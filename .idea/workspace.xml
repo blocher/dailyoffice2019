@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8657ce3f-a52e-4518-a963-4f09ef5b69fc" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sermons/db.sqlite3" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/sermons/sermons/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/sermons/sermons/settings.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -51,7 +48,7 @@
       <option name="presentableId" value="Default" />
       <updated>1564503861241</updated>
       <workItem from="1564503864435" duration="55000" />
-      <workItem from="1564503941371" duration="1157000" />
+      <workItem from="1564503941371" duration="1241000" />
     </task>
     <servers />
   </component>
