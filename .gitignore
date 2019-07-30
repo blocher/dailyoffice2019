@@ -1,1 +1,5 @@
 env
+sermons/.env
+.DS_Store
+.log
+.sql
