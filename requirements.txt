@@ -1,6 +1,13 @@
+appdirs==1.4.3
+attrs==19.1.0
+black==19.3b0
+Click==7.0
 Django==2.2.3
 django-extensions==2.2.1
 psycopg2-binary==2.8.3
+python-dotenv==0.10.3
 pytz==2019.1
 six==1.12.0
 sqlparse==0.3.0
+toml==0.10.0
+Werkzeug==0.15.5
