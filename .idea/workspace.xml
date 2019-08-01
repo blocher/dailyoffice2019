@@ -2,13 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8657ce3f-a52e-4518-a963-4f09ef5b69fc" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/watcherTasks.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/sermons/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/watcherTasks.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/watcherTasks.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sermons/manage.py" beforeDir="false" afterPath="$PROJECT_DIR$/sermons/manage.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sermons/sermons/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/sermons/sermons/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sermons/sermons/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/sermons/sermons/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sermons/sermons/wsgi.py" beforeDir="false" afterPath="$PROJECT_DIR$/sermons/sermons/wsgi.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -62,7 +62,9 @@
       <option name="presentableId" value="Default" />
       <updated>1564503861241</updated>
       <workItem from="1564503864435" duration="55000" />
-      <workItem from="1564503941371" duration="2691000" />
+      <workItem from="1564503941371" duration="2751000" />
+      <workItem from="1564692940130" duration="21000" />
+      <workItem from="1564692975784" duration="2615000" />
     </task>
     <servers />
   </component>
@@ -74,7 +76,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>

@@ -6,3 +6,4 @@ sermons/.env
 *.pyc
 *.pyo
 _pycache__
+sermons/static/
