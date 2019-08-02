@@ -2,8 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8657ce3f-a52e-4518-a963-4f09ef5b69fc" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/sermons/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/sermons/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/site/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/sermons/migrations/0002_auto_20190802_0229.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/sermons/migrations/0002_auto_20190802_0229.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/uploads/Advent_Brookline_8.4.19_-_Ecclesiastes_1.docx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/uploads/Advent_Brookline_8.4.19_-_Ecclesiastes_1_ZFlCTxv.docx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/uploads/The_Blessing_of_a_House.docx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/uploads/The_Blessing_of_a_House.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/uploads/The_Blessing_of_a_House_AJ7LMDu.pdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/uploads/The_Blessing_of_a_House_dYJMbGV.docx" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
