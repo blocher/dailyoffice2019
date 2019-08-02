@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
+    "website",
+    "sermons",
 ]
 
 MIDDLEWARE = [
@@ -55,7 +57,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "sermons.urls"
+ROOT_URLCONF = "website.urls"
 
 TEMPLATES = [
     {
@@ -73,7 +75,7 @@ TEMPLATES = [
     }
 ]
 
-WSGI_APPLICATION = "sermons.wsgi.application"
+WSGI_APPLICATION = "website.wsgi.application"
 
 
 # Database
@@ -114,6 +116,10 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+MEDIA_ROOT = BASE_DIR + "/uploads/"
+
+MEDIA_URL = "/uploads/"
 
 
 # Static files (CSS, JavaScript, Images)
