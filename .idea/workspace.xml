@@ -3,12 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="8657ce3f-a52e-4518-a963-4f09ef5b69fc" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sermons/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/site/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sermons/manage.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/manage.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sermons/sermons/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sermons/sermons/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sermons/sermons/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sermons/sermons/wsgi.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/wsgi.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/sermons/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/sermons/models.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />

@@ -1,5 +1,6 @@
 from django.db import models
 from website.models import UUIDModel
+import docx
 
 
 class Sermon(UUIDModel):
@@ -8,7 +9,7 @@ class Sermon(UUIDModel):
     file = models.FileField(
         verbose_name="File", help_text="The sermon in Microsoft Word or text format", blank=True, null=True
     )
-    text = models.TextField(verbose_name="Text", help_text="The full content of the sermon")
+    text = models.TextField(verbose_name="Text", help_text="The full content of the sermon", blank=True, null=True)
     summary = models.TextField(verbose_name="Summary", help_text="A summary of the sermon", blank=True, null=True)
     auto_summary = models.TextField(
         verbose_name="Auto-summary", help_text="An auto-generated summary of the sermon", blank=True, null=True
@@ -17,6 +18,17 @@ class Sermon(UUIDModel):
     private_notes = models.TextField(
         verbose_name="Notes (private)", help_text="Notes (Internal only)", blank=True, null=True
     )
+
+    def getText(self, file):
+        doc = docx.Document(file)
+        fullText = []
+        for para in doc.paragraphs:
+            fullText.append(para.text)
+        return "\n".join(fullText)
+
+    def save(self, *args, **kwargs):
+        self.text = self.getText(self.file)
+        return super().save(*args, **kwargs)
 
 
 class SermonDateTime(UUIDModel):
