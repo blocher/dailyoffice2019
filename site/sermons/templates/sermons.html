@@ -1,0 +1,12 @@
+<html>
+    <body>
+        <h1>Sermons</h1>
+
+        <ul>
+            {% for sermon in sermons %}
+            <a href="/sermon/{{ sermon.id }}"><li>{{ sermon.title }}</li></a>
+            {% endfor %}
+        </ul>
+    </body>
+
+</html>

@@ -17,12 +17,21 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from sermons import views as sermon_views
+
 
 urlpatterns = [
+    path("sermons", sermon_views.sermons, name="sermons"),
+    path("sermon/<uuid:id>", sermon_views.sermon, name="sermon"),
     path("jet/", include("jet.urls", "jet")),
     path("jet/dashboard/", include("jet.dashboard.urls", "jet-dashboard")),
     path("admin/", admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    import debug_toolbar
+
+    urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
 
 admin.site.site_title = "Sermon Database"
 admin.site.site_header = "Sermon Database Administration"

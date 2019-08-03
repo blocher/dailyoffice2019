@@ -1,6 +1,7 @@
 from django.db import models
 from website.models import UUIDModel
 import docx
+import sumy
 
 
 class Sermon(UUIDModel):
@@ -26,8 +27,36 @@ class Sermon(UUIDModel):
             fullText.append(para.text)
         return "\n".join(fullText)
 
+    def getSummary(self):
+
+        from sumy.parsers.html import HtmlParser
+        from sumy.parsers.plaintext import PlaintextParser
+        from sumy.nlp.tokenizers import Tokenizer
+        from sumy.summarizers.lsa import LsaSummarizer as Summarizer
+        from sumy.nlp.stemmers import Stemmer
+        from sumy.utils import get_stop_words
+
+        LANGUAGE = "english"
+        SENTENCES_COUNT = 5
+
+        url = "https://en.wikipedia.org/wiki/Automatic_summarization"
+        parser = HtmlParser.from_url(url, Tokenizer(LANGUAGE))
+        # or for plain text files
+        parser = PlaintextParser.from_string(self.text, Tokenizer(LANGUAGE))
+        stemmer = Stemmer(LANGUAGE)
+
+        summarizer = Summarizer(stemmer)
+        summarizer.stop_words = get_stop_words(LANGUAGE)
+
+        summary = ""
+        for sentence in summarizer(parser.document, SENTENCES_COUNT):
+            summary = "{} {}".format(summary, sentence)
+        return summary
+
     def save(self, *args, **kwargs):
-        self.text = self.getText(self.file)
+        if self.file:
+            self.text = self.getText(self.file)
+        self.auto_summary = self.getSummary()
         return super().save(*args, **kwargs)
 
 

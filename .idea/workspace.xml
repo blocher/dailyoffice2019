@@ -2,14 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8657ce3f-a52e-4518-a963-4f09ef5b69fc" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/site/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/site/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/sermons/migrations/0002_auto_20190802_0229.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/sermons/migrations/0002_auto_20190802_0229.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/uploads/Advent_Brookline_8.4.19_-_Ecclesiastes_1.docx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/uploads/Advent_Brookline_8.4.19_-_Ecclesiastes_1_ZFlCTxv.docx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/uploads/The_Blessing_of_a_House.docx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/uploads/The_Blessing_of_a_House.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/uploads/The_Blessing_of_a_House_AJ7LMDu.pdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/uploads/The_Blessing_of_a_House_dYJMbGV.docx" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/site/sermons/templates/sermon.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/site/sermons/templates/sermons.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/sermons/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/sermons/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/sermons/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/sermons/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/website/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/website/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/urls.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -39,7 +39,7 @@
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="watcher.settings" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -67,6 +67,10 @@
       <workItem from="1564503941371" duration="2751000" />
       <workItem from="1564692940130" duration="21000" />
       <workItem from="1564692975784" duration="2615000" />
+      <workItem from="1564753067999" duration="14000" />
+      <workItem from="1564753375035" duration="618000" />
+      <workItem from="1564862879260" duration="729000" />
+      <workItem from="1564864091959" duration="1974000" />
     </task>
     <servers />
   </component>
