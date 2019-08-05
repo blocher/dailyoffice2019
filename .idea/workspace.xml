@@ -2,11 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8657ce3f-a52e-4518-a963-4f09ef5b69fc" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/site/sermons/templates/sermon.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/site/sermons/templates/sermons.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/site/sermons/templates/404.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/sermons/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/sermons/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/sermons/templates/sermon.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/sermons/templates/sermon.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/sermons/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/sermons/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/website/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/website/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/urls.py" afterDir="false" />
@@ -70,7 +68,8 @@
       <workItem from="1564753067999" duration="14000" />
       <workItem from="1564753375035" duration="618000" />
       <workItem from="1564862879260" duration="729000" />
-      <workItem from="1564864091959" duration="1974000" />
+      <workItem from="1564864091959" duration="3072000" />
+      <workItem from="1564968063726" duration="12000" />
     </task>
     <servers />
   </component>
