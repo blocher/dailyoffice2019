@@ -36,3 +36,5 @@ if settings.DEBUG:
 admin.site.site_title = "Sermon Database"
 admin.site.site_header = "Sermon Database Administration"
 admin.site.index_title = "Sermon Database Administration"
+
+handler404 = "sermons.views.handle404"
