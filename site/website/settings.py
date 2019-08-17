@@ -33,8 +33,7 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
-    # "jet.dashboard",
-    "jet",
+    "grappelli",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -45,6 +44,8 @@ INSTALLED_APPS = [
     "website",
     "sermons",
     "debug_toolbar",
+    "djrichtextfield",
+    "taggit",
 ]
 
 MIDDLEWARE = [
@@ -131,7 +132,19 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(PROJECT_ROOT, "static")
 
-
-JET_DEFAULT_THEME = "light-violet"
+SHELL_PLUS = "ipython"
+JET_DEFAULT_THEME = "default"
 JET_SIDE_MENU_COMPACT = True
 JET_CHANGE_FORM_SIBLING_LINKS = True
+
+
+DJRICHTEXTFIELD_CONFIG = {
+    "js": ["//cdn.tinymce.com/4/tinymce.min.js"],
+    "init_template": "djrichtextfield/init/tinymce.js",
+    "settings": {
+        "menubar": True,
+        "toolbar": "formatselect | bold italic strikethrough forecolor backcolor permanentpen formatpainter | link image media pageembed | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent | removeformat | addcomment",
+        "width": "100%",
+        "height": 800,
+    },
+}
