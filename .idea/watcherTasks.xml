@@ -14,7 +14,7 @@
         <array />
       </option>
       <option name="outputFromStdout" value="false" />
-      <option name="program" value="black" />
+      <option name="program" value="$PROJECT_DIR$/env/bin/black" />
       <option name="runOnExternalChanges" value="true" />
       <option name="scopeName" value="Django" />
       <option name="trackOnlyRoot" value="false" />

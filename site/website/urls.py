@@ -23,8 +23,8 @@ from sermons import views as sermon_views
 urlpatterns = [
     path("sermons", sermon_views.sermons, name="sermons"),
     path("sermon/<uuid:id>", sermon_views.sermon, name="sermon"),
-    path("jet/", include("jet.urls", "jet")),
-    path("jet/dashboard/", include("jet.dashboard.urls", "jet-dashboard")),
+    path("grappelli/", include("grappelli.urls")),  # grappelli URLS
+    path("djrichtextfield/", include("djrichtextfield.urls")),
     path("admin/", admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
