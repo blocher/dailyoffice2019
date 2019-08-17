@@ -2,7 +2,6 @@ appdirs==1.4.3
 appnope==0.1.0
 attrs==19.1.0
 backcall==0.1.0
-beatitud-scriptures==4.0.0
 beautifulsoup4==4.8.0
 black==19.3b0
 blis==0.2.4
@@ -20,12 +19,10 @@ decorator==4.4.0
 Django==2.2.4
 django-debug-toolbar==2.0
 django-extensions==2.2.1
-django-grappelli==2.13.1
 django-jet==1.0.8
 django-richtextfield==1.4.0
 django-taggit==1.1.0
 docopt==0.6.2
-en-core-web-sm==2.1.0
 feedparser==5.2.1
 future==0.17.1
 google-api-python-client==1.7.11
@@ -51,7 +48,6 @@ parso==0.5.1
 pexpect==4.7.0
 pickleshare==0.7.5
 pipenv==2018.11.26
-pke==1.8
 plac==1.1.0
 preshed==2.0.1
 prompt-toolkit==2.0.9
