@@ -2,15 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8657ce3f-a52e-4518-a963-4f09ef5b69fc" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/site/bible/utils.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/site/esv.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/watcherTasks.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/watcherTasks.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/sermons/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/sermons/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/sermons/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/sermons/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/website/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/website/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/urls.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -78,7 +71,7 @@
       <workItem from="1565228007971" duration="6923000" />
       <workItem from="1565469547727" duration="733000" />
       <workItem from="1565831360002" duration="5872000" />
-      <workItem from="1566073624821" duration="388000" />
+      <workItem from="1566073624821" duration="1047000" />
     </task>
     <servers />
   </component>
