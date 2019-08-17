@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from bs4 import BeautifulSoup
 import requests
 import scriptures
+from html2text import html2text
 
 
 class PassageRetriever(object):
@@ -11,15 +12,15 @@ class PassageRetriever(object):
 
 class BibleVersion(ABC):
     @abstractmethod
-    def getPassageText(self):
+    def get_passage_text(self):
         pass
 
     @abstractmethod
-    def getPassageHTML(self):
+    def get_passage_html(self):
         pass
 
     @abstractmethod
-    def getPassageHeadings(self):
+    def get_passage_headings(self):
         pass
 
 
@@ -27,41 +28,71 @@ class NRSV(BibleVersion):
     def __init__(self, passage):
         self.passage_reference = scriptures.extract(passage)[0]
         self.passage = scriptures.reference_to_string(*self.passage_reference)
-        self.markup = self.getPassage()
+        self.markup = self.get_markup()
         self.soup = BeautifulSoup(self.markup, "html5lib")
+        self.passage_html = self.get_passage_html()
+        self.passage_text = self.get_passage_text()
+        self.passage_headings = self.get_passage_headings()
 
-    def getPassage(self, passage=None):
+    def get_markup(self, passage=None):
         passage = passage if passage else self.passage
         r = requests.get("https://beta.biblegateway.com/passage/?search={}&version=NRSV".format(passage))
         if r.status_code == 200:
             return r.text
         raise Exception("Error getting passage")
 
-    def getPassageText(self):
-        pass
+    def get_passage_text(self):
+        return html2text(self.passage_html)
 
-    def getPassageHTML(self):
-        main_sections = self.soup.find_all("div", class_="result-text-style-normal")
-        for section in main_sections:
-            print(section)
+    def get_passage_html(self):
+        return " ".join(
+            [
+                str(tag)
+                for tag in self.soup.find_all("div", class_="result-text-style-normal")[0].find_all(
+                    "span", class_="text"
+                )
+            ]
+        )
 
-    def getPassageHeadings(self):
+    def get_previous_heading(self):
+
+        book, start_chapter, start_verse, end_chapter, end_verse = self.passage_reference
+
+        new_start_chapter = 1 if start_chapter == 1 else start_chapter - 1
+        new_start_verse = 1
+        new_end_chapter = start_chapter
+        new_end_verse = start_verse
+
+        passage = "{} {}:{} - {}:{}".format(book, new_start_chapter, new_start_verse, new_end_chapter, new_end_verse)
+        markup = self.get_markup(passage)
+        soup = BeautifulSoup(markup, "html5lib")
+        headings = soup.find_all("div", class_="result-text-style-normal")[0].find_all("h3")
+        if headings:
+            return headings.pop()
+        return None
+
+    def get_passage_headings(self):
 
         headings = self.soup.find_all("div", class_="result-text-style-normal")[0].find_all("h3")
-        headings = [heading.string for heading in headings]
 
         first_element = self.soup.find_all("div", class_="result-text-style-normal")[0].find_all()[0]
         if first_element.name != "h3":
-            chapter = 1 if self.passage_reference[1] == 1 else self.passage_reference[1] - 1
-            extended_passage = "{} {}:1 - {}:{}".format(
-                self.passage_reference[0], chapter, self.passage_reference[3], self.passage_reference[4]
-            )
-            extended_markup = self.getPassage(extended_passage)
-            extended_soup = BeautifulSoup(extended_markup, "html5lib")
-            extended_headings = extended_soup.find_all("div", class_="result-text-style-normal")[0].find_all("h3")
-            extended_headings = [heading.string for heading in extended_headings]
-            original_headings = set(headings)
-            new_headings = [item for item in extended_headings if item not in original_headings]
-            headings = [new_headings.pop()] + headings
+            new_heading = self.get_previous_heading()
+            if new_heading:
+                headings = [new_heading] + headings
 
-        return headings
+        formatted_headings = []
+        for heading in headings:
+            span = heading.find_next("span")
+            classes = span.get_attribute_list("class")
+            try:
+                classes.remove("text")
+            except ValueError:
+                pass
+            passage = classes[0].split("-")
+            passage = "{} {}:{}".format(passage[0], passage[1], passage[2])
+            passage = scriptures.extract(passage)[0]
+            passage = scriptures.reference_to_string(*passage)
+            formatted_headings.append((passage, heading.string))
+
+        return formatted_headings
