@@ -109,7 +109,6 @@ class BibleGateway(BibleSource):
             except ValueError:
                 pass
             passage = classes[0].split("-")
-            print(passage)
             passage = "{} {}:{}".format(passage[0], passage[1], passage[2])
             passage = scriptures.extract(passage)[0]
             passage = scriptures.reference_to_string(*passage)
