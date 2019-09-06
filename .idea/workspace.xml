@@ -4,14 +4,9 @@
     <list default="true" id="8657ce3f-a52e-4518-a963-4f09ef5b69fc" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/bible/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/bible/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/bible/admin.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/bible/apps.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/bible/migrations/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/bible/sources.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/bible/models.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/bible/tests.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/bible/utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/bible/views.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/bible/sources.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/bible/sources.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/sermons/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/sermons/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/sermons/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/sermons/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/website/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/settings.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -88,6 +83,9 @@
       <workItem from="1565831360002" duration="5872000" />
       <workItem from="1566073624821" duration="17030000" />
       <workItem from="1566525411655" duration="4495000" />
+      <workItem from="1566956058636" duration="6165000" />
+      <workItem from="1567734054999" duration="13000" />
+      <workItem from="1567734084119" duration="1490000" />
     </task>
     <servers />
   </component>

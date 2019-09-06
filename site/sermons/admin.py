@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 from django.urls import path, reverse
-from .models import Sermon, SermonDateTime
+from .models import Sermon, SermonDateTime, SermonBiblePassage
 from django.shortcuts import render, redirect
 
 
@@ -12,6 +12,12 @@ class ImportForm(forms.Form):
 class SermonDateTimeInline(admin.TabularInline):
     model = SermonDateTime
     extra = 0
+
+
+class SermonBiblePassageInline(admin.TabularInline):
+    model = SermonBiblePassage
+    extra = 0
+    ordering = ["type"]
 
 
 class SermonAdmin(admin.ModelAdmin):
@@ -31,7 +37,7 @@ class SermonAdmin(admin.ModelAdmin):
 
     change_list_template = "admin/sermons_changelist.html"
 
-    inlines = (SermonDateTimeInline,)
+    inlines = (SermonDateTimeInline, SermonBiblePassageInline)
 
     def get_urls(self):
         urls = super().get_urls()
@@ -48,6 +54,7 @@ class SermonAdmin(admin.ModelAdmin):
             sermon.text = sermon.getText(file)
             sermon.auto_summary = sermon.getSummary()
             sermon.getKeyWords()
+            sermon.getBiblePassages(file)
 
             import datefinder
 
