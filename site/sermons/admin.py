@@ -1,8 +1,11 @@
-from django.contrib import admin
+from array_tags import widgets
 from django import forms
-from django.urls import path, reverse
-from .models import Sermon, SermonDateTime, SermonBiblePassage
+from django.contrib import admin
+from django.contrib.postgres.fields import ArrayField
 from django.shortcuts import render, redirect
+from django.urls import path, reverse
+
+from .models import Sermon, SermonDateTime, SermonBiblePassage, SermonLocation
 
 
 class ImportForm(forms.Form):
@@ -48,11 +51,12 @@ class SermonAdmin(admin.ModelAdmin):
         if request.method == "POST":
             file = request.FILES["file"]
             sermon = Sermon.objects.create()
-            sermon.title = "Poo ninnymuggins 2"
             sermon.file = file
+            sermon.title = sermon.getTitle(file)
             sermon.content = sermon.getContent(file)
             sermon.text = sermon.getText(file)
             sermon.auto_summary = sermon.getSummary()
+
             sermon.getKeyWords()
             sermon.getBiblePassages(file)
 
@@ -78,4 +82,12 @@ class SermonAdmin(admin.ModelAdmin):
         return render(request, "admin/import_sermon.html", payload)
 
 
+class SermonLocationAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+    fields = ("name", "address", "website", "alternate_names")
+
+    formfield_overrides = {ArrayField: {"widget": widgets.AdminTagWidget}}
+
+
+admin.site.register(SermonLocation, SermonLocationAdmin)
 admin.site.register(Sermon, SermonAdmin)
