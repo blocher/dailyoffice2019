@@ -1,6 +1,7 @@
 import scriptures
 from address.models import AddressField
 from django.db import models
+from django.utils.functional import cached_property
 from website.models import UUIDModel
 import mammoth
 from rake_nltk import Rake
@@ -136,9 +137,6 @@ class Sermon(UUIDModel):
         LANGUAGE = "english"
         SENTENCES_COUNT = 5
 
-        url = "https://en.wikipedia.org/wiki/Automatic_summarization"
-        parser = HtmlParser.from_url(url, Tokenizer(LANGUAGE))
-        # or for plain text files
         parser = PlaintextParser.from_string(self.text, Tokenizer(LANGUAGE))
         stemmer = Stemmer(LANGUAGE)
 
@@ -149,6 +147,17 @@ class Sermon(UUIDModel):
         for sentence in summarizer(parser.document, SENTENCES_COUNT):
             summary = "{} {}".format(summary, sentence)
         return summary
+
+    def getLocation(self):
+        locations = SermonLocation.objects.all()
+        search_strings = {}
+        for location in locations:
+            search_strings = {**search_strings, **location.search_strings}
+        text = self.text.replace(",", "")
+        for search_string, location in search_strings.items():
+            if search_string in text:
+                return location
+        return None
 
     def getKeyWords(self):
         return
@@ -234,6 +243,14 @@ class SermonLocation(UUIDModel):
     )
 
     objects = ArrayQuerySet.as_manager()
+
+    @cached_property
+    def names(self):
+        return [self.name] + self.alternate_names
+
+    @cached_property
+    def search_strings(self):
+        return {name: self for name in self.names}
 
     def __str__(self):
         return "{} ({}, {})".format(self.name, self.address.locality.name, self.address.locality.state.code)

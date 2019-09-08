@@ -56,6 +56,7 @@ class SermonAdmin(admin.ModelAdmin):
             sermon.content = sermon.getContent(file)
             sermon.text = sermon.getText(file)
             sermon.auto_summary = sermon.getSummary()
+            sermon.location = sermon.getLocation()
 
             sermon.getKeyWords()
             sermon.getBiblePassages(file)
