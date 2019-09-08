@@ -4,7 +4,6 @@
     <list default="true" id="8657ce3f-a52e-4518-a963-4f09ef5b69fc" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/bible/sources.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/bible/sources.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/sermons/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/sermons/admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/sermons/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/sermons/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/website/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/settings.py" afterDir="false" />
@@ -85,7 +84,9 @@
       <workItem from="1566525411655" duration="4495000" />
       <workItem from="1566956058636" duration="6165000" />
       <workItem from="1567734054999" duration="13000" />
-      <workItem from="1567734084119" duration="1490000" />
+      <workItem from="1567734084119" duration="2519000" />
+      <workItem from="1567777004019" duration="5000" />
+      <workItem from="1567893645318" duration="5127000" />
     </task>
     <servers />
   </component>
@@ -109,8 +110,9 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/site/sermons/admin.py</url>
-          <option name="timeStamp" value="1" />
+          <url>file://$PROJECT_DIR$/site/website/settings.py</url>
+          <line>127</line>
+          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

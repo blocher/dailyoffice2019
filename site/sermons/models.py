@@ -1,4 +1,5 @@
 import scriptures
+from address.models import AddressField
 from django.db import models
 from website.models import UUIDModel
 import mammoth
@@ -13,10 +14,13 @@ from bible import BibleVersions
 
 from bible import Passage
 
+from array_tags.fields import TagField as ArrayField
+from array_tags.managers import TagQuerySet as ArrayQuerySet
+
 
 class Sermon(UUIDModel):
     title = models.CharField(max_length=255, verbose_name="Sermon title", help_text="Sermon Title")
-    location = models.CharField(max_length=255, verbose_name="Location", help_text="Location Sermon was delivered")
+    location = models.ForeignKey("SermonLocation", null=True, blank=True, on_delete=models.SET_NULL)
     file = models.FileField(
         verbose_name="File", help_text="The sermon in Microsoft Word or text format", blank=True, null=True
     )
@@ -40,6 +44,18 @@ class Sermon(UUIDModel):
     )
 
     # tags = TaggableManager()
+
+    def getTitle(self, file):
+        name = file.name
+        name = name.split(".")
+        if len(name) > 1:
+            name.pop()
+        name = ".".join(name)
+        name = name.replace("_", " ")
+        name = name.split("-")
+        if len(name) > 1:
+            return name.pop().strip()
+        return name[0].strip()
 
     def getContent(self, file):
         result = mammoth.convert_to_html(file)
@@ -159,6 +175,7 @@ class Sermon(UUIDModel):
 
     def save(self, *args, **kwargs):
         if self.file:
+            print(type(self.file).__name__)
             self.content = self.getContent(self.file)
             self.text = self.getText(self.file)
         self.auto_summary = self.getSummary()
@@ -205,3 +222,18 @@ class SermonBiblePassage(UUIDModel):
         null=True,
         max_length=256,
     )
+
+
+class SermonLocation(UUIDModel):
+
+    name = models.CharField(max_length=255, blank=False, null=False)
+    address = AddressField(blank=True, null=True, default="", on_delete=models.SET_NULL)
+    website = models.URLField(blank=True, null=True)
+    alternate_names = ArrayField(
+        blank=True, null=True, help_text="A list of strings to be matched when importing a sermon."
+    )
+
+    objects = ArrayQuerySet.as_manager()
+
+    def __str__(self):
+        return "{} ({}, {})".format(self.name, self.address.locality.name, self.address.locality.state.code)

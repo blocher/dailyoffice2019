@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "djrichtextfield",
     "taggit",
+    "address",
+    "array_tags",
 ]
 
 MIDDLEWARE = [
@@ -162,3 +164,5 @@ DJRICHTEXTFIELD_CONFIG = {
         "height": 800,
     },
 }
+
+GOOGLE_API_KEY = "AIzaSyAoETL2PnO843Q98QgumZg756AAHAzhhRw"
