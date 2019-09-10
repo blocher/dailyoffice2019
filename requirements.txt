@@ -22,7 +22,7 @@ decorator==4.4.0
 Django==2.2.4
 django-debug-toolbar==2.0
 django-extensions==2.2.1
-django-jet==1.0.8
+django-material-admin==1.4.6
 django-richtextfield==1.4.0
 django-taggit==1.1.0
 docopt==0.6.2
@@ -66,6 +66,8 @@ pyrsistent==0.15.4
 python-dateutil==2.8.0
 python-docx==0.8.10
 python-dotenv==0.10.3
+python-magic==0.4.15
+python-magic-bin==0.4.14
 pytz==2019.2
 rake-nltk==1.0.4
 regex==2019.6.8

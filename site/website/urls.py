@@ -13,19 +13,29 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import path, include
 from sermons import views as sermon_views
 
+from django.contrib.staticfiles.templatetags.staticfiles import static as staticfiles
+from django.urls import path, include
+from django.utils.translation import ugettext_lazy as _
+
+from material.admin.sites import site
+
+site.site_header = _("Elizabeth Locher's Sermon Archive")
+site.site_title = _("Elizabeth Locher's Sermon Archive")
+# site.favicon = staticfiles('path/to/favicon')
 
 urlpatterns = [
     path("sermons", sermon_views.sermons, name="sermons"),
     path("sermon/<uuid:id>", sermon_views.sermon, name="sermon"),
     path("djrichtextfield/", include("djrichtextfield.urls")),
-    path("jet/", include("jet.urls", "jet")),
-    path("admin/", admin.site.urls),
+    # path("jet/", include("jet.urls", "jet")),
+    # path("admin/", admin.site.urls),
+    path("admin/", include("material.admin.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

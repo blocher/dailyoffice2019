@@ -5,7 +5,10 @@ from django.contrib.postgres.fields import ArrayField
 from django.shortcuts import render, redirect
 from django.urls import path, reverse
 
+from sermons.text_extractor import TextExtractor, WordXExtractor
 from .models import Sermon, SermonDateTime, SermonBiblePassage, SermonLocation
+from material.admin.decorators import register
+from material.admin.options import MaterialModelAdmin
 
 
 class ImportForm(forms.Form):
@@ -23,8 +26,9 @@ class SermonBiblePassageInline(admin.TabularInline):
     ordering = ["type"]
 
 
-class SermonAdmin(admin.ModelAdmin):
-    list_display = ("title",)
+@register(Sermon)
+class SermonAdmin(MaterialModelAdmin):
+    list_display = ("title", "primary_date_and_time_given", "location")
     fields = (
         "title",
         "location",
@@ -40,7 +44,10 @@ class SermonAdmin(admin.ModelAdmin):
 
     change_list_template = "admin/sermons_changelist.html"
 
+    list_filter = ("location", "primary_date_and_time_given")
     inlines = (SermonDateTimeInline, SermonBiblePassageInline)
+
+    ordering = ("-primary_date_and_time_given",)
 
     def get_urls(self):
         urls = super().get_urls()
@@ -50,6 +57,9 @@ class SermonAdmin(admin.ModelAdmin):
     def import_sermon(self, request):
         if request.method == "POST":
             file = request.FILES["file"]
+            ex = TextExtractor.get_extractor(file)
+            print(ex.file_name(), ex.text(), ex.html())
+            return render(request, "admin/import_sermon.html", None)
             sermon = Sermon.objects.create()
             sermon.file = file
             sermon.title = sermon.getTitle(file)
@@ -83,7 +93,8 @@ class SermonAdmin(admin.ModelAdmin):
         return render(request, "admin/import_sermon.html", payload)
 
 
-class SermonLocationAdmin(admin.ModelAdmin):
+@register(SermonLocation)
+class SermonLocationAdmin(MaterialModelAdmin):
     list_display = ("name",)
     fields = ("name", "address", "website", "alternate_names")
 
