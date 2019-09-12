@@ -51,29 +51,37 @@ class BibleGateway(BibleSource):
         raise Exception("Error getting passage")
 
     def _set_text(self):
-        str = html2text(self.html).replace("\n", " ").replace("/\s\s+/", " ").strip()
-        str = re.sub(" +", " ", str)
-        return str
+        try:
+            str = html2text(self.html).replace("\n", " ").replace("/\s\s+/", " ").strip()
+            str = re.sub(" +", " ", str)
+            return str
+        except Exception as e:
+            print(e)
+            return None
 
     def _set_html(self):
-        for h3 in self.soup.find_all("h3"):
-            h3.decompose()
-        for span in self.soup.find_all("span", class_="chapternum"):
-            span.decompose()
-        for sup in self.soup.find_all("sup", class_="versenum"):
-            sup.decompose()
-        for sup in self.soup.find_all("sup", class_="crossreference"):
-            sup.decompose()
-        for sup in self.soup.find_all("sup", class_="footnote"):
-            sup.decompose()
-        return " ".join(
-            [
-                str(tag)
-                for tag in self.soup.find_all("div", class_="result-text-style-normal")[0].find_all(
-                    "span", class_="text"
-                )
-            ]
-        )
+        try:
+            for h3 in self.soup.find_all("h3"):
+                h3.decompose()
+            for span in self.soup.find_all("span", class_="chapternum"):
+                span.decompose()
+            for sup in self.soup.find_all("sup", class_="versenum"):
+                sup.decompose()
+            for sup in self.soup.find_all("sup", class_="crossreference"):
+                sup.decompose()
+            for sup in self.soup.find_all("sup", class_="footnote"):
+                sup.decompose()
+            return " ".join(
+                [
+                    str(tag)
+                    for tag in self.soup.find_all("div", class_="result-text-style-normal")[0].find_all(
+                        "span", class_="text"
+                    )
+                ]
+            )
+        except Exception as e:
+            print(e)
+            return None
 
     def _get_previous_heading(self):
 
@@ -94,26 +102,30 @@ class BibleGateway(BibleSource):
 
     def _set_headings(self):
 
-        headings = self.soup.find_all("div", class_="result-text-style-normal")[0].find_all("h3")
+        try:
+            headings = self.soup.find_all("div", class_="result-text-style-normal")[0].find_all("h3")
 
-        first_element = self.soup.find_all("div", class_="result-text-style-normal")[0].find_all()[0]
-        if first_element.name != "h3":
-            new_heading = self._get_previous_heading()
-            if new_heading:
-                headings = [new_heading] + headings
+            first_element = self.soup.find_all("div", class_="result-text-style-normal")[0].find_all()[0]
+            if first_element.name != "h3":
+                new_heading = self._get_previous_heading()
+                if new_heading:
+                    headings = [new_heading] + headings
 
-        formatted_headings = []
-        for heading in headings:
-            span = heading.find_next("span")
-            classes = span.get_attribute_list("class")
-            try:
-                classes.remove("text")
-            except ValueError:
-                pass
-            passage = classes[0].split("-")
-            passage = "{} {}:{}".format(passage[0], passage[1], passage[2])
-            passage = scriptures.extract(passage)[0]
-            passage = scriptures.reference_to_string(*passage)
-            formatted_headings.append((passage, heading.string))
+            formatted_headings = []
+            for heading in headings:
+                span = heading.find_next("span")
+                classes = span.get_attribute_list("class")
+                try:
+                    classes.remove("text")
+                except ValueError:
+                    pass
+                passage = classes[0].split("-")
+                passage = "{} {}:{}".format(passage[0], passage[1], passage[2])
+                passage = scriptures.extract(passage)[0]
+                passage = scriptures.reference_to_string(*passage)
+                formatted_headings.append((passage, heading.string))
 
-        return formatted_headings
+            return formatted_headings
+        except Exception as e:
+            print(e)
+            return None
