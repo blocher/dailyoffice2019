@@ -1,31 +1,20 @@
+import io
 from abc import ABC, abstractmethod
 
 import mammoth
-import magic
-import PyPDF2
-import io
-
-from pdfminer3.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer3.converter import TextConverter, HTMLConverter
 from pdfminer3.layout import LAParams
+from pdfminer3.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer3.pdfpage import PDFPage
 
+import mimetypes
 
-class TextExtractor(ABC):
-    def __init__(self, file):
-        self.file = file
 
-    def file_name(self):
-        return self.file.name
+class FileTypeNotSupportedException(Exception):
+    pass
 
-    @abstractmethod
-    def text(self):
-        pass
 
-    @abstractmethod
-    def html(self):
-        pass
-
+class TextExtractorFactory(object):
     @staticmethod
     def get_extractor(file):
 
@@ -38,14 +27,48 @@ class TextExtractor(ABC):
         if file.content_type == "x-pdf":
             return PDFExtractor(file)
 
-        raise Exception("This file type is not yet implemented.")
+        raise FileTypeNotSupportedException("This file type is not yet implemented.")
+
+
+class TextExtractor(ABC):
+    def __init__(self, file):
+        self.file = file
+        self.file_name_cache = ""
+        self.text_cache = ""
+        self.html_cache = ""
+
+    def set_file_name(self):
+        return self.file.name
+
+    @abstractmethod
+    def set_text(self):
+        pass
+
+    @abstractmethod
+    def set_html(self):
+        pass
+
+    def file_name(self):
+        if not self.file_name_cache:
+            self.file_name_cache = self.set_file_name()
+        return self.file_name_cache
+
+    def text(self):
+        if not self.text_cache:
+            self.text_cache = self.set_text()
+        return self.text_cache
+
+    def html(self):
+        if not self.html_cache:
+            self.html_cache = self.set_html()
+        return self.html_cache
 
 
 class WordXExtractor(TextExtractor):
-    def text(self):
+    def set_text(self):
         return mammoth.extract_raw_text(self.file).value
 
-    def html(self):
+    def set_html(self):
         return mammoth.convert_to_html(self.file).value
 
 
@@ -76,8 +99,8 @@ class PDFExtractor(TextExtractor):
         retstr.close()
         return text.decode()
 
-    def text(self):
+    def set_text(self):
         return self._extract()
 
-    def html(self):
+    def set_html(self):
         return self._extract(convertor_class=HTMLConverter)

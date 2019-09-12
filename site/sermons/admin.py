@@ -6,6 +6,9 @@ from django.shortcuts import render, redirect
 from django.urls import path, reverse
 
 from sermons.text_extractor import TextExtractor, WordXExtractor
+
+from sermons.importer import SermonImporter
+from sermons.text_extractor import TextExtractorFactory
 from .models import Sermon, SermonDateTime, SermonBiblePassage, SermonLocation
 from material.admin.decorators import register
 from material.admin.options import MaterialModelAdmin
@@ -57,35 +60,8 @@ class SermonAdmin(MaterialModelAdmin):
     def import_sermon(self, request):
         if request.method == "POST":
             file = request.FILES["file"]
-            ex = TextExtractor.get_extractor(file)
-            print(ex.file_name(), ex.text(), ex.html())
-            return render(request, "admin/import_sermon.html", None)
-            sermon = Sermon.objects.create()
-            sermon.file = file
-            sermon.title = sermon.getTitle(file)
-            sermon.content = sermon.getContent(file)
-            sermon.text = sermon.getText(file)
-            sermon.auto_summary = sermon.getSummary()
-            sermon.location = sermon.getLocation()
-
-            sermon.getKeyWords()
-            sermon.getBiblePassages(file)
-
-            import datefinder
-
-            matches = list(datefinder.find_dates(sermon.text))
-            if len(matches) > 0:
-                if matches[0].hour == 0:
-                    matches[0] = matches[0].replace(hour=10, minute=0, second=0, microsecond=0)
-                sermon.primary_date_and_time_given = matches[0]
-
-            sermon.save()
-
-            if sermon.primary_date_and_time_given:
-                SermonDateTime.objects.create(
-                    sermon_id=sermon.pk, date_and_time_given=sermon.primary_date_and_time_given, primary=True
-                )
-
+            sermon = SermonImporter.import_file(file)
+            return redirect("/admin/sermons/sermon/import-sermon/")
             self.message_user(request, "Your file has been imported")
             return redirect(reverse("admin:sermons_sermon_change", args=(sermon.pk,)))
         form = ImportForm()
