@@ -1,0 +1,9 @@
+<div style="background-color:gray; padding: 20px">
+
+	{% for day in calendar.dates %}
+		
+		<p style="color:{{ day.primary.color }}; {{ day.primary.rank.required|yesno:"text-transform:uppercase," }}">{{ day.date }}: {{ day.primary.name }}</p>
+
+	{% endfor %}
+
+</div>
