@@ -1,6 +1,7 @@
 git+https://github.com/blocher/python-scriptures
 git+https://github.com/boudinfl/pke.git
 git+https://github.com/blocher/django-address
+git+https://github.com/blocher/churchcal
 appdirs==1.4.3
 appnope==0.1.0
 attrs==19.1.0
