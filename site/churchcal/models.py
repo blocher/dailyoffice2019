@@ -157,7 +157,7 @@ class FerialCommemoration(Commemoration):
     def __init__(self, date, season, calendar, *args, **kwargs):
         super(FerialCommemoration, self).__init__(*args, **kwargs)
         self.date = date
-        season = Season.objects.filter(calendar=calendar).get(name=season)
+        season = Season.objects.filter(calendar=calendar).get(name=season.name)
         self.name = season.rank.formatted_name
         self.rank = season.rank
         self.color = season.color
@@ -176,6 +176,9 @@ class Proper(BaseModel):
     calendar = models.ForeignKey(Calendar, on_delete=models.CASCADE, null=False, blank=False)
     collect = models.TextField(blank=True, null=True)
 
+    def __repr__(self):
+        return str(self.number)
+
 
 class Season(BaseModel):
 
@@ -186,3 +189,6 @@ class Season(BaseModel):
     alternate_color = models.CharField(max_length=255, null=True, blank=True)
     rank = models.ForeignKey(CommemorationRank, on_delete=models.CASCADE, null=False, blank=False)
     calendar = models.ForeignKey(Calendar, on_delete=models.CASCADE, null=False, blank=False)
+
+    def __repr__(self):
+        return self.name

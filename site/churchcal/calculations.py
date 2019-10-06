@@ -1,5 +1,7 @@
 from collections import OrderedDict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
+
+from dateutil.parser import parse
 
 from django.utils.functional import cached_property
 from indexed import IndexedOrderedDict
@@ -32,7 +34,7 @@ class CalendarDate(object):
     @cached_property
     def proper(self):
 
-        if self.season != "Season After Pentecost":
+        if self.season.name != "Season After Pentecost":
             return None
 
         for date in [self.primary] + self.required + self.optional:
@@ -84,9 +86,6 @@ class CalendarDate(object):
 
     def add_commemoration(self, commemoration):
 
-        if commemoration.name == "The First Sunday after Christmas Day":
-            print(commemoration)
-
         if not commemoration.rank.required:
             self.optional.append(commemoration)
         else:
@@ -122,9 +121,6 @@ class CalendarDate(object):
         transfers = self.handle_privileged_lesser_feast()
         if transfers:
             return transfers
-
-        if self.date.day == 1 and self.date.month == 1:
-            print(self.required, self.optional)
 
         if len(self.required) < 2:
             return []
@@ -245,8 +241,7 @@ class ChurchYear(object):
         commemorations = Commemoration.objects.filter(calendar__abbreviation=calendar).all()
         already_added = []
         for commemoration in commemorations:
-            if commemoration.name == "The First Sunday after Christmas Day":
-                print(commemoration.initial_date_string(self.start_year))
+
             if not commemoration.can_occur_in_year(self.start_year):
                 continue
 
@@ -292,7 +287,7 @@ class ChurchYear(object):
         )
         season_mapping = {}
         for season in seasons:
-            season_mapping[season.start_commemoration.name] = season.name
+            season_mapping[season.start_commemoration.name] = season
         self.seasons = season_mapping
         # print(self.seasons)
 
@@ -329,6 +324,15 @@ class ChurchYear(object):
     def office_year(self):
 
         return 1 if self.start_year % 2 == 0 else 2
+
+    def get_date(self, date_string):
+        date = to_date(date_string)
+        try:
+            date = self.dates[date.strftime("%Y-%m-%d")]
+            date.year = self
+            return date
+        except IndexError:
+            return None
 
 
 class CalendarYear(object):
@@ -473,3 +477,27 @@ class SetNamesAndCollects(object):
                     return commemoration
             return None
         return None
+
+
+def to_date(date_string):
+    if isinstance(date_string, datetime):
+        return date_string.date()
+
+    if isinstance(date_string, date):
+        return date
+
+    if isinstance(date_string, str):
+        try:
+            return parse(date_string).date()
+        except ValueError:
+            return None
+
+    return None
+
+
+def get_calendar_date(date_string):
+    date = to_date(date_string)
+    advent_start = advent(date.year)
+    year = date.year if date > advent_start else date.year - 1
+    year = ChurchYear(year)
+    return year.get_date(date_string)

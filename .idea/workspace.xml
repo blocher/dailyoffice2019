@@ -2,13 +2,24 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8657ce3f-a52e-4518-a963-4f09ef5b69fc" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/sermons.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sermons.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/churchcal/calculations.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/churchcal/calculations.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/churchcal/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/churchcal/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/churchcal/settings.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/churchcal/urls.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/churchcal/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/churchcal/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/churchcal/wsgi.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/website/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/settings.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DjangoConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)">
+    <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -37,7 +48,7 @@
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="watcher.settings" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
     <property name="typescript.add.unambiguous.imports.on.the.fly" value="true" />
   </component>
   <component name="RecentsManager">
@@ -97,6 +108,8 @@
       <workItem from="1569257822872" duration="2000" />
       <workItem from="1570394863847" duration="607000" />
       <workItem from="1570395487782" duration="6000" />
+      <workItem from="1570397125083" duration="2886000" />
+      <workItem from="1570400315132" duration="1052000" />
     </task>
     <servers />
   </component>
@@ -117,8 +130,24 @@
     </option>
   </component>
   <component name="WindowStateProjectService">
-    <state x="701" y="237" key="com.intellij.ide.util.TipDialog" />
-    <state x="701" y="237" key="com.intellij.ide.util.TipDialog/3360.2100" />
-    <state x="701" y="237" key="com.intellij.ide.util.TipDialog/3360.2100/1920.1200/1920.1200" />
+    <state x="428" y="249" key="IDE.errors.dialog" timestamp="1570398539274">
+      <screen x="0" y="23" width="1680" height="952" />
+    </state>
+    <state x="428" y="249" key="IDE.errors.dialog/0.23.1680.952@0.23.1680.952" timestamp="1570398539274" />
+    <state x="333" y="138" key="SettingsEditor" timestamp="1570398401470">
+      <screen x="0" y="23" width="1680" height="952" />
+    </state>
+    <state x="333" y="138" key="SettingsEditor/0.23.1680.952@0.23.1680.952" timestamp="1570398401470" />
+    <state x="701" y="237" key="com.intellij.ide.util.TipDialog" timestamp="1570397175336" />
+    <state x="701" y="237" key="com.intellij.ide.util.TipDialog/3360.2100" timestamp="1570397175337" />
+    <state x="701" y="237" key="com.intellij.ide.util.TipDialog/3360.2100/1920.1200/1920.1200" timestamp="1570397175337" />
+    <state x="506" y="288" width="667" height="422" key="find.popup" timestamp="1570400805218">
+      <screen x="0" y="23" width="1680" height="952" />
+    </state>
+    <state x="506" y="288" width="667" height="422" key="find.popup/0.23.1680.952@0.23.1680.952" timestamp="1570400805218" />
+    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup" timestamp="1570400977370">
+      <screen x="0" y="23" width="1680" height="952" />
+    </state>
+    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952@0.23.1680.952" timestamp="1570400977370" />
   </component>
 </project>

@@ -14,7 +14,6 @@ def weekday_after(weekday, month, day, year=None, number_after=1):
     weekday = weekday.lower()
     direction = "last" if number_after < 1 else "next"
     number_after = abs(number_after)
-
     d = Delorean(datetime=timezone.datetime(year, month, day), timezone="UTC")
     return d._shift_date(direction, weekday, number_after).date
 
