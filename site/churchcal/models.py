@@ -91,7 +91,7 @@ class Commemoration(BaseModel):
         if not self.cannot_occur_after:
             return True
 
-        if self.initial_date(advent_year=advent_year) > self.cannot_occur_after_subtype.initial_date(
+        if self.initial_date(advent_year=advent_year) >= self.cannot_occur_after_subtype.initial_date(
             advent_year=advent_year
         ):
             return False
