@@ -19,6 +19,8 @@ from django.contrib import admin
 from django.urls import path, include
 from sermons import views as sermon_views
 
+from office import views as office_views
+
 from django.contrib.staticfiles.templatetags.staticfiles import static as staticfiles
 from django.urls import path, include
 from django.utils.translation import ugettext_lazy as _
@@ -36,6 +38,7 @@ urlpatterns = [
     # path("jet/", include("jet.urls", "jet")),
     # path("admin/", admin.site.urls),
     path("admin/", include("material.admin.urls")),
+    path("office/evening_prayer/today/", office_views.today_evening_prayer, name="today_evening_prayer"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

@@ -157,7 +157,6 @@ class FerialCommemoration(Commemoration):
     def __init__(self, date, season, calendar, *args, **kwargs):
         super(FerialCommemoration, self).__init__(*args, **kwargs)
         self.date = date
-        season = Season.objects.filter(calendar=calendar).get(name=season.name)
         self.name = season.rank.formatted_name
         self.rank = season.rank
         self.color = season.color
