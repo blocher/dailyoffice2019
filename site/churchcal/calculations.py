@@ -7,7 +7,8 @@ from django.utils.functional import cached_property
 from indexed import IndexedOrderedDict
 
 from .utils import advent, week_days
-from churchcal.models import Commemoration, FerialCommemoration, Proper, Season, Calendar
+from churchcal.models import Commemoration, FerialCommemoration, Proper, Season, Calendar, CommemorationRank
+import copy
 
 
 class CalendarDate(object):
@@ -126,8 +127,19 @@ class CalendarDate(object):
             return []
 
         required = self.required
-        self.required = required[:1]
-        return [feast for feast in required[1:] if feast.rank.name != "SUNDAY"]
+        if self.season.name != "Advent" and self.season.name != "Lent" and self.season.name != "Eastertide":
+            if self.required[1].rank.name == "HOLY_DAY":
+                alternate_sunday = self.required[1].copy()
+                alternate_sunday.rank = CommemorationRank.objects.get(calendar=self.calendar, name="ALTERNATE_SUNDAY")
+                self.required = required[:1] + [alternate_sunday]
+            else:
+                self.required = required[:1]
+        else:
+            self.required = required[:1]
+        transfers = required[1:]
+        for transfer in transfers:
+            transfer.transferred = True
+        return [feast for feast in transfers if feast.rank.name != "SUNDAY"]
 
     def append_feria_if_needed(self):
 
@@ -154,7 +166,9 @@ class CalendarDate(object):
 
     def __repr__(self):
         return "{} {} - {}".format(
-            self.date.strftime("%A"), str(self.date), " | ".join([commemoration.name for commemoration in self.all])
+            self.date.strftime("%A"),
+            str(self.date),
+            " | ".join(["{} {}".format(commemoration.name, commemoration.rank.name) for commemoration in self.all]),
         )
 
 
