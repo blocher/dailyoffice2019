@@ -266,7 +266,7 @@ class ChurchYear(object):
             if new_date in self.dates.keys():
                 self.dates[new_date].required = transfers + self.dates[new_date].required
 
-        # SetNamesAndCollects(self)
+        SetNamesAndCollects(self)
 
         # print(
         #     "{} = {} - {} {}".format(

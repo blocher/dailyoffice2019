@@ -5,6 +5,11 @@ from django.utils import timezone
 from office.offices import EveningPrayer
 
 
-def today_evening_prayer(request):
-    ep = EveningPrayer(timezone.now())
+def evening_prayer(request, year, month, day):
+    ep = EveningPrayer("{}-{}-{}".format(year, month, day))
     return render(request, "office/evening_prayer/ep.html", {"ep": ep})
+
+
+def today_evening_prayer(request):
+    date = timezone.now()
+    return evening_prayer(request, date.year, date.month, date.day)

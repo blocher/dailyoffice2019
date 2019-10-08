@@ -2,7 +2,9 @@
     <head>
     </head>
     <body>
-        <h1>Evening Prayer</h1>
+        {%  for module in ep.modules %}
+            {%  include module.1  with data=module.0.data only %}
+        {%  endfor %}
     </body>
 </html>
 
