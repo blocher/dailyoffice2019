@@ -14,7 +14,7 @@ class CalendarDate(object):
     def __init__(self, date, calendar):
 
         self.date = date
-        self.calendar = Calendar.objects.get(abbreviation=calendar)
+        self.calendar = calendar
 
         self.required = []
         self.optional = []
@@ -219,7 +219,7 @@ class ChurchYear(object):
 
     def __init__(self, year_of_advent, calendar="ACNA_BCP2019"):
 
-        self.calendar = calendar
+        self.calendar = Calendar.objects.filter(abbreviation=calendar).first()
 
         self.start_year = year_of_advent
         self.end_year = year_of_advent + 1
@@ -231,14 +231,17 @@ class ChurchYear(object):
 
         self.seasons = self._get_seasons()
         self.season_tracker = None
-
         # create each date
         for single_date in self.daterange(start_date, end_date):
             name = single_date.strftime("%Y-%m-%d")
             self.dates[name] = CalendarDate(single_date, calendar=self.calendar)
 
         # add commemorations to date
-        commemorations = Commemoration.objects.filter(calendar__abbreviation=calendar).all()
+        commemorations = (
+            Commemoration.objects.select_related("rank", "cannot_occur_after__rank")
+            .filter(calendar__abbreviation=calendar)
+            .all()
+        )
         already_added = []
         for commemoration in commemorations:
 
@@ -263,7 +266,7 @@ class ChurchYear(object):
             if new_date in self.dates.keys():
                 self.dates[new_date].required = transfers + self.dates[new_date].required
 
-        SetNamesAndCollects(self)
+        # SetNamesAndCollects(self)
 
         # print(
         #     "{} = {} - {} {}".format(
@@ -277,11 +280,11 @@ class ChurchYear(object):
         # )
         # print(calendar_date.required, calendar_date.optional)
 
-        # #print("{} - {} - {}".format(self.mass_year, self.daily_mass_year, self.office_year))
+        # #print("{} - {} - {}".format(self.mass_year, sself.daily_mass_year, self.office_year))
 
     def _get_seasons(self):
         seasons = (
-            Season.objects.filter(calendar=Calendar.objects.filter(abbreviation=self.calendar).get())
+            Season.objects.filter(calendar=Calendar.objects.filter(abbreviation=self.calendar.abbreviation).get())
             .order_by("order")
             .all()
         )
@@ -338,6 +341,7 @@ class ChurchYear(object):
 class CalendarYear(object):
     def __init__(self, year):
 
+        print("AAA")
         first_year = year - 1
         second_year = year
 

@@ -27,7 +27,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False if os.getenv("DEBUG", "False") == "False" else "True"
+# DEBUG = False if os.getenv("DEBUG", "False") == "False" else "True"
+DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 
@@ -169,3 +170,10 @@ DJRICHTEXTFIELD_CONFIG = {
 }
 
 GOOGLE_API_KEY = "AIzaSyAoETL2PnO843Q98QgumZg756AAHAzhhRw"
+
+
+def show_toolbar(request):
+    return True
+
+
+DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": show_toolbar}
