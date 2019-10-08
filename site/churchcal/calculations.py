@@ -127,12 +127,23 @@ class CalendarDate(object):
 
         required = self.required
         self.required = required[:1]
-        return required[1:]
+        return [feast for feast in required[1:] if feast.rank.name != "SUNDAY"]
+
+    def append_feria_if_needed(self):
+
+        # Don't append Feria to a Sunday!
+        if self.date.weekday() == 6:
+            return
+
+        # Don't append a Feria to a Principal Feast or Privileged Observance
+        if len(self.required) > 0 and self.required[0].rank.precedence_rank <= 2:
+            return
+
+        self.optional.append(FerialCommemoration(self.date, self.season, self.calendar))
 
     def finalize_day(self):
-        if self.date.weekday() != 6:
-            self.optional.append(FerialCommemoration(self.date, self.season, self.calendar))
 
+        self.append_feria_if_needed()
         self.optional = sorted(self.optional, key=lambda commemoration: (commemoration.rank.precedence_rank))
 
         if len(self.required) > 0:
@@ -444,6 +455,9 @@ class SetNamesAndCollects(object):
         commemoration.morning_prayer_collect = commemoration.evening_prayer_collect = None
 
     def has_collect_for_feria(self, calendar_date):
+        epiphany = self.is_epiphany(calendar_date)
+        if epiphany:
+            return epiphany
         christmas = self.is_christmas(calendar_date)
         if christmas:
             return christmas
@@ -453,6 +467,12 @@ class SetNamesAndCollects(object):
         sunday = self.is_sunday(calendar_date)
         if sunday:
             return sunday
+
+    @staticmethod
+    def is_epiphany(calendar_date):
+        if "The Epiphany" in calendar_date.primary.name and calendar_date.primary.rank.required:
+            return calendar_date.primary
+        return None
 
     @staticmethod
     def is_christmas(calendar_date):
