@@ -39,6 +39,7 @@ urlpatterns = [
     # path("admin/", admin.site.urls),
     path("admin/", include("material.admin.urls")),
     path("office/evening_prayer/today/", office_views.today_evening_prayer, name="today_evening_prayer"),
+    path("office/evening_prayer/<int:year>-<int:month>-<int:day>", office_views.evening_prayer, name="evening_prayer"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

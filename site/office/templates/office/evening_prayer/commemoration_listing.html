@@ -1,1 +1,7 @@
-Commms
+<h2>{{ data.heading }}</h2>
+{%  for commemoration in data.commemorations %}
+
+    <h3>{{  commemoration.name  }}</h3>
+    <p>{{ commemoration.color }} {% if commemoration.alternate_color %}or {{ commemoration.alternate_color }}{%  endif %} | {{  commemoration.rank.formatted_name }}</p>
+
+{%  endfor %}
