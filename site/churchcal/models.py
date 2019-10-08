@@ -98,6 +98,11 @@ class Commemoration(BaseModel):
 
         return True
 
+    def copy(self):
+        model = type(self).objects.get(pk=self.pk)
+        self.pk = None
+        return model
+
     def __repr__(self):
         return "{} ({}) ({})".format(self.name, self.rank.formatted_name, self.color)
 
