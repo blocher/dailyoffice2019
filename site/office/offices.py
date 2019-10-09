@@ -16,7 +16,7 @@ class OfficeSection(object):
 class EPHeading(OfficeSection):
     @cached_property
     def data(self):
-        return {"heading": "Evening Prayer"}
+        return {"heading": "Evening Prayer", "calendar_date": self.date}
 
 
 class EPCommemorationListing(OfficeSection):
