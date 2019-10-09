@@ -44,41 +44,44 @@ class CalendarDate(object):
 
         return None
 
+    FAST_NONE = 0
+    FAST_PARTIAL = 1
+    FAST_FULL = 2
+    FAST_DAYS_RANKS = {FAST_NONE: "None", FAST_PARTIAL: "Fast", FAST_FULL: "Fast (Total abstinence)"}
+
     @cached_property
-    def day_of_special_commemoration(self):
+    def fast_day(self):
 
         # Sundays are never fast days
         if self.date.weekday() == 6:
-            return False
+            return self.FAST_NONE
 
-        # Ember days and Rogation days
+        # Christmas and Easter are never fast days
+        if self.season.name in ["Christmastide", "Eastertide"]:
+            return self.FAST_NONE
+
+        if self.primary.name == "Ash Wednesday" or self.primary.name == "Good Friday":
+            return self.FAST_FULL
+
+        # Not for primary feasts (Annunciation)
+        if self.primary.rank.precedence_rank == 1:
+            return self.FAST_NONE
+
+        # Ember days and rogation days are fast days
         if len(self.required) == 0:
             for optional in self.optional:
                 if optional.rank.name in ["EMBER_DAY", "ROGATION_DAY"]:
-                    return True
+                    return self.FAST_PARTIAL
 
-        # Christmas and Easter are exempt
-        if self.season in ["Christmas Season", "Easter Season"]:
-            return False
-
-        # All of lent except Annunciation
-        if self.season == "Lenten Season":
-            if (
-                len(self.required) > 0
-                and self.required[0].name == "The Annunciation of Our Lord Jesus Christ to the Blessed Virgin Mary"
-            ):
-                return False
-            return True
-
-        # Feasts of Our Lord are Exempt
-        if len(self.required) > 0 and self.required[0].rank.name == "FEAST_OF_OUR_LORD":
-            return False
+        # All of lent is a fast day
+        if self.season.name == "Lent" or self.season.name == "Holy Week":
+            return self.FAST_PARTIAL
 
         # Fridays
         if self.date.weekday() == 4:
-            return True
+            return self.FAST_PARTIAL
 
-        return False
+        return self.FAST_NONE
 
     def _sort_commemorations(self):
 
