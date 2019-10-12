@@ -354,7 +354,7 @@ class ChurchYear(object):
     @cached_property
     def office_year(self):
 
-        return 1 if self.start_year % 2 == 0 else 2
+        return "I" if self.start_year % 2 == 0 else "II"
 
     def get_date(self, date_string):
         date = to_date(date_string)

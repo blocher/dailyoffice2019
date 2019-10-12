@@ -1,16 +1,14 @@
 <h1>{{ data.heading }}</h1>
 <h3>{{  data.calendar_date.date|date:"l, F j, Y" }}</h3>
-<p>
-    <strong>Season:</strong> {{  data.calendar_date.season.name }}
-    &nbsp;({{ data.calendar_date.season.color }}
-    {%  if data.calendar_date.season.alternate_color %}
-        &nbsp;or&nbsp;{{ data.calendar_date.season.alternate_color }}
-    {% endif%})
-</p>
 {%  if data.calendar_date.fast_day == 1  %}
-    <p><strong>Fast Day</strong></p>
+    <h4><strong>++ FAST DAY ++</strong></h4>
 {%  endif %}
 
 {%  if data.calendar_date.fast_day == 2  %}
-    <p><strong>Fast Day</strong> (Total Abstinence)</p>
+    <h4><strong>++ FAST DAY</strong> (Total Abstinence) ++</h4>
 {%  endif %}
+<p>
+    <strong>Season:</strong> {{  data.calendar_date.season.name }}
+    &nbsp;({{ data.calendar_date.season.color }}{%  if data.calendar_date.season.alternate_color %} or&nbsp;{{ data.calendar_date.season.alternate_color }}{% endif%})
+    &bull; <strong>Daily Office Year:</strong> {{  data.calendar_date.year.office_year }} &bull;  <strong>Eucharistic Year:</strong> {{  data.calendar_date.year.mass_year }}
+</p>
