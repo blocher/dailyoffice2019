@@ -17,7 +17,6 @@ class Passage(object):
     def __init__(self, passage, source="nrsv"):
         if source not in BibleVersions.VERSIONS.keys():
             raise Exception("This bible format is not currently supported")
-
         adapter = BibleVersions.VERSIONS[source]["adapter"]
         self.lookup = adapter(passage, source)
 

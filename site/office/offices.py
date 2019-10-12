@@ -2,11 +2,13 @@ from django.template.loader import render_to_string
 from django.utils.functional import cached_property
 
 from churchcal.calculations import get_calendar_date
+from office.models import OfficeDay
 
 
 class OfficeSection(object):
-    def __init__(self, date):
+    def __init__(self, date, office_readings=None):
         self.date = date
+        self.office_readings = office_readings
 
     @cached_property
     def data(self):
@@ -16,13 +18,13 @@ class OfficeSection(object):
 class EPHeading(OfficeSection):
     @cached_property
     def data(self):
-        return {"heading": "Evening Prayer", "calendar_date": self.date}
+        return {"heading": "Daily Evening Prayer", "calendar_date": self.date}
 
 
 class EPCommemorationListing(OfficeSection):
     @cached_property
     def data(self):
-        return {"heading": "Today", "commemorations": self.date.all}
+        return {"heading": "This Evening's Commemorations", "commemorations": self.date.all}
 
 
 class EPOpeningSetence(OfficeSection):
@@ -139,6 +141,18 @@ class EPOpeningSetence(OfficeSection):
         return {"heading": "Opening Sentence", "sentence": self.get_sentence()}
 
 
+class EPConfession(OfficeSection):
+    @cached_property
+    def data(self):
+        return {"heading": "Confession of Sin", "long_form": self.date.fast_day}
+
+
+class EPPsalms(OfficeSection):
+    @cached_property
+    def data(self):
+        return {"heading": "Psalms", "psalms": self.office_readings.ep_psalms_text}
+
+
 # ==== Offices
 
 
@@ -149,6 +163,7 @@ class Office(object):
 
     def __init__(self, date):
         self.date = get_calendar_date(date)
+        self.office_readings = OfficeDay.objects.get(month=self.date.date.month, day=self.date.date.day)
 
     def render(self):
         rendering = ""
@@ -167,4 +182,6 @@ class EveningPrayer(Office):
             (EPHeading(self.date), "office/evening_prayer/heading.html"),
             (EPCommemorationListing(self.date), "office/evening_prayer/commemoration_listing.html"),
             (EPOpeningSetence(self.date), "office/evening_prayer/opening_sentence.html"),
+            (EPConfession(self.date), "office/evening_prayer/confession.html"),
+            (EPPsalms(self.date, self.office_readings), "office/evening_prayer/psalms.html"),
         ]

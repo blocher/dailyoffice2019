@@ -1,10 +1,78 @@
 <html>
     <head>
+        <link rel="stylesheet" href="https://use.typekit.net/yxz6vwf.css">
+        <link href="https://fonts.googleapis.com/css?family=EB+Garamond&display=swap" rel="stylesheet">
+        <style>
+            h1, h2, h3, h4 {
+                font-family: adobe-caslon-pro, serif;
+                font-weight: 600;
+                font-style: normal;
+                text-transform: uppercase;
+                letter-spacing: 0.2em;
+                text-align: center;
+            }
+
+            h1 {
+                font-size: 30px;
+            }
+
+            h3 {
+                font-size: 20px;
+            }
+
+            p {
+                font-family: 'EB Garamond', serif;
+                font-weight: 300;
+                font-style: normal;
+            }
+
+            em {
+                font-family: 'EB Garamond', serif;
+                font-weight: 300;
+                font-style: italic;
+            }
+
+            strong {
+                font-family: 'EB Garamond', serif;
+                font-weight: 900;
+            }
+
+            div.psalms {
+
+                font-family: 'EB Garamond', serif;
+                font-weight: 300;
+                font-style: normal;
+
+            }
+
+            p.line {
+                margin-top: 1.5em;
+            }
+
+            span.chapternum {
+                font-size: 1.5em;
+            }
+
+            sup.versnum {
+                font-size: 1.2em;
+            }
+
+            .text {
+                padding-left: 10px;
+            }
+
+
+
+        </style>
     </head>
     <body>
-        {%  for module in ep.modules %}
-            {%  include module.1  with data=module.0.data only %}
-        {%  endfor %}
+        <div style="text-align:center">
+            <div style="max-width:550px; display:inline-block; text-align: left">
+                {%  for module in ep.modules %}
+                    {%  include module.1  with data=module.0.data only %}
+                {%  endfor %}
+            </div>
+        </div>
     </body>
 </html>
 

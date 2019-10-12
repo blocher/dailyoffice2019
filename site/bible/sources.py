@@ -24,10 +24,16 @@ class BibleGateway(BibleSource):
     def __init__(self, passage, version="nrsv"):
 
         self.version = version
-        self.reference = scriptures.extract(passage)[0]
-        self.passage = scriptures.reference_to_string(*self.reference)
+        try:
+            self.reference = scriptures.extract(passage)[0]
+            self.passage = scriptures.reference_to_string(*self.reference)
+        except:
+            self.text = ""
+            self.html = ""
+            self.headings = []
+            return
         self.markup = self._get_markup()
-        # print(self.markup)
+
         self.soup = BeautifulSoup(self.markup, "html5lib")
         self.html = self._set_html()
         self.text = self._set_text()
@@ -40,6 +46,7 @@ class BibleGateway(BibleSource):
         return self.html
 
     def get_headings(self):
+        return []
         return self.headings
 
     def _get_markup(self, passage=None):
@@ -61,23 +68,19 @@ class BibleGateway(BibleSource):
 
     def _set_html(self):
         try:
-            for h3 in self.soup.find_all("h3"):
-                h3.decompose()
-            for span in self.soup.find_all("span", class_="chapternum"):
-                span.decompose()
-            for sup in self.soup.find_all("sup", class_="versenum"):
-                sup.decompose()
+            # for h3 in self.soup.find_all("h3"):
+            #     h3.decompose()
+            # for span in self.soup.find_all("span", class_="chapternum"):
+            #     span.decompose()
+            # for sup in self.soup.find_all("sup", class_="versenum"):
+            #     sup.decompose()
             for sup in self.soup.find_all("sup", class_="crossreference"):
                 sup.decompose()
             for sup in self.soup.find_all("sup", class_="footnote"):
                 sup.decompose()
+
             return " ".join(
-                [
-                    str(tag)
-                    for tag in self.soup.find_all("div", class_="result-text-style-normal")[0].find_all(
-                        "span", class_="text"
-                    )
-                ]
+                [str(tag) for tag in self.soup.find_all("div", class_="result-text-style-normal")[0].find_all("div")]
             )
         except Exception as e:
             print(e)
@@ -101,7 +104,8 @@ class BibleGateway(BibleSource):
         return None
 
     def _set_headings(self):
-
+        self.headings = False
+        return
         try:
             headings = self.soup.find_all("div", class_="result-text-style-normal")[0].find_all("h3")
 
