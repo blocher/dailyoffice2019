@@ -2,17 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8657ce3f-a52e-4518-a963-4f09ef5b69fc" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/confession.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/bible/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/bible/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/bible/sources.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/bible/sources.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/churchcal/calculations.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/churchcal/calculations.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/offices.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/offices.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/commemoration_listing.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/commemoration_listing.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/ep.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/ep.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/heading.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/heading.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/opening_sentence.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/opening_sentence.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/management/commands/import_office_days.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/management/commands/import_office_days.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,18 +48,6 @@
       <recent name="$USER_HOME$" />
       <recent name="~/Desktop" />
     </key>
-  </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -117,6 +96,8 @@
       <workItem from="1570641448194" duration="2968000" />
       <workItem from="1570670278945" duration="5921000" />
       <workItem from="1570756302571" duration="1204000" />
+      <workItem from="1570907003533" duration="5773000" />
+      <workItem from="1570913318395" duration="1541000" />
     </task>
     <servers />
   </component>
@@ -152,15 +133,15 @@
     <state x="701" y="237" key="com.intellij.ide.util.TipDialog" timestamp="1570397175336" />
     <state x="701" y="237" key="com.intellij.ide.util.TipDialog/3360.2100" timestamp="1570397175337" />
     <state x="701" y="237" key="com.intellij.ide.util.TipDialog/3360.2100/1920.1200/1920.1200" timestamp="1570397175337" />
-    <state x="506" y="288" width="667" height="422" key="find.popup" timestamp="1570643546418">
+    <state x="506" y="288" width="667" height="422" key="find.popup" timestamp="1570907989800">
       <screen x="0" y="23" width="1680" height="952" />
     </state>
     <state x="506" y="288" width="667" height="422" key="find.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1570643546418" />
-    <state x="506" y="288" width="667" height="422" key="find.popup/0.23.1680.952@0.23.1680.952" timestamp="1570400805218" />
-    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup" timestamp="1570756304421">
+    <state x="506" y="288" width="667" height="422" key="find.popup/0.23.1680.952@0.23.1680.952" timestamp="1570907989800" />
+    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup" timestamp="1570911381755">
       <screen x="0" y="23" width="1680" height="952" />
     </state>
     <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1570553506427" />
-    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952@0.23.1680.952" timestamp="1570756304421" />
+    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952@0.23.1680.952" timestamp="1570911381755" />
   </component>
 </project>
