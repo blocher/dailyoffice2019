@@ -2,13 +2,31 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8657ce3f-a52e-4518-a963-4f09ef5b69fc" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/reading.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/bible/sources.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/bible/sources.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/office/management/commands/import_office_days.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/management/commands/import_office_days.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/offices.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/offices.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/ep.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/ep.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand />
+    <select />
   </component>
   <component name="DjangoConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)">
     <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
@@ -138,10 +156,10 @@
     </state>
     <state x="506" y="288" width="667" height="422" key="find.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1570643546418" />
     <state x="506" y="288" width="667" height="422" key="find.popup/0.23.1680.952@0.23.1680.952" timestamp="1570907989800" />
-    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup" timestamp="1570911381755">
+    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup" timestamp="1570933651138">
       <screen x="0" y="23" width="1680" height="952" />
     </state>
     <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1570553506427" />
-    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952@0.23.1680.952" timestamp="1570911381755" />
+    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952@0.23.1680.952" timestamp="1570933651138" />
   </component>
 </project>

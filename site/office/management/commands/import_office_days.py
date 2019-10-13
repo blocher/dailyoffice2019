@@ -5,6 +5,7 @@ from django.conf import settings
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
+from bible.sources import PassageNotFoundException
 from office.models import OfficeDay
 from bible import Passage
 
@@ -36,6 +37,16 @@ class Command(BaseCommand):
         except:
             return "-"
 
+    def get_passage(self, passage):
+        passage = self.parse_passage(passage)
+        try:
+            return Passage(passage, source="esv").html
+        except PassageNotFoundException:
+            try:
+                return Passage(passage, source="rsv").html
+            except PassageNotFoundException:
+                return None
+
     def add_arguments(self, parser):
         pass
 
@@ -61,13 +72,17 @@ class Command(BaseCommand):
             day.mp_psalms = row[3]
             # day.mp_psalms_text = (get_psalms(row[3])
             day.mp_reading_1 = self.parse_passage(row[4])
+            day.mp_reading_1_text = self.get_passage(row[4])
             day.mp_reading_1_abbreviated = row[5]
             day.mp_reading_2 = self.parse_passage(row[6])
+            day.mp_reading_2_text = self.get_passage(row[6])
             day.ep_psalms = row[7]
             # day.ep_psalms_text = (get_psalms(row[7])
             day.ep_reading_1 = self.parse_passage(row[8])
+            day.ep_reading_1_text = self.get_passage(row[8])
             day.ep_reading_1_abbreviated = row[9]
             day.ep_reading_2 = self.parse_passage(row[10])
+            day.ep_reading_2_text = self.get_passage(row[10])
             day.save()
 
         print("All done")

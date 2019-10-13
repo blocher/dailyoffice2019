@@ -1,3 +1,5 @@
+import re
+
 from django.template.loader import render_to_string
 from django.utils.functional import cached_property
 
@@ -153,6 +155,28 @@ class EPPsalms(OfficeSection):
         return {"heading": "Psalms", "psalms": self.office_readings.ep_psalms_text}
 
 
+class EPReading1(OfficeSection):
+    @cached_property
+    def data(self):
+        return {
+            "heading": "The First Lesson",
+            "book": re.sub("[^a-zA-Z ]+", "", self.office_readings.ep_reading_1),
+            "passage": self.office_readings.ep_reading_1,
+            "reading": self.office_readings.ep_reading_1_text,
+        }
+
+
+class EPReading2(OfficeSection):
+    @cached_property
+    def data(self):
+        return {
+            "heading": "The Second Lesson",
+            "book": re.sub("[^a-zA-Z]+", "", self.office_readings.ep_reading_2),
+            "passage": self.office_readings.ep_reading_2,
+            "reading": self.office_readings.ep_reading_2_text,
+        }
+
+
 # ==== Offices
 
 
@@ -184,4 +208,6 @@ class EveningPrayer(Office):
             (EPOpeningSetence(self.date), "office/evening_prayer/opening_sentence.html"),
             (EPConfession(self.date), "office/evening_prayer/confession.html"),
             (EPPsalms(self.date, self.office_readings), "office/evening_prayer/psalms.html"),
+            (EPReading1(self.date, self.office_readings), "office/evening_prayer/reading.html"),
+            (EPReading2(self.date, self.office_readings), "office/evening_prayer/reading.html"),
         ]
