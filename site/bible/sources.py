@@ -20,6 +20,10 @@ class BibleSource(ABC):
         pass
 
 
+class PassageNotFoundException(BaseException):
+    pass
+
+
 class BibleGateway(BibleSource):
     def __init__(self, passage, version="nrsv"):
 
@@ -68,23 +72,25 @@ class BibleGateway(BibleSource):
 
     def _set_html(self):
         try:
-            # for h3 in self.soup.find_all("h3"):
-            #     h3.decompose()
-            # for span in self.soup.find_all("span", class_="chapternum"):
-            #     span.decompose()
-            # for sup in self.soup.find_all("sup", class_="versenum"):
-            #     sup.decompose()
             for sup in self.soup.find_all("sup", class_="crossreference"):
                 sup.decompose()
             for sup in self.soup.find_all("sup", class_="footnote"):
                 sup.decompose()
+            for div in self.soup.find_all("div", class_="footnotes"):
+                div.decompose()
+            for div in self.soup.find_all("div", class_="crossrefs"):
+                div.decompose()
+            for div in self.soup.find_all("div", class_="publisher-info-bottom"):
+                div.decompose()
+            for a in self.soup.find_all("a", class_="full-chap-link"):
+                a.decompose()
 
-            return " ".join(
-                [str(tag) for tag in self.soup.find_all("div", class_="result-text-style-normal")[0].find_all("div")]
-            )
+            result = " ".join([str(tag) for tag in self.soup.find_all("div", class_="passage-text")[0]])
+            if not result:
+                raise PassageNotFoundException
+            return result
         except Exception as e:
-            print(e)
-            return None
+            raise PassageNotFoundException
 
     def _get_previous_heading(self):
 
