@@ -177,6 +177,36 @@ class EPReading2(OfficeSection):
         }
 
 
+class EPInvitatory(OfficeSection):
+    @cached_property
+    def data(self):
+        return {}
+
+
+class Hymn(OfficeSection):
+    @cached_property
+    def data(self):
+        return {}
+
+
+class EPCanticle1(OfficeSection):
+    @cached_property
+    def data(self):
+        return {}
+
+
+class EPCanticle2(OfficeSection):
+    @cached_property
+    def data(self):
+        return {}
+
+
+class EPCreed(OfficeSection):
+    @cached_property
+    def data(self):
+        return {}
+
+
 # ==== Offices
 
 
@@ -207,7 +237,12 @@ class EveningPrayer(Office):
             (EPCommemorationListing(self.date), "office/evening_prayer/commemoration_listing.html"),
             (EPOpeningSetence(self.date), "office/evening_prayer/opening_sentence.html"),
             (EPConfession(self.date), "office/evening_prayer/confession.html"),
+            (EPInvitatory(self.date), "office/evening_prayer/invitatory.html"),
+            (Hymn(self.date), "office/evening_prayer/hymn.html"),
             (EPPsalms(self.date, self.office_readings), "office/evening_prayer/psalms.html"),
             (EPReading1(self.date, self.office_readings), "office/evening_prayer/reading.html"),
+            (EPCanticle1(self.date, self.office_readings), "office/evening_prayer/canticle_1.html"),
             (EPReading2(self.date, self.office_readings), "office/evening_prayer/reading.html"),
+            (EPCanticle2(self.date, self.office_readings), "office/evening_prayer/canticle_2.html"),
+            (EPCreed(self.date, self.office_readings), "office/evening_prayer/creed.html"),
         ]
