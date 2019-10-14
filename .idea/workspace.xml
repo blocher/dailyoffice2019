@@ -2,11 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8657ce3f-a52e-4518-a963-4f09ef5b69fc" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/prayers.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/bible/sources.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/bible/sources.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/office/offices.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/offices.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/ep.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/ep.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/opening_sentence.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/opening_sentence.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/hymn.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/hymn.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/invitatory.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/invitatory.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/reading.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/reading.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -117,6 +118,7 @@
       <workItem from="1570907003533" duration="5773000" />
       <workItem from="1570913318395" duration="1541000" />
       <workItem from="1570990781292" duration="4958000" />
+      <workItem from="1571069067869" duration="2145000" />
     </task>
     <servers />
   </component>
@@ -157,10 +159,10 @@
     </state>
     <state x="506" y="288" width="667" height="422" key="find.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1570643546418" />
     <state x="506" y="288" width="667" height="422" key="find.popup/0.23.1680.952@0.23.1680.952" timestamp="1570907989800" />
-    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup" timestamp="1571017342514">
+    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup" timestamp="1571071000052">
       <screen x="0" y="23" width="1680" height="952" />
     </state>
     <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1570553506427" />
-    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952@0.23.1680.952" timestamp="1571017342514" />
+    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952@0.23.1680.952" timestamp="1571071000052" />
   </component>
 </project>

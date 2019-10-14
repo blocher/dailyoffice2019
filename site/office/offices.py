@@ -207,6 +207,12 @@ class EPCreed(OfficeSection):
         return {}
 
 
+class EPPrayers(OfficeSection):
+    @cached_property
+    def data(self):
+        return {}
+
+
 # ==== Offices
 
 
@@ -245,4 +251,5 @@ class EveningPrayer(Office):
             (EPReading2(self.date, self.office_readings), "office/evening_prayer/reading.html"),
             (EPCanticle2(self.date, self.office_readings), "office/evening_prayer/canticle_2.html"),
             (EPCreed(self.date, self.office_readings), "office/evening_prayer/creed.html"),
+            (EPPrayers(self.date, self.office_readings), "office/evening_prayer/prayers.html"),
         ]
