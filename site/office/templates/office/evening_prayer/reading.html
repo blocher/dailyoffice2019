@@ -1,13 +1,22 @@
 <h3>{{  data.heading }}</h3>
 <h4>{{ data.passage }}</h4>
-<strong>A reading from {{  data.book }}</strong>
+<table class="dialogue">
+    <tr>
+        <td><em>Reader</em></td>
+        <td>A reading from {{  data.book }}</td>
+    </tr>
+</table>
+<p>&nbsp;</p>
 <div class="reading">
     {{  data.reading | safe }}
 </div>
-<p>&nbsp;</p>
-<p>
-    <em>Reader</em> The Word of the Lord.
-    <br>
-    <em>People</em>	<strong>Thanks be to God.</strong>
-</p>
-
+<table class="dialogue">
+    <tr>
+        <td><em>Reader</em></td>
+        <td>The Word of the Lord.</td>
+    </tr>
+    <tr>
+        <td><em>People</em></td>
+        <td><strong>Thanks be to God.</strong></td>
+    </tr>
+</table>

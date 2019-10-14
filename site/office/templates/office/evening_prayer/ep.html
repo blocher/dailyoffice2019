@@ -3,12 +3,25 @@
         <link rel="stylesheet" href="https://use.typekit.net/yxz6vwf.css">
         <link href="https://fonts.googleapis.com/css?family=EB+Garamond&display=swap" rel="stylesheet">
         <style>
+
+            html {
+                font-size: 22px;
+            }
+
+            div.body {
+                max-width:700px;
+                display:inline-block;
+                text-align: left;
+                padding: 1.5rem;
+            }
+
             h1, h2, h3, h4 {
                 font-family: adobe-caslon-pro, serif;
                 font-weight: 600;
                 font-style: normal;
-                letter-spacing: 0.2em;
+                letter-spacing: 0.1rem;
                 text-align: center;
+                margin: 0.2rem;
             }
 
             h1, h2, h3 {
@@ -16,13 +29,13 @@
             }
 
             h1 {
-                font-size: 30px;
+                font-size: 2rem;
             }
 
             h3 {
                 padding-top: 30px;
                 margin-bottom: 5px;
-                font-size: 20px;
+                font-size: 1.5rem;
             }
 
             h4 {
@@ -30,29 +43,34 @@
                 font-family: adobe-caslon-pro, serif;
                 font-weight: 600;
                 font-style: italic;
+                font-size: 1.3rem
 
             }
 
             h5 {
                 font-weight: 300;
                 text-align: right;
+                font-size: 1rem
             }
 
             p {
                 font-family: 'EB Garamond', serif;
                 font-weight: 300;
                 font-style: normal;
+                font-size: 1rem;
             }
 
             em {
                 font-family: 'EB Garamond', serif;
                 font-weight: 300;
                 font-style: italic;
+                font-size: .8rem;
             }
 
             strong {
                 font-family: 'EB Garamond', serif;
                 font-weight: 900;
+
             }
 
             div.psalms {
@@ -96,13 +114,18 @@
                 text-align:center;
             }
 
+            table.dialogue td {
+                padding-right: 1.5rem;
+                font-size: 1rem;
+            }
+
 
 
         </style>
     </head>
     <body>
         <div style="text-align:center">
-            <div style="max-width:550px; display:inline-block; text-align: left">
+            <div class="body">
                 {%  for module in ep.modules %}
                     {%  include module.1  with data=module.0.data only %}
                 {%  endfor %}
