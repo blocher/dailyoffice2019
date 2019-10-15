@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "website",
     "sermons",
     "churchcal",
+    "psalter",
     "bible",
     "office",
     "debug_toolbar",
