@@ -26,7 +26,10 @@ class EPHeading(OfficeSection):
 class EPCommemorationListing(OfficeSection):
     @cached_property
     def data(self):
-        return {"heading": "This Evening's Commemorations", "commemorations": self.date.all}
+        return {
+            "heading": "This Evening's Commemoration{}".format("s" if len(self.date.all) > 1 else ""),
+            "commemorations": self.date.all,
+        }
 
 
 class EPOpeningSetence(OfficeSection):
