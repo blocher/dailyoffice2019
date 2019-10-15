@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils import timezone
@@ -11,5 +12,6 @@ def evening_prayer(request, year, month, day):
 
 
 def today_evening_prayer(request):
-    date = timezone.now()
+    date = timezone.localtime(timezone.now())
+    print(date)
     return evening_prayer(request, date.year, date.month, date.day)

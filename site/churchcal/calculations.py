@@ -34,13 +34,11 @@ class CalendarDate(object):
 
     @cached_property
     def proper(self):
-
-        if self.season.name != "Season After Pentecost":
+        if self.season.name != "Season After Pentecost" and self.primary.name != "The Day of Pentecost":
             return None
 
-        for date in [self.primary] + self.required + self.optional:
-            if date.rank.name == "SUNDAY":
-                return self._find_proper()
+        if self.date.weekday() == 6:
+            return self._find_proper()
 
         return None
 
@@ -325,9 +323,12 @@ class ChurchYear(object):
     def _set_season(self, calendar_date):
         if not self.seasons:
             self._get_seasons()
+        if len(calendar_date.required) > 0 and calendar_date.required[0].name == "The Day of Pentecost":
+            calendar_date.season = self.season_tracker
         if len(calendar_date.required) > 0 and calendar_date.required[0].name in self.seasons.keys():
             self.season_tracker = self.seasons[calendar_date.required[0].name]
-        calendar_date.season = self.season_tracker
+        if not calendar_date.required or calendar_date.required[0].name != "The Day of Pentecost":
+            calendar_date.season = self.season_tracker
 
     @staticmethod
     def daterange(start_date, end_date):
@@ -369,7 +370,6 @@ class ChurchYear(object):
 class CalendarYear(object):
     def __init__(self, year):
 
-        print("AAA")
         first_year = year - 1
         second_year = year
 
@@ -437,16 +437,25 @@ class SetNamesAndCollects(object):
 
     def own_collect(self, commemoration, calendar_date):
 
+        if "FERIA" in commemoration.rank.name:
+            return False
+
         if commemoration.collect:
             commemoration.morning_prayer_collect = commemoration.evening_prayer_collect = commemoration.collect
             if commemoration.alternate_collect:
                 commemoration.evening_prayer_collect = commemoration.alternate_collect
 
     def proper_collect(self, commemoration, calendar_date):
+        if not commemoration.rank.required:
+            return
         if calendar_date.proper and calendar_date.proper.collect:
             commemoration.morning_prayer_collect = commemoration.evening_prayer_collect = calendar_date.proper.collect
+            if commemoration.rank.name == "SUNDAY":
+                proper_string = " (Proper {})".format(calendar_date.proper.number)
+                commemoration.name = "{}{}".format(commemoration.name, proper_string)
 
     def feria_collect(self, commemoration, calendar_date):
+
         if "FERIA" in commemoration.rank.name:
             i = self.i.get_current_index()
             while True:
@@ -455,15 +464,28 @@ class SetNamesAndCollects(object):
                 if not previous:
                     break
                 if self.has_collect_for_feria(previous):
-                    try:
+                    if previous.proper and previous.proper.collect:
+                        commemoration.morning_prayer_collect = previous.proper.collect
+                        commemoration.evening_prayer_collect = previous.proper.collect
+                        name = previous.primary.name
+                        if name[:3] == "The":
+                            name = name.replace("The ", "the ")
+                        if previous.primary.rank.name == "PRINCIPAL_FEAST":
+                            proper_string = " (Proper {})".format(previous.proper.number)
+                            commemoration.name = "{} after {}{}".format(
+                                week_days[calendar_date.date.weekday()], name, proper_string
+                            )
+                        else:
+                            commemoration.name = "{} after {}".format(week_days[calendar_date.date.weekday()], name)
+                    else:
                         commemoration.morning_prayer_collect = previous.primary.morning_prayer_collect
                         commemoration.evening_prayer_collect = previous.primary.evening_prayer_collect
                         commemoration.name = "{} after {}".format(
                             week_days[calendar_date.date.weekday()], previous.primary.name
                         )
-                        break
-                    except Exception as e:
-                        raise (e)
+
+                    break
+        return False
 
     def saint_collect(self, commemoration, calendar_date):
         pass
@@ -484,6 +506,8 @@ class SetNamesAndCollects(object):
         sunday = self.is_sunday(calendar_date)
         if sunday:
             return sunday
+
+        return False
 
     @staticmethod
     def is_epiphany(calendar_date):
