@@ -8,7 +8,9 @@
     <h4><strong>++ FAST DAY</strong> (Total Abstinence) ++</h4>
 {%  endif %}
 <p>
+<div class="metadata">
     <strong>Season:</strong> {{  data.calendar_date.season.name }}
-    &nbsp;({{ data.calendar_date.season.color }}{%  if data.calendar_date.season.alternate_color %} or&nbsp;{{ data.calendar_date.season.alternate_color }}{% endif%})
-    &bull; <strong>Daily Office Year:</strong> {{  data.calendar_date.year.office_year }} &bull;  <strong>Eucharistic Year:</strong> {{  data.calendar_date.year.mass_year }}
+    &nbsp;({{ data.calendar_date.season.color }}{%  if data.calendar_date.season.alternate_color %} or&nbsp;{{ data.calendar_date.season.alternate_color }}{% endif%})<br>
+    <strong>Daily Office Year:</strong> {{  data.calendar_date.year.office_year }} &bull;  <strong>Eucharistic Year:</strong> {{  data.calendar_date.year.mass_year }}
+</div>
 </p>

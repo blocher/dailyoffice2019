@@ -213,6 +213,18 @@ class EPPrayers(OfficeSection):
         return {}
 
 
+class EPCollectsOfTheDay(OfficeSection):
+    @cached_property
+    def data(self):
+        return {
+            "collects": {
+                commemoration.name: commemoration.morning_prayer_collect.replace(" Amen.", "")
+                for commemoration in self.date.all
+                if commemoration.morning_prayer_collect
+            }
+        }
+
+
 # ==== Offices
 
 
@@ -252,4 +264,5 @@ class EveningPrayer(Office):
             (EPCanticle2(self.date, self.office_readings), "office/evening_prayer/canticle_2.html"),
             (EPCreed(self.date, self.office_readings), "office/evening_prayer/creed.html"),
             (EPPrayers(self.date, self.office_readings), "office/evening_prayer/prayers.html"),
+            (EPCollectsOfTheDay(self.date, self.office_readings), "office/evening_prayer/collects_of_the_day.html"),
         ]
