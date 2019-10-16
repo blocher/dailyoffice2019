@@ -2,21 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8657ce3f-a52e-4518-a963-4f09ef5b69fc" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/site/psalter/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/management/commands/import_office_days.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/management/commands/import_office_days.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/office/offices.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/offices.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/canticle_1.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/canticle_1.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/canticle_2.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/canticle_2.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/confession.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/confession.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/creed.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/creed.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/ep.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/ep.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/hymn.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/hymn.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/invitatory.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/invitatory.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/opening_sentence.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/opening_sentence.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/prayers.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/prayers.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/psalms.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/psalms.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/reading.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/reading.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -130,7 +117,7 @@
       <workItem from="1571104052819" duration="7878000" />
       <workItem from="1571159341712" duration="5467000" />
       <workItem from="1571175503510" duration="701000" />
-      <workItem from="1571188880705" duration="4837000" />
+      <workItem from="1571188880705" duration="6773000" />
     </task>
     <servers />
   </component>
@@ -172,12 +159,12 @@
     <state x="-495" y="-849" width="763" height="522" key="find.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@-1073.-1177.1920.1177" timestamp="1571164483046" />
     <state x="506" y="288" width="667" height="422" key="find.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1570643546418" />
     <state x="506" y="288" width="683" height="422" key="find.popup/0.23.1680.952@0.23.1680.952" timestamp="1571192199123" />
-    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup" timestamp="1571193536465">
+    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup" timestamp="1571194953627">
       <screen x="0" y="23" width="1680" height="952" />
     </state>
     <state x="-496" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@-1073.-1177.1920.1177" timestamp="1571175688299" />
     <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1571074379760" />
     <state x="1424" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1571147975957" />
-    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952@0.23.1680.952" timestamp="1571193536465" />
+    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952@0.23.1680.952" timestamp="1571194953627" />
   </component>
 </project>
