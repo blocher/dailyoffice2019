@@ -5,6 +5,7 @@ from django.utils.functional import cached_property
 
 from churchcal.calculations import get_calendar_date
 from office.models import OfficeDay
+from psalter.utils import get_psalms
 
 
 class OfficeSection(object):
@@ -32,7 +33,7 @@ class EPCommemorationListing(OfficeSection):
         }
 
 
-class EPOpeningSetence(OfficeSection):
+class EPOpeningSentence(OfficeSection):
     def get_sentence(self):
 
         if self.date.season.name == "Advent":
@@ -155,7 +156,11 @@ class EPConfession(OfficeSection):
 class EPPsalms(OfficeSection):
     @cached_property
     def data(self):
-        return {"heading": "Psalms", "psalms": self.office_readings.ep_psalms_text}
+        citations = self.office_readings.ep_psalms.split(",")
+        return {
+            "heading": "The Psalm{} Appointed".format("s" if len(citations) > 1 else ""),
+            "psalms": get_psalms(self.office_readings.ep_psalms),
+        }
 
 
 class EPReading1(OfficeSection):
@@ -256,7 +261,7 @@ class EveningPrayer(Office):
         return [
             (EPHeading(self.date), "office/evening_prayer/heading.html"),
             (EPCommemorationListing(self.date), "office/evening_prayer/commemoration_listing.html"),
-            (EPOpeningSetence(self.date), "office/evening_prayer/opening_sentence.html"),
+            (EPOpeningSentence(self.date), "office/evening_prayer/opening_sentence.html"),
             (EPConfession(self.date), "office/evening_prayer/confession.html"),
             (EPInvitatory(self.date), "office/evening_prayer/invitatory.html"),
             (Hymn(self.date), "office/evening_prayer/hymn.html"),
