@@ -13,12 +13,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import datetime
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from sermons import views as sermon_views
-
+from django_distill import distill_path
 from office import views as office_views
 
 from django.contrib.staticfiles.templatetags.staticfiles import static as staticfiles
@@ -27,9 +29,22 @@ from django.utils.translation import ugettext_lazy as _
 
 from material.admin.sites import site
 
+from office.views import evening_prayer
+
 site.site_header = _("Elizabeth Locher's Sermon Archive")
 site.site_title = _("Elizabeth Locher's Sermon Archive")
 # site.favicon = staticfiles('path/to/favicon')
+
+
+def get_evening_prayer_days():
+    numdays = 365 * 2
+    base = datetime.datetime.today()
+    previous_date_list = [base - datetime.timedelta(days=x) for x in range(numdays)]
+    future_date_list = [base + datetime.timedelta(days=x) for x in range(numdays)]
+    date_list = previous_date_list + future_date_list
+    for date in date_list:
+        yield {"year": date.year, "month": date.month, "day": date.day}
+
 
 urlpatterns = [
     path("sermons", sermon_views.sermons, name="sermons"),
@@ -39,8 +54,11 @@ urlpatterns = [
     # path("admin/", admin.site.urls),
     path("admin/", include("material.admin.urls")),
     path("office/evening_prayer/today/", office_views.today_evening_prayer, name="today_evening_prayer"),
-    path(
-        "office/evening_prayer/<int:year>-<int:month>-<int:day>/", office_views.evening_prayer, name="evening_prayer"
+    distill_path(
+        "office/evening_prayer/<int:year>-<int:month>-<int:day>/",
+        office_views.evening_prayer,
+        name="evening_prayer",
+        distill_func=get_evening_prayer_days,
     ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

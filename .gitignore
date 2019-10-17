@@ -7,3 +7,4 @@ sermons/.env
 *.pyo
 _pycache__
 sermons/static/
+static_export

@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "taggit",
     "address",
     "array_tags",
+    "django_distill",
 ]
 
 MIDDLEWARE = [
@@ -178,3 +179,5 @@ def show_toolbar(request):
 
 
 DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": show_toolbar}
+
+DISTILL_DIR = "{}/../static_export".format(BASE_DIR)
