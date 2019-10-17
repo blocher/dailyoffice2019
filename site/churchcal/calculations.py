@@ -133,14 +133,14 @@ class CalendarDate(object):
         if len(self.required) < 2:
             return []
 
-        required = self.required
+        required = self.required.copy()
         if self.season.name != "Advent" and self.season.name != "Lent" and self.season.name != "Eastertide":
             if self.required[1].rank.name == "HOLY_DAY":
                 alternate_sunday = self.required[1].copy()
                 alternate_sunday.rank = CommemorationRank.objects.get(calendar=self.calendar, name="ALTERNATE_SUNDAY")
-                self.required = required[:1] + [alternate_sunday]
+                self.required = self.required[:1] + [alternate_sunday]
             else:
-                self.required = required[:1]
+                self.required = self.required[:1]
         else:
             self.required = required[:1]
         transfers = required[1:]
@@ -369,7 +369,9 @@ class ChurchYear(object):
             date = self.dates[date.strftime("%Y-%m-%d")]
             date.year = self
             return date
-        except IndexError:
+        except KeyError:
+            print(date)
+            print(date.strftime("%Y-%m-%d"))
             return None
 
 
@@ -597,6 +599,6 @@ def to_date(date_string):
 def get_calendar_date(date_string):
     date = to_date(date_string)
     advent_start = advent(date.year)
-    year = date.year if date > advent_start else date.year - 1
+    year = date.year if date >= advent_start else date.year - 1
     year = ChurchYear(year)
     return year.get_date(date_string)

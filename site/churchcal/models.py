@@ -45,6 +45,9 @@ class CommemorationRank(BaseModel):
 
         return None
 
+    def __repr__(self):
+        return "{} ({}) ({})".format(self.name, self.rank.formatted_name, self.color)
+
 
 class Commemoration(BaseModel):
     InheritanceQuerySetMixin._get_subclasses_recurse = _get_subclasses_recurse_without_managed
@@ -97,16 +100,6 @@ class Commemoration(BaseModel):
             return False
 
         return True
-
-    def copy(self):
-
-        pk = self.original_pk if hasattr(self, "original_pk") else self.pk
-        model = type(self)()
-        for key, value in self.__dict__.items():
-            setattr(model, key, value)
-        model.pk = None
-        model.original_pk = pk
-        return model
 
     def __repr__(self):
         return "{} ({}) ({})".format(self.name, self.rank.formatted_name, self.color)
