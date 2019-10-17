@@ -2,15 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8657ce3f-a52e-4518-a963-4f09ef5b69fc" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/churchcal/base_models.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/churchcal/base_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/churchcal/calculations.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/churchcal/calculations.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/churchcal/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/churchcal/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/commemoration_listing.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/commemoration_listing.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/website/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/website/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/site/Makefile" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -128,7 +121,7 @@
       <workItem from="1571244328840" duration="4669000" />
       <workItem from="1571276565641" duration="8000" />
       <workItem from="1571276584282" duration="8076000" />
-      <workItem from="1571332756937" duration="2059000" />
+      <workItem from="1571332756937" duration="2996000" />
     </task>
     <servers />
   </component>
