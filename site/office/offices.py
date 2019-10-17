@@ -4,7 +4,7 @@ from django.template.loader import render_to_string
 from django.utils.functional import cached_property
 
 from churchcal.calculations import get_calendar_date
-from office.models import OfficeDay
+from office.models import OfficeDay, HolyDayOfficeDay, StandardOfficeDay
 from psalter.utils import get_psalms
 
 
@@ -28,8 +28,8 @@ class EPCommemorationListing(OfficeSection):
     @cached_property
     def data(self):
         return {
-            "heading": "This Evening's Commemoration{}".format("s" if len(self.date.all) > 1 else ""),
-            "commemorations": self.date.all,
+            "heading": "This Evening's Commemoration{}".format("s" if len(self.date.all_evening) > 1 else ""),
+            "commemorations": self.date.all_evening,
         }
 
 
@@ -226,9 +226,9 @@ class EPCollectsOfTheDay(OfficeSection):
     def data(self):
         return {
             "collects": {
-                commemoration.name: commemoration.morning_prayer_collect.replace(" Amen.", "")
-                for commemoration in self.date.all
-                if commemoration.morning_prayer_collect
+                commemoration.name: commemoration.evening_prayer_collect.replace(" Amen.", "")
+                for commemoration in self.date.all_evening
+                if commemoration.evening_prayer_collect
             }
         }
 
@@ -307,7 +307,11 @@ class Office(object):
 
     def __init__(self, date):
         self.date = get_calendar_date(date)
-        self.office_readings = OfficeDay.objects.get(month=self.date.date.month, day=self.date.date.day)
+
+        try:
+            self.office_readings = HolyDayOfficeDay.objects.get(commemoration=self.date.primary)
+        except HolyDayOfficeDay.DoesNotExist:
+            self.office_readings = StandardOfficeDay.objects.get(month=self.date.date.month, day=self.date.date.day)
 
     def render(self):
         rendering = ""
