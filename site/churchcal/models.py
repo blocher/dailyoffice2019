@@ -99,8 +99,13 @@ class Commemoration(BaseModel):
         return True
 
     def copy(self):
-        model = type(self).objects.get(pk=self.pk)
-        self.pk = None
+
+        pk = self.original_pk if hasattr(self, "original_pk") else self.pk
+        model = type(self)()
+        for key, value in self.__dict__.items():
+            setattr(model, key, value)
+        model.pk = None
+        model.original_pk = pk
         return model
 
     def __repr__(self):

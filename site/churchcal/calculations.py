@@ -32,6 +32,12 @@ class CalendarDate(object):
     def all(self):
         return self.required + self.optional
 
+    @property
+    def all_evening(self):
+        required = self.evening_required if hasattr(self, "evening_required") else self.required
+        optional = self.evening_optional if hasattr(self, "evening_optional") else self.optional
+        return required + optional
+
     @cached_property
     def proper(self):
         if self.season.name != "Season After Pentecost" and self.primary.name != "The Day of Pentecost":
@@ -414,26 +420,54 @@ class SetNamesAndCollects(object):
                         check(commemoration, calendar_date)
                         if hasattr(commemoration, "morning_prayer_collect"):
                             break
-                    self.check_previous_evening()
+                    self.check_previous_evening(calendar_date)
             except StopIteration:
                 break
 
-    def check_previous_evening(self):
-        return False
-        # current = self.i.get_current_index()
-        # if not current.primary.rank.required:
-        #     return
-        # previous = self.i.get_previous()
-        # if not previous:
-        #     return
-        # if previous.primary.rank.required:
-        #     return
+    def check_previous_evening(self, calendar_date):
+
+        if calendar_date.primary.rank.precedence_rank > 4:
+            return
+
+        if calendar_date.primary.rank.name == "PRIVILEGED_OBSERVANCE":
+            return
+
+        previous = self.i.get_previous()
+        if not previous:
+            return
+
+        if previous.primary.rank.required and previous.primary.rank.name != "PRIVILEGED_OBSERVANCE":
+            return
+
+        previous.evening_required = previous.required.copy()
+        previous.evening_optional = previous.optional.copy()
+        feast_copy = calendar_date.primary.copy()
+        feast_copy.name = "Eve of {}".format(feast_copy.name)
+
+        if feast_copy.eve_collect:
+            feast_copy.evening_prayer_collect = feast_copy.eve_collect
+
+        previous.evening_required.append(feast_copy)
+
+        for idx, commemoration in enumerate(previous.evening_required):
+            if "PRIVILEGED_OBSERVANCE" in commemoration.rank.name:
+                previous.evening_required.pop(idx)
+
+        for idx, commemoration in enumerate(previous.evening_optional):
+            if "FERIA" in commemoration.rank.name:
+                previous.evening_optional.pop(idx)
+
+        # # print(current.primary, current.primary.pk)
+        # print(self.church_calendar.dates)
+        # copy = calendar_date.primary.copy()
+        # print(copy)
+
+        # if copy.eve_collect:
+        #     copy.evening_prayer_collect = copy.eve_collect
         #
-        # if current.primary.eve_collect:
-        #     previous.primary.evening_prayer_collect = current.primary.eve_collect
-        #     return
-        #
-        # previous.primary.evening_prayer_collect = current.primary.evening_prayer_collect
+        # previous.required.append(copy)
+
+        # @TODO: resort
 
     def own_collect(self, commemoration, calendar_date):
 
