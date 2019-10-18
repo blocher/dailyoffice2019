@@ -3,8 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="8657ce3f-a52e-4518-a963-4f09ef5b69fc" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/static/redirect.js" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/static/redirect.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/static/redirect.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/redirect.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/redirect.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/website/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/urls.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,6 +61,9 @@
     <property name="typescript.add.unambiguous.imports.on.the.fly" value="true" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/site/office/static/office/js" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/site/website/static" />
       <recent name="$USER_HOME$" />
@@ -153,22 +158,22 @@
       <screen x="0" y="23" width="1680" height="952" />
     </state>
     <state x="528" y="234" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.23.1680.952@0.23.1680.952" timestamp="1571276568434" />
-    <state width="817" height="255" key="GridCell.Tab.0.bottom" timestamp="1571367380426">
+    <state width="816" height="255" key="GridCell.Tab.0.bottom" timestamp="1571368085727">
       <screen x="0" y="23" width="1680" height="952" />
     </state>
-    <state width="817" height="255" key="GridCell.Tab.0.bottom/0.23.1680.952@0.23.1680.952" timestamp="1571367380426" />
-    <state width="817" height="255" key="GridCell.Tab.0.center" timestamp="1571367380425">
+    <state width="816" height="255" key="GridCell.Tab.0.bottom/0.23.1680.952@0.23.1680.952" timestamp="1571368085726" />
+    <state width="816" height="255" key="GridCell.Tab.0.center" timestamp="1571368085726">
       <screen x="0" y="23" width="1680" height="952" />
     </state>
-    <state width="817" height="255" key="GridCell.Tab.0.center/0.23.1680.952@0.23.1680.952" timestamp="1571367380425" />
-    <state width="817" height="255" key="GridCell.Tab.0.left" timestamp="1571367380424">
+    <state width="816" height="255" key="GridCell.Tab.0.center/0.23.1680.952@0.23.1680.952" timestamp="1571368085726" />
+    <state width="816" height="255" key="GridCell.Tab.0.left" timestamp="1571368085725">
       <screen x="0" y="23" width="1680" height="952" />
     </state>
-    <state width="817" height="255" key="GridCell.Tab.0.left/0.23.1680.952@0.23.1680.952" timestamp="1571367380424" />
-    <state width="817" height="255" key="GridCell.Tab.0.right" timestamp="1571367380425">
+    <state width="816" height="255" key="GridCell.Tab.0.left/0.23.1680.952@0.23.1680.952" timestamp="1571368085725" />
+    <state width="816" height="255" key="GridCell.Tab.0.right" timestamp="1571368085726">
       <screen x="0" y="23" width="1680" height="952" />
     </state>
-    <state width="817" height="255" key="GridCell.Tab.0.right/0.23.1680.952@0.23.1680.952" timestamp="1571367380425" />
+    <state width="816" height="255" key="GridCell.Tab.0.right/0.23.1680.952@0.23.1680.952" timestamp="1571368085726" />
     <state x="428" y="249" key="IDE.errors.dialog" timestamp="1570398539274">
       <screen x="0" y="23" width="1680" height="952" />
     </state>
@@ -186,12 +191,12 @@
     <state x="-495" y="-849" width="763" height="522" key="find.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@-1073.-1177.1920.1177" timestamp="1571164483046" />
     <state x="506" y="288" width="667" height="422" key="find.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1570643546418" />
     <state x="506" y="288" width="683" height="422" key="find.popup/0.23.1680.952@0.23.1680.952" timestamp="1571192199123" />
-    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup" timestamp="1571368009357">
+    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup" timestamp="1571368286602">
       <screen x="0" y="23" width="1680" height="952" />
     </state>
     <state x="-496" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@-1073.-1177.1920.1177" timestamp="1571175688299" />
     <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1571247750353" />
     <state x="1424" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1571334400459" />
-    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952@0.23.1680.952" timestamp="1571368009357" />
+    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952@0.23.1680.952" timestamp="1571368286602" />
   </component>
 </project>

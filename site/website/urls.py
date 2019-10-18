@@ -36,6 +36,10 @@ site.site_title = _("Elizabeth Locher's Sermon Archive")
 # site.favicon = staticfiles('path/to/favicon')
 
 
+def get_today_evening_prayer():
+    return None
+
+
 def get_evening_prayer_days():
     numdays = 365 * 2
     base = datetime.datetime.today()
@@ -53,12 +57,14 @@ urlpatterns = [
     # path("jet/", include("jet.urls", "jet")),
     # path("admin/", admin.site.urls),
     path("admin/", include("material.admin.urls")),
-    path("office/evening_prayer/today/", office_views.today_evening_prayer, name="today_evening_prayer"),
     distill_path(
         "office/evening_prayer/<int:year>-<int:month>-<int:day>/",
         office_views.evening_prayer,
         name="evening_prayer",
         distill_func=get_evening_prayer_days,
+    ),
+    distill_path(
+        "", office_views.today_evening_prayer, name="today_evening_prayer", distill_func=get_today_evening_prayer
     ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

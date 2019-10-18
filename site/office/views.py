@@ -12,6 +12,4 @@ def evening_prayer(request, year, month, day):
 
 
 def today_evening_prayer(request):
-    date = timezone.localtime(timezone.now())
-    print(date)
-    return evening_prayer(request, date.year, date.month, date.day)
+    return render(request, "office/evening_prayer/redirect.html", {})
