@@ -9,7 +9,7 @@ var redirect = function() {
     .padStart(2, "0")}`;
   const path = `\\office\\evening_prayer\\${date_string}`;
   console.log(path);
-  // window.location.pathname = path;
+  window.location.pathname = path;
 };
 
 if (
