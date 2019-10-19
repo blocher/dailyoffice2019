@@ -303,6 +303,72 @@ class EPCollects(OfficeSection):
         return {"collect": weekly_collects[self.date.date.weekday()]}
 
 
+class EPIntercessions(OfficeSection):
+    @cached_property
+    def data(self):
+        return {
+            "heading": "Intercessions",
+            "rubric_1": "The Officiant may invite the People to offer intercessions and thanksgivings.",
+            "rubric_2": "A hymn or anthem may be sung.",
+        }
+
+
+class EPGeneralThanksgiving(OfficeSection):
+    @cached_property
+    def data(self):
+        return {"heading": "The General Thanksgiving"}
+
+
+class EPChrysostom(OfficeSection):
+    @cached_property
+    def data(self):
+        return {"heading": "A PRAYER OF ST. JOHN CHRYSOSTOM"}
+
+
+class EPDismissal(OfficeSection):
+    @cached_property
+    def data(self):
+
+        officiant = "Let us bless the Lord."
+        people = "Thanks be to God."
+
+        if self.date.season.name == "Eastertide":
+
+            officiant = "{} Alleluia, alleluia.".format(officiant)
+            people = "{} Alleluia, alleluia.".format(people)
+
+        return {"heading": "Dismissal", "officiant": officiant, "people": people}
+
+
+class EPGrace(OfficeSection):
+    def get_grace(self):
+
+        if self.date.date.weekday() in (6, 2, 5):
+            return {
+                "officiant": "The grace of our Lord Jesus Christ, and the love of God, and the fellowship of the Holy Spirit, be with us all evermore.",
+                "people": "Amen.",
+                "citation": "2 CORINTHIANS 13:14",
+            }
+
+        if self.date.date.weekday() in (0, 3):
+            return {
+                "officiant": "May the God of hope fill us with all joy and peace in believing through the power of the Holy Spirit. ",
+                "people": "Amen.",
+                "citation": "ROMANS 15:13",
+            }
+
+        if self.date.date.weekday() in (1, 4):
+            return {
+                "officiant": "Glory to God whose power, working in us, can do infinitely more than we can ask or imagine: Glory to him from generation to generation in the Church, and in Christ Jesus for ever and ever",
+                "people": "Amen.",
+                "citation": "EPHESIANS 3:20-21",
+            }
+
+    @cached_property
+    def data(self):
+        return {"heading": "The Grace", "grace": self.get_grace()}
+
+
 # ==== Offices
 
 
@@ -350,4 +416,12 @@ class EveningPrayer(Office):
             (EPCollectsOfTheDay(self.date, self.office_readings), "office/evening_prayer/collects_of_the_day.html"),
             (EPCollects(self.date, self.office_readings), "office/evening_prayer/collects.html"),
             (EPMissionCollect(self.date, self.office_readings), "office/evening_prayer/mission_collect.html"),
+            (EPIntercessions(self.date, self.office_readings), "office/evening_prayer/intercessions.html"),
+            (
+                EPGeneralThanksgiving(self.date, self.office_readings),
+                "office/evening_prayer/general_thanksgiving.html",
+            ),
+            (EPChrysostom(self.date, self.office_readings), "office/evening_prayer/chrysostom.html"),
+            (EPDismissal(self.date, self.office_readings), "office/evening_prayer/dismissal.html"),
+            (EPGrace(self.date, self.office_readings), "office/evening_prayer/grace.html"),
         ]
