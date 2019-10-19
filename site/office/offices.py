@@ -221,6 +221,12 @@ class EPPrayers(OfficeSection):
         return {}
 
 
+class EPSuffrages(OfficeSection):
+    @cached_property
+    def data(self):
+        return {}
+
+
 class EPCollectsOfTheDay(OfficeSection):
     @cached_property
     def data(self):
@@ -340,6 +346,7 @@ class EveningPrayer(Office):
             (EPCanticle2(self.date, self.office_readings), "office/evening_prayer/canticle_2.html"),
             (EPCreed(self.date, self.office_readings), "office/evening_prayer/creed.html"),
             (EPPrayers(self.date, self.office_readings), "office/evening_prayer/prayers.html"),
+            (EPSuffrages(self.date, self.office_readings), "office/evening_prayer/suffrages.html"),
             (EPCollectsOfTheDay(self.date, self.office_readings), "office/evening_prayer/collects_of_the_day.html"),
             (EPCollects(self.date, self.office_readings), "office/evening_prayer/collects.html"),
             (EPMissionCollect(self.date, self.office_readings), "office/evening_prayer/mission_collect.html"),
