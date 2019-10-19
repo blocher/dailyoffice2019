@@ -41,10 +41,13 @@ def get_today_evening_prayer():
 
 
 def get_evening_prayer_days():
-    numdays = 365 * 2
+
+    days_back = 365 * 2
+    days_forward = 365 * 2
+
     base = datetime.datetime.today()
-    previous_date_list = [base - datetime.timedelta(days=x) for x in range(numdays)]
-    future_date_list = [base + datetime.timedelta(days=x) for x in range(numdays)]
+    previous_date_list = [base - datetime.timedelta(days=x) for x in range(days_back)]
+    future_date_list = [base + datetime.timedelta(days=x) for x in range(days_forward)]
     date_list = previous_date_list + future_date_list
     for date in date_list:
         yield {"year": date.year, "month": date.month, "day": date.day}
