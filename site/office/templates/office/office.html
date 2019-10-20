@@ -156,6 +156,26 @@
                 margin-left: 10px;
             }
 
+            .footer {
+              position: fixed;
+              left: 0;
+              bottom: 0;
+              width: 100%;
+              text-align: center;
+              display:flex;
+              justify-content: center;
+              flex-wrap: nowrap;
+              align-content: space-around;
+              border-top: 1px black solid;
+                background-color: lightgrey;
+              font-size: .8em;
+              font-weight: 300;
+            }
+
+            .footer div {
+                flex-grow: 2;
+            }
+
 
 
 
@@ -165,11 +185,18 @@
     <body>
         <div style="text-align:center">
             <div class="body">
-                {%  for module in ep.modules %}
+                {%  for module in office.modules %}
                     {%  include module.1  with data=module.0.data only %}
                 {%  endfor %}
             </div>
         </div>
     </body>
+    {%  include "office/footer.html" %}
+
 </html>
+
+
+<style>
+
+</style>
 
