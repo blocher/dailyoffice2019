@@ -1,5 +1,6 @@
 <div class="commemorations">
     <h4>{{ data.heading }}</h4>
+
     {%  for commemoration in data.commemorations %}
 
         <p><strong>{{  commemoration.name  }}{% if commemoration.transferred %} (Transferred) {% endif %}</strong><br>Color: {{ commemoration.color }} {% if commemoration.alternate_color %}or {{ commemoration.alternate_color }}{%  endif %} &bull; Rank: {{  commemoration.rank.formatted_name }}</p>

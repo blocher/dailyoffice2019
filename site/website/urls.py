@@ -67,6 +67,12 @@ urlpatterns = [
         distill_func=get_evening_prayer_days,
     ),
     distill_path(
+        "office/morning_prayer/<int:year>-<int:month>-<int:day>/",
+        office_views.morning_prayer,
+        name="evening_prayer",
+        distill_func=get_evening_prayer_days,
+    ),
+    distill_path(
         "", office_views.today_evening_prayer, name="today_evening_prayer", distill_func=get_today_evening_prayer
     ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

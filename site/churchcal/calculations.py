@@ -68,7 +68,7 @@ class CalendarDate(object):
             return self.FAST_FULL
 
         # Not for primary feasts (Annunciation)
-        if self.primary.rank.precedence_rank == 1:
+        if self.primary.rank.name == "PRINCIPAL_FEAST":
             return self.FAST_NONE
 
         # Ember days and rogation days are fast days
@@ -83,6 +83,7 @@ class CalendarDate(object):
 
         # Fridays
         if self.date.weekday() == 4:
+
             return self.FAST_PARTIAL
 
         return self.FAST_NONE
