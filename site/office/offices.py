@@ -52,6 +52,42 @@ class EPCommemorationListing(OfficeSection):
 class EPOpeningSentence(OfficeSection):
     def get_sentence(self):
 
+        if "Thanksgiving Day" in self.date.primary.name:
+            return {
+                "sentence": "The Lord by wisdom founded the earth; by understanding he established the heavens; by his knowledge the deeps broke open, and the clouds drop down the dew.",
+                "citation": "PROVERBS 3:19-20",
+            }
+
+        if self.date.season.name == "Holy Week":
+
+            return {
+                "sentence": "All we like sheep have gone astray; we have turned every one to his own way; and the Lord has laid on him the iniquity of us all.",
+                "citation": "ISAIAH 53:6",
+            }
+
+        if (
+            self.date.season.name == "Lent"
+            or self.date.primary.rank.name == "EMBER_DAY"
+            or self.date.primary.rank.name == "ROGATION_DAY"
+        ):
+
+            if self.date.date.weekday() in [6, 2]:  # Sunday, Wednesday
+                return {
+                    "sentence": "To the Lord our God belong mercy and forgiveness, for we have rebelled against him.",
+                    "citation": "DANIEL 9:9",
+                }
+
+            if self.date.date.weekday() in [0, 3, 5]:  # Monday, Thursday, Saturday
+                return {
+                    "sentence": "For I acknowledge my faults, and my sin is ever before me.",
+                    "citation": "PSALM 51:3",
+                }
+
+            return {  # Tuesday, Friday
+                "sentence": "If we say we have no sin, we deceive ourselves, and the truth is not in us. If we confess our sins, he is faithful and just to forgive us our sins and to cleanse us from all unrighteousness.",
+                "citation": "1 JOHN 1:8-9",
+            }
+
         if self.date.season.name == "Advent":
 
             return {
@@ -69,32 +105,6 @@ class EPOpeningSentence(OfficeSection):
             return {
                 "sentence": "Nations shall come to your light, and kings to the brightness of your rising.",
                 "citation": "ISAIAH 60:3",
-            }
-
-        if self.date.season.name == "Lent":
-
-            if self.date.date.weekday() == 6 or self.date.date.weekday() == 2:
-                return {
-                    "sentence": "To the Lord our God belong mercy and forgiveness, for we have rebelled against him.",
-                    "citation": "DANIEL 9:9",
-                }
-
-            if self.date.date.weekday() == 0 or self.date.date.weekday() == 3:
-                return {
-                    "sentence": "For I acknowledge my faults, and my sin is ever before me.",
-                    "citation": "PSALM 51:3",
-                }
-
-            return {
-                "sentence": "If we say we have no sin, we deceive ourselves, and the truth is not in us. If we confess our sins, he is faithful and just to forgive us our sins and to cleanse us from all unrighteousness.",
-                "citation": "1 JOHN 1:8-9",
-            }
-
-        if self.date.season.name == "Holy Week":
-
-            return {
-                "sentence": "All we like sheep have gone astray; we have turned every one to his own way; and the Lord has laid on him the iniquity of us all.",
-                "citation": "ISAIAH 53:6",
             }
 
         if "Ascension" in self.date.primary.name:
@@ -166,6 +176,39 @@ class EPOpeningSentence(OfficeSection):
 class MPOpeningSentence(OfficeSection):
     def get_sentence(self):
 
+        if "Thanksgiving Day" in self.date.primary.name:
+            return {
+                "sentence": "Honor the Lord with your wealth and with the firstfruits of all your produce; then your barns will be filled with plenty, and your vats will be bursting with wine.",
+                "citation": "PROVERBS 3:9-10",
+            }
+
+        if self.date.season.name == "Holy Week":
+
+            return {
+                "sentence": "Is it nothing to you, all you who pass by? Look and see if there is any sorrow like my sorrow, which was brought upon me, which the Lord inflicted on the day of his fierce anger.",
+                "citation": "LAMENTATIONS 1:12",
+            }
+
+        if (
+            self.date.season.name == "Lent"
+            or self.date.primary.rank.name == "EMBER_DAY"
+            or self.date.primary.rank.name == "ROGATION_DAY"
+        ):
+
+            if self.date.date.weekday() in [6, 2]:  # Sunday, Wednesday
+                return {"sentence": "Repent, for the kingdom of heaven is at hand.", "citation": "MATTHEW 3:2"}
+
+            if self.date.date.weekday() in [0, 3, 5]:  # Monday, Thursday, Saturday
+                return {
+                    "sentence": "Turn your face from my sins, and blot out all my misdeeds.",
+                    "citation": "PSALM 51:9",
+                }
+
+            return {
+                "sentence": "If anyone would come after me, let him deny himself and take up his cross and follow me.",
+                "citation": "MARK 8:34",
+            }
+
         if self.date.season.name == "Advent":
 
             return {
@@ -183,29 +226,6 @@ class MPOpeningSentence(OfficeSection):
             return {
                 "sentence": "From the rising of the sun to its setting my name will be great among the nations, and in every place incense will be offered to my name, and a pure offering. For my name will be great among the nations, says the Lord of hosts.",
                 "citation": "MALACHI 1:11",
-            }
-
-        if self.date.season.name == "Lent":
-
-            if self.date.date.weekday() == 6 or self.date.date.weekday() == 2:
-                return {"sentence": "Repent, for the kingdom of heaven is at hand.", "citation": "MATTHEW 3:2"}
-
-            if self.date.date.weekday() == 0 or self.date.date.weekday() == 3:
-                return {
-                    "sentence": "Turn your face from my sins, and blot out all my misdeeds.",
-                    "citation": "PSALM 51:9",
-                }
-
-            return {
-                "sentence": "If anyone would come after me, let him deny himself and take up his cross and follow me.",
-                "citation": "MARK 8:34",
-            }
-
-        if self.date.season.name == "Holy Week":
-
-            return {
-                "sentence": "Is it nothing to you, all you who pass by? Look and see if there is any sorrow like my sorrow, which was brought upon me, which the Lord inflicted on the day of his fierce anger.",
-                "citation": "LAMENTATIONS 1:12",
             }
 
         if "Ascension" in self.date.primary.name:
