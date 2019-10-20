@@ -540,6 +540,9 @@ class SetNamesAndCollects(object):
         ash_wednesday = self.is_ash_wednesday(calendar_date)
         if ash_wednesday:
             return ash_wednesday
+        ascension = self.is_ascension(calendar_date)
+        if ascension:
+            return ascension
         sunday = self.is_sunday(calendar_date)
         if sunday:
             return sunday
@@ -561,6 +564,12 @@ class SetNamesAndCollects(object):
     @staticmethod
     def is_ash_wednesday(calendar_date):
         if "Ash Wednesday" in calendar_date.primary.name and calendar_date.primary.rank.required:
+            return calendar_date.primary
+        return None
+
+    @staticmethod
+    def is_ascension(calendar_date):
+        if "Ascension Day" in calendar_date.primary.name and calendar_date.primary.rank.required:
             return calendar_date.primary
         return None
 

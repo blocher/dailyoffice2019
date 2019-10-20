@@ -364,6 +364,87 @@ class Hymn(OfficeSection):
 
 class MPInvitatory(OfficeSection):
     @cached_property
+    def antiphon(self):
+
+        if "Presentation" in self.date.primary.name or "Annunciation" in self.date.primary.name:
+            return {
+                "first_line": "The Word was made flesh and dwelt among us:",
+                "second_line": "O come, let us adore him.",
+            }
+
+        if self.date.primary.name == "The Day of Pentecost":
+            return {
+                "first_line": "Alleluia. The Spirit of the Lord renews the face of the earth:",
+                "second_line": "O come, let us adore him.",
+            }
+
+        if self.date.primary.name == "Trinity Sunday":
+            return {"first_line": "Father, Son, and Holy Spirit, one God:", "second_line": "O come, let us adore him."}
+
+        if self.date.primary.name == "Easter Day":
+            return {"first_line": "Alleluia. The Lord is risen indeed:", "second_line": "O come, let us adore him."}
+
+        if self.date.primary.name == "Ascension Day":
+            return {
+                "first_line": "Alleluia. Christ the Lord has ascended into heaven:",
+                "second_line": "O come, let us adore him.",
+            }
+
+        if self.date.primary.name == "The Transfiguration of Our Lord Jesus Christ":
+            return {"first_line": "The Lord has shown forth his glory:", "second_line": "O come, let us adore him."}
+
+        if self.date.primary.name == "All Saints’ Day":
+            return {"first_line": "The Lord is glorious in his saints:", "second_line": "O come, let us adore him."}
+
+        if self.date.primary.rank.name == "HOLY_DAY" and self.date.primary.name not in (
+            "The Circumcision and Holy Name of our Lord Jesus Christ",
+            "The Visitation of the Virgin Mary to Elizabeth and Zechariah",
+            "Holy Cross Day",
+            "The Holy Innocents",
+        ):
+            return {"first_line": "The Lord is glorious in his saints:", "second_line": "O come, let us adore him."}
+
+        if self.date.season.name == "Lent":
+            return {
+                "first_line": "The Lord is full of compassion and mercy:",
+                "second_line": "O come, let us adore him.",
+            }
+
+        if self.date.season.name == "Advent":
+            return {"first_line": "Our King and Savior now draws near:", "second_line": "O come, let us adore him."}
+
+        if self.date.season.name == "Christmastide":
+            return {"first_line": "Alleluia, to us a child is born:", "second_line": "O come, let us adore him."}
+
+        if self.date.season.name == "Epiphanytide":
+            return {"first_line": "The Lord has shown forth his glory:", "second_line": "O come, let us adore him."}
+
+        if self.date.season.name == "Eastertide":
+            for commemoration in self.date.all:
+                if "Ascension Day" in commemoration.name:
+                    return {
+                        "first_line": "Alleluia. Christ the Lord has ascended into heaven:",
+                        "second_line": "O come, let us adore him.",
+                    }
+
+            return {"first_line": "Alleluia. The Lord is risen indeed:", "second_line": "O come, let us adore him."}
+
+        if self.date.date.weekday() in [0, 3, 6]:
+            return {
+                "first_line": "The earth is the Lord’s for he made it: ",
+                "second_line": "O come, let us adore him.",
+            }
+
+        if self.date.date.weekday() in [1, 4]:
+            return {
+                "first_line": "Worship the Lord in the beauty of holiness:",
+                "second_line": "O come, let us adore him.",
+            }
+
+        if self.date.date.weekday() in [2, 5]:
+            return {"first_line": "The mercy of the Lord is everlasting: ", "second_line": "O come, let us adore him."}
+
+    @cached_property
     def data(self):
 
         pascha_nostrum = {
@@ -372,6 +453,7 @@ class MPInvitatory(OfficeSection):
             "rubric": "Officiant and People, all standing",
             "content": render_to_string("office/morning_prayer/pascha_nostrum.html", {}),
             "citation": mark_safe("1 CORINTHIANS 5:7-8<br>ROMANS 6:9-11<br>1 CORINTHIANS 15:20-22"),
+            "antiphon": None,
         }
 
         jubilate = {
@@ -380,14 +462,17 @@ class MPInvitatory(OfficeSection):
             "rubric": "Officiant and People, all standing",
             "content": render_to_string("office/morning_prayer/jubilate.html", {}),
             "citation": "PSALM 100",
+            "antiphon": self.antiphon,
         }
 
+        lent = self.date.season.name == "Lent" or self.date.season.name == "Holy Week"
         venite = {
             "heading": "Venite",
             "subheading": "O Come",
             "rubric": "Officiant and People, all standing",
-            "content": render_to_string("office/morning_prayer/venite.html", {}),
-            "citation": "PSALM 95:1-7, 8-11",
+            "content": render_to_string("office/morning_prayer/venite.html", {"lent": lent}),
+            "citation": "PSALM 95:1-7, 8-11" if not lent else "PSALM 95",
+            "antiphon": self.antiphon,
         }
 
         if "Easter Day" in self.date.primary.name or "Easter Week" in self.date.primary.name:
@@ -752,6 +837,7 @@ class MorningPrayer(Office):
 
     @cached_property
     def modules(self):
+        invitatory = MPInvitatory(self.date, self.office_readings)
         return [
             (MPHeading(self.date, self.office_readings), "office/heading.html"),
             (MPCommemorationListing(self.date, self.office_readings), "office/commemoration_listing.html"),
