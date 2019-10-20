@@ -3,29 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="8657ce3f-a52e-4518-a963-4f09ef5b69fc" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/churchcal/calculations.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/churchcal/calculations.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/office/offices.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/offices.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/chrysostom.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/chrysostom.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/collects.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/collects.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/collects_of_the_day.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/collects_of_the_day.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/commemoration_listing.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/commemoration_listing.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/confession.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/confession.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/creed.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/creed.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/dismissal.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/dismissal.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/ep.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/ep.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/general_thanksgiving.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/general_thanksgiving.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/grace.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/grace.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/heading.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/heading.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/intercessions.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/intercessions.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/invitatory.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/invitatory.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/mission_collect.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/mission_collect.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/opening_sentence.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/opening_sentence.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/prayers.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/prayers.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/psalms.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/psalms.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/reading.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/reading.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/suffrages.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/suffrages.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/website/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/morning_prayer/mpinvitatory.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/morning_prayer/mpinvitatory.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -410,6 +410,39 @@ class MPInvitatory(OfficeSection):
         return venite
 
 
+class MPCanticle1(OfficeSection):
+    @cached_property
+    def data(self):
+        if self.date.season.name in ("Lent", "Holy Week"):
+            return {
+                "heading": "BENEDICTUS ES, DOMINE",
+                "subheading": "A Song of Praise",
+                "rubric": "Officiant and People, all standing",
+                "content": render_to_string("office/morning_prayer/benedictus_es_domine.html", {}),
+                "citation": "SONG OF THE THREE YOUNG MEN, 29-34",
+            }
+
+        return {
+            "heading": "TE DEUM LAUDAMUS",
+            "subheading": "We Praise You, O God",
+            "rubric": "Officiant and People, all standing",
+            "content": render_to_string("office/morning_prayer/te_deum.html", {}),
+            "citation": "",
+        }
+
+
+class MPCanticle2(OfficeSection):
+    @cached_property
+    def data(self):
+        return {
+            "heading": "BENEDICTUS",
+            "subheading": "The Song of Zechariah",
+            "rubric": "Officiant and People, all standing",
+            "content": render_to_string("office/morning_prayer/benedictus.html", {}),
+            "citation": "LUKE 1:68-79",
+        }
+
+
 class EPCanticle1(OfficeSection):
     @cached_property
     def data(self):
@@ -728,7 +761,9 @@ class MorningPrayer(Office):
             (MPInvitatory(self.date, self.office_readings), "office/morning_prayer/mpinvitatory.html"),
             (MPPsalms(self.date, self.office_readings), "office/psalms.html"),
             (MPReading1(self.date, self.office_readings), "office/reading.html"),
+            (MPCanticle1(self.date, self.office_readings), "office/canticle.html"),
             (MPReading2(self.date, self.office_readings), "office/reading.html"),
+            (MPCanticle2(self.date, self.office_readings), "office/canticle.html"),
             (Creed(self.date, self.office_readings), "office/creed.html"),
             (Prayers(self.date, self.office_readings), "office/prayers.html"),
             (Suffrages(self.date, self.office_readings), "office/suffrages.html"),
