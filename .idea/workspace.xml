@@ -2,8 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8657ce3f-a52e-4518-a963-4f09ef5b69fc" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/watcherTasks.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/watcherTasks.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/offices.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/offices.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/bible/sources.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/bible/sources.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/management/commands/import_office_days.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/management/commands/import_office_days.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/models.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,7 +58,7 @@
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="Errors" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
     <property name="typescript.add.unambiguous.imports.on.the.fly" value="true" />
   </component>
   <component name="RecentsManager">
@@ -127,6 +131,9 @@
       <workItem from="1571276565641" duration="8000" />
       <workItem from="1571276584282" duration="8076000" />
       <workItem from="1571332756937" duration="3095000" />
+      <workItem from="1571602365819" duration="111000" />
+      <workItem from="1571602489842" duration="3237000" />
+      <workItem from="1571605748176" duration="269000" />
     </task>
     <servers />
   </component>
@@ -180,10 +187,10 @@
       <screen x="0" y="23" width="1680" height="952" />
     </state>
     <state x="428" y="249" key="IDE.errors.dialog/0.23.1680.952@0.23.1680.952" timestamp="1570398539274" />
-    <state x="333" y="138" key="SettingsEditor" timestamp="1571367410675">
+    <state x="333" y="138" key="SettingsEditor" timestamp="1571604605794">
       <screen x="0" y="23" width="1680" height="952" />
     </state>
-    <state x="333" y="138" key="SettingsEditor/0.23.1680.952@0.23.1680.952" timestamp="1571367410675" />
+    <state x="333" y="138" key="SettingsEditor/0.23.1680.952@0.23.1680.952" timestamp="1571604605794" />
     <state x="701" y="237" key="com.intellij.ide.util.TipDialog" timestamp="1570397175336" />
     <state x="701" y="237" key="com.intellij.ide.util.TipDialog/3360.2100" timestamp="1570397175337" />
     <state x="701" y="237" key="com.intellij.ide.util.TipDialog/3360.2100/1920.1200/1920.1200" timestamp="1570397175337" />
@@ -193,12 +200,12 @@
     <state x="-495" y="-849" width="763" height="522" key="find.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@-1073.-1177.1920.1177" timestamp="1571164483046" />
     <state x="506" y="288" width="667" height="422" key="find.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1570643546418" />
     <state x="506" y="288" width="683" height="422" key="find.popup/0.23.1680.952@0.23.1680.952" timestamp="1571192199123" />
-    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup" timestamp="1571600591275">
+    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup" timestamp="1571605568409">
       <screen x="0" y="23" width="1680" height="952" />
     </state>
     <state x="-496" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@-1073.-1177.1920.1177" timestamp="1571175688299" />
     <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1571247750353" />
     <state x="1424" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1571334400459" />
-    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952@0.23.1680.952" timestamp="1571600591275" />
+    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952@0.23.1680.952" timestamp="1571605568409" />
   </component>
 </project>

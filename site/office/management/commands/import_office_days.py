@@ -33,16 +33,26 @@ class Command(BaseCommand):
 
     HOLY_DAY_RANGE_NAME = "OfficeDatesHolyDays!A3:G9"
 
+    def get_testament(self, passage):
+
+        try:
+            passage = scriptures.extract(passage)[0]
+            return passage[5]
+        except:
+            return "-"
+
     def parse_passage(self, passage):
+
         try:
             passage = scriptures.extract(passage)[0]
             return scriptures.reference_to_string(*passage)
         except:
-            return "-"
+            return None
 
     def get_passage(self, passage):
+
         passage = self.parse_passage(passage)
-        print(Passage(passage, source="esv").html)
+
         try:
             return Passage(passage, source="esv").html
         except PassageNotFoundException:
@@ -75,15 +85,19 @@ class Command(BaseCommand):
             day.holy_day_name = row[2]
             day.mp_psalms = row[3].replace(" ", "")
             day.mp_reading_1 = self.parse_passage(row[4])
+            day.mp_reading_1_testament = self.get_testament(row[4])
             day.mp_reading_1_text = self.get_passage(row[4])
             day.mp_reading_1_abbreviated = row[5]
             day.mp_reading_2 = self.parse_passage(row[6])
+            day.mp_reading_2_testament = self.get_testament(row[6])
             day.mp_reading_2_text = self.get_passage(row[6])
             day.ep_psalms = row[7].replace(" ", "")
             day.ep_reading_1 = self.parse_passage(row[8])
+            day.ep_reading_1_testament = self.get_testament(row[8])
             day.ep_reading_1_text = self.get_passage(row[8])
             day.ep_reading_1_abbreviated = row[9]
             day.ep_reading_2 = self.parse_passage(row[10])
+            day.ep_reading_2_testament = self.get_testament(row[10])
             day.ep_reading_2_text = self.get_passage(row[10])
             day.save()
 
@@ -93,20 +107,23 @@ class Command(BaseCommand):
             print(e)
             print("Worksheet for Holy Days not found")
             return
-
         for row in result.get("values", []):
             commemoration = Commemoration.objects.filter(calendar__abbreviation="ACNA_BCP2019", name=row[0]).first()
             day = HolyDayOfficeDay.objects.get_or_create(commemoration_id=commemoration.pk)[0]
             day.holy_day_name = row[0]
             day.mp_psalms = row[1].replace(" ", "")
             day.mp_reading_1 = self.parse_passage(row[2])
+            day.mp_reading_1_testament = self.get_testament(row[2])
             day.mp_reading_1_text = self.get_passage(row[2])
             day.mp_reading_2 = self.parse_passage(row[3])
+            day.mp_reading_2_testament = self.get_testament(row[3])
             day.mp_reading_2_text = self.get_passage(row[3])
             day.ep_psalms = row[4].replace(" ", "")
             day.ep_reading_1 = self.parse_passage(row[5])
             day.ep_reading_1_text = self.get_passage(row[5])
+            day.ep_reading_1_testament = self.get_testament(row[5])
             day.ep_reading_2 = self.parse_passage(row[6])
+            day.ep_reading_2_testament = self.get_testament(row[6])
             day.ep_reading_2_text = self.get_passage(row[6])
             day.save()
 
