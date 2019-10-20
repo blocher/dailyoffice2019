@@ -26,20 +26,22 @@ class PassageNotFoundException(BaseException):
 
 class BibleGateway(BibleSource):
     def __init__(self, passage, version="nrsv"):
-
         self.version = version
-        try:
-            self.reference = scriptures.extract(passage)[0]
-            self.passage = scriptures.reference_to_string(*self.reference)
-            self.passage = self.passage.replace("III ", "3 ")
-            self.passage = self.passage.replace("II ", "2 ")
-            self.passage = self.passage.replace("I ", "1 ")
+        # try:
+        print(passage)
+        print(scriptures.extract(passage))
+        self.reference = scriptures.extract(passage)[0]
+        self.passage = scriptures.reference_to_string(*self.reference)
+        self.passage = self.passage.replace("III ", "3 ")
+        self.passage = self.passage.replace("II ", "2 ")
+        self.passage = self.passage.replace("I ", "1 ")
 
-        except:
-            self.text = ""
-            self.html = ""
-            self.headings = []
-            return
+        # except Exception as e:
+        #     print(e)
+        #     self.text = ""
+        #     self.html = ""
+        #     self.headings = []
+        #     return
         self.markup = self._get_markup()
 
         self.soup = BeautifulSoup(self.markup, "html5lib")
