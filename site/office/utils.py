@@ -23,7 +23,7 @@ books = {
     "Psalms": ("the Psalms", False, "OT"),
     "Proverbs": ("Proverbs", False, "OT"),
     "Ecclesiastes": ("the Book of Ecclesiastes", False, "OT"),
-    "Song of Solomon": ("the Song of Songs", False, "OT"),
+    "Song of Songs": ("the Song of Songs", False, "OT"),
     "Isaiah": ("the Prophet Isaiah", False, "OT"),
     "Jeremiah": ("the Book of Jeremiah", False, "OT"),
     "Lamentations": ("the Lamentations of Jeremiah", False, "OT"),
@@ -96,12 +96,14 @@ def passage_to_citation(passage):
     if not passage:
         return None
 
-    if passage[0] == "Song of Solomon":
-        passage[0] = "Song of Songs"
-
     if passage[0] == "Susanna":
-        return "The Book of Daniel, beginning with thirteenth chapter, the first verse"
-    book = books[passage[0]]
+        return "The Book of Daniel, beginning with thirteenth chapter, the first verse, the Story of Susanna"
+
+    book_name = passage[0]
+    if book_name == "Song of Solomon":
+        book_name = "Song of Songs"
+
+    book = books[book_name]
 
     if book[1]:  # 1 chapter book
         return "A reading from {}, beginning with the {} verse".format(book[0], num2words(passage[2], ordinal=True))

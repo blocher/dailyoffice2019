@@ -335,7 +335,7 @@ class EPReading1(OfficeSection):
         return {
             "heading": "The First Lesson",
             "intro": passage_to_citation(self.office_readings.ep_reading_1),
-            "passage": self.office_readings.ep_reading_1,
+            "passage": self.office_readings.ep_reading_1.replace("Solomon", "Songs"),
             "reading": self.office_readings.ep_reading_1_text,
             "abbreviated_passage": self.office_readings.ep_reading_1_abbreviated,
             "abbreviated_reading": self.office_readings.ep_reading_1_abbreviated_text,
