@@ -57,6 +57,7 @@ murmurhash==1.0.2
 networkx==2.3
 nltk==3.4.5
 numpy==1.17.2
+num2words==0.5.10
 oauth2client==4.1.3
 parso==0.5.1
 pdfminer3==2018.12.3.0
