@@ -1,9 +1,15 @@
     <div class="footer">
-        <div><strong>&#8592; Tues</strong></div>
-          <div>Morning</div>
-          <div>Noon</div>
-           <div>Evening</div>
-           <div>Compline</div>
-           <div><strong>Thurs &#8594;</strong></div>
+        <div><strong><a href="{{ office.links.yesterday.link }}">&#8592; {{ office.links.yesterday.label }}</a></strong></div>
+        {%  if office.links.current != 'morning_prayer' %}
+            <div><a href="{{ office.links.morning_prayer.link }}">{{ office.links.morning_prayer.label }}</a></div>
+        {%  else %}
+            <div>{{ office.links.morning_prayer.label }}</div>
+        {% endif %}
+        {%  if office.links.current != 'evening_prayer' %}
+            <div><a href="{{ office.links.evening_prayer.link }}">{{ office.links.evening_prayer.label }}</a></div>
+        {%  else %}
+            <div>{{ office.links.evening_prayer.label }}</div>
+        {% endif %}
+        <div><strong><a href="{{ office.links.tomorrow.link }}">{{ office.links.tomorrow.label }} &#8594;</a></strong></div>
 
     </div>

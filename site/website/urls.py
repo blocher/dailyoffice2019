@@ -69,7 +69,7 @@ urlpatterns = [
     distill_path(
         "office/morning_prayer/<int:year>-<int:month>-<int:day>/",
         office_views.morning_prayer,
-        name="evening_prayer",
+        name="morning_prayer",
         distill_func=get_evening_prayer_days,
     ),
     distill_path(
