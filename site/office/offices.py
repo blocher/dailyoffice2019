@@ -1,6 +1,7 @@
-import re
+import datetime
 
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 
@@ -8,7 +9,7 @@ from churchcal.calculations import get_calendar_date
 from office.models import HolyDayOfficeDay, StandardOfficeDay
 from psalter.utils import get_psalms
 
-from office.utils import books, passage_to_citation
+from office.utils import passage_to_citation
 
 
 class OfficeSection(object):
@@ -834,6 +835,33 @@ class Office(object):
         except HolyDayOfficeDay.DoesNotExist:
             self.office_readings = StandardOfficeDay.objects.get(month=self.date.date.month, day=self.date.date.day)
 
+    @cached_property
+    def links(self):
+
+        today = self.date.date
+        yesterday = today - datetime.timedelta(days=1)
+        tomorrow = today + datetime.timedelta(days=1)
+
+        return {
+            "yesterday": {
+                "label": yesterday.strftime("%a"),
+                "link": reverse("evening_prayer", args=[yesterday.year, yesterday.month, yesterday.day]),
+            },
+            "tomorrow": {
+                "label": tomorrow.strftime("%a"),
+                "link": reverse("morning_prayer", args=[tomorrow.year, tomorrow.month, tomorrow.day]),
+            },
+            "morning_prayer": {
+                "label": "Morning Prayer",
+                "link": reverse("morning_prayer", args=[today.year, today.month, today.day]),
+            },
+            "evening_prayer": {
+                "label": "Evening Prayer",
+                "link": reverse("evening_prayer", args=[today.year, today.month, today.day]),
+            },
+            "current": self.office,
+        }
+
     def render(self):
         rendering = ""
         for module, template in self.modules:
@@ -844,6 +872,7 @@ class Office(object):
 class EveningPrayer(Office):
 
     name = "Evening Prayer"
+    office = "evening_prayer"
 
     @cached_property
     def modules(self):
@@ -876,6 +905,7 @@ class EveningPrayer(Office):
 class MorningPrayer(Office):
 
     name = "Morning Prayer"
+    office = "morning_prayer"
 
     @cached_property
     def modules(self):
