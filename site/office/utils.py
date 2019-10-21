@@ -103,6 +103,10 @@ def passage_to_citation(passage):
     if book_name == "Song of Solomon":
         book_name = "Song of Songs"
 
+    book_name = passage[0]
+    if book_name == "Revelation of Jesus Christ":
+        book_name = "Revelation"
+
     book = books[book_name]
 
     if book[1]:  # 1 chapter book

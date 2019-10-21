@@ -322,10 +322,19 @@ class EPPsalms(OfficeSection):
 class MPPsalms(OfficeSection):
     @cached_property
     def data(self):
-        citations = self.office_readings.mp_psalms.split(",")
+        psalms = self.office_readings.mp_psalms.split("or")
+        if len(psalms) > 1:
+            if (self.date.date.year % 2) == 0:
+                psalms = psalms[0]
+            else:
+                psalms = psalms[1]
+        else:
+            psalms = psalms[0]
+
+        citations = psalms.split(",")
         return {
             "heading": "The Psalm{} Appointed".format("s" if len(citations) > 1 else ""),
-            "psalms": get_psalms(self.office_readings.mp_psalms),
+            "psalms": get_psalms(psalms),
         }
 
 
