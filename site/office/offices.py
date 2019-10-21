@@ -5,8 +5,10 @@ from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 
 from churchcal.calculations import get_calendar_date
-from office.models import OfficeDay, HolyDayOfficeDay, StandardOfficeDay
+from office.models import HolyDayOfficeDay, StandardOfficeDay
 from psalter.utils import get_psalms
+
+from office.utils import books, passage_to_citation
 
 
 class OfficeSection(object):
@@ -331,9 +333,18 @@ class EPReading1(OfficeSection):
     def data(self):
         return {
             "heading": "The First Lesson",
-            "book": re.sub("[^a-zA-Z ]+", "", self.office_readings.ep_reading_1),
+            "intro": passage_to_citation(self.office_readings.ep_reading_1),
             "passage": self.office_readings.ep_reading_1,
             "reading": self.office_readings.ep_reading_1_text,
+            "abbreviated_passage": self.office_readings.ep_reading_1_abbreviated,
+            "abbreviated_reading": self.office_readings.ep_reading_1_abbreviated_text,
+            "abbreviated_intro": passage_to_citation(self.office_readings.ep_reading_1_abbreviated),
+            "closing": {
+                "reader": "The Word of the Lord."
+                if self.office_readings.ep_reading_1_testament != "DC"
+                else "Hear ends the Reading.",
+                "people": "Thanks be to God." if self.office_readings.ep_reading_1_testament != "DC" else "",
+            },
         }
 
 
@@ -342,9 +353,10 @@ class EPReading2(OfficeSection):
     def data(self):
         return {
             "heading": "The Second Lesson",
-            "book": re.sub("[^a-zA-Z]+", "", self.office_readings.ep_reading_2),
+            "intro": passage_to_citation(self.office_readings.ep_reading_2),
             "passage": self.office_readings.ep_reading_2,
             "reading": self.office_readings.ep_reading_2_text,
+            "closing": {"reader": "The Word of the Lord.", "people": "Thanks be to God."},
         }
 
 
@@ -353,9 +365,18 @@ class MPReading1(OfficeSection):
     def data(self):
         return {
             "heading": "The First Lesson",
-            "book": re.sub("[^a-zA-Z ]+", "", self.office_readings.mp_reading_1),
+            "intro": passage_to_citation(self.office_readings.mp_reading_1),
             "passage": self.office_readings.mp_reading_1,
             "reading": self.office_readings.mp_reading_1_text,
+            "abbreviated_passage": self.office_readings.mp_reading_1_abbreviated,
+            "abbreviated_reading": self.office_readings.mp_reading_1_abbreviated_text,
+            "abbreviated_intro": passage_to_citation(self.office_readings.mp_reading_1_abbreviated),
+            "closing": {
+                "reader": "The Word of the Lord."
+                if self.office_readings.ep_reading_1_testament != "DC"
+                else "Hear ends the Reading.",
+                "people": "Thanks be to God." if self.office_readings.ep_reading_1_testament != "DC" else "",
+            },
         }
 
 
@@ -364,9 +385,10 @@ class MPReading2(OfficeSection):
     def data(self):
         return {
             "heading": "The Second Lesson",
-            "book": re.sub("[^a-zA-Z]+", "", self.office_readings.mp_reading_2),
+            "intro": passage_to_citation(self.office_readings.mp_reading_2),
             "passage": self.office_readings.mp_reading_2,
             "reading": self.office_readings.mp_reading_2_text,
+            "closing": {"reader": "The Word of the Lord.", "people": "Thanks be to God."},
         }
 
 
