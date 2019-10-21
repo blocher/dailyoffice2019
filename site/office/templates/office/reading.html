@@ -1,23 +1,50 @@
 <h2>{{  data.heading }}</h2>
-<h4>{{ data.passage }}</h4>
-<p><em>The lesson is read, the people sitting</em></p>
-<table class="dialogue">
-    <tr>
-        <td><em>Reader</em></td>
-        <td>A reading from {{  data.book }}</td>
-    </tr>
-</table>
-<div class="reading">
-    <br>
-    {{  data.reading | safe }}
+
+
+<div id="reading-full">
+    <h4>{{ data.passage }}</h4>
+    <p><em>The lesson is read, the people sitting</em></p>
+    <table class="dialogue">
+        <tr>
+            <td><em>Reader</em></td>
+            <td>{{ data.intro }}</td>
+        </tr>
+    </table>
+    <div class="reading">
+        <br>
+        {{  data.reading | safe }}
+    </div>
 </div>
+
+
+{%  if  data.abbreviated_reading %}
+
+    <div id="reading-abbreviated" class="off">
+        <h4>{{ data.abbreviated_passage }}</h4>
+        <p><em>The lesson is read, the people sitting</em></p>
+        <table class="dialogue">
+            <tr>
+                <td><em>Reader</em></td>
+                <td>{{ data.abbreviated_intro }}</td>
+            </tr>
+        </table>
+        <div class="reading">
+            <br>
+            {{  data.abbreviated_reading | safe }}
+        </div>
+    </div>
+
+{% endif %}
+
 <table class="dialogue">
     <tr>
         <td><em>Reader</em></td>
-        <td>The Word of the Lord.</td>
+        <td>{{ data.closing.reader }}</td>
     </tr>
-    <tr>
-        <td><em>People</em></td>
-        <td><strong>Thanks be to God.</strong></td>
-    </tr>
+    {%  if data.closing.people %}
+        <tr>
+            <td><em>People</em></td>
+            <td><strong>{{ data.closing.people }}</strong></td>
+        </tr>
+    {%  endif %}
 </table>

@@ -49,6 +49,23 @@ class Command(BaseCommand):
         except:
             return None
 
+    def parse_abbreviated_passage(self, original_passage, verses):
+
+        verses = verses.replace(",", ", ")
+        if verses:
+            return "{}:{}".format(original_passage, verses)
+        return None
+
+    def get_abbreviated_passage(self, original_passage, verses=None):
+
+        if not verses:
+            return None
+        verses = verses.split(",")
+        passage = ""
+        for verse in verses:
+            passage = passage + self.get_passage("{}:{}".format(original_passage, verse))
+        return passage
+
     def get_passage(self, passage):
 
         passage = self.parse_passage(passage)
@@ -87,7 +104,8 @@ class Command(BaseCommand):
             day.mp_reading_1 = self.parse_passage(row[4])
             day.mp_reading_1_testament = self.get_testament(row[4])
             day.mp_reading_1_text = self.get_passage(row[4])
-            day.mp_reading_1_abbreviated = row[5]
+            day.mp_reading_1_abbreviated = self.parse_abbreviated_passage(day.mp_reading_1, row[5])
+            day.mp_reading_1_abbreviated_text = self.get_abbreviated_passage(day.mp_reading_1, row[5])
             day.mp_reading_2 = self.parse_passage(row[6])
             day.mp_reading_2_testament = self.get_testament(row[6])
             day.mp_reading_2_text = self.get_passage(row[6])
@@ -95,7 +113,8 @@ class Command(BaseCommand):
             day.ep_reading_1 = self.parse_passage(row[8])
             day.ep_reading_1_testament = self.get_testament(row[8])
             day.ep_reading_1_text = self.get_passage(row[8])
-            day.ep_reading_1_abbreviated = row[9]
+            day.ep_reading_1_abbreviated = self.parse_abbreviated_passage(day.ep_reading_1, row[9])
+            day.ep_reading_1_abbreviated_text = self.get_abbreviated_passage(day.ep_reading_1, row[9])
             day.ep_reading_2 = self.parse_passage(row[10])
             day.ep_reading_2_testament = self.get_testament(row[10])
             day.ep_reading_2_text = self.get_passage(row[10])
