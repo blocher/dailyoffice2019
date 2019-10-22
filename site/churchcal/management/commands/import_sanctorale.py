@@ -6,7 +6,7 @@ class Command(ImportCommemorationsBaseCommand):
 
     help = "Imports Episcopal sanctorale"
 
-    RANGE_NAME = "Sanctorale!A2:L700"
+    RANGE_NAME = "Sanctorale!A2:R700"
 
     def import_dates(self):
 
@@ -44,6 +44,41 @@ class Command(ImportCommemorationsBaseCommand):
                     commemoration.eve_collect = row[11]
                 except IndexError:
                     commemoration.eve_collect = None
+
+                try:
+                    commemoration.saint_name = row[12]
+                except IndexError:
+                    commemoration.saint_name = None
+
+                try:
+                    commemoration.saint_type = row[13]
+                except IndexError:
+                    commemoration.saint_type = None
+
+                try:
+                    commemoration.saint_gender = row[14]
+                except IndexError:
+                    commemoration.saint_gender = None
+
+                try:
+                    commemoration.saint_fill_in_the_blank = row[15]
+                except IndexError:
+                    commemoration.saint_fill_in_the_blank = None
+
+                try:
+                    commemoration.link_1 = row[16]
+                except IndexError:
+                    commemoration.link_1 = None
+
+                try:
+                    commemoration.link_2 = row[17]
+                except IndexError:
+                    commemoration.link_2 = None
+
+                try:
+                    commemoration.link_3 = row[18]
+                except IndexError:
+                    commemoration.link_3 = None
 
                 commemoration.save()
 

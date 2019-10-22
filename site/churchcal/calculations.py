@@ -456,9 +456,10 @@ class SetNamesAndCollects(object):
             if "PRIVILEGED_OBSERVANCE" in commemoration.rank.name:
                 previous.evening_required.pop(idx)
 
-        for idx, commemoration in enumerate(previous.evening_optional):
-            if "FERIA" in commemoration.rank.name:
-                previous.evening_optional.pop(idx)
+        if feast_copy.rank.name == "SUNDAY":
+            for idx, commemoration in enumerate(previous.evening_optional):
+                if "FERIA" in commemoration.rank.name:
+                    previous.evening_optional.pop(idx)
 
         # # print(current.primary, current.primary.pk)
         # print(self.church_calendar.dates)
