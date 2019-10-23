@@ -469,7 +469,10 @@ class SetNamesAndCollects(object):
             return False
 
         if commemoration.collect:
-            commemoration.morning_prayer_collect = commemoration.evening_prayer_collect = commemoration.collect
+
+            commemoration.morning_prayer_collect = (
+                commemoration.evening_prayer_collect
+            ) = commemoration.collect.replace(" [this day]", " this day")
             if commemoration.alternate_collect:
                 commemoration.evening_prayer_collect = commemoration.alternate_collect
 
@@ -506,10 +509,14 @@ class SetNamesAndCollects(object):
                         else:
                             commemoration.name = "{} after {}".format(week_days[calendar_date.date.weekday()], name)
                     else:
-                        commemoration.morning_prayer_collect = previous.primary.morning_prayer_collect
-                        commemoration.evening_prayer_collect = previous.primary.evening_prayer_collect
+                        commemoration.morning_prayer_collect = previous.primary.morning_prayer_collect.replace(
+                            "to be born this day of a pure virgin", "to be born of a pure virgin"
+                        )
+                        commemoration.evening_prayer_collect = previous.primary.evening_prayer_collect.replace(
+                            "to be born this day of a pure virgin", "to be born of a pure virgin"
+                        )
                         commemoration.name = "{} after {}".format(
-                            week_days[calendar_date.date.weekday()], previous.primary.name
+                            week_days[calendar_date.date.weekday()], previous.primary.name.replace("The ", "the ")
                         )
 
                     break
