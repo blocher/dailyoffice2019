@@ -4,9 +4,6 @@
     <list default="true" id="8657ce3f-a52e-4518-a963-4f09ef5b69fc" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/churchcal/calculations.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/churchcal/calculations.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/collects.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/collects.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/collects_of_the_day.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/collects_of_the_day.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/mission_collect.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/mission_collect.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -136,7 +133,7 @@
       <workItem from="1571666584155" duration="633000" />
       <workItem from="1571752290384" duration="3108000" />
       <workItem from="1571767967032" duration="4518000" />
-      <workItem from="1571795752864" duration="3174000" />
+      <workItem from="1571795752864" duration="4463000" />
     </task>
     <servers />
   </component>
