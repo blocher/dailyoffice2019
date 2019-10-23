@@ -3,9 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="8657ce3f-a52e-4518-a963-4f09ef5b69fc" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/redirect.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/redirect.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/footer.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/footer.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/office.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/office.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/churchcal/calculations.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/churchcal/calculations.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/collects.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/collects.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/collects_of_the_day.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/collects_of_the_day.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/mission_collect.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/mission_collect.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -134,7 +135,8 @@
       <workItem from="1571605748176" duration="10816000" />
       <workItem from="1571666584155" duration="633000" />
       <workItem from="1571752290384" duration="3108000" />
-      <workItem from="1571767967032" duration="2791000" />
+      <workItem from="1571767967032" duration="4518000" />
+      <workItem from="1571795752864" duration="3174000" />
     </task>
     <servers />
   </component>
@@ -206,12 +208,12 @@
     <state x="506" y="288" width="667" height="422" key="find.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1570643546418" />
     <state x="1425" y="-849" width="781" height="522" key="find.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1571763115189" />
     <state x="506" y="288" width="683" height="422" key="find.popup/0.23.1680.952@0.23.1680.952" timestamp="1571192199123" />
-    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup" timestamp="1571770993602">
+    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup" timestamp="1571798648793">
       <screen x="0" y="23" width="1680" height="952" />
     </state>
     <state x="-496" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@-1073.-1177.1920.1177" timestamp="1571175688299" />
     <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1571667135133" />
     <state x="1424" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1571764168491" />
-    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952@0.23.1680.952" timestamp="1571770993602" />
+    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952@0.23.1680.952" timestamp="1571798648793" />
   </component>
 </project>
