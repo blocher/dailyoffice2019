@@ -1,0 +1,197 @@
+        html {
+            font-size: 25px;
+        }
+
+        div.body {
+            max-width: 700px;
+            display: inline-block;
+            text-align: left;
+            padding: 1.5rem;
+            margin-bottom: 5rem;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: adobe-caslon-pro, serif;
+            font-weight: 600;
+            font-style: normal;
+            letter-spacing: 0.1rem;
+            text-align: center;
+            margin: 0.2rem;
+            padding-top: 2rem;
+        }
+
+        h1, h2, h3 {
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: 2rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+        }
+
+        h3 {
+            padding-top: 30px;
+            margin-bottom: 5px;
+            font-size: 1.2rem;
+        }
+
+        h4 {
+            margin-top: 0;
+            padding-top: 0;
+            font-family: adobe-caslon-pro, serif;
+            font-weight: 600;
+            font-style: italic;
+            font-size: 1rem;
+            line-height: 1.1rem;
+
+        }
+
+        h5 {
+            font-weight: 300;
+            text-align: right;
+            font-size: 1rem;
+            margin: 10px 0;
+        }
+
+        p {
+            font-family: 'Lusitana', serif;
+            font-weight: 300;
+            font-style: normal;
+            font-size: 1rem;
+            margin: 10px 0;
+        }
+
+        em {
+            font-family: 'Lusitana', serif;
+            font-weight: 300;
+            font-style: italic;
+            font-size: .8rem;
+        }
+
+        strong {
+            font-family: 'Lusitana', serif;
+            font-weight: 700;
+
+        }
+
+        div.psalms {
+
+            font-family: 'Lusitana', serif;
+            font-weight: 300;
+            font-style: normal;
+
+        }
+
+        p.line {
+            margin-top: 1.5em;
+        }
+
+        span.chapternum {
+            font-size: 1.5em;
+        }
+
+        sup.versnum {
+            font-size: 1.2em;
+        }
+
+        .text {
+            padding-left: 10px;
+        }
+
+        .reading h3 {
+            font-family: 'Lusitana', serif;
+            font-weight: 900;
+            font-style: normal;
+            font-size: 0.9em;
+            text-align: center;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        .reading h4 {
+            font-family: 'Lusitana', serif;
+            font-weight: 900;
+            font-style: normal;
+            font-size: 0.7em;
+            text-align: center;
+        }
+
+        table.dialogue td {
+            padding-right: 1.5rem;
+            font-family: 'Lusitana', serif;
+            font-weight: 300;
+            font-style: normal;
+            font-size: 1rem;
+        }
+
+        div.metadata {
+            text-align: center;
+        }
+
+        div.commemorations {
+            border: solid 1px grey;
+            padding: 1.3rem;
+        }
+
+        span.indent {
+            padding-left: 1rem;
+        }
+
+        p.indent {
+            margin: 0 0 0 1.1rem;
+        }
+
+        p.hanging-indent {
+            text-indent: -1rem;
+            margin: 0 0 0 1rem;
+        }
+
+        span.asterisk {
+            margin-left: 10px;
+        }
+
+        .footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+
+            border-top: 1px black solid;
+            background-color: lightgrey;
+            font-size: .8em;
+            font-weight: 300;
+            height: 6rem;
+        }
+
+        .footer-flex {
+            display: flex;
+            justify-content: center;
+            flex-wrap: nowrap;
+            align-content: space-around;
+        }
+
+        .footer-flex div {
+            flex-grow: 2;
+            border-right: 1px solid black;
+            border-bottom: 1px solid black;
+            height: 4rem;
+        }
+
+        .footer-flex div:last-child {
+            flex-grow: 2;
+            border-right: 0
+        }
+
+        .footer-flex a {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .off {
+            display: none;
+        }

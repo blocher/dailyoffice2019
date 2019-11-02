@@ -1,3 +1,12 @@
-<h3>{{  data.collect.0 }}</h3>
-<h4>{{  data.collect.1 }}</h4>
-<p>{{  data.collect.2 }} <strong>Amen.</strong></p>
+<div class="rotating">
+    <h3>{{  data.collect.0 }}</h3>
+    <h4>{{  data.collect.1 }}</h4>
+    <p>{{  data.collect.2 }} <strong>Amen.</strong></p>
+</div>
+
+<div class="fixed off">
+    {% for collect in data.fixed_collects %}
+        <h3>{{  collect.0 }}</h3>
+        <p>{{  collect.1 }} <strong>Amen.</strong></p>
+    {%  endfor %}
+</div>
