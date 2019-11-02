@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"status":"error","publicPath":"/static/office/js/","chunks":{"main":[{"name":"bundle.8ba377e0a09cb7a66fc6.js","publicPath":"/static/office/js/bundle.8ba377e0a09cb7a66fc6.js","path":"/Users/benjaminlocher/personal/projects/sermons/site/office/static/office/js/bundle.8ba377e0a09cb7a66fc6.js"}]},"error":"ModuleBuildError","message":"Module build failed (from ./node_modules/babel-loader/lib/index.js):\nError: ENOENT: no such file or directory, open '/Users/benjaminlocher/personal/projects/sermons/site/office/src/office/js/index.js'"}
+=======
+{"status":"done","publicPath":"/static/office/js/","chunks":{"main":[{"name":"bundle.8ba377e0a09cb7a66fc6.js","publicPath":"/static/office/js/bundle.8ba377e0a09cb7a66fc6.js","path":"/Users/benjaminlocher/personal/projects/sermons/site/office/static/office/js/bundle.8ba377e0a09cb7a66fc6.js"}]}}
+>>>>>>> production

@@ -38,3 +38,9 @@ class StandardOfficeDay(OfficeDay):
 class HolyDayOfficeDay(OfficeDay):
 
     commemoration = models.ForeignKey(Commemoration, on_delete=models.CASCADE)
+
+
+class ThirtyDayPsalterDay(BaseModel):
+    day = models.IntegerField()
+    mp_psalms = models.CharField(max_length=255)
+    ep_psalms = models.CharField(max_length=255)

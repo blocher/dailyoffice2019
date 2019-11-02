@@ -456,19 +456,10 @@ class SetNamesAndCollects(object):
             if "PRIVILEGED_OBSERVANCE" in commemoration.rank.name:
                 previous.evening_required.pop(idx)
 
-        for idx, commemoration in enumerate(previous.evening_optional):
-            if "FERIA" in commemoration.rank.name:
-                previous.evening_optional.pop(idx)
-
-        # # print(current.primary, current.primary.pk)
-        # print(self.church_calendar.dates)
-        # copy = calendar_date.primary.copy()
-        # print(copy)
-
-        # if copy.eve_collect:
-        #     copy.evening_prayer_collect = copy.eve_collect
-        #
-        # previous.required.append(copy)
+        if feast_copy.rank.name == "SUNDAY":
+            for idx, commemoration in enumerate(previous.evening_optional):
+                if "FERIA" in commemoration.rank.name:
+                    previous.evening_optional.pop(idx)
 
         # @TODO: resort
 
@@ -478,7 +469,10 @@ class SetNamesAndCollects(object):
             return False
 
         if commemoration.collect:
-            commemoration.morning_prayer_collect = commemoration.evening_prayer_collect = commemoration.collect
+
+            commemoration.morning_prayer_collect = (
+                commemoration.evening_prayer_collect
+            ) = commemoration.collect.replace(" [this day]", " this day")
             if commemoration.alternate_collect:
                 commemoration.evening_prayer_collect = commemoration.alternate_collect
 
@@ -515,17 +509,111 @@ class SetNamesAndCollects(object):
                         else:
                             commemoration.name = "{} after {}".format(week_days[calendar_date.date.weekday()], name)
                     else:
-                        commemoration.morning_prayer_collect = previous.primary.morning_prayer_collect
-                        commemoration.evening_prayer_collect = previous.primary.evening_prayer_collect
+                        commemoration.morning_prayer_collect = previous.primary.morning_prayer_collect.replace(
+                            "to be born this day of a pure virgin", "to be born of a pure virgin"
+                        )
+                        commemoration.evening_prayer_collect = previous.primary.evening_prayer_collect.replace(
+                            "to be born this day of a pure virgin", "to be born of a pure virgin"
+                        )
                         commemoration.name = "{} after {}".format(
-                            week_days[calendar_date.date.weekday()], previous.primary.name
+                            week_days[calendar_date.date.weekday()], previous.primary.name.replace("The ", "the ")
                         )
 
                     break
         return False
 
     def saint_collect(self, commemoration, calendar_date):
-        pass
+        if not commemoration.saint_type:
+            return False
+
+        if commemoration.saint_type == "PASTOR":
+            if commemoration.saint_gender in ["M", "F"]:
+                text = "O God, our heavenly Father, you raised up your faithful servant {} to be a {} pastor in your Church and to feed your flock: Give abundantly to all pastors the gifts of your Holy Spirit, that they may minister in your household as true servants of Christ and stewards of your divine mysteries; through Jesus Christ our Lord, who lives and reigns with you and the Holy Spirit, one God, for ever and ever.".format(
+                    commemoration.saint_name, commemoration.saint_fill_in_the_blank
+                ).replace(
+                    " ", " "
+                )
+            else:
+                text = "O God, our heavenly Father, you raised up your faithful servants {} to be {} pastors in your Church and to feed your flock: Give abundantly to all pastors the gifts of your Holy Spirit, that they may minister in your household as true servants of Christ and stewards of your divine mysteries; through Jesus Christ our Lord, who lives and reigns with you and the Holy Spirit, one God, for ever and ever.".format(
+                    commemoration.saint_name, commemoration.saint_fill_in_the_blank
+                ).replace(
+                    " ", " "
+                )
+
+        if commemoration.saint_type == "MONASTIC":
+            text = "O God, your blessed Son became poor for our sake, and chose the Cross over the kingdoms of this world: Deliver us from an inordinate love of worldly things, that we, inspired by the devotion of your servant{} {}, may seek you with singleness of heart, behold your glory by faith, and attain to the riches of your everlasting kingdom, where we shall be united with our Savior Jesus Christ; who lives and reigns with you and the Holy Spirit, one God, now and for ever. ".format(
+                "s" if commemoration.saint_gender == "P" else "", commemoration.saint_name
+            )
+
+        if commemoration.saint_type == "MARTYR":
+            text = "Almighty God, you gave your servant{} {} boldness to confess the Name of our Savior Jesus Christ before the rulers of this world, and courage to die for this faith: Grant that we may always be ready to give a reason for the hope that is in us, and to suffer gladly for the sake of our Lord Jesus Christ; who lives and reigns with you and the Holy Spirit, one God, for ever and ever. ".format(
+                "s" if commemoration.saint_gender == "P" else "", commemoration.saint_name
+            )
+
+        if commemoration.saint_type == "MISSIONARY":
+            text = (
+                "Almighty and everlasting God, you called your servant{} {} to preach the Gospel {}: Raise up in this and every land evangelists and heralds of your kingdom, that your Church may proclaim the unsearchable riches of our Savior Jesus Christ; who lives and reigns with you and the Holy Spirit, one God, now and for ever. ".format(
+                    "s" if commemoration.saint_gender == "P" else "",
+                    commemoration.saint_name,
+                    commemoration.saint_fill_in_the_blank,
+                )
+                .replace(" ", " ")
+                .replace(" :", ":")
+            )
+
+        if commemoration.saint_type == "TEACHER":
+            text = "Almighty God, you gave your servant{} {} special gifts of grace to understand and teach the truth revealed in Christ Jesus: Grant that by this teaching we may know you, the one true God, and Jesus Christ whom you have sent; who lives and reigns with you and the Holy Spirit, one God, for ever and ever.  Amen.".format(
+                "s" if commemoration.saint_gender == "P" else "", commemoration.saint_name
+            )
+
+        if commemoration.saint_type == "RENEWER":
+            text = "Almighty and everlasting God, you kindled the flame of your love in the heart of your servant{} {} to manifest your compassion and mercy to the poor and the persecuted: Grant to us, your humble servants, a like faith and power of love, that we who give thanks for {} righteous zeal may profit by {} example; through Jesus Christ our Lord, who lives and reigns with you and the Holy Spirit, one God, for ever and ever.".format(
+                "s" if commemoration.saint_gender == "P" else "",
+                commemoration.saint_name,
+                "his"
+                if commemoration.saint_gender == "M"
+                else "her"
+                if commemoration.saint_gender == "F"
+                else "their",
+                "his"
+                if commemoration.saint_gender == "M"
+                else "her"
+                if commemoration.saint_gender == "F"
+                else "their",
+            )
+
+        if commemoration.saint_type == "REFORMER":
+            text = "O God, by your grace your servant{} {}, kindled by the flame of your love, became {} burning and shining light{} in your Church, turning pride into humility and error into truth: Grant that we may be set aflame with the same spirit of love and discipline, and walk before you as children of light; through Jesus Christ our Lord, who lives and reigns with you, in the unity of the Holy Spirit, one God, now and for ever.".format(
+                "s" if commemoration.saint_gender == "P" else "",
+                commemoration.saint_name,
+                "a" if commemoration.saint_gender != "P" else "",
+                "s" if commemoration.saint_gender == "P" else "",
+            ).replace(
+                " ", " "
+            )
+
+        if commemoration.saint_type == "ECUMENIST":
+            text = "Almighty God, we give you thanks for the ministry of {}, who labored that the Church of Jesus Christ might be one: Grant that we, instructed by {} teaching and example, and knit together in unity by your Spirit, may ever stand firm upon the one foundation, which is Jesus Christ our Lord; who lives and reigns with you, in the unity of the Holy Spirit, one God, now and for ever.".format(
+                commemoration.saint_name,
+                "his"
+                if commemoration.saint_gender == "M"
+                else "her"
+                if commemoration.saint_gender == "F"
+                else "their",
+            )
+
+        if commemoration.saint_type == "SAINT_1":
+            text = "Almighty God, you have surrounded us with a great cloud of witnesses: Grant that we, encouraged by the good example of your servant{} {}, may persevere in running the race that is set before us, until at last, with {}, we attain to your eternal joy; through Jesus Christ, the pioneer and perfecter of our faith, who lives and reigns with you and the Holy Spirit, one God, for ever and ever. ".format(
+                "s" if commemoration.saint_gender == "P" else "",
+                commemoration.saint_name,
+                "him" if commemoration.saint_gender == "M" else "her" if commemoration.saint_gender == "F" else "them",
+            )
+
+        if commemoration.saint_type == "SAINT_2":
+            text = "Almighty God, by your Holy Spirit you have made us one with your saints in heaven and on earth: Grant that in our earthly pilgrimage we may always be supported by this fellowship of love and prayer, and know ourselves to be surrounded by their witness to your power and mercy; for the sake of Jesus Christ, in whom all our intercessions are acceptable through the Spirit, and who lives and reigns with you and the same Spirit, one God, for ever and ever."
+
+        if text:
+            commemoration.morning_prayer_collect = commemoration.evening_prayer_collect = text
 
     def fallback_collect(self, commemoration, calendar_date):
         commemoration.morning_prayer_collect = commemoration.evening_prayer_collect = None

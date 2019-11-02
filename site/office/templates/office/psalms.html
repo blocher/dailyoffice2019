@@ -1,4 +1,14 @@
-<h2>{{  data.heading }}</h2>
-<div class="psalms">
-    {{  data.psalms | safe }}
+<div class="psalter-sixty">
+    <h2>{{  data.heading_60 }}</h2>
+    <h4>60 Day Cycle</h4>
+    <div class="psalms 60day">
+        {{  data.psalms_60 | safe }}
+    </div>
+</div>
+<div class="psalter-thirty off">
+    <h2>{{  data.heading_30 }}</h2>
+    <h4>30 Day Cycle</h4>
+    <div class="psalms 30day">
+        {{  data.psalms_30 | safe }}
+    </div>
 </div>

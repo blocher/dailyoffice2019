@@ -1,201 +1,48 @@
+{% load static %}
+{% load render_bundle from webpack_loader %}
+
 <html>
-    <head>
-        <link rel="stylesheet" href="https://use.typekit.net/yxz6vwf.css">
-        <link href="https://fonts.googleapis.com/css?family=EB+Garamond&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css?family=Lusitana:400,700&display=swap" rel="stylesheet">
-        <style>
+<head>
+    <!-- Google Tag Manager -->
+    <script>(function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({
+            'gtm.start':
+                new Date().getTime(), event: 'gtm.js'
+        });
+        var f = d.getElementsByTagName(s)[0],
+            j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src =
+            'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-NSB92RP');</script>
+    <!-- End Google Tag Manager -->
+    <link rel="stylesheet" href="https://use.typekit.net/yxz6vwf.css">
+    <link href="https://fonts.googleapis.com/css?family=EB+Garamond&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lusitana:400,700&display=swap" rel="stylesheet">
+    {% render_bundle 'main' 'js' %}
 
-            html {
-                font-size: 22px;
-            }
+</head>
+<body>
+<!-- Google Tag Manager (noscript) -->
+<noscript>
+    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NSB92RP"
+            height="0" width="0" style="display:none;visibility:hidden"></iframe>
+</noscript>
+<!-- End Google Tag Manager (noscript) -->
 
-            div.body {
-                max-width:700px;
-                display:inline-block;
-                text-align: left;
-                padding: 1.5rem;
-            }
+{% include "office/settings.html" %}
 
-            h1, h2, h3, h4 {
-                font-family: adobe-caslon-pro, serif;
-                font-weight: 600;
-                font-style: normal;
-                letter-spacing: 0.1rem;
-                text-align: center;
-                margin: 0.2rem;
-                padding-top: 2rem;
-            }
-
-            h1, h2, h3 {
-                text-transform: uppercase;
-            }
-
-            h1 {
-                font-size: 2rem;
-            }
-
-            h2 {
-                font-size: 1.5rem;
-            }
-
-            h3 {
-                padding-top: 30px;
-                margin-bottom: 5px;
-                font-size: 1.2rem;
-            }
-
-            h4 {
-                margin-top: 0;
-                padding-top: 0;
-                font-family: adobe-caslon-pro, serif;
-                font-weight: 600;
-                font-style: italic;
-                font-size: 1rem;
-                line-height: 1.1rem;
-
-            }
-
-            h5 {
-                font-weight: 300;
-                text-align: right;
-                font-size: 1rem;
-                margin: 10px 0;
-            }
-
-            p {
-                font-family: 'Lusitana', serif;
-                font-weight: 300;
-                font-style: normal;
-                font-size: 1rem;
-                margin: 10px 0;
-            }
-
-            em {
-                font-family: 'Lusitana', serif;
-                font-weight: 300;
-                font-style: italic;
-                font-size: .8rem;
-            }
-
-            strong {
-                font-family: 'Lusitana', serif;
-                font-weight: 700;
-
-            }
-
-            div.psalms {
-
-                font-family: 'Lusitana', serif;
-                font-weight: 300;
-                font-style: normal;
-
-            }
-
-            p.line {
-                margin-top: 1.5em;
-            }
-
-            span.chapternum {
-                font-size: 1.5em;
-            }
-
-            sup.versnum {
-                font-size: 1.2em;
-            }
-
-            .text {
-                padding-left: 10px;
-            }
-
-            .reading h3 {
-                font-family: 'Lusitana', serif;
-                font-weight: 900;
-                font-style: normal;
-                font-size: 0.9em;
-                text-align:center;
-                padding: 0;
-                margin: 1rem 0;
-            }
-
-            .reading h4 {
-                font-family: 'Lusitana', serif;
-                font-weight: 900;
-                font-style: normal;
-                font-size: 0.7em;
-                text-align:center;
-            }
-
-            table.dialogue td {
-                padding-right: 1.5rem;
-                font-size: 1rem;
-            }
-
-            div.metadata {
-                text-align: center;
-            }
-            div.commemorations {
-                border: solid 1px grey;
-                padding: 1.3rem;
-            }
-
-            span.indent {
-                padding-left: 1rem;
-            }
-
-            p.indent {
-                margin :  0 0 0 1.1rem;
-            }
-
-            p.hanging-indent
-            {
-              text-indent : -1rem ;
-              margin :  0 0 0 1rem;
-            }
-
-            span.asterisk {
-                margin-left: 10px;
-            }
-
-            .footer {
-              position: fixed;
-              left: 0;
-              bottom: 0;
-              width: 100%;
-              text-align: center;
-              display:flex;
-              justify-content: center;
-              flex-wrap: nowrap;
-              align-content: space-around;
-              border-top: 1px black solid;
-                background-color: lightgrey;
-              font-size: .8em;
-              font-weight: 300;
-            }
-
-            .footer div {
-                flex-grow: 2;
-            }
-
-            .off {
-                display: none;
-            }
-
-
-
-
-
-        </style>
-    </head>
-    <body>
-        <div style="text-align:center">
-            <div class="body">
-                {%  for module in office.modules %}
-                    {%  include module.1  with data=module.0.data only %}
-                {%  endfor %}
-            </div>
-        </div>
-    </body>
-    {%  include "office/footer.html" %}
+<div style="text-align:center">
+    <div class="body">
+        {% for module in office.modules %}
+            {% include module.1  with data=module.0.data only %}
+        {% endfor %}
+    </div>
+</div>
+</body>
+{% include "office/footer.html" %}
 
 </html>
 
