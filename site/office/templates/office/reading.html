@@ -1,7 +1,7 @@
 <h2>{{  data.heading }}</h2>
 
 
-<div id="reading-full">
+<div class="full-reading">
     <h4>{{ data.passage }}</h4>
     <p><em>The lesson is read, the people sitting</em></p>
     <table class="dialogue">
@@ -16,25 +16,21 @@
     </div>
 </div>
 
-
-{%  if  data.abbreviated_reading %}
-
-    <div id="reading-abbreviated" class="off">
-        <h4>{{ data.abbreviated_passage }}</h4>
-        <p><em>The lesson is read, the people sitting</em></p>
-        <table class="dialogue">
-            <tr>
-                <td><em>Reader</em></td>
-                <td>{{ data.abbreviated_intro }}</td>
-            </tr>
-        </table>
-        <div class="reading">
-            <br>
-            {{  data.abbreviated_reading | safe }}
-        </div>
+<div class="abbreviated-reading off">
+    <h4>{{ data.abbreviated_passage }}</h4>
+    {%  if data.has_abbreviated %}<h4>(Abbreviated)</h4>{%  endif %}
+    <p><em>The lesson is read, the people sitting</em></p>
+    <table class="dialogue">
+        <tr>
+            <td><em>Reader</em></td>
+            <td>{{ data.abbreviated_intro }}</td>
+        </tr>
+    </table>
+    <div class="reading">
+        <br>
+        {{  data.abbreviated_reading | safe }}
     </div>
-
-{% endif %}
+</div>
 
 <table class="dialogue">
     <tr>

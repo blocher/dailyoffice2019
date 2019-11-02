@@ -6,16 +6,17 @@ from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 
 from churchcal.calculations import get_calendar_date
-from office.models import HolyDayOfficeDay, StandardOfficeDay
+from office.models import HolyDayOfficeDay, StandardOfficeDay, ThirtyDayPsalterDay
 from psalter.utils import get_psalms
 
 from office.utils import passage_to_citation
 
 
 class OfficeSection(object):
-    def __init__(self, date, office_readings=None):
+    def __init__(self, date, office_readings=None, thirty_day_psalter_day=None):
         self.date = date
         self.office_readings = office_readings
+        self.thirty_day_psalter_day = thirty_day_psalter_day
 
     @cached_property
     def data(self):
@@ -312,29 +313,50 @@ class Confession(OfficeSection):
 class EPPsalms(OfficeSection):
     @cached_property
     def data(self):
-        citations = self.office_readings.ep_psalms.split(",")
+        psalms_60 = self.office_readings.ep_psalms.split("or")
+        if len(psalms_60) > 1:
+            if (self.date.date.year % 2) == 0:
+                psalms_60 = psalms_60[0]
+            else:
+                psalms_60 = psalms_60[1]
+        else:
+            psalms_60 = psalms_60[0]
+
+        citations_60 = psalms_60.split(",")
+
+        psalms_30 = self.thirty_day_psalter_day.ep_psalms
+        citations_30 = psalms_30.split(",")
+
         return {
-            "heading": "The Psalm{} Appointed".format("s" if len(citations) > 1 else ""),
-            "psalms": get_psalms(self.office_readings.ep_psalms),
+            "heading_60": "The Psalm{} Appointed".format("s" if len(citations_60) > 1 else ""),
+            "psalms_60": get_psalms(psalms_60),
+            "heading_30": "The Psalm{} Appointed".format("s" if len(citations_30) > 1 else ""),
+            "psalms_30": get_psalms(psalms_30),
         }
 
 
 class MPPsalms(OfficeSection):
     @cached_property
     def data(self):
-        psalms = self.office_readings.mp_psalms.split("or")
-        if len(psalms) > 1:
+        psalms_60 = self.office_readings.mp_psalms.split("or")
+        if len(psalms_60) > 1:
             if (self.date.date.year % 2) == 0:
-                psalms = psalms[0]
+                psalms_60 = psalms_60[0]
             else:
-                psalms = psalms[1]
+                psalms_60 = psalms_60[1]
         else:
-            psalms = psalms[0]
+            psalms_60 = psalms_60[0]
 
-        citations = psalms.split(",")
+        citations_60 = psalms_60.split(",")
+
+        psalms_30 = self.thirty_day_psalter_day.mp_psalms
+        citations_30 = psalms_30.split(",")
+
         return {
-            "heading": "The Psalm{} Appointed".format("s" if len(citations) > 1 else ""),
-            "psalms": get_psalms(psalms),
+            "heading_60": "The Psalm{} Appointed".format("s" if len(citations_60) > 1 else ""),
+            "psalms_60": get_psalms(psalms_60),
+            "heading_30": "The Psalm{} Appointed".format("s" if len(citations_30) > 1 else ""),
+            "psalms_30": get_psalms(psalms_30),
         }
 
 
@@ -346,9 +368,10 @@ class EPReading1(OfficeSection):
             "intro": passage_to_citation(self.office_readings.ep_reading_1),
             "passage": self.office_readings.ep_reading_1.replace("Solomon", "Songs"),
             "reading": self.office_readings.ep_reading_1_text,
-            "abbreviated_passage": self.office_readings.ep_reading_1_abbreviated,
-            "abbreviated_reading": self.office_readings.ep_reading_1_abbreviated_text,
-            "abbreviated_intro": passage_to_citation(self.office_readings.ep_reading_1_abbreviated),
+            "abbreviated_passage": self.office_readings.ep_reading_1_abbreviated if self.office_readings.ep_reading_1_abbreviated else self.office_readings.ep_reading_1,
+            "abbreviated_reading": self.office_readings.ep_reading_1_abbreviated_text if self.office_readings.ep_reading_1_abbreviated_text else self.office_readings.ep_reading_1_text,
+            "abbreviated_intro": passage_to_citation(self.office_readings.ep_reading_1_abbreviated if self.office_readings.ep_reading_1_abbreviated else self.office_readings.ep_reading_1),
+            "has_abbreviated": True if self.office_readings.ep_reading_1_abbreviated_text else False,
             "closing": {
                 "reader": "The Word of the Lord."
                 if self.office_readings.ep_reading_1_testament != "DC"
@@ -366,6 +389,10 @@ class EPReading2(OfficeSection):
             "intro": passage_to_citation(self.office_readings.ep_reading_2),
             "passage": self.office_readings.ep_reading_2,
             "reading": self.office_readings.ep_reading_2_text,
+            "abbreviated_intro": passage_to_citation(self.office_readings.ep_reading_2),
+            "abbreviated_passage": self.office_readings.ep_reading_2,
+            "abbreviated_reading": self.office_readings.ep_reading_2_text,
+            "has_abbreviated": False,
             "closing": {"reader": "The Word of the Lord.", "people": "Thanks be to God."},
         }
 
@@ -378,9 +405,10 @@ class MPReading1(OfficeSection):
             "intro": passage_to_citation(self.office_readings.mp_reading_1),
             "passage": self.office_readings.mp_reading_1,
             "reading": self.office_readings.mp_reading_1_text,
-            "abbreviated_passage": self.office_readings.mp_reading_1_abbreviated,
-            "abbreviated_reading": self.office_readings.mp_reading_1_abbreviated_text,
-            "abbreviated_intro": passage_to_citation(self.office_readings.mp_reading_1_abbreviated),
+            "abbreviated_passage": self.office_readings.mp_reading_1_abbreviated if self.office_readings.mp_reading_1_abbreviated else self.office_readings.mp_reading_1,
+            "abbreviated_reading": self.office_readings.mp_reading_1_abbreviated_text if self.office_readings.mp_reading_1_abbreviated_text else self.office_readings.mp_reading_1_text,
+            "abbreviated_intro": passage_to_citation(self.office_readings.mp_reading_1_abbreviated if self.office_readings.mp_reading_1_abbreviated else self.office_readings.mp_reading_1),
+            "has_abbreviated": True if self.office_readings.mp_reading_1_abbreviated_text else False,
             "closing": {
                 "reader": "The Word of the Lord."
                 if self.office_readings.ep_reading_1_testament != "DC"
@@ -398,6 +426,10 @@ class MPReading2(OfficeSection):
             "intro": passage_to_citation(self.office_readings.mp_reading_2),
             "passage": self.office_readings.mp_reading_2,
             "reading": self.office_readings.mp_reading_2_text,
+            "abbreviated_intro": passage_to_citation(self.office_readings.mp_reading_2),
+            "abbreviated_passage": self.office_readings.mp_reading_2,
+            "abbreviated_reading": self.office_readings.mp_reading_2_text,
+            "has_abbreviated": False,
             "closing": {"reader": "The Word of the Lord.", "people": "Thanks be to God."},
         }
 
@@ -715,7 +747,18 @@ class EPCollects(OfficeSection):
             ),
         )
 
-        return {"collect": weekly_collects[self.date.date.weekday()]}
+        fixed_collects = (
+            (
+                "A COLLECT FOR PEACE",
+                "O God, the source of all holy desires, all good counsels, and all just works: Give to your servants that peace which the world cannot give, that our hearts may be set to obey your commandments, and that we, being defended from the fear of our enemies, may pass our time in rest and quietness; through the merits of Jesus Christ our Savior.",
+            ),
+            (
+                "A COLLECT FOR AID AGAINST PERILS",
+                "Lighten our darkness, we beseech you, O Lord; and by your great mercy defend us from all perils and dangers of this night; for the love of your only Son, our Savior Jesus Christ.",
+            ),
+        )
+
+        return {"collect": weekly_collects[self.date.date.weekday()], "fixed_collects": fixed_collects}
 
 
 class MPCollects(OfficeSection):
@@ -759,7 +802,18 @@ class MPCollects(OfficeSection):
             ),
         )
 
-        return {"collect": weekly_collects[self.date.date.weekday()]}
+        fixed_collects = (
+            (
+                "A COLLECT FOR PEACE",
+                "O God, the author of peace and lover of concord, to know you is eternal life and to serve you is perfect freedom: Defend us, your humble servants, in all assaults of our enemies; that we, surely trusting in your defense, may not fear the power of any adversaries, through the might of Jesus Christ our Lord. ",
+            ),
+            (
+                "A COLLECT FOR GRACE",
+                "O Lord, our heavenly Father, almighty and everlasting God, you have brought us safely to the beginning of this day: Defend us by your mighty power, that we may not fall into sin nor run into any danger; and that, guided by your Spirit, we may do what is righteous in your sight; through Jesus Christ our Lord.",
+            ),
+        )
+
+        return {"collect": weekly_collects[self.date.date.weekday()], "fixed_collects": fixed_collects}
 
 
 class Intercessions(OfficeSection):
@@ -818,7 +872,7 @@ class Grace(OfficeSection):
 
         if self.date.date.weekday() in (1, 4):
             return {
-                "officiant": "Glory to God whose power, working in us, can do infinitely more than we can ask or imagine: Glory to him from generation to generation in the Church, and in Christ Jesus for ever and ever",
+                "officiant": "Glory to God whose power, working in us, can do infinitely more than we can ask or imagine: Glory to him from generation to generation in the Church, and in Christ Jesus for ever and ever.",
                 "people": "Amen.",
                 "citation": "EPHESIANS 3:20-21",
             }
@@ -843,6 +897,8 @@ class Office(object):
             self.office_readings = HolyDayOfficeDay.objects.get(commemoration=self.date.primary)
         except HolyDayOfficeDay.DoesNotExist:
             self.office_readings = StandardOfficeDay.objects.get(month=self.date.date.month, day=self.date.date.day)
+
+        self.thirty_day_psalter_day = ThirtyDayPsalterDay.objects.get(day=self.date.date.day)
 
     @cached_property
     def links(self):
@@ -871,11 +927,139 @@ class Office(object):
             "current": self.office,
         }
 
-    def render(self):
-        rendering = ""
-        for module, template in self.modules:
-            rendering += render_to_string(template, module(self.date).data)
-        return rendering
+    @cached_property
+    def settings(self):
+
+        return [
+            {
+                "title": "Psalter",
+                "name": "psalter",
+                "options": [
+                    {
+                        "value": "60",
+                        "hide": ["psalter-thirty"],
+                        "show": ["psalter-sixty"],
+                        "heading": "60 Day",
+                        "text": "Pray through the psalms once every 60 days",
+                    },
+                    {
+                        "value": "30",
+                        "hide": ["psalter-sixty"],
+                        "show": ["psalter-thirty"],
+                        "heading": "30 Day",
+                        "text": "Pray through the psalms once every 30 days",
+                    },
+                ]
+            },
+
+            {
+                "title": "Reading Length",
+                "name": "reading_length",
+                "options": [
+                    {
+                        "value": "full",
+                        "hide": ["abbreviated-reading"],
+                        "show": ["full-reading"],
+                        "heading": "Full",
+                        "text": "The full readings will always be used.",
+                    },
+                    {
+                        "value": "abbreviated",
+                        "hide": ["full-reading"],
+                        "show": ["abbreviated-reading"],
+                        "heading": "Abbreviated",
+                        "text": "Suggested abbreviations, when available.",
+                    },
+                ]
+            },
+            {
+                "title": "Language Style",
+                "name": "language_style",
+                "options": [
+                    {
+                        "value": "traditional",
+                        "hide": ["contemporary"],
+                        "show": ["traditional"],
+                        "heading": "Traditional",
+                        "text": "Traditional language for the Kyrie and Our Father",
+                    },
+                    {
+                        "value": "contemporary",
+                        "hide": ["traditional"],
+                        "show": ["contemporary"],
+                        "heading": "Contemporary",
+                        "text": "Modern language for the Kyrie and Our Father",
+                    },
+                ]
+            },
+            {
+                "title": "Collects",
+                "name": "collects",
+                "options": [
+                    {
+                        "value": "rotating",
+                        "hide": ["fixed"],
+                        "show": ["rotating"],
+                        "heading": "Rotating",
+                        "text": "A different collect is said for each day of the week",
+                    },
+                    {
+                        "value": "fixed",
+                        "hide": ["rotating"],
+                        "show": ["fixed"],
+                        "heading": "Fixed",
+                        "text": "The two traditional collects are said every day",
+                    },
+                ]
+            },
+            {
+                "title": "Absolution",
+                "name": "absolution",
+                "options": [
+                    {
+                        "value": "lay",
+                        "hide": ["priest"],
+                        "show": ["lay"],
+                        "heading": "Lay Person",
+                        "text": "A prayer suitable for a deacon or lay person to read",
+                    },
+                    {
+                        "value": "priest",
+                        "hide": ["lay"],
+                        "show": ["priest"],
+                        "heading": "Priest",
+                        "text": "An absolution suitable for a priest to pronounce",
+                    },
+                ]
+            },
+            {
+                "title": "National Holidays",
+                "name": "national_holidays",
+                "options": [
+                    {
+                        "value": "us",
+                        "hide": ["canada"],
+                        "show": ["us"],
+                        "heading": "United States",
+                        "text": "United States Holidays",
+                    },
+                    {
+                        "value": "canada",
+                        "hide": ["us"],
+                        "show": ["canada"],
+                        "heading": "Canada",
+                        "text": "Canadian Holidays",
+                    },
+                    {
+                        "value": "all",
+                        "hide": [],
+                        "show": ["canada", "us"],
+                        "heading": "All",
+                        "text": "Both U.S. and Canadian Holidays",
+                    },
+                ]
+            }
+        ]
 
 
 class EveningPrayer(Office):
@@ -892,7 +1076,7 @@ class EveningPrayer(Office):
             (Confession(self.date), "office/confession.html"),
             (Invitatory(self.date), "office/invitatory.html"),
             (Hymn(self.date), "office/evening_prayer/hymn.html"),
-            (EPPsalms(self.date, self.office_readings), "office/psalms.html"),
+            (EPPsalms(self.date, self.office_readings, self.thirty_day_psalter_day), "office/psalms.html"),
             (EPReading1(self.date, self.office_readings), "office/reading.html"),
             (EPCanticle1(self.date, self.office_readings), "office/evening_prayer/canticle_1.html"),
             (EPReading2(self.date, self.office_readings), "office/reading.html"),
@@ -918,7 +1102,6 @@ class MorningPrayer(Office):
 
     @cached_property
     def modules(self):
-        invitatory = MPInvitatory(self.date, self.office_readings)
         return [
             (MPHeading(self.date, self.office_readings), "office/heading.html"),
             (MPCommemorationListing(self.date, self.office_readings), "office/commemoration_listing.html"),
@@ -926,7 +1109,7 @@ class MorningPrayer(Office):
             (Confession(self.date, self.office_readings), "office/confession.html"),
             (Invitatory(self.date, self.office_readings), "office/invitatory.html"),
             (MPInvitatory(self.date, self.office_readings), "office/morning_prayer/mpinvitatory.html"),
-            (MPPsalms(self.date, self.office_readings), "office/psalms.html"),
+            (MPPsalms(self.date, self.office_readings, self.thirty_day_psalter_day), "office/psalms.html"),
             (MPReading1(self.date, self.office_readings), "office/reading.html"),
             (MPCanticle1(self.date, self.office_readings), "office/canticle.html"),
             (MPReading2(self.date, self.office_readings), "office/reading.html"),

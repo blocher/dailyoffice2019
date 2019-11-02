@@ -1,0 +1,36 @@
+<div>
+    <a href="#" class="toggle-settings">Settings</a>
+</div>
+<div id="settings" class="off">
+    <form class="form">
+
+        <h1>Settings</h1>
+
+        {%  for setting in office.settings %}
+
+            <h2>{{  setting.title }}</h2>
+            <section>
+                {%  for option in setting.options %}
+                    <div>
+                        <input
+                                type="radio"
+                                class="settings-radio"
+                                id="setting_{{ setting.name }}_{{ option.value }}"
+                                name="setting_{{ setting.name }}"
+                                value="{{ option.value }}"
+                                data-class_to_hide="{%  for cls in option.hide %}{{ cls }} {% endfor %}"
+                                data-class_to_show="{%  for cls in option.show %}{{ cls }} {% endfor %}"
+                                {% if forloop.first %}checked{% endif %}
+                        >
+                        <label for="setting_{{ setting.name }}_{{ option.value }}">
+                            <h2>{{ option.heading }}</h2>
+                            <p>{{ option.text }}</p>
+                        </label>
+                    </div>
+                {%  endfor %}
+            </section>
+
+        {%  endfor %}
+
+    </form>
+</div>
