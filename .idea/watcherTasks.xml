@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="ProjectTasksOptions">
+  <component name="ProjectTasksOptions" suppressed-tasks="SCSS">
     <TaskOptions isEnabled="true">
       <option name="arguments" value="--target-version=py37 --line-length=119 $FilePath$" />
       <option name="checkSyntaxErrors" value="true" />
@@ -34,7 +34,7 @@
         <array />
       </option>
       <option name="outputFromStdout" value="false" />
-      <option name="program" value="$ProjectFileDir$/client/node_modules/prettier/bin-prettier.js" />
+      <option name="program" value="$ProjectFileDir$/site/node_modules/prettier/bin-prettier.js" />
       <option name="runOnExternalChanges" value="true" />
       <option name="scopeName" value="Django" />
       <option name="trackOnlyRoot" value="false" />

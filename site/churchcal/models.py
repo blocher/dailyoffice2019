@@ -66,6 +66,9 @@ class Commemoration(BaseModel):
     eve_collect = models.TextField(blank=True, null=True)
     color_notes = models.CharField(max_length=256, null=True, blank=True)
     calendar = models.ForeignKey(Calendar, on_delete=models.CASCADE, null=False, blank=False)
+    link_1 = models.URLField(null=True, blank=True)
+    link_2 = models.URLField(null=True, blank=True)
+    link_3 = models.URLField(null=True, blank=True)
 
     def _year_from_advent_year(self, year, month, day):
 
@@ -108,6 +111,29 @@ class Commemoration(BaseModel):
 class SanctoraleCommemoration(Commemoration):
     month = models.PositiveSmallIntegerField()
     day = models.PositiveSmallIntegerField()
+    saint_name = models.CharField(max_length=256, null=True, blank=True)
+    saint_type = models.CharField(
+        max_length=256,
+        null=True,
+        blank=True,
+        choices=(
+            ("PASTOR", "OF A PASTOR"),
+            ("MONASTIC", "OF A MONASTIC OR RELIGIOUS"),
+            ("MARTYR", "OF A MARTYR"),
+            ("MISSIONARY", "OF A MISSIONARY OR EVANGELIST"),
+            ("TEACHER", "OF A TEACHER OF THE FAITH"),
+            ("RENEWER", "OF A RENEWER OF SOCIETY"),
+            ("REFORMER", "OF A REFORMER OF THE CHURCH"),
+            ("SAINT_1", "OF ANY COMMEMORATION 1"),
+            ("SAINT_2", "OF ANY COMMEMORATION 2"),
+            ("ECUMENIST", "OF AN ECUMENIST"),
+        ),
+    )
+
+    saint_gender = models.CharField(
+        max_length=1, null=True, blank=True, choices=(("M", "Male"), ("F", "Female"), ("P", "Plural"))
+    )
+    saint_fill_in_the_blank = models.CharField(max_length=256, null=True, blank=True)
 
     def initial_date(self, advent_year):
         year = self._year_from_advent_year(advent_year, self.month, self.day)
