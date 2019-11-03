@@ -1,5 +1,6 @@
         html {
             font-size: 25px;
+            -webkit-text-size-adjust:none;
         }
 
         div.body {
@@ -26,6 +27,7 @@
 
         h1 {
             font-size: 2rem;
+            line-height: 2.1rem;
         }
 
         h2 {
@@ -70,7 +72,7 @@
             font-family: 'Lusitana', serif;
             font-weight: 300;
             font-style: italic;
-            font-size: .8rem;
+            font-size: .6rem;
         }
 
         strong {
@@ -127,6 +129,8 @@
             font-weight: 300;
             font-style: normal;
             font-size: 1rem;
+            margin: 10px 0;
+            line-height: 1.5rem;
         }
 
         div.metadata {
@@ -229,6 +233,10 @@
             text-align: center;
           }
 
+        }
 
-
+        .feedback {
+          margin-top: 3rem;
+          padding: 1rem;
+          border: 1px solid;
         }
