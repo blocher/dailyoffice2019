@@ -1,5 +1,14 @@
-{%  for name, collect in data.collects.items %}
+{%  for name, collect, rank in data.collects %}
+    {%  if rank == "NATIONAL_DAY_UNITED_STATES" %}
+        <div class="us">
+    {%  endif  %}
+    {%  if rank == "NATIONAL_DAY_CANADA" %}
+        <div class="canada">
+    {%  endif  %}
     <h3>Collect of the Day</h3>
     <h4>{{ name }}</h4>
     <p>{{  collect }} <strong>Amen.</strong></p>
+    {%  if rank == "NATIONAL_DAY_UNITED_STATES" or rank == "NATIONAL_DAY_CANADA" %}
+        </div>
+    {%  endif  %}
 {%  endfor  %}

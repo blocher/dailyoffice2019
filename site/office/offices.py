@@ -661,6 +661,11 @@ class Suffrages(OfficeSection):
 class EPCollectsOfTheDay(OfficeSection):
     @cached_property
     def data(self):
+        print( {
+                commemoration.name: commemoration.evening_prayer_collect.replace(" Amen.", "")
+                for commemoration in self.date.all_evening
+                if commemoration.evening_prayer_collect
+            })
         return {
             "collects": {
                 commemoration.name: commemoration.evening_prayer_collect.replace(" Amen.", "")
@@ -674,11 +679,13 @@ class MPCollectsOfTheDay(OfficeSection):
     @cached_property
     def data(self):
         return {
-            "collects": {
-                commemoration.name: commemoration.morning_prayer_collect.replace(" Amen.", "")
+            "collects": (
+                (commemoration.name,
+                commemoration.morning_prayer_collect.replace(" Amen.", ""),
+                commemoration.rank.name)
                 for commemoration in self.date.all
                 if commemoration.morning_prayer_collect
-            }
+                )
         }
 
 

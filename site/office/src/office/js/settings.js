@@ -11,19 +11,23 @@ function localStorageExists() {
 
 const settings = () => {
   const applySettingFromElement = element => {
-    let class_to_hide = element.dataset.class_to_hide;
-    let class_to_show = element.dataset.class_to_show;
+    let class_to_hide = element.dataset.class_to_hide.split(',');
+    let class_to_show = element.dataset.class_to_show.split(',');
 
-    Array.from(document.getElementsByClassName(class_to_hide)).forEach(
-      (element, element_index) => {
-        element.classList.add("off");
-      }
-    );
-    Array.from(document.getElementsByClassName(class_to_show)).forEach(
-      (element, element_index) => {
-        element.classList.remove("off");
-      }
-    );
+    class_to_hide.forEach((value, idx) =>{
+      Array.from(document.getElementsByClassName(value)).forEach(
+          (element, element_index) => {
+            element.classList.add("off");
+          }
+      );
+    });
+    class_to_show.forEach((value, idx) =>{
+      Array.from(document.getElementsByClassName(value)).forEach(
+          (element, element_index) => {
+            element.classList.remove("off");
+          }
+      );
+    });
   };
 
   const getSettingsFromStorage = () => {
