@@ -26,13 +26,13 @@ class OfficeSection(object):
 class EPHeading(OfficeSection):
     @cached_property
     def data(self):
-        return {"heading": "Daily Evening Prayer", "calendar_date": self.date}
+        return {"heading": mark_safe("Daily<br>Evening Prayer"), "calendar_date": self.date}
 
 
 class MPHeading(OfficeSection):
     @cached_property
     def data(self):
-        return {"heading": "Daily Morning Prayer", "calendar_date": self.date}
+        return {"heading": mark_safe("Daily<br>Morning Prayer"), "calendar_date": self.date}
 
 
 class MPCommemorationListing(OfficeSection):
@@ -694,12 +694,15 @@ class EPMissionCollect(OfficeSection):
 
         if self.date.date.weekday() == 0 or self.date.date.weekday() == 3:
             collect = mission_collects[0]
+            subheading = "I"
         elif self.date.date.weekday() == 1 or self.date.date.weekday() == 4 or self.date.date.weekday() == 6:
             collect = mission_collects[1]
+            subheading = "II"
         elif self.date.date.weekday() == 2 or self.date.date.weekday() == 5:
             collect = mission_collects[1]
+            subheading = "III"
 
-        return {"heading": "Prayer for Mission", "collect": collect}
+        return {"heading": "A Collect for Mission", "collect": collect, "subheading": subheading}
 
 
 class MPMissionCollect(OfficeSection):
@@ -714,12 +717,15 @@ class MPMissionCollect(OfficeSection):
 
         if self.date.date.weekday() == 0 or self.date.date.weekday() == 3:
             collect = mission_collects[0]
+            subheading = "I"
         elif self.date.date.weekday() == 1 or self.date.date.weekday() == 4 or self.date.date.weekday() == 6:
             collect = mission_collects[1]
+            subheading = "II"
         elif self.date.date.weekday() == 2 or self.date.date.weekday() == 5:
             collect = mission_collects[1]
+            subheading = "III"
 
-        return {"heading": "Prayer for Mission", "collect": collect}
+        return {"heading": "A Collect for Mission", "collect": collect, "subheading": subheading}
 
 
 class EPCollects(OfficeSection):
@@ -855,21 +861,7 @@ class Chrysostom(OfficeSection):
 
 
 class Dismissal(OfficeSection):
-    @cached_property
-    def data(self):
 
-        officiant = "Let us bless the Lord."
-        people = "Thanks be to God."
-
-        if self.date.season.name == "Eastertide":
-
-            officiant = "{} Alleluia, alleluia.".format(officiant)
-            people = "{} Alleluia, alleluia.".format(people)
-
-        return {"heading": "Dismissal", "officiant": officiant, "people": people}
-
-
-class Grace(OfficeSection):
     def get_grace(self):
 
         if self.date.date.weekday() in (6, 2, 5):
@@ -895,7 +887,18 @@ class Grace(OfficeSection):
 
     @cached_property
     def data(self):
-        return {"heading": "The Grace", "grace": self.get_grace()}
+
+        officiant = "Let us bless the Lord."
+        people = "Thanks be to God."
+
+        if self.date.season.name == "Eastertide":
+
+            officiant = "{} Alleluia, alleluia.".format(officiant)
+            people = "{} Alleluia, alleluia.".format(people)
+
+
+        return {"heading": "Dismissal", "officiant": officiant, "people": people, "grace": self.get_grace()}
+
 
 
 # ==== Offices
@@ -1106,8 +1109,7 @@ class EveningPrayer(Office):
             (Intercessions(self.date, self.office_readings), "office/intercessions.html"),
             (GeneralThanksgiving(self.date, self.office_readings), "office/general_thanksgiving.html"),
             (Chrysostom(self.date, self.office_readings), "office/chrysostom.html"),
-            (Dismissal(self.date, self.office_readings), "office/dismissal.html"),
-            (Grace(self.date, self.office_readings), "office/grace.html"),
+            (Dismissal(self.date, self.office_readings), "office/dismissal.html"),\
         ]
 
 
@@ -1140,5 +1142,4 @@ class MorningPrayer(Office):
             (GeneralThanksgiving(self.date, self.office_readings), "office/general_thanksgiving.html"),
             (Chrysostom(self.date, self.office_readings), "office/chrysostom.html"),
             (Dismissal(self.date, self.office_readings), "office/dismissal.html"),
-            (Grace(self.date, self.office_readings), "office/grace.html"),
         ]
