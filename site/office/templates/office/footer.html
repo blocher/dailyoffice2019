@@ -1,20 +1,30 @@
-    <div class="footer">
-<div class="footer-flex">
+<div class="footer">
+    <div class="footer-flex">
         <div><strong><a href="{{ office.links.yesterday.link }}">&#8592; {{ office.links.yesterday.label }}</a></strong></div>
+        <p><strong>{{ office.links.date }}</strong></p>
+        <div><strong><a href="{{ office.links.tomorrow.link }}">{{ office.links.tomorrow.label }} &#8594;</a></strong></div>
+    </div>
+    <div class="footer-flex">
         {%  if office.links.current != 'morning_prayer' %}
-            <div><a href="{{ office.links.morning_prayer.link }}">{{ office.links.morning_prayer.label }}</a></div>
+            <div><a href="{{ office.links.morning_prayer.link }}"><i class="fal fa-sunrise"></i>{{ office.links.morning_prayer.label }}</a></div>
         {%  else %}
-            <div>{{ office.links.morning_prayer.label }}</div>
+            <div><i class="fas fa-sunrise"></i>{{ office.links.morning_prayer.label | upper }}</div>
         {% endif %}
         {%  if office.links.current != 'evening_prayer' %}
-            <div><a href="{{ office.links.evening_prayer.link }}">{{ office.links.evening_prayer.label }}</a></div>
+            <div><a href="{{ office.links.evening_prayer.link }}"><i class="fal fa-sunset"></i>{{ office.links.evening_prayer.label }}</a></div>
         {%  else %}
-            <div>{{ office.links.evening_prayer.label }}</div>
+            <div><i class="fas fa-sunset"></i>{{ office.links.evening_prayer.label | upper }}</div>
         {% endif %}
-        <div><strong><a href="{{ office.links.tomorrow.link }}">{{ office.links.tomorrow.label }} &#8594;</a></strong></div>
-</div>
-        <div>
-            <em><small>Feedback? Feature requests? Rubric, calendar, or content errors? Email <a href="mailto:feedback@dailyoffice2019.com">feedback@dailyoffice2019.com</a></small></em>
-        </div>
-
     </div>
+
+
+</div>
+{#        <div>#}
+{#            <em><small>Feedback? Feature requests? Rubric, calendar, or content errors? Email <a href="mailto:feedback@dailyoffice2019.com">feedback@dailyoffice2019.com</a></small></em>#}
+{#        </div>#}
+{##}
+{#    </div>#}
+{##}
+{##}
+{#<div><strong><a href="{{ office.links.tomorrow.link }}">{{ office.links.tomorrow.label }} &#8594;</a></strong></div>#}
+{#<div><strong><a href="{{ office.links.yesterday.link }}">&#8592; {{ office.links.yesterday.label }}</a></strong></div>#}

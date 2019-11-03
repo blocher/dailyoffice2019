@@ -926,11 +926,11 @@ class Office(object):
         return {
             "yesterday": {
                 "label": yesterday.strftime("%a"),
-                "link": reverse("evening_prayer", args=[yesterday.year, yesterday.month, yesterday.day]),
+                "link": reverse(self.office, args=[yesterday.year, yesterday.month, yesterday.day]),
             },
             "tomorrow": {
                 "label": tomorrow.strftime("%a"),
-                "link": reverse("morning_prayer", args=[tomorrow.year, tomorrow.month, tomorrow.day]),
+                "link": reverse(self.office, args=[tomorrow.year, tomorrow.month, tomorrow.day]),
             },
             "morning_prayer": {
                 "label": "Morning Prayer",
@@ -941,6 +941,7 @@ class Office(object):
                 "link": reverse("evening_prayer", args=[today.year, today.month, today.day]),
             },
             "current": self.office,
+            "date": today.strftime("%A %B %-d, %Y")
         }
 
     @cached_property
