@@ -2,8 +2,15 @@
     <h4>{{ data.heading }}</h4>
 
     {%  for commemoration in data.commemorations %}
-
-        <p><strong>{{  commemoration.name  }}{% if commemoration.transferred %} (Transferred) {% endif %}</strong><br><small>Color: {{ commemoration.color }} {% if commemoration.alternate_color %}or {{ commemoration.alternate_color }}{%  endif %} &bull; Rank: {{  commemoration.rank.formatted_name }}</small></p>
-
+        {%  if commemoration.rank.name == "NATIONAL_DAY_UNITED_STATES" %}
+            <div class="us">
+        {%  endif  %}
+        {%  if commemoration.rank.name == "NATIONAL_DAY_CANADA" %}
+            <div class="canada">
+        {%  endif  %}
+            <p><strong>{{  commemoration.name  }}{% if commemoration.transferred %} (Transferred) {% endif %}</strong><br><small>Color: {{ commemoration.color }} {% if commemoration.alternate_color %}or {{ commemoration.alternate_color }}{%  endif %} &bull; Rank: {{  commemoration.rank.formatted_name }}</small></p>
+        {%  if commemoration.rank.name == "NATIONAL_DAY_UNITED_STATES" or commemoration.rank.name == "NATIONAL_DAY_CANADA" %}
+            </div>
+        {%  endif  %}
     {%  endfor %}
 </div>

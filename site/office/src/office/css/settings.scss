@@ -1,8 +1,12 @@
 div#settings {
 
-
+  width: 100%;
   max-width: 700px;
   margin: auto;
+
+  em {
+      line-height: .8rem;
+    }
 
 
   section {
@@ -21,6 +25,7 @@ div#settings {
       font-size: .85rem;
       margin: 0;
       font-weight: 300;
+      line-height: 1rem;
     }
 
   }
@@ -94,7 +99,6 @@ div#settings {
   p {
     font-weight: 900;
   }
-
 
   @media only screen and (max-width: 700px) {
     section {

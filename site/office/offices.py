@@ -433,6 +433,45 @@ class MPReading1(OfficeSection):
             },
         }
 
+class MPAlternateReading1(OfficeSection):
+    @cached_property
+    def data(self):
+        if self.date.office_year == 1:
+            module = MPReading1(self.date, self.office_readings)
+            return module.data
+
+        module = EPReading1(self.date, self.office_readings)
+        return module.data
+
+class MPAlternateReading2(OfficeSection):
+    @cached_property
+    def data(self):
+        if self.date.office_year == 1:
+            module = MPReading2(self.date, self.office_readings)
+            return module.data
+
+        module = EPReading2(self.date, self.office_readings)
+        return module.data
+
+class EPAlternateReading1(OfficeSection):
+    @cached_property
+    def data(self):
+        if self.date.office_year == 2:
+            module = EPReading1(self.date, self.office_readings)
+            return module.data
+
+        module = MPReading1(self.date, self.office_readings)
+        return module.data
+
+class EPAlternateReading2(OfficeSection):
+    @cached_property
+    def data(self):
+        if self.date.office_year == 2:
+            module = EPReading2(self.date, self.office_readings)
+            return module.data
+
+        module = MPReading2(self.date, self.office_readings)
+        return module.data
 
 class MPReading2(OfficeSection):
     @cached_property
@@ -661,17 +700,14 @@ class Suffrages(OfficeSection):
 class EPCollectsOfTheDay(OfficeSection):
     @cached_property
     def data(self):
-        print( {
-                commemoration.name: commemoration.evening_prayer_collect.replace(" Amen.", "")
-                for commemoration in self.date.all_evening
-                if commemoration.evening_prayer_collect
-            })
         return {
-            "collects": {
-                commemoration.name: commemoration.evening_prayer_collect.replace(" Amen.", "")
-                for commemoration in self.date.all_evening
+            "collects": (
+                (commemoration.name,
+                 commemoration.evening_prayer_collect.replace(" Amen.", ""),
+                 commemoration.rank.name)
+                for commemoration in self.date.all
                 if commemoration.evening_prayer_collect
-            }
+            )
         }
 
 
@@ -959,7 +995,7 @@ class Office(object):
 
         return [
             {
-                "title": "Psalter",
+                "title": "Psalter Cycle",
                 "name": "psalter",
                 "options": [
                     {
@@ -975,6 +1011,26 @@ class Office(object):
                         "show": ["psalter-thirty"],
                         "heading": "30 Day",
                         "text": "Pray through the psalms once every 30 days",
+                    },
+                ],
+            },
+            {
+                "title": "Reading Cycle",
+                "name": "reading_cycle",
+                "options": [
+                    {
+                        "value": "1",
+                        "hide": ["alternate-reading"],
+                        "show": ["main-reading"],
+                        "heading": "One Year",
+                        "text": mark_safe("Read through most of the bible each year. (Use if you pray <strong>both</strong> morning and evening prayer)"),
+                    },
+                    {
+                        "value": "2",
+                        "hide": ["main-reading"],
+                        "show": ["alternate-reading"],
+                        "heading": "Two Year",
+                        "text": mark_safe("Read through most of the bible in two years. (Use if you pray <strong>only one</strong> of morning and evening prayer)"),
                     },
                 ],
             },
@@ -1059,6 +1115,46 @@ class Office(object):
                 ],
             },
             {
+                "title": "General Thanksgiving",
+                "name": "general_thanksgiving",
+                "options": [
+                    {
+                        "value": "on",
+                        "hide": [],
+                        "show": ["general_thanksgiving"],
+                        "heading": "On",
+                        "text": "Add the prayer of general thanksgiving to the end of the office",
+                    },
+                    {
+                        "value": "off",
+                        "hide": ["general_thanksgiving"],
+                        "show": [""],
+                        "heading": "Off",
+                        "text": "Hide the prayer of general thanksgiving to the end of the office",
+                    },
+                ],
+            },
+            {
+                "title": "Prayer of St. John Chrysostom",
+                "name": "chrysostom",
+                "options": [
+                    {
+                        "value": "on",
+                        "hide": [],
+                        "show": ["chrysostom"],
+                        "heading": "On",
+                        "text": "For use when praying in groups of two or more",
+                    },
+                    {
+                        "value": "off",
+                        "hide": ["chrysostom"],
+                        "show": [""],
+                        "heading": "Off",
+                        "text": "For when praying individually",
+                    },
+                ],
+            },
+            {
                 "title": "National Holidays",
                 "name": "national_holidays",
                 "options": [
@@ -1103,9 +1199,11 @@ class EveningPrayer(Office):
             (Invitatory(self.date), "office/invitatory.html"),
             (Hymn(self.date), "office/evening_prayer/hymn.html"),
             (EPPsalms(self.date, self.office_readings, self.thirty_day_psalter_day), "office/psalms.html"),
-            (EPReading1(self.date, self.office_readings), "office/reading.html"),
+            (EPReading1(self.date, self.office_readings), "office/main_reading.html"),
+            (EPAlternateReading1(self.date, self.office_readings), "office/alternate_reading.html"),
             (EPCanticle1(self.date, self.office_readings), "office/evening_prayer/canticle_1.html"),
-            (EPReading2(self.date, self.office_readings), "office/reading.html"),
+            (EPReading2(self.date, self.office_readings), "office/main_reading.html"),
+            (EPAlternateReading2(self.date, self.office_readings), "office/alternate_reading.html"),
             (EPCanticle2(self.date, self.office_readings), "office/evening_prayer/canticle_2.html"),
             (Creed(self.date, self.office_readings), "office/creed.html"),
             (Prayers(self.date, self.office_readings), "office/prayers.html"),
@@ -1135,9 +1233,11 @@ class MorningPrayer(Office):
             (Invitatory(self.date, self.office_readings), "office/invitatory.html"),
             (MPInvitatory(self.date, self.office_readings), "office/morning_prayer/mpinvitatory.html"),
             (MPPsalms(self.date, self.office_readings, self.thirty_day_psalter_day), "office/psalms.html"),
-            (MPReading1(self.date, self.office_readings), "office/reading.html"),
+            (MPReading1(self.date, self.office_readings), "office/main_reading.html"),
+            (MPAlternateReading1(self.date, self.office_readings), "office/alternate_reading.html"),
             (MPCanticle1(self.date, self.office_readings), "office/canticle.html"),
-            (MPReading2(self.date, self.office_readings), "office/reading.html"),
+            (MPReading2(self.date, self.office_readings), "office/main_reading.html"),
+            (MPAlternateReading2(self.date, self.office_readings), "office/alternate_reading.html"),
             (MPCanticle2(self.date, self.office_readings), "office/canticle.html"),
             (Creed(self.date, self.office_readings), "office/creed.html"),
             (Prayers(self.date, self.office_readings), "office/prayers.html"),

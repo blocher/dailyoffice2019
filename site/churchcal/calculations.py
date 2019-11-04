@@ -12,7 +12,7 @@ import copy
 
 
 class CalendarDate(object):
-    def __init__(self, date, calendar):
+    def __init__(self, date, calendar, year):
 
         self.date = date
         self.calendar = calendar
@@ -23,6 +23,8 @@ class CalendarDate(object):
         self.finalized = False
 
         self.season = None
+
+        self.year = year
 
     def _find_proper(self):
         date = datetime.strptime("2019-{}-{}".format(self.date.month, self.date.day), "%Y-%m-%d").date()
@@ -47,6 +49,12 @@ class CalendarDate(object):
             return self._find_proper()
 
         return None
+
+    @cached_property
+    def office_year(self):
+
+        return 1 if self.year.start_year % 2 == 0 else 2
+
 
     FAST_NONE = 0
     FAST_PARTIAL = 1
@@ -267,7 +275,7 @@ class ChurchYear(object):
         # create each date
         for single_date in self.daterange(start_date, end_date):
             name = single_date.strftime("%Y-%m-%d")
-            self.dates[name] = CalendarDate(single_date, calendar=self.calendar)
+            self.dates[name] = CalendarDate(single_date, calendar=self.calendar, year=self)
 
         # add commemorations to date
         commemorations = (
