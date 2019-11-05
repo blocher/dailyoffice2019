@@ -8,7 +8,8 @@ from indexed import IndexedOrderedDict
 
 from .utils import advent, week_days
 from churchcal.models import Commemoration, FerialCommemoration, Proper, Season, Calendar, CommemorationRank
-import copy
+
+from django.core.cache import cache
 
 
 class CalendarDate(object):
@@ -706,5 +707,11 @@ def get_calendar_date(date_string):
     date = to_date(date_string)
     advent_start = advent(date.year)
     year = date.year if date >= advent_start else date.year - 1
-    year = ChurchYear(year)
-    return year.get_date(date_string)
+    church_year = cache.get(str(year))
+    if not church_year:
+        print('not_cached')
+        church_year = ChurchYear(year)
+        cache.set(str(year), church_year)
+    else:
+        print('cached')
+    return church_year.get_date(date_string)
