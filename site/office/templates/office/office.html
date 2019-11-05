@@ -1,61 +1,23 @@
+{% extends 'base.html' %}
 {% load static %}
 {% load render_bundle from webpack_loader %}
 
-<html>
-<head>
-    <!-- Google Tag Manager -->
-    <script>(function (w, d, s, l, i) {
-        w[l] = w[l] || [];
-        w[l].push({
-            'gtm.start':
-                new Date().getTime(), event: 'gtm.js'
-        });
-        var f = d.getElementsByTagName(s)[0],
-            j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : '';
-        j.async = true;
-        j.src =
-            'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-        f.parentNode.insertBefore(j, f);
-    })(window, document, 'script', 'dataLayer', 'GTM-NSB92RP');</script>
-    <!-- End Google Tag Manager -->
-    <link rel="stylesheet" href="https://use.typekit.net/yxz6vwf.css">
-    <link href="https://fonts.googleapis.com/css?family=EB+Garamond&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Lusitana:400,700&display=swap" rel="stylesheet">
-    {% render_bundle 'main' 'js' %}
 
-</head>
-<body>
-<!-- Google Tag Manager (noscript) -->
-<noscript>
-    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NSB92RP"
-            height="0" width="0" style="display:none;visibility:hidden"></iframe>
-</noscript>
-<!-- End Google Tag Manager (noscript) -->
-
-
-
-<div style="text-align:center">
-    <div class="menu">
-        <a href="#" class="toggle-settings menu-button"><i class="fal fa-cog"></i> <span class="first-letter">S</span>ettings</a>
-        <a href="#" class="toggle-settings menu-button off"><i class="fal fa-bible"></i> <span class="first-letter">P</span>ray</a>
-    </div>
-    <div class="body">
-        {% include "office/settings.html" %}
-        <div id="office">
-            {% for module in office.modules %}
-                {% include module.1  with data=module.0.data only %}
-            {% endfor %}
+{% block content %}
+    <div style="text-align:center">
+        <div class="menu">
+            <a href="#" class="toggle-settings menu-button"><i class="fal fa-cog"></i> <span class="first-letter">S</span>ettings</a>
+            <a href="#" class="toggle-settings menu-button off"><i class="fal fa-bible"></i> <span class="first-letter">P</span>ray</a>
         </div>
-        <p class="feedback"><small><strong>Thanks for praying with us!</strong> <em>We welcome your feedback or feature requests. We also would appreciate if you report any rubric, calendar, or content errors. Email <a href="mailto:feedback@dailyoffice2019.com">feedback@dailyoffice2019.com</a>. May God bless you!</em></small></p>
+        <div class="body">
+            {% include "office/settings.html" %}
+            <div id="office">
+                {% for module in office.modules %}
+                    {% include module.1  with data=module.0.data only %}
+                {% endfor %}
+            </div>
+            <p class="feedback"><small><strong>Thanks for praying with us!</strong> <em>We welcome your feedback or feature requests. We also would appreciate if you report any rubric, calendar, or content errors. Email <a href="mailto:feedback@dailyoffice2019.com">feedback@dailyoffice2019.com</a>. May God bless you!</em></small></p>
+        </div>
     </div>
-</div>
-</body>
-{% include "office/footer.html" %}
-
-</html>
-
-
-<style>
-
-</style>
-
+    {% include "office/footer.html" %}
+{%  endblock %}

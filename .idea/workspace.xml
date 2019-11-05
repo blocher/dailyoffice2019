@@ -2,17 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4d3b96da-e02b-4ac5-80bf-e1b5c662734c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/site/office/templates/office/alternate_reading.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/churchcal/calculations.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/churchcal/calculations.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/offices.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/offices.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/src/office/css/office.scss" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/css/office.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/src/office/css/settings.scss" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/css/settings.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/chrysostom.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/chrysostom.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/commemoration_listing.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/commemoration_listing.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/general_thanksgiving.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/general_thanksgiving.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/settings.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/settings.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/src/office/js/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/js/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/src/office/js/redirect.js" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/js/redirect.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/redirect.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/redirect.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/office.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/office.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/webpack-stats.json" beforeDir="false" afterPath="$PROJECT_DIR$/site/webpack-stats.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/website/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/settings.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,18 +66,18 @@
     <property name="typescript.add.unambiguous.imports.on.the.fly" value="true" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/site/office/templates" />
+      <recent name="$PROJECT_DIR$/site/office/src/office" />
+      <recent name="$PROJECT_DIR$/site/office" />
+      <recent name="$PROJECT_DIR$/site" />
+      <recent name="$PROJECT_DIR$/site/office/templates/office" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/site" />
       <recent name="$PROJECT_DIR$/site/website/static" />
       <recent name="$USER_HOME$" />
       <recent name="~/Desktop" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/site/office/src/office" />
-      <recent name="$PROJECT_DIR$/site/office" />
-      <recent name="$PROJECT_DIR$/site" />
-      <recent name="$PROJECT_DIR$/site/office/templates/office" />
-      <recent name="$PROJECT_DIR$/site/office/static/office/js" />
     </key>
   </component>
   <component name="SvnConfiguration">
@@ -154,7 +152,7 @@
       <workItem from="1572037118843" duration="4660000" />
       <workItem from="1572444538737" duration="4269000" />
       <workItem from="1572634786991" duration="13313000" />
-      <workItem from="1572735100188" duration="18755000" />
+      <workItem from="1572735100188" duration="21673000" />
     </task>
     <servers />
   </component>
@@ -238,10 +236,10 @@
     </state>
     <state x="1340" y="-1003" key="scopes/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1572038171664" />
     <state x="431" y="164" key="scopes/0.23.1680.952@0.23.1680.952" timestamp="1571970198902" />
-    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup" timestamp="1572911306580">
+    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup" timestamp="1572920876530">
       <screen x="0" y="23" width="1680" height="948" />
     </state>
-    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948@0.23.1680.948" timestamp="1572911306580" />
+    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948@0.23.1680.948" timestamp="1572920876530" />
     <state x="-496" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@-1073.-1177.1920.1177" timestamp="1571175688299" />
     <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1571852305223" />
     <state x="1424" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1572038272971" />
