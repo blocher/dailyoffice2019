@@ -709,9 +709,6 @@ def get_calendar_date(date_string):
     year = date.year if date >= advent_start else date.year - 1
     church_year = cache.get(str(year))
     if not church_year:
-        print('not_cached')
         church_year = ChurchYear(year)
         cache.set(str(year), church_year)
-    else:
-        print('cached')
     return church_year.get_date(date_string)

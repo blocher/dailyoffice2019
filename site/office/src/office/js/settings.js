@@ -89,6 +89,8 @@ const settings = () => {
         element.addEventListener("click", event => {
           document.getElementById("settings").classList.toggle("off");
           document.getElementById("office").classList.toggle("off");
+          document.getElementById("menu").classList.toggle("off");
+          document.getElementById("settings-menu").classList.toggle("off");
           document.querySelectorAll(".toggle-settings").forEach((element, index) => {
             element.classList.toggle("off")
           });

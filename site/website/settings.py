@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "churchcal",
     "psalter",
     "bible",
+    "mathfilters",
     "office",
     "debug_toolbar",
     "djrichtextfield",

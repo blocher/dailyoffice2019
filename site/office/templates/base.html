@@ -18,19 +18,19 @@
             f.parentNode.insertBefore(j, f);
         })(window, document, 'script', 'dataLayer', 'GTM-NSB92RP');</script>
         <!-- End Google Tag Manager -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="https://use.typekit.net/yxz6vwf.css">
         <link href="https://fonts.googleapis.com/css?family=Lusitana:400,700&display=swap" rel="stylesheet">
         {% render_bundle 'main' 'js' %}
     </head>
 
-    <body>
+    <body id="body">
         <!-- Google Tag Manager (noscript) -->
         <noscript>
             <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NSB92RP"
                     height="0" width="0" style="display:none;visibility:hidden"></iframe>
         </noscript>
         <!-- End Google Tag Manager (noscript) -->
-
         {% block content %}
         {% endblock %}
     </body>

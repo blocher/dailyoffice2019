@@ -705,7 +705,7 @@ class EPCollectsOfTheDay(OfficeSection):
                 (commemoration.name,
                  commemoration.evening_prayer_collect.replace(" Amen.", ""),
                  commemoration.rank.name)
-                for commemoration in self.date.all
+                for commemoration in self.date.all_evening
                 if commemoration.evening_prayer_collect
             )
         }
