@@ -52,6 +52,11 @@ def get_evening_prayer_days():
     for date in date_list:
         yield {"year": date.year, "month": date.month, "day": date.day}
 
+def get_church_years():
+
+    for year in [2017, 2018, 2019, 2020, 2021, 2022]:
+        yield {"start_year": year}
+
 
 urlpatterns = [
     path("sermons", sermon_views.sermons, name="sermons"),
@@ -72,6 +77,12 @@ urlpatterns = [
         name="morning_prayer",
         distill_func=get_evening_prayer_days,
     ),
+      distill_path(
+          "office/church_year/<int:start_year>",
+          office_views.church_year,
+          name="church_year",
+          distill_func=get_church_years,
+      ),
     distill_path(
         "", office_views.today_evening_prayer, name="today_evening_prayer", distill_func=get_today_evening_prayer
     ),

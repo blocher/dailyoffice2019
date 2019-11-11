@@ -4,5 +4,15 @@
 
 
 {% block content %}
-    <p id="redirect-to-today">Redirecting...</p>
+    <div style="text-align:center">
+        <div class="body">
+            {% include "office/settings.html" %}
+            <h1>The Daily Office</h1>
+            <h4>According to theBook of Common Prayer, 2019<br>of the Anglican Church in North America</h4>
+            <h4>&nbsp;</h4>
+            <h4 id="redirect-to-today"><i class="fas fa-spinner fa-spin"></i></h4>
+            <p><em>If the daily office does not load shortly, please try refreshing the page.</em></p>
+
+        </div>
+    </div>
 {%  endblock %}

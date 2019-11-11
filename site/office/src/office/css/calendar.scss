@@ -1,0 +1,99 @@
+.calendar {
+
+  max-width: 700px;
+  margin: 0 auto;
+  p {
+    line-height: 1rem;
+  }
+
+  .calendar-links {
+    clear: both;
+  }
+
+  .day {
+    padding: .8rem;
+    display: flex;
+    flex-basis: 0px;
+
+    &.major {
+      border: 1px solid black;
+      border-radius: 5px;
+      margin: 0.5rem 0;
+
+    }
+
+    .day-section {
+      padding: 1rem;
+
+
+      &.date {
+        text-align: center;
+        flex-size: 1;
+        border: solid 1px black;
+        border-radius: 5px;
+        padding: 1rem;
+
+        .dateline-day {
+          font-size: 2rem;
+        }
+
+        .dateline-weekday {
+          font-weight: 900;
+          text-transform: uppercase;
+        }
+
+        .dateline-month {
+          text-transform: uppercase;
+        }
+
+      }
+      &.content {
+        flex-size: 2;
+        align-items:flex-start;
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+    }
+
+  }
+
+
+
+}
+
+
+    .color {
+      width: 0.5em;
+      height: 0.5em;
+      border: black 1px solid;
+      display: inline-block;
+      margin-right: 0.3rem;
+    }
+
+    .red {
+      background-color: #c21c13;
+      color: white;
+    }
+
+    .green {
+      background-color: #077339;
+      color: white;
+    }
+
+    .white {
+      background-color: white;
+    }
+
+    .purple {
+      background-color: #64147d;
+      color: white;
+    }
+
+    .black {
+      background-color: black;
+      color: white;
+    }
+
+    .rose {
+      background-color: pink;
+    }
