@@ -162,15 +162,21 @@
         }
 
         .footer {
+            border-top: 1px solid black;
             position: fixed;
             left: 0;
             bottom: 0;
-            width: 100%;
             text-align: center;
+            width: 100%;
 
             background-color: lightgrey;
             font-size: .8em;
             font-weight: 300;
+            padding: 1rem 0;
+
+            strong {
+              font-size: 1rem;
+            }
 
             i {
               font-size: 1.8rem;
@@ -185,6 +191,7 @@
             justify-content: center;
             flex-wrap: nowrap;
             align-content: space-around;
+
         }
 
         .footer-flex div {

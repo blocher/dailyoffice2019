@@ -48,6 +48,7 @@ class EPCommemorationListing(OfficeSection):
     @cached_property
     def data(self):
         return {
+            "day": self.date,
             "heading": "This Evening's Commemoration{}".format("s" if len(self.date.all_evening) > 1 else ""),
             "commemorations": self.date.all_evening,
         }
@@ -382,9 +383,9 @@ class EPReading1(OfficeSection):
             "has_abbreviated": True if self.office_readings.ep_reading_1_abbreviated_text else False,
             "closing": {
                 "reader": "The Word of the Lord."
-                if self.office_readings.ep_reading_1_testament != "DC"
+                if self.office_readings.mp_reading_1_testament != "DC"
                 else "Hear ends the Reading.",
-                "people": "Thanks be to God." if self.office_readings.ep_reading_1_testament != "DC" else "",
+                "people": "Thanks be to God." if self.office_readings.mp_reading_1_testament != "DC" else "",
             },
         }
 
