@@ -1,0 +1,31 @@
+{% load static %}
+{% load mathfilters %}
+
+
+<div class="calendar-settings">
+    <div class="menu">
+
+        <div id="cal-menu-seasons" class="menu-section seasons off">
+            <p class="close-cal-menu"><i class="fal fa-times-square"></i></p>
+            <h3>Seasons</h3>
+            <div class="season-buttons">
+            {%  for season in seasons %}
+                <a class="menu-button calendar-menu-button" href="#{{ season.name|slugify }}"><div class="color {{ season.color|lower }}"></div>{{ season.name }}</a>
+            {% endfor %}
+            </div>
+        </div>
+        <div id="cal-menu-dates" class="menu-section dates off">
+            <p class="close-cal-menu"><i class="fal fa-times-square"></i></p>
+            <h3>Dates</h3>
+            <p><a class="menu-button" href="/office/church_year/{{ start_year|sub:1 }}-{{ end_year|sub:1 }}"><i class="fas fa-arrow-left"></i> {{ start_year|sub:1 }} - {{ end_year|sub:1 }}</a> <a class="menu-button" href="/office/church_year/{{ start_year|add:1 }}-{{ end_year|add:1 }}">{{ start_year|add:1 }} - {{ end_year|add:1 }} <i class="fas fa-arrow-right"></i> </a></p>
+            <div class="menu-months">
+                <p>
+                {%  for month in months %}
+                   <a class="menu-button calendar-menu-button" href="#month-{{ month|slugify }}"><i class="fal fa-calendar-alt"></i> {{ month }}</a>
+                {% endfor %}
+                 </p>
+            </div>
+
+        </div>
+    </div>
+</div>

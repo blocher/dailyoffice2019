@@ -6,8 +6,8 @@
     <div id="menu">
         <div class="menu">
             <a href="#" class="toggle-settings menu-button"><i class="fal fa-cog"></i> <span class="first-letter">S</span>ettings</a>
-            <a href="#" class="toggle-settings menu-button"><i class="fal fa-cross"></i> <span class="first-letter">A</span>bout</a>
-            <a href="#" class="toggle-settings menu-button"><i class="fal fa-calendar-alt"></i> <span class="first-letter">C</span>alendar</a>
+{#            <a href="#" class="menu-button"><i class="fal fa-cross"></i> <span class="first-letter">A</span>bout</a>#}
+            <a href="/office/church_year/{{ office.date.year.start_year }}-{{ office.date.year.end_year }}#day-{{  office.date.date|date:"Y-m-d" }}" class="menu-button"><i class="fal fa-calendar-alt"></i> <span class="first-letter">C</span>alendar</a>
             <a href="/" id="now-button" class="menu-button"><i class="fal fa-clock"></i> <span class="first-letter">N</span>ow</a>
         </div>
         <div id="messages"></div>

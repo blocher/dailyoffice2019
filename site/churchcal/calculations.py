@@ -69,22 +69,24 @@ class CalendarDate(object):
         if self.date.weekday() == 6:
             return self.FAST_NONE
 
-        # Christmas and Easter are never fast days
-        if self.season.name in ["Christmastide", "Eastertide"]:
-            return self.FAST_NONE
-
         if self.primary.name == "Ash Wednesday" or self.primary.name == "Good Friday":
             return self.FAST_FULL
-
-        # Not for primary feasts (Annunciation)
-        if self.primary.rank.name == "PRINCIPAL_FEAST":
-            return self.FAST_NONE
 
         # Ember days and rogation days are fast days
         if len(self.required) == 0:
             for optional in self.optional:
                 if optional.rank.name in ["EMBER_DAY", "ROGATION_DAY"]:
                     return self.FAST_PARTIAL
+
+        # Christmas and Easter are never fast days
+        if self.season.name in ["Christmastide", "Eastertide"]:
+            return self.FAST_NONE
+
+
+        # Not for primary feasts (Annunciation)
+        if self.primary.rank.name == "PRINCIPAL_FEAST":
+            return self.FAST_NONE
+
 
         # All of lent is a fast day
         if self.season.name == "Lent" or self.season.name == "Holy Week":
@@ -144,7 +146,7 @@ class CalendarDate(object):
             return []
 
         required = self.required.copy()
-        if self.season.name != "Advent" and self.season.name != "Lent" and self.season.name != "Eastertide":
+        if self.season.name not in ("Advent", "Lent", "Holy Week", "Eastertide"):
             if self.required[1].rank.name == "HOLY_DAY":
                 alternate_sunday = self.required[1].copy()
                 alternate_sunday.rank = CommemorationRank.objects.get(calendar=self.calendar, name="ALTERNATE_SUNDAY")
@@ -163,11 +165,6 @@ class CalendarDate(object):
         # Don't append Feria to a Sunday!
         if self.date.weekday() == 6:
             return
-
-        # Don't append a Feria to a Principal Feast or Privileged Observance
-        if len(self.required) > 0 and self.required[0].rank.precedence_rank <= 2:
-            return
-
         self.optional.append(FerialCommemoration(self.date, self.season, self.calendar))
 
     def finalize_day(self):
@@ -337,14 +334,28 @@ class ChurchYear(object):
         # print(self.seasons)
 
     def _set_season(self, calendar_date):
+
+        calendar_date.season = self.season_tracker
+
+        if not calendar_date.required:
+            return
+
+        possible_days = [feast.name for feast in calendar_date.required]
+
         if not self.seasons:
             self._get_seasons()
-        if len(calendar_date.required) > 0 and calendar_date.required[0].name == "The Day of Pentecost":
+
+        if "The Day of Pentecost" in possible_days:
             calendar_date.season = self.season_tracker
-        if len(calendar_date.required) > 0 and calendar_date.required[0].name in self.seasons.keys():
-            self.season_tracker = self.seasons[calendar_date.required[0].name]
-        if not calendar_date.required or calendar_date.required[0].name != "The Day of Pentecost":
-            calendar_date.season = self.season_tracker
+
+        for match in self.seasons.keys():
+            if match in possible_days:
+                self.season_tracker = self.seasons[match]
+                if "The Day of Pentecost" not in possible_days:
+                    calendar_date.season = self.season_tracker
+
+        print(calendar_date.season.name)
+
 
     @staticmethod
     def daterange(start_date, end_date):
@@ -373,6 +384,14 @@ class ChurchYear(object):
 
         return "I" if self.start_year % 2 == 0 else "II"
 
+    @cached_property
+    def first_date(self):
+        return self.dates[:1]
+
+    @cached_property
+    def last_date(self):
+        return self.dates[-1]
+
     def get_date(self, date_string):
         date = to_date(date_string)
         try:
@@ -400,17 +419,6 @@ class CalendarYear(object):
         date_list = [base + timedelta(days=x) for x in range(0, 365)]
 
         self.dates = [dates[date.strftime("%Y-%m-%d")] for date in date_list]
-
-        for calendar_date in self.dates:
-            pass
-            # print(
-            #     "{} {} - {} {}".format(
-            #         calendar_date.season,
-            #         calendar_date.date.strftime("%a, %b, %d, %Y"),
-            #         calendar_date.primary.__repr__(),
-            #         "+" if calendar_date.day_of_special_commemoration else "",
-            #     )
-            # )
 
 
 class SetNamesAndCollects(object):

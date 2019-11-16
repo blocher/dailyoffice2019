@@ -1,15 +1,1 @@
 <h1>{{ data.heading }}</h1>
-<h3>{{  data.calendar_date.date|date:"l, F j, Y" }}</h3>
-{%  if data.calendar_date.fast_day == 1  %}
-    <h4><strong>++ FAST DAY ++</strong></h4>
-{%  endif %}
-
-{%  if data.calendar_date.fast_day == 2  %}
-    <h4><strong>++ FAST DAY</strong> (Total Abstinence) ++</h4>
-{%  endif %}
-<p>
-<div class="metadata">
-    <strong>Season:</strong> {{  data.calendar_date.season.name }} ({{ data.calendar_date.season.color }}{%  if data.calendar_date.season.alternate_color %} or&nbsp;{{ data.calendar_date.season.alternate_color }}{% endif%})<br>
-    <strong>Daily Office Year:</strong> {{  data.calendar_date.year.office_year }} &bull;  <strong>Eucharistic Year:</strong> {{  data.calendar_date.year.mass_year }}
-</div>
-</p>

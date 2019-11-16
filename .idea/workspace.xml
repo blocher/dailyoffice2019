@@ -2,23 +2,23 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4d3b96da-e02b-4ac5-80bf-e1b5c662734c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/site/office/src/office/css/calendar.scss" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/churchcal/calculations.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/churchcal/calculations.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/office/offices.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/offices.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/src/office/css/calendar.scss" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/css/calendar.scss" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/office/src/office/css/index.scss" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/css/index.scss" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/office/src/office/css/office.scss" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/css/office.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/src/office/js/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/js/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/office/src/office/js/redirect.js" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/js/redirect.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/src/office/js/settings.js" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/js/settings.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/redirect.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/redirect.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/church_year.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/church_year.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/commemoration_listing.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/commemoration_listing.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/heading.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/heading.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/office/templates/office/office.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/office.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/office/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/webpack-stats.json" beforeDir="false" afterPath="$PROJECT_DIR$/site/webpack-stats.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/website/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/website/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/urls.py" afterDir="false" />
     </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -59,7 +59,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="eu.ydp.idea.ts.spec.generator.settings.spec.template" value="import {$ClassName$} from '$TestsRelativePath$../src/$classRelativePath$/$ClassName$';&#10;&#10;describe('$ClassName$', () =&gt; {&#10;  let $ObjName$:$ClassName$;&#10;&#10;  beforeEach(() =&gt; {&#10;    $ObjName$ = new $ClassName$();&#10;  });&#10;&#10;  describe('', () =&gt; {&#10;    it('', () =&gt; {&#10;      // given&#10;&#10;      // when&#10;&#10;      // then&#10;    });&#10;  });&#10;});&#10;" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/site" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -73,29 +73,29 @@
     <property name="typescript.add.unambiguous.imports.on.the.fly" value="true" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/site/office/templates" />
-      <recent name="$PROJECT_DIR$/site/office/src/office" />
-      <recent name="$PROJECT_DIR$/site/office" />
-      <recent name="$PROJECT_DIR$/site" />
-      <recent name="$PROJECT_DIR$/site/office/templates/office" />
-    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/site" />
       <recent name="$PROJECT_DIR$/site/website/static" />
       <recent name="$USER_HOME$" />
       <recent name="~/Desktop" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/site/office/src/office/css" />
+      <recent name="$PROJECT_DIR$/site/office/templates" />
+      <recent name="$PROJECT_DIR$/site/office/src/office" />
+      <recent name="$PROJECT_DIR$/site/office" />
+      <recent name="$PROJECT_DIR$/site" />
+    </key>
   </component>
-  <component name="ServiceViewManager">
-    <option name="viewStates">
+  <component name="RunDashboard">
+    <option name="ruleStates">
       <list>
-        <serviceView>
-          <treeState>
-            <expand />
-            <select />
-          </treeState>
-        </serviceView>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
       </list>
     </option>
   </component>
@@ -173,7 +173,13 @@
       <workItem from="1572634786991" duration="13313000" />
       <workItem from="1572735100188" duration="24030000" />
       <workItem from="1573093805009" duration="3214000" />
-      <workItem from="1573346081042" duration="19055000" />
+      <workItem from="1573346081042" duration="20152000" />
+      <workItem from="1573574577145" duration="1000" />
+      <workItem from="1573577586090" duration="38000" />
+      <workItem from="1573596984969" duration="3904000" />
+      <workItem from="1573663741939" duration="251000" />
+      <workItem from="1573685554574" duration="8428000" />
+      <workItem from="1573841672945" duration="18882000" />
     </task>
     <servers />
   </component>
@@ -257,10 +263,10 @@
     </state>
     <state x="1340" y="-1003" key="scopes/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1572038171664" />
     <state x="431" y="164" key="scopes/0.23.1680.952@0.23.1680.952" timestamp="1571970198902" />
-    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup" timestamp="1573512809940">
+    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup" timestamp="1573514029384">
       <screen x="0" y="23" width="1680" height="948" />
     </state>
-    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948@0.23.1680.948" timestamp="1573512809940" />
+    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948@0.23.1680.948" timestamp="1573514029384" />
     <state x="-496" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@-1073.-1177.1920.1177" timestamp="1571175688299" />
     <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1571852305223" />
     <state x="1424" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1572038272971" />
