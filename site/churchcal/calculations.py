@@ -41,6 +41,10 @@ class CalendarDate(object):
         optional = self.evening_optional if hasattr(self, "evening_optional") else self.optional
         return required + optional
 
+    @property
+    def primary_evening(self):
+        return self.all_evening[0]
+
     @cached_property
     def proper(self):
         if self.season.name != "Season After Pentecost" and self.primary.name != "The Day of Pentecost":

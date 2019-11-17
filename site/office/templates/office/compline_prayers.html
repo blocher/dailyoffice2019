@@ -1,0 +1,46 @@
+<h2>THE PRAYERS</h2>
+
+<p><em>A period of silence may be kept.  A suitable hymn may be sung.</em></p>
+<table class="dialogue">
+    <tr>
+        <td><em>Officiant</em></td>
+        <td>Into your hands, O Lord, I commend my spirit;</td>
+    </tr>
+    <tr>
+        <td><em>People</em></td>
+        <td><strong>For you have redeemed me, O Lord, O God of truth.</strong></td>
+    </tr>
+    <tr>
+        <td><em>Officiant</em></td>
+        <td>Keep me, O Lord, as the apple of your eye;</td>
+    </tr>
+    <tr>
+        <td><em>People</em></td>
+        <td><strong>Hide me under the shadow of your wings.</strong></td>
+    </tr>
+</table>
+
+
+{% include "office/kyrie_pater.html" %}
+
+<p>&nbsp;</p>
+<table class="dialogue">
+    <tr>
+        <td><em>Officiant</em></td>
+        <td>O Lord, hear our prayer;</td>
+    </tr>
+    <tr>
+        <td><em>People</em></td>
+        <td><strong>And let our cry come to you.</strong></td>
+    </tr>
+    <tr>
+        <td><em>Officiant</em></td>
+        <td>Let us pray.</td>
+    </tr>
+</table>
+
+{%  for collect in data.collects %}
+    <h3>{{ collect.0 }}</h3>
+    <p>{{ collect.1 }} <strong>Amen.</strong></p>
+
+{%  endfor %}

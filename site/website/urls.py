@@ -40,7 +40,7 @@ def get_today_evening_prayer():
     return None
 
 
-def get_evening_prayer_days():
+def get_days():
 
     days_back = 365 * 2
     days_forward = 365 * 2
@@ -69,20 +69,27 @@ urlpatterns = [
         "office/evening_prayer/<int:year>-<int:month>-<int:day>/",
         office_views.evening_prayer,
         name="evening_prayer",
-        distill_func=get_evening_prayer_days,
+        distill_func=get_days,
     ),
     distill_path(
         "office/morning_prayer/<int:year>-<int:month>-<int:day>/",
         office_views.morning_prayer,
         name="morning_prayer",
-        distill_func=get_evening_prayer_days,
+        distill_func=get_days,
     ),
-      distill_path(
+  distill_path(
+      "office/compline/<int:year>-<int:month>-<int:day>/",
+      office_views.compline,
+      name="compline",
+      distill_func=get_days,
+  ),
+    distill_path(
           "office/church_year/<int:start_year>-<int:end_year>",
           office_views.church_year,
           name="church_year",
           distill_func=get_church_years,
       ),
+
     distill_path(
         "", office_views.today_evening_prayer, name="today_evening_prayer", distill_func=get_today_evening_prayer
     ),
