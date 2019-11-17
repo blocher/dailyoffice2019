@@ -30,16 +30,33 @@
         h1 {
             font-size: 2rem;
             line-height: 2.1rem;
+
         }
 
         h2 {
             font-size: 1.5rem;
+
+          &.intro-heading {
+            font-size: .5rem;
+            margin: 1rem 0 0 0;
+            padding: 0;
+            line-height: .6rem;
+            letter-spacing: .1rem;
+          }
+
         }
 
         h3 {
             padding-top: 30px;
             margin-bottom: 5px;
             font-size: 1.2rem;
+            &.intro-heading {
+              font-size: .4rem;
+              margin: 0;
+              padding: 0;
+              line-height: .5rem;
+              letter-spacing: .1rem;
+            }
         }
 
         h4 {
@@ -221,18 +238,28 @@
           border: 1px solid;
         }
 
+        #menu {
+          padding: .1rem;
+          margin: .1rem;
+
+        }
+
+        .menu-wrapper {
+          text-align: center;
+          padding: 1px;
+        }
+
         .menu {
-          display: block;
-          width: 100%;
-          clear: both;
+          display: inline-block;
+          padding: 3px;
         }
 
 
         .menu-button {
           color: black;
           text-decoration: none;
-          font-size: 0.7rem;
-          margin: 0.3rem 0 0 0.3rem;
+          font-size: 0.6rem;
+          margin: 0.15rem;
           initial-letter: 2;
           letter-spacing: .03rem;
           border: 1px solid grey;
@@ -250,7 +277,7 @@
           }
 
           .first-letter {
-            font-size: .9rem;
+            font-size: .8rem;
           }
 
           &.inline {
