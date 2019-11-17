@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from churchcal.calculations import ChurchYear
 from churchcal.models import Season
-from office.offices import EveningPrayer, MorningPrayer
+from office.offices import EveningPrayer, MorningPrayer, Compline
 
 
 def morning_prayer(request, year, month, day):
@@ -15,6 +15,10 @@ def morning_prayer(request, year, month, day):
 def evening_prayer(request, year, month, day):
     ep = EveningPrayer("{}-{}-{}".format(year, month, day))
     return render(request, "office/office.html", {"office": ep})
+
+def compline(request, year, month, day):
+    cp = Compline("{}-{}-{}".format(year, month, day))
+    return render(request, "office/office.html", {"office": cp})
 
 def church_year(request, start_year, end_year=None):
     church_year = ChurchYear(start_year)

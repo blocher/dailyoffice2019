@@ -15,6 +15,11 @@
         {%  else %}
             <div><i class="fas fa-sunset"></i>{{ office.links.evening_prayer.label | upper }}</div>
         {% endif %}
+        {%  if office.links.current != 'compline' %}
+            <div><a href="{{ office.links.compline.link }}"><i class="fal fa-sunset"></i>{{ office.links.compline.label }}</a></div>
+        {%  else %}
+            <div><i class="fas fa-sunset"></i>{{ office.links.compline.label | upper }}</div>
+        {% endif %}
     </div>
 
 

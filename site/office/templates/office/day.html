@@ -1,5 +1,5 @@
 <div id="day-{{ day.date|date:"Y-m-d"}}" class="day {% if day.date.weekday == 6 %} sunday {% endif %}{% if day.required %} major {% else %} minor {% endif %}{% if day.primary.rank.name == "PRINCIPAL_FEAST" %} principal {% endif %}">
-    <div class="day-section date {{ day.primary.color|lower }}">
+    <div class="day-section date {%  if evening %}{{ day.primary_evening.color|lower }}{% else %}{{ day.primary.color|lower }}{%  endif %}">
         <div class="dateline dateline-weekday">{{ day.date|date:"D" }}</div>
         <div class="dateline dateline-day">{{ day.date|date:"j" }}</div>
         <div class="dateline dateline-month">{{ day.date|date:"M" }}</div>
@@ -12,12 +12,22 @@
     </div>
     <div class="day-section content">
 
-        <p class="primary"><span class="color {{ day.primary.color|lower }}"></span> {{  day.primary.name }}{% if day.primary.transferred %} <small>(Transferred)</small>{%  endif %}</p>
-        {%  for feast in day.all %}
-            {% if not forloop.first %}
-                <p class="secondary"><span class="color {{ feast.color|lower }}"></span>{{ feast.name }}</p>
-            {%  endif %}
-        {%  endfor %}
+        {%  if evening %}
+            <p class="primary"><span class="color {{ day.primary_evening.color|lower }}"></span> {{  day.primary_evening.name }}{% if day.primary_evening.transferred %} <small>(Transferred)</small>{%  endif %}</p>
+
+            {%  for feast in day.all_evening %}
+                {% if not forloop.first %}
+                    <p class="secondary"><span class="color {{ feast.color|lower }}"></span>{{ feast.name }}</p>
+                {%  endif %}
+            {%  endfor %}
+        {%  else %}
+            <p class="primary"><span class="color {{ day.primary.color|lower }}"></span> {{  day.primary.name }}{% if day.primary.transferred %} <small>(Transferred)</small>{%  endif %}</p>
+             {%  for feast in day.all %}
+                {% if not forloop.first %}
+                    <p class="secondary"><span class="color {{ feast.color|lower }}"></span>{{ feast.name }}</p>
+                {%  endif %}
+            {%  endfor %}
+        {%  endif %}
         {%  if not nolinks %}
             <p class="links">
                 <a class="menu-button" href="/office/morning_prayer/{{  day.date|date:"Y-n-j" }}"><i class="fas fa-sunrise"></i>  Morning Prayer</a>
