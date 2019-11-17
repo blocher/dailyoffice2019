@@ -152,10 +152,12 @@
     padding: .8rem;
     display: flex;
     flex: 1 1 0px;
-    flex-wrap: nowrap;
     margin: 0.5rem 0.5rem;
     border: 1px solid black;
     border-radius: 5px;
+    @media only screen and (max-width: 374px) {
+      flex-wrap: wrap;
+    }
     p.secondary {
       font-size: .8rem;
     }
@@ -173,6 +175,9 @@
     .day-section {
       padding: 1rem;
 
+      @media only screen and (max-width: 374px) {
+       width: 100%;
+      }
 
       &.date {
         text-align: center;

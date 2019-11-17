@@ -173,6 +173,9 @@ class CalendarDate(object):
         if self.required and self.required[0].rank.name == "PRIVILEGED_OBSERVANCE":
             return
 
+        if SetNamesAndCollects.has_collect_for_feria(self):
+            return
+
         self.optional.append(FerialCommemoration(self.date, self.season, self.calendar))
 
     def finalize_day(self):
@@ -646,20 +649,23 @@ class SetNamesAndCollects(object):
     def fallback_collect(self, commemoration, calendar_date):
         commemoration.morning_prayer_collect = commemoration.evening_prayer_collect = None
 
-    def has_collect_for_feria(self, calendar_date):
-        epiphany = self.is_epiphany(calendar_date)
+    @staticmethod
+    def has_collect_for_feria(calendar_date):
+
+        epiphany = SetNamesAndCollects.is_epiphany(calendar_date)
         if epiphany:
             return epiphany
-        christmas = self.is_christmas(calendar_date)
+        christmas = SetNamesAndCollects.is_christmas(calendar_date)
         if christmas:
+            print('B')
             return christmas
-        ash_wednesday = self.is_ash_wednesday(calendar_date)
+        ash_wednesday = SetNamesAndCollects.is_ash_wednesday(calendar_date)
         if ash_wednesday:
             return ash_wednesday
-        ascension = self.is_ascension(calendar_date)
+        ascension = SetNamesAndCollects.is_ascension(calendar_date)
         if ascension:
             return ascension
-        sunday = self.is_sunday(calendar_date)
+        sunday = SetNamesAndCollects.is_sunday(calendar_date)
         if sunday:
             return sunday
 
@@ -667,26 +673,26 @@ class SetNamesAndCollects(object):
 
     @staticmethod
     def is_epiphany(calendar_date):
-        if "The Epiphany" in calendar_date.primary.name and calendar_date.primary.rank.required:
-            return calendar_date.primary
+        if calendar_date.required and "The Epiphany" in calendar_date.required[0].name and calendar_date.required[0].rank.required:
+            return calendar_date.required[0]
         return None
 
     @staticmethod
     def is_christmas(calendar_date):
-        if "Christmas Day" in calendar_date.primary.name and calendar_date.primary.rank.required:
-            return calendar_date.primary
+        if calendar_date.required and "Christmas Day" in calendar_date.required[0].name and calendar_date.required[0].rank.required:
+            return calendar_date.required[0]
         return None
 
     @staticmethod
     def is_ash_wednesday(calendar_date):
-        if "Ash Wednesday" in calendar_date.primary.name and calendar_date.primary.rank.required:
-            return calendar_date.primary
+        if calendar_date.required and "Ash Wednesday" in calendar_date.required[0].name and calendar_date.required[0].rank.required:
+            return calendar_date.required[0]
         return None
 
     @staticmethod
     def is_ascension(calendar_date):
-        if "Ascension Day" in calendar_date.primary.name and calendar_date.primary.rank.required:
-            return calendar_date.primary
+        if calendar_date.required and "Ascension Day" in calendar_date.required[0].name and calendar_date.required[0].rank.required:
+            return calendar_date.required[0]
         return None
 
     @staticmethod
