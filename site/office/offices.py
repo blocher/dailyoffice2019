@@ -13,10 +13,11 @@ from office.utils import passage_to_citation
 
 
 class OfficeSection(object):
-    def __init__(self, date, office_readings=None, thirty_day_psalter_day=None):
+    def __init__(self, date, office_readings=None, thirty_day_psalter_day=None, office=None):
         self.date = date
         self.office_readings = office_readings
         self.thirty_day_psalter_day = thirty_day_psalter_day
+        self.office=office
 
     @cached_property
     def data(self):
@@ -80,7 +81,7 @@ class EPOpeningSentence(OfficeSection):
                 "citation": "PROVERBS 3:19-20",
             }
 
-        if self.date.season.name == "Holy Week":
+        if self.date.evening_season.name == "Holy Week":
 
             return {
                 "sentence": "All we like sheep have gone astray; we have turned every one to his own way; and the Lord has laid on him the iniquity of us all.",
@@ -88,7 +89,7 @@ class EPOpeningSentence(OfficeSection):
             }
 
         if (
-            self.date.season.name == "Lent"
+            self.date.evening_season.name == "Lent"
             or self.date.primary.rank.name == "EMBER_DAY"
             or self.date.primary.rank.name == "ROGATION_DAY"
         ):
@@ -110,20 +111,20 @@ class EPOpeningSentence(OfficeSection):
                 "citation": "1 JOHN 1:8-9",
             }
 
-        if self.date.season.name == "Advent":
+        if self.date.evening_season.name == "Advent":
 
             return {
                 "sentence": "Therefore stay awake—for you do not know when the master of the house will come, in the evening, or at midnight, or when the rooster crows, or in the morning—lest he come suddenly and find you asleep.",
                 "citation": "MARK 13:35-36",
             }
 
-        if self.date.season.name == "Christmastide":
+        if self.date.evening_season.name == "Christmastide":
             return {
                 "sentence": "Behold, the dwelling place of God is with man. He will dwell with them, and they will be his people, and God himself will be with them as their God.",
                 "citation": "REVELATION 21:3",
             }
 
-        if self.date.season.name == "Epiphanytide":
+        if self.date.evening_season.name == "Epiphanytide":
             return {
                 "sentence": "Nations shall come to your light, and kings to the brightness of your rising.",
                 "citation": "ISAIAH 60:3",
@@ -154,7 +155,7 @@ class EPOpeningSentence(OfficeSection):
                 "citation": "ISAIAH 6:3",
             }
 
-        if self.date.season.name == "Eastertide":
+        if self.date.evening_season.name == "Eastertide":
             return {
                 "sentence": "Thanks be to God, who gives us the victory through our Lord Jesus Christ.",
                 "citation": "1 CORINTHIANS 15:57",
@@ -399,7 +400,7 @@ class ComplinePrayers(OfficeSection):
 class  ComplineCanticle(OfficeSection):
     @cached_property
     def data(self):
-        return {"heading": "Nunc Dimittis", "subheading": "The Song of Simeon", "alleluia": self.date.season.name=="Eastertide"}
+        return {"heading": "Nunc Dimittis", "subheading": "The Song of Simeon", "alleluia": self.date.evening_season.name=="Eastertide"}
 
 class  ComplineConclusion(OfficeSection):
     @cached_property
@@ -620,7 +621,7 @@ class ComplineInvitatory(OfficeSection):
     @cached_property
     def data(self):
         return {
-            'alleluia': self.date.season.name != "Lent" and self.date.season.name != "Holy Week",
+            'alleluia': self.date.evening_season.name != "Lent" and self.date.evening_season.name != "Holy Week",
             'heading': "Invitatory",
         }
 
@@ -1061,10 +1062,14 @@ class Dismissal(OfficeSection):
     @cached_property
     def data(self):
 
+        morning_easter = self.office.office not in ["evening_prayer"] and self.date.season.name == "Eastertide"
+        evening_easter = self.office.office in ["evening_prayer"] and self.date.evening_season.name == "Eastertide"
+
+
         officiant = "Let us bless the Lord."
         people = "Thanks be to God."
 
-        if self.date.season.name == "Eastertide":
+        if morning_easter or evening_easter:
 
             officiant = "{} Alleluia, alleluia.".format(officiant)
             people = "{} Alleluia, alleluia.".format(people)
@@ -1348,7 +1353,7 @@ class EveningPrayer(Office):
             (Intercessions(self.date, self.office_readings), "office/intercessions.html"),
             (GeneralThanksgiving(self.date, self.office_readings), "office/general_thanksgiving.html"),
             (Chrysostom(self.date, self.office_readings), "office/chrysostom.html"),
-            (Dismissal(self.date, self.office_readings), "office/dismissal.html"),\
+            (Dismissal(self.date, self.office_readings, office=self), "office/dismissal.html"),\
         ]
 
 
@@ -1382,7 +1387,7 @@ class MorningPrayer(Office):
             (Intercessions(self.date, self.office_readings), "office/intercessions.html"),
             (GeneralThanksgiving(self.date, self.office_readings), "office/general_thanksgiving.html"),
             (Chrysostom(self.date, self.office_readings), "office/chrysostom.html"),
-            (Dismissal(self.date, self.office_readings), "office/dismissal.html"),
+            (Dismissal(self.date, self.office_readings, office=self), "office/dismissal.html"),
         ]
 
 

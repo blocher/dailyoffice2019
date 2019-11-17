@@ -35,7 +35,11 @@
             </p>
         {%  endif %}
         {%  if season %}
-            <p class="season">{{  day.season.name }} <span class="color {{  day.season.color }}"></span></p>
+            {%  if evening %}
+                <p class="season">{{  day.evening_season.name }} <span class="color {{  day.evening_season.color }}"></span></p>
+            {%  else %}
+                <p class="season">{{  day.season.name }} <span class="color {{  day.season.color }}"></span></p>
+            {% endif %}
         {%  endif %}
 
 

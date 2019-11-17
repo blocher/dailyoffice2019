@@ -169,6 +169,10 @@ class CalendarDate(object):
         # Don't append Feria to a Sunday!
         if self.date.weekday() == 6:
             return
+
+        if self.required and self.required[0].rank.name == "PRIVILEGED_OBSERVANCE":
+            return
+
         self.optional.append(FerialCommemoration(self.date, self.season, self.calendar))
 
     def finalize_day(self):
@@ -340,6 +344,7 @@ class ChurchYear(object):
     def _set_season(self, calendar_date):
 
         calendar_date.season = self.season_tracker
+        calendar_date.evening_season = calendar_date.season
 
         if not calendar_date.required:
             return
@@ -358,7 +363,7 @@ class ChurchYear(object):
                 if "The Day of Pentecost" not in possible_days:
                     calendar_date.season = self.season_tracker
 
-        print(calendar_date.season.name)
+        calendar_date.evening_season = calendar_date.season
 
 
     @staticmethod
@@ -481,6 +486,8 @@ class SetNamesAndCollects(object):
             for idx, commemoration in enumerate(previous.evening_optional):
                 if "FERIA" in commemoration.rank.name:
                     previous.evening_optional.pop(idx)
+
+        previous.evening_season = calendar_date.season
 
         # @TODO: resort
 
@@ -719,8 +726,9 @@ def get_calendar_date(date_string):
     date = to_date(date_string)
     advent_start = advent(date.year)
     year = date.year if date >= advent_start else date.year - 1
-    church_year = cache.get(str(year))
-    if not church_year:
-        church_year = ChurchYear(year)
-        cache.set(str(year), church_year)
+    church_year = ChurchYear(year)
+    # church_year = cache.get(str(year))
+    # if not church_year:
+    #     church_year = ChurchYear(year)
+    #     cache.set(str(year), church_year)
     return church_year.get_date(date_string)
