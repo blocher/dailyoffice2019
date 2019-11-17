@@ -1114,11 +1114,11 @@ class Office(object):
                 "link": reverse(self.office, args=[tomorrow.year, tomorrow.month, tomorrow.day]),
             },
             "morning_prayer": {
-                "label": "Morning Prayer",
+                "label": "Morning",
                 "link": reverse("morning_prayer", args=[today.year, today.month, today.day]),
             },
             "evening_prayer": {
-                "label": "Evening Prayer",
+                "label": "Evening",
                 "link": reverse("evening_prayer", args=[today.year, today.month, today.day]),
             },
             "compline": {
