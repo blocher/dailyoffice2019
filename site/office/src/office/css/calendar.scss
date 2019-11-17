@@ -6,17 +6,26 @@
     padding-bottom: 0;
   }
 
+  .menu-button {
+      width: 6rem;
+      text-align: center;
+  }
+
   p {
     line-height: 1.2rem;
 
     &.season {
       text-align: right;
-      font-size: 0.8rem;
+      font-size: 0.6rem;
       line-height: .9rem;
+      letter-spacing: 0.1rem;
+      display: inline-block;
+      border: 1px solid black;
+      padding: 0.4rem;
+      float: right;
+      text-transform: uppercase;
     }
   }
-
-
 
 
   h2, h3 {
@@ -39,6 +48,7 @@
       padding: 0;
       font-size: .7rem;
     }
+
   }
 
   .calendar-settings {
@@ -142,14 +152,15 @@
     padding: .8rem;
     display: flex;
     flex: 1 1 0px;
+    flex-wrap: nowrap;
     margin: 0.5rem 0.5rem;
+    border: 1px solid black;
+    border-radius: 5px;
     p.secondary {
       font-size: .8rem;
     }
 
     &.major {
-      border: 1px solid black;
-      border-radius: 5px;
       background-color: lightgrey;
 
 
@@ -193,6 +204,7 @@
         align-items:flex-start;
         padding-top: 0;
         padding-bottom: 0;
+        flex-basis: 100%;
       }
     }
 

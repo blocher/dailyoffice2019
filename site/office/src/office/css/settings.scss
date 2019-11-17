@@ -4,6 +4,10 @@ div#settings {
   max-width: 700px;
   margin: auto;
 
+  h2 {
+    margin: 1rem 0;
+  }
+
   em {
       line-height: .8rem;
     }
@@ -32,7 +36,7 @@ div#settings {
 
   section > div {
     flex: 1;
-    padding: 0.5rem;
+    padding: 0;
   }
 
   input[type="radio"] {
@@ -55,7 +59,7 @@ div#settings {
     background: white;
     border: 2px solid hsla(0, 0%, 50%, 1);
     border-radius: 20px;
-    padding: 1rem;
+    padding: 2rem;
     margin-bottom: 1rem;
     text-align: center;
     box-shadow: 0px 3px 10px -2px hsla(150, 5%, 65%, 0.5);
@@ -98,6 +102,10 @@ div#settings {
 
   p {
     font-weight: 900;
+  }
+
+  .menu-button {
+    margin-bottom: 2rem;
   }
 
   @media only screen and (max-width: 700px) {
