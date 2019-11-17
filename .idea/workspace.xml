@@ -5,12 +5,8 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/churchcal/calculations.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/churchcal/calculations.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/office/offices.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/offices.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/commemoration_listing.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/commemoration_listing.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/office/templates/office/day.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/day.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/office/templates/office/footer.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/footer.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/prayers.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/prayers.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/website/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/urls.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -173,7 +169,7 @@
       <workItem from="1573596984969" duration="3904000" />
       <workItem from="1573663741939" duration="251000" />
       <workItem from="1573685554574" duration="8428000" />
-      <workItem from="1573841672945" duration="27139000" />
+      <workItem from="1573841672945" duration="29667000" />
     </task>
     <servers />
   </component>
