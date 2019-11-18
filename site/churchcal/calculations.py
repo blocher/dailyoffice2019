@@ -657,7 +657,6 @@ class SetNamesAndCollects(object):
             return epiphany
         christmas = SetNamesAndCollects.is_christmas(calendar_date)
         if christmas:
-            print('B')
             return christmas
         ash_wednesday = SetNamesAndCollects.is_ash_wednesday(calendar_date)
         if ash_wednesday:

@@ -1,0 +1,35 @@
+<h2>THE PRAYERS</h2>
+
+<table class="dialogue">
+    <tr>
+        <td><em>Officiant</em></td>
+        <td>I will bless the Lord at all times.</td>
+    </tr>
+    <tr>
+        <td><em>People</em></td>
+        <td><strong>His praise shall continually be in my mouth.</strong></td>
+    </tr>
+</table>
+
+{% include "office/kyrie_pater.html" %}
+
+<p>&nbsp;</p>
+<table class="dialogue">
+    <tr>
+        <td><em>Officiant</em></td>
+        <td>O Lord, hear our prayer;</td>
+    </tr>
+    <tr>
+        <td><em>People</em></td>
+        <td><strong>And let our cry come to you.</strong></td>
+    </tr>
+    <tr>
+        <td><em>Officiant</em></td>
+        <td>Let us pray.</td>
+    </tr>
+</table>
+
+{%  for collect in data.collects %}
+    <p>{{ collect }} <strong>Amen.</strong></p>
+
+{%  endfor %}

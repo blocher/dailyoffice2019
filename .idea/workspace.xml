@@ -6,9 +6,14 @@
       <change beforePath="$PROJECT_DIR$/site/churchcal/calculations.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/churchcal/calculations.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/office/offices.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/offices.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/office/src/office/css/calendar.scss" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/css/calendar.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/src/office/css/office.scss" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/css/office.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/compline_psalms.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/minor_office_psalms.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/compline_scripture.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/minor_office_scripture.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/day.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/day.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/redirect.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/redirect.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/footer.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/footer.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/webpack-stats.json" beforeDir="false" afterPath="$PROJECT_DIR$/site/webpack-stats.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/website/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/urls.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -72,11 +77,11 @@
       <recent name="~/Desktop" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/site/office/templates/office" />
       <recent name="$PROJECT_DIR$/site/office/src/office/css" />
       <recent name="$PROJECT_DIR$/site/office/templates" />
       <recent name="$PROJECT_DIR$/site/office/src/office" />
       <recent name="$PROJECT_DIR$/site/office" />
-      <recent name="$PROJECT_DIR$/site" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -171,7 +176,7 @@
       <workItem from="1573596984969" duration="3904000" />
       <workItem from="1573663741939" duration="251000" />
       <workItem from="1573685554574" duration="8428000" />
-      <workItem from="1573841672945" duration="36790000" />
+      <workItem from="1573841672945" duration="42951000" />
     </task>
     <servers />
   </component>

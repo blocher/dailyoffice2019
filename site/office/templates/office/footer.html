@@ -10,6 +10,11 @@
         {%  else %}
             <div><i class="fas fa-sunrise"></i>{{ office.links.morning_prayer.label | upper }}</div>
         {% endif %}
+        {%  if office.links.current != 'midday_prayer' %}
+            <div><a href="{{ office.links.midday_prayer.link }}"><i class="fal fa-sun"></i>{{ office.links.midday_prayer.label }}</a></div>
+        {%  else %}
+            <div><i class="fas fa-sun"></i>{{ office.links.midday_prayer.label | upper }}</div>
+        {% endif %}
         {%  if office.links.current != 'evening_prayer' %}
             <div><a href="{{ office.links.evening_prayer.link }}"><i class="fal fa-sunset"></i>{{ office.links.evening_prayer.label }}</a></div>
         {%  else %}

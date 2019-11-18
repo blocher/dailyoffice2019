@@ -31,15 +31,16 @@
         {%  if not nolinks %}
             <p class="links">
                 <a class="menu-button" href="/office/morning_prayer/{{  day.date|date:"Y-n-j" }}"><i class="fal fa-sunrise"></i>  Morning</a>
+                <a class="menu-button" href="/office/midday_prayer/{{  day.date|date:"Y-n-j" }}"><i class="fal fa-sun"></i> Midday</a>
                 <a class="menu-button" href="/office/evening_prayer/{{  day.date|date:"Y-n-j" }}"><i class="fal fa-sunset"></i> Evening</a>
                 <a class="menu-button" href="/office/compline/{{  day.date|date:"Y-n-j" }}"><i class="fal fa-moon"></i> Compline</a>
             </p>
         {%  endif %}
         {%  if season %}
             {%  if evening %}
-                <p class="season">{{  day.evening_season.name }} <span class="color {{  day.evening_season.color }}"></span></p>
+                <p class="season"><span class="color {{  day.evening_season.color }}"></span> {{  day.evening_season.name }}</p>
             {%  else %}
-                <p class="season">{{  day.season.name }} <span class="color {{  day.season.color }}"></span></p>
+                <p class="season"><span class="color {{  day.season.color }}"></span> {{  day.season.name }}</p>
             {% endif %}
         {%  endif %}
 
