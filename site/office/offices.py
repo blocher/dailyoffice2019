@@ -1276,7 +1276,7 @@ class Office(object):
                         "hide": ["main-reading"],
                         "show": ["alternate-reading"],
                         "heading": "Two Year",
-                        "text": mark_safe("Read through most of the bible in two years. (Use if you pray <strong>only one</strong> of morning and evening prayer)"),
+                        "text": mark_safe("Read through most of the bible in two years. (Use if you pray <strong>either</strong> morning <strong>or</strong> evening prayer)"),
                     },
                 ],
             },
