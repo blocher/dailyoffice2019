@@ -60,7 +60,7 @@ div#settings {
     border: 2px solid hsla(0, 0%, 50%, 1);
     border-radius: 20px;
     padding: 2rem;
-    margin-bottom: 1rem;
+    margin: 1rem;
     text-align: center;
     box-shadow: 0px 3px 10px -2px hsla(150, 5%, 65%, 0.5);
     position: relative;
@@ -103,9 +103,18 @@ div#settings {
   p {
     font-weight: 900;
   }
+  .pray-with-wrapper {
+    width: 100%;
+    text-align: center;
+  }
 
+  .pray-with {
+    display: inline-block;
+    padding: .1rem;
+  }
   .menu-button {
-    margin-bottom: 2rem;
+    clear: both;
+    display: inline-block;
   }
 
   @media only screen and (max-width: 700px) {
