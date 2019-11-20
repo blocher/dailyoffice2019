@@ -1,5 +1,5 @@
 import {settings} from "./settings";
-
+import {setupCalendar} from "./calendar";
 const today = function() {
     const date = new Date();
     const year = date.getFullYear();
@@ -13,6 +13,13 @@ const current_office = function() {
      const date = new Date();
      const hours = date.getHours()
      const office = hours >= 12 ? 'evening_prayer' : 'morning_prayer';
+     return office
+}
+
+const current_office_label = function() {
+     const date = new Date();
+     const hours = date.getHours()
+     const office = hours >= 12 ? 'Evening Prayer' : 'Morning Prayer';
      return office
 }
 
@@ -41,7 +48,7 @@ const redirect = function() {
   if (document.getElementById("redirect-to-today")) {
     const date_string = today();
     const office = current_office();
-    const path = `\\office\\${office}\\${date_string}`;
+    const path = `\\${office}\\${date_string}`;
     const xhr = new XMLHttpRequest();
     xhr.open('GET', path);
     xhr.responseType = "document"
@@ -51,9 +58,10 @@ const redirect = function() {
             const elem = document.querySelector("#body");
             const newBody = xhr.response.querySelector("#body");
             elem.innerHTML = newBody.innerHTML;
-            document.querySelector("#messages").innerHTML = "Showing office for right now <a href='/'><i class=\"far fa-sync-alt\"></i></a><br><a href='" + path + "'>Permanent link for " + new Date().toDateString() + "</a></a></p>"
-            document.querySelector("#now-button").classList.add('off');
+            document.querySelector("#messages").innerHTML = "<a href='" + path + "'>Permanent link for " + current_office_label() + " for " + new Date().toDateString() + "</a></a></p>"
             settings();
+            setupCalendar();
+            document.getElementById("now-button").classList.add('on')
         }
         else {
             alert('Request failed.  Returned status of ' + xhr.status);

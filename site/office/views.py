@@ -24,6 +24,9 @@ def midday_prayer(request, year, month, day):
     md = MiddayPrayer("{}-{}-{}".format(year, month, day))
     return render(request, "office/office.html", {"office": md})
 
+def settings(request):
+    return render(request, "office/settings.html", {})
+
 def church_year(request, start_year, end_year=None):
     church_year = ChurchYear(start_year)
     months = []
@@ -34,6 +37,9 @@ def church_year(request, start_year, end_year=None):
 
     seasons = Season.objects.filter(calendar__abbreviation="ACNA_BCP2019").order_by("order").all()
     return render(request, "office/church_year.html", {"start_year": start_year, "end_year": start_year + 1, "church_year": church_year, "seasons": seasons, "months": months })
+
+def about(request):
+    return render(request, "office/about.html")
 
 def today_evening_prayer(request):
     return render(request, "office/evening_prayer/redirect.html", {})

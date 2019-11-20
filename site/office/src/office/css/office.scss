@@ -272,6 +272,10 @@
           //  text-align: center;
           //}
 
+          &.on {
+            background-color: lightgrey;
+          }
+
           &.right {
             float: right;
           }

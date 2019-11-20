@@ -2,9 +2,15 @@ import {today, getChurchYearStartYear} from "./redirect";
 
 const calendar = function() {
 
+    const current_church_year = getChurchYearStartYear(new Date())
+    document.getElementById("calendar-button" ).href =  "/church_year/" + current_church_year + "-" + (parseInt(current_church_year) + 1) + "#day-" + today()
+
     if (!document.getElementById("cal-menu-seasons-link")) {
         return;
     }
+
+    document.getElementById("cal-menu-today-link" ).href =  "/church_year/" + current_church_year + "-" + (parseInt(current_church_year) + 1) + "#day-" + today()
+
     document.getElementById("cal-menu-seasons-link").addEventListener("click", event => {
           document.getElementById("cal-menu-seasons").classList.remove('off');
           document.getElementById("cal-menu-dates").classList.add('off');
@@ -40,8 +46,7 @@ const calendar = function() {
           document.getElementById("calendar").classList.remove('off');
         });
 
-    const current_church_year = getChurchYearStartYear(new Date())
-    document.getElementById("cal-menu-today-link" ).href =  "/office/church_year/" + current_church_year + "-" + (parseInt(current_church_year) + 1) + "#day-" + today()
+
 };
 
 const setupCalendar = () =>

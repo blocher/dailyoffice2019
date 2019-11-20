@@ -89,19 +89,30 @@ const settings = () => {
         element.addEventListener("click", event => {
           document.getElementById("settings").classList.toggle("off");
           document.getElementById("office").classList.toggle("off");
-          document.getElementById("menu").classList.toggle("off");
-          document.getElementById("settings-menu").classList.toggle("off");
-          document.querySelectorAll(".toggle-settings").forEach((element, index) => {
-            element.classList.toggle("off")
-          });
+          // document.querySelectorAll(".toggle-settings").forEach((element, index) => {
+          //   element.classList.toggle("off")
+          // });
         });
       });
   };
+
+  const bindBackButtons = () => {
+    document
+        .querySelectorAll(".back-button")
+        .forEach((element, element_index) => {
+          element.setAttribute('href', document.referrer);
+          element.addEventListener("click", event => {
+            history.back();
+            return false;
+          });
+        });
+  }
 
   const setupSettings = () => {
     initializeSettings();
     addRadioButtonListeners();
     addSettingsMenuToggle();
+    bindBackButtons();
   };
 
   // TODO: Refactor into reusable module

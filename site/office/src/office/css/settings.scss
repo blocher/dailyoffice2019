@@ -110,7 +110,8 @@ div#settings {
 
   .pray-with {
     display: inline-block;
-    padding: .1rem;
+    padding: .1rem
+  ;
   }
   .menu-button {
     clear: both;
@@ -123,4 +124,12 @@ div#settings {
     }
   }
 
+}
+
+
+.about {
+  p {
+    font-size: 0.9rem;
+    line-height: 1.1rem;
+  }
 }

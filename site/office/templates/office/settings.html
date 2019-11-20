@@ -1,42 +1,6 @@
-<div id="settings" class="off">
-    <form class="form">
-
-        <h1>Daily Office Settings</h1>
-        <p><em>Setting changes take effect immediately. You do not need to save settings after you have updated them.  Your choices will be loaded the next time you come back (when using the same computer/device and browser).</em></p>
-
-        {%  for setting in office.settings %}
-
-            <h2>{{  setting.title }}</h2>
-            <section>
-                {%  for option in setting.options %}
-                    <div>
-                        <input
-                                type="radio"
-                                class="settings-radio"
-                                id="setting_{{ setting.name }}_{{ option.value }}"
-                                name="setting_{{ setting.name }}"
-                                value="{{ option.value }}"
-                                data-class_to_hide='{{ option.hide | join:"," }}'
-                                data-class_to_show='{{ option.show | join:"," }}'
-                                {% if forloop.first %}checked{% endif %}
-                        >
-                        <label for="setting_{{ setting.name }}_{{ option.value }}">
-                            <h2>{{ option.heading }}</h2>
-                            <p>{{ option.text }}</p>
-                        </label>
-                    </div>
-                {%  endfor %}
-            </section>
-            <div class="pray-with-wrapper">
-                <div class="pray-with">
-                    <a href="#" class="toggle-settings menu-button inline off"><i class="fal fa-arrow-square-left"></i> <span class="first-letter">P</span>ray with new settings</a>
-                </div>
-            </div>
-
-
-
-
-        {%  endfor %}
-
-    </form>
-</div>
+{% extends 'base.html' %}
+{% load static %}
+{% load render_bundle from webpack_loader %}
+{% block content %}
+    {%  include "office/settings_section.html" %}
+{% endblock %}
