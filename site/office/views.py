@@ -41,5 +41,5 @@ def church_year(request, start_year, end_year=None):
 def about(request):
     return render(request, "office/about.html")
 
-def today_evening_prayer(request):
+def now(request):
     return render(request, "office/evening_prayer/redirect.html", {})
