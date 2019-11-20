@@ -19,6 +19,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+
+from churchcal.calculations import ChurchYear
 from sermons import views as sermon_views
 from django_distill import distill_path
 from office import views as office_views
@@ -38,25 +40,22 @@ site.site_title = _("Elizabeth Locher's Sermon Archive")
 def get_about():
     return None
 
-def get_today_evening_prayer():
+def get_now():
     return None
 
 
 def get_days():
-
-    days_back = 365 * 2
-    days_forward = 365 * 2
-
-    base = datetime.datetime.today()
-    previous_date_list = [base - datetime.timedelta(days=x) for x in range(days_back)]
-    future_date_list = [base + datetime.timedelta(days=x) for x in range(days_forward)]
-    date_list = previous_date_list + future_date_list
+    date_list = []
+    for year in get_church_years():
+        church_year = ChurchYear(year["start_year"])
+        for day in church_year:
+            date_list.append(day.date)
     for date in date_list:
         yield {"year": date.year, "month": date.month, "day": date.day}
 
 def get_church_years():
 
-    for year in [2017, 2018, 2019, 2020, 2021, 2022]:
+    for year in range(settings.FIRST_BEGINNING_YEAR, settings.LAST_BEGINNING_YEAR + 1):
         yield {"start_year": year, "end_year": year+1}
 
 
@@ -111,7 +110,7 @@ urlpatterns = [
       ),
 
     distill_path(
-        "", office_views.today_evening_prayer, name="today_evening_prayer", distill_func=get_today_evening_prayer
+        "", office_views.now, name="now", distill_func=get_now
     ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
