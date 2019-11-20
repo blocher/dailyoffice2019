@@ -35,6 +35,8 @@ site.site_header = _("Elizabeth Locher's Sermon Archive")
 site.site_title = _("Elizabeth Locher's Sermon Archive")
 # site.favicon = staticfiles('path/to/favicon')
 
+def get_about():
+    return None
 
 def get_today_evening_prayer():
     return None
@@ -66,34 +68,46 @@ urlpatterns = [
     # path("admin/", admin.site.urls),
     path("admin/", include("material.admin.urls")),
     distill_path(
-        "office/evening_prayer/<int:year>-<int:month>-<int:day>/",
+        "evening_prayer/<int:year>-<int:month>-<int:day>/",
         office_views.evening_prayer,
         name="evening_prayer",
         distill_func=get_days,
     ),
       distill_path(
-          "office/midday_prayer/<int:year>-<int:month>-<int:day>/",
+          "midday_prayer/<int:year>-<int:month>-<int:day>/",
           office_views.midday_prayer,
           name="midday_prayer",
           distill_func=get_days,
       ),
     distill_path(
-        "office/morning_prayer/<int:year>-<int:month>-<int:day>/",
+        "morning_prayer/<int:year>-<int:month>-<int:day>/",
         office_views.morning_prayer,
         name="morning_prayer",
         distill_func=get_days,
     ),
-  distill_path(
-      "office/compline/<int:year>-<int:month>-<int:day>/",
-      office_views.compline,
-      name="compline",
-      distill_func=get_days,
-  ),
+      distill_path(
+          "compline/<int:year>-<int:month>-<int:day>/",
+          office_views.compline,
+          name="compline",
+          distill_func=get_days,
+      ),
     distill_path(
-          "office/church_year/<int:start_year>-<int:end_year>",
+          "church_year/<int:start_year>-<int:end_year>",
           office_views.church_year,
           name="church_year",
           distill_func=get_church_years,
+      ),
+      distill_path(
+          "about",
+          office_views.about,
+          name="about",
+          distill_func=get_about,
+      ),
+    distill_path(
+          "settings",
+          office_views.settings,
+          name="settings",
+          distill_func=get_about,
       ),
 
     distill_path(

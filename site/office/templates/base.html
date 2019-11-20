@@ -30,8 +30,14 @@
             <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NSB92RP"
                     height="0" width="0" style="display:none;visibility:hidden"></iframe>
         </noscript>
-        <!-- End Google Tag Manager (noscript) -->
-        {% block content %}
+        <span id="top"></span>
+        {% include "office/header.html" %}
+        <div class="main">
+            <div class="{{ show_settings_class }}">
+                {%  include "office/settings_section.html" %}
+            </div>
+            {% block content %}
+         </div>
         {% endblock %}
     </body>
 
