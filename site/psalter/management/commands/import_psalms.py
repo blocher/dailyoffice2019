@@ -45,14 +45,16 @@ class Command(BaseCommand):
                 if not verse.isnumeric():
                     continue
                 line = " ".join(words)
+                line = line.replace(" * ", "")
                 line = line.replace(" *", "")
+                line = line.replace("*", "")
                 try:
                     psalm_verse = PsalmVerse.objects.get_or_create(psalm=psalm, number=verse)[0]
                 except Exception as e:
                     print(line)
                     continue
                 line = line.replace("<br/>", " ").replace("<br />", " ").replace("<br>", " ")
-                line = line.replace("\n", " ").replace("\r", "")
+                line = line.replace("\n", " ").replace("\r", "").replace("\t", "")
                 line = line.replace("  ", " ")
                 psalm_verse.first_half = line
                 first_half_next = False

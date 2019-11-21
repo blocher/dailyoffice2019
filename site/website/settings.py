@@ -40,8 +40,11 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
+    "django.contrib.sites",
     "django.contrib.messages",
+    "django.contrib.sitemaps",
     "django.contrib.staticfiles",
+
     "django_extensions",
     "website",
     "sermons",
@@ -202,6 +205,8 @@ CACHES = {
         'LOCATION': '127.0.0.1:11211',
     }
 }
+
+SITE_ID = 1
 
 FIRST_BEGINNING_YEAR = 2017
 LAST_BEGINNING_YEAR = 2022
