@@ -2,12 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4d3b96da-e02b-4ac5-80bf-e1b5c662734c" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/churchcal/calculations.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/churchcal/calculations.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/psalter/management/commands/import_psalms.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/psalter/management/commands/import_psalms.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/website/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/website/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/website/migrations/0001_update_site_name.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/migrations/0001_update_site_name.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -206,7 +201,7 @@
       <workItem from="1574215693297" duration="5665000" />
       <workItem from="1574269639097" duration="2889000" />
       <workItem from="1574276114947" duration="1003000" />
-      <workItem from="1574306354504" duration="4862000" />
+      <workItem from="1574306354504" duration="4999000" />
     </task>
     <servers />
   </component>
