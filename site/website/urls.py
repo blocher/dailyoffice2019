@@ -13,26 +13,24 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-import datetime
+from datetime import date
 
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
-
-from churchcal.calculations import ChurchYear
-from sermons import views as sermon_views
-from django_distill import distill_path
-from office import views as office_views
-
-from django.contrib.staticfiles.templatetags.staticfiles import static as staticfiles
+from django.contrib.sitemaps.views import sitemap
 from django.urls import path, include
 from django.utils.translation import ugettext_lazy as _
-
+from django_distill import distill_path
+from future.backports.datetime import timedelta
 from material.admin.sites import site
 
-from office.views import evening_prayer
+from django.contrib.sitemaps import views
 
+from churchcal.calculations import ChurchYear
+from office import views as office_views
+from sermons import views as sermon_views
+from django.contrib.sitemaps import Sitemap
 site.site_header = _("Elizabeth Locher's Sermon Archive")
 site.site_title = _("Elizabeth Locher's Sermon Archive")
 # site.favicon = staticfiles('path/to/favicon')
@@ -43,6 +41,8 @@ def get_about():
 def get_now():
     return None
 
+def get_distill_sitemap():
+    return None
 
 def get_days():
     date_list = []
@@ -58,6 +58,145 @@ def get_church_years():
     for year in range(settings.FIRST_BEGINNING_YEAR, settings.LAST_BEGINNING_YEAR + 1):
         yield {"start_year": year, "end_year": year+1}
 
+class MorningPrayerSitemap(Sitemap):
+    changefreq = "daily"
+    priority = 0.7
+
+    def items(self):
+        days = []
+        for day in get_days():
+            days.append(day)
+        return days
+
+    def lastmod(self, obj):
+        return date.today()
+
+    def location(self, obj):
+        return '/morning_prayer/{}-{}-{}'.format(obj['year'], obj['month'], obj['day']);
+
+class MiddayPrayerSitemap(Sitemap):
+    changefreq = "daily"
+    priority = 0.6
+
+    def items(self):
+        days = []
+        for day in get_days():
+            days.append(day)
+        return days
+
+    def lastmod(self, obj):
+        return date.today()
+
+    def location(self, obj):
+        return '/midday_prayer/{}-{}-{}'.format(obj['year'], obj['month'], obj['day']);
+
+class EveningPrayerSitemap(Sitemap):
+    changefreq = "daily"
+    priority = 0.7
+    protocol = "https"
+
+    def items(self):
+        days = []
+        for day in get_days():
+            days.append(day)
+        return days
+
+    def lastmod(self, obj):
+        return date.today()
+
+    def location(self, obj):
+        return '/evening_prayer/{}-{}-{}'.format(obj['year'], obj['month'], obj['day']);
+
+class ComplineSitemap(Sitemap):
+    changefreq = "daily"
+    priority = 0.6
+    protocol = "https"
+
+    def items(self):
+        days = []
+        for day in get_days():
+            days.append(day)
+        return days
+
+    def lastmod(self, obj):
+        return date.today()
+
+    def location(self, obj):
+        return '/compline/{}-{}-{}'.format(obj['year'], obj['month'], obj['day']);
+
+class CalendarSitemap(Sitemap):
+    changefreq = "daily"
+    priority = 0.7
+    protocol = "https"
+
+    def items(self):
+        years = []
+        for year in get_church_years():
+            print(year)
+            years.append(year)
+        return years
+
+    def lastmod(self, obj):
+        return date.today()
+
+    def location(self, obj):
+        return '/church_year/{}-{}'.format(obj['start_year'], obj['end_year']);
+
+class SettingsSitemap(Sitemap):
+    changefreq = "daily"
+    priority = 0.3
+    protocol = "https"
+
+    def items(self):
+        return ['settings']
+
+    def lastmod(self, obj):
+        return date.today()
+
+    def location(self, obj):
+        return '/{}'.format(obj);
+
+class AboutSitemap(Sitemap):
+    changefreq = "daily"
+    priority = 0.9
+    protocol = "https"
+
+    def items(self):
+        return ['about']
+
+    def lastmod(self, obj):
+        return date.today()
+
+    def location(self, obj):
+        return '/{}'.format(obj);
+
+class HomeSitemap(Sitemap):
+    changefreq = "always"
+    priority = 1.0
+    protocol = "https"
+
+    def items(self):
+        return ['home']
+
+    def lastmod(self, obj):
+        return False
+
+    def location(self, obj):
+        return '/';
+
+sitemaps = {
+    'morning_prayer': MorningPrayerSitemap(),
+    'midday_prayer': MiddayPrayerSitemap(),
+    'evening_prayer': EveningPrayerSitemap(),
+    'compline': ComplineSitemap(),
+    'calendar': CalendarSitemap(),
+    'settings': SettingsSitemap(),
+    'about': AboutSitemap(),
+    'home': HomeSitemap(),
+}
+
+def get_sitemap_distill():
+    return {}
 
 urlpatterns = [
     path("sermons", sermon_views.sermons, name="sermons"),
@@ -112,6 +251,9 @@ urlpatterns = [
     distill_path(
         "", office_views.now, name="now", distill_func=get_now
     ),
+    distill_path('sitemap.xml', views.index, {'sitemaps': sitemaps},  distill_func=get_distill_sitemap, name="sitemap_index"),
+    distill_path('sitemap-<section>.xml', views.sitemap, {'sitemaps': sitemaps},
+         name='django.contrib.sitemaps.views.sitemap', distill_func=get_distill_sitemap),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
