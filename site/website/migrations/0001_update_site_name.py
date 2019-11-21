@@ -4,7 +4,7 @@ from django.db import migrations
 
 def load_data(apps, schema_editor):
     Site = apps.get_model('sites', 'Site')
-    Site.objects.filter(id=1).update(name="dailyoffice2019.com", domain="dailyoffice2019.com")
+    Site.objects.filter(id=1).update(name="www.dailyoffice2019.com", domain="www.dailyoffice2019.com")
 
 def reverse_load_data(apps, schema_editor):
     Site = apps.get_model('sites', 'Site')
