@@ -3,11 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="4d3b96da-e02b-4ac5-80bf-e1b5c662734c" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/churchcal/calculations.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/churchcal/calculations.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/offices.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/offices.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/church_year.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/church_year.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/office.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/office.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/about.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/about.html" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -207,7 +203,7 @@
       <workItem from="1574269639097" duration="2889000" />
       <workItem from="1574276114947" duration="1003000" />
       <workItem from="1574306354504" duration="12346000" />
-      <workItem from="1574546798562" duration="12847000" />
+      <workItem from="1574546798562" duration="14925000" />
     </task>
     <servers />
   </component>
