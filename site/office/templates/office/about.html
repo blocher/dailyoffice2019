@@ -2,6 +2,96 @@
 {% load static %}
 {% load render_bundle from webpack_loader %}
 
+{% block extra_head %}
+<script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [{
+        "@type": "Question",
+        "name": "What is this site for?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "This site invites you to join with Christians around the world in praying with the Church, at any time or in any place you may find yourself. It makes it easy to pray daily morning, midday, evening, and compline (bedtime) prayer without flipping pages, searching for scripture readings or calendars, or interpreting rubrics. The prayers are presented from <em><em>The Book of Common Prayer (2019)</em></em> of the Anglican Church in North America and reflect the ancient patterns of daily prayer Christians have used since the earliest days of the church.</p>"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the daily office?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Daily Morning Prayer and Daily Evening Prayer are the established rites (offices) by which, both corporately and individually, God’s people annually encounter the whole of the Holy Scriptures, daily confess their sins and praise Almighty God, and offer timely thanksgivings, petitions, and intercessions."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Where are the prayers taken from?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "These prayers are excellent for use by Christians of any tradition, but this site is intended to accurately reflect the liturgy, calendar, and rubrics of <em>The Book of Common Prayer (2019)</em> of the Anglican Church in North America. The official texts can be found on the <a href='http://bcp2019.anglicanchurch.net/index.php/downloads/' target='_blank'>website of the Anglican Church in North America</a>."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Which translation of the Bible is used?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Scripture readings are taken from the English Standard Version. Readings from the Deuterocanon (Apocrypha) are taken from the Revised Standard Version. The Psalter is the New Coverdale Psalter from <em>The Book of Common Prayer (2019)</em>."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is this an official site?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No, this site was built as a personal project and is not affiliated with any church or organization. It does intend, as much as possible, to accurately reflect <em>The Book of Common Prayer (2019)</em> of the Anglican Church in North America."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I customize the prayers to the way I usually use the daily office?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes! We’ve chosen good default options so you can start praying right away. If you prefer different options, we offer many choices under 'Settings'. Currently, it is possible to change from a one-year to a two-year cycle of scripture readings, switch from a sixty-day cycle to a thirty-day cycle of psalms, and make other choices as permitted in the rubrics of The Book of Common Prayer. More options are coming soon. Your settings will be saved the next time you pray on the same computer/phone/device and browser."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Why should I use this site instead of the others already available?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "This site is built to be streamlined, clean, and easy-to-use while being extremely flexible for those who want a greater level of control over how they pray. It is also very accurate and faithful to the text, rubrics, and calendar of <em>The Book of Common Prayer (2019)</em>. All that said, please use what works for you. <a target='_blank' href='http://legereme.com/'>Legerme</a> is another good option for the 2019 prayer book texts. <a target='_blank' href='http://www.stbedeproductions.com/breviary/'>St. Bede's Breviary</a>, <a target='_blank' href='https://www.missionstclare.com/english/index.html'>Mission St. Claire</a>, and <a target='_blank' href='https://dailyoffice.app/'>dailyoffice.app</a> are good options for the 1979 prayer book texts."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What new features are coming soon?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "<p>iOS (iPhone and iPad) and Android Apps</p><p>Ability to create an account to save your settings across multiple computers,  phones, and browsers</p><p>Biographies for individual saints</p><p>Eucharistic readings</p><p>Much more ... if you would like to request a feature, email us at <a href='mailto:feedback@dailyoffice2019.com'>feedback@dailyoffice2019.com</a>.</p>"
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Where can I provide feedback?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Send an email to <a href='mailto:feedback@dailyoffice2019.com'>feedback@dailyoffice2019.com</a>. We welcome suggestions for new features or ways to make this site easier to use. We especially appreciate corrections for errors in the text, calendar, or rubrics."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How much of scripture is read?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "he Old Testament is read in its entirety once each year (with the exception of a few passages in Leviticus, Numbers, Joshua, Judges, Ezra, Nehemiah, Ezekiel, and the majority of Chronicles). The Gospels and Acts are read in their entirety twice each year, at Morning Prayer during the first part of the year, at Evening Prayer during the second part of the year. The Epistles are read twice each year in the opposite pattern, except for the  Revelation to John, which is read only once, during the Advent season. Select passages of the Apocrypha have been retained. In general, readings move continuously through books of the Bible, interrupted only by Holy Days. For most Holy Days a single proper lesson is included, usually in Morning Prayer. For major feasts of our Lord, two proper lessons are included."
+        }
+      }
+    ]}
+</script>
+{%  endblock %}
+
+
 {% block content %}
 
     <div class="about">
@@ -50,7 +140,7 @@
         <p>Send an email to <a href="mailto:feedback@dailyoffice2019.com">feedback@dailyoffice2019.com</a>. We welcome suggestions for new features or ways to make this site easier to use. We especially appreciate corrections for errors in the text, calendar, or rubrics.</p>
 
         <h3>HOW MUCH OF SCRIPTURE IS READ?</h3>
-        <p> The Old Testament is read in its entirety once each year (with the exception of a few passages in Leviticus, Numbers, Joshua, Judges, Ezra, Nehemiah, Ezekiel, and the majority of Chronicles). The Gospels and Acts are read in their entirety twice each year, at Morning Prayer during the first part of the year, at Evening Prayer during the second part of the year. The Epistles are read twice each year in the opposite pattern, except for the  Revelation to John, which is read only once, during the Advent season. Select passages of the Apocrypha have been retained. In general, readings move continuously through books of the Bible, interrupted only by Holy Days. For most Holy Days a single proper lesson is included, usually in Morning Prayer. For major feasts of our Lord, two proper lessons are included.</p>
+        <p>The Old Testament is read in its entirety once each year (with the exception of a few passages in Leviticus, Numbers, Joshua, Judges, Ezra, Nehemiah, Ezekiel, and the majority of Chronicles). The Gospels and Acts are read in their entirety twice each year, at Morning Prayer during the first part of the year, at Evening Prayer during the second part of the year. The Epistles are read twice each year in the opposite pattern, except for the  Revelation to John, which is read only once, during the Advent season. Select passages of the Apocrypha have been retained. In general, readings move continuously through books of the Bible, interrupted only by Holy Days. For most Holy Days a single proper lesson is included, usually in Morning Prayer. For major feasts of our Lord, two proper lessons are included.</p>
         <h5>Adapted from the Book of Common Prayer (2019)</h5>
 
     </div>
