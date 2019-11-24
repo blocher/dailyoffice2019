@@ -25,9 +25,6 @@ meta_defaults = {
     "# image_height": "",
     "object_type": "website",
     "site_name": generic_title,
-    "extra_props": {
-        'viewport': 'width": "device-width, initial-scale": "1.0, minimum-scale": "1.0'
-    },
     "extra_custom_props": [
             ('http-equiv', 'Content-Type', 'text/html; charset=UTF-8'),
         ]
