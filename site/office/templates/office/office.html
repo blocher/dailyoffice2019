@@ -2,6 +2,47 @@
 {% load static %}
 {% load render_bundle from webpack_loader %}
 
+{% block extra_head %}
+    <script type="application/ld+json">
+        [
+            {
+                  "@context" : "http://schema.org",
+                  "@type" : "Event",
+                  "name" : "{{ office.title }}",
+                  "startDate" : "{{  office.start_time|date:"c" }}",
+                  "endDate": "{{  office.end_time|date:"c" }}",
+                  "description" : "{{ office.description }}",
+                  "url" : "https://www.dailyoffice2109.com{{ request.get_full_path }}",
+                  "isAccessibleForFree": true,
+                   "location": {
+                      "@type": "Place",
+                      "name": "Accessible worldwide via computer or phone",
+                      "address": {
+                        "addressCountry": "US"
+                      }
+                   }
+                },
+                {
+                  "@context" : "http://schema.org",
+                  "@type" : "Event",
+                  "name" : "{{ office.title }}",
+                  "startDate" : "{{  office.start_time|date:"c" }}",
+                  "endDate": "{{  office.end_time|date:"c" }}",
+                  "description" : "{{ office.description }}",
+                  "url" : "https://www.dailyoffice2109.com{{ request.get_full_path }}",
+                  "isAccessibleForFree": true,
+                   "location": {
+                      "@type": "Place",
+                      "name": "Accessible worldwide via computer or phone",
+                      "address": {
+                        "addressCountry": "CA"
+                      }
+                   }
+                }
+        ]
+    </script>
+{% endblock %}
+
 {% block content %}
 
     <div id="office">

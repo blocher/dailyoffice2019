@@ -6,6 +6,7 @@ from dateutil.parser import parse
 from django.utils.functional import cached_property
 from indexed import IndexedOrderedDict
 
+from office.offices import MorningPrayer, MiddayPrayer, EveningPrayer, Compline
 from .utils import advent, week_days
 from churchcal.models import Commemoration, FerialCommemoration, Proper, Season, Calendar, CommemorationRank
 
@@ -26,6 +27,7 @@ class CalendarDate(object):
         self.season = None
 
         self.year = year
+
 
     def _find_proper(self):
         date = datetime.strptime("2019-{}-{}".format(self.date.month, self.date.day), "%Y-%m-%d").date()

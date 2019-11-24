@@ -27,6 +27,8 @@
         <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon-16x16.png' %}">
         <link rel="manifest" href="{% static 'site.webmanifest' %}">
         {% include 'meta/meta.html' %}
+        {% block extra_head %}
+        {% endblock %}
     </head>
 
     <body id="body">
@@ -41,8 +43,9 @@
                 {%  include "office/settings_section.html" %}
             </div>
             {% block content %}
+            {% endblock %}
          </div>
-        {% endblock %}
+
     </body>
 
 </html>
