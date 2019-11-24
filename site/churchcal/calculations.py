@@ -279,6 +279,9 @@ class ChurchYear(object):
         start_date = advent(year_of_advent)
         end_date = advent(year_of_advent + 1) - timedelta(days=1)
 
+        self.start_date = start_date
+        self.end_date = end_date
+
         self.seasons = self._get_seasons()
         self.season_tracker = None
         # create each date

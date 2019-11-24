@@ -1,7 +1,7 @@
 {% load static %}
 {% load render_bundle from webpack_loader %}
 
-<html>
+<html  id="html">
     <head>
         <!-- Google Tag Manager -->
         <script>(function (w, d, s, l, i) {
@@ -26,6 +26,7 @@
         <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon-32x32.png' %}">
         <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon-16x16.png' %}">
         <link rel="manifest" href="{% static 'site.webmanifest' %}">
+        {% include 'meta/meta.html' %}
     </head>
 
     <body id="body">
@@ -34,7 +35,6 @@
             <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NSB92RP"
                     height="0" width="0" style="display:none;visibility:hidden"></iframe>
         </noscript>
-        <span id="top"></span>
         {% include "office/header.html" %}
         <div class="main">
             <div class="{{ show_settings_class }}">

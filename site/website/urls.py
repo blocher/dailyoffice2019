@@ -29,19 +29,16 @@ from django.contrib.sitemaps import views
 
 from churchcal.calculations import ChurchYear
 from office import views as office_views
-from sermons import views as sermon_views
+# from sermons import views as sermon_views
 from django.contrib.sitemaps import Sitemap
-site.site_header = _("Elizabeth Locher's Sermon Archive")
-site.site_title = _("Elizabeth Locher's Sermon Archive")
+# site.site_header = _("Elizabeth Locher's Sermon Archive")
+# site.site_title = _("Elizabeth Locher's Sermon Archive")
 # site.favicon = staticfiles('path/to/favicon')
 
 def get_about():
     return None
 
 def get_now():
-    return None
-
-def get_distill_sitemap():
     return None
 
 def get_days():
@@ -61,6 +58,7 @@ def get_church_years():
 class MorningPrayerSitemap(Sitemap):
     changefreq = "daily"
     priority = 0.7
+    protocol = "https"
 
     def items(self):
         days = []
@@ -76,7 +74,8 @@ class MorningPrayerSitemap(Sitemap):
 
 class MiddayPrayerSitemap(Sitemap):
     changefreq = "daily"
-    priority = 0.6
+    priority = 0.5
+    protocol = "https"
 
     def items(self):
         days = []
@@ -109,7 +108,7 @@ class EveningPrayerSitemap(Sitemap):
 
 class ComplineSitemap(Sitemap):
     changefreq = "daily"
-    priority = 0.6
+    priority = 0.5
     protocol = "https"
 
     def items(self):
@@ -126,7 +125,7 @@ class ComplineSitemap(Sitemap):
 
 class CalendarSitemap(Sitemap):
     changefreq = "daily"
-    priority = 0.7
+    priority = 0.8
     protocol = "https"
 
     def items(self):
@@ -195,16 +194,25 @@ sitemaps = {
     'home': HomeSitemap(),
 }
 
-def get_sitemap_distill():
-    return {}
+def get_distill_sitemap():
+
+    yield None
+
+def sitemap_index_view(request):
+    return views.index(request, sitemaps)
+
+def sitemap_view(request):
+    return views.sitemap(request, sitemaps)
+
+
 
 urlpatterns = [
-    path("sermons", sermon_views.sermons, name="sermons"),
-    path("sermon/<uuid:id>", sermon_views.sermon, name="sermon"),
-    path("djrichtextfield/", include("djrichtextfield.urls")),
+    # path("sermons", sermon_views.sermons, name="sermons"),
+    # path("sermon/<uuid:id>", sermon_views.sermon, name="sermon"),
+    # path("djrichtextfield/", include("djrichtextfield.urls")),
     # path("jet/", include("jet.urls", "jet")),
     # path("admin/", admin.site.urls),
-    path("admin/", include("material.admin.urls")),
+    # path("admin/", include("material.admin.urls")),
     distill_path(
         "evening_prayer/<int:year>-<int:month>-<int:day>/",
         office_views.evening_prayer,
@@ -230,29 +238,27 @@ urlpatterns = [
           distill_func=get_days,
       ),
     distill_path(
-          "church_year/<int:start_year>-<int:end_year>",
+          "church_year/<int:start_year>-<int:end_year>/",
           office_views.church_year,
           name="church_year",
           distill_func=get_church_years,
       ),
       distill_path(
-          "about",
+          "about/",
           office_views.about,
           name="about",
           distill_func=get_about,
       ),
     distill_path(
-          "settings",
+          "settings/",
           office_views.settings,
           name="settings",
           distill_func=get_about,
       ),
-
     distill_path(
-        "", office_views.now, name="now", distill_func=get_now
+        "", office_views.now, distill_file="index.html", name="now", distill_func=get_now
     ),
-    distill_path('sitemap.xml', views.index, {'sitemaps': sitemaps},  distill_func=get_distill_sitemap, name="sitemap_index"),
-    distill_path('sitemap-<section>.xml', views.sitemap, {'sitemaps': sitemaps},
+    distill_path('sitemap.xml', sitemap_view,
          name='django.contrib.sitemaps.views.sitemap', distill_func=get_distill_sitemap),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
@@ -260,9 +266,9 @@ if settings.DEBUG:
     import debug_toolbar
 
     urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns
+#
+# admin.site.site_title = "Sermon Database"
+# admin.site.site_header = "Sermon Database Administration"
+# admin.site.index_title = "Sermon Database Administration"
 
-admin.site.site_title = "Sermon Database"
-admin.site.site_header = "Sermon Database Administration"
-admin.site.index_title = "Sermon Database Administration"
-
-handler404 = "sermons.views.handle404"
+# handler404 = "sermons.views.handle404"
