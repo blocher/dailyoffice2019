@@ -31,6 +31,7 @@ django-dotenv==1.4.2
 django-extensions==2.2.3
 django-material-admin==1.4.6
 django-mathfilters==0.4.0
+django-meta==1.5.2
 django-model-utils==3.2.0
 django-richtextfield==1.4.0
 django-taggit==1.1.0

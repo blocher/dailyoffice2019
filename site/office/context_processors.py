@@ -16,7 +16,6 @@ def get_on(path):
     return None
 
 def settings(request):
-    print(request.path)
     return {
         "on": get_on(request.path),
         "show_settings_class": "" if get_on(request.path) == "settings-button" else "off",

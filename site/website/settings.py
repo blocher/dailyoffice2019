@@ -35,8 +35,8 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
-    "material.admin",
-    "django.contrib.admin",
+    # "material.admin",
+    # "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -47,11 +47,12 @@ INSTALLED_APPS = [
 
     "django_extensions",
     "website",
-    "sermons",
+    #"sermons",
     "churchcal",
     "psalter",
     "bible",
     "mathfilters",
+    "meta",
     "office",
     "debug_toolbar",
     "djrichtextfield",
@@ -210,3 +211,18 @@ SITE_ID = 1
 
 FIRST_BEGINNING_YEAR = 2017
 LAST_BEGINNING_YEAR = 2022
+
+META_SITE_PROTOCOL = "https"
+META_SITE_DOMAIN = "www.dailyoffice2019.com"
+META_SITE_TYPE = "website"
+META_SITE_NAME = "The Daily Office"
+META_DEFAULT_KEYWORDS = ["daily office", "prayer", "divine office", "daily prayer", "evening prayer", "morning prayer", "compline", "midday prayer", "noonday prayer", "nones", "matins", "vespers", "evensong", "liturgy of the hours", "breviary", "anglican", "episcopal", "Anglican Church in North America", "ACNA", "common prayer", "book of common prayer", "bcp", "2019"]
+META_USE_OG_PROPERTIES = True
+META_USE_TWITTER_PROPERTIES = True
+META_USE_GOOGLEPLUS_PROPERTIES = True
+META_USE_TITLE_TAG = True
+META_SITE_TYPE = "website"
+META_FB_APPID = "826553607777260"
+META_FB_AUTHOR_URL = "https://www.dailyoffice2019.com"
+META_TWITTER_AUTHOR = "Daily Office, Book of Common Prayer 2019"
+META_TWITTER_SITE = "https://www.dailyoffice2019.com"

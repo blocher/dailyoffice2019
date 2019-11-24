@@ -7,6 +7,7 @@ from django.utils.safestring import mark_safe
 
 from churchcal.calculations import get_calendar_date
 from office.models import HolyDayOfficeDay, StandardOfficeDay, ThirtyDayPsalterDay
+# from office.views import meta_defaults
 from psalter.utils import get_psalms
 
 from office.utils import passage_to_citation
@@ -70,9 +71,9 @@ class MiddayCommemorationListing(OfficeSection):
     def data(self):
         return {
             "day": self.date,
-            "evening": True,
+            "evening": False,
             "heading": "This Day's Commemoration{}".format("s" if len(self.date.all) > 1 else ""),
-            "commemorations": self.date.all_evening,
+            "commemorations": self.date.all,
         }
 
 class EPCommemorationListing(OfficeSection):
@@ -1200,6 +1201,14 @@ class Office(object):
 
         self.thirty_day_psalter_day = ThirtyDayPsalterDay.objects.get(day=self.date.date.day)
 
+        print(self.office_readings, self.thirty_day_psalter_day)
+
+        primary_feast_name = self.date.primary_evening.name if self.name == "Evening Prayer" or self.name == "Compline" else self.date.primary.name
+        self.title = "{} for {}: {} | The Daily Office according to The Book of Common Prayer (2019)".format(self.name,
+                                                                                                             self.date.date.strftime(
+                                                                                                                 "%A %B %-d, %Y"),
+                                                                                                             primary_feast_name)
+
     @cached_property
     def links(self):
 
@@ -1435,6 +1444,12 @@ class EveningPrayer(Office):
     name = "Evening Prayer"
     office = "evening_prayer"
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Office: {}, Date: {}, Commemoration: {}, Psalms (30 Day Cycle): {}, Psalms (60 Day Cycle): {}, First Reading: {}, Second Reading: {}, Prayer Book: {}".format("Daily Evening Prayer", self.date.date.strftime(
+                                                                                                                 "%A %B %-d, %Y"),  self.date.primary_evening.name, self.thirty_day_psalter_day.ep_psalms.replace(',', ' '), self.office_readings.ep_psalms.replace(',', ' '), self.office_readings.ep_reading_1, self.office_readings.ep_reading_2, "The Book of Common Prayer (2019), Anglican Church in North America")
+
+
     @cached_property
     def modules(self):
         return [
@@ -1469,6 +1484,12 @@ class MorningPrayer(Office):
     name = "Morning Prayer"
     office = "morning_prayer"
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Office: {}, Date: {}, Commemoration: {}, Psalms (30 Day Cycle): {}, Psalms (60 Day Cycle): {}, First Reading: {}, Second Reading: {}, Prayer Book: {}".format("Daily Morning Prayer", self.date.date.strftime(
+                                                                                                                 "%A %B %-d, %Y"),  self.date.primary.name, self.thirty_day_psalter_day.mp_psalms.replace(',', ' '), self.office_readings.mp_psalms.replace(',', ' '), self.office_readings.mp_reading_1, self.office_readings.mp_reading_2, "The Book of Common Prayer (2019), Anglican Church in North America")
+
+
     @cached_property
     def modules(self):
         return [
@@ -1502,6 +1523,10 @@ class Compline(Office):
     name = "Compline"
     office = "compline"
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Office: {}, Date: {}, Commemoration: {}, Prayer Book: {}".format("Compline (Bedtime Prayer)", self.date.date.strftime(
+                                                                                                                 "%A %B %-d, %Y"),  self.date.primary_evening.name, "The Book of Common Prayer (2019), Anglican Church in North America")
     @cached_property
     def modules(self):
         return [
@@ -1521,6 +1546,11 @@ class Compline(Office):
 class MiddayPrayer(Office):
     name = "Midday Prayer"
     office = "midday_prayer"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.description = "Office: {}, Date: {}, Commemoration: {}, Prayer Book: {}".format("Midday Prayer", self.date.date.strftime(
+                                                                                                                 "%A %B %-d, %Y"),  self.date.primary_evening.name, "The Book of Common Prayer (2019), Anglican Church in North America")
 
     @cached_property
     def modules(self):
