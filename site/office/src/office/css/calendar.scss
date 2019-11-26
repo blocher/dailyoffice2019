@@ -219,6 +219,19 @@
 
   }
 
+  .year-links {
+    display:flex;
+    width:50%;
+    margin: auto;
+    clear: both;
+
+    a {
+      flex-basis: 50%;
+      display: inline;
+    }
+
+  }
+
 }
 
 

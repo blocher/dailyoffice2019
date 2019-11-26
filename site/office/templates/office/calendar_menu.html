@@ -17,7 +17,14 @@
         <div id="cal-menu-dates" class="menu-section dates off">
             <p class="close-cal-menu"><i class="fal fa-times-square"></i></p>
             <h3>Dates</h3>
-            <p><a class="menu-button" href="/church_year/{{ start_year|sub:1 }}-{{ end_year|sub:1 }}"><i class="fas fa-arrow-left"></i> {{ start_year|sub:1 }} - {{ end_year|sub:1 }}</a> <a class="menu-button" href="/church_year/{{ start_year|add:1 }}-{{ end_year|add:1 }}">{{ start_year|add:1 }} - {{ end_year|add:1 }} <i class="fas fa-arrow-right"></i> </a></p>
+            <div class="year-links">
+                {%  if not hide_previous %}
+                    <a class="menu-button" href="/church_year/{{ start_year|sub:1 }}-{{ end_year|sub:1 }}"><i class="fas fa-arrow-left"></i> {{ start_year|sub:1 }} - {{ end_year|sub:1 }}</a>
+                {% endif %}
+                {%  if not hide_next %}
+                    <a class="menu-button" href="/church_year/{{ start_year|add:1 }}-{{ end_year|add:1 }}">{{ start_year|add:1 }} - {{ end_year|add:1 }} <i class="fas fa-arrow-right"></i></a>
+                {%  endif %}
+            </div>
             <div class="menu-months">
                 <p>
                 {%  for month in months %}
