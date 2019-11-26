@@ -982,7 +982,7 @@ class Creed(OfficeSection):
 class Prayers(OfficeSection):
     @cached_property
     def data(self):
-        return {}
+        return {"heading": "The Prayers"}
 
 
 class Suffrages(OfficeSection):

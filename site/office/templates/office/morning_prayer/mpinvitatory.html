@@ -2,14 +2,16 @@
 <h4>{{ data.subheading}}</h4>
 <p><em>{{ data.rubric }}</em></p>
 {% if data.antiphon %}
+    <div class="antiphon">
         <p class="hanging-indent">{{ data.antiphon.first_line }}</p>
         <p class="indent"><strong>{{ data.antiphon.second_line }}</strong></p>
-        <p>&nbsp;</p>
+    </div>
 {%  endif %}
 {{  data.content }}
 <h5>{{  data.citation }}</h5>
 {% if data.antiphon %}
-        <p>&nbsp;</p>
+    <div class="antiphon">
         <p class="hanging-indent">{{ data.antiphon.first_line }}</p>
         <p class="indent"><strong>{{ data.antiphon.second_line }}</strong></p>
+    </div>
 {%  endif %}
