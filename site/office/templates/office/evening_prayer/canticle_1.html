@@ -1,7 +1,20 @@
 <h2>MAGNIFICAT</h2>
 <h4>The Song of Mary</h4>
 <p><em>Officiant and People, all standing</em></p>
+{%  if data.antiphon %}
 
+    <div class="antiphon_literal">
+        <p><strong>{{ data.antiphon.english }}</strong></p>
+    </div>
+
+    <div class="antiphon_paraphrase off">
+        <p><strong>{{ data.antiphon.hymn }}</strong></p>
+    </div>
+
+    <div class="antiphon_latin off">
+        <p><strong>{{ data.antiphon.latin }}</strong></p>
+    </div>
+{%  endif %}
 <p class="hanging-indent"><strong>My soul magnifies the Lord,<span class="asterisk">*</span></strong></p>
 <p class="indent"><strong>and my spirit rejoices in God my Savior;</strong></p>
 <p class="hanging-indent"><strong>For he has regarded<span class="asterisk">*</span></strong></p>
@@ -23,6 +36,19 @@
 <p class="hanging-indent">&nbsp;</p>
 <p class="hanging-indent"><strong>Glory be to the Father, and to the Son, and to the Holy Spirit;<span class="asterisk">*</span></strong></p>
 <p class="indent"><strong>as it was in the beginning, is now, and ever shall be, world without end. Amen.</strong></p>
+{%  if data.antiphon %}
+    <div class="antiphon_literal">
+        <p><strong>{{ data.antiphon.english }}</strong></p>
+    </div>
 
+    <div class="antiphon_paraphrase off">
+        <p><strong>{{ data.antiphon.hymn }}</strong></p>
+    </div>
+
+    <div class="antiphon_latin off">
+        <p><strong>{{ data.antiphon.latin }}</strong></p>
+    </div>
+
+{%  endif %}
 
 <h5>LUKE 1:46-55</h5>

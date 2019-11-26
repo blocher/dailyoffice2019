@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = False if os.getenv("DEBUG", "False") == "False" else "True"
 DEBUG = True
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*", "127.0.0.1:8000", "127.0.0.1", "dailyoffice2019.com", "www.dailyoffice2019.com"]
 
 
 # Application definition
@@ -61,11 +61,12 @@ INSTALLED_APPS = [
     "array_tags",
     "django_distill",
     "webpack_loader",
+    "robots",
 ]
 
 MIDDLEWARE = [
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -73,6 +74,9 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+if DEBUG:
+    MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE
 
 ROOT_URLCONF = "website.urls"
 
@@ -226,3 +230,7 @@ META_FB_APPID = "826553607777260"
 META_FB_AUTHOR_URL = "https://www.dailyoffice2019.com"
 META_TWITTER_AUTHOR = "Daily Office, Book of Common Prayer 2019"
 META_TWITTER_SITE = "https://www.dailyoffice2019.com"
+
+ROBOTS_SITEMAP_URLS = [
+    'https://www.dailyoffice2019.com/sitemap.xml',
+]

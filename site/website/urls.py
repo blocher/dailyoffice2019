@@ -21,6 +21,7 @@ from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
 from django.urls import path, include
 from django.utils.translation import ugettext_lazy as _
+from django.views.generic import TemplateView
 from django_distill import distill_path
 from future.backports.datetime import timedelta
 from material.admin.sites import site
@@ -34,11 +35,15 @@ from django.contrib.sitemaps import Sitemap
 # site.site_header = _("Elizabeth Locher's Sermon Archive")
 # site.site_title = _("Elizabeth Locher's Sermon Archive")
 # site.favicon = staticfiles('path/to/favicon')
+from django.views.static import serve
 
 def get_about():
     return None
 
 def get_now():
+    return None
+
+def get_none():
     return None
 
 def get_days():
@@ -260,7 +265,9 @@ urlpatterns = [
     ),
     distill_path('sitemap.xml', sitemap_view,
          name='django.contrib.sitemaps.views.sitemap', distill_func=get_distill_sitemap),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    distill_path('404/', office_views.four_oh_four, name='404', distill_func=get_none),
+    distill_path('robots.txt', TemplateView.as_view(template_name="office/robots.txt", content_type='text/plain'), name="robots", distill_func=get_none)
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:
     import debug_toolbar

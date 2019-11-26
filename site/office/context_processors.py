@@ -209,5 +209,39 @@ def settings(request):
                     },
                 ],
             },
+            {
+                "title": "Advent O Antiphons",
+                "name": "o_antiphons",
+                "options": [
+                    {
+                        "value": "literal",
+                        "hide": ["antiphon_paraphrase, antiphon_latin"],
+                        "show": ["antiphon_literal"],
+                        "heading": "Literal",
+                        "text": "Literal translation of the orignal Latin",
+                    },
+                    {
+                        "value": "paraphrase",
+                        "hide": ["antiphon_literal, antiphon_latin"],
+                        "show": ["antiphon_paraphrase"],
+                        "heading": "Hymnal",
+                        "text": "Paraphrase used for the hymn, O Come, O Come Emmanuel",
+                    },
+                    {
+                        "value": "latin",
+                        "hide": ["antiphon_paraphrase, antiphon_literal"],
+                        "show": ["antiphon_latin"],
+                        "heading": "Latin",
+                        "text": "Original Latin",
+                    },
+                    {
+                        "value": "none",
+                        "hide": ["antiphon_paraphrase, antiphon_latin", "antiphon_literal"],
+                        "show": [""],
+                        "heading": "None",
+                        "text": "Hide the antiphons",
+                    },
+                ],
+            },
         ]
     }
