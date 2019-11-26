@@ -218,54 +218,54 @@ urlpatterns = [
     # path("jet/", include("jet.urls", "jet")),
     # path("admin/", admin.site.urls),
     # path("admin/", include("material.admin.urls")),
-    distill_path(
-        "evening_prayer/<int:year>-<int:month>-<int:day>/",
-        office_views.evening_prayer,
-        name="evening_prayer",
-        distill_func=get_days,
-    ),
-      distill_path(
-          "midday_prayer/<int:year>-<int:month>-<int:day>/",
-          office_views.midday_prayer,
-          name="midday_prayer",
-          distill_func=get_days,
-      ),
-    distill_path(
-        "morning_prayer/<int:year>-<int:month>-<int:day>/",
-        office_views.morning_prayer,
-        name="morning_prayer",
-        distill_func=get_days,
-    ),
-      distill_path(
-          "compline/<int:year>-<int:month>-<int:day>/",
-          office_views.compline,
-          name="compline",
-          distill_func=get_days,
-      ),
-    distill_path(
-          "church_year/<int:start_year>-<int:end_year>/",
-          office_views.church_year,
-          name="church_year",
-          distill_func=get_church_years,
-      ),
-      distill_path(
-          "about/",
-          office_views.about,
-          name="about",
-          distill_func=get_about,
-      ),
-    distill_path(
-          "settings/",
-          office_views.settings,
-          name="settings",
-          distill_func=get_about,
-      ),
-    distill_path(
-        "", office_views.now, distill_file="index.html", name="now", distill_func=get_now
-    ),
-    distill_path('sitemap.xml', sitemap_view,
-         name='django.contrib.sitemaps.views.sitemap', distill_func=get_distill_sitemap),
-    distill_path('404/', office_views.four_oh_four, name='404', distill_func=get_none),
+    # distill_path(
+    #     "evening_prayer/<int:year>-<int:month>-<int:day>/",
+    #     office_views.evening_prayer,
+    #     name="evening_prayer",
+    #     distill_func=get_days,
+    # ),
+    #   distill_path(
+    #       "midday_prayer/<int:year>-<int:month>-<int:day>/",
+    #       office_views.midday_prayer,
+    #       name="midday_prayer",
+    #       distill_func=get_days,
+    #   ),
+    # distill_path(
+    #     "morning_prayer/<int:year>-<int:month>-<int:day>/",
+    #     office_views.morning_prayer,
+    #     name="morning_prayer",
+    #     distill_func=get_days,
+    # ),
+    #   distill_path(
+    #       "compline/<int:year>-<int:month>-<int:day>/",
+    #       office_views.compline,
+    #       name="compline",
+    #       distill_func=get_days,
+    #   ),
+    # distill_path(
+    #       "church_year/<int:start_year>-<int:end_year>/",
+    #       office_views.church_year,
+    #       name="church_year",
+    #       distill_func=get_church_years,
+    #   ),
+    #   distill_path(
+    #       "about/",
+    #       office_views.about,
+    #       name="about",
+    #       distill_func=get_about,
+    #   ),
+    # distill_path(
+    #       "settings/",
+    #       office_views.settings,
+    #       name="settings",
+    #       distill_func=get_about,
+    #   ),
+    # distill_path(
+    #     "", office_views.now, distill_file="index.html", name="now", distill_func=get_now
+    # ),
+    # distill_path('sitemap.xml', sitemap_view,
+    #      name='django.contrib.sitemaps.views.sitemap', distill_func=get_distill_sitemap),
+    distill_path('404.html', office_views.four_oh_four, name='404', distill_func=get_none),
     distill_path('robots.txt', TemplateView.as_view(template_name="office/robots.txt", content_type='text/plain'), name="robots", distill_func=get_none)
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
