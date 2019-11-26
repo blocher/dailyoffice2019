@@ -891,6 +891,14 @@ class MPCanticle1(OfficeSection):
 class MPCanticle2(OfficeSection):
     @cached_property
     def data(self):
+
+        print({
+            "heading": "BENEDICTUS",
+            "subheading": "The Song of Zechariah",
+            "rubric": "Officiant and People, all standing",
+            "content": render_to_string("office/morning_prayer/benedictus.html", {}),
+            "citation": "LUKE 1:68-79",
+        })
         return {
             "heading": "BENEDICTUS",
             "subheading": "The Song of Zechariah",
@@ -1847,39 +1855,6 @@ class MPInvitatory(OfficeSection):
         if "95" in self.office_readings.mp_psalms.split(","):
             return jubilate
         return venite
-
-
-class MPCanticle1(OfficeSection):
-    @cached_property
-    def data(self):
-        if self.date.season.name in ("Lent", "Holy Week"):
-            return {
-                "heading": "BENEDICTUS ES, DOMINE",
-                "subheading": "A Song of Praise",
-                "rubric": "Officiant and People, all standing",
-                "content": render_to_string("office/morning_prayer/benedictus_es_domine.html", {}),
-                "citation": "SONG OF THE THREE YOUNG MEN, 29-34",
-            }
-
-        return {
-            "heading": "TE DEUM LAUDAMUS",
-            "subheading": "We Praise You, O God",
-            "rubric": "Officiant and People, all standing",
-            "content": render_to_string("office/morning_prayer/te_deum.html", {}),
-            "citation": "",
-        }
-
-
-class MPCanticle2(OfficeSection):
-    @cached_property
-    def data(self):
-        return {
-            "heading": "BENEDICTUS",
-            "subheading": "The Song of Zechariah",
-            "rubric": "Officiant and People, all standing",
-            "content": render_to_string("office/morning_prayer/benedictus.html", {}),
-            "citation": "LUKE 1:68-79",
-        }
 
 
 class EPCanticle1(OfficeSection):
