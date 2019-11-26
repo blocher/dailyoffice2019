@@ -9,7 +9,14 @@
             <h1>The Church Year</h1>
             <h2>{{  start_year }} - {{  end_year }}</h2>
 
-
+            <div class="year-links">
+                {%  if not hide_previous %}
+                    <a class="menu-button" href="/church_year/{{ start_year|sub:1 }}-{{ end_year|sub:1 }}"><i class="fas fa-arrow-left"></i> {{ start_year|sub:1 }} - {{ end_year|sub:1 }}</a>
+                {% endif %}
+                {%  if not hide_next %}
+                    <a class="menu-button" href="/church_year/{{ start_year|add:1 }}-{{ end_year|add:1 }}">{{ start_year|add:1 }} - {{ end_year|add:1 }} <i class="fas fa-arrow-right"></i></a>
+                {%  endif %}
+            </div>
             {%  for day in church_year %}
                 {% ifchanged day.season.name %}
                     <h3 id="{{ day.season.name|slugify }}"class="season"><div class="color {{ day.season.color|lower }}"></div>{{  day.season.name  }}</h3>
@@ -19,6 +26,15 @@
                 {% endifchanged %}
                 {% include "office/day.html" %}
             {%  endfor %}
+
+            <div class="year-links">
+                {%  if not hide_previous %}
+                    <a class="menu-button" href="/church_year/{{ start_year|sub:1 }}-{{ end_year|sub:1 }}"><i class="fas fa-arrow-left"></i> {{ start_year|sub:1 }} - {{ end_year|sub:1 }}</a>
+                {% endif %}
+                {%  if not hide_next %}
+                    <a class="menu-button" href="/church_year/{{ start_year|add:1 }}-{{ end_year|add:1 }}">{{ start_year|add:1 }} - {{ end_year|add:1 }} <i class="fas fa-arrow-right"></i></a>
+                {%  endif %}
+            </div>
 
         </div>
         {% include "office/calendar_menu.html" %}

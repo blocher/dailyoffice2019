@@ -10,6 +10,8 @@ from office.offices import EveningPrayer, MorningPrayer, Compline, MiddayPrayer
 
 from meta.views import Meta
 
+from website.settings import FIRST_BEGINNING_YEAR, LAST_BEGINNING_YEAR
+
 generic_title = "The Daily Office | Morning and Evening Prayer according to the Book of Common Prayer (2019)"
 generic_description = "This site invites you to join with Christians around the world in praying with the Church, at any time or in any place you may find yourself. It makes it easy to pray daily morning, midday, evening, and compline (bedtime) prayer without flipping pages, searching for scripture readings or calendars, or interpreting rubrics. The prayers are presented from <em><em>The Book of Common Prayer (2019)</em></em> of the Anglican Church in North America and reflect the ancient patterns of daily prayer Christians have used since the earliest days of the church."
 meta_defaults = {
@@ -84,7 +86,7 @@ def church_year(request, start_year, end_year=None):
     year_meta["description"] = "Start date: {}, End date: {}, Calendar for liturgical year {}-{} according to the use of the Anglican Church in North America including links to Morning Prayer, Midday Prayer, Evening Prayer, and Compline".format(church_year.start_date.strftime("%A %B %-d, %Y"), church_year.end_date.strftime("%A %B %-d, %Y"), start_year, start_year+1)
     year_meta["url"] = reverse('church_year', kwargs={"start_year": start_year, "end_year": end_year})
 
-    return render(request, "office/church_year.html", {"start_year": start_year, "end_year": start_year + 1, "church_year": church_year, "seasons": seasons, "months": months, "meta": Meta(**year_meta) })
+    return render(request, "office/church_year.html", {"hide_previous": start_year == FIRST_BEGINNING_YEAR, "hide_next": start_year == LAST_BEGINNING_YEAR,  "start_year": start_year, "end_year": start_year + 1, "church_year": church_year, "seasons": seasons, "months": months, "meta": Meta(**year_meta) })
 
 def about(request):
     about_meta = meta_defaults.copy()
