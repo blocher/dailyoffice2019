@@ -137,12 +137,17 @@
             font-weight: 300;
             font-style: italic;
             font-size: .8rem;
+            line-height: 1rem;
         }
 
         strong {
             font-family: 'Lusitana', serif;
             font-weight: 700;
 
+        }
+
+        div.antiphon {
+          margin: 1rem auto;
         }
 
         div.psalms {
@@ -161,8 +166,10 @@
             font-size: 1.5em;
         }
 
-        sup.versnum {
-            font-size: 1.2em;
+        sup.versenum {
+            font-size: .6rem;
+            margin-bottom: .5rem;
+            vertical-align: super;
         }
 
         .text {
@@ -187,7 +194,9 @@
             text-align: center;
         }
 
-        table.dialogue td {
+        table.dialogue {
+          margin-top: 1rem;
+          td {
             padding: .1rem 1rem .1rem 0;
             font-family: 'Lusitana', serif;
             font-weight: 300;
@@ -195,6 +204,7 @@
             font-size: 1.1rem;
             margin: 1.5rem 0;
             line-height: 1.6rem;
+          }
         }
 
         div.metadata {
