@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from django.urls import reverse
 from django.utils import timezone
 
@@ -97,3 +97,16 @@ def about(request):
 
 def now(request):
     return render(request, "office/evening_prayer/redirect.html", { "meta": meta })
+
+def handle404(request, exception):
+    response = render_to_response("404.html")
+    response.status_code = 404
+    return response
+
+
+def four_oh_four(request):
+    return render(request, "404.html")
+
+def robots(request):
+    return render(request, "robots.txt", content_type='text/plain')
+

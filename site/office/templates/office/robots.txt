@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: / 404
+
+Host: www.dailyoffice2019.com
+Sitemap: https://www.dailyoffice2019.com/sitemap.xml
