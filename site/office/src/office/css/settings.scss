@@ -129,8 +129,12 @@ div#settings {
 
 .about {
   p {
-    font-size: 0.9rem;
-    line-height: 1.1rem;
+    font-size: 1.1rem;
+    line-height: 1.6rem;
+
+    em {
+      font-size: 1.1rem;
+    }
   }
 }
 

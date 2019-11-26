@@ -3,7 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="4d3b96da-e02b-4ac5-80bf-e1b5c662734c" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/robots.txt" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/robots.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/src/office/css/office.scss" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/css/office.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/src/office/css/settings.scss" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/css/settings.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/webpack-stats.json" beforeDir="false" afterPath="$PROJECT_DIR$/site/webpack-stats.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/website/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/urls.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -207,7 +209,7 @@
       <workItem from="1574546798562" duration="20075000" />
       <workItem from="1574699984944" duration="922000" />
       <workItem from="1574703815529" duration="4080000" />
-      <workItem from="1574735413750" duration="2726000" />
+      <workItem from="1574735413750" duration="4396000" />
     </task>
     <servers />
   </component>
