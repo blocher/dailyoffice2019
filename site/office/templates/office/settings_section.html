@@ -1,7 +1,10 @@
 <div id="settings">
     <form class="form">
-
-        <h1>Daily Office Settings</h1>
+        {%  if h1 %}
+            <h1>Daily Office Settings</h1>
+        {% else %}
+            <h2>Daily Office Settings</h2>
+        {%  endif %}
         <p><em>Setting changes take effect immediately. You do not need to save settings after you have updated them.</em></p>
         <p><em>Your settings will be saved the next time you pray on the same computer/phone/device and browser.</em></p>
 
