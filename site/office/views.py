@@ -69,7 +69,7 @@ def settings(request):
     settings_meta = meta_defaults.copy()
     settings_meta["title"] = settings_meta["og_title"] = settings_meta["twitter_title"] = settings_meta["gplus_title"] = "Settings | {}".format(generic_title)
     settings_meta["url"] = reverse('settings')
-    return render(request, "office/settings.html", {"meta": Meta(**settings_meta)})
+    return render(request, "office/settings.html", {"h1": True, "meta": Meta(**settings_meta)})
 
 def church_year(request, start_year, end_year=None):
     church_year = ChurchYear(start_year)

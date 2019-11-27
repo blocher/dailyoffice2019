@@ -108,11 +108,43 @@ const settings = () => {
         });
   }
 
+  const handleFontSizes = () => {
+    let base_font_size = localStorage.getItem("base-font-size");
+    if (base_font_size) {
+      document.getElementById("html").style.fontSize = base_font_size;
+      document.getElementsByClassName("font-size-selector").forEach( (element, element_index)  => {
+            element.classList.remove('fas')
+            element.classList.add('fal')
+          })
+      document.querySelectorAll('[data-fontsize]').forEach((element, element_index) => {
+        if (element.getAttribute('data-fontsize') == base_font_size) {
+          element.classList.remove('fal');
+          element.classList.add('fas');
+        }
+      });
+
+
+    }
+    document.querySelectorAll(".font-size-selector").forEach((element, element_index) => {
+        element.addEventListener("click", event => {
+          document.getElementById("html").style.fontSize = event.target.getAttribute('data-fontsize');
+          document.getElementsByClassName("font-size-selector").forEach( (element, element_index)  => {
+            element.classList.remove('fas')
+            element.classList.add('fal')
+          })
+          event.target.classList.remove('fal')
+          event.target.classList.add('fas')
+          localStorage.setItem("base-font-size", event.target.getAttribute('data-fontsize'));
+        });
+      });
+    }
+
   const setupSettings = () => {
     initializeSettings();
     addRadioButtonListeners();
     addSettingsMenuToggle();
     bindBackButtons();
+    handleFontSizes();
   };
 
   // TODO: Refactor into reusable module

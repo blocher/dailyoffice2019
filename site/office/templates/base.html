@@ -1,7 +1,7 @@
 {% load static %}
 {% load render_bundle from webpack_loader %}
 
-<html  id="html">
+<html id="html">
     <head>
         <!-- Google Tag Manager -->
         <script>(function (w, d, s, l, i) {
@@ -19,13 +19,12 @@
         })(window, document, 'script', 'dataLayer', 'GTM-NSB92RP');</script>
         <!-- End Google Tag Manager -->
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="https://use.typekit.net/yxz6vwf.css">
-        <link href="https://fonts.googleapis.com/css?family=Lusitana:400,700&display=swap" rel="stylesheet">
-        {% render_bundle 'main' 'js' %}
+
         <link rel="apple-touch-icon" sizes="180x180" href="{% static 'apple-touch-icon.png' %}">
         <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon-32x32.png' %}">
         <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon-16x16.png' %}">
         <link rel="manifest" href="{% static 'site.webmanifest' %}">
+        {% render_bundle 'main' 'js' %}
         {% include 'meta/meta.html' %}
         {% block extra_head %}
         {% endblock %}
@@ -47,5 +46,7 @@
          </div>
 
     </body>
+    <link rel="stylesheet" href="https://use.typekit.net/yxz6vwf.css">
+    <link href="https://fonts.googleapis.com/css?family=Lusitana:400,700&display=swap" rel="stylesheet">
 
 </html>

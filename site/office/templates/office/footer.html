@@ -1,8 +1,9 @@
 <div class="footer">
+
     <div class="footer-flex">
-        <div><strong><a href="{{ office.links.yesterday.link }}">&#8592; {{ office.links.yesterday.label }}</a></strong></div>
-        <p><strong>{{ office.links.date }}</strong></p>
-        <div><strong><a href="{{ office.links.tomorrow.link }}">{{ office.links.tomorrow.label }} &#8594;</a></strong></div>
+        <div><strong><a class="day-link" href="{{ office.links.yesterday.link }}">&#8592; {{ office.links.yesterday.label }}</a></strong></div>
+        <div><strong>{{ office.links.date }}</strong></div>
+        <div><strong><a  class="day-link" href="{{ office.links.tomorrow.link }}">{{ office.links.tomorrow.label }} &#8594;</a></strong></div>
     </div>
     <div class="footer-flex">
         {%  if office.links.current != 'morning_prayer' %}
@@ -26,6 +27,7 @@
             <div><i class="fal fa-moon"></i>{{ office.links.compline.label | upper }}</div>
         {% endif %}
     </div>
+
 
 
 </div>
