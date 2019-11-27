@@ -32,12 +32,12 @@ def psalm_html(citation, verses):
             verse.first_half,
         )
         html = html + format_html("<p class='indent'><strong>{}</strong></p>", verse.second_half)
-    html = html + format_html("<p  class='hanging-indent'>&nbsp;</p>")
-    html = html + format_html(
-        "<p class='hanging-indent'><strong>Glory be to the Father, and to the Son, and to the Holy Spirit; *</strong></p>"
-    )
-    html = html + format_html(
-        "<p class='indent'><strong>as it was in the beginning, is now, and ever shall be, world without end. Amen.</strong></p>"
-    )
+    # html = html + format_html("<p  class='hanging-indent'>&nbsp;</p>")
+    # html = html + format_html(
+    #     "<p class='hanging-indent'><strong>Glory be to the Father, and to the Son, and to the Holy Spirit; *</strong></p>"
+    # )
+    # html = html + format_html(
+    #     "<p class='indent'><strong>as it was in the beginning, is now, and ever shall be, world without end. Amen.</strong></p>"
+    # )
 
     return html
