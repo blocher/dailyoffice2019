@@ -218,7 +218,7 @@ def settings(request):
                         "hide": ["antiphon_paraphrase, antiphon_latin"],
                         "show": ["antiphon_literal"],
                         "heading": "Literal",
-                        "text": "Literal translation of the orignal Latin",
+                        "text": "Literal translation of the original Latin",
                     },
                     {
                         "value": "paraphrase",

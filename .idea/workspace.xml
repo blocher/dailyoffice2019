@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4d3b96da-e02b-4ac5-80bf-e1b5c662734c" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/psalms.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/psalms.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/psalter/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/psalter/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/website/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/settings.py" afterDir="false" />
-    </list>
+    <list default="true" id="4d3b96da-e02b-4ac5-80bf-e1b5c662734c" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -213,6 +208,7 @@
       <workItem from="1574791664387" duration="525000" />
       <workItem from="1574792380912" duration="30000" />
       <workItem from="1574823308879" duration="5320000" />
+      <workItem from="1574982492830" duration="83000" />
     </task>
     <servers />
   </component>
