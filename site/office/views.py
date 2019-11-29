@@ -28,9 +28,11 @@ meta_defaults = {
     "image_height": 3931,
     "object_type": "website",
     "site_name": generic_title,
-    # "extra_props":  [
-    #     ("og_image", static("office/img/bcp_evening_prayer.jpg")),
-    # ],
+    "extra_props":  {
+        "twitter:image": static("office/img/bcp_evening_prayer.jpg"),
+        "twitter:card": "summary_large_image",
+        "twitter:site": "@dailyoffice2019",
+    },
     "extra_custom_props": [
             ('http-equiv', 'Content-Type', 'text/html; charset=UTF-8'),
         ]
