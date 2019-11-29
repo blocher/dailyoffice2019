@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.admin.templatetags.admin_static import static
 from django.http import HttpResponse
 from django.shortcuts import render, render_to_response
 from django.urls import reverse
@@ -22,11 +23,14 @@ meta_defaults = {
     "description": generic_description,
     "og_description": generic_description,
     "url": "https://www.dailyoffice2019.com",
-    "# image": "",
-    "# image_width": "",
-    "# image_height": "",
+    "image": static("office/img/bcp_evening_prayer.jpg"),
+    "image_width": 5897,
+    "image_height": 3931,
     "object_type": "website",
     "site_name": generic_title,
+    # "extra_props":  [
+    #     ("og_image", static("office/img/bcp_evening_prayer.jpg")),
+    # ],
     "extra_custom_props": [
             ('http-equiv', 'Content-Type', 'text/html; charset=UTF-8'),
         ]
@@ -39,6 +43,9 @@ def morning_prayer(request, year, month, day):
     mp_meta["title"] = mp_meta["og_title"] = mp_meta["twitter_title"] = mp_meta["gplus_title"] = mp.title
     mp_meta["description"] = mp.description
     mp_meta["url"] = reverse('morning_prayer', kwargs={"year": year, "month": month, "day": day})
+    mp_meta["image"] = static("office/img/bcp.jpg")
+    mp_meta["image_width"] = 1000
+    mp_meta["image_height"] = 1333
     return render(request, "office/office.html", {"office": mp, "meta": Meta(**mp_meta)})
 
 def evening_prayer(request, year, month, day):
@@ -55,6 +62,9 @@ def compline(request, year, month, day):
     compline_meta["title"] = compline_meta["og_title"] = compline_meta["twitter_title"] = compline_meta["gplus_title"] = cp.title
     compline_meta["description"] = cp.description
     compline_meta["url"] = reverse('compline', kwargs={"year": year, "month": month, "day": day})
+    compline_meta["image"] = static("office/img/bcp.jpg")
+    compline_meta["image_width"] = 1000
+    compline_meta["image_height"] = 1333
     return render(request, "office/office.html", {"office": cp, "meta": Meta(**compline_meta)})
 
 def midday_prayer(request, year, month, day):
@@ -63,6 +73,9 @@ def midday_prayer(request, year, month, day):
     midday_meta["title"] = midday_meta["og_title"] = midday_meta["twitter_title"] = midday_meta["gplus_title"] = md.title
     midday_meta["description"] = md.description
     midday_meta["url"] = reverse('midday_prayer', kwargs={"year": year, "month": month, "day": day})
+    midday_meta["image"] = static("office/img/bcp.jpg")
+    midday_meta["image_width"] = 1000
+    midday_meta["image_height"] = 1333
     return render(request, "office/office.html", {"office": md, "meta": Meta(**midday_meta)})
 
 def settings(request):
