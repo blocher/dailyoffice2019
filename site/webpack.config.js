@@ -2,6 +2,7 @@ const fs = require('fs');
 const WebpackOnBuildPlugin = require('on-build-webpack');
 const BundleTracker = require('webpack-bundle-tracker');
 const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: './office/src/office/js/index.js',
@@ -49,6 +50,9 @@ module.exports = {
   },
   mode: "development",
   plugins: [
+      new CopyPlugin([
+          { from: 'office/src/office/img', to: '../img' },
+        ]),
       new WebpackOnBuildPlugin(function(stats) {
         const buildDir = __dirname + '/office/static/office/js/';
         const newlyCreatedAssets = stats.compilation.assets;

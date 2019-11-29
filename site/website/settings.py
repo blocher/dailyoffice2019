@@ -230,6 +230,7 @@ META_FB_APPID = "826553607777260"
 META_FB_AUTHOR_URL = "https://www.dailyoffice2019.com"
 META_TWITTER_AUTHOR = "Daily Office, Book of Common Prayer 2019"
 META_TWITTER_SITE = "https://www.dailyoffice2019.com"
+META_OG_SECURE_URL_ITEMS = []
 
 ROBOTS_SITEMAP_URLS = [
     'https://www.dailyoffice2019.com/sitemap.xml',
