@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, date
 from dateutil.parser import parse
 
 from django.utils.functional import cached_property
+from django.utils.safestring import mark_safe
 from indexed import IndexedOrderedDict
 
 from office.offices import MorningPrayer, MiddayPrayer, EveningPrayer, Compline
@@ -458,6 +459,20 @@ class SetNamesAndCollects(object):
                         if hasattr(commemoration, "morning_prayer_collect"):
                             break
                     self.check_previous_evening(calendar_date)
+
+            except StopIteration:
+                break
+
+        self.i = iter(self.church_calendar)
+        while True:
+            try:
+                calendar_date = next(self.i)
+
+                for commemoration in calendar_date.all:
+
+                    if "SUNDAY" in commemoration.rank.name:
+                        self.append_o_antiphon_if_needed(commemoration, calendar_date)
+
             except StopIteration:
                 break
 
@@ -554,9 +569,55 @@ class SetNamesAndCollects(object):
                         commemoration.name = "{} after {}".format(
                             week_days[calendar_date.date.weekday()], previous.primary.name.replace("The ", "the ")
                         )
-
+                    self.append_o_antiphon_if_needed(commemoration, calendar_date)
                     break
         return False
+
+    def append_o_antiphon_if_needed(self, commemoration, calendar_date):
+
+        '''16		*
+
+17
+
+18
+
+19
+
+20
+
+21	Thomas the
+	Apostle
+22		l
+
+23		O Virgo Virginum
+		O Virgin of Virgins
+'''
+
+        if calendar_date.date.month == 12:
+            if calendar_date.date.day == 16:
+                commemoration.name = mark_safe("{} <em>(O Sapientia / O Wisdom from on high)</em>".format(commemoration.name))
+
+            if calendar_date.date.day == 17:
+                commemoration.name = mark_safe("{} <em>(O Adonai / O Lord of Might)</em>".format(commemoration.name))
+
+            if calendar_date.date.day == 18:
+                commemoration.name = mark_safe("{} <em>(O Radix Jesse / O Root of Jesse)</em>".format(commemoration.name))
+
+            if calendar_date.date.day == 19:
+                commemoration.name = mark_safe("{} <em>(O Clavis David / O Key of David)</em>".format(commemoration.name))
+
+            if calendar_date.date.day == 20:
+                commemoration.name = mark_safe("{} <em>(O Oriens / O Daypsring)</em>".format(commemoration.name))
+
+            if calendar_date.date.day == 21:
+                commemoration.name = mark_safe("{} <em>(O Rex Gentium / O Desire of Nations)</em>".format(commemoration.name))
+
+            if calendar_date.date.day == 22:
+                commemoration.name = mark_safe("{} <em>(O Emmanuel / O Come, Emmanuel)</em>".format(commemoration.name))
+
+            if calendar_date.date.day == 23:
+                commemoration.name = mark_safe("{} <em>(O Virgo Virginum / O Virgin of Virgins)</em>".format(commemoration.name))
+
 
     def saint_collect(self, commemoration, calendar_date):
         if not commemoration.saint_type:

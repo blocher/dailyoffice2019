@@ -210,7 +210,7 @@ def settings(request):
                 ],
             },
             {
-                "title": "Advent O Antiphons",
+                "title": 'Advent "O" Antiphons',
                 "name": "o_antiphons",
                 "options": [
                     {
@@ -225,7 +225,7 @@ def settings(request):
                         "hide": ["antiphon_literal, antiphon_latin"],
                         "show": ["antiphon_paraphrase"],
                         "heading": "Hymnal",
-                        "text": "Paraphrase used for the hymn, O Come, O Come Emmanuel",
+                        "text": mark_safe("Paraphrase used in, <em>O Come, O Come Emmanuel</em>"),
                     },
                     {
                         "value": "latin",
