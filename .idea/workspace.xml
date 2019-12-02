@@ -3,8 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="4d3b96da-e02b-4ac5-80bf-e1b5c662734c" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/churchcal/calculations.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/churchcal/calculations.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/management/commands/import_office_days.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/management/commands/import_office_days.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/netlify.toml" beforeDir="false" afterPath="$PROJECT_DIR$/netlify.toml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -219,7 +218,8 @@
       <workItem from="1574792380912" duration="30000" />
       <workItem from="1574823308879" duration="5320000" />
       <workItem from="1574982492830" duration="83000" />
-      <workItem from="1574982641954" duration="18013000" />
+      <workItem from="1574982641954" duration="18611000" />
+      <workItem from="1575323745568" duration="94000" />
     </task>
     <servers />
   </component>
