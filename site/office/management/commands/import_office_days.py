@@ -86,39 +86,39 @@ class Command(BaseCommand):
         service = build("sheets", "v4", developerKey=settings.GOOGLE_API_KEY)
 
         sheet = service.spreadsheets()
-
-        try:
-            result = sheet.values().get(spreadsheetId=self.SHEET_ID, range=self.RANGE_NAME).execute()
-        except HttpError as e:
-            print(e)
-            print("Worksheet not found")
-            return
-
-        for row in result.get("values", []):
-            day = StandardOfficeDay.objects.get_or_create(month=row[0], day=row[1])
-            day = day[0]
-            day.month = row[0]
-            day.day = row[1]
-            day.holy_day_name = row[2]
-            day.mp_psalms = row[3].replace(" ", "")
-            day.mp_reading_1 = self.parse_passage(row[4])
-            day.mp_reading_1_testament = self.get_testament(row[4])
-            day.mp_reading_1_text = self.get_passage(row[4])
-            day.mp_reading_1_abbreviated = self.parse_abbreviated_passage(day.mp_reading_1, row[5])
-            day.mp_reading_1_abbreviated_text = self.get_abbreviated_passage(day.mp_reading_1, row[5])
-            day.mp_reading_2 = self.parse_passage(row[6])
-            day.mp_reading_2_testament = self.get_testament(row[6])
-            day.mp_reading_2_text = self.get_passage(row[6])
-            day.ep_psalms = row[7].replace(" ", "")
-            day.ep_reading_1 = self.parse_passage(row[8])
-            day.ep_reading_1_testament = self.get_testament(row[8])
-            day.ep_reading_1_text = self.get_passage(row[8])
-            day.ep_reading_1_abbreviated = self.parse_abbreviated_passage(day.ep_reading_1, row[9])
-            day.ep_reading_1_abbreviated_text = self.get_abbreviated_passage(day.ep_reading_1, row[9])
-            day.ep_reading_2 = self.parse_passage(row[10])
-            day.ep_reading_2_testament = self.get_testament(row[10])
-            day.ep_reading_2_text = self.get_passage(row[10])
-            day.save()
+        #
+        # try:
+        #     result = sheet.values().get(spreadsheetId=self.SHEET_ID, range=self.RANGE_NAME).execute()
+        # except HttpError as e:
+        #     print(e)
+        #     print("Worksheet not found")
+        #     return
+        #
+        # for row in result.get("values", []):
+        #     day = StandardOfficeDay.objects.get_or_create(month=row[0], day=row[1])
+        #     day = day[0]
+        #     day.month = row[0]
+        #     day.day = row[1]
+        #     day.holy_day_name = row[2]
+        #     day.mp_psalms = row[3].replace(" ", "")
+        #     day.mp_reading_1 = self.parse_passage(row[4])
+        #     day.mp_reading_1_testament = self.get_testament(row[4])
+        #     day.mp_reading_1_text = self.get_passage(row[4])
+        #     day.mp_reading_1_abbreviated = self.parse_abbreviated_passage(day.mp_reading_1, row[5])
+        #     day.mp_reading_1_abbreviated_text = self.get_abbreviated_passage(day.mp_reading_1, row[5])
+        #     day.mp_reading_2 = self.parse_passage(row[6])
+        #     day.mp_reading_2_testament = self.get_testament(row[6])
+        #     day.mp_reading_2_text = self.get_passage(row[6])
+        #     day.ep_psalms = row[7].replace(" ", "")
+        #     day.ep_reading_1 = self.parse_passage(row[8])
+        #     day.ep_reading_1_testament = self.get_testament(row[8])
+        #     day.ep_reading_1_text = self.get_passage(row[8])
+        #     day.ep_reading_1_abbreviated = self.parse_abbreviated_passage(day.ep_reading_1, row[9])
+        #     day.ep_reading_1_abbreviated_text = self.get_abbreviated_passage(day.ep_reading_1, row[9])
+        #     day.ep_reading_2 = self.parse_passage(row[10])
+        #     day.ep_reading_2_testament = self.get_testament(row[10])
+        #     day.ep_reading_2_text = self.get_passage(row[10])
+        #     day.save()
 
         try:
             result = sheet.values().get(spreadsheetId=self.SHEET_ID, range=self.HOLY_DAY_RANGE_NAME).execute()

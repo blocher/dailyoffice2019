@@ -8,7 +8,7 @@ from django.utils.safestring import mark_safe
 from indexed import IndexedOrderedDict
 
 from office.offices import MorningPrayer, MiddayPrayer, EveningPrayer, Compline
-from .utils import advent, week_days
+from .utils import advent, week_days, easter
 from churchcal.models import Commemoration, FerialCommemoration, Proper, Season, Calendar, CommemorationRank
 
 from django.core.cache import cache
@@ -450,6 +450,20 @@ class SetNamesAndCollects(object):
         while True:
             try:
                 calendar_date = next(self.i)
+
+                for commemoration in calendar_date.all:
+
+                    if "SUNDAY" in commemoration.rank.name:
+                        self.append_o_antiphon_if_needed(commemoration, calendar_date)
+                        self.append_seuptuagesima_if_needed(commemoration, calendar_date)
+
+            except StopIteration:
+                break
+
+        self.i = iter(self.church_calendar)
+        while True:
+            try:
+                calendar_date = next(self.i)
                 # print(calendar_date.date, calendar_date.primary.name, self.i.get_previous().primary.name, self.i.get_next().primary.name)
 
                 for commemoration in calendar_date.all:
@@ -463,18 +477,7 @@ class SetNamesAndCollects(object):
             except StopIteration:
                 break
 
-        self.i = iter(self.church_calendar)
-        while True:
-            try:
-                calendar_date = next(self.i)
 
-                for commemoration in calendar_date.all:
-
-                    if "SUNDAY" in commemoration.rank.name:
-                        self.append_o_antiphon_if_needed(commemoration, calendar_date)
-
-            except StopIteration:
-                break
 
     def check_previous_evening(self, calendar_date):
 
@@ -546,6 +549,7 @@ class SetNamesAndCollects(object):
                 if not previous:
                     break
                 if self.has_collect_for_feria(previous):
+
                     if previous.proper and previous.proper.collect:
                         commemoration.morning_prayer_collect = previous.proper.collect
                         commemoration.evening_prayer_collect = previous.proper.collect
@@ -569,29 +573,26 @@ class SetNamesAndCollects(object):
                         commemoration.name = "{} after {}".format(
                             week_days[calendar_date.date.weekday()], previous.primary.name.replace("The ", "the ")
                         )
+                    self.append_seuptuagesima_if_needed(commemoration, calendar_date)
                     self.append_o_antiphon_if_needed(commemoration, calendar_date)
+                    if "gesima" in commemoration.name:
+                        commemoration.alternate_color_2 = "purple" if commemoration.alternate_color else None
+                        commemoration.alternate_color = commemoration.alternate_color if commemoration.alternate_color else "purple"
                     break
         return False
 
+    def append_seuptuagesima_if_needed(self, commemoration, calendar_date):
+
+        easter_day = easter(calendar_date.date.year)
+        seventy_days_before_easter = easter_day - timedelta(days=9*7)
+        date = calendar_date.date
+        if seventy_days_before_easter == date:
+            commemoration.name = "{}, or Septuagesima".format(commemoration.name)
+            commemoration.alternate_color_2 = "purple" if commemoration.alternate_color else None
+            commemoration.alternate_color = commemoration.alternate_color if commemoration.alternate_color else "purple"
+
+
     def append_o_antiphon_if_needed(self, commemoration, calendar_date):
-
-        '''16		*
-
-17
-
-18
-
-19
-
-20
-
-21	Thomas the
-	Apostle
-22		l
-
-23		O Virgo Virginum
-		O Virgin of Virgins
-'''
 
         if calendar_date.date.month == 12:
             if calendar_date.date.day == 16:
