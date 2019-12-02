@@ -26,3 +26,10 @@
 	no-cache,
 	no-store,
 	must-revalidate'''
+
+[[redirects]]
+  from = "/office/*"
+  to = "/:splat"
+  status = 301
+  force = false
+
