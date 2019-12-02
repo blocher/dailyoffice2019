@@ -80,7 +80,7 @@ class CalendarDate(object):
             return self.FAST_FULL
 
         # Ember days and rogation days are fast days
-        if len(self.required) == 0:
+        if len(self.required) == 0 or self.primary.rank.name != "PRINCIPAL_FEAST":
             for optional in self.optional:
                 if optional.rank.name in ["EMBER_DAY", "ROGATION_DAY"]:
                     return self.FAST_PARTIAL
