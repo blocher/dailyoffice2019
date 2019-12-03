@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load render_bundle from webpack_loader %}
+
+{% block content %}
+
+    <div>
+        <h1>Thank you</h1>
+        <p><strong>Thanks for praying with us, and thanks for signing up.</strong></p>
+        <p>We'll be sure to email you when we add new features, and promise not to share your email with anyone.</p>
+        <p>In the meantime, would you consider joining our <a target='_blank' href='https://www.facebook.com/groups/dailyoffice'>Facebook group</a> or <a href="/">get started praying?</a></p>
+    </div>
+
+    {% include "feedback.html" %}
+{% endblock %}

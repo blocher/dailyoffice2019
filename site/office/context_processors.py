@@ -50,7 +50,7 @@ def settings(request):
                         "show": ["main-reading"],
                         "heading": "One Year",
                         "text": mark_safe(
-                            "Read through most of the bible each year. (Use if you pray <strong>both</strong> morning and evening prayer)"),
+                            "Read through most of the Bible each year. (Use if you pray <strong>both</strong> Morning and Evening Prayer)"),
                     },
                     {
                         "value": "2",
@@ -58,7 +58,7 @@ def settings(request):
                         "show": ["alternate-reading"],
                         "heading": "Two Year",
                         "text": mark_safe(
-                            "Read through most of the bible in two years. (Use if you pray <strong>either</strong> morning <strong>or</strong> evening prayer)"),
+                            "Read through most of the Bible in two years. (Use if you pray <strong>either</strong> Morning <strong>or</strong> Evening prayer)"),
                     },
                 ],
             },
@@ -151,14 +151,14 @@ def settings(request):
                         "hide": [],
                         "show": ["general_thanksgiving"],
                         "heading": "On",
-                        "text": "Add the prayer of general thanksgiving to the end of the office",
+                        "text": "Add the prayer of general thanksgiving at the end of the office",
                     },
                     {
                         "value": "off",
                         "hide": ["general_thanksgiving"],
                         "show": [""],
                         "heading": "Off",
-                        "text": "Hide the prayer of general thanksgiving to the end of the office",
+                        "text": "Hide the prayer of general thanksgiving at the end of the office",
                     },
                 ],
             },

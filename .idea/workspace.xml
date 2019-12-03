@@ -2,8 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4d3b96da-e02b-4ac5-80bf-e1b5c662734c" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/site/office/templates/feedback.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/netlify.toml" beforeDir="false" afterPath="$PROJECT_DIR$/netlify.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/context_processors.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/context_processors.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/src/office/css/office.scss" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/css/office.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/about.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/about.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/office.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/office.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/robots.txt" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/robots.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/settings.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/settings.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/webpack-stats.json" beforeDir="false" afterPath="$PROJECT_DIR$/site/webpack-stats.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/website/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/urls.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -219,7 +228,7 @@
       <workItem from="1574823308879" duration="5320000" />
       <workItem from="1574982492830" duration="83000" />
       <workItem from="1574982641954" duration="18611000" />
-      <workItem from="1575323745568" duration="94000" />
+      <workItem from="1575323745568" duration="4705000" />
     </task>
     <servers />
   </component>
