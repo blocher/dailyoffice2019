@@ -1,6 +1,8 @@
 User-agent: *
 Disallow: /404
 Disallow: /404.html
+Disallow:: signup-thank-you/
+Disallow:: signup-thank-you.html
 
 Host: www.dailyoffice2019.com
 Sitemap: https://www.dailyoffice2019.com/sitemap.xml

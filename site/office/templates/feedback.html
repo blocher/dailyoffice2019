@@ -1,0 +1,23 @@
+    <div id="office">
+        {% for module in office.modules %}
+            {% include module.1  with data=module.0.data only %}
+        {% endfor %}
+    </div>
+    <div class="feedback">
+        <small>
+            <p><strong>Your feedback is welcomed</strong></p>
+            <p><em>We welcome your feedback or feature requests. We also would appreciate if you report any rubric, calendar, or content errors.</em></p>
+            <p><em><a href="mailto:feedback@dailyoffice2019.com"><i class="far fa-envelope"></i></a> Email us at <a href="mailto:feedback@dailyoffice2019.com">feedback@dailyoffice2019.com</a></em></p>
+            <p><em><a target="_blank" href="https://www.facebook.com/groups/dailyoffice"><i class="fab fa-facebook"></i></a> Post in our <a target="_blank" href="https://www.facebook.com/groups/dailyoffice">Facebook group</a></em></p>
+        </small>
+    </div>
+    <div class="feedback">
+        <small>
+            <p><strong>Get occasional email updates</strong></p>
+            <p><em>Receive a very occasional email when a new feature is launched, including the forthcoming <strong>iOS and Android apps</strong>. We send an email only once every few months and will never share your information with anyone.</em></p>
+        </small>
+        <form name="signup" action="/signup-thank-you" netlify>
+            <input type="email" name="email" placeholder="email address">
+            <input type="submit" value="Subscribe">
+        </form>
+    </div>

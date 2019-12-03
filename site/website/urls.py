@@ -261,6 +261,12 @@ urlpatterns = [
           distill_func=get_about,
       ),
     distill_path(
+          "signup-thank-you/",
+          office_views.signup_thank_you,
+          name="signup_thank_you",
+          distill_func=get_none,
+      ),
+    distill_path(
         "", office_views.now, distill_file="index.html", name="now", distill_func=get_now
     ),
     distill_path('sitemap.xml', sitemap_view,
