@@ -71,7 +71,7 @@ books = {
     "Tobit": ("the Book of Tobit", False, "DC"),
     "Judith": ("the Book of Judith", False, "DC"),
     "Additions to Esther": ("the Book of Esther", False, "DC"),
-    "The Wisdom of Solomon": ("the Wisdom of Solomon", False, "DC"),
+    "Wisdom": ("the Wisdom of Solomon", False, "DC"),
     "Sirach": ("Ecclesiasticus, the Wisdom of Jesus Son of Sirach ", False, "DC"),
     "Baruch": ("the Book of Baruch the Prophet", False, "DC"),
     "Letter of Jeremiah": ("the Letter of Jeremiah", True, "DC"),

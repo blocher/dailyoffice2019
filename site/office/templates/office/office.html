@@ -44,7 +44,11 @@
 {% endblock %}
 
 {% block content %}
-
+    <div id="office">
+        {% for module in office.modules %}
+            {% include module.1  with data=module.0.data only %}
+        {% endfor %}
+    </div>
     {% include "feedback.html" %}
     {% include "office/footer.html" %}
 {%  endblock %}
