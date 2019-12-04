@@ -649,27 +649,27 @@ class MPReading1(OfficeSection):
 class MPAlternateReading1(OfficeSection):
     @cached_property
     def data(self):
-        if self.date.office_year == 1:
-            module = MPReading1(self.date, self.office_readings)
+        if self.date.date.year % 2 == 0:
+            module = EPReading1(self.date, self.office_readings)
             return module.data
 
-        module = EPReading1(self.date, self.office_readings)
+        module = MPReading1(self.date, self.office_readings)
         return module.data
 
 class MPAlternateReading2(OfficeSection):
     @cached_property
     def data(self):
-        if self.date.office_year == 1:
-            module = MPReading2(self.date, self.office_readings)
+        if self.date.date.year % 2 == 0:
+            module = EPReading2(self.date, self.office_readings)
             return module.data
 
-        module = EPReading2(self.date, self.office_readings)
+        module = MPReading2(self.date, self.office_readings)
         return module.data
 
 class EPAlternateReading1(OfficeSection):
     @cached_property
     def data(self):
-        if self.date.office_year == 2:
+        if self.date.date.year % 2 == 0:
             module = EPReading1(self.date, self.office_readings)
             return module.data
 
@@ -679,7 +679,7 @@ class EPAlternateReading1(OfficeSection):
 class EPAlternateReading2(OfficeSection):
     @cached_property
     def data(self):
-        if self.date.office_year == 2:
+        if self.date.date.year % 2 == 0:
             module = EPReading2(self.date, self.office_readings)
             return module.data
 
