@@ -676,7 +676,7 @@ class SetNamesAndCollects(object):
             )
 
         if commemoration.saint_type == "TEACHER":
-            text = "Almighty God, you gave your servant{} {} special gifts of grace to understand and teach the truth revealed in Christ Jesus: Grant that by this teaching we may know you, the one true God, and Jesus Christ whom you have sent; who lives and reigns with you and the Holy Spirit, one God, for ever and ever.  Amen.".format(
+            text = "Almighty God, you gave your servant{} {} special gifts of grace to understand and teach the truth revealed in Christ Jesus: Grant that by this teaching we may know you, the one true God, and Jesus Christ whom you have sent; who lives and reigns with you and the Holy Spirit, one God, for ever and ever.".format(
                 "s" if commemoration.saint_gender == "P" else "", commemoration.saint_name
             )
 
