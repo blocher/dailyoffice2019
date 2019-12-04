@@ -179,7 +179,9 @@
         sup.versenum {
             font-size: .6rem;
             margin-bottom: .5rem;
-            vertical-align: super;
+            vertical-align: top;
+            position: relative;
+            top: -0.5em;
         }
 
         .text {
