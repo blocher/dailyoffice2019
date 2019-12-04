@@ -596,7 +596,7 @@ class EPReading1(OfficeSection):
             "closing": {
                 "reader": "The Word of the Lord."
                 if self.office_readings.ep_reading_1_testament != "DC"
-                else "Hear ends the Reading.",
+                else "Here ends the Reading.",
                 "people": "Thanks be to God." if self.office_readings.ep_reading_1_testament != "DC" else "",
             },
         }
@@ -641,7 +641,7 @@ class MPReading1(OfficeSection):
             "closing": {
                 "reader": "The Word of the Lord."
                 if self.office_readings.mp_reading_1_testament != "DC"
-                else "Hear ends the Reading.",
+                else "Here ends the Reading.",
                 "people": "Thanks be to God." if self.office_readings.mp_reading_1_testament != "DC" else "",
             },
         }
