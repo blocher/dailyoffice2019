@@ -3,11 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="4d3b96da-e02b-4ac5-80bf-e1b5c662734c" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/feedback.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/feedback.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/office.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/office.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/offices.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/offices.py" afterDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -82,18 +79,6 @@
       <recent name="~/Desktop" />
     </key>
   </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
-  </component>
   <component name="RunManager">
     <configuration name="urls" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="sermons" />
@@ -122,6 +107,18 @@
         <item itemvalue="Python.urls" />
       </list>
     </recent_temporary>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -221,7 +218,11 @@
       <workItem from="1574823308879" duration="5320000" />
       <workItem from="1574982492830" duration="83000" />
       <workItem from="1574982641954" duration="18611000" />
-      <workItem from="1575323745568" duration="6426000" />
+      <workItem from="1575323745568" duration="8792000" />
+      <workItem from="1575401555502" duration="614000" />
+      <workItem from="1575464123735" duration="286000" />
+      <workItem from="1575464413084" duration="1000" />
+      <workItem from="1575464438071" duration="27000" />
     </task>
     <servers />
   </component>
@@ -292,10 +293,10 @@
     <state x="701" y="237" key="com.intellij.ide.util.TipDialog" timestamp="1570397175336" />
     <state x="701" y="237" key="com.intellij.ide.util.TipDialog/3360.2100" timestamp="1570397175337" />
     <state x="701" y="237" key="com.intellij.ide.util.TipDialog/3360.2100/1920.1200/1920.1200" timestamp="1570397175337" />
-    <state x="506" y="287" width="683" height="476" key="find.popup" timestamp="1573511561197">
+    <state x="506" y="287" width="683" height="476" key="find.popup" timestamp="1575464457601">
       <screen x="0" y="23" width="1680" height="948" />
     </state>
-    <state x="506" y="287" width="683" height="476" key="find.popup/0.23.1680.948@0.23.1680.948" timestamp="1573511561197" />
+    <state x="506" y="287" width="683" height="476" key="find.popup/0.23.1680.948@0.23.1680.948" timestamp="1575464457601" />
     <state x="-495" y="-849" width="763" height="522" key="find.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@-1073.-1177.1920.1177" timestamp="1571164483046" />
     <state x="506" y="288" width="667" height="422" key="find.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1570643546418" />
     <state x="1425" y="-849" width="781" height="522" key="find.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1571763115189" />
@@ -305,10 +306,10 @@
     </state>
     <state x="1340" y="-1003" key="scopes/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1572038171664" />
     <state x="431" y="164" key="scopes/0.23.1680.952@0.23.1680.952" timestamp="1571970198902" />
-    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup" timestamp="1573514029384">
+    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup" timestamp="1575464409516">
       <screen x="0" y="23" width="1680" height="948" />
     </state>
-    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948@0.23.1680.948" timestamp="1573514029384" />
+    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948@0.23.1680.948" timestamp="1575464409516" />
     <state x="-496" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@-1073.-1177.1920.1177" timestamp="1571175688299" />
     <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1571852305223" />
     <state x="1424" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1572038272971" />
@@ -330,7 +331,7 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/sermons$Test__office_static_office_js_office.coverage" NAME="Test: office.static.office.js.office Coverage Results" MODIFIED="1574981264747" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/sermons$urls.coverage" NAME="urls Coverage Results" MODIFIED="1574993317848" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/site/website" />
+    <SUITE FILE_PATH="coverage/sermons$Test__office_static_office_js_office.coverage" NAME="Test: office.static.office.js.office Coverage Results" MODIFIED="1574981264747" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>
