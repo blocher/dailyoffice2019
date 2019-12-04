@@ -454,7 +454,6 @@ class SetNamesAndCollects(object):
                 for commemoration in calendar_date.all:
 
                     if "SUNDAY" in commemoration.rank.name:
-                        self.append_o_antiphon_if_needed(commemoration, calendar_date)
                         self.append_seuptuagesima_if_needed(commemoration, calendar_date)
 
             except StopIteration:
@@ -473,6 +472,21 @@ class SetNamesAndCollects(object):
                         if hasattr(commemoration, "morning_prayer_collect"):
                             break
                     self.check_previous_evening(calendar_date)
+
+
+            except StopIteration:
+                break
+
+
+        self.i = iter(self.church_calendar)
+        while True:
+            try:
+                calendar_date = next(self.i)
+
+                for commemoration in calendar_date.all:
+
+                    if "SUNDAY" in commemoration.rank.name:
+                        self.append_o_antiphon_if_needed(commemoration, calendar_date)
 
             except StopIteration:
                 break
@@ -579,6 +593,7 @@ class SetNamesAndCollects(object):
                         commemoration.alternate_color_2 = "purple" if commemoration.alternate_color else None
                         commemoration.alternate_color = commemoration.alternate_color if commemoration.alternate_color else "purple"
                     break
+
         return False
 
     def append_seuptuagesima_if_needed(self, commemoration, calendar_date):
@@ -593,6 +608,7 @@ class SetNamesAndCollects(object):
 
 
     def append_o_antiphon_if_needed(self, commemoration, calendar_date):
+
 
         if calendar_date.date.month == 12:
             if calendar_date.date.day == 16:
