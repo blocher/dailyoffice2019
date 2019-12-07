@@ -210,6 +210,26 @@ def settings(request):
                 ],
             },
             {
+                "title": "Reading Headings",
+                "name": "reading_headings",
+                "options": [
+                    {
+                        "value": "off",
+                        "hide": ["reading-heading"],
+                        "show": [],
+                        "heading": "Hide",
+                        "text": "Hide ESV headings in readings",
+                    },
+                    {
+                        "value": "on",
+                        "hide": [],
+                        "show": ["reading-heading"],
+                        "heading": "Show",
+                        "text": "Show ESV headings in readings",
+                    },
+                ],
+            },
+            {
                 "title": 'Advent "O" Antiphons',
                 "name": "o_antiphons",
                 "options": [
