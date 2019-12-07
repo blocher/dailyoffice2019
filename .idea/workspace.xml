@@ -3,8 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="4d3b96da-e02b-4ac5-80bf-e1b5c662734c" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/churchcal/calculations.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/churchcal/calculations.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/office/src/office/css/office.scss" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/css/office.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/minor_office_psalms.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/minor_office_psalms.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/psalms.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/psalms.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/webpack-stats.json" beforeDir="false" afterPath="$PROJECT_DIR$/site/webpack-stats.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/website/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/settings.py" afterDir="false" />
     </list>
@@ -225,7 +226,9 @@
       <workItem from="1575401555502" duration="614000" />
       <workItem from="1575464123735" duration="286000" />
       <workItem from="1575464413084" duration="1000" />
-      <workItem from="1575464438071" duration="3035000" />
+      <workItem from="1575464438071" duration="3122000" />
+      <workItem from="1575480522732" duration="153000" />
+      <workItem from="1575753841684" duration="1070000" />
     </task>
     <servers />
   </component>
@@ -296,11 +299,11 @@
     <state x="701" y="237" key="com.intellij.ide.util.TipDialog" timestamp="1570397175336" />
     <state x="701" y="237" key="com.intellij.ide.util.TipDialog/3360.2100" timestamp="1570397175337" />
     <state x="701" y="237" key="com.intellij.ide.util.TipDialog/3360.2100/1920.1200/1920.1200" timestamp="1570397175337" />
-    <state x="506" y="287" width="683" height="476" key="find.popup" timestamp="1575479946262">
+    <state x="506" y="287" width="683" height="476" key="find.popup" timestamp="1575758111156">
       <screen x="0" y="23" width="1680" height="948" />
     </state>
     <state x="506" y="287" width="683" height="476" key="find.popup/0.23.1680.948/874.-1177.1920.1177/-1046.-1177.1920.1177@0.23.1680.948" timestamp="1575479946262" />
-    <state x="506" y="287" width="683" height="476" key="find.popup/0.23.1680.948@0.23.1680.948" timestamp="1575464457601" />
+    <state x="506" y="287" width="683" height="476" key="find.popup/0.23.1680.948@0.23.1680.948" timestamp="1575758111156" />
     <state x="-495" y="-849" width="763" height="522" key="find.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@-1073.-1177.1920.1177" timestamp="1571164483046" />
     <state x="506" y="288" width="667" height="422" key="find.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1570643546418" />
     <state x="1425" y="-849" width="781" height="522" key="find.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1571763115189" />
@@ -310,11 +313,11 @@
     </state>
     <state x="1340" y="-1003" key="scopes/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1572038171664" />
     <state x="431" y="164" key="scopes/0.23.1680.952@0.23.1680.952" timestamp="1571970198902" />
-    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup" timestamp="1575479926617">
+    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup" timestamp="1575758363039">
       <screen x="0" y="23" width="1680" height="948" />
     </state>
-    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948/874.-1177.1920.1177/-1046.-1177.1920.1177@0.23.1680.948" timestamp="1575479926617" />
-    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948@0.23.1680.948" timestamp="1575466650930" />
+    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948/874.-1177.1920.1177/-1046.-1177.1920.1177@0.23.1680.948" timestamp="1575480666139" />
+    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948@0.23.1680.948" timestamp="1575758363039" />
     <state x="-496" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@-1073.-1177.1920.1177" timestamp="1571175688299" />
     <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1571852305223" />
     <state x="1424" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1572038272971" />

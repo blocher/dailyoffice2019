@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = False if os.getenv("DEBUG", "False") == "False" else "True"
-DEBUG = False
+DEBUG = True
 ALLOWED_HOSTS = ["*", "127.0.0.1:8000", "127.0.0.1", "dailyoffice2019.com", "www.dailyoffice2019.com"]
 
 
@@ -54,7 +54,6 @@ INSTALLED_APPS = [
     "mathfilters",
     "meta",
     "office",
-#    "debug_toolbar",
     "djrichtextfield",
     "taggit",
     "address",
@@ -63,6 +62,9 @@ INSTALLED_APPS = [
     "webpack_loader",
     "robots",
 ]
+
+if DEBUG:
+    INSTALLED_APPS = ["debug_toolbar"] + INSTALLED_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
