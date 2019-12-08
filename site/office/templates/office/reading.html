@@ -3,6 +3,7 @@
 
 <div class="full-reading">
     <h4>{{ data.passage }}</h4>
+
     <p><em>The lesson is read, the people sitting</em></p>
     <table class="dialogue">
         <tr>
@@ -11,6 +12,11 @@
         </tr>
     </table>
     <div class="reading">
+        {%  if not data.deuterocanon %}
+        <div class="bible-audio off">
+            <audio controls type="audio/mpeg" src="https://audio.esv.org/hw/{{ data.passage|urlencode }}"><a href="https://audio.esv.org/hw/{{ data.passage|urlencode }}">Listen</a></audio>
+        </div>
+        {% endif %}
         <br>
         {{  data.reading | safe }}
     </div>
@@ -27,6 +33,11 @@
         </tr>
     </table>
     <div class="reading">
+        {%  if not data.deuterocanon %}
+            <div class="bible-audio off">
+                <audio controls type="audio/mpeg" src="https://audio.esv.org/hw/{{ data.abbreviated_passage|urlencode }}"><a href="https://audio.esv.org/hw/{{ data.abbreviated_passage|urlencode }}">Listen</a></audio>
+            </div>
+        {% endif %}
         <br>
         {{  data.abbreviated_reading | safe }}
     </div>

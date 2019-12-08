@@ -14,7 +14,7 @@
 
         {% if evening %}
             <p class="primary">
-                <span class="color {{ day.primary_evening.color|lower }}"></span>{% if day.primary_evening.alternate_color %}<span class="color {{ day.primary_evening.alternate_color|lower }}"></span>{% endif %}{% if day.primary_evening.alternate_color_2 %}<span class="color {{ day.primary_evening.alternate_color_2|lower }}"></span>{% endif %}{{  day.primary.name }}{% if day.primary.transferred %} <small>(Transferred)</small>{%  endif %}
+                <span class="color {{ day.primary_evening.color|lower }}"></span>{% if day.primary_evening.alternate_color %}<span class="color {{ day.primary_evening.alternate_color|lower }}"></span>{% endif %}{% if day.primary_evening.alternate_color_2 %}<span class="color {{ day.primary_evening.alternate_color_2|lower }}"></span>{% endif %}{{  day.primary_evening.name }}{% if day.primary_evening.transferred %} <small>(Transferred)</small>{%  endif %}
                 {% if day.primary_evening.link_1 %}<a class="wiki-link" target="_blank" href="{{ day.primary_evening.link_1 }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
                 {% if day.primary_evening.link_2 %}<a class="wiki-link" target="_blank" href="{{ day.primary_evening.link_2 }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
                 {% if day.primary_evening.link_3 %}<a class="wiki-link" target="_blank" href="{{ day.primary_evening.link_3 }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}

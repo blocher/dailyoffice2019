@@ -482,25 +482,17 @@ class  ComplineCanticle(OfficeSection):
 class  ComplineConclusion(OfficeSection):
     @cached_property
     def data(self):
-        return {}
+        return {"alleluia": self.date.evening_season.name=="Eastertide"}
 
 class  MiddayConclusion(OfficeSection):
     @cached_property
     def data(self):
         return {"alleluia": self.date.season.name == "Eastertide"}
 
-
-class  CompliMiddayConclusionneConclusion(OfficeSection):
-    @cached_property
-    def data(self):
-        return {"alleluia": self.date.evening_season.name=="Eastertide"}
-
-
-
 class Confession(OfficeSection):
     @cached_property
     def data(self):
-        return {"heading": "Confession of Sin", "long_form": self.date.fast_day}
+        return {"heading": "Confession of Sin", "fast_day": self.date.fast_day}
 
 class ComplineConfession(OfficeSection):
     @cached_property
@@ -644,6 +636,7 @@ class MPReading1(OfficeSection):
                 else "Here ends the Reading.",
                 "people": "Thanks be to God." if self.office_readings.mp_reading_1_testament != "DC" else "",
             },
+            "deuterocanon": self.office_readings.mp_reading_1_testament not in ["OT", "NT"],
         }
 
 class MPAlternateReading1(OfficeSection):
@@ -984,64 +977,6 @@ class Prayers(OfficeSection):
     def data(self):
         return {"heading": "The Prayers"}
 
-
-class Suffrages(OfficeSection):
-    @cached_property
-    def data(self):
-        return {}
-
-
-class EPCollectsOfTheDay(OfficeSection):
-    @cached_property
-    def data(self):
-        return {
-            "collects": (
-                (commemoration.name,
-                 commemoration.evening_prayer_collect.replace(" Amen.", ""),
-                 commemoration.rank.name)
-                for commemoration in self.date.all_evening
-                if commemoration.evening_prayer_collect
-            )
-        }
-
-
-class MPCollectsOfTheDay(OfficeSection):
-    @cached_property
-    def data(self):
-        return {
-            "collects": (
-                (commemoration.name,
-                commemoration.morning_prayer_collect.replace(" Amen.", ""),
-                commemoration.rank.name)
-                for commemoration in self.date.all
-                if commemoration.morning_prayer_collect
-                )
-        }
-
-
-class EPMissionCollect(OfficeSection):
-    @cached_property
-    def data(self):
-
-        mission_collects = (
-            "O God and Father of all, whom the whole heavens adore: Let the whole earth also worship you, all nations obey you, all tongues confess and bless you, and men, women, and children everywhere love you and serve you in peace; through Jesus Christ our Lord.",
-            "Keep watch, dear Lord, with those who work, or watch, or weep this night, and give your angels charge over those who sleep. Tend the sick, Lord Christ; give rest to the weary, bless the dying, soothe the suffering, pity the afflicted, shield the joyous; and all for your love’s sake.",
-            "O God, you manifest in your servants the signs of your presence: Send forth upon us the Spirit of love, that in companionship with one another your abounding grace may increase among us; through Jesus Christ our Lord.",
-        )
-
-        if self.date.date.weekday() == 0 or self.date.date.weekday() == 3:
-            collect = mission_collects[0]
-            subheading = "I"
-        elif self.date.date.weekday() == 1 or self.date.date.weekday() == 4 or self.date.date.weekday() == 6:
-            collect = mission_collects[1]
-            subheading = "II"
-        elif self.date.date.weekday() == 2 or self.date.date.weekday() == 5:
-            collect = mission_collects[1]
-            subheading = "III"
-
-        return {"heading": "A Collect for Mission", "collect": collect, "subheading": subheading}
-
-
 class MPMissionCollect(OfficeSection):
     @cached_property
     def data(self):
@@ -1173,72 +1108,6 @@ class MPCollects(OfficeSection):
         )
 
         return {"collect": weekly_collects[self.date.date.weekday()], "fixed_collects": fixed_collects}
-
-
-class Intercessions(OfficeSection):
-    @cached_property
-    def data(self):
-        return {
-            "heading": "Intercessions",
-            "rubric_1": "The Officiant may invite the People to offer intercessions and thanksgivings.",
-            "rubric_2": "A hymn or anthem may be sung.",
-        }
-
-
-class GeneralThanksgiving(OfficeSection):
-    @cached_property
-    def data(self):
-        return {"heading": "The General Thanksgiving"}
-
-
-class Chrysostom(OfficeSection):
-    @cached_property
-    def data(self):
-        return {"heading": "A PRAYER OF ST. JOHN CHRYSOSTOM"}
-
-
-class Dismissal(OfficeSection):
-
-    def get_grace(self):
-
-        if self.date.date.weekday() in (6, 2, 5):
-            return {
-                "officiant": "The grace of our Lord Jesus Christ, and the love of God, and the fellowship of the Holy Spirit, be with us all evermore.",
-                "people": "Amen.",
-                "citation": "2 CORINTHIANS 13:14",
-            }
-
-        if self.date.date.weekday() in (0, 3):
-            return {
-                "officiant": "May the God of hope fill us with all joy and peace in believing through the power of the Holy Spirit. ",
-                "people": "Amen.",
-                "citation": "ROMANS 15:13",
-            }
-
-        if self.date.date.weekday() in (1, 4):
-            return {
-                "officiant": "Glory to God whose power, working in us, can do infinitely more than we can ask or imagine: Glory to him from generation to generation in the Church, and in Christ Jesus for ever and ever.",
-                "people": "Amen.",
-                "citation": "EPHESIANS 3:20-21",
-            }
-
-    @cached_property
-    def data(self):
-
-        morning_easter = self.office.office not in ["evening_prayer"] and self.date.season.name == "Eastertide"
-        evening_easter = self.office.office in ["evening_prayer"] and self.date.evening_season.name == "Eastertide"
-
-
-        officiant = "Let us bless the Lord."
-        people = "Thanks be to God."
-
-        if morning_easter or evening_easter:
-
-            officiant = "{} Alleluia, alleluia.".format(officiant)
-            people = "{} Alleluia, alleluia.".format(people)
-
-
-        return {"heading": "Dismissal", "officiant": officiant, "people": people, "grace": self.get_grace()}
 
 
 # ==== Offices
@@ -1304,199 +1173,6 @@ class Office(object):
             "date": today.strftime("%B %-d, %Y")
         }
 
-    @cached_property
-    def settings(self):
-
-        return [
-            {
-                "title": "Psalter Cycle",
-                "name": "psalter",
-                "options": [
-                    {
-                        "value": "60",
-                        "hide": ["psalter-thirty"],
-                        "show": ["psalter-sixty"],
-                        "heading": "60 Day",
-                        "text": "Pray through the psalms once every 60 days",
-                    },
-                    {
-                        "value": "30",
-                        "hide": ["psalter-sixty"],
-                        "show": ["psalter-thirty"],
-                        "heading": "30 Day",
-                        "text": "Pray through the psalms once every 30 days",
-                    },
-                ],
-            },
-            {
-                "title": "Reading Cycle",
-                "name": "reading_cycle",
-                "options": [
-                    {
-                        "value": "1",
-                        "hide": ["alternate-reading"],
-                        "show": ["main-reading"],
-                        "heading": "One Year",
-                        "text": mark_safe("Read through most of the bible each year. (Use if you pray <strong>both</strong> morning and evening prayer)"),
-                    },
-                    {
-                        "value": "2",
-                        "hide": ["main-reading"],
-                        "show": ["alternate-reading"],
-                        "heading": "Two Year",
-                        "text": mark_safe("Read through most of the bible in two years. (Use if you pray <strong>either</strong> morning <strong>or</strong> evening prayer)"),
-                    },
-                ],
-            },
-            {
-                "title": "Reading Length",
-                "name": "reading_length",
-                "options": [
-                    {
-                        "value": "full",
-                        "hide": ["abbreviated-reading"],
-                        "show": ["full-reading"],
-                        "heading": "Full",
-                        "text": "The full readings will always be used.",
-                    },
-                    {
-                        "value": "abbreviated",
-                        "hide": ["full-reading"],
-                        "show": ["abbreviated-reading"],
-                        "heading": "Abbreviated",
-                        "text": "Suggested abbreviations, when available.",
-                    },
-                ],
-            },
-            {
-                "title": "Language Style",
-                "name": "language_style",
-                "options": [
-                    {
-                        "value": "traditional",
-                        "hide": ["contemporary"],
-                        "show": ["traditional"],
-                        "heading": "Traditional",
-                        "text": "Traditional language for the Kyrie and Our Father",
-                    },
-                    {
-                        "value": "contemporary",
-                        "hide": ["traditional"],
-                        "show": ["contemporary"],
-                        "heading": "Contemporary",
-                        "text": "Modern language for the Kyrie and Our Father",
-                    },
-                ],
-            },
-            {
-                "title": "Collects",
-                "name": "collects",
-                "options": [
-                    {
-                        "value": "rotating",
-                        "hide": ["fixed"],
-                        "show": ["rotating"],
-                        "heading": "Rotating",
-                        "text": "A different collect is said for each day of the week",
-                    },
-                    {
-                        "value": "fixed",
-                        "hide": ["rotating"],
-                        "show": ["fixed"],
-                        "heading": "Fixed",
-                        "text": "The two traditional collects are said every day",
-                    },
-                ],
-            },
-            {
-                "title": "Absolution",
-                "name": "absolution",
-                "options": [
-                    {
-                        "value": "lay",
-                        "hide": ["priest"],
-                        "show": ["lay"],
-                        "heading": "Lay Person",
-                        "text": "A prayer suitable for a deacon or lay person to read",
-                    },
-                    {
-                        "value": "priest",
-                        "hide": ["lay"],
-                        "show": ["priest"],
-                        "heading": "Priest",
-                        "text": "An absolution suitable for a priest to pronounce",
-                    },
-                ],
-            },
-            {
-                "title": "General Thanksgiving",
-                "name": "general_thanksgiving",
-                "options": [
-                    {
-                        "value": "on",
-                        "hide": [],
-                        "show": ["general_thanksgiving"],
-                        "heading": "On",
-                        "text": "Add the prayer of general thanksgiving to the end of the office",
-                    },
-                    {
-                        "value": "off",
-                        "hide": ["general_thanksgiving"],
-                        "show": [""],
-                        "heading": "Off",
-                        "text": "Hide the prayer of general thanksgiving to the end of the office",
-                    },
-                ],
-            },
-            {
-                "title": "Prayer of St. John Chrysostom",
-                "name": "chrysostom",
-                "options": [
-                    {
-                        "value": "on",
-                        "hide": [],
-                        "show": ["chrysostom"],
-                        "heading": "On",
-                        "text": "For use when praying in groups of two or more",
-                    },
-                    {
-                        "value": "off",
-                        "hide": ["chrysostom"],
-                        "show": [""],
-                        "heading": "Off",
-                        "text": "For when praying individually",
-                    },
-                ],
-            },
-            {
-                "title": "National Holidays",
-                "name": "national_holidays",
-                "options": [
-                    {
-                        "value": "us",
-                        "hide": ["canada"],
-                        "show": ["us"],
-                        "heading": "United States",
-                        "text": "United States Holidays",
-                    },
-                    {
-                        "value": "canada",
-                        "hide": ["us"],
-                        "show": ["canada"],
-                        "heading": "Canada",
-                        "text": "Canadian Holidays",
-                    },
-                    {
-                        "value": "all",
-                        "hide": [],
-                        "show": ["canada", "us"],
-                        "heading": "All",
-                        "text": "Both U.S. and Canadian Holidays",
-                    },
-                ],
-            },
-        ]
-
 
 class EveningPrayer(Office):
 
@@ -1544,110 +1220,6 @@ class EveningPrayer(Office):
         ]
 
 
-class MorningPrayer(Office):
-
-    name = "Morning Prayer"
-    office = "morning_prayer"
-
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.description = "Office: {}, Date: {}, Commemoration: {}, Psalms (30 Day Cycle): {}, Psalms (60 Day Cycle): {}, First Reading: {}, Second Reading: {}, Prayer Book: {}".format("Daily Morning Prayer", self.date.date.strftime(
-                                                                                                                 "%A %B %-d, %Y"),  self.date.primary.name, self.thirty_day_psalter_day.mp_psalms.replace(',', ' '), self.office_readings.mp_psalms.replace(',', ' '), self.office_readings.mp_reading_1, self.office_readings.mp_reading_2, "The Book of Common Prayer (2019), Anglican Church in North America")
-
-        self.start_time = datetime.datetime.combine(self.date.date, datetime.time())
-        self.start_time = self.start_time.replace(minute=0, hour=5, second=0)
-        self.end_time = self.start_time.replace(minute=0, hour=12, second=0)
-
-    @cached_property
-    def modules(self):
-        return [
-            (MPHeading(self.date, self.office_readings), "office/heading.html"),
-            (MPCommemorationListing(self.date, self.office_readings), "office/commemoration_listing.html"),
-            (MPOpeningSentence(self.date, self.office_readings), "office/opening_sentence.html"),
-            (Confession(self.date, self.office_readings), "office/confession.html"),
-            (Invitatory(self.date, self.office_readings), "office/invitatory.html"),
-            (MPInvitatory(self.date, self.office_readings), "office/morning_prayer/mpinvitatory.html"),
-            (MPPsalms(self.date, self.office_readings, self.thirty_day_psalter_day), "office/psalms.html"),
-            (MPReading1(self.date, self.office_readings), "office/main_reading.html"),
-            (MPAlternateReading1(self.date, self.office_readings), "office/alternate_reading.html"),
-            (MPCanticle1(self.date, self.office_readings), "office/canticle.html"),
-            (MPReading2(self.date, self.office_readings), "office/main_reading.html"),
-            (MPAlternateReading2(self.date, self.office_readings), "office/alternate_reading.html"),
-            (MPCanticle2(self.date, self.office_readings), "office/canticle.html"),
-            (Creed(self.date, self.office_readings), "office/creed.html"),
-            (Prayers(self.date, self.office_readings), "office/prayers.html"),
-            (Suffrages(self.date, self.office_readings), "office/suffrages.html"),
-            (MPCollectsOfTheDay(self.date, self.office_readings), "office/collects_of_the_day.html"),
-            (MPCollects(self.date, self.office_readings), "office/collects.html"),
-            (MPMissionCollect(self.date, self.office_readings), "office/mission_collect.html"),
-            (Intercessions(self.date, self.office_readings), "office/intercessions.html"),
-            (GeneralThanksgiving(self.date, self.office_readings), "office/general_thanksgiving.html"),
-            (Chrysostom(self.date, self.office_readings), "office/chrysostom.html"),
-            (Dismissal(self.date, self.office_readings, office=self), "office/dismissal.html"),
-        ]
-
-
-class Compline(Office):
-    name = "Compline"
-    office = "compline"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.description = "Office: {}, Date: {}, Commemoration: {}, Prayer Book: {}".format("Compline (Bedtime Prayer)", self.date.date.strftime(
-                                                                                                                 "%A %B %-d, %Y"),  self.date.primary_evening.name, "The Book of Common Prayer (2019), Anglican Church in North America")
-
-        self.start_time = datetime.datetime.combine(self.date.date, datetime.time())
-        self.start_time = self.start_time.replace(minute=0, hour=20, second=0)
-        self.end_time = self.start_time.replace(minute=59, hour=23, second=59)
-
-    @cached_property
-    def modules(self):
-        return [
-            (ComplineHeading(self.date, self.office_readings), "office/heading.html"),
-            (ComplineCommemorationListing(self.date, self.office_readings), "office/commemoration_listing.html"),
-            (ComplineOpening(self.date, self.office_readings), "office/compline_opening.html"),
-            (ComplineConfession(self.date, self.office_readings), "office/compline_confession.html"),
-            (ComplineInvitatory(self.date, self.office_readings), "office/compline_invitatory.html"),
-            (ComplinePsalms(self.date, self.office_readings), "office/minor_office_psalms.html"),
-            (ComplineScripture(self.date, self.office_readings), "office/minor_office_scripture.html"),
-            (ComplinePrayers(self.date, self.office_readings), "office/compline_prayers.html"),
-            (ComplineCanticle(self.date, self.office_readings), "office/compline_canticle.html"),
-            (ComplineConclusion(self.date, self.office_readings), "office/compline_conclusion.html"),
-
-        ]
-
-class MiddayPrayer(Office):
-    name = "Midday Prayer"
-    office = "midday_prayer"
-
-    start_time = "11:00 AM"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.description = "Office: {}, Date: {}, Commemoration: {}, Prayer Book: {}".format("Midday Prayer", self.date.date.strftime(
-                                                                                                                 "%A %B %-d, %Y"),  self.date.primary_evening.name, "The Book of Common Prayer (2019), Anglican Church in North America")
-
-        self.start_time = datetime.datetime.combine(self.date.date, datetime.time())
-        self.start_time = self.start_time.replace(minute=0, hour=11, second=0)
-        self.end_time = self.start_time.replace(minute=0, hour=16, second=0)
-
-    @cached_property
-    def modules(self):
-        return [
-            (MiddayHeading(self.date, self.office_readings), "office/heading.html"),
-            (MiddayCommemorationListing(self.date, self.office_readings), "office/commemoration_listing.html"),
-            (MiddayInvitatory(self.date, self.office_readings), "office/midday_invitatory.html"),
-            (MiddayPsalms(self.date, self.office_readings), "office/minor_office_psalms.html"),
-            (MiddayScripture(self.date, self.office_readings), "office/minor_office_scripture.html"),
-            (MiddayPrayers(self.date, self.office_readings), "office/midday_prayers.html"),
-            (MiddayConclusion(self.date, self.office_readings), "office/midday_conclusion.html"),
-
-        ]
-
-    @cached_property
-    def data(self):
-        return {}
 
 
 class Suffrages(OfficeSection):
@@ -1707,139 +1279,6 @@ class EPMissionCollect(OfficeSection):
         return {"heading": "A Collect for Mission", "collect": collect, "subheading": subheading}
 
 
-class MPMissionCollect(OfficeSection):
-    @cached_property
-    def data(self):
-
-        mission_collects = (
-            "Almighty and everlasting God, who alone works great marvels: Send down upon our clergy and the congregations committed to their charge the life-giving Spirit of your grace, shower them with the continual dew of your blessing, and ignite in them a zealous love of your Gospel; through Jesus Christ our Lord. ",
-            "O God, you have made of one blood all the peoples of the earth, and sent your blessed Son to preach peace to those who are far off and to those who are near: Grant that people everywhere may seek after you and find you; bring the nations into your fold; pour out your Spirit upon all flesh; and hasten the coming of your kingdom; through Jesus Christ our Lord.",
-            "Lord Jesus Christ, you stretched out your arms of love on the hard wood of the Cross that everyone might come within the reach of your saving embrace: So clothe us in your Spirit that we, reaching forth our hands in love, may bring those who do not know you to the knowledge and love of you; for the honor of your Name.",
-        )
-
-        if self.date.date.weekday() == 0 or self.date.date.weekday() == 3:
-            collect = mission_collects[0]
-            subheading = "I"
-        elif self.date.date.weekday() == 1 or self.date.date.weekday() == 4 or self.date.date.weekday() == 6:
-            collect = mission_collects[1]
-            subheading = "II"
-        elif self.date.date.weekday() == 2 or self.date.date.weekday() == 5:
-            collect = mission_collects[1]
-            subheading = "III"
-
-        return {"heading": "A Collect for Mission", "collect": collect, "subheading": subheading}
-
-
-class EPCollects(OfficeSection):
-    @cached_property
-    def data(self):
-        weekly_collects = (
-            (
-                "A COLLECT FOR PEACE",
-                "Monday",
-                "O God, the source of all holy desires, all good counsels, and all just works: Give to your servants that peace which the world cannot give, that our hearts may be set to obey your commandments, and that we, being defended from the fear of our enemies, may pass our time in rest and quietness; through the merits of Jesus Christ our Savior.",
-            ),
-            (
-                "A COLLECT FOR AID AGAINST PERILS",
-                "Tuesday",
-                "Lighten our darkness, we beseech you, O Lord; and by your great mercy defend us from all perils and dangers of this night; for the love of your only Son, our Savior Jesus Christ.",
-            ),
-            (
-                "A COLLECT FOR PROTECTION",
-                "Wednesday",
-                "O God, the life of all who live, the light of the faithful, the strength of those who labor, and the repose of the dead: We thank you for the blessings of the day that is past, and humbly ask for your protection through the coming night. Bring us in safety to the morning hours; through him who died and rose again for us, your Son our Savior Jesus Christ.",
-            ),
-            (
-                "A COLLECT FOR THE PRESENCE OF CHRIST",
-                "Thursday",
-                "Lord Jesus, stay with us, for evening is at hand and the day is past; be our companion in the way, kindle our hearts, and awaken hope, that we may know you as you are revealed in Scripture and the breaking of bread. Grant this for the sake of your love.",
-            ),
-            (
-                "A COLLECT FOR FAITH",
-                "Friday",
-                "Lord Jesus Christ, by your death you took away the sting of death: Grant to us your servants so to follow in faith where you have led the way, that we may at length fall asleep peacefully in you and wake up in your likeness; for your tender mercies’ sake.",
-            ),
-            (
-                "A COLLECT FOR THE EVE OF WORSHIP",
-                "Saturday",
-                "O God, the source of eternal light: Shed forth your unending day upon us who watch for you, that our lips may praise you, our lives may bless you, and our worship on the morrow give you glory; through Jesus Christ our Lord.",
-            ),
-            (
-                "A COLLECT FOR RESURRECTION HOPE",
-                "Sunday",
-                "Lord God, whose Son our Savior Jesus Christ triumphed over the powers of death and prepared for us our place in the new Jerusalem: Grant that we, who have this day given thanks for his resurrection, may praise you in that City of which he is the light, and where he lives and reigns for ever and ever.",
-            ),
-        )
-
-        fixed_collects = (
-            (
-                "A COLLECT FOR PEACE",
-                "O God, the source of all holy desires, all good counsels, and all just works: Give to your servants that peace which the world cannot give, that our hearts may be set to obey your commandments, and that we, being defended from the fear of our enemies, may pass our time in rest and quietness; through the merits of Jesus Christ our Savior.",
-            ),
-            (
-                "A COLLECT FOR AID AGAINST PERILS",
-                "Lighten our darkness, we beseech you, O Lord; and by your great mercy defend us from all perils and dangers of this night; for the love of your only Son, our Savior Jesus Christ.",
-            ),
-        )
-
-        return {"collect": weekly_collects[self.date.date.weekday()], "fixed_collects": fixed_collects}
-
-
-class MPCollects(OfficeSection):
-    @cached_property
-    def data(self):
-        weekly_collects = (
-            (
-                "A COLLECT FOR THE RENEWAL OF LIFE",
-                "Monday",
-                "Lighten our darkness, we beseech you, O Lord; and by your great mercy defend us from all perils and dangers of this night; for the love of your only Son, our Savior Jesus Christ.",
-            ),
-            (
-                "A COLLECT FOR PEACE",
-                "Tuesday",
-                "O God, the author of peace and lover of concord, to know you is eternal life and to serve you is perfect freedom: Defend us, your humble servants, in all assaults of our enemies; that we, surely trusting in your defense, may not fear the power of any adversaries, through the might of Jesus Christ our Lord. ",
-            ),
-            (
-                "A COLLECT FOR GRACE",
-                "Wednesday",
-                "O Lord, our heavenly Father, almighty and everlasting God, you have brought us safely to the beginning of this day: Defend us by your mighty power, that we may not fall into sin nor run into any danger; and that, guided by your Spirit, we may do what is righteous in your sight; through Jesus Christ our Lord.",
-            ),
-            (
-                "A COLLECT FOR GUIDANCE",
-                "Thursday",
-                "Heavenly Father, in you we live and move and have our being: We humbly pray you so to guide and govern us by your Holy Spirit, that in all the cares and occupations of our life we may not forget you, but may remember that we are ever walking in your sight; through Jesus Christ our Lord. ",
-            ),
-            (
-                "A COLLECT FOR ENDURANCE ",
-                "Friday",
-                "Almighty God, whose most dear Son went not up to joy but first he suffered pain, and entered not into glory before he was crucified: Mercifully grant that we, walking in the way of the Cross, may find it none other than the way of life and peace; through Jesus Christ your Son our Lord.  ",
-            ),
-            (
-                "A COLLECT FOR SABBATH REST",
-                "Saturday",
-                "Almighty God, who after the creation of the world rested from all your works and sanctified a day of rest for all your creatures: Grant that we, putting away all earthly anxieties, may be duly prepared for the service of your sanctuary, and that our rest here upon earth may be a preparation for the eternal rest promised to your people in heaven; through Jesus Christ our Lord. ",
-            ),
-            (
-                "A COLLECT FOR STRENGTH TO AWAIT CHRIST’S RETURN",
-                "Sunday",
-                "O God our King, by the resurrection of your Son Jesus Christ on the first day of the week, you conquered sin, put death to flight, and gave us the hope of everlasting life: Redeem all our days by this victory; forgive our sins, banish our fears, make us bold to praise you and to do your will; and steel us to wait for the consummation of your kingdom on the last great Day; through Jesus Christ our Lord. ",
-            ),
-        )
-
-        fixed_collects = (
-            (
-                "A COLLECT FOR PEACE",
-                "O God, the author of peace and lover of concord, to know you is eternal life and to serve you is perfect freedom: Defend us, your humble servants, in all assaults of our enemies; that we, surely trusting in your defense, may not fear the power of any adversaries, through the might of Jesus Christ our Lord. ",
-            ),
-            (
-                "A COLLECT FOR GRACE",
-                "O Lord, our heavenly Father, almighty and everlasting God, you have brought us safely to the beginning of this day: Defend us by your mighty power, that we may not fall into sin nor run into any danger; and that, guided by your Spirit, we may do what is righteous in your sight; through Jesus Christ our Lord.",
-            ),
-        )
-
-        return {"collect": weekly_collects[self.date.date.weekday()], "fixed_collects": fixed_collects}
-
-
 class Intercessions(OfficeSection):
     @cached_property
     def data(self):
@@ -1863,6 +1302,14 @@ class Chrysostom(OfficeSection):
 
 
 class Dismissal(OfficeSection):
+
+    def get_fixed_grace(self):
+
+        return {
+            "officiant": "The grace of our Lord Jesus Christ, and the love of God, and the fellowship of the Holy Spirit, be with us all evermore.",
+            "people": "Amen.",
+            "citation": "2 CORINTHIANS 13:14",
+        }
 
     def get_grace(self):
 
@@ -1903,7 +1350,7 @@ class Dismissal(OfficeSection):
             people = "{} Alleluia, alleluia.".format(people)
 
 
-        return {"heading": "Dismissal", "officiant": officiant, "people": people, "grace": self.get_grace()}
+        return {"heading": "Dismissal", "officiant": officiant, "people": people, "grace": self.get_grace(), "fixed_grace": self.get_fixed_grace()}
 
 
 # ==== Offices

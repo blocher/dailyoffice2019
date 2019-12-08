@@ -1,10 +1,19 @@
 <h2>{{  data.heading }}</h2>
 <p><em>The Officiant says to the People</em></p>
-{%  if data.long_form %}
+
+<div class="confession-fast-only">
+    {%  if data.fast_day %}
+        <p>Dearly beloved, the Scriptures teach us to acknowledge our many sins and offenses, not concealing them from our heavenly Father, but confessing them with humble and obedient hearts that we may obtain forgiveness by his infinite goodness and mercy. We ought at all times humbly to acknowledge our sins before Almighty God, but especially when we come together in his presence to give thanks for the great benefits we have received at his hands, to declare his most worthy praise, to hear his holy Word, and to ask, for ourselves and on behalf of others, those things which are necessary for our life and our salvation. Therefore, draw near with me to the throne of heavenly grace.</p>
+    {%  else %}
+        <p>Let us humbly confess our sins to Almighty God.</p>
+    {%  endif %}
+</div>
+<div class="confession-long-form off">
     <p>Dearly beloved, the Scriptures teach us to acknowledge our many sins and offenses, not concealing them from our heavenly Father, but confessing them with humble and obedient hearts that we may obtain forgiveness by his infinite goodness and mercy. We ought at all times humbly to acknowledge our sins before Almighty God, but especially when we come together in his presence to give thanks for the great benefits we have received at his hands, to declare his most worthy praise, to hear his holy Word, and to ask, for ourselves and on behalf of others, those things which are necessary for our life and our salvation. Therefore, draw near with me to the throne of heavenly grace.</p>
-{%  else %}
-    <p>Let us humbly confess our sins to Almighty God.</p>
-{%  endif %}
+</div>
+<div class="confession-short-form off">
+   <p>Let us humbly confess our sins to Almighty God.</p>
+</div>
 <p></p>
 <p><em>Silence is kept. All kneeling, the Officiant and People say</em></p>
 
@@ -35,9 +44,17 @@
 
 <div class="priest off">
     <p><em>The Priest alone stands and says</em></p>
-    {%  if data.long_form %}
+    <div class="confession-fast-only">
+        {%  if data.fast_day %}
+            <p>Almighty God, the Father of our Lord Jesus Christ, desires not the death of sinners, but that they may turn from their wickedness and live. He has empowered and commanded his ministers to pronounce to his people, being penitent, the absolution and remission of their sins. He pardons and absolves all who truly repent and genuinely believe his holy Gospel. For this reason, we beseech him to grant us true repentance and his Holy Spirit, that our present deeds may please him, the rest of our lives may be pure and holy, and that at the last we may come to his eternal joy; through Jesus Christ our Lord. <strong>Amen.</strong></p>
+        {%  else  %}
+            <p>The Almighty and merciful Lord grant you absolution and remission of all your sins, true repentance, amendment of life, and the grace and consolation of his Holy Spirit. <strong>Amen.</strong></p>
+        {%  endif  %}
+    </div>
+    <div class="confession-long-form off">
         <p>Almighty God, the Father of our Lord Jesus Christ, desires not the death of sinners, but that they may turn from their wickedness and live. He has empowered and commanded his ministers to pronounce to his people, being penitent, the absolution and remission of their sins. He pardons and absolves all who truly repent and genuinely believe his holy Gospel. For this reason, we beseech him to grant us true repentance and his Holy Spirit, that our present deeds may please him, the rest of our lives may be pure and holy, and that at the last we may come to his eternal joy; through Jesus Christ our Lord. <strong>Amen.</strong></p>
-    {%  else  %}
+    </div>
+    <div class="confession-short-form off">
         <p>The Almighty and merciful Lord grant you absolution and remission of all your sins, true repentance, amendment of life, and the grace and consolation of his Holy Spirit. <strong>Amen.</strong></p>
-    {%  endif  %}
+    </div>
 </div>

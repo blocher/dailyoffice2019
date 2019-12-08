@@ -123,6 +123,33 @@ def settings(request):
                 ],
             },
             {
+                "title": "Confession",
+                "name": "confession",
+                "options": [
+                    {
+                        "value": "long-on-fast",
+                        "hide": ["confession-long-form", "confession-short-form"],
+                        "show": ["confession-fast-only"],
+                        "heading": "Long Intro on Fast Days, short other days",
+                        "text": "The long form of the intro and absolution are used only on fast days",
+                    },
+                    {
+                        "value": "short",
+                        "hide": ["confession-fast-only", "confession-long-form"],
+                        "show": ["confession-short-form"],
+                        "heading": "Short Intro and Absolution",
+                        "text": "The short form of the intro and absolution are used every day",
+                    },
+                    {
+                        "value": "long",
+                        "hide": ["confession-fast-only", "confession-short-form"],
+                        "show": ["confession-long-form"],
+                        "heading": "Long Intro and Absolution",
+                        "text": "The long form of the intro and absolution are used every day",
+                    },
+                ],
+            },
+            {
                 "title": "Absolution",
                 "name": "absolution",
                 "options": [
@@ -227,6 +254,46 @@ def settings(request):
                         "heading": "Show",
                         "text": "Show ESV headings in readings",
                     },
+                ],
+            },
+            {
+                "title": "Reading Audio",
+                "name": "reading_audio",
+                "options": [
+                    {
+                        "value": "off",
+                        "hide": ["bible-audio"],
+                        "show": [],
+                        "heading": "Hide",
+                        "text": "No audio controls for scripture readings",
+                    },
+                    {
+                        "value": "on",
+                        "hide": [],
+                        "show": ["bible-audio"],
+                        "heading": "Show",
+                        "text": "Turn on audio player for scripture readings (Apocrypha not available yet)",
+                    },
+                ],
+            },
+            {
+                "title": "The Grace",
+                "name": "grace",
+                "options": [
+                    {
+                        "value": "rotating",
+                        "hide": ["fixed-grace"],
+                        "show": ["rotating-grace"],
+                        "heading": "Rotating",
+                        "text": "Rotate through three different verses daily",
+                    },
+                    {
+                        "value": "traditional",
+                        "hide": ["rotating-grace"],
+                        "show": ["fixed-grace"],
+                        "heading": "Traditional",
+                        "text": "Conclude with the traditional grace each day",
+                    }
                 ],
             },
             {
