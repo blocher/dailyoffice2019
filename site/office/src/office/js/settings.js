@@ -63,6 +63,11 @@ const settings = () => {
     }
   };
 
+  const showAndHideSavedLabel = async element => {
+    document.getElementById("saved_" + element.name).classList.remove("off");
+    setTimeout(function(){ document.getElementById("saved_" + element.name).classList.add("off"); }, 2000);
+  }
+
   const addRadioButtonListeners = () => {
     document
       .querySelectorAll(".settings-radio")
@@ -70,6 +75,7 @@ const settings = () => {
         element.addEventListener("change", event => {
           applySettingFromElement(event.target);
           storeSetting(event.target);
+          showAndHideSavedLabel(event.target)
         });
       });
   };

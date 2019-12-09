@@ -1062,7 +1062,7 @@ class MPCollects(OfficeSection):
             (
                 "A COLLECT FOR THE RENEWAL OF LIFE",
                 "Monday",
-                "Lighten our darkness, we beseech you, O Lord; and by your great mercy defend us from all perils and dangers of this night; for the love of your only Son, our Savior Jesus Christ.",
+                "O God, the King eternal, whose light divides the day from the night and turns the shadow of death into the morning: Drive far from us all wrong desires, incline our hearts to keep your law, and guide our feet into the way of peace; that, having done your will with cheerfulness during the day, we may, when night comes, rejoice to give you thanks; through Jesus Christ our Lord.",
             ),
             (
                 "A COLLECT FOR PEACE",

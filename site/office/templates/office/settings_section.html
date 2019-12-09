@@ -1,3 +1,5 @@
+
+
 <div id="settings">
     <form class="form">
         {%  if h1 %}
@@ -5,38 +7,45 @@
         {% else %}
             <h2>Daily Office Settings</h2>
         {%  endif %}
+
+        <p>Your settings will be saved the next time you pray on the same computer/phone/device and browser.</p>
         <p><em>Setting changes take effect immediately. You do not need to save settings after you have updated them.</em></p>
-        <p><em>Your settings will be saved the next time you pray on the same computer/phone/device and browser.</em></p>
 
         {%  for setting in settings %}
 
-            <h2>{{  setting.title }}</h2>
+            <h2>
+                {{  setting.title }}
+                <em id="saved_setting_{{ setting.name }}" class="saved off">Saved!</em>
+            </h2>
             <section>
                 {%  for option in setting.options %}
-                    <div>
+                    <div class="pretty p-default p-round p-smooth">
                         <input
-                                type="radio"
-                                class="settings-radio"
-                                id="setting_{{ setting.name }}_{{ option.value }}"
-                                name="setting_{{ setting.name }}"
-                                value="{{ option.value }}"
-                                data-class_to_hide='{{ option.hide | join:"," }}'
-                                data-class_to_show='{{ option.show | join:"," }}'
-                                {% if forloop.first %}checked{% endif %}
-                        >
-                        <label for="setting_{{ setting.name }}_{{ option.value }}">
-                            <h2>{{ option.heading }}</h2>
-                            <p>{{ option.text }}</p>
-                        </label>
+                            type="radio"
+                            class="settings-radio"
+                            id="setting_{{ setting.name }}_{{ option.value }}"
+                            name="setting_{{ setting.name }}"
+                            value="{{ option.value }}"
+                            data-class_to_hide='{{ option.hide | join:"," }}'
+                            data-class_to_show='{{ option.show | join:"," }}'
+                            {% if forloop.first %}checked{% endif %} />
+                        <div class="state p-primary">
+                            <label for="setting_{{ setting.name }}_{{ option.value }}">{{ option.heading }}</label>
+                        </div>
                     </div>
                 {%  endfor %}
+                    {%  if setting.help_text %}
+                        <p class="help-text"><em>{{  setting.help_text }}</em></p>
+                    {%  endif %}
             </section>
-            <div class="pray-with-wrapper">
-                <div class="pray-with">
-                    <a href="#" class="back-button menu-button inline off"><i class="fal fa-bible"></i> <span class="first-letter">B</span>ack (using new settings) </a>
-                    <a href="/" class="menu-button inline off"><i class="fal fa-praying-hands"></i> <span class="first-letter">P</span>ray (using new settings)</a>
-                </div>
-            </div>
+
+            <a href="#" class="back-button menu-button inline"><i class="fal fa-arrow-left"></i> BACK</a>
+{#            <div class="pray-with-wrapper">#}
+{#                <div class="pray-with">#}
+{#                    <a href="#" class="back-button menu-button inline off"><i class="fal fa-bible"></i> <span class="first-letter">B</span>ack (using new settings) </a>#}
+{#                    <a href="/" class="menu-button inline off"><i class="fal fa-praying-hands"></i> <span class="first-letter">P</span>ray (using new settings)</a>#}
+{#                </div>#}
+{#            </div>#}
 
 
 

@@ -20,5 +20,9 @@
     "webpack-bundle-tracker": "^0.4.3",
     "webpack-cli": "^3.3.9",
     "webpack-dev-server": "^3.9.0"
+  },
+  "dependencies": {
+    "copy-webpack-plugin": "^5.0.5",
+    "pretty-checkbox": "^3.0.3"
   }
 }
