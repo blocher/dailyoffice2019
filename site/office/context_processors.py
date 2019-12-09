@@ -21,8 +21,58 @@ def settings(request):
         "show_settings_class": "" if get_on(request.path) == "settings-button" else "off",
         "settings": [
             {
+                "title": "Confession Intro Length",
+                "name": "confession",
+                "help_text": "Use either the short or long exhortation before the confession.",
+                "options": [
+                    {
+                        "value": "long-on-fast",
+                        "hide": ["confession-long-form", "confession-short-form"],
+                        "show": ["confession-fast-only"],
+                        "heading": "Long Intro Only on Fast Days",
+                        "text": "The long form of the intro and absolution are used only on fast days",
+                    },
+                    {
+                        "value": "short",
+                        "hide": ["confession-fast-only", "confession-long-form"],
+                        "show": ["confession-short-form"],
+                        "heading": "Short Intro Always",
+                        "text": "The short form of the intro and absolution are used every day",
+                    },
+                    {
+                        "value": "long",
+                        "hide": ["confession-fast-only", "confession-short-form"],
+                        "show": ["confession-long-form"],
+                        "heading": "Long Intro Always",
+                        "text": "The long form of the intro and absolution are used every day",
+                    },
+                ],
+            },
+            {
+                "title": "Absolution Style",
+                "name": "absolution",
+                "help_text": "After the confession, read an absolution suitable for a priest or a prayer suitable for a deacon or lay person.",
+                "options": [
+                    {
+                        "value": "lay",
+                        "hide": ["priest"],
+                        "show": ["lay"],
+                        "heading": "Deacon or Lay Person",
+                        "text": "A prayer suitable for a deacon or lay person to read",
+                    },
+                    {
+                        "value": "priest",
+                        "hide": ["lay"],
+                        "show": ["priest"],
+                        "heading": "Priest or Bishop",
+                        "text": "An absolution suitable for a priest to pronounce",
+                    },
+                ],
+            },
+            {
                 "title": "Psalter Cycle",
                 "name": "psalter",
+                "help_text": mark_safe("During Morning and Evening Prayer, pray through all the Psalms either every <strong>60 days</strong> (fewer psalms per day) or once every <strong>30 days</strong> (more psalms per day)."),
                 "options": [
                     {
                         "value": "60",
@@ -43,6 +93,7 @@ def settings(request):
             {
                 "title": "Reading Cycle",
                 "name": "reading_cycle",
+                "help_text": mark_safe("Read through most of the Bible during Morning and Evening Prayer every <strong>1 year</strong> or every <strong>2 years</strong>.  The one year cycle is best if you do <strong>both</strong> Morning and Evening prayer daily; the two year cycle is best if you do only one."),
                 "options": [
                     {
                         "value": "1",
@@ -65,6 +116,7 @@ def settings(request):
             {
                 "title": "Reading Length",
                 "name": "reading_length",
+                "help_text": "Always use the full readings, or use the shortened readings (when there are suggested abbreviations).",
                 "options": [
                     {
                         "value": "full",
@@ -83,162 +135,9 @@ def settings(request):
                 ],
             },
             {
-                "title": "Language Style",
-                "name": "language_style",
-                "options": [
-                    {
-                        "value": "traditional",
-                        "hide": ["contemporary"],
-                        "show": ["traditional"],
-                        "heading": "Traditional",
-                        "text": "Traditional language for the Kyrie and Our Father",
-                    },
-                    {
-                        "value": "contemporary",
-                        "hide": ["traditional"],
-                        "show": ["contemporary"],
-                        "heading": "Contemporary",
-                        "text": "Modern language for the Kyrie and Our Father",
-                    },
-                ],
-            },
-            {
-                "title": "Collects",
-                "name": "collects",
-                "options": [
-                    {
-                        "value": "rotating",
-                        "hide": ["fixed"],
-                        "show": ["rotating"],
-                        "heading": "Rotating",
-                        "text": "A different collect is said for each day of the week",
-                    },
-                    {
-                        "value": "fixed",
-                        "hide": ["rotating"],
-                        "show": ["fixed"],
-                        "heading": "Fixed",
-                        "text": "The two traditional collects are said every day",
-                    },
-                ],
-            },
-            {
-                "title": "Confession",
-                "name": "confession",
-                "options": [
-                    {
-                        "value": "long-on-fast",
-                        "hide": ["confession-long-form", "confession-short-form"],
-                        "show": ["confession-fast-only"],
-                        "heading": "Long Intro on Fast Days, short other days",
-                        "text": "The long form of the intro and absolution are used only on fast days",
-                    },
-                    {
-                        "value": "short",
-                        "hide": ["confession-fast-only", "confession-long-form"],
-                        "show": ["confession-short-form"],
-                        "heading": "Short Intro and Absolution",
-                        "text": "The short form of the intro and absolution are used every day",
-                    },
-                    {
-                        "value": "long",
-                        "hide": ["confession-fast-only", "confession-short-form"],
-                        "show": ["confession-long-form"],
-                        "heading": "Long Intro and Absolution",
-                        "text": "The long form of the intro and absolution are used every day",
-                    },
-                ],
-            },
-            {
-                "title": "Absolution",
-                "name": "absolution",
-                "options": [
-                    {
-                        "value": "lay",
-                        "hide": ["priest"],
-                        "show": ["lay"],
-                        "heading": "Lay Person",
-                        "text": "A prayer suitable for a deacon or lay person to read",
-                    },
-                    {
-                        "value": "priest",
-                        "hide": ["lay"],
-                        "show": ["priest"],
-                        "heading": "Priest",
-                        "text": "An absolution suitable for a priest to pronounce",
-                    },
-                ],
-            },
-            {
-                "title": "General Thanksgiving",
-                "name": "general_thanksgiving",
-                "options": [
-                    {
-                        "value": "on",
-                        "hide": [],
-                        "show": ["general_thanksgiving"],
-                        "heading": "On",
-                        "text": "Add the prayer of general thanksgiving at the end of the office",
-                    },
-                    {
-                        "value": "off",
-                        "hide": ["general_thanksgiving"],
-                        "show": [""],
-                        "heading": "Off",
-                        "text": "Hide the prayer of general thanksgiving at the end of the office",
-                    },
-                ],
-            },
-            {
-                "title": "Prayer of St. John Chrysostom",
-                "name": "chrysostom",
-                "options": [
-                    {
-                        "value": "on",
-                        "hide": [],
-                        "show": ["chrysostom"],
-                        "heading": "On",
-                        "text": "For use when praying in groups of two or more",
-                    },
-                    {
-                        "value": "off",
-                        "hide": ["chrysostom"],
-                        "show": [""],
-                        "heading": "Off",
-                        "text": "For when praying individually",
-                    },
-                ],
-            },
-            {
-                "title": "National Holidays",
-                "name": "national_holidays",
-                "options": [
-                    {
-                        "value": "us",
-                        "hide": ["canada"],
-                        "show": ["us"],
-                        "heading": "United States",
-                        "text": "United States Holidays",
-                    },
-                    {
-                        "value": "canada",
-                        "hide": ["us"],
-                        "show": ["canada"],
-                        "heading": "Canada",
-                        "text": "Canadian Holidays",
-                    },
-                    {
-                        "value": "all",
-                        "hide": [],
-                        "show": ["canada", "us"],
-                        "heading": "All",
-                        "text": "Both U.S. and Canadian Holidays",
-                    },
-                ],
-            },
-            {
                 "title": "Reading Headings",
                 "name": "reading_headings",
+                "help_text": "Show or hide headings from the English Standard Version of the Bible in scripture readings ",
                 "options": [
                     {
                         "value": "off",
@@ -259,26 +158,140 @@ def settings(request):
             {
                 "title": "Reading Audio",
                 "name": "reading_audio",
+                "help_text": "Show or hide an audio player to listen to the scripture readings during Morning and Evening Prayer.  Audio is provided by esv.org and currently does not include the Deuterocanon/Apocrypha.",
                 "options": [
                     {
                         "value": "off",
                         "hide": ["bible-audio"],
                         "show": [],
-                        "heading": "Hide",
+                        "heading": "Disable Audio",
                         "text": "No audio controls for scripture readings",
                     },
                     {
                         "value": "on",
                         "hide": [],
                         "show": ["bible-audio"],
-                        "heading": "Show",
+                        "heading": "Enable Audio",
                         "text": "Turn on audio player for scripture readings (Apocrypha not available yet)",
+                    },
+                ],
+            },
+            {
+                "title": "Language Style for Prayers",
+                "name": "language_style",
+                "help_text": "Traditional and contemporary language options are available for the Kyrie (Lord have mercy) and the Lord's Prayer",
+                "options": [
+                    {
+                        "value": "traditional",
+                        "hide": ["contemporary"],
+                        "show": ["traditional"],
+                        "heading": "Traditional",
+                        "text": "Traditional language for the Kyrie and Our Father",
+                    },
+                    {
+                        "value": "contemporary",
+                        "hide": ["traditional"],
+                        "show": ["contemporary"],
+                        "heading": "Contemporary",
+                        "text": "Modern language for the Kyrie and Our Father",
+                    },
+                ],
+            },
+            {
+                "title": "National Holiday Collects",
+                "name": "national_holidays",
+                "help_text": "Show country-specific commemorations for the United States, Canada, or both.",
+                "options": [
+                    {
+                        "value": "all",
+                        "hide": [],
+                        "show": ["canada", "us"],
+                        "heading": "All",
+                        "text": "Both U.S. and Canadian Holidays",
+                    },
+                    {
+                        "value": "us",
+                        "hide": ["canada"],
+                        "show": ["us"],
+                        "heading": "United States",
+                        "text": "United States Holidays",
+                    },
+                    {
+                        "value": "canada",
+                        "hide": ["us"],
+                        "show": ["canada"],
+                        "heading": "Canada",
+                        "text": "Canadian Holidays",
+                    },
+                ],
+            },
+            {
+                "title": "Additional Collects",
+                "name": "collects",
+                "help_text": "Use a different collect for each day of the week, or use the same two collects (from the classic prayer books) each day.",
+                "options": [
+                    {
+                        "value": "rotating",
+                        "hide": ["fixed"],
+                        "show": ["rotating"],
+                        "heading": "Rotating",
+                        "text": "A different collect is said for each day of the week",
+                    },
+                    {
+                        "value": "fixed",
+                        "hide": ["rotating"],
+                        "show": ["fixed"],
+                        "heading": "Fixed",
+                        "text": "The two traditional collects are said every day",
+                    },
+                ],
+            },
+            {
+                "title": "General Thanksgiving",
+                "name": "general_thanksgiving",
+                "help_text": "Pray the General Thanksgiving at the end of Morning and Evening Prayer",
+                "options": [
+                    {
+                        "value": "on",
+                        "hide": [],
+                        "show": ["general_thanksgiving"],
+                        "heading": "On",
+                        "text": "Add the prayer of general thanksgiving at the end of the office",
+                    },
+                    {
+                        "value": "off",
+                        "hide": ["general_thanksgiving"],
+                        "show": [""],
+                        "heading": "Off",
+                        "text": "Hide the prayer of general thanksgiving at the end of the office",
+                    },
+                ],
+            },
+            {
+                "title": "Prayer of St. John Chrysostom",
+                "name": "chrysostom",
+                "help_text": "Pray the Prayer of St. John Chrysostom at the end of Morning and Evening Prayer.  This prayer is suitable when praying in a group.",
+                "options": [
+                    {
+                        "value": "on",
+                        "hide": [],
+                        "show": ["chrysostom"],
+                        "heading": "On",
+                        "text": "For use when praying in groups of two or more",
+                    },
+                    {
+                        "value": "off",
+                        "hide": ["chrysostom"],
+                        "show": [""],
+                        "heading": "Off",
+                        "text": "For when praying individually",
                     },
                 ],
             },
             {
                 "title": "The Grace",
                 "name": "grace",
+                "help_text": "Rotate each day through the three provided conclusions, or always use the same one from the classic prayer books.",
                 "options": [
                     {
                         "value": "rotating",
@@ -299,6 +312,7 @@ def settings(request):
             {
                 "title": 'Advent "O" Antiphons',
                 "name": "o_antiphons",
+                "help_text": "The traditional \"O\" Antiphons are used before and after the first canticle in Evening Prayer during the last eight days of Advent. You can use literal translations of the original Latin, or the familiar paraphrases used in the hymn \"O Come, O Come Emmanuel\"",
                 "options": [
                     {
                         "value": "literal",
