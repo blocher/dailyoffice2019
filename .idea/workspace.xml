@@ -3,17 +3,13 @@
   <component name="ChangeListManager">
     <list default="true" id="4d3b96da-e02b-4ac5-80bf-e1b5c662734c" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/context_processors.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/context_processors.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/offices.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/offices.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/src/office/css/index.scss" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/css/index.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/.env" beforeDir="false" afterPath="$PROJECT_DIR$/site/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/office/src/office/css/office.scss" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/css/office.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/src/office/css/settings.scss" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/css/settings.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/src/office/js/settings.js" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/js/settings.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/settings_section.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/settings_section.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/site/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/confession.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/confession.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/webpack-stats.json" beforeDir="false" afterPath="$PROJECT_DIR$/site/webpack-stats.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/website/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/site/yarn.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,6 +48,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="eu.ydp.idea.ts.spec.generator.settings.spec.template" value="import {$ClassName$} from '$TestsRelativePath$../src/$classRelativePath$/$ClassName$';&#10;&#10;describe('$ClassName$', () =&gt; {&#10;  let $ObjName$:$ClassName$;&#10;&#10;  beforeEach(() =&gt; {&#10;    $ObjName$ = new $ClassName$();&#10;  });&#10;&#10;  describe('', () =&gt; {&#10;    it('', () =&gt; {&#10;      // given&#10;&#10;      // when&#10;&#10;      // then&#10;    });&#10;  });&#10;});&#10;" />
@@ -65,7 +62,7 @@
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
     <property name="typescript.add.unambiguous.imports.on.the.fly" value="true" />
   </component>
   <component name="RecentsManager">
@@ -235,7 +232,9 @@
       <workItem from="1575464438071" duration="3122000" />
       <workItem from="1575480522732" duration="153000" />
       <workItem from="1575753841684" duration="16050000" />
-      <workItem from="1575848520542" duration="5895000" />
+      <workItem from="1575848520542" duration="6969000" />
+      <workItem from="1576372617269" duration="5116000" />
+      <workItem from="1576439648292" duration="1145000" />
     </task>
     <servers />
   </component>
@@ -265,42 +264,48 @@
       <screen x="0" y="23" width="1680" height="952" />
     </state>
     <state x="554" y="309" key="#com.intellij.fileTypes.FileTypeChooser/0.23.1680.952@0.23.1680.952" timestamp="1571880753647" />
-    <state x="528" y="234" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1571276568435">
-      <screen x="0" y="23" width="1680" height="952" />
+    <state x="528" y="233" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1576375711576">
+      <screen x="0" y="23" width="1680" height="947" />
     </state>
+    <state x="528" y="233" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.23.1680.947@0.23.1680.947" timestamp="1576375711576" />
     <state x="528" y="234" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.23.1680.952@0.23.1680.952" timestamp="1571276568434" />
     <state x="1398" y="-854" key="EditFileWatcherDialog" timestamp="1572038174578">
       <screen x="847" y="-1177" width="1920" height="1177" />
     </state>
     <state x="1398" y="-854" key="EditFileWatcherDialog/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1572038174578" />
     <state x="482" y="284" key="EditFileWatcherDialog/0.23.1680.952@0.23.1680.952" timestamp="1571970202245" />
-    <state width="1638" height="193" key="GridCell.Tab.0.bottom" timestamp="1575900086833">
+    <state width="1638" height="193" key="GridCell.Tab.0.bottom" timestamp="1576015760420">
       <screen x="0" y="23" width="1680" height="948" />
     </state>
     <state width="1638" height="193" key="GridCell.Tab.0.bottom/0.23.1680.948/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.948" timestamp="1575900086833" />
+    <state width="1638" height="193" key="GridCell.Tab.0.bottom/0.23.1680.948@0.23.1680.948" timestamp="1576015760420" />
     <state width="816" height="255" key="GridCell.Tab.0.bottom/0.23.1680.952@0.23.1680.952" timestamp="1571368085726" />
-    <state width="1638" height="193" key="GridCell.Tab.0.center" timestamp="1575900086832">
+    <state width="1638" height="193" key="GridCell.Tab.0.center" timestamp="1576015760419">
       <screen x="0" y="23" width="1680" height="948" />
     </state>
     <state width="1638" height="193" key="GridCell.Tab.0.center/0.23.1680.948/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.948" timestamp="1575900086832" />
+    <state width="1638" height="193" key="GridCell.Tab.0.center/0.23.1680.948@0.23.1680.948" timestamp="1576015760419" />
     <state width="816" height="255" key="GridCell.Tab.0.center/0.23.1680.952@0.23.1680.952" timestamp="1571368085726" />
-    <state width="1638" height="193" key="GridCell.Tab.0.left" timestamp="1575900086832">
+    <state width="1638" height="193" key="GridCell.Tab.0.left" timestamp="1576015760418">
       <screen x="0" y="23" width="1680" height="948" />
     </state>
     <state width="1638" height="193" key="GridCell.Tab.0.left/0.23.1680.948/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.948" timestamp="1575900086832" />
+    <state width="1638" height="193" key="GridCell.Tab.0.left/0.23.1680.948@0.23.1680.948" timestamp="1576015760418" />
     <state width="816" height="255" key="GridCell.Tab.0.left/0.23.1680.952@0.23.1680.952" timestamp="1571368085725" />
-    <state width="1638" height="193" key="GridCell.Tab.0.right" timestamp="1575900086833">
+    <state width="1638" height="193" key="GridCell.Tab.0.right" timestamp="1576015760420">
       <screen x="0" y="23" width="1680" height="948" />
     </state>
     <state width="1638" height="193" key="GridCell.Tab.0.right/0.23.1680.948/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.948" timestamp="1575900086833" />
+    <state width="1638" height="193" key="GridCell.Tab.0.right/0.23.1680.948@0.23.1680.948" timestamp="1576015760420" />
     <state width="816" height="255" key="GridCell.Tab.0.right/0.23.1680.952@0.23.1680.952" timestamp="1571368085726" />
     <state x="428" y="249" key="IDE.errors.dialog" timestamp="1570398539274">
       <screen x="0" y="23" width="1680" height="952" />
     </state>
     <state x="428" y="249" key="IDE.errors.dialog/0.23.1680.952@0.23.1680.952" timestamp="1570398539274" />
-    <state x="333" y="138" key="SettingsEditor" timestamp="1572645427200">
-      <screen x="0" y="23" width="1680" height="952" />
+    <state x="333" y="137" key="SettingsEditor" timestamp="1576376056210">
+      <screen x="0" y="23" width="1680" height="947" />
     </state>
+    <state x="333" y="137" key="SettingsEditor/0.23.1680.947@0.23.1680.947" timestamp="1576376056210" />
     <state x="1228" y="-1035" key="SettingsEditor/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1572040526887" />
     <state x="333" y="138" key="SettingsEditor/0.23.1680.952@0.23.1680.952" timestamp="1572645427200" />
     <state x="947" y="-1077" width="1720" height="977" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog" timestamp="1571763174162">
@@ -324,10 +329,11 @@
     </state>
     <state x="1340" y="-1003" key="scopes/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1572038171664" />
     <state x="431" y="164" key="scopes/0.23.1680.952@0.23.1680.952" timestamp="1571970198902" />
-    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup" timestamp="1575900084921">
-      <screen x="0" y="23" width="1680" height="948" />
+    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup" timestamp="1576440157452">
+      <screen x="0" y="23" width="1680" height="947" />
     </state>
-    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.948" timestamp="1575900084921" />
+    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.947@0.23.1680.947" timestamp="1576440157452" />
+    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.948" timestamp="1575901035403" />
     <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948/874.-1177.1920.1177/-1046.-1177.1920.1177@0.23.1680.948" timestamp="1575480666139" />
     <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948@0.23.1680.948" timestamp="1575861613968" />
     <state x="-496" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@-1073.-1177.1920.1177" timestamp="1571175688299" />
