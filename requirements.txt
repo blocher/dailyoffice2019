@@ -86,6 +86,7 @@ python-docx==0.8.10
 python-dotenv==0.10.3
 python-magic==0.4.15
 python-magic-bin==0.4.14
+python-memcached==1.59
 pytz==2019.2
 rake-nltk==1.0.4
 regex==2019.6.8
@@ -114,5 +115,6 @@ virtualenv-clone==0.5.3
 wasabi==0.2.2
 wcwidth==0.1.7
 webencodings==0.5.1
+django-webpack-loader==0.6.0
 whitenoise==4.1.4
 Werkzeug==0.16.0

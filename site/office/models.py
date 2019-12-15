@@ -32,7 +32,7 @@ class OfficeDay(BaseModel):
         value = super().__getattribute__(attrname)
         try:
             return value.replace("<h3>", "<h3 class='reading-heading off'>")
-        except AttributeError:
+        except (AttributeError, TypeError):
             return value
 
 class StandardOfficeDay(OfficeDay):
