@@ -1,0 +1,14 @@
+<h3>The Suffrages</h3>
+<div class="suffrages-a off">
+    {%  include "office/suffrages_a.html" %}
+</div>
+
+<div class="suffrages-b off">
+    {%  include "office/suffrages_b.html" %}
+</div>
+
+<div class="suffrages-rotating suffrages-rotating-{{ data.default_set }}">
+    {% with template="office/suffrages_"|add:data.default_set|add:".html" %}
+        {%  include template %}
+    {% endwith %}
+</div>
