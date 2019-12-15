@@ -1220,9 +1220,26 @@ class EveningPrayer(Office):
         ]
 
 
+class EPSuffrages(OfficeSection):
 
+    def get_names(self):
+        names = [feast.saint_name for feast in self.date.all_evening if hasattr(feast, "saint_name") and feast.saint_name]
+        names = ["the Blessed Virgin Mary"] + names
+        return ", ".join(names)
 
-class Suffrages(OfficeSection):
+    def get_default_set(self):
+
+        if self.date.date.timetuple().tm_yday %2:
+            return "b"
+
+        return "a"
+
+    @cached_property
+    def data(self):
+        self.date
+        return {"default_set": self.get_default_set(), "names": self.get_names() }
+
+class MPSuffrages(OfficeSection):
     @cached_property
     def data(self):
         return {}
@@ -1645,7 +1662,7 @@ class EveningPrayer(Office):
             (EPCanticle2(self.date, self.office_readings), "office/evening_prayer/canticle_2.html"),
             (Creed(self.date, self.office_readings), "office/creed.html"),
             (Prayers(self.date, self.office_readings), "office/prayers.html"),
-            (Suffrages(self.date, self.office_readings), "office/suffrages.html"),
+            (EPSuffrages(self.date, self.office_readings), "office/evening_prayer/suffrages.html"),
             (EPCollectsOfTheDay(self.date, self.office_readings), "office/collects_of_the_day.html"),
             (EPCollects(self.date, self.office_readings), "office/collects.html"),
             (EPMissionCollect(self.date, self.office_readings), "office/mission_collect.html"),
@@ -1689,7 +1706,7 @@ class MorningPrayer(Office):
             (MPCanticle2(self.date, self.office_readings), "office/canticle.html"),
             (Creed(self.date, self.office_readings), "office/creed.html"),
             (Prayers(self.date, self.office_readings), "office/prayers.html"),
-            (Suffrages(self.date, self.office_readings), "office/suffrages.html"),
+            (MPSuffrages(self.date, self.office_readings), "office/morning_prayer/suffrages.html"),
             (MPCollectsOfTheDay(self.date, self.office_readings), "office/collects_of_the_day.html"),
             (MPCollects(self.date, self.office_readings), "office/collects.html"),
             (MPMissionCollect(self.date, self.office_readings), "office/mission_collect.html"),

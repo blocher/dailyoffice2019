@@ -240,11 +240,17 @@
 
         p.indent {
             margin: 0 0 0 1.1rem;
+
+
+            &.entreaty {
+              margin-bottom: 1rem;
+            }
         }
 
         p.hanging-indent {
             text-indent: -1rem;
             margin: 0 0 0 1rem;
+
         }
 
         span.asterisk {

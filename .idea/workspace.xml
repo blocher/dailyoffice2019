@@ -2,14 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4d3b96da-e02b-4ac5-80bf-e1b5c662734c" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/site/office/templates/office/morning_prayer/suffrages.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/site/office/templates/office/suffrages_b.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/.env" beforeDir="false" afterPath="$PROJECT_DIR$/site/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/context_processors.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/context_processors.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/offices.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/offices.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/site/office/src/office/css/office.scss" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/css/office.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/confession.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/confession.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/templates/office/suffrages.html" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/site/webpack-stats.json" beforeDir="false" afterPath="$PROJECT_DIR$/site/webpack-stats.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/website/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/settings.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,24 +66,18 @@
     <property name="typescript.add.unambiguous.imports.on.the.fly" value="true" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/site" />
+      <recent name="$PROJECT_DIR$/site/website/static" />
+      <recent name="$USER_HOME$" />
+      <recent name="~/Desktop" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/site/office/templates/office/evening_prayer" />
       <recent name="$PROJECT_DIR$/site/office/templates/office" />
       <recent name="$PROJECT_DIR$/site/office/src/office/css" />
       <recent name="$PROJECT_DIR$/site/office/templates" />
       <recent name="$PROJECT_DIR$/site/office/src/office" />
-      <recent name="$PROJECT_DIR$/site/office" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/site" />
-      <recent name="$PROJECT_DIR$/site/website/static" />
-      <recent name="$USER_HOME$" />
-      <recent name="~/Desktop" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/site" />
-      <recent name="$PROJECT_DIR$/site/website/static" />
-      <recent name="$USER_HOME$" />
-      <recent name="~/Desktop" />
     </key>
   </component>
   <component name="RunManager">
@@ -234,7 +228,7 @@
       <workItem from="1575753841684" duration="16050000" />
       <workItem from="1575848520542" duration="6969000" />
       <workItem from="1576372617269" duration="5116000" />
-      <workItem from="1576439648292" duration="1145000" />
+      <workItem from="1576439648292" duration="7425000" />
     </task>
     <servers />
   </component>
@@ -329,10 +323,10 @@
     </state>
     <state x="1340" y="-1003" key="scopes/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1572038171664" />
     <state x="431" y="164" key="scopes/0.23.1680.952@0.23.1680.952" timestamp="1571970198902" />
-    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup" timestamp="1576440157452">
+    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup" timestamp="1576449826969">
       <screen x="0" y="23" width="1680" height="947" />
     </state>
-    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.947@0.23.1680.947" timestamp="1576440157452" />
+    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.947@0.23.1680.947" timestamp="1576449826969" />
     <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.948" timestamp="1575901035403" />
     <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948/874.-1177.1920.1177/-1046.-1177.1920.1177@0.23.1680.948" timestamp="1575480666139" />
     <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948@0.23.1680.948" timestamp="1575861613968" />

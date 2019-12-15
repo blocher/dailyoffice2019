@@ -226,6 +226,34 @@ def settings(request):
                 ],
             },
             {
+                "title": "Evening Prayer Suffrages",
+                "name": "suffrages",
+                "help_text": "Choose which set of short prayers to be used each evening",
+                "options": [
+                    {
+                        "value": "rotating",
+                        "hide": ["suffrages-a", "suffrages-b"],
+                        "show": ["suffrages-rotating"],
+                        "heading": "Rotating",
+                        "text": "Rotate between the traditional and new set each day",
+                    },
+                    {
+                        "value": "traditional",
+                        "hide": ["suffrages-b", "suffrages-rotating"],
+                        "show": ["suffrages-a"],
+                        "heading": "Traditional",
+                        "text": "Always use the traditional set (same as Morning Prayer)",
+                    },
+                    {
+                        "value": "new",
+                        "hide": ["suffrages-a", "suffrages-rotating"],
+                        "show": ["suffrages-b"],
+                        "heading": "New",
+                        "text": "Always use the newer set, each ending with \"We entreat you, O Lord\"",
+                    },
+                ],
+            },
+            {
                 "title": "Additional Collects",
                 "name": "collects",
                 "help_text": "Use a different collect for each day of the week, or use the same two collects (from the classic prayer books) each day.",
