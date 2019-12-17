@@ -15,60 +15,13 @@ def get_on(path):
 
     return None
 
+
+
 def settings(request):
     return {
         "on": get_on(request.path),
         "show_settings_class": "" if get_on(request.path) == "settings-button" else "off",
         "settings": [
-            {
-                "title": "Confession Intro Length",
-                "name": "confession",
-                "help_text": "Use either the short or long exhortation before the confession.",
-                "options": [
-                    {
-                        "value": "long-on-fast",
-                        "hide": ["confession-long-form", "confession-short-form"],
-                        "show": ["confession-fast-only"],
-                        "heading": "Long Intro Only on Fast Days",
-                        "text": "The long form of the intro and absolution are used only on fast days",
-                    },
-                    {
-                        "value": "short",
-                        "hide": ["confession-fast-only", "confession-long-form"],
-                        "show": ["confession-short-form"],
-                        "heading": "Short Intro Always",
-                        "text": "The short form of the intro and absolution are used every day",
-                    },
-                    {
-                        "value": "long",
-                        "hide": ["confession-fast-only", "confession-short-form"],
-                        "show": ["confession-long-form"],
-                        "heading": "Long Intro Always",
-                        "text": "The long form of the intro and absolution are used every day",
-                    },
-                ],
-            },
-            {
-                "title": "Absolution Style",
-                "name": "absolution",
-                "help_text": "After the confession, read an absolution suitable for a priest or a prayer suitable for a deacon or lay person.",
-                "options": [
-                    {
-                        "value": "lay",
-                        "hide": ["priest"],
-                        "show": ["lay"],
-                        "heading": "Deacon or Lay Person",
-                        "text": "A prayer suitable for a deacon or lay person to read",
-                    },
-                    {
-                        "value": "priest",
-                        "hide": ["lay"],
-                        "show": ["priest"],
-                        "heading": "Priest or Bishop",
-                        "text": "An absolution suitable for a priest to pronounce",
-                    },
-                ],
-            },
             {
                 "title": "Psalter Cycle",
                 "name": "psalter",
@@ -134,6 +87,79 @@ def settings(request):
                     },
                 ],
             },
+
+            {
+                "title": "Reading Audio",
+                "name": "reading_audio",
+                "help_text": "Show or hide an audio player to listen to the scripture readings during Morning and Evening Prayer.  Audio is provided by esv.org and currently does not include the Deuterocanon/Apocrypha.",
+                "options": [
+                    {
+                        "value": "off",
+                        "hide": ["bible-audio"],
+                        "show": [],
+                        "heading": "Disable Audio",
+                        "text": "No audio controls for scripture readings",
+                    },
+                    {
+                        "value": "on",
+                        "hide": [],
+                        "show": ["bible-audio"],
+                        "heading": "Enable Audio",
+                        "text": "Enable audio player for scripture readings",
+                    },
+                ],
+            }
+        ],
+        "minor_settings": [
+            {
+                "title": "Confession Intro Length",
+                "name": "confession",
+                "help_text": "Use either the short or long exhortation before the confession.",
+                "options": [
+                    {
+                        "value": "long-on-fast",
+                        "hide": ["confession-long-form", "confession-short-form"],
+                        "show": ["confession-fast-only"],
+                        "heading": "Long Intro Only on Fast Days",
+                        "text": "The long form of the intro and absolution are used only on fast days",
+                    },
+                    {
+                        "value": "short",
+                        "hide": ["confession-fast-only", "confession-long-form"],
+                        "show": ["confession-short-form"],
+                        "heading": "Short Intro Always",
+                        "text": "The short form of the intro and absolution are used every day",
+                    },
+                    {
+                        "value": "long",
+                        "hide": ["confession-fast-only", "confession-short-form"],
+                        "show": ["confession-long-form"],
+                        "heading": "Long Intro Always",
+                        "text": "The long form of the intro and absolution are used every day",
+                    },
+                ],
+            },
+            {
+                "title": "Absolution Style",
+                "name": "absolution",
+                "help_text": "After the confession, read an absolution suitable for a priest or a prayer suitable for a deacon or lay person.",
+                "options": [
+                    {
+                        "value": "lay",
+                        "hide": ["priest"],
+                        "show": ["lay"],
+                        "heading": "Deacon or Lay Person",
+                        "text": "A prayer suitable for a deacon or lay person to read",
+                    },
+                    {
+                        "value": "priest",
+                        "hide": ["lay"],
+                        "show": ["priest"],
+                        "heading": "Priest or Bishop",
+                        "text": "An absolution suitable for a priest to pronounce",
+                    },
+                ],
+            },
             {
                 "title": "Reading Headings",
                 "name": "reading_headings",
@@ -152,27 +178,6 @@ def settings(request):
                         "show": ["reading-heading"],
                         "heading": "Show",
                         "text": "Show ESV headings in readings",
-                    },
-                ],
-            },
-            {
-                "title": "Reading Audio",
-                "name": "reading_audio",
-                "help_text": "Show or hide an audio player to listen to the scripture readings during Morning and Evening Prayer.  Audio is provided by esv.org and currently does not include the Deuterocanon/Apocrypha.",
-                "options": [
-                    {
-                        "value": "off",
-                        "hide": ["bible-audio"],
-                        "show": [],
-                        "heading": "Disable Audio",
-                        "text": "No audio controls for scripture readings",
-                    },
-                    {
-                        "value": "on",
-                        "hide": [],
-                        "show": ["bible-audio"],
-                        "heading": "Enable Audio",
-                        "text": "Turn on audio player for scripture readings (Apocrypha not available yet)",
                     },
                 ],
             },
@@ -371,6 +376,6 @@ def settings(request):
                         "text": "Hide the antiphons",
                     },
                 ],
-            },
+            }
         ]
     }

@@ -145,12 +145,31 @@ const settings = () => {
       });
     }
 
+    const advancedSettings = () => {
+
+      document.getElementById("show-advanced").addEventListener("click", event=> {
+        document.getElementById("advanced-settings").classList.remove("off");
+        document.getElementById("hide-advanced").classList.remove("off");
+        document.getElementById("show-advanced").classList.add("off");
+        event.preventDefault()
+      });
+
+      document.getElementById("hide-advanced").addEventListener("click", event=> {
+        document.getElementById("advanced-settings").classList.add("off");
+        document.getElementById("hide-advanced").classList.add("off");
+        document.getElementById("show-advanced").classList.remove("off");
+        event.preventDefault()
+
+      });
+    }
+
   const setupSettings = () => {
     initializeSettings();
     addRadioButtonListeners();
     addSettingsMenuToggle();
     bindBackButtons();
     handleFontSizes();
+    advancedSettings();
   };
 
   // TODO: Refactor into reusable module

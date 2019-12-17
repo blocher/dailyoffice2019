@@ -426,3 +426,21 @@
 
         }
 
+.about {
+  p {
+    font-size: 1.1rem;
+    line-height: 1.6rem;
+
+    em {
+      font-size: 1.1rem;
+    }
+  }
+}
+
+.four_oh_four {
+  max-width: 700px;
+  p {
+    text-align: center;
+    margin: 0 4rem;
+  }
+}
