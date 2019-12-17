@@ -5,7 +5,11 @@ div#settings {
   margin: auto;
 
   h2 {
-    padding-top:1.5rem;
+
+  }
+
+  h3 {
+    padding-top: 1.5rem;
     text-align: left;
     font-size: 1.1em;
     margin-bottom: -.2rem;
@@ -38,8 +42,12 @@ div#settings {
   }
 
   @keyframes fadein {
-      from { opacity: 0; }
-      to   { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   .back-button {
@@ -50,24 +58,148 @@ div#settings {
     background-color: white;
   }
 
-}
+  .advanced-settings {
+    padding: 1rem;
+    border: 1px solid black;
+    background-color: lightgray;
 
-
-.about {
-  p {
-    font-size: 1.1rem;
-    line-height: 1.6rem;
-
-    em {
-      font-size: 1.1rem;
+    h3 {
+      font-size: 1em;
     }
   }
-}
 
-.four_oh_four {
-  max-width: 700px;
-  p {
+  .advanced-toggle {
     text-align: center;
-    margin: 0 4rem;
+    margin: -2rem auto 1rem auto;
+  }
+
+
+  .main-setting {
+
+    h3 {
+      padding: .2rem;
+      font-size: 1.5rem;
+      text-align:center;
+      margin: 2rem;
+      font-family: adobe-caslon-pro, serif;
+
+    }
+
+    h4 {
+      font-style: normal;
+      margin: 1rem .3rem .3rem .3rem;
+      font-size: 1.2rem;
+      font-family: adobe-caslon-pro, serif;
+      text-transform: uppercase;
+      text-align:center;
+      width: 100%;
+    }
+
+    section {
+      display: flex;
+      flex-flow: row wrap;
+
+
+      p {
+        padding: .2rem;
+        font-size: .85rem;
+        margin: 0;
+        font-weight: 300;
+        line-height: 1rem;
+      }
+
+    }
+
+    section > div {
+      flex: 1;
+      padding: 0;
+    }
+
+    input[type="radio"] {
+      display: none;
+
+      &:not(:disabled) ~ label {
+        cursor: pointer;
+      }
+
+      &:disabled ~ label {
+        color: hsla(150, 5%, 75%, 1);
+        border-color: hsla(150, 5%, 75%, 1);
+        box-shadow: none;
+        cursor: not-allowed;
+      }
+    }
+
+    label {
+      display: block;
+      background: white;
+      border: 2px solid hsla(0, 0%, 50%, 1);
+      border-radius: 20px;
+      padding: 2rem;
+      margin: 1rem;
+      text-align: center;
+      box-shadow: 0px 3px 10px -2px hsla(150, 5%, 65%, 0.5);
+      position: relative;
+      //height: 100%;
+    }
+
+    input[type="radio"]:checked + label {
+      background: hsla(0, 0%, 50%, 1);
+      color: hsla(215, 0%, 100%, 1);
+      box-shadow: 0px 0px 20px hsla(0, 0%, 50%, 0.75);
+
+      &::after {
+
+        @extend %fa-icon;
+        @extend .far;
+
+        color: hsla(215, 5%, 25%, 1);
+        border: 2px solid hsla(0, 0%, 45%, 1);
+        content: fa-content($fa-var-check);
+        font-size: 24px;
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        height: 50px;
+        width: 50px;
+        line-height: 50px;
+        text-align: center;
+        border-radius: 50%;
+        background: white;
+        box-shadow: 0px 2px 5px -2px hsla(0, 0%, 0%, 0.25);
+      }
+    }
+
+    input[type="radio"]#control_05:checked + label {
+      background: red;
+      border-color: red;
+    }
+
+    p {
+      font-weight: 900;
+    }
+
+    .pray-with-wrapper {
+      width: 100%;
+      text-align: center;
+    }
+
+    .pray-with {
+      display: inline-block;
+      padding: .1rem;
+    }
+
+    .menu-button {
+      clear: both;
+      display: inline-block;
+    }
+
+    @media only screen and (max-width: 700px) {
+      section {
+        flex-direction: column;
+      }
+    }
+
   }
 }

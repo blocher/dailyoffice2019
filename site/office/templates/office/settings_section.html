@@ -5,39 +5,81 @@
         {%  if h1 %}
             <h1>Daily Office Settings</h1>
         {% else %}
-            <h2>Daily Office Settings</h2>
+            <h3>Daily Office Settings</h3>
         {%  endif %}
 
         <p>Your settings will be saved the next time you pray on the same computer/phone/device and browser.</p>
         <p><em>Setting changes take effect immediately. You do not need to save settings after you have updated them.</em></p>
 
         {%  for setting in settings %}
-
-            <h2>
-                {{  setting.title }}
-                <em id="saved_setting_{{ setting.name }}" class="saved off">Saved!</em>
-            </h2>
-            <section>
-                {%  for option in setting.options %}
-                    <div class="pretty p-default p-round p-smooth">
-                        <input
-                            type="radio"
-                            class="settings-radio"
-                            id="setting_{{ setting.name }}_{{ option.value }}"
-                            name="setting_{{ setting.name }}"
-                            value="{{ option.value }}"
-                            data-class_to_hide='{{ option.hide | join:"," }}'
-                            data-class_to_show='{{ option.show | join:"," }}'
-                            {% if forloop.first %}checked{% endif %} />
-                        <div class="state p-primary">
-                            <label for="setting_{{ setting.name }}_{{ option.value }}">{{ option.heading }}</label>
+            <div class="main-setting">
+                <h3>
+                    {{  setting.title }}
+                    <em id="saved_setting_{{ setting.name }}" class="saved off">Saved!</em>
+                </h3>
+                <section>
+                    {%  for option in setting.options %}
+                        <div>
+                            <input
+                                    type="radio"
+                                    class="settings-radio"
+                                    id="setting_{{ setting.name }}_{{ option.value }}"
+                                    name="setting_{{ setting.name }}"
+                                    value="{{ option.value }}"
+                                    data-class_to_hide='{{ option.hide | join:"," }}'
+                                    data-class_to_show='{{ option.show | join:"," }}'
+                                    {% if forloop.first %}checked{% endif %}
+                            >
+                            <label for="setting_{{ setting.name }}_{{ option.value }}">
+                                <h4>{{ option.heading }}</h4>
+                                <p>{{ option.text }}</p>
+                            </label>
                         </div>
-                    </div>
+                    {%  endfor %}
+                </section>
+            </div>
+        {%  endfor %}
+        <div class="main-setting">
+            <h3>Even more customizations...</h3>
+            <p class="advanced-toggle"><a href="#" id="show-advanced">Show advanced settings <i class="fas fa-caret-down"></i></a></p>
+            <p class="advanced-toggle"><a href="#" id="hide-advanced" class="off">Hide advanced settings <i class="fas fa-caret-up"></i></a></p>
+        </div>
+        <div id="advanced-settings" class="advanced-settings off">
+
+            <div class="advanced-settings-interior">
+                <h2>Advanced Settings</h2>
+
+
+                {%  for setting in minor_settings %}
+
+                    <h3>
+                        {{  setting.title }}
+                        <em id="saved_setting_{{ setting.name }}" class="saved off">Saved!</em>
+                    </h3>
+                    <section>
+                        {%  for option in setting.options %}
+                            <div class="pretty p-default p-round p-smooth">
+                                <input
+                                    type="radio"
+                                    class="settings-radio"
+                                    id="setting_{{ setting.name }}_{{ option.value }}"
+                                    name="setting_{{ setting.name }}"
+                                    value="{{ option.value }}"
+                                    data-class_to_hide='{{ option.hide | join:"," }}'
+                                    data-class_to_show='{{ option.show | join:"," }}'
+                                    {% if forloop.first %}checked{% endif %} />
+                                <div class="state p-primary">
+                                    <label for="setting_{{ setting.name }}_{{ option.value }}">{{ option.heading }}</label>
+                                </div>
+                            </div>
+                        {%  endfor %}
+                            {%  if setting.help_text %}
+                                <p class="help-text"><em>{{  setting.help_text }}</em></p>
+                            {%  endif %}
+                    </section>
                 {%  endfor %}
-                    {%  if setting.help_text %}
-                        <p class="help-text"><em>{{  setting.help_text }}</em></p>
-                    {%  endif %}
-            </section>
+            </div>
+        </div>
 
             <a href="#" class="back-button menu-button inline"><i class="fal fa-arrow-left"></i> BACK</a>
 {#            <div class="pray-with-wrapper">#}
@@ -48,9 +90,6 @@
 {#            </div>#}
 
 
-
-
-        {%  endfor %}
 
     </form>
 </div>
