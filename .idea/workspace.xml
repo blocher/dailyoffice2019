@@ -3,12 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="4d3b96da-e02b-4ac5-80bf-e1b5c662734c" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/context_processors.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/context_processors.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/src/office/css/office.scss" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/css/office.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/src/office/css/settings.scss" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/css/settings.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/src/office/js/settings.js" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/js/settings.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/settings_section.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/settings_section.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/webpack-stats.json" beforeDir="false" afterPath="$PROJECT_DIR$/site/webpack-stats.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/management/commands/import_office_days.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/management/commands/import_office_days.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/offices.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/offices.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/website/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/settings.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,6 +59,7 @@
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
     <property name="typescript.add.unambiguous.imports.on.the.fly" value="true" />
   </component>
   <component name="RecentsManager">
@@ -227,7 +225,8 @@
       <workItem from="1575753841684" duration="16050000" />
       <workItem from="1575848520542" duration="6969000" />
       <workItem from="1576372617269" duration="5116000" />
-      <workItem from="1576439648292" duration="13705000" />
+      <workItem from="1576439648292" duration="15924000" />
+      <workItem from="1576982174286" duration="2895000" />
     </task>
     <servers />
   </component>
@@ -308,9 +307,10 @@
     <state x="701" y="237" key="com.intellij.ide.util.TipDialog" timestamp="1570397175336" />
     <state x="701" y="237" key="com.intellij.ide.util.TipDialog/3360.2100" timestamp="1570397175337" />
     <state x="701" y="237" key="com.intellij.ide.util.TipDialog/3360.2100/1920.1200/1920.1200" timestamp="1570397175337" />
-    <state x="506" y="287" width="683" height="476" key="find.popup" timestamp="1575758111156">
-      <screen x="0" y="23" width="1680" height="948" />
+    <state x="506" y="287" width="683" height="476" key="find.popup" timestamp="1576984206823">
+      <screen x="0" y="23" width="1680" height="947" />
     </state>
+    <state x="506" y="287" width="683" height="476" key="find.popup/0.23.1680.947@0.23.1680.947" timestamp="1576984206823" />
     <state x="506" y="287" width="683" height="476" key="find.popup/0.23.1680.948/874.-1177.1920.1177/-1046.-1177.1920.1177@0.23.1680.948" timestamp="1575479946262" />
     <state x="506" y="287" width="683" height="476" key="find.popup/0.23.1680.948@0.23.1680.948" timestamp="1575758111156" />
     <state x="-495" y="-849" width="763" height="522" key="find.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@-1073.-1177.1920.1177" timestamp="1571164483046" />
@@ -322,19 +322,20 @@
     </state>
     <state x="1340" y="-1003" key="scopes/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1572038171664" />
     <state x="431" y="164" key="scopes/0.23.1680.952@0.23.1680.952" timestamp="1571970198902" />
-    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup" timestamp="1576552796393">
-      <screen x="0" y="23" width="1680" height="949" />
+    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup" timestamp="1576982605492">
+      <screen x="0" y="23" width="1680" height="947" />
     </state>
-    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.947@0.23.1680.947" timestamp="1576454116025" />
+    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.947@0.23.1680.947" timestamp="1576982605492" />
     <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.948" timestamp="1575901035403" />
     <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948/874.-1177.1920.1177/-1046.-1177.1920.1177@0.23.1680.948" timestamp="1575480666139" />
     <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948@0.23.1680.948" timestamp="1575861613968" />
-    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.949@0.23.1680.949" timestamp="1576552796393" />
+    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.949@0.23.1680.949" timestamp="1576553977283" />
     <state x="-496" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@-1073.-1177.1920.1177" timestamp="1571175688299" />
     <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1571852305223" />
     <state x="1424" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1572038272971" />
     <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952@0.23.1680.952" timestamp="1576552267160" />
     <state x="505" y="233" width="670" height="679" key="search.everywhere.popup/0.23.1680.954@0.23.1680.954" timestamp="1576550415045" />
+    <state x="505" y="231" width="670" height="673" key="search.everywhere.popup/860.-1177.1920.1177/-1060.-1177.1920.1177/0.23.1680.947@0.23.1680.947" timestamp="1576765652912" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

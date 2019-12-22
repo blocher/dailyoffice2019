@@ -95,6 +95,8 @@ class Command(BaseCommand):
             return
 
         for row in result.get("values", []):
+            # if row[1] != "13" or row[0] != "6":
+            #     continue
             day = StandardOfficeDay.objects.get_or_create(month=row[0], day=row[1])
             day = day[0]
             day.month = row[0]
@@ -119,6 +121,7 @@ class Command(BaseCommand):
             day.ep_reading_2_testament = self.get_testament(row[10])
             day.ep_reading_2_text = self.get_passage(row[10])
             day.save()
+
 
         try:
             result = sheet.values().get(spreadsheetId=self.SHEET_ID, range=self.HOLY_DAY_RANGE_NAME).execute()
