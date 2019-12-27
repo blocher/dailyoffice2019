@@ -50,9 +50,30 @@ const settings = () => {
     let settings = getSettingsFromStorage();
     settings[element.name] = element.value;
     putSettingsInStorage(settings);
+    document.getElementById("settings-link").value = getSettingsLink()
   };
 
+  const findGetParameter = parameterName => {
+    var result = null,
+        tmp = [];
+    location.search
+        .substr(1)
+        .split("&")
+        .forEach(function (item) {
+          tmp = item.split("=");
+          if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+        });
+    return result;
+  }
+
   const initializeSetting = element => {
+    const fromURL = findGetParameter(element.name)
+    if (fromURL && element.value == fromURL) {
+        element.checked = true;
+        applySettingFromElement(element);
+        storeSetting(element);
+        return;
+    }
     if (localStorageExists()) {
       let settings = getSettingsFromStorage();
       let stored = settings[element.name] || null;
@@ -114,6 +135,7 @@ const settings = () => {
         });
   }
 
+
   const handleFontSizes = () => {
     let base_font_size = localStorage.getItem("base-font-size");
     if (base_font_size) {
@@ -128,7 +150,6 @@ const settings = () => {
           element.classList.add('fas');
         }
       });
-
 
     }
     document.querySelectorAll(".font-size-selector").forEach((element, element_index) => {
@@ -145,23 +166,66 @@ const settings = () => {
       });
     }
 
-    const advancedSettings = () => {
+  const getSettingsLink = () => {
 
-      document.getElementById("show-advanced").addEventListener("click", event=> {
-        document.getElementById("advanced-settings").classList.remove("off");
-        document.getElementById("hide-advanced").classList.remove("off");
-        document.getElementById("show-advanced").classList.add("off");
-        event.preventDefault()
+    let params = {}
+    document
+      .querySelectorAll(".settings-radio:checked")
+      .forEach((element, element_index) => {
+        params[element.name] = element.value;
       });
 
-      document.getElementById("hide-advanced").addEventListener("click", event=> {
-        document.getElementById("advanced-settings").classList.add("off");
-        document.getElementById("hide-advanced").classList.add("off");
-        document.getElementById("show-advanced").classList.remove("off");
-        event.preventDefault()
-
-      });
+    params = new URLSearchParams(params);
+    let path = location.protocol + '//' + location.host;
+    if (location.pathname != '/about/' && location.pathname != '/calendar/' && location.pathname != '/settings/') {
+      path = path + location.pathname;
+    } else {
+      path = path + "/";
     }
+    return path + "?" + params
+  }
+
+  const  copySettingsLink = () => {
+    /* Get the text field */
+    let text = document.getElementById("settings-link").value;
+
+    let textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position="fixed";  //avoid scrolling to bottom
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    textArea.setSelectionRange(0, 99999); /*For mobile devices*/
+
+    /* Copy the text inside the text field */
+    document.execCommand("copy");
+
+    /* Alert the copied text */
+    document.getElementById('settings-link-copy').classList.add('off')
+    document.getElementById("copied-message").classList.remove("off");
+    setTimeout(function(){
+      document.getElementById("copied-message").classList.add("off");
+      document.getElementById("settings-link-copy").classList.remove("off");
+    }, 2000);
+
+  }
+
+  const bindShowSettingsLink = () => {
+    document.getElementById("settings-link").value = getSettingsLink()
+    document
+      .querySelectorAll(".show-settings-link")
+      .forEach((element, element_index) => {
+        element.addEventListener("click", event => {
+          document.getElementById('settings-link-view').classList.remove('off')
+          document.getElementById('show-settings-link').classList.add('off')
+        });
+      });
+
+    document.getElementById("settings-link-copy").addEventListener("click", event => {
+      copySettingsLink();
+      event.preventDefault();
+    });
+  }
 
   const setupSettings = () => {
     initializeSettings();
@@ -169,7 +233,7 @@ const settings = () => {
     addSettingsMenuToggle();
     bindBackButtons();
     handleFontSizes();
-    advancedSettings();
+    bindShowSettingsLink();
   };
 
   // TODO: Refactor into reusable module

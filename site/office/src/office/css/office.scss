@@ -290,9 +290,13 @@
         }
 
         .footer-flex {
+            display: -webkit-box;  /* OLD - iOS 6-, Safari 3.1-6, BB7 */
+            display: -ms-flexbox;  /* TWEENER - IE 10 */
+            display: -webkit-flex; /* NEW - Safari 6.1+. iOS 7.1+, BB10 */
             display: flex;
             align-items: center;
             justify-content: center;
+            -webkit-flex-wrap: nowrap;
             flex-wrap: nowrap;
             align-content: space-around;
             max-width: 700px;
@@ -312,6 +316,7 @@
         }
 
         .footer-flex div {
+            -webkit-flex-grow: 2;
             flex-grow: 2;
             font-weight: 900;
         }
@@ -328,6 +333,10 @@
 
         .off {
             display: none;
+        }
+
+        .invisbile {
+            visibility: hidden;
         }
 
 

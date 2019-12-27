@@ -2,6 +2,7 @@ import datetime
 
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 
@@ -987,18 +988,20 @@ class MPMissionCollect(OfficeSection):
             "Lord Jesus Christ, you stretched out your arms of love on the hard wood of the Cross that everyone might come within the reach of your saving embrace: So clothe us in your Spirit that we, reaching forth our hands in love, may bring those who do not know you to the knowledge and love of you; for the honor of your Name.",
         )
 
-        if self.date.date.weekday() == 0 or self.date.date.weekday() == 3:
+        day_of_year = self.date.date.timetuple().tm_yday
+        collect_number = day_of_year % 3
+
+        if collect_number == 0:
             collect = mission_collects[0]
             subheading = "I"
-        elif self.date.date.weekday() == 1 or self.date.date.weekday() == 4 or self.date.date.weekday() == 6:
+        elif collect_number == 1:
             collect = mission_collects[1]
             subheading = "II"
-        elif self.date.date.weekday() == 2 or self.date.date.weekday() == 5:
-            collect = mission_collects[1]
+        else:
+            collect = mission_collects[2]
             subheading = "III"
 
         return {"heading": "A Collect for Mission", "collect": collect, "subheading": subheading}
-
 
 class EPCollects(OfficeSection):
     @cached_property
@@ -1283,14 +1286,17 @@ class EPMissionCollect(OfficeSection):
             "O God, you manifest in your servants the signs of your presence: Send forth upon us the Spirit of love, that in companionship with one another your abounding grace may increase among us; through Jesus Christ our Lord.",
         )
 
-        if self.date.date.weekday() == 0 or self.date.date.weekday() == 3:
+        day_of_year = self.date.date.timetuple().tm_yday
+        collect_number = day_of_year % 3
+
+        if collect_number == 0:
             collect = mission_collects[0]
             subheading = "I"
-        elif self.date.date.weekday() == 1 or self.date.date.weekday() == 4 or self.date.date.weekday() == 6:
+        elif collect_number == 1:
             collect = mission_collects[1]
             subheading = "II"
-        elif self.date.date.weekday() == 2 or self.date.date.weekday() == 5:
-            collect = mission_collects[1]
+        else:
+            collect = mission_collects[2]
             subheading = "III"
 
         return {"heading": "A Collect for Mission", "collect": collect, "subheading": subheading}
