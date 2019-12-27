@@ -67,7 +67,7 @@ books = {
     "II John": ("the Second Epistle of St. John", True, "NT"),
     "III John": ("the Third Epistle of St. John", False, "NT"),
     "Jude": ("the Epistle of St. Jude", True, "NT"),
-    "Revelation": ("Revelation of Our Lord Jesus Christ to St. John", False, "NT"),
+    "Revelation": ("the Revelation of Our Lord Jesus Christ to St. John", False, "NT"),
     "Tobit": ("the Book of Tobit", False, "DC"),
     "Judith": ("the Book of Judith", False, "DC"),
     "Additions to Esther": ("the Book of Esther", False, "DC"),
