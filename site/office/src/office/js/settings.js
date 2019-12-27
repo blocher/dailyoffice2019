@@ -107,6 +107,7 @@ const settings = () => {
       .forEach((element, element_index) => {
         initializeSetting(element);
       });
+    window.history.replaceState({}, document.title, location.protocol + '//' + location.host +  window.location.pathname);
   };
 
   const addSettingsMenuToggle = () => {
