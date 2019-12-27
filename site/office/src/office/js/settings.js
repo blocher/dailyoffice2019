@@ -177,12 +177,7 @@ const settings = () => {
       });
 
     params = new URLSearchParams(params);
-    let path = location.protocol + '//' + location.host;
-    if (location.pathname != '/about/' && location.pathname != '/calendar/' && location.pathname != '/settings/') {
-      path = path + location.pathname;
-    } else {
-      path = path + "/";
-    }
+    let path = location.protocol + '//' + location.host + location.pathname;
     return path + "?" + params
   }
 
@@ -212,15 +207,23 @@ const settings = () => {
   }
 
   const bindShowSettingsLink = () => {
-    document.getElementById("settings-link").value = getSettingsLink()
+    document.getElementById("settings-link").value = getSettingsLink();
     document
       .querySelectorAll(".show-settings-link")
       .forEach((element, element_index) => {
         element.addEventListener("click", event => {
-          document.getElementById('settings-link-view').classList.remove('off')
-          document.getElementById('show-settings-link').classList.add('off')
+          document.getElementById('settings-link-view').classList.remove('off');
+          document.getElementById('show-settings-link').classList.add('off');
+          event.preventDefault();
         });
       });
+
+    document.getElementById("settings-link").addEventListener("focus", event => {
+      copySettingsLink();
+      event.target.select();
+    });
+
+
 
     document.getElementById("settings-link-copy").addEventListener("click", event => {
       copySettingsLink();
