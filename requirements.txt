@@ -22,7 +22,7 @@ cymem==2.0.2
 datefinder==0.7.0
 decorator==4.4.0
 Delorean==1.0.0
-Django==2.2.6
+Django==2.2.8
 django-array-tags==0.2.2
 django-cachekiller
 django-debug-toolbar==2.0
