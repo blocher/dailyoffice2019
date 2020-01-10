@@ -2,17 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4d3b96da-e02b-4ac5-80bf-e1b5c662734c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/site/office/src/office/js/voice.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/site/office/templates/office/canticles/canticle.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/context_processors.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/context_processors.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/offices.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/offices.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/src/office/js/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/js/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/src/office/js/settings.js" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/js/settings.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/canticle.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/canticle.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/site/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/webpack-stats.json" beforeDir="false" afterPath="$PROJECT_DIR$/site/webpack-stats.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/website/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/src/office/css/office.scss" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/css/office.scss" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -238,7 +229,7 @@
       <workItem from="1577150731694" duration="47335000" />
       <workItem from="1578256163361" duration="1738000" />
       <workItem from="1578336881785" duration="23000" />
-      <workItem from="1578411934930" duration="1703000" />
+      <workItem from="1578411934930" duration="2950000" />
     </task>
     <servers />
   </component>
@@ -336,8 +327,8 @@
     </state>
     <state x="1340" y="-1003" key="scopes/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1572038171664" />
     <state x="431" y="164" key="scopes/0.23.1680.952@0.23.1680.952" timestamp="1571970198902" />
-    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup" timestamp="1578256784122">
-      <screen x="0" y="23" width="1680" height="947" />
+    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup" timestamp="1578627098532">
+      <screen x="0" y="23" width="1680" height="952" />
     </state>
     <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.947@0.23.1680.947" timestamp="1578256784122" />
     <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.948" timestamp="1575901035403" />
@@ -347,8 +338,8 @@
     <state x="-496" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@-1073.-1177.1920.1177" timestamp="1571175688299" />
     <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1571852305223" />
     <state x="1424" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1572038272971" />
-    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952@0.23.1680.952" timestamp="1576552267160" />
-    <state x="505" y="233" width="670" height="679" key="search.everywhere.popup/0.23.1680.954@0.23.1680.954" timestamp="1576550415045" />
+    <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952@0.23.1680.952" timestamp="1578627098532" />
+    <state x="505" y="233" width="670" height="679" key="search.everywhere.popup/0.23.1680.954@0.23.1680.954" timestamp="1578624482193" />
     <state x="505" y="231" width="670" height="673" key="search.everywhere.popup/860.-1177.1920.1177/-1060.-1177.1920.1177/0.23.1680.947@0.23.1680.947" timestamp="1576765652912" />
   </component>
   <component name="XDebuggerManager">
