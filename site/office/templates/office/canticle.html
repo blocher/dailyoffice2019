@@ -1,7 +1,44 @@
-<h3>{{ data.heading }}</h3>
-<h4>{{ data.subheading}}</h4>
-<p><em>{{ data.rubric }}</em></p>
-{{  data.content }}
-{%  if data.citation %}
-    <h5>{{  data.citation }}</h5>
-{%  endif %}
+<div class="canticle-default">
+    <h3>{{ data.default.latin_name }}</h3>
+    <h4>{{ data.default.english_name }}</h4>
+    <p><em>{{ data.default.rubric }}</em></p>
+    {{  data.default.content }}
+    {%  if data.default.citation %}
+        <h5>{{  data.default.citation }}</h5>
+    {%  endif %}
+    {%  if data.default.gloria %}
+        <p class="hanging-indent"><strong>Glory be to the Father, and to the Son, and to the Holy Spirit; *</strong></p>
+        <p class="indent"><strong>as it was in the beginning, is now, and ever shall be,</strong></p>
+        <p class="indent"><strong>world without end. Amen.</strong></p>
+    {%  endif %}
+</div>
+
+<div class="canticle-1979 off">
+    <h3>{{ data.1979.latin_name }}</h3>
+    <h4>{{ data.1979.english_name }}</h4>
+    <p><em>{{ data.1979.rubric }}</em></p>
+    {{  data.1979.content }}
+    {%  if data.1979.citation %}
+        <h5>{{  data.1979.citation }}</h5>
+    {%  endif %}
+    {%  if data.1979.gloria %}
+        <p class="hanging-indent"><strong>Glory be to the Father, and to the Son, and to the Holy Spirit; *</strong></p>
+        <p class="indent"><strong>as it was in the beginning, is now, and ever shall be,</strong></p>
+        <p class="indent"><strong>world without end. Amen.</strong></p>
+    {%  endif %}
+</div>
+
+<div class="canticle-2011 off">
+    <h3>{{ data.2011.latin_name }}</h3>
+    <h4>{{ data.2011.english_name }}</h4>
+    <p><em>{{ data.2011.rubric }}</em></p>
+    {{  data.2011.content }}
+    {%  if data.2011.citation %}
+        <h5>{{  data.2011.citation }}</h5>
+    {%  endif %}
+    {%  if data.2011.gloria %}
+        <p class="hanging-indent"><strong>Glory be to the Father, and to the Son, and to the Holy Spirit; *</strong></p>
+        <p class="indent"><strong>as it was in the beginning, is now, and ever shall be,</strong></p>
+        <p class="indent"><strong>world without end. Amen.</strong></p>
+    {%  endif %}
+</div>

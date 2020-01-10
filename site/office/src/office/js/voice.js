@@ -1,0 +1,5 @@
+const voice = () => {
+
+};
+
+export { voice };
