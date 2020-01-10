@@ -1,3 +1,5 @@
+const clipboard = require("clipboard-polyfill/dist/clipboard-polyfill.promise");
+
 function localStorageExists() {
   var test = "test";
   try {
@@ -107,7 +109,7 @@ const settings = () => {
       .forEach((element, element_index) => {
         initializeSetting(element);
       });
-    window.history.replaceState({}, document.title, location.protocol + '//' + location.host +  window.location.pathname);
+    window.history.replaceState({}, document.title, location.protocol + '//' + location.host +  window.location.pathname + window.location.hash);
   };
 
   const addSettingsMenuToggle = () => {
@@ -185,18 +187,8 @@ const settings = () => {
     /* Get the text field */
     let text = document.getElementById("settings-link").value;
 
-    let textArea = document.createElement("textarea");
-    textArea.value = text;
-    textArea.style.position="fixed";  //avoid scrolling to bottom
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-    textArea.setSelectionRange(0, 99999); /*For mobile devices*/
+    clipboard.writeText(text);
 
-    /* Copy the text inside the text field */
-    document.execCommand("copy");
-
-    /* Alert the copied text */
     document.getElementById('settings-link-copy').classList.add('off')
     document.getElementById("copied-message").classList.remove("off");
     setTimeout(function(){
@@ -222,8 +214,6 @@ const settings = () => {
       copySettingsLink();
       event.target.select();
     });
-
-
 
     document.getElementById("settings-link-copy").addEventListener("click", event => {
       copySettingsLink();

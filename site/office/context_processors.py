@@ -108,6 +108,35 @@ def settings(request):
                         "text": "Enable audio player for scripture readings",
                     },
                 ],
+            },
+            {
+                "title": "Canticle Rotation",
+                "name": "canticle_rotation",
+                "help_text": "",
+                "options": [
+                    {
+                        "value": "default",
+                        "hide": ["canticle-1979", "canticle-2011"],
+                        "show": ["canticle-default"],
+                        "heading": "Traditional",
+                        "text": "The traditional fixed canticles each day",
+                    },
+                    {
+                        "value": "2011",
+                        "hide": ["canticle-1979", "canticle-default"],
+                        "show": ["canticle-2011"],
+                        "heading": "Seasonal Rotation",
+                        "text": "One fixed canticle and one canticle that rotates by season",
+                    },
+                    {
+                        "value": "1979",
+                        "hide": ["canticle-default", "canticle-2011"],
+                        "show": ["canticle-1979"],
+                        "heading": "Daily Rotation",
+                        "text": "A rotating set of canticles by day of week and season",
+                    },
+
+                ],
             }
         ],
         "minor_settings": [
@@ -379,3 +408,20 @@ def settings(request):
             }
         ]
     }
+
+
+'''In a nutshell, this is (tentatively) what I do with them...
+* Magna et Mirabilia replaces Te Deum in Advent.
+* Surge illuminare replaces Te Deum in Epiphanytide.
+* Benedictus es replaces Te Deum in Lent.
+* Cantemus Domino replaces Te Deum in Eastertide.
+* Dignus es replaces Te Deum in Ascensiontide & Pentecost Week.
+* Ecce, Deus replaces Te Deum in Trinitytide.
+* Benedicite replaces Te Deum on Saturdays in Trinitytide.
+
+
+* Quaerite Dominum replaces Nunc dimittis in Advent.
+* Kyrie Pantokrator replaces Nunc dimittis in Lent.
+* Cantate Domino replaces Nunc dimittis in Christmas & Easter.
+* Deus Misereatur replaces Nunc dimittis in Epiphanytide & Trinitytide.
+(All of the above apply to weekdays; Sundays are usually the default.)'''

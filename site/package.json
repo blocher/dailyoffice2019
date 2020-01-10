@@ -22,6 +22,7 @@
     "webpack-dev-server": "^3.9.0"
   },
   "dependencies": {
+    "clipboard-polyfill": "^2.8.6",
     "copy-webpack-plugin": "^5.0.5",
     "pretty-checkbox": "^3.0.3"
   }

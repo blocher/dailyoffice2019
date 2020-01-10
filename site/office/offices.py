@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 
+from office.canticles import DefaultCanticles, BCP1979CanticleTable, REC2011CanticleTable
 from office.models import HolyDayOfficeDay, StandardOfficeDay, ThirtyDayPsalterDay
 # from office.views import meta_defaults
 from psalter.utils import get_psalms
@@ -864,33 +865,22 @@ class MPInvitatory(OfficeSection):
 class MPCanticle1(OfficeSection):
     @cached_property
     def data(self):
-        if self.date.season.name in ("Lent", "Holy Week"):
-            return {
-                "heading": "BENEDICTUS ES, DOMINE",
-                "subheading": "A Song of Praise",
-                "rubric": "Officiant and People, all standing",
-                "content": render_to_string("office/morning_prayer/benedictus_es_domine.html", {}),
-                "citation": "SONG OF THE THREE YOUNG MEN, 29-34",
-            }
 
         return {
-            "heading": "TE DEUM LAUDAMUS",
-            "subheading": "We Praise You, O God",
-            "rubric": "Officiant and People, all standing",
-            "content": render_to_string("office/morning_prayer/te_deum.html", {}),
-            "citation": "",
+            "default": DefaultCanticles().get_mp_canticle_1(self.date),
+            "1979": BCP1979CanticleTable().get_mp_canticle_1(self.date),
+            "2011": REC2011CanticleTable().get_mp_canticle_1(self.date),
         }
 
 
 class MPCanticle2(OfficeSection):
     @cached_property
     def data(self):
+
         return {
-            "heading": "BENEDICTUS",
-            "subheading": "The Song of Zechariah",
-            "rubric": "Officiant and People, all standing",
-            "content": render_to_string("office/morning_prayer/benedictus.html", {}),
-            "citation": "LUKE 1:68-79",
+            "default": DefaultCanticles().get_mp_canticle_2(self.date),
+            "1979": BCP1979CanticleTable().get_mp_canticle_2(self.date),
+            "2011": REC2011CanticleTable().get_mp_canticle_2(self.date),
         }
 
 
@@ -955,16 +945,26 @@ class EPCanticle1(OfficeSection):
         except KeyError:
             return None
 
-
     @cached_property
     def data(self):
-        return {"antiphon": self.get_antiphon()}
+
+        return {
+            "antiphon": self.get_antiphon(),
+            "default": DefaultCanticles().get_ep_canticle_1(self.date),
+            "1979": BCP1979CanticleTable().get_ep_canticle_1(self.date),
+            "2011": REC2011CanticleTable().get_ep_canticle_1(self.date),
+        }
 
 
 class EPCanticle2(OfficeSection):
     @cached_property
     def data(self):
-        return {}
+
+        return {
+            "default": DefaultCanticles().get_ep_canticle_2(self.date),
+            "1979": BCP1979CanticleTable().get_ep_canticle_2(self.date),
+            "2011": REC2011CanticleTable().get_ep_canticle_2(self.date),
+        }
 
 
 class Creed(OfficeSection):
@@ -1176,51 +1176,6 @@ class Office(object):
             "date": today.strftime("%B %-d, %Y")
         }
 
-
-class EveningPrayer(Office):
-
-    name = "Evening Prayer"
-    office = "evening_prayer"
-
-    start_time = "4:00 PM"
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.description = "Office: {}, Date: {}, Commemoration: {}, Psalms (30 Day Cycle): {}, Psalms (60 Day Cycle): {}, First Reading: {}, Second Reading: {}, Prayer Book: {}".format("Daily Evening Prayer", self.date.date.strftime(
-                                                                                                                 "%A %B %-d, %Y"),  self.date.primary_evening.name, self.thirty_day_psalter_day.ep_psalms.replace(',', ' '), self.office_readings.ep_psalms.replace(',', ' '), self.office_readings.ep_reading_1, self.office_readings.ep_reading_2, "The Book of Common Prayer (2019), Anglican Church in North America")
-
-        self.start_time = datetime.datetime.combine(self.date.date, datetime.time())
-        self.start_time = self.start_time.replace(minute=0, hour=16, second=0)
-        self.end_time = self.start_time.replace(minute=59, hour=23, second=59)
-
-
-    @cached_property
-    def modules(self):
-        return [
-            (EPHeading(self.date), "office/heading.html"),
-            (EPCommemorationListing(self.date), "office/commemoration_listing.html"),
-            (EPOpeningSentence(self.date), "office/opening_sentence.html"),
-            (Confession(self.date), "office/confession.html"),
-            (Invitatory(self.date), "office/invitatory.html"),
-            (Hymn(self.date), "office/evening_prayer/hymn.html"),
-            (EPPsalms(self.date, self.office_readings, self.thirty_day_psalter_day), "office/psalms.html"),
-            (EPReading1(self.date, self.office_readings), "office/main_reading.html"),
-            (EPAlternateReading1(self.date, self.office_readings), "office/alternate_reading.html"),
-            (EPCanticle1(self.date, self.office_readings), "office/evening_prayer/canticle_1.html"),
-            (EPReading2(self.date, self.office_readings), "office/main_reading.html"),
-            (EPAlternateReading2(self.date, self.office_readings), "office/alternate_reading.html"),
-            (EPCanticle2(self.date, self.office_readings), "office/evening_prayer/canticle_2.html"),
-            (Creed(self.date, self.office_readings), "office/creed.html"),
-            (Prayers(self.date, self.office_readings), "office/prayers.html"),
-            (Suffrages(self.date, self.office_readings), "office/suffrages.html"),
-            (EPCollectsOfTheDay(self.date, self.office_readings), "office/collects_of_the_day.html"),
-            (EPCollects(self.date, self.office_readings), "office/collects.html"),
-            (EPMissionCollect(self.date, self.office_readings), "office/mission_collect.html"),
-            (Intercessions(self.date, self.office_readings), "office/intercessions.html"),
-            (GeneralThanksgiving(self.date, self.office_readings), "office/general_thanksgiving.html"),
-            (Chrysostom(self.date, self.office_readings), "office/chrysostom.html"),
-            (Dismissal(self.date, self.office_readings, office=self), "office/dismissal.html"),\
-        ]
 
 
 class EPSuffrages(OfficeSection):
@@ -1662,10 +1617,10 @@ class EveningPrayer(Office):
             (EPPsalms(self.date, self.office_readings, self.thirty_day_psalter_day), "office/psalms.html"),
             (EPReading1(self.date, self.office_readings), "office/main_reading.html"),
             (EPAlternateReading1(self.date, self.office_readings), "office/alternate_reading.html"),
-            (EPCanticle1(self.date, self.office_readings), "office/evening_prayer/canticle_1.html"),
+            (EPCanticle1(self.date, self.office_readings), "office/canticle.html"),
             (EPReading2(self.date, self.office_readings), "office/main_reading.html"),
             (EPAlternateReading2(self.date, self.office_readings), "office/alternate_reading.html"),
-            (EPCanticle2(self.date, self.office_readings), "office/evening_prayer/canticle_2.html"),
+            (EPCanticle2(self.date, self.office_readings), "office/canticle.html"),
             (Creed(self.date, self.office_readings), "office/creed.html"),
             (Prayers(self.date, self.office_readings), "office/prayers.html"),
             (EPSuffrages(self.date, self.office_readings), "office/evening_prayer/suffrages.html"),
