@@ -150,7 +150,11 @@
             font-family: 'Lusitana', serif;
             font-display: swap;
             font-weight: 700;
+        }
 
+        input[type='text']
+        {
+          font-size: 16px;
         }
 
         div.antiphon {
