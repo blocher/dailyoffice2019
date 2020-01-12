@@ -2,7 +2,6 @@ env
 sermons/.env
 .DS_Store
 *.log
-*.sql
 *.pyc
 *.pyo
 _pycache__
