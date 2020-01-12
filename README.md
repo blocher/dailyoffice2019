@@ -19,7 +19,7 @@ Pull requests are welcome. Take a look at the issues and see where you might hel
 ### Setting up a development environment
 
 #### Clone project
-- Clone the project `git clone git@github.com:blocher/dailyoffice2019.git`
+- Clone or fork the project from `https://github.com/blocher/dailyoffice2019`
 - `cd dailyoffice2019`
 
 #### Import database
