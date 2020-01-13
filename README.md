@@ -37,21 +37,25 @@ ALTERNATE: You may import the data into a clean database using the provided `imp
 - Load virtual environment `source env/bin/activate`
 - Install Python Requirements `pip install -r requirements.txt`
 
-### Setup up Javascript environment
+#### Setup up Javascript environment
 - `cd site`
 - Install JavaScript Requirements `yarn install`
 - Bundle Javascript and CSS `npx webpack --watch`
 
-### Run development server (in separate terminal)
+#### Run development server (in separate terminal)
 - Collect static assets `python manage.py collectstatic`
 - Start development server `python manage.py runserver`
 - The site will be accessible locally at `http://127.0.0.1:8000`
 
-### Generate static site and deploy
+#### Generate static site and deploy
 - Set the `DEBUG` setting to `False` in `site\website\settings.py`
 - Run `python manage.py collectstatic` from the `site` directory
 - Run `python manage.py distill-local` from the `site` directory.  This builds a static copy of the site in the `static_export` directory
 - Run `netlfy deploy --prod` from `static_export` directory (must be done by site owner that has Netlify credentials)
+
+### Code formatting standard
+- Please use `black` to format code with a line length of 119 beore submitting a pull request
+- `find . -iname "*.py" | xargs black --target-version=py37 --line-length=119` from the `site` directory
 
 ## Quick overview
 The application is built around several Django "apps".  The most important are:
