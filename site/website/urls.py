@@ -30,21 +30,27 @@ from django.contrib.sitemaps import views
 
 from churchcal.calculations import ChurchYear
 from office import views as office_views
+
 # from sermons import views as sermon_views
 from django.contrib.sitemaps import Sitemap
+
 # site.site_header = _("Elizabeth Locher's Sermon Archive")
 # site.site_title = _("Elizabeth Locher's Sermon Archive")
 # site.favicon = staticfiles('path/to/favicon')
 from django.views.static import serve
 
+
 def get_about():
     return None
+
 
 def get_now():
     return None
 
+
 def get_none():
     return None
+
 
 def get_days():
     date_list = []
@@ -55,10 +61,12 @@ def get_days():
     for date in date_list:
         yield {"year": date.year, "month": date.month, "day": date.day}
 
+
 def get_church_years():
 
     for year in range(settings.FIRST_BEGINNING_YEAR, settings.LAST_BEGINNING_YEAR + 1):
-        yield {"start_year": year, "end_year": year+1}
+        yield {"start_year": year, "end_year": year + 1}
+
 
 class MorningPrayerSitemap(Sitemap):
     changefreq = "daily"
@@ -75,7 +83,8 @@ class MorningPrayerSitemap(Sitemap):
         return date.today()
 
     def location(self, obj):
-        return '/morning_prayer/{}-{}-{}'.format(obj['year'], obj['month'], obj['day']);
+        return "/morning_prayer/{}-{}-{}".format(obj["year"], obj["month"], obj["day"])
+
 
 class MiddayPrayerSitemap(Sitemap):
     changefreq = "daily"
@@ -92,7 +101,8 @@ class MiddayPrayerSitemap(Sitemap):
         return date.today()
 
     def location(self, obj):
-        return '/midday_prayer/{}-{}-{}'.format(obj['year'], obj['month'], obj['day']);
+        return "/midday_prayer/{}-{}-{}".format(obj["year"], obj["month"], obj["day"])
+
 
 class EveningPrayerSitemap(Sitemap):
     changefreq = "daily"
@@ -109,7 +119,8 @@ class EveningPrayerSitemap(Sitemap):
         return date.today()
 
     def location(self, obj):
-        return '/evening_prayer/{}-{}-{}'.format(obj['year'], obj['month'], obj['day']);
+        return "/evening_prayer/{}-{}-{}".format(obj["year"], obj["month"], obj["day"])
+
 
 class ComplineSitemap(Sitemap):
     changefreq = "daily"
@@ -126,7 +137,8 @@ class ComplineSitemap(Sitemap):
         return date.today()
 
     def location(self, obj):
-        return '/compline/{}-{}-{}'.format(obj['year'], obj['month'], obj['day']);
+        return "/compline/{}-{}-{}".format(obj["year"], obj["month"], obj["day"])
+
 
 class CalendarSitemap(Sitemap):
     changefreq = "daily"
@@ -144,7 +156,8 @@ class CalendarSitemap(Sitemap):
         return date.today()
 
     def location(self, obj):
-        return '/church_year/{}-{}'.format(obj['start_year'], obj['end_year']);
+        return "/church_year/{}-{}".format(obj["start_year"], obj["end_year"])
+
 
 class SettingsSitemap(Sitemap):
     changefreq = "daily"
@@ -152,13 +165,14 @@ class SettingsSitemap(Sitemap):
     protocol = "https"
 
     def items(self):
-        return ['settings']
+        return ["settings"]
 
     def lastmod(self, obj):
         return date.today()
 
     def location(self, obj):
-        return '/{}'.format(obj);
+        return "/{}".format(obj)
+
 
 class AboutSitemap(Sitemap):
     changefreq = "daily"
@@ -166,13 +180,14 @@ class AboutSitemap(Sitemap):
     protocol = "https"
 
     def items(self):
-        return ['about']
+        return ["about"]
 
     def lastmod(self, obj):
         return date.today()
 
     def location(self, obj):
-        return '/{}'.format(obj);
+        return "/{}".format(obj)
+
 
 class HomeSitemap(Sitemap):
     changefreq = "always"
@@ -180,35 +195,38 @@ class HomeSitemap(Sitemap):
     protocol = "https"
 
     def items(self):
-        return ['home']
+        return ["home"]
 
     def lastmod(self, obj):
         return False
 
     def location(self, obj):
-        return '/';
+        return "/"
+
 
 sitemaps = {
-    'morning_prayer': MorningPrayerSitemap(),
-    'midday_prayer': MiddayPrayerSitemap(),
-    'evening_prayer': EveningPrayerSitemap(),
-    'compline': ComplineSitemap(),
-    'calendar': CalendarSitemap(),
-    'settings': SettingsSitemap(),
-    'about': AboutSitemap(),
-    'home': HomeSitemap(),
+    "morning_prayer": MorningPrayerSitemap(),
+    "midday_prayer": MiddayPrayerSitemap(),
+    "evening_prayer": EveningPrayerSitemap(),
+    "compline": ComplineSitemap(),
+    "calendar": CalendarSitemap(),
+    "settings": SettingsSitemap(),
+    "about": AboutSitemap(),
+    "home": HomeSitemap(),
 }
+
 
 def get_distill_sitemap():
 
     yield None
 
+
 def sitemap_index_view(request):
     return views.index(request, sitemaps)
 
+
 def sitemap_view(request):
     return views.sitemap(request, sitemaps)
-
 
 
 urlpatterns = [
@@ -224,55 +242,41 @@ urlpatterns = [
         name="evening_prayer",
         distill_func=get_days,
     ),
-      distill_path(
-          "midday_prayer/<int:year>-<int:month>-<int:day>/",
-          office_views.midday_prayer,
-          name="midday_prayer",
-          distill_func=get_days,
-      ),
+    distill_path(
+        "midday_prayer/<int:year>-<int:month>-<int:day>/",
+        office_views.midday_prayer,
+        name="midday_prayer",
+        distill_func=get_days,
+    ),
     distill_path(
         "morning_prayer/<int:year>-<int:month>-<int:day>/",
         office_views.morning_prayer,
         name="morning_prayer",
         distill_func=get_days,
     ),
-      distill_path(
-          "compline/<int:year>-<int:month>-<int:day>/",
-          office_views.compline,
-          name="compline",
-          distill_func=get_days,
-      ),
     distill_path(
-          "church_year/<int:start_year>-<int:end_year>/",
-          office_views.church_year,
-          name="church_year",
-          distill_func=get_church_years,
-      ),
-      distill_path(
-          "about/",
-          office_views.about,
-          name="about",
-          distill_func=get_about,
-      ),
-    distill_path(
-          "settings/",
-          office_views.settings,
-          name="settings",
-          distill_func=get_about,
-      ),
-    distill_path(
-          "signup-thank-you/",
-          office_views.signup_thank_you,
-          name="signup_thank_you",
-          distill_func=get_none,
-      ),
-    distill_path(
-        "", office_views.now, distill_file="index.html", name="now", distill_func=get_now
+        "compline/<int:year>-<int:month>-<int:day>/", office_views.compline, name="compline", distill_func=get_days
     ),
-    distill_path('sitemap.xml', sitemap_view,
-         name='django.contrib.sitemaps.views.sitemap', distill_func=get_distill_sitemap),
-    distill_path('404.html', office_views.four_oh_four, name='404', distill_func=get_none),
-    distill_path('robots.txt', TemplateView.as_view(template_name="office/robots.txt", content_type='text/plain'), name="robots", distill_func=get_none)
+    distill_path(
+        "church_year/<int:start_year>-<int:end_year>/",
+        office_views.church_year,
+        name="church_year",
+        distill_func=get_church_years,
+    ),
+    distill_path("about/", office_views.about, name="about", distill_func=get_about),
+    distill_path("settings/", office_views.settings, name="settings", distill_func=get_about),
+    distill_path("signup-thank-you/", office_views.signup_thank_you, name="signup_thank_you", distill_func=get_none),
+    distill_path("", office_views.now, distill_file="index.html", name="now", distill_func=get_now),
+    distill_path(
+        "sitemap.xml", sitemap_view, name="django.contrib.sitemaps.views.sitemap", distill_func=get_distill_sitemap
+    ),
+    distill_path("404.html", office_views.four_oh_four, name="404", distill_func=get_none),
+    distill_path(
+        "robots.txt",
+        TemplateView.as_view(template_name="office/robots.txt", content_type="text/plain"),
+        name="robots",
+        distill_func=get_none,
+    ),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:

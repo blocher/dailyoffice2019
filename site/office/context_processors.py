@@ -1,5 +1,6 @@
 from django.utils.safestring import mark_safe
 
+
 def get_on(path):
     if path == "/":
         return "now-button"
@@ -16,7 +17,6 @@ def get_on(path):
     return None
 
 
-
 def settings(request):
     return {
         "on": get_on(request.path),
@@ -25,7 +25,9 @@ def settings(request):
             {
                 "title": "Psalter Cycle",
                 "name": "psalter",
-                "help_text": mark_safe("During Morning and Evening Prayer, pray through all the Psalms either every <strong>60 days</strong> (fewer psalms per day) or once every <strong>30 days</strong> (more psalms per day)."),
+                "help_text": mark_safe(
+                    "During Morning and Evening Prayer, pray through all the Psalms either every <strong>60 days</strong> (fewer psalms per day) or once every <strong>30 days</strong> (more psalms per day)."
+                ),
                 "options": [
                     {
                         "value": "60",
@@ -46,7 +48,9 @@ def settings(request):
             {
                 "title": "Reading Cycle",
                 "name": "reading_cycle",
-                "help_text": mark_safe("Read through most of the Bible during Morning and Evening Prayer every <strong>1 year</strong> or every <strong>2 years</strong>.  The one year cycle is best if you do <strong>both</strong> Morning and Evening prayer daily; the two year cycle is best if you do only one."),
+                "help_text": mark_safe(
+                    "Read through most of the Bible during Morning and Evening Prayer every <strong>1 year</strong> or every <strong>2 years</strong>.  The one year cycle is best if you do <strong>both</strong> Morning and Evening prayer daily; the two year cycle is best if you do only one."
+                ),
                 "options": [
                     {
                         "value": "1",
@@ -54,7 +58,8 @@ def settings(request):
                         "show": ["main-reading"],
                         "heading": "One Year",
                         "text": mark_safe(
-                            "Read through most of the Bible each year. (Use if you pray <strong>both</strong> Morning and Evening Prayer)"),
+                            "Read through most of the Bible each year. (Use if you pray <strong>both</strong> Morning and Evening Prayer)"
+                        ),
                     },
                     {
                         "value": "2",
@@ -62,7 +67,8 @@ def settings(request):
                         "show": ["alternate-reading"],
                         "heading": "Two Year",
                         "text": mark_safe(
-                            "Read through most of the Bible in two years. (Use if you pray <strong>either</strong> Morning <strong>or</strong> Evening prayer)"),
+                            "Read through most of the Bible in two years. (Use if you pray <strong>either</strong> Morning <strong>or</strong> Evening prayer)"
+                        ),
                     },
                 ],
             },
@@ -87,7 +93,6 @@ def settings(request):
                     },
                 ],
             },
-
             {
                 "title": "Reading Audio",
                 "name": "reading_audio",
@@ -135,9 +140,8 @@ def settings(request):
                         "heading": "Daily Rotation",
                         "text": "A rotating set of canticles by day of week and season",
                     },
-
                 ],
-            }
+            },
         ],
         "minor_settings": [
             {
@@ -283,7 +287,7 @@ def settings(request):
                         "hide": ["suffrages-a", "suffrages-rotating"],
                         "show": ["suffrages-b"],
                         "heading": "New",
-                        "text": "Always use the newer set, each ending with \"We entreat you, O Lord\"",
+                        "text": 'Always use the newer set, each ending with "We entreat you, O Lord"',
                     },
                 ],
             },
@@ -368,13 +372,13 @@ def settings(request):
                         "show": ["fixed-grace"],
                         "heading": "Traditional",
                         "text": "Conclude with the traditional grace each day",
-                    }
+                    },
                 ],
             },
             {
                 "title": 'Advent "O" Antiphons',
                 "name": "o_antiphons",
-                "help_text": "The traditional \"O\" Antiphons are used before and after the first canticle in Evening Prayer during the last eight days of Advent. You can use literal translations of the original Latin, or the familiar paraphrases used in the hymn \"O Come, O Come Emmanuel\"",
+                "help_text": 'The traditional "O" Antiphons are used before and after the first canticle in Evening Prayer during the last eight days of Advent. You can use literal translations of the original Latin, or the familiar paraphrases used in the hymn "O Come, O Come Emmanuel"',
                 "options": [
                     {
                         "value": "literal",
@@ -405,12 +409,12 @@ def settings(request):
                         "text": "Hide the antiphons",
                     },
                 ],
-            }
-        ]
+            },
+        ],
     }
 
 
-'''In a nutshell, this is (tentatively) what I do with them...
+"""In a nutshell, this is (tentatively) what I do with them...
 * Magna et Mirabilia replaces Te Deum in Advent.
 * Surge illuminare replaces Te Deum in Epiphanytide.
 * Benedictus es replaces Te Deum in Lent.
@@ -424,4 +428,4 @@ def settings(request):
 * Kyrie Pantokrator replaces Nunc dimittis in Lent.
 * Cantate Domino replaces Nunc dimittis in Christmas & Easter.
 * Deus Misereatur replaces Nunc dimittis in Epiphanytide & Trinitytide.
-(All of the above apply to weekdays; Sundays are usually the default.)'''
+(All of the above apply to weekdays; Sundays are usually the default.)"""

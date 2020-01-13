@@ -29,7 +29,6 @@ class CalendarDate(object):
 
         self.year = year
 
-
     def _find_proper(self):
         date = datetime.strptime("2019-{}-{}".format(self.date.month, self.date.day), "%Y-%m-%d").date()
         return Proper.objects.filter(calendar=self.calendar, start_date__lte=date, end_date__gte=date).first()
@@ -63,7 +62,6 @@ class CalendarDate(object):
 
         return 1 if self.year.start_year % 2 == 0 else 2
 
-
     FAST_NONE = 0
     FAST_PARTIAL = 1
     FAST_FULL = 2
@@ -89,11 +87,9 @@ class CalendarDate(object):
         if self.season.name in ["Christmastide", "Eastertide"]:
             return self.FAST_NONE
 
-
         # Not for primary feasts (Annunciation)
         if self.primary.rank.name == "PRINCIPAL_FEAST":
             return self.FAST_NONE
-
 
         # All of lent is a fast day
         if self.season.name == "Lent" or self.season.name == "Holy Week":
@@ -374,7 +370,6 @@ class ChurchYear(object):
 
         calendar_date.evening_season = calendar_date.season
 
-
     @staticmethod
     def daterange(start_date, end_date):
         for n in range(int((end_date - start_date).days + 1)):
@@ -473,10 +468,8 @@ class SetNamesAndCollects(object):
                             break
                     self.check_previous_evening(calendar_date)
 
-
             except StopIteration:
                 break
-
 
         self.i = iter(self.church_calendar)
         while True:
@@ -490,8 +483,6 @@ class SetNamesAndCollects(object):
 
             except StopIteration:
                 break
-
-
 
     def check_previous_evening(self, calendar_date):
 
@@ -591,7 +582,9 @@ class SetNamesAndCollects(object):
                     self.append_o_antiphon_if_needed(commemoration, calendar_date)
                     if "gesima" in commemoration.name:
                         commemoration.alternate_color_2 = "purple" if commemoration.alternate_color else None
-                        commemoration.alternate_color = commemoration.alternate_color if commemoration.alternate_color else "purple"
+                        commemoration.alternate_color = (
+                            commemoration.alternate_color if commemoration.alternate_color else "purple"
+                        )
                     break
 
         return False
@@ -599,42 +592,53 @@ class SetNamesAndCollects(object):
     def append_seuptuagesima_if_needed(self, commemoration, calendar_date):
 
         easter_day = easter(calendar_date.date.year)
-        seventy_days_before_easter = easter_day - timedelta(days=9*7)
+        seventy_days_before_easter = easter_day - timedelta(days=9 * 7)
         date = calendar_date.date
         if seventy_days_before_easter == date:
             commemoration.name = "{}, or Septuagesima".format(commemoration.name)
             commemoration.alternate_color_2 = "purple" if commemoration.alternate_color else None
-            commemoration.alternate_color = commemoration.alternate_color if commemoration.alternate_color else "purple"
-
+            commemoration.alternate_color = (
+                commemoration.alternate_color if commemoration.alternate_color else "purple"
+            )
 
     def append_o_antiphon_if_needed(self, commemoration, calendar_date):
 
-
         if calendar_date.date.month == 12:
             if calendar_date.date.day == 16:
-                commemoration.name = mark_safe("{} <em>(O Sapientia / O Wisdom from on high)</em>".format(commemoration.name))
+                commemoration.name = mark_safe(
+                    "{} <em>(O Sapientia / O Wisdom from on high)</em>".format(commemoration.name)
+                )
 
             if calendar_date.date.day == 17:
                 commemoration.name = mark_safe("{} <em>(O Adonai / O Lord of Might)</em>".format(commemoration.name))
 
             if calendar_date.date.day == 18:
-                commemoration.name = mark_safe("{} <em>(O Radix Jesse / O Root of Jesse)</em>".format(commemoration.name))
+                commemoration.name = mark_safe(
+                    "{} <em>(O Radix Jesse / O Root of Jesse)</em>".format(commemoration.name)
+                )
 
             if calendar_date.date.day == 19:
-                commemoration.name = mark_safe("{} <em>(O Clavis David / O Key of David)</em>".format(commemoration.name))
+                commemoration.name = mark_safe(
+                    "{} <em>(O Clavis David / O Key of David)</em>".format(commemoration.name)
+                )
 
             if calendar_date.date.day == 20:
                 commemoration.name = mark_safe("{} <em>(O Oriens / O Daypsring)</em>".format(commemoration.name))
 
             if calendar_date.date.day == 21:
-                commemoration.name = mark_safe("{} <em>(O Rex Gentium / O Desire of Nations)</em>".format(commemoration.name))
+                commemoration.name = mark_safe(
+                    "{} <em>(O Rex Gentium / O Desire of Nations)</em>".format(commemoration.name)
+                )
 
             if calendar_date.date.day == 22:
-                commemoration.name = mark_safe("{} <em>(O Emmanuel / O Come, Emmanuel)</em>".format(commemoration.name))
+                commemoration.name = mark_safe(
+                    "{} <em>(O Emmanuel / O Come, Emmanuel)</em>".format(commemoration.name)
+                )
 
             if calendar_date.date.day == 23:
-                commemoration.name = mark_safe("{} <em>(O Virgo Virginum / O Virgin of Virgins)</em>".format(commemoration.name))
-
+                commemoration.name = mark_safe(
+                    "{} <em>(O Virgo Virginum / O Virgin of Virgins)</em>".format(commemoration.name)
+                )
 
     def saint_collect(self, commemoration, calendar_date):
         if not commemoration.saint_type:
@@ -755,25 +759,41 @@ class SetNamesAndCollects(object):
 
     @staticmethod
     def is_epiphany(calendar_date):
-        if calendar_date.required and "The Epiphany" in calendar_date.required[0].name and calendar_date.required[0].rank.required:
+        if (
+            calendar_date.required
+            and "The Epiphany" in calendar_date.required[0].name
+            and calendar_date.required[0].rank.required
+        ):
             return calendar_date.required[0]
         return None
 
     @staticmethod
     def is_christmas(calendar_date):
-        if calendar_date.required and "Christmas Day" in calendar_date.required[0].name and calendar_date.required[0].rank.required:
+        if (
+            calendar_date.required
+            and "Christmas Day" in calendar_date.required[0].name
+            and calendar_date.required[0].rank.required
+        ):
             return calendar_date.required[0]
         return None
 
     @staticmethod
     def is_ash_wednesday(calendar_date):
-        if calendar_date.required and "Ash Wednesday" in calendar_date.required[0].name and calendar_date.required[0].rank.required:
+        if (
+            calendar_date.required
+            and "Ash Wednesday" in calendar_date.required[0].name
+            and calendar_date.required[0].rank.required
+        ):
             return calendar_date.required[0]
         return None
 
     @staticmethod
     def is_ascension(calendar_date):
-        if calendar_date.required and "Ascension Day" in calendar_date.required[0].name and calendar_date.required[0].rank.required:
+        if (
+            calendar_date.required
+            and "Ascension Day" in calendar_date.required[0].name
+            and calendar_date.required[0].rank.required
+        ):
             return calendar_date.required[0]
         return None
 

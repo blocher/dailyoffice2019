@@ -122,7 +122,6 @@ class Command(BaseCommand):
             day.ep_reading_2_text = self.get_passage(row[10])
             day.save()
 
-
         try:
             result = sheet.values().get(spreadsheetId=self.SHEET_ID, range=self.HOLY_DAY_RANGE_NAME).execute()
         except HttpError as e:

@@ -8,17 +8,19 @@ from django.utils.safestring import mark_safe
 
 from office.canticles import DefaultCanticles, BCP1979CanticleTable, REC2011CanticleTable
 from office.models import HolyDayOfficeDay, StandardOfficeDay, ThirtyDayPsalterDay
+
 # from office.views import meta_defaults
 from psalter.utils import get_psalms
 
 from office.utils import passage_to_citation
+
 
 class OfficeSection(object):
     def __init__(self, date, office_readings=None, thirty_day_psalter_day=None, office=None):
         self.date = date
         self.office_readings = office_readings
         self.thirty_day_psalter_day = thirty_day_psalter_day
-        self.office=office
+        self.office = office
 
     @cached_property
     def data(self):
@@ -30,15 +32,18 @@ class EPHeading(OfficeSection):
     def data(self):
         return {"heading": mark_safe("Daily<br>Evening Prayer"), "calendar_date": self.date}
 
+
 class ComplineHeading(OfficeSection):
     @cached_property
     def data(self):
         return {"heading": mark_safe("Compline"), "calendar_date": self.date}
 
+
 class MiddayHeading(OfficeSection):
     @cached_property
     def data(self):
         return {"heading": mark_safe("Midday Prayer"), "calendar_date": self.date}
+
 
 class MPHeading(OfficeSection):
     @cached_property
@@ -56,6 +61,7 @@ class MPCommemorationListing(OfficeSection):
             "commemorations": self.date.all,
         }
 
+
 class ComplineCommemorationListing(OfficeSection):
     @cached_property
     def data(self):
@@ -66,6 +72,7 @@ class ComplineCommemorationListing(OfficeSection):
             "commemorations": self.date.all_evening,
         }
 
+
 class MiddayCommemorationListing(OfficeSection):
     @cached_property
     def data(self):
@@ -75,6 +82,7 @@ class MiddayCommemorationListing(OfficeSection):
             "heading": "This Day's Commemoration{}".format("s" if len(self.date.all) > 1 else ""),
             "commemorations": self.date.all,
         }
+
 
 class EPCommemorationListing(OfficeSection):
     @cached_property
@@ -365,11 +373,10 @@ class ComplineScripture(OfficeSection):
                 "citation": "1 PETER 5:8-9",
             }
 
-
-
     @cached_property
     def data(self):
         return {"heading": "The Reading", "sentence": self.get_scripture()}
+
 
 class MiddayScripture(OfficeSection):
     def get_scripture(self):
@@ -397,42 +404,59 @@ class MiddayScripture(OfficeSection):
         return {"heading": "The Reading", "sentence": self.get_scripture(), "midday": True}
 
 
-
 class ComplinePrayers(OfficeSection):
-
     def get_collects(self):
 
-        collects =[
-            ("a collect for evening", "Visit this place, O Lord, and drive far from it all snares of the enemy; let your holy angels dwell with us to preserve us in peace; and let your blessing be upon us always; through Jesus Christ our Lord."),
-            ("a collect for aid against perils", "Lighten our darkness, we beseech you, O Lord; and by your great mercy defend us from all perils and dangers of this night; for the love of your only Son, our Savior Jesus Christ."),
-            ("a collect for evening", "Be present, O merciful God, and protect us through the hours of this night, so that we who are wearied by the changes and chances of this life may rest in your eternal changelessness; through Jesus Christ our Lord."),
-            ("a collect for evening", "Look down, O Lord, from your heavenly throne, illumine this night with your celestial brightness, and from the children of light banish the deeds of darkness; through Jesus Christ our Lord."),
-            ("a collect for saturdays", "We give you thanks, O God, for revealing your Son Jesus Christ to us by the light of his resurrection: Grant that as we sing your glory at the close of this day, our joy may abound in the morning as we celebrate the Paschal mystery; through Jesus Christ our Lord."),
-            ("a collect for mission", "Keep watch, dear Lord, with those who work, or watch, or weep this night, and give your angels charge over those who sleep. Tend the sick, Lord Christ; give rest to the weary, bless the dying, soothe the suffering, pity the afflicted, shield the joyous; and all for your love’s sake."),
-            ("a collect for evening", "O God, your unfailing providence sustains the world we live in and the life we live: Watch over those, both night and day, who work while others sleep, and grant that we may never forget that our common life depends upon each other’s toil; through Jesus Christ our Lord.")
+        collects = [
+            (
+                "a collect for evening",
+                "Visit this place, O Lord, and drive far from it all snares of the enemy; let your holy angels dwell with us to preserve us in peace; and let your blessing be upon us always; through Jesus Christ our Lord.",
+            ),
+            (
+                "a collect for aid against perils",
+                "Lighten our darkness, we beseech you, O Lord; and by your great mercy defend us from all perils and dangers of this night; for the love of your only Son, our Savior Jesus Christ.",
+            ),
+            (
+                "a collect for evening",
+                "Be present, O merciful God, and protect us through the hours of this night, so that we who are wearied by the changes and chances of this life may rest in your eternal changelessness; through Jesus Christ our Lord.",
+            ),
+            (
+                "a collect for evening",
+                "Look down, O Lord, from your heavenly throne, illumine this night with your celestial brightness, and from the children of light banish the deeds of darkness; through Jesus Christ our Lord.",
+            ),
+            (
+                "a collect for saturdays",
+                "We give you thanks, O God, for revealing your Son Jesus Christ to us by the light of his resurrection: Grant that as we sing your glory at the close of this day, our joy may abound in the morning as we celebrate the Paschal mystery; through Jesus Christ our Lord.",
+            ),
+            (
+                "a collect for mission",
+                "Keep watch, dear Lord, with those who work, or watch, or weep this night, and give your angels charge over those who sleep. Tend the sick, Lord Christ; give rest to the weary, bless the dying, soothe the suffering, pity the afflicted, shield the joyous; and all for your love’s sake.",
+            ),
+            (
+                "a collect for evening",
+                "O God, your unfailing providence sustains the world we live in and the life we live: Watch over those, both night and day, who work while others sleep, and grant that we may never forget that our common life depends upon each other’s toil; through Jesus Christ our Lord.",
+            ),
         ]
 
-
-
-        if self.date.date.weekday() in [6]: #Sunday
+        if self.date.date.weekday() in [6]:  # Sunday
             return collects[0], collects[1], collects[5]
 
-        if self.date.date.weekday() in [0]: #Monday
+        if self.date.date.weekday() in [0]:  # Monday
             return collects[2], collects[3], collects[5]
 
-        if self.date.date.weekday() in [1]: #Tuesday
+        if self.date.date.weekday() in [1]:  # Tuesday
             return collects[0], collects[2], collects[5]
 
-        if self.date.date.weekday() in [2]: #Wednesday
+        if self.date.date.weekday() in [2]:  # Wednesday
             return collects[1], collects[3], collects[6]
 
-        if self.date.date.weekday() in [3]: #Thursday
+        if self.date.date.weekday() in [3]:  # Thursday
             return collects[0], collects[3], collects[5]
 
-        if self.date.date.weekday() in [4]: #Friday
+        if self.date.date.weekday() in [4]:  # Friday
             return collects[1], collects[2], collects[6]
 
-        if self.date.date.weekday() in [5]: #Saturday
+        if self.date.date.weekday() in [5]:  # Saturday
             return collects[2], collects[4], collects[5]
 
     @cached_property
@@ -441,65 +465,79 @@ class ComplinePrayers(OfficeSection):
 
 
 class MiddayPrayers(OfficeSection):
-
     def get_collects(self):
 
-        collects =[
-            ("Blessed Savior, at this hour you hung upon the Cross, stretching out your loving arms: Grant that all the peoples of the earth may look to you and be saved; for your tender mercies’ sake."),
-            ("Almighty Savior, who at mid-day called your servant Saint Paul to be an apostle to the Gentiles: We pray you to illumine the world with the radiance of your glory, that all nations may come and worship you; for you live and reign with the Father and the Holy Spirit, one God, for ever and ever."),
-            ("Father of all mercies, you revealed your boundless compassion to your apostle Saint Peter in a three-fold vision: Forgive our unbelief, we pray, and so strengthen our hearts and enkindle our zeal, that we may fervently desire the salvation of all people, and diligently labor in the extension of your kingdom; through him who gave himself for the life of the world, your Son our Savior Jesus Christ."),
-            ("Pour your grace into our hearts, O Lord, that we who have known the incarnation of your Son Jesus Christ, announced by an angel to the Virgin Mary, may by his Cross and passion be brought to the glory of his resurrection; who lives and reigns with you, in the unity of the Holy Spirit, one God, now and for ever."),
+        collects = [
+            (
+                "Blessed Savior, at this hour you hung upon the Cross, stretching out your loving arms: Grant that all the peoples of the earth may look to you and be saved; for your tender mercies’ sake."
+            ),
+            (
+                "Almighty Savior, who at mid-day called your servant Saint Paul to be an apostle to the Gentiles: We pray you to illumine the world with the radiance of your glory, that all nations may come and worship you; for you live and reign with the Father and the Holy Spirit, one God, for ever and ever."
+            ),
+            (
+                "Father of all mercies, you revealed your boundless compassion to your apostle Saint Peter in a three-fold vision: Forgive our unbelief, we pray, and so strengthen our hearts and enkindle our zeal, that we may fervently desire the salvation of all people, and diligently labor in the extension of your kingdom; through him who gave himself for the life of the world, your Son our Savior Jesus Christ."
+            ),
+            (
+                "Pour your grace into our hearts, O Lord, that we who have known the incarnation of your Son Jesus Christ, announced by an angel to the Virgin Mary, may by his Cross and passion be brought to the glory of his resurrection; who lives and reigns with you, in the unity of the Holy Spirit, one God, now and for ever."
+            ),
         ]
 
-
-
-        if self.date.date.weekday() in [6]: #Sunday
+        if self.date.date.weekday() in [6]:  # Sunday
             return collects[0], collects[1]
 
-        if self.date.date.weekday() in [0, 5]: #Monday,  #Saturday
+        if self.date.date.weekday() in [0, 5]:  # Monday,  #Saturday
             return collects[2], collects[3]
 
-        if self.date.date.weekday() in [1]: #Tuesday
+        if self.date.date.weekday() in [1]:  # Tuesday
             return collects[0], collects[2]
 
-        if self.date.date.weekday() in [2]: #Wednesday
+        if self.date.date.weekday() in [2]:  # Wednesday
             return collects[1], collects[3]
 
-        if self.date.date.weekday() in [3]: #Thursday
+        if self.date.date.weekday() in [3]:  # Thursday
             return collects[0], collects[3]
 
-        if self.date.date.weekday() in [4]: #Friday
+        if self.date.date.weekday() in [4]:  # Friday
             return collects[1], collects[2]
-
 
     @cached_property
     def data(self):
         return {"heading": "The Prayers", "collects": self.get_collects()}
 
-class  ComplineCanticle(OfficeSection):
+
+class ComplineCanticle(OfficeSection):
     @cached_property
     def data(self):
-        return {"heading": "Nunc Dimittis", "subheading": "The Song of Simeon", "alleluia": self.date.evening_season.name=="Eastertide"}
+        return {
+            "heading": "Nunc Dimittis",
+            "subheading": "The Song of Simeon",
+            "alleluia": self.date.evening_season.name == "Eastertide",
+        }
 
-class  ComplineConclusion(OfficeSection):
+
+class ComplineConclusion(OfficeSection):
     @cached_property
     def data(self):
-        return {"alleluia": self.date.evening_season.name=="Eastertide"}
+        return {"alleluia": self.date.evening_season.name == "Eastertide"}
 
-class  MiddayConclusion(OfficeSection):
+
+class MiddayConclusion(OfficeSection):
     @cached_property
     def data(self):
         return {"alleluia": self.date.season.name == "Eastertide"}
+
 
 class Confession(OfficeSection):
     @cached_property
     def data(self):
         return {"heading": "Confession of Sin", "fast_day": self.date.fast_day}
 
+
 class ComplineConfession(OfficeSection):
     @cached_property
     def data(self):
         return {"heading": "Confession of Sin"}
+
 
 class EPPsalms(OfficeSection):
     @cached_property
@@ -554,18 +592,14 @@ class MPPsalms(OfficeSection):
 class ComplinePsalms(OfficeSection):
     @cached_property
     def data(self):
-        return {
-            "heading": "The Psalms",
-            "psalms": get_psalms("4,31:1-6,91,134"),
-        }
+        return {"heading": "The Psalms", "psalms": get_psalms("4,31:1-6,91,134")}
+
 
 class MiddayPsalms(OfficeSection):
     @cached_property
     def data(self):
-        return {
-            "heading": "The Psalms",
-            "psalms": get_psalms("119:105-112,121,124,126"),
-        }
+        return {"heading": "The Psalms", "psalms": get_psalms("119:105-112,121,124,126")}
+
 
 class EPReading1(OfficeSection):
     @cached_property
@@ -641,6 +675,7 @@ class MPReading1(OfficeSection):
             "deuterocanon": self.office_readings.mp_reading_1_testament not in ["OT", "NT"],
         }
 
+
 class MPAlternateReading1(OfficeSection):
     @cached_property
     def data(self):
@@ -650,6 +685,7 @@ class MPAlternateReading1(OfficeSection):
 
         module = MPReading1(self.date, self.office_readings)
         return module.data
+
 
 class MPAlternateReading2(OfficeSection):
     @cached_property
@@ -661,6 +697,7 @@ class MPAlternateReading2(OfficeSection):
         module = MPReading2(self.date, self.office_readings)
         return module.data
 
+
 class EPAlternateReading1(OfficeSection):
     @cached_property
     def data(self):
@@ -671,6 +708,7 @@ class EPAlternateReading1(OfficeSection):
         module = MPReading1(self.date, self.office_readings)
         return module.data
 
+
 class EPAlternateReading2(OfficeSection):
     @cached_property
     def data(self):
@@ -680,6 +718,7 @@ class EPAlternateReading2(OfficeSection):
 
         module = MPReading2(self.date, self.office_readings)
         return module.data
+
 
 class MPReading2(OfficeSection):
     @cached_property
@@ -702,24 +741,25 @@ class Invitatory(OfficeSection):
     def data(self):
         return {}
 
+
 class ComplineOpening(OfficeSection):
     @cached_property
     def data(self):
         return {}
 
+
 class MiddayInvitatory(OfficeSection):
     @cached_property
     def data(self):
-        return {
-            'alleluia': self.date.evening_season.name != "Lent" and self.date.evening_season.name != "Holy Week",
-        }
+        return {"alleluia": self.date.evening_season.name != "Lent" and self.date.evening_season.name != "Holy Week"}
+
 
 class ComplineInvitatory(OfficeSection):
     @cached_property
     def data(self):
         return {
-            'alleluia': self.date.evening_season.name != "Lent" and self.date.evening_season.name != "Holy Week",
-            'heading': "Invitatory",
+            "alleluia": self.date.evening_season.name != "Lent" and self.date.evening_season.name != "Holy Week",
+            "heading": "Invitatory",
         }
 
 
@@ -885,7 +925,6 @@ class MPCanticle2(OfficeSection):
 
 
 class EPCanticle1(OfficeSection):
-
     def get_antiphon(self):
         if self.date.date.month != 12:
             return None
@@ -937,7 +976,7 @@ class EPCanticle1(OfficeSection):
                 "english": "O Virgin of virgins, how shall this be? For neither before you was any like you, nor shall there be after. Daughters of Jerusalem, why do you marvel at me? The thing which you behold is a divine mystery.",
                 "hymn": "O Virgin great! How shall this be? For none before nor hence were like to thee; Why, Salem’s daughters, marvel ye? Behold, a heav’nly mystery! Rejoice! Rejoice! Emmanuel shall come to thee, O Israel.",
                 "citation": "",
-            }
+            },
         }
         index = str(self.date.date.day)
         try:
@@ -978,6 +1017,7 @@ class Prayers(OfficeSection):
     def data(self):
         return {"heading": "The Prayers"}
 
+
 class MPMissionCollect(OfficeSection):
     @cached_property
     def data(self):
@@ -1002,6 +1042,7 @@ class MPMissionCollect(OfficeSection):
             subheading = "III"
 
         return {"heading": "A Collect for Mission", "collect": collect, "subheading": subheading}
+
 
 class EPCollects(OfficeSection):
     @cached_property
@@ -1133,12 +1174,14 @@ class Office(object):
 
         self.thirty_day_psalter_day = ThirtyDayPsalterDay.objects.get(day=self.date.date.day)
 
-
-        primary_feast_name = self.date.primary_evening.name if self.name == "Evening Prayer" or self.name == "Compline" else self.date.primary.name
-        self.title = "{} for {}: {} | The Daily Office according to The Book of Common Prayer (2019)".format(self.name,
-                                                                                                             self.date.date.strftime(
-                                                                                                                 "%A %B %-d, %Y"),
-                                                                                                             primary_feast_name)
+        primary_feast_name = (
+            self.date.primary_evening.name
+            if self.name == "Evening Prayer" or self.name == "Compline"
+            else self.date.primary.name
+        )
+        self.title = "{} for {}: {} | The Daily Office according to The Book of Common Prayer (2019)".format(
+            self.name, self.date.date.strftime("%A %B %-d, %Y"), primary_feast_name
+        )
 
     @cached_property
     def links(self):
@@ -1168,26 +1211,23 @@ class Office(object):
                 "label": "Evening",
                 "link": reverse("evening_prayer", args=[today.year, today.month, today.day]),
             },
-            "compline": {
-                "label": "Compline",
-                "link": reverse("compline", args=[today.year, today.month, today.day]),
-            },
+            "compline": {"label": "Compline", "link": reverse("compline", args=[today.year, today.month, today.day])},
             "current": self.office,
-            "date": today.strftime("%B %-d, %Y")
+            "date": today.strftime("%B %-d, %Y"),
         }
 
 
-
 class EPSuffrages(OfficeSection):
-
     def get_names(self):
-        names = [feast.saint_name for feast in self.date.all_evening if hasattr(feast, "saint_name") and feast.saint_name]
+        names = [
+            feast.saint_name for feast in self.date.all_evening if hasattr(feast, "saint_name") and feast.saint_name
+        ]
         names = ["the Blessed Virgin Mary"] + names
         return ", ".join(names)
 
     def get_default_set(self):
 
-        if self.date.date.timetuple().tm_yday %2:
+        if self.date.date.timetuple().tm_yday % 2:
             return "b"
 
         return "a"
@@ -1195,7 +1235,8 @@ class EPSuffrages(OfficeSection):
     @cached_property
     def data(self):
         self.date
-        return {"default_set": self.get_default_set(), "names": self.get_names() }
+        return {"default_set": self.get_default_set(), "names": self.get_names()}
+
 
 class MPSuffrages(OfficeSection):
     @cached_property
@@ -1208,9 +1249,11 @@ class EPCollectsOfTheDay(OfficeSection):
     def data(self):
         return {
             "collects": (
-                (commemoration.name,
-                 commemoration.evening_prayer_collect.replace(" Amen.", ""),
-                 commemoration.rank.name)
+                (
+                    commemoration.name,
+                    commemoration.evening_prayer_collect.replace(" Amen.", ""),
+                    commemoration.rank.name,
+                )
                 for commemoration in self.date.all_evening
                 if commemoration.evening_prayer_collect
             )
@@ -1222,12 +1265,14 @@ class MPCollectsOfTheDay(OfficeSection):
     def data(self):
         return {
             "collects": (
-                (commemoration.name,
-                commemoration.morning_prayer_collect.replace(" Amen.", ""),
-                commemoration.rank.name)
+                (
+                    commemoration.name,
+                    commemoration.morning_prayer_collect.replace(" Amen.", ""),
+                    commemoration.rank.name,
+                )
                 for commemoration in self.date.all
                 if commemoration.morning_prayer_collect
-                )
+            )
         }
 
 
@@ -1280,7 +1325,6 @@ class Chrysostom(OfficeSection):
 
 
 class Dismissal(OfficeSection):
-
     def get_fixed_grace(self):
 
         return {
@@ -1318,7 +1362,6 @@ class Dismissal(OfficeSection):
         morning_easter = self.office.office not in ["evening_prayer"] and self.date.season.name == "Eastertide"
         evening_easter = self.office.office in ["evening_prayer"] and self.date.evening_season.name == "Eastertide"
 
-
         officiant = "Let us bless the Lord."
         people = "Thanks be to God."
 
@@ -1327,8 +1370,13 @@ class Dismissal(OfficeSection):
             officiant = "{} Alleluia, alleluia.".format(officiant)
             people = "{} Alleluia, alleluia.".format(people)
 
-
-        return {"heading": "Dismissal", "officiant": officiant, "people": people, "grace": self.get_grace(), "fixed_grace": self.get_fixed_grace()}
+        return {
+            "heading": "Dismissal",
+            "officiant": officiant,
+            "people": people,
+            "grace": self.get_grace(),
+            "fixed_grace": self.get_fixed_grace(),
+        }
 
 
 # ==== Offices
@@ -1351,12 +1399,14 @@ class Office(object):
 
         self.thirty_day_psalter_day = ThirtyDayPsalterDay.objects.get(day=self.date.date.day)
 
-
-        primary_feast_name = self.date.primary_evening.name if self.name == "Evening Prayer" or self.name == "Compline" else self.date.primary.name
-        self.title = "{} for {}: {} | The Daily Office according to The Book of Common Prayer (2019)".format(self.name,
-                                                                                                             self.date.date.strftime(
-                                                                                                                 "%A %B %-d, %Y"),
-                                                                                                             primary_feast_name)
+        primary_feast_name = (
+            self.date.primary_evening.name
+            if self.name == "Evening Prayer" or self.name == "Compline"
+            else self.date.primary.name
+        )
+        self.title = "{} for {}: {} | The Daily Office according to The Book of Common Prayer (2019)".format(
+            self.name, self.date.date.strftime("%A %B %-d, %Y"), primary_feast_name
+        )
 
     @cached_property
     def links(self):
@@ -1386,12 +1436,9 @@ class Office(object):
                 "label": "Evening",
                 "link": reverse("evening_prayer", args=[today.year, today.month, today.day]),
             },
-            "compline": {
-                "label": "Compline",
-                "link": reverse("compline", args=[today.year, today.month, today.day]),
-            },
+            "compline": {"label": "Compline", "link": reverse("compline", args=[today.year, today.month, today.day])},
             "current": self.office,
-            "date": today.strftime("%B %-d, %Y")
+            "date": today.strftime("%B %-d, %Y"),
         }
 
     @cached_property
@@ -1427,14 +1474,18 @@ class Office(object):
                         "hide": ["alternate-reading"],
                         "show": ["main-reading"],
                         "heading": "One Year",
-                        "text": mark_safe("Read through most of the bible each year. (Use if you pray <strong>both</strong> morning and evening prayer)"),
+                        "text": mark_safe(
+                            "Read through most of the bible each year. (Use if you pray <strong>both</strong> morning and evening prayer)"
+                        ),
                     },
                     {
                         "value": "2",
                         "hide": ["main-reading"],
                         "show": ["alternate-reading"],
                         "heading": "Two Year",
-                        "text": mark_safe("Read through most of the bible in two years. (Use if you pray <strong>either</strong> morning <strong>or</strong> evening prayer)"),
+                        "text": mark_safe(
+                            "Read through most of the bible in two years. (Use if you pray <strong>either</strong> morning <strong>or</strong> evening prayer)"
+                        ),
                     },
                 ],
             },
@@ -1597,13 +1648,20 @@ class EveningPrayer(Office):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.description = "Office: {}, Date: {}, Commemoration: {}, Psalms (30 Day Cycle): {}, Psalms (60 Day Cycle): {}, First Reading: {}, Second Reading: {}, Prayer Book: {}".format("Daily Evening Prayer", self.date.date.strftime(
-                                                                                                                 "%A %B %-d, %Y"),  self.date.primary_evening.name, self.thirty_day_psalter_day.ep_psalms.replace(',', ' '), self.office_readings.ep_psalms.replace(',', ' '), self.office_readings.ep_reading_1, self.office_readings.ep_reading_2, "The Book of Common Prayer (2019), Anglican Church in North America")
+        self.description = "Office: {}, Date: {}, Commemoration: {}, Psalms (30 Day Cycle): {}, Psalms (60 Day Cycle): {}, First Reading: {}, Second Reading: {}, Prayer Book: {}".format(
+            "Daily Evening Prayer",
+            self.date.date.strftime("%A %B %-d, %Y"),
+            self.date.primary_evening.name,
+            self.thirty_day_psalter_day.ep_psalms.replace(",", " "),
+            self.office_readings.ep_psalms.replace(",", " "),
+            self.office_readings.ep_reading_1,
+            self.office_readings.ep_reading_2,
+            "The Book of Common Prayer (2019), Anglican Church in North America",
+        )
 
         self.start_time = datetime.datetime.combine(self.date.date, datetime.time())
         self.start_time = self.start_time.replace(minute=0, hour=16, second=0)
         self.end_time = self.start_time.replace(minute=59, hour=23, second=59)
-
 
     @cached_property
     def modules(self):
@@ -1630,7 +1688,7 @@ class EveningPrayer(Office):
             (Intercessions(self.date, self.office_readings), "office/intercessions.html"),
             (GeneralThanksgiving(self.date, self.office_readings), "office/general_thanksgiving.html"),
             (Chrysostom(self.date, self.office_readings), "office/chrysostom.html"),
-            (Dismissal(self.date, self.office_readings, office=self), "office/dismissal.html"),\
+            (Dismissal(self.date, self.office_readings, office=self), "office/dismissal.html"),
         ]
 
 
@@ -1639,11 +1697,18 @@ class MorningPrayer(Office):
     name = "Morning Prayer"
     office = "morning_prayer"
 
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.description = "Office: {}, Date: {}, Commemoration: {}, Psalms (30 Day Cycle): {}, Psalms (60 Day Cycle): {}, First Reading: {}, Second Reading: {}, Prayer Book: {}".format("Daily Morning Prayer", self.date.date.strftime(
-                                                                                                                 "%A %B %-d, %Y"),  self.date.primary.name, self.thirty_day_psalter_day.mp_psalms.replace(',', ' '), self.office_readings.mp_psalms.replace(',', ' '), self.office_readings.mp_reading_1, self.office_readings.mp_reading_2, "The Book of Common Prayer (2019), Anglican Church in North America")
+        self.description = "Office: {}, Date: {}, Commemoration: {}, Psalms (30 Day Cycle): {}, Psalms (60 Day Cycle): {}, First Reading: {}, Second Reading: {}, Prayer Book: {}".format(
+            "Daily Morning Prayer",
+            self.date.date.strftime("%A %B %-d, %Y"),
+            self.date.primary.name,
+            self.thirty_day_psalter_day.mp_psalms.replace(",", " "),
+            self.office_readings.mp_psalms.replace(",", " "),
+            self.office_readings.mp_reading_1,
+            self.office_readings.mp_reading_2,
+            "The Book of Common Prayer (2019), Anglican Church in North America",
+        )
 
         self.start_time = datetime.datetime.combine(self.date.date, datetime.time())
         self.start_time = self.start_time.replace(minute=0, hour=5, second=0)
@@ -1684,8 +1749,12 @@ class Compline(Office):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.description = "Office: {}, Date: {}, Commemoration: {}, Prayer Book: {}".format("Compline (Bedtime Prayer)", self.date.date.strftime(
-                                                                                                                 "%A %B %-d, %Y"),  self.date.primary_evening.name, "The Book of Common Prayer (2019), Anglican Church in North America")
+        self.description = "Office: {}, Date: {}, Commemoration: {}, Prayer Book: {}".format(
+            "Compline (Bedtime Prayer)",
+            self.date.date.strftime("%A %B %-d, %Y"),
+            self.date.primary_evening.name,
+            "The Book of Common Prayer (2019), Anglican Church in North America",
+        )
 
         self.start_time = datetime.datetime.combine(self.date.date, datetime.time())
         self.start_time = self.start_time.replace(minute=0, hour=20, second=0)
@@ -1704,8 +1773,8 @@ class Compline(Office):
             (ComplinePrayers(self.date, self.office_readings), "office/compline_prayers.html"),
             (ComplineCanticle(self.date, self.office_readings), "office/compline_canticle.html"),
             (ComplineConclusion(self.date, self.office_readings), "office/compline_conclusion.html"),
-
         ]
+
 
 class MiddayPrayer(Office):
     name = "Midday Prayer"
@@ -1715,8 +1784,12 @@ class MiddayPrayer(Office):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.description = "Office: {}, Date: {}, Commemoration: {}, Prayer Book: {}".format("Midday Prayer", self.date.date.strftime(
-                                                                                                                 "%A %B %-d, %Y"),  self.date.primary_evening.name, "The Book of Common Prayer (2019), Anglican Church in North America")
+        self.description = "Office: {}, Date: {}, Commemoration: {}, Prayer Book: {}".format(
+            "Midday Prayer",
+            self.date.date.strftime("%A %B %-d, %Y"),
+            self.date.primary_evening.name,
+            "The Book of Common Prayer (2019), Anglican Church in North America",
+        )
 
         self.start_time = datetime.datetime.combine(self.date.date, datetime.time())
         self.start_time = self.start_time.replace(minute=0, hour=11, second=0)
@@ -1732,5 +1805,4 @@ class MiddayPrayer(Office):
             (MiddayScripture(self.date, self.office_readings), "office/minor_office_scripture.html"),
             (MiddayPrayers(self.date, self.office_readings), "office/midday_prayers.html"),
             (MiddayConclusion(self.date, self.office_readings), "office/midday_conclusion.html"),
-
         ]

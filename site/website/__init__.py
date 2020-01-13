@@ -1,11 +1,12 @@
 from bs4 import BeautifulSoup
 import requests
 
+
 def get_parish_list():
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
-     }
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3",
+    }
 
     f = open("congregations.txt", "w")
 
@@ -21,7 +22,7 @@ def get_parish_list():
             if name == "The page you were looking for doesn't exist.":
                 continue
 
-            email = ''
+            email = ""
             email_p = soup.find("p", class_="break")
             if not email_p:
                 continue
@@ -30,12 +31,11 @@ def get_parish_list():
             if email == "example@example.com":
                 continue
 
-            name = name.replace('"', '').replace(',', ' ').strip()
-            email = email.replace('"', '').replace(',', ' ').strip()
-            diocese = diocese.replace('"', '').replace(',', ' ').strip()
+            name = name.replace('"', "").replace(",", " ").strip()
+            email = email.replace('"', "").replace(",", " ").strip()
+            diocese = diocese.replace('"', "").replace(",", " ").strip()
 
             result = '"{}","{}","{}","{}"'.format(i, name, email, diocese)
             print(result)
             f.write("{}\n".format(result))
     f.close()
-

@@ -35,6 +35,7 @@ class OfficeDay(BaseModel):
         except (AttributeError, TypeError):
             return value
 
+
 class StandardOfficeDay(OfficeDay):
 
     month = models.IntegerField()

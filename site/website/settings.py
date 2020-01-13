@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = False if os.getenv("DEBUG", "False") == "False" else "True"
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = ["*", "127.0.0.1:8000", "127.0.0.1", "dailyoffice2019.com", "www.dailyoffice2019.com"]
 
 
@@ -44,10 +44,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.sitemaps",
     "django.contrib.staticfiles",
-
     "django_extensions",
     "website",
-    #"sermons",
+    # "sermons",
     "churchcal",
     "psalter",
     "bible",
@@ -206,12 +205,7 @@ WEBPACK_LOADER = {
     }
 }
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
-    }
-}
+CACHES = {"default": {"BACKEND": "django.core.cache.backends.memcached.MemcachedCache", "LOCATION": "127.0.0.1:11211"}}
 
 SITE_ID = 1
 
@@ -222,7 +216,31 @@ META_SITE_PROTOCOL = "https"
 META_SITE_DOMAIN = "www.dailyoffice2019.com"
 META_SITE_TYPE = "website"
 META_SITE_NAME = "The Daily Office"
-META_DEFAULT_KEYWORDS = ["daily office", "prayer", "divine office", "daily prayer", "evening prayer", "morning prayer", "compline", "midday prayer", "noonday prayer", "nones", "matins", "vespers", "evensong", "liturgy of the hours", "breviary", "anglican", "episcopal", "Anglican Church in North America", "ACNA", "common prayer", "book of common prayer", "bcp", "2019"]
+META_DEFAULT_KEYWORDS = [
+    "daily office",
+    "prayer",
+    "divine office",
+    "daily prayer",
+    "evening prayer",
+    "morning prayer",
+    "compline",
+    "midday prayer",
+    "noonday prayer",
+    "nones",
+    "matins",
+    "vespers",
+    "evensong",
+    "liturgy of the hours",
+    "breviary",
+    "anglican",
+    "episcopal",
+    "Anglican Church in North America",
+    "ACNA",
+    "common prayer",
+    "book of common prayer",
+    "bcp",
+    "2019",
+]
 META_USE_OG_PROPERTIES = True
 META_USE_TWITTER_PROPERTIES = True
 META_USE_GOOGLEPLUS_PROPERTIES = True
@@ -234,6 +252,4 @@ META_TWITTER_AUTHOR = "Daily Office, Book of Common Prayer 2019"
 META_TWITTER_SITE = "https://www.dailyoffice2019.com"
 META_OG_SECURE_URL_ITEMS = []
 
-ROBOTS_SITEMAP_URLS = [
-    'https://www.dailyoffice2019.com/sitemap.xml',
-]
+ROBOTS_SITEMAP_URLS = ["https://www.dailyoffice2019.com/sitemap.xml"]
