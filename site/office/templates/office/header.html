@@ -4,18 +4,19 @@
     <div class="menu-wrapper">
         <div class="menu">
             <a href="/" id="now-button" class="menu-button {%  if on == "now-button" %} on {% endif %}"><i class="fal fa-clock"></i> <span class="first-letter">N</span>ow</a>
-            <a id="calendar-button" href="/church_year/2019-2020" class="menu-button {%  if on == "calendar-button" %} on {% endif %}""><i class="fal fa-calendar-alt"></i> <span class="first-letter">C</span>alendar</a>
+            <a id="calendar-button" href="/church_year/2019-2020" class="menu-button {%  if on == "calendar-button" %} on {% endif %}"><i class="fal fa-calendar-alt"></i> <span class="first-letter">C</span>alendar</a>
             <a id="settings-button" href="/settings" class="menu-button {%  if on == "settings-button" %} on {% endif %}"><i class="fal fa-cog"></i> <span class="first-letter">S</span>ettings</a>
             <a id="about-button" href="/about" class="menu-button {%  if on == "about-button" %} on {% endif %}"><i class="fal fa-cross"></i> <span class="first-letter">A</span>bout</a>
         </div>
-        <div class="font-sizes">
-            <i data-fontsize="12" class="font-size-selector fal fa-font-case small"></i>
-            <i data-fontsize="16" class="font-size-selector fas fa-font-case medium"></i>
-            <i data-fontsize="20" class="font-size-selector fal fa-font-case large"></i>
+        <div class="appearance-selectors">
+                <i data-fontsize="12" class="font-size-selector fal fa-font-case small"></i>
+                <i data-fontsize="16" class="font-size-selector fas fa-font-case medium"></i>
+                <i data-fontsize="20" class="font-size-selector fal fa-font-case large"></i>
+                <i data-theme="theme-light" class="theme-selector fas fa-lightbulb medium"></i>
+                <i data-theme="theme-dark" class="theme-selector fas fa-lightbulb-slash medium"></i>
+            </div>
         </div>
-    </div>
     <div id="messages"></div>
-
 </div>
 
 

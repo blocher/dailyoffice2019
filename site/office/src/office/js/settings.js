@@ -32,6 +32,15 @@ const settings = () => {
     });
   };
 
+  const getSetting = (property) => {
+    property = "setting_" + property;
+    const settings = getSettingsFromStorage();
+    if (settings.hasOwnProperty(property)) {
+      return settings[property]
+    }
+    return false;
+  };
+
   const getSettingsFromStorage = () => {
     let settings = localStorage.getItem("settings");
     if (!settings || settings == "null") {
@@ -148,7 +157,7 @@ const settings = () => {
             element.classList.add('fal')
           })
       document.querySelectorAll('[data-fontsize]').forEach((element, element_index) => {
-        if (element.getAttribute('data-fontsize') == base_font_size) {
+        if (element.getAttribute('data-fontsize') == base_font_size.replace('px', '')) {
           element.classList.remove('fal');
           element.classList.add('fas');
         }
@@ -157,14 +166,71 @@ const settings = () => {
     }
     document.querySelectorAll(".font-size-selector").forEach((element, element_index) => {
         element.addEventListener("click", event => {
-          document.getElementById("html").style.fontSize = event.target.getAttribute('data-fontsize');
+          document.getElementById("html").style.fontSize = event.currentTarget.getAttribute('data-fontsize') + 'px';
           document.getElementsByClassName("font-size-selector").forEach( (element, element_index)  => {
             element.classList.remove('fas')
             element.classList.add('fal')
           })
-          event.target.classList.remove('fal')
-          event.target.classList.add('fas')
-          localStorage.setItem("base-font-size", event.target.getAttribute('data-fontsize'));
+          event.currentTarget.classList.remove('fal')
+          event.currentTarget.classList.add('fas')
+          document.getElementById("html").style.fontSize = event.currentTarget.getAttribute('data-fontsize');
+          localStorage.setItem("base-font-size", event.target.getAttribute('data-fontsize') + 'px');
+        });
+      });
+    }
+
+   const setThemeIcon = () => {
+
+     document.getElementsByClassName("theme-selector").forEach( (element, element_index)  => {
+       element.classList.remove('fas')
+       element.classList.add('fal')
+     });
+     const theme = document.getElementById('html').classList[0];
+     document.querySelectorAll('i[data-theme=' + theme + ']').forEach( (element) => {
+       element.classList.add('fas');
+       element.classList.remove('fal');
+     });
+
+   }
+
+   const handleThemes = () => {
+    let theme = getSetting("theme");
+    if (!theme || theme == "theme-auto") {
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          theme = "theme-dark";
+      } else {
+        theme = "theme-light";
+      }
+      storeSetting({"name": "setting_theme", "value": "theme-auto"});
+      initializeSettings();
+    }
+    if (theme) {
+      theme = theme.trim()
+      document.getElementById("html").className = ""
+      document.getElementById("html").classList.add(theme)
+      setThemeIcon();
+    }
+    document.querySelectorAll(".theme-selector").forEach((element, element_index) => {
+        element.addEventListener("click", event => {
+          theme = event.currentTarget.getAttribute('data-theme');
+          if (!theme || theme == "theme-auto") {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                theme = "theme-dark";
+            } else {
+              theme = "theme-light";
+            }
+          }
+          document.getElementById("html").className = theme;
+            document.getElementsByClassName("theme-selector").forEach( (element, element_index)  => {
+              element.classList.remove('fas')
+              element.classList.add('fal')
+            })
+          event.currentTarget.classList.remove('fal');
+          event.target.classList.add('fas');
+          setThemeIcon();
+          localStorage.setItem("theme", event.currentTarget.getAttribute('data-theme'));
+          storeSetting({"name": "setting_theme", "value": event.currentTarget.getAttribute('data-theme')});
+          initializeSettings();
         });
       });
     }
@@ -227,6 +293,7 @@ const settings = () => {
     addSettingsMenuToggle();
     bindBackButtons();
     handleFontSizes();
+    handleThemes();
     bindShowSettingsLink();
   };
 
