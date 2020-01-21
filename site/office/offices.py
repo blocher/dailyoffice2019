@@ -1180,7 +1180,7 @@ class Office(object):
             else self.date.primary.name
         )
         self.title = "{} for {}: {} | The Daily Office according to The Book of Common Prayer (2019)".format(
-            self.name, self.date.date.strftime("%A %B %-d, %Y"), primary_feast_name
+            self.name, "{dt:%A} {dt:%B} {dt.day}, {dt.year}".format(dt=self.date.date), primary_feast_name
         )
 
     @cached_property
@@ -1213,7 +1213,7 @@ class Office(object):
             },
             "compline": {"label": "Compline", "link": reverse("compline", args=[today.year, today.month, today.day])},
             "current": self.office,
-            "date": today.strftime("%B %-d, %Y"),
+            "date": f"{today:%B} {today.day}, {today.year}",
         }
 
 
@@ -1405,7 +1405,7 @@ class Office(object):
             else self.date.primary.name
         )
         self.title = "{} for {}: {} | The Daily Office according to The Book of Common Prayer (2019)".format(
-            self.name, self.date.date.strftime("%A %B %-d, %Y"), primary_feast_name
+            self.name, "{dt:%A} {dt:%B} {dt.day}, {dt.year}".format(dt=self.date.date), primary_feast_name
         )
 
     @cached_property
@@ -1438,7 +1438,7 @@ class Office(object):
             },
             "compline": {"label": "Compline", "link": reverse("compline", args=[today.year, today.month, today.day])},
             "current": self.office,
-            "date": today.strftime("%B %-d, %Y"),
+            "date": f"{today:%B} {today.day}, {today.year}",
         }
 
     @cached_property
@@ -1650,7 +1650,7 @@ class EveningPrayer(Office):
         super().__init__(*args, **kwargs)
         self.description = "Office: {}, Date: {}, Commemoration: {}, Psalms (30 Day Cycle): {}, Psalms (60 Day Cycle): {}, First Reading: {}, Second Reading: {}, Prayer Book: {}".format(
             "Daily Evening Prayer",
-            self.date.date.strftime("%A %B %-d, %Y"),
+            "{dt:%A} {dt:%B} {dt.day}, {dt.year}".format(dt=self.date.date),
             self.date.primary_evening.name,
             self.thirty_day_psalter_day.ep_psalms.replace(",", " "),
             self.office_readings.ep_psalms.replace(",", " "),
@@ -1701,7 +1701,7 @@ class MorningPrayer(Office):
         super().__init__(*args, **kwargs)
         self.description = "Office: {}, Date: {}, Commemoration: {}, Psalms (30 Day Cycle): {}, Psalms (60 Day Cycle): {}, First Reading: {}, Second Reading: {}, Prayer Book: {}".format(
             "Daily Morning Prayer",
-            self.date.date.strftime("%A %B %-d, %Y"),
+            "{dt:%A} {dt:%B} {dt.day}, {dt.year}".format(dt=self.date.date),
             self.date.primary.name,
             self.thirty_day_psalter_day.mp_psalms.replace(",", " "),
             self.office_readings.mp_psalms.replace(",", " "),
@@ -1751,7 +1751,7 @@ class Compline(Office):
         super().__init__(*args, **kwargs)
         self.description = "Office: {}, Date: {}, Commemoration: {}, Prayer Book: {}".format(
             "Compline (Bedtime Prayer)",
-            self.date.date.strftime("%A %B %-d, %Y"),
+            "{dt:%A} {dt:%B} {dt.day}, {dt.year}".format(dt=self.date.date),
             self.date.primary_evening.name,
             "The Book of Common Prayer (2019), Anglican Church in North America",
         )
@@ -1786,7 +1786,7 @@ class MiddayPrayer(Office):
         super().__init__(*args, **kwargs)
         self.description = "Office: {}, Date: {}, Commemoration: {}, Prayer Book: {}".format(
             "Midday Prayer",
-            self.date.date.strftime("%A %B %-d, %Y"),
+            "{dt:%A} {dt:%B} {dt.day}, {dt.year}".format(dt=self.date.date),
             self.date.primary_evening.name,
             "The Book of Common Prayer (2019), Anglican Church in North America",
         )
