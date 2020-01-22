@@ -61,7 +61,10 @@ div#settings {
   .advanced-settings {
     padding: 1rem;
     border: 1px solid black;
-    background-color: lightgray;
+    @include themify($themes) {
+        background-color: themed('footer-color-bg');
+      }
+
     margin: 2rem;
 
     h3 {
@@ -144,15 +147,25 @@ div#settings {
       padding: 2rem;
       margin: 1rem;
       text-align: center;
-      box-shadow: 0px 3px 10px -2px hsla(150, 5%, 65%, 0.5);
       position: relative;
       //height: 100%;
+
+      @include themify($themes) {
+        box-shadow: themed('settings-shadow');
+        background: themed('alt-bg');
+      }
+
     }
+
 
     input[type="radio"]:checked + label {
       background: hsla(0, 0%, 50%, 1);
       color: hsla(215, 0%, 100%, 1);
       box-shadow: 0px 0px 20px hsla(0, 0%, 50%, 0.75);
+
+      //color: rgb(255, 255, 255); /*darkmode*/
+      //box-shadow: rgba(128, 128, 128, 0.75) 0px 0px 20px; /*darkmode*/
+      //background: rgb(128, 128, 128); /*darkmode*/
 
       &::after {
 

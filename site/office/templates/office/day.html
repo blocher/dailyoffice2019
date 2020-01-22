@@ -1,4 +1,4 @@
-<div id="day-{{ day.date|date:"Y-m-j"}}" class="day {% if day.date.weekday == 6 %} sunday {% endif %}{% if day.required %} major {% else %} minor {% endif %}{% if day.primary.rank.name == "PRINCIPAL_FEAST" %} principal {% endif %}">
+<div id="day-{{ day.date|date:"Y-n-j"}}" class="day {% if day.date.weekday == 6 %} sunday {% endif %}{% if day.required %} major {% else %} minor {% endif %}{% if day.primary.rank.name == "PRINCIPAL_FEAST" %} principal {% endif %}">
     <div class="day-section date {% if evening %}{{ day.primary_evening.color|lower }}{% else %}{{ day.primary.color|lower }}{%  endif %}">
         <div class="dateline dateline-weekday">{{ day.date|date:"D" }}</div>
         <div class="dateline dateline-day">{{ day.date|date:"j" }}</div>

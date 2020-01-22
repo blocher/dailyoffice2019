@@ -52,7 +52,9 @@
   a.wiki-link {
     font-size: .65rem;
     margin: 0 .1rem;
-    color: black;
+    @include themify($themes) {
+        color: themed('font-color');
+    }
   }
 
   .calendar-settings {
@@ -167,7 +169,9 @@
     }
 
     &.major {
-      background-color: lightgrey;
+      @include themify($themes) {
+        background-color: themed('footer-color-bg');
+      }
 
 
       .primary {
@@ -234,47 +238,41 @@
 
 }
 
+.color {
+  width: 0.5em;
+  height: 0.5em;
+  border: black 1px solid;
+  display: inline-block;
+  margin-right: 0.3rem;
+}
 
-    .color {
-      width: 0.5em;
-      height: 0.5em;
-      border: black 1px solid;
-      display: inline-block;
-      margin-right: 0.3rem;
-    }
+.red {
+  background-color: #c21c13;
+  color: white;
+}
 
-    .red {
-      background-color: #c21c13;
-      color: white;
-    }
+.green {
+  background-color: #077339;
+  color: white;
+}
 
-    .green {
-      background-color: #077339;
-      color: white;
-    }
+.white {
+  background-color: white;
+  color: black;
+}
 
-    .white {
-      background-color: white;
-    }
+.purple {
+  background-color: #64147d;
+  color: white;
+}
 
-    .purple {
-      background-color: #64147d;
-      color: white;
-    }
+.black {
+  background-color: black;
+  color: white;
+}
 
-    .black {
-      background-color: black;
-      color: white;
-    }
+.rose {
+  background-color: pink;
+  color: black;
+}
 
-    .rose {
-      background-color: pink;
-    }
-
-    .blue {
-      background-color: #0544a8;
-    }
-
-    .lenten {
-      background-color: #b2beb5;
-    }
