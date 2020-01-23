@@ -122,8 +122,8 @@ def church_year(request, start_year, end_year=None):
     year_meta[
         "description"
     ] = "Start date: {}, End date: {}, Calendar for liturgical year {}-{} according to the use of the Anglican Church in North America including links to Morning Prayer, Midday Prayer, Evening Prayer, and Compline".format(
-        church_year.start_date.strftime("%A %B %-d, %Y"),
-        church_year.end_date.strftime("%A %B %-d, %Y"),
+        "{dt:%A} {dt:%B} {dt.day}, {dt.year}".format(dt=church_year.start_date),
+        "{dt:%A} {dt:%B} {dt.day}, {dt.year}".format(dt=church_year.end_date),
         start_year,
         start_year + 1,
     )
