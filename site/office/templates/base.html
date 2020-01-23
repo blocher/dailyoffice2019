@@ -1,7 +1,7 @@
 {% load static %}
 {% load render_bundle from webpack_loader %}
-
-<html id="html">
+<!DOCTYPE html>
+<html id="html" class="theme-dark">
     <head>
         <!-- Google Tag Manager -->
         <script>(function (w, d, s, l, i) {
@@ -43,10 +43,12 @@
             </div>
             {% block content %}
             {% endblock %}
+            {%  include "feedback.html" %}
          </div>
 
+        <link rel="stylesheet" href="https://use.typekit.net/yxz6vwf.css">
+        <link href="https://fonts.googleapis.com/css?family=Lusitana:400,700&display=swap" rel="stylesheet">
     </body>
-    <link rel="stylesheet" href="https://use.typekit.net/yxz6vwf.css">
-    <link href="https://fonts.googleapis.com/css?family=Lusitana:400,700&display=swap" rel="stylesheet">
+
 
 </html>

@@ -1,459 +1,502 @@
-        html {
-            font-size: 16px;
-            text-size-adjust: none;
-            -webkit-text-size-adjust: none;
-            font-display: swap;
-        }
-
-        div.main {
-            max-width: 700px;
-            display: block;
-            text-align: left;
-            padding: 1.4rem;
-            margin: 0 auto 10rem;
-            clear: both;
-        }
-
-        h1, h2, h3, h4 {
-            font-family: adobe-caslon-pro, serif;
-            font-display: swap;
-            font-weight: 600;
-            font-style: normal;
-            letter-spacing: 0.1rem;
-            text-align: center;
-            margin: 0.2rem;
-            padding-top: 2rem;
-        }
-
-        h1, h2, h3 {
-            text-transform: uppercase;
-        }
-
-        h1 {
-            font-size: 2rem;
-            line-height: 2.1rem;
-
-        }
-
-        h2 {
-            font-size: 1.5rem;
-
-          &.intro-heading {
-            font-size: .5rem;
-            margin: 1rem 0 0 0;
-            padding: 0;
-            line-height: .6rem;
-            letter-spacing: .1rem;
-          }
-
-        }
-
-        h3 {
-            padding-top: 30px;
-            margin-bottom: 5px;
-            font-size: 1.2rem;
-            line-height: 1.6rem;
-            &.intro-heading {
-              font-size: .4rem;
-              margin: 0;
-              padding: 0;
-              line-height: .5rem;
-              letter-spacing: .1rem;
-            }
-        }
-
-        h4 {
-            margin-top: 0;
-            padding-top: 0;
-            font-family: adobe-caslon-pro, serif;
-            font-display: swap;
-            font-weight: 600;
-            font-style: italic;
-            font-size: 1rem;
-            line-height: 1.1rem;
-
-        }
-
-        h5 {
-            font-weight: 300;
-            text-align: right;
-            font-size: 1rem;
-            margin: 10px 0;
-        }
-
-        p {
-            font-family: 'Lusitana', serif;
-            font-display: swap;
-            font-weight: 300;
-            font-style: normal;
-            font-size: 1.1rem;
-            margin: 10px 0;
-
-            line-height: 1.6rem;
-
-            &.intro-heading-1 {
-              font-family: adobe-caslon-pro, serif;
-              font-display: swap;
-              font-weight: 600;
-              font-style: normal;
-              letter-spacing: 0.1rem;
-              text-align: center;
-              margin: 0.2rem;
-              padding-top: 2rem;
-
-              font-size: 1.5rem;
-
-              text-transform: uppercase;
-
-              font-size: .5rem;
-              margin: 1rem 0 0 0;
-              padding: 0;
-              line-height: .6rem;
-              letter-spacing: .1rem;
-            }
-
-            &.intro-heading-2 {
-
-              font-family: adobe-caslon-pro, serif;
-              font-display: swap;
-              font-weight: 600;
-              font-style: normal;
-              letter-spacing: 0.1rem;
-              text-align: center;
-              margin: 0.2rem;
-              padding-top: 2rem;
-
-              text-transform: uppercase;
-
-              padding-top: 30px;
-              margin-bottom: 5px;
-              font-size: 1.2rem;
-
-              font-size: .4rem;
-              margin: 0;
-              padding: 0;
-              line-height: .5rem;
-              letter-spacing: .1rem;
-
-            }
-        }
-
-        em {
-            font-family: 'Lusitana', serif;
-            font-display: swap;
-            font-weight: 300;
-            font-style: italic;
-            font-size: .8rem;
-        }
-
-        strong {
-            font-family: 'Lusitana', serif;
-            font-display: swap;
-            font-weight: 700;
-        }
-
-        input[type='text']
-        {
-          font-size: 16px;
-        }
-
-        div.antiphon {
-          margin: 1rem auto;
-        }
-
-        div.psalms {
-
-            font-family: 'Lusitana', serif;
-            font-display: swap;
-            font-weight: 300;
-            font-style: normal;
-
-        }
-
-        div.gloria-patri {
-          margin-top: 1rem;
-        }
-
-        div.bible-audio {
-          margin: 1rem auto 0.5rem;
-        }
-
-        p.line {
-            margin-top: 1.5em;
-        }
-
-        span.chapternum {
-            font-size: 1.5em;
-        }
-
-        sup.versenum {
-            font-size: .6rem;
-            margin-bottom: .5rem;
-            vertical-align: top;
-            position: relative;
-            top: -0.5em;
-        }
-
-        .text {
-            padding-left: 10px;
-        }
-
-        .reading h3 {
-            font-family: 'Lusitana', serif;
-            font-weight: 900;
-            font-style: normal;
-            font-size: 0.9em;
-            text-align: center;
-            padding: 0;
-            margin: 1rem 0;
-        }
-
-        .reading h4 {
-            font-family: 'Lusitana', serif;
-            font-weight: 900;
-            font-style: normal;
-            font-size: 0.7em;
-            text-align: center;
-        }
-
-        table.dialogue {
-          margin-top: 1rem;
-          td {
-            padding: .1rem 1rem .1rem 0;
-            font-family: 'Lusitana', serif;
-            font-weight: 300;
-            font-style: normal;
-            font-size: 1.1rem;
-            margin: 1.5rem 0;
-            line-height: 1.6rem;
-          }
-        }
-
-        div.metadata {
-            text-align: center;
-        }
-
-        div.commemorations {
-            border: solid 1px grey;
-            padding: 1.3rem;
-        }
-
-        span.indent {
-            padding-left: 1rem;
-        }
-
-        p.indent {
-            margin: 0 0 0 1.1rem;
-
-
-            &.entreaty {
-              margin-bottom: 1rem;
-            }
-        }
-
-        p.hanging-indent {
-            text-indent: -1rem;
-            margin: 0 0 0 1rem;
-
-        }
-
-        span.asterisk {
-            margin-left: 10px;
-        }
-
-        .footer {
-            border-top: 1px solid black;
-            position: fixed;
-            left: 0;
-            bottom: 0;
-            text-align: center;
-            width: 100%;
-
-            background-color: lightgrey;
-            font-size: .8em;
-            font-weight: 300;
-            padding: .2rem 0;
-
-            strong {
-              font-size: 1rem;
-            }
-
-            i {
-              display: block;
-              padding-bottom: .2rem;
-            }
-
-
-            p, a, i {
-              font-size: 0.7rem;
-            }
-
-           strong {
-             font-size: .9rem;
-           }
-        }
-
-        .footer-flex {
-            display: -webkit-box;  /* OLD - iOS 6-, Safari 3.1-6, BB7 */
-            display: -ms-flexbox;  /* TWEENER - IE 10 */
-            display: -webkit-flex; /* NEW - Safari 6.1+. iOS 7.1+, BB10 */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            -webkit-flex-wrap: nowrap;
-            flex-wrap: nowrap;
-            align-content: space-around;
-            max-width: 700px;
-            margin: auto;
-            padding: .6rem;
-
-            p {
-              margin: 0 0 0.2rem 0;
-            }
-
-            a.day-link {
-              padding: .3rem;
-              border: 1px black solid;
-               border-radius: .5rem;
-            }
-
-        }
-
-        .footer-flex div {
-            -webkit-flex-grow: 2;
-            flex-grow: 2;
-            font-weight: 900;
-        }
-
-
-        .footer-flex a {
-            width: 100%;
-            height: 100%;
-            padding: 0;
-            color: black;
-            text-decoration: none;
-            font-weight: 300;
-        }
-
-        .off {
-            display: none;
-        }
-
-        .invisbile {
-            visibility: hidden;
-        }
-
-
-
-        .feedback {
-          margin-top: 3rem;
-          padding: 1rem;
-          border: 1px solid;
-        }
-
-        #menu {
-          padding: .1rem;
-          margin: .1rem;
-
-        }
-
-        .menu-wrapper {
-          text-align: center;
-          padding: 1px;
-        }
-
-        .menu {
-          display: inline-block;
-          padding: 3px;
-        }
-
-
-        .menu-button {
-          color: black;
-          text-decoration: none;
-          font-size: 0.6rem;
-          margin: 0.15rem;
-          initial-letter: 2;
-          letter-spacing: .03rem;
-          border: 1px solid grey;
-          border-radius: 0.5rem;
-          padding: 0.3rem;
-          text-transform: uppercase;
-          float: left;
-          //@media only screen and (max-width: 600px) {
-          //  width: 6rem;
-          //  text-align: center;
-          //}
-
-          &.on {
-            background-color: lightgrey;
-          }
-
-          &.right {
-            float: right;
-          }
-
-          .first-letter {
-            font-size: .8rem;
-          }
-
-          &.inline {
-            text-align: center;
-          }
-
-        }
-
-        #messages {
-          margin: 0.5rem auto 0 auto;
-          font-size: 0.6rem;
-          text-align:center;
-
-          a {
-            color: black;
-          }
-
-        }
-
-        .font-sizes {
-          a {
-            color:black
-          }
-          i {
-            padding: 5px 12px;
-          }
-          .small {
-            font-size: 12px;
-          }
-
-          .medium {
-            font-size: 16px;
-          }
-
-          .large {
-            font-size: 20px;
-          }
-
-          .selected {
-            font-weight: 900;
-          }
-
-        }
+html {
+      font-size: 16px;
+      text-size-adjust: none;
+      -webkit-text-size-adjust: none;
+      font-display: swap;
+      @include themify($themes) {
+        color: themed('font-color');
+        background-color: themed('color-bg');
+      }
+  }
+
+  body {
+    @include themify($themes) {
+      color: themed('font-color');
+      background-color: themed('color-bg');
+    }
+  }
+
+  a {
+    @include themify($themes) {
+        color: themed('link-color');
+      }
+  }
+
+  div.main {
+      max-width: 700px;
+      display: block;
+      text-align: left;
+      padding: 1.4rem;
+      margin: 0 auto 10rem;
+      clear: both;
+  }
+
+  h1, h2, h3, h4 {
+      font-family: adobe-caslon-pro, serif;
+      font-display: swap;
+      font-weight: 600;
+      font-style: normal;
+      letter-spacing: 0.1rem;
+      text-align: center;
+      margin: 0.2rem;
+      padding-top: 2rem;
+  }
+
+  h1, h2, h3 {
+      text-transform: uppercase;
+  }
+
+  h1 {
+      font-size: 2rem;
+      line-height: 2.1rem;
+
+  }
+
+  h2 {
+      font-size: 1.5rem;
+
+    &.intro-heading {
+      font-size: .5rem;
+      margin: 1rem 0 0 0;
+      padding: 0;
+      line-height: .6rem;
+      letter-spacing: .1rem;
+    }
+
+  }
+
+  h3 {
+      padding-top: 30px;
+      margin-bottom: 5px;
+      font-size: 1.2rem;
+      line-height: 1.6rem;
+      &.intro-heading {
+        font-size: .4rem;
+        margin: 0;
+        padding: 0;
+        line-height: .5rem;
+        letter-spacing: .1rem;
+      }
+  }
+
+  h4 {
+      margin-top: 0;
+      padding-top: 0;
+      font-family: adobe-caslon-pro, serif;
+      font-display: swap;
+      font-weight: 600;
+      font-style: italic;
+      font-size: 1rem;
+      line-height: 1.1rem;
+
+  }
+
+  h5 {
+      font-weight: 300;
+      text-align: right;
+      font-size: 1rem;
+      margin: 10px 0;
+  }
+
+  p {
+      font-family: 'Lusitana', serif;
+      font-display: swap;
+      font-weight: 300;
+      font-style: normal;
+      font-size: 1.1rem;
+      margin: 10px 0;
+
+      line-height: 1.6rem;
+
+      &.intro-heading-1 {
+        font-family: adobe-caslon-pro, serif;
+        font-display: swap;
+        font-weight: 600;
+        font-style: normal;
+        letter-spacing: 0.1rem;
+        text-align: center;
+        margin: 0.2rem;
+        padding-top: 2rem;
+
+        font-size: 1.5rem;
+
+        text-transform: uppercase;
+
+        font-size: .5rem;
+        margin: 1rem 0 0 0;
+        padding: 0;
+        line-height: .6rem;
+        letter-spacing: .1rem;
+      }
+
+      &.intro-heading-2 {
+
+        font-family: adobe-caslon-pro, serif;
+        font-display: swap;
+        font-weight: 600;
+        font-style: normal;
+        letter-spacing: 0.1rem;
+        text-align: center;
+        margin: 0.2rem;
+        padding-top: 2rem;
+
+        text-transform: uppercase;
+
+        padding-top: 30px;
+        margin-bottom: 5px;
+        font-size: 1.2rem;
+
+        font-size: .4rem;
+        margin: 0;
+        padding: 0;
+        line-height: .5rem;
+        letter-spacing: .1rem;
+
+      }
+  }
+
+  em {
+      font-family: 'Lusitana', serif;
+      font-display: swap;
+      font-weight: 300;
+      font-style: italic;
+      font-size: .8rem;
+  }
+
+  strong {
+      font-family: 'Lusitana', serif;
+      font-display: swap;
+      font-weight: 700;
+  }
+
+  input[type='text']
+  {
+    font-size: 16px;
+  }
+
+  div.antiphon {
+    margin: 1rem auto;
+  }
+
+  div.psalms {
+
+      font-family: 'Lusitana', serif;
+      font-display: swap;
+      font-weight: 300;
+      font-style: normal;
+
+  }
+
+  div.gloria-patri {
+    margin-top: 1rem;
+  }
+
+  div.bible-audio {
+    margin: 1rem auto 0.5rem;
+  }
+
+  p.line {
+      margin-top: 1.5em;
+  }
+
+  span.chapternum {
+      font-size: 1.5em;
+  }
+
+  sup.versenum {
+      font-size: .6rem;
+      margin-bottom: .5rem;
+      vertical-align: top;
+      position: relative;
+      top: -0.5em;
+  }
+
+  .text {
+      padding-left: 10px;
+  }
+
+  .reading h3 {
+      font-family: 'Lusitana', serif;
+      font-weight: 900;
+      font-style: normal;
+      font-size: 0.9em;
+      text-align: center;
+      padding: 0;
+      margin: 1rem 0;
+  }
+
+  .reading h4 {
+      font-family: 'Lusitana', serif;
+      font-weight: 900;
+      font-style: normal;
+      font-size: 0.7em;
+      text-align: center;
+  }
+
+  table.dialogue {
+    margin-top: 1rem;
+    td {
+      padding: .1rem 1rem .1rem 0;
+      font-family: 'Lusitana', serif;
+      font-weight: 300;
+      font-style: normal;
+      font-size: 1.1rem;
+      margin: 1.5rem 0;
+      line-height: 1.6rem;
+    }
+  }
+
+  div.metadata {
+      text-align: center;
+  }
+
+  div.commemorations {
+      border: solid 1px grey;
+      padding: 1.3rem;
+  }
+
+  span.indent {
+      padding-left: 1rem;
+  }
+
+  p.indent {
+      margin: 0 0 0 1.1rem;
+
+
+      &.entreaty {
+        margin-bottom: 1rem;
+      }
+  }
+
+  p.hanging-indent {
+      text-indent: -1rem;
+      margin: 0 0 0 1rem;
+
+  }
+
+  span.asterisk {
+      margin-left: 10px;
+  }
+
+  .footer {
+      border-top: 1px solid black;
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      text-align: center;
+      width: 100%;
+
+      @include themify($themes) {
+        background-color: themed('footer-color-bg');
+      }
+      font-size: .8em;
+      font-weight: 300;
+      padding: .2rem 0;
+
+      strong {
+        font-size: 1rem;
+      }
+
+      i {
+        display: block;
+        padding-bottom: .2rem;
+      }
+
+
+      p, a, i {
+        font-size: 0.7rem;
+      }
+
+     strong {
+       font-size: .9rem;
+     }
+  }
+
+  .footer-flex {
+      display: -webkit-box;  /* OLD - iOS 6-, Safari 3.1-6, BB7 */
+      display: -ms-flexbox;  /* TWEENER - IE 10 */
+      display: -webkit-flex; /* NEW - Safari 6.1+. iOS 7.1+, BB10 */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      -webkit-flex-wrap: nowrap;
+      flex-wrap: nowrap;
+      align-content: space-around;
+      max-width: 700px;
+      margin: auto;
+      padding: .6rem;
+
+      p {
+        margin: 0 0 0.2rem 0;
+      }
+
+      a.day-link {
+        padding: .3rem;
+        border: 1px black solid;
+        border-radius: .5rem;
+      }
+
+  }
+
+  .footer-flex div {
+      -webkit-flex-grow: 2;
+      flex-grow: 2;
+      font-weight: 900;
+  }
+
+
+  .footer-flex a {
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      @include themify($themes) {
+        color: themed('font-color');
+      }
+      text-decoration: none;
+      font-weight: 300;
+  }
+
+  .off {
+      display: none;
+  }
+
+  .invisbile {
+      visibility: hidden;
+  }
+
+
+
+  .feedback {
+    margin-top: 3rem;
+    padding: 1rem;
+    border: 1px solid;
+  }
+
+  #menu {
+    padding: .1rem;
+    margin: .1rem;
+
+  }
+
+  .menu-wrapper {
+    text-align: center;
+    padding: 1px;
+  }
+
+  .menu {
+    display: inline-block;
+    padding: 3px;
+  }
+
+  form {
+      min-height: 2rem;
+    }
+
+
+  .menu-button {
+    @include themify($themes) {
+        color: themed('font-color');
+    }
+    text-decoration: none;
+    font-size: 0.6rem;
+    margin: 0.15rem;
+    initial-letter: 2;
+    letter-spacing: .03rem;
+    border: 1px solid grey;
+    border-radius: 0.5rem;
+    padding: 0.3rem;
+    text-transform: uppercase;
+    float: left;
+    //@media only screen and (max-width: 600px) {
+    //  width: 6rem;
+    //  text-align: center;
+    //}
+
+    &.on {
+      @include themify($themes) {
+        background-color: themed('footer-color-bg');
+      }
+    }
+
+    &.right {
+      float: right;
+    }
+
+    .first-letter {
+      font-size: .8rem;
+    }
+
+    &.inline {
+      text-align: center;
+    }
+
+    &.input {
+      display:block;
+      min-width: 200px;
+    }
+
+  }
+
+  #messages {
+    margin: 0.5rem auto 0 auto;
+    font-size: 0.6rem;
+    text-align:center;
+
+    a {
+      @include themify($themes) {
+        color: themed('font-color');
+      }
+    }
+
+
+  }
+
+  .appearance-selectors {
+
+    i {
+      padding: 5px 12px;
+    }
+
+    .small {
+      font-size: 12px;
+    }
+
+    .medium {
+      font-size: 16px;
+    }
+
+    .large {
+      font-size: 20px;
+    }
+
+    .selected {
+      font-weight: 900;
+    }
+
+    .flipped {
+      transform: scaleX(-1);
+      -moz-transform: scaleX(-1);
+      -webkit-transform: scaleX(-1);
+      -ms-transform: scaleX(-1);
+    }
+
+  }
 
 .about {
   p {
-    font-size: 1.1rem;
-    line-height: 1.6rem;
+  font-size: 1.1rem;
+  line-height: 1.6rem;
 
-    em {
-      font-size: 1.1rem;
-    }
+  em {
+  font-size: 1.1rem;
   }
-}
+  }
+  }
 
-.four_oh_four {
+  .four_oh_four {
   max-width: 700px;
   p {
-    text-align: center;
-    margin: 0 4rem;
+  text-align: center;
+  margin: 0 4rem;
   }
 }

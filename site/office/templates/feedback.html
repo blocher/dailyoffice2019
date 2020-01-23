@@ -2,7 +2,7 @@
         <small>
             <p><strong>Praying in a group? Want to share your settings?</strong></p>
             <p><em>Share this link to open this page using your currently configured settings. This can also be used to share your settings between different computers, tablets, or phones.</em></p>
-            <p></p><input readonly type="text" id="settings-link"></input></p>
+            <p><input readonly type="text" id="settings-link"></p>
             <p><em><a id="settings-link-copy" href="#"><i class="far fa-copy"></i> Copy link</a> <span id="copied-message" class="off">Copied!</span></em></p>
         </small>
 
@@ -21,7 +21,7 @@
             <p><em>Receive a very occasional email when a new feature is launched, including the forthcoming <strong>iOS and Android apps</strong>. We send an email only once every few months and will never share your information with anyone.</em></p>
         </small>
         <form name="signup" action="/signup-thank-you" netlify>
-            <input type="email" name="email" placeholder="email address">
-            <input type="submit" value="Subscribe">
+            <input type="email" class="menu-button input" name="email" placeholder="email address">
+            <input type="submit" class="menu-button on submit" value="Subscribe">
         </form>
     </div>

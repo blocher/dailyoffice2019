@@ -145,6 +145,46 @@ def settings(request):
         ],
         "minor_settings": [
             {
+                "title": "Visual Theme",
+                "name": "theme",
+                "help_text": "Use light mode or dark mode, or default to your computer's setting for light or dark mode",
+                "options": [
+                    {
+                        "value": "theme-auto",
+                        "hide": [],
+                        "show": [],
+                        "heading": "Use Computer Setting",
+                        "text": "The long form of the intro and absolution are used every day",
+                        "tags": {
+                            "class": "theme-selector",
+                            "data-theme": "theme-auto",
+                        }
+                    },
+                    {
+                        "value": "theme-light",
+                        "hide": [],
+                        "show": [],
+                        "heading": "Light Mode",
+                        "text": "The long form of the intro and absolution are used only on fast days",
+                        "tags": {
+                            "class": "theme-selector",
+                            "data-theme": "theme-light",
+                        }
+                    },
+                    {
+                        "value": "theme-dark",
+                        "hide": [],
+                        "show": [],
+                        "heading": "Dark Mode",
+                        "text": "The short form of the intro and absolution are used every day",
+                        "tags": {
+                            "class": "theme-selector",
+                            "data-theme": "theme-dark",
+                        }
+                    },
+                ],
+            },
+            {
                 "title": "Confession Intro Length",
                 "name": "confession",
                 "help_text": "Use either the short or long exhortation before the confession.",

@@ -107,7 +107,7 @@ WSGI_APPLICATION = "website.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.getenv("POSTGRES_NAME", "dailyoffice"),
+        "NAME": os.getenv("POSTGRES_NAME", "dailyoffice2"),
         "USER": os.getenv("POSTGRES_USER", "dailyoffice"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD", "dailyoffice"),
         "HOST": os.getenv("POSTGRES_HOST", "localhost"),
