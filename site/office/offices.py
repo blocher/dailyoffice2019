@@ -1387,7 +1387,7 @@ class Office(object):
     name = "Daily Office"
     modules = []
 
-    def get_date_string(self):
+    def get_formatted_date_string(self):
         "{dt:%A} {dt:%B} {dt.day}, {dt.year}".format(dt=self.date.date)
 
     def __init__(self, date):
@@ -1408,7 +1408,7 @@ class Office(object):
             else self.date.primary.name
         )
         self.title = "{} for {}: {} | The Daily Office according to The Book of Common Prayer (2019)".format(
-            self.name, self.get_date_string(), primary_feast_name
+            self.name, self.get_formatted_date_string(), primary_feast_name
         )
 
     @cached_property
@@ -1653,7 +1653,7 @@ class EveningPrayer(Office):
         super().__init__(*args, **kwargs)
         self.description = "Office: {}, Date: {}, Commemoration: {}, Psalms (30 Day Cycle): {}, Psalms (60 Day Cycle): {}, First Reading: {}, Second Reading: {}, Prayer Book: {}".format(
             "Daily Evening Prayer",
-            self.get_date_string(),
+            self.get_formatted_date_string(),
             self.date.primary_evening.name,
             self.thirty_day_psalter_day.ep_psalms.replace(",", " "),
             self.office_readings.ep_psalms.replace(",", " "),
@@ -1704,7 +1704,7 @@ class MorningPrayer(Office):
         super().__init__(*args, **kwargs)
         self.description = "Office: {}, Date: {}, Commemoration: {}, Psalms (30 Day Cycle): {}, Psalms (60 Day Cycle): {}, First Reading: {}, Second Reading: {}, Prayer Book: {}".format(
             "Daily Morning Prayer",
-            self.get_date_string(),
+            self.get_formatted_date_string(),
             self.date.primary.name,
             self.thirty_day_psalter_day.mp_psalms.replace(",", " "),
             self.office_readings.mp_psalms.replace(",", " "),
@@ -1754,7 +1754,7 @@ class Compline(Office):
         super().__init__(*args, **kwargs)
         self.description = "Office: {}, Date: {}, Commemoration: {}, Prayer Book: {}".format(
             "Compline (Bedtime Prayer)",
-            self.get_date_string(),
+            self.get_formatted_date_string(),
             self.date.primary_evening.name,
             "The Book of Common Prayer (2019), Anglican Church in North America",
         )
@@ -1789,7 +1789,7 @@ class MiddayPrayer(Office):
         super().__init__(*args, **kwargs)
         self.description = "Office: {}, Date: {}, Commemoration: {}, Prayer Book: {}".format(
             "Midday Prayer",
-            self.get_date_string(),
+            self.get_formatted_date_string(),
             self.date.primary_evening.name,
             "The Book of Common Prayer (2019), Anglican Church in North America",
         )
