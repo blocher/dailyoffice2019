@@ -1,17 +1,13 @@
-from collections import OrderedDict
 from datetime import datetime, timedelta, date
 
 from dateutil.parser import parse
-
+from django.core.cache import cache
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from indexed import IndexedOrderedDict
 
-from office.offices import MorningPrayer, MiddayPrayer, EveningPrayer, Compline
-from .utils import advent, week_days, easter
 from churchcal.models import Commemoration, FerialCommemoration, Proper, Season, Calendar, CommemorationRank
-
-from django.core.cache import cache
+from .utils import advent, week_days, easter
 
 
 class CalendarDate(object):

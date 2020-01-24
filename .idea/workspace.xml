@@ -2,26 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4d3b96da-e02b-4ac5-80bf-e1b5c662734c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/site/office/src/office/css/themes.scss" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/site/office/compline.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/context_processors.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/context_processors.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/src/office/css/calendar.scss" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/css/calendar.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/src/office/css/index.scss" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/css/index.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/src/office/css/office.scss" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/css/office.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/src/office/css/settings.scss" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/css/settings.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/src/office/js/settings.js" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/src/office/js/settings.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/base.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/feedback.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/feedback.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/about.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/about.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/day.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/day.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/redirect.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/evening_prayer/redirect.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/header.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/office.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/office.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/settings.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/settings.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/settings_section.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/settings_section.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/office/templates/office/signup_thank_you.html" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/templates/office/signup_thank_you.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/webpack-stats.json" beforeDir="false" afterPath="$PROJECT_DIR$/site/webpack-stats.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/site/website/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/website/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/churchcal/calculations.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/churchcal/calculations.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/offices.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/offices.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/site/office/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/site/office/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -253,6 +238,7 @@
       <workItem from="1579062043023" duration="1301000" />
       <workItem from="1579141514210" duration="3001000" />
       <workItem from="1579470707616" duration="15165000" />
+      <workItem from="1579904301614" duration="2169000" />
     </task>
     <servers />
   </component>
@@ -273,11 +259,6 @@
     </option>
   </component>
   <component name="WindowStateProjectService">
-    <state x="304" y="161" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1571246645295">
-      <screen x="0" y="23" width="1680" height="952" />
-    </state>
-    <state x="304" y="161" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1571246645295" />
-    <state x="304" y="161" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.23.1680.952@0.23.1680.952" timestamp="1571105011007" />
     <state x="554" y="310" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1578794733498">
       <screen x="0" y="23" width="1680" height="954" />
     </state>
@@ -328,6 +309,10 @@
       <screen x="847" y="-1177" width="1920" height="1177" />
     </state>
     <state x="947" y="-1077" width="1720" height="977" key="com.intellij.history.integration.ui.views.DirectoryHistoryDialog/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1571763174162" />
+    <state x="901" y="-1177" width="1553" height="1157" key="dock-window-1" timestamp="1579904748044">
+      <screen x="860" y="-1177" width="1920" height="1177" />
+    </state>
+    <state x="901" y="-1177" width="1553" height="1157" key="dock-window-1/860.-1177.1920.1177/-1060.-1177.1920.1177/0.23.1680.947@-1060.-1177.1920.1177" timestamp="1579904748044" />
     <state x="506" y="287" width="837" height="540" key="find.popup" timestamp="1579616666979">
       <screen x="0" y="23" width="1680" height="947" />
     </state>
@@ -335,7 +320,6 @@
     <state x="506" y="287" width="683" height="476" key="find.popup/0.23.1680.948/874.-1177.1920.1177/-1046.-1177.1920.1177@0.23.1680.948" timestamp="1575479946262" />
     <state x="506" y="287" width="683" height="476" key="find.popup/0.23.1680.948@0.23.1680.948" timestamp="1575758111156" />
     <state x="506" y="288" width="837" height="543" key="find.popup/0.23.1680.949@0.23.1680.949" timestamp="1578866738206" />
-    <state x="-495" y="-849" width="763" height="522" key="find.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@-1073.-1177.1920.1177" timestamp="1571164483046" />
     <state x="1425" y="-849" width="781" height="522" key="find.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1571763115189" />
     <state x="506" y="288" width="683" height="476" key="find.popup/0.23.1680.952@0.23.1680.952" timestamp="1572732918362" />
     <state x="506" y="289" width="837" height="545" key="find.popup/0.23.1680.954@0.23.1680.954" timestamp="1579062532974" />
@@ -346,20 +330,20 @@
     </state>
     <state x="1340" y="-1003" key="scopes/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1572038171664" />
     <state x="431" y="164" key="scopes/0.23.1680.952@0.23.1680.952" timestamp="1571970198902" />
-    <state x="505" y="231" width="670" height="674" key="search.everywhere.popup" timestamp="1579624560764">
-      <screen x="0" y="23" width="1680" height="947" />
+    <state x="-483" y="-918" width="766" height="838" key="search.everywhere.popup" timestamp="1579906374170">
+      <screen x="-1060" y="-1177" width="1920" height="1177" />
     </state>
     <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.947@0.23.1680.947" timestamp="1579624560764" />
     <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.948" timestamp="1575901035403" />
     <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948/874.-1177.1920.1177/-1046.-1177.1920.1177@0.23.1680.948" timestamp="1575480666139" />
     <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.948@0.23.1680.948" timestamp="1575861613968" />
     <state x="505" y="231" width="670" height="674" key="search.everywhere.popup/0.23.1680.949@0.23.1680.949" timestamp="1578866753756" />
-    <state x="-496" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@-1073.-1177.1920.1177" timestamp="1571175688299" />
     <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@0.23.1680.952" timestamp="1571852305223" />
     <state x="1424" y="-919" width="766" height="836" key="search.everywhere.popup/0.23.1680.952/-1073.-1177.1920.1177/847.-1177.1920.1177@847.-1177.1920.1177" timestamp="1572038272971" />
     <state x="505" y="232" width="670" height="676" key="search.everywhere.popup/0.23.1680.952@0.23.1680.952" timestamp="1578862638304" />
     <state x="505" y="233" width="670" height="679" key="search.everywhere.popup/0.23.1680.954@0.23.1680.954" timestamp="1579062231405" />
     <state x="505" y="233" width="670" height="681" key="search.everywhere.popup/0.23.1680.956@0.23.1680.956" timestamp="1579146993687" />
+    <state x="-483" y="-918" width="766" height="838" key="search.everywhere.popup/860.-1177.1920.1177/-1060.-1177.1920.1177/0.23.1680.947@-1060.-1177.1920.1177" timestamp="1579906374170" />
     <state x="505" y="231" width="670" height="673" key="search.everywhere.popup/860.-1177.1920.1177/-1060.-1177.1920.1177/0.23.1680.947@0.23.1680.947" timestamp="1578952846240" />
   </component>
   <component name="XDebuggerManager">

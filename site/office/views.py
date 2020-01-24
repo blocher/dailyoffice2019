@@ -1,16 +1,14 @@
-from django.conf import settings
 from django.contrib.admin.templatetags.admin_static import static
-from django.http import HttpResponse
 from django.shortcuts import render, render_to_response
 from django.urls import reverse
-from django.utils import timezone
+from meta.views import Meta
 
 from churchcal.calculations import ChurchYear
 from churchcal.models import Season
-from office.offices import EveningPrayer, MorningPrayer, Compline, MiddayPrayer
-
-from meta.views import Meta
-
+from office.compline import Compline
+from office.evening_prayer import EveningPrayer
+from office.midday_prayer import MiddayPrayer
+from office.morning_prayer import MorningPrayer
 from website.settings import FIRST_BEGINNING_YEAR, LAST_BEGINNING_YEAR
 
 generic_title = "The Daily Office | Morning and Evening Prayer according to the Book of Common Prayer (2019)"
