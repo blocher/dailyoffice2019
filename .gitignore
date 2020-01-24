@@ -7,3 +7,4 @@ sermons/.env
 _pycache__
 sermons/static/
 static_export
+.idea
