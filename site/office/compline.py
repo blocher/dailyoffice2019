@@ -39,10 +39,12 @@ class Compline(Office):
             (ComplineConclusion(self.date, self.office_readings), "office/compline_conclusion.html"),
         ]
 
+
 class ComplineHeading(OfficeSection):
     @cached_property
     def data(self):
         return {"heading": mark_safe("Compline"), "calendar_date": self.date}
+
 
 class ComplineCommemorationListing(OfficeSection):
     @cached_property
@@ -54,10 +56,12 @@ class ComplineCommemorationListing(OfficeSection):
             "commemorations": self.date.all_evening,
         }
 
+
 class ComplineOpening(OfficeSection):
     @cached_property
     def data(self):
         return {}
+
 
 class ComplineConfession(OfficeSection):
     @cached_property
@@ -73,10 +77,12 @@ class ComplineInvitatory(OfficeSection):
             "heading": "Invitatory",
         }
 
+
 class ComplinePsalms(OfficeSection):
     @cached_property
     def data(self):
         return {"heading": "The Psalms", "psalms": get_psalms("4,31:1-6,91,134")}
+
 
 class ComplineScripture(OfficeSection):
     def get_scripture(self):
@@ -178,6 +184,7 @@ class ComplineCanticle(OfficeSection):
             "subheading": "The Song of Simeon",
             "alleluia": self.date.evening_season.name == "Eastertide",
         }
+
 
 class ComplineConclusion(OfficeSection):
     @cached_property

@@ -68,6 +68,7 @@ class Office(object):
             "date": f"{today:%B} {today.day}, {today.year}",
         }
 
+
 class OfficeSection(object):
     def __init__(self, date, office_readings=None, thirty_day_psalter_day=None, office=None):
         self.date = date
@@ -79,20 +80,24 @@ class OfficeSection(object):
     def data(self):
         raise NotImplementedError
 
+
 class Confession(OfficeSection):
     @cached_property
     def data(self):
         return {"heading": "Confession of Sin", "fast_day": self.date.fast_day}
+
 
 class Invitatory(OfficeSection):
     @cached_property
     def data(self):
         return {}
 
+
 class Creed(OfficeSection):
     @cached_property
     def data(self):
         return {}
+
 
 class Prayers(OfficeSection):
     @cached_property
@@ -108,6 +113,7 @@ class Intercessions(OfficeSection):
             "rubric_1": "The Officiant may invite the People to offer intercessions and thanksgivings.",
             "rubric_2": "A hymn or anthem may be sung.",
         }
+
 
 class GeneralThanksgiving(OfficeSection):
     @cached_property

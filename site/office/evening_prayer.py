@@ -5,8 +5,18 @@ from django.utils.safestring import mark_safe
 
 from office.canticles import DefaultCanticles, BCP1979CanticleTable, REC2011CanticleTable
 from office.morning_prayer import MPReading1, MPReading2
-from office.offices import Office, Confession, Invitatory, Creed, Prayers, Intercessions, GeneralThanksgiving, \
-    Chrysostom, Dismissal, OfficeSection
+from office.offices import (
+    Office,
+    Confession,
+    Invitatory,
+    Creed,
+    Prayers,
+    Intercessions,
+    GeneralThanksgiving,
+    Chrysostom,
+    Dismissal,
+    OfficeSection,
+)
 from office.utils import passage_to_citation
 from psalter.utils import get_psalms
 
@@ -63,10 +73,12 @@ class EveningPrayer(Office):
             (Dismissal(self.date, self.office_readings, office=self), "office/dismissal.html"),
         ]
 
+
 class EPHeading(OfficeSection):
     @cached_property
     def data(self):
         return {"heading": mark_safe("Daily<br>Evening Prayer"), "calendar_date": self.date}
+
 
 class EPCommemorationListing(OfficeSection):
     @cached_property
@@ -78,10 +90,12 @@ class EPCommemorationListing(OfficeSection):
             "commemorations": self.date.all_evening,
         }
 
+
 class EPInvitatory(OfficeSection):
     @cached_property
     def data(self):
         return {}
+
 
 class EPOpeningSentence(OfficeSection):
     def get_sentence(self):
@@ -206,6 +220,7 @@ class EPOpeningSentence(OfficeSection):
     def data(self):
         return {"heading": "Opening Sentence", "sentence": self.get_sentence()}
 
+
 class EPPsalms(OfficeSection):
     @cached_property
     def data(self):
@@ -229,6 +244,7 @@ class EPPsalms(OfficeSection):
             "heading_30": "The Psalm{} Appointed".format("s" if len(citations_30) > 1 else ""),
             "psalms_30": get_psalms(psalms_30),
         }
+
 
 class EPReading1(OfficeSection):
     @cached_property
@@ -258,6 +274,7 @@ class EPReading1(OfficeSection):
             },
         }
 
+
 class EPAlternateReading1(OfficeSection):
     @cached_property
     def data(self):
@@ -267,6 +284,7 @@ class EPAlternateReading1(OfficeSection):
 
         module = MPReading1(self.date, self.office_readings)
         return module.data
+
 
 class EPCanticle1(OfficeSection):
     def get_antiphon(self):
@@ -338,6 +356,7 @@ class EPCanticle1(OfficeSection):
             "2011": REC2011CanticleTable().get_ep_canticle_1(self.date),
         }
 
+
 class EPReading2(OfficeSection):
     @cached_property
     def data(self):
@@ -353,6 +372,7 @@ class EPReading2(OfficeSection):
             "closing": {"reader": "The Word of the Lord.", "people": "Thanks be to God."},
         }
 
+
 class EPAlternateReading2(OfficeSection):
     @cached_property
     def data(self):
@@ -363,6 +383,7 @@ class EPAlternateReading2(OfficeSection):
         module = MPReading2(self.date, self.office_readings)
         return module.data
 
+
 class EPCanticle2(OfficeSection):
     @cached_property
     def data(self):
@@ -372,6 +393,7 @@ class EPCanticle2(OfficeSection):
             "1979": BCP1979CanticleTable().get_ep_canticle_2(self.date),
             "2011": REC2011CanticleTable().get_ep_canticle_2(self.date),
         }
+
 
 class EPSuffrages(OfficeSection):
     def get_names(self):
@@ -393,6 +415,7 @@ class EPSuffrages(OfficeSection):
         self.date
         return {"default_set": self.get_default_set(), "names": self.get_names()}
 
+
 class EPCollectsOfTheDay(OfficeSection):
     @cached_property
     def data(self):
@@ -407,6 +430,7 @@ class EPCollectsOfTheDay(OfficeSection):
                 if commemoration.evening_prayer_collect
             )
         }
+
 
 class EPCollects(OfficeSection):
     @cached_property
@@ -461,6 +485,7 @@ class EPCollects(OfficeSection):
         )
 
         return {"collect": weekly_collects[self.date.date.weekday()], "fixed_collects": fixed_collects}
+
 
 class EPMissionCollect(OfficeSection):
     @cached_property

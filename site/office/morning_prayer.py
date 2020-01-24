@@ -6,8 +6,18 @@ from django.utils.safestring import mark_safe
 
 from office.canticles import DefaultCanticles, BCP1979CanticleTable, REC2011CanticleTable
 
-from office.offices import Office, Confession, Invitatory, Creed, Prayers, Intercessions, GeneralThanksgiving, \
-    Chrysostom, Dismissal, OfficeSection
+from office.offices import (
+    Office,
+    Confession,
+    Invitatory,
+    Creed,
+    Prayers,
+    Intercessions,
+    GeneralThanksgiving,
+    Chrysostom,
+    Dismissal,
+    OfficeSection,
+)
 from office.utils import passage_to_citation
 from psalter.utils import get_psalms
 
@@ -62,10 +72,12 @@ class MorningPrayer(Office):
             (Dismissal(self.date, self.office_readings, office=self), "office/dismissal.html"),
         ]
 
+
 class MPHeading(OfficeSection):
     @cached_property
     def data(self):
         return {"heading": mark_safe("Daily<br>Morning Prayer"), "calendar_date": self.date}
+
 
 class MPCommemorationListing(OfficeSection):
     @cached_property
@@ -76,6 +88,7 @@ class MPCommemorationListing(OfficeSection):
             "heading": "This Morning's Commemoration{}".format("s" if len(self.date.all) > 1 else ""),
             "commemorations": self.date.all,
         }
+
 
 class MPOpeningSentence(OfficeSection):
     def get_sentence(self):
@@ -202,6 +215,7 @@ class MPOpeningSentence(OfficeSection):
     @cached_property
     def data(self):
         return {"heading": "Opening Sentence", "sentence": self.get_sentence()}
+
 
 class MPInvitatory(OfficeSection):
     @cached_property
@@ -335,6 +349,7 @@ class MPInvitatory(OfficeSection):
             return jubilate
         return venite
 
+
 class MPPsalms(OfficeSection):
     @cached_property
     def data(self):
@@ -358,6 +373,7 @@ class MPPsalms(OfficeSection):
             "heading_30": "The Psalm{} Appointed".format("s" if len(citations_30) > 1 else ""),
             "psalms_30": get_psalms(psalms_30),
         }
+
 
 class MPReading1(OfficeSection):
     @cached_property
@@ -388,16 +404,19 @@ class MPReading1(OfficeSection):
             "deuterocanon": self.office_readings.mp_reading_1_testament not in ["OT", "NT"],
         }
 
+
 class MPAlternateReading1(OfficeSection):
     @cached_property
     def data(self):
         from office.evening_prayer import EPReading1
+
         if self.date.date.year % 2 == 0:
             module = EPReading1(self.date, self.office_readings)
             return module.data
 
         module = MPReading1(self.date, self.office_readings)
         return module.data
+
 
 class MPCanticle1(OfficeSection):
     @cached_property
@@ -408,6 +427,7 @@ class MPCanticle1(OfficeSection):
             "1979": BCP1979CanticleTable().get_mp_canticle_1(self.date),
             "2011": REC2011CanticleTable().get_mp_canticle_1(self.date),
         }
+
 
 class MPReading2(OfficeSection):
     @cached_property
@@ -424,16 +444,19 @@ class MPReading2(OfficeSection):
             "closing": {"reader": "The Word of the Lord.", "people": "Thanks be to God."},
         }
 
+
 class MPAlternateReading2(OfficeSection):
     @cached_property
     def data(self):
         from office.evening_prayer import EPReading2
+
         if self.date.date.year % 2 == 0:
             module = EPReading2(self.date, self.office_readings)
             return module.data
 
         module = MPReading2(self.date, self.office_readings)
         return module.data
+
 
 class MPCanticle2(OfficeSection):
     @cached_property
@@ -444,6 +467,7 @@ class MPCanticle2(OfficeSection):
             "1979": BCP1979CanticleTable().get_mp_canticle_2(self.date),
             "2011": REC2011CanticleTable().get_mp_canticle_2(self.date),
         }
+
 
 class MPSuffrages(OfficeSection):
     @cached_property
@@ -465,6 +489,7 @@ class MPCollectsOfTheDay(OfficeSection):
                 if commemoration.morning_prayer_collect
             )
         }
+
 
 class MPCollects(OfficeSection):
     @cached_property
@@ -520,6 +545,7 @@ class MPCollects(OfficeSection):
 
         return {"collect": weekly_collects[self.date.date.weekday()], "fixed_collects": fixed_collects}
 
+
 class MPMissionCollect(OfficeSection):
     @cached_property
     def data(self):
@@ -544,4 +570,3 @@ class MPMissionCollect(OfficeSection):
             subheading = "III"
 
         return {"heading": "A Collect for Mission", "collect": collect, "subheading": subheading}
-

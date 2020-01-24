@@ -155,10 +155,7 @@ def settings(request):
                         "show": [],
                         "heading": "Use Computer Setting",
                         "text": "The long form of the intro and absolution are used every day",
-                        "tags": {
-                            "class": "theme-selector",
-                            "data-theme": "theme-auto",
-                        }
+                        "tags": {"class": "theme-selector", "data-theme": "theme-auto"},
                     },
                     {
                         "value": "theme-light",
@@ -166,10 +163,7 @@ def settings(request):
                         "show": [],
                         "heading": "Light Mode",
                         "text": "The long form of the intro and absolution are used only on fast days",
-                        "tags": {
-                            "class": "theme-selector",
-                            "data-theme": "theme-light",
-                        }
+                        "tags": {"class": "theme-selector", "data-theme": "theme-light"},
                     },
                     {
                         "value": "theme-dark",
@@ -177,10 +171,7 @@ def settings(request):
                         "show": [],
                         "heading": "Dark Mode",
                         "text": "The short form of the intro and absolution are used every day",
-                        "tags": {
-                            "class": "theme-selector",
-                            "data-theme": "theme-dark",
-                        }
+                        "tags": {"class": "theme-selector", "data-theme": "theme-dark"},
                     },
                 ],
             },

@@ -38,10 +38,12 @@ class MiddayPrayer(Office):
             (MiddayConclusion(self.date, self.office_readings), "office/midday_conclusion.html"),
         ]
 
+
 class MiddayHeading(OfficeSection):
     @cached_property
     def data(self):
         return {"heading": mark_safe("Midday Prayer"), "calendar_date": self.date}
+
 
 class MiddayCommemorationListing(OfficeSection):
     @cached_property
@@ -53,15 +55,18 @@ class MiddayCommemorationListing(OfficeSection):
             "commemorations": self.date.all,
         }
 
+
 class MiddayInvitatory(OfficeSection):
     @cached_property
     def data(self):
         return {"alleluia": self.date.evening_season.name != "Lent" and self.date.evening_season.name != "Holy Week"}
 
+
 class MiddayPsalms(OfficeSection):
     @cached_property
     def data(self):
         return {"heading": "The Psalms", "psalms": get_psalms("119:105-112,121,124,126")}
+
 
 class MiddayScripture(OfficeSection):
     def get_scripture(self):
@@ -87,6 +92,7 @@ class MiddayScripture(OfficeSection):
     @cached_property
     def data(self):
         return {"heading": "The Reading", "sentence": self.get_scripture(), "midday": True}
+
 
 class MiddayPrayers(OfficeSection):
     def get_collects(self):
@@ -127,6 +133,7 @@ class MiddayPrayers(OfficeSection):
     @cached_property
     def data(self):
         return {"heading": "The Prayers", "collects": self.get_collects()}
+
 
 class MiddayConclusion(OfficeSection):
     @cached_property
