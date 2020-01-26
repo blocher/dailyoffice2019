@@ -237,9 +237,9 @@ urlpatterns = [
     # path("admin/", admin.site.urls),
     # path("admin/", include("material.admin.urls")),
     distill_path(
-        "evening_prayer/<int:year>-<int:month>-<int:day>/",
-        office_views.evening_prayer,
-        name="evening_prayer",
+        "morning_prayer/<int:year>-<int:month>-<int:day>/",
+        office_views.morning_prayer,
+        name="morning_prayer",
         distill_func=get_days,
     ),
     distill_path(
@@ -249,9 +249,9 @@ urlpatterns = [
         distill_func=get_days,
     ),
     distill_path(
-        "morning_prayer/<int:year>-<int:month>-<int:day>/",
-        office_views.morning_prayer,
-        name="morning_prayer",
+        "evening_prayer/<int:year>-<int:month>-<int:day>/",
+        office_views.evening_prayer,
+        name="evening_prayer",
         distill_func=get_days,
     ),
     distill_path(
@@ -262,6 +262,30 @@ urlpatterns = [
         office_views.church_year,
         name="church_year",
         distill_func=get_church_years,
+    ),
+    distill_path(
+        "family/morning_prayer/<int:year>-<int:month>-<int:day>/",
+        office_views.family_morning_prayer,
+        name="family_morning_prayer",
+        distill_func=get_days,
+    ),
+    distill_path(
+        "family/midday_prayer/<int:year>-<int:month>-<int:day>/",
+        office_views.family_midday_prayer,
+        name="family_midday_prayer",
+        distill_func=get_days,
+    ),
+    distill_path(
+        "family/early_evening_prayer/<int:year>-<int:month>-<int:day>/",
+        office_views.family_early_evening_prayer,
+        name="family_early_evening_prayer",
+        distill_func=get_days,
+    ),
+    distill_path(
+        "family/close_of_day_prayer/<int:year>-<int:month>-<int:day>/",
+        office_views.family_close_of_day_prayer,
+        name="family_close_of_day_prayer",
+        distill_func=get_days,
     ),
     distill_path("about/", office_views.about, name="about", distill_func=get_about),
     distill_path("settings/", office_views.settings, name="settings", distill_func=get_about),

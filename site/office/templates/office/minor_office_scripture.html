@@ -1,17 +1,18 @@
 <h2>{{ data.heading  }}</h2>
 <p>{{  data.sentence.sentence }}</p>
 <h5>{{  data.sentence.citation }}</h5>
-<table class="dialogue">
-    <tr>
-        <td><em>Officiant</em></td>
-        <td>The Word of the Lord.</td>
-    </tr>
-    <tr>
-        <td><em>People</em></td>
-        <td><strong>Thanks be to God.</strong></td>
-    </tr>
-</table>
-
+{% if not data.hide_closing %}
+    <table class="dialogue">
+        <tr>
+            <td><em>Officiant</em></td>
+            <td>The Word of the Lord.</td>
+        </tr>
+        <tr>
+            <td><em>People</em></td>
+            <td><strong>Thanks be to God.</strong></td>
+        </tr>
+    </table>
+{% endif %}
 {% if data.midday %}
 <p><em>A meditation, silent or spoken, may follow.</em></p>
 {%  endif %}

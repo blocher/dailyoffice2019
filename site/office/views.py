@@ -7,6 +7,10 @@ from churchcal.calculations import ChurchYear
 from churchcal.models import Season
 from office.compline import Compline
 from office.evening_prayer import EveningPrayer
+from office.family_close_of_day import FamilyCloseOfDay
+from office.family_early_evening import FamilyEarlyEvening
+from office.family_midday import FamilyMidday
+from office.family_morning import FamilyMorning
 from office.midday_prayer import MiddayPrayer
 from office.morning_prayer import MorningPrayer
 from website.settings import FIRST_BEGINNING_YEAR, LAST_BEGINNING_YEAR
@@ -83,6 +87,66 @@ def midday_prayer(request, year, month, day):
     midday_meta["image_width"] = 1000
     midday_meta["image_height"] = 1333
     return render(request, "office/office.html", {"office": md, "meta": Meta(**midday_meta)})
+
+
+def family_morning_prayer(request, year, month, day):
+    fm = FamilyMorning("{}-{}-{}".format(year, month, day))
+    family_morning_meta = meta_defaults.copy()
+    family_morning_meta["title"] = family_morning_meta["og_title"] = family_morning_meta[
+        "twitter_title"
+    ] = family_morning_meta["gplus_title"] = fm.title
+    family_morning_meta["description"] = fm.description
+    family_morning_meta["url"] = reverse("family_morning_prayer", kwargs={"year": year, "month": month, "day": day})
+    family_morning_meta["image"] = static("office/img/bcp.jpg")
+    family_morning_meta["image_width"] = 1000
+    family_morning_meta["image_height"] = 1333
+    return render(request, "office/office.html", {"office": fm, "meta": Meta(**family_morning_meta)})
+
+
+def family_midday_prayer(request, year, month, day):
+    fm = FamilyMidday("{}-{}-{}".format(year, month, day))
+    family_morning_meta = meta_defaults.copy()
+    family_morning_meta["title"] = family_morning_meta["og_title"] = family_morning_meta[
+        "twitter_title"
+    ] = family_morning_meta["gplus_title"] = fm.title
+    family_morning_meta["description"] = fm.description
+    family_morning_meta["url"] = reverse("family_midday_prayer", kwargs={"year": year, "month": month, "day": day})
+    family_morning_meta["image"] = static("office/img/bcp.jpg")
+    family_morning_meta["image_width"] = 1000
+    family_morning_meta["image_height"] = 1333
+    return render(request, "office/office.html", {"office": fm, "meta": Meta(**family_morning_meta)})
+
+
+def family_early_evening_prayer(request, year, month, day):
+    fm = FamilyEarlyEvening("{}-{}-{}".format(year, month, day))
+    family_morning_meta = meta_defaults.copy()
+    family_morning_meta["title"] = family_morning_meta["og_title"] = family_morning_meta[
+        "twitter_title"
+    ] = family_morning_meta["gplus_title"] = fm.title
+    family_morning_meta["description"] = fm.description
+    family_morning_meta["url"] = reverse(
+        "family_early_evening_prayer", kwargs={"year": year, "month": month, "day": day}
+    )
+    family_morning_meta["image"] = static("office/img/bcp.jpg")
+    family_morning_meta["image_width"] = 1000
+    family_morning_meta["image_height"] = 1333
+    return render(request, "office/office.html", {"office": fm, "meta": Meta(**family_morning_meta)})
+
+
+def family_close_of_day_prayer(request, year, month, day):
+    fm = FamilyCloseOfDay("{}-{}-{}".format(year, month, day))
+    family_morning_meta = meta_defaults.copy()
+    family_morning_meta["title"] = family_morning_meta["og_title"] = family_morning_meta[
+        "twitter_title"
+    ] = family_morning_meta["gplus_title"] = fm.title
+    family_morning_meta["description"] = fm.description
+    family_morning_meta["url"] = reverse(
+        "family_close_of_day_prayer", kwargs={"year": year, "month": month, "day": day}
+    )
+    family_morning_meta["image"] = static("office/img/bcp.jpg")
+    family_morning_meta["image_width"] = 1000
+    family_morning_meta["image_height"] = 1333
+    return render(request, "office/office.html", {"office": fm, "meta": Meta(**family_morning_meta)})
 
 
 def settings(request):

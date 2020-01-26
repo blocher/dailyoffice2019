@@ -2,4 +2,4 @@ const voice = () => {
 
 };
 
-export { voice };
+export {voice};
