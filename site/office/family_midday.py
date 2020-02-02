@@ -3,6 +3,8 @@ import datetime
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 
+from office.evening_prayer import EPCollectsOfTheDay
+from office.midday_prayer import MiddayPrayers
 from office.morning_prayer import MPCommemorationListing, MPReading2
 from office.offices import Office, OfficeSection
 from psalter.utils import get_psalms
@@ -104,9 +106,38 @@ class Pater(OfficeSection):
 
 
 class FPCollect(OfficeSection):
+    def get_day_of_week_collect(self):
+        collects = MiddayPrayers.collects
+
+        if self.date.date.weekday() in [6]:  # Sunday
+            collect = collects[1]
+
+        if self.date.date.weekday() in [0, 5]:  # Monday,  #Saturday
+            collect = collects[2]
+
+        if self.date.date.weekday() in [1]:  # Tuesday
+            collect = collects[3]
+
+        if self.date.date.weekday() in [2]:  # Wednesday
+            collect = collects[0]
+
+        if self.date.date.weekday() in [3]:  # Thursday
+            collect = collects[1]
+
+        if self.date.date.weekday() in [4]:  # Friday
+            collect = collects[0]
+
+        return (None, None, collect)
+
     @cached_property
     def data(self):
+
+        day_of_year = next(EPCollectsOfTheDay(self.date, self.office_readings).data["collects"])
+        day_of_week = self.get_day_of_week_collect()
+
         return {
             "heading": "The Collect",
-            "collect": "Blessed Savior, at this hour you hung upon the Cross, stretching out your loving arms: Grant that all the peoples of the earth may look to you and be saved; for your tender mercies’ sake.",
+            "time_of_day": "Blessed Savior, at this hour you hung upon the Cross, stretching out your loving arms: Grant that all the peoples of the earth may look to you and be saved; for your tender mercies’ sake.",
+            "day_of_year": day_of_year,
+            "day_of_week": day_of_week,
         }

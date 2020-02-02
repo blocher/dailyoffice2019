@@ -117,59 +117,60 @@ class ComplineScripture(OfficeSection):
 
 
 class ComplinePrayers(OfficeSection):
+
+    collects = [
+        (
+            "A Collect for Evening",
+            "Visit this place, O Lord, and drive far from it all snares of the enemy; let your holy angels dwell with us to preserve us in peace; and let your blessing be upon us always; through Jesus Christ our Lord.",
+        ),
+        (
+            "A Collect for Aid Against Peril",
+            "Lighten our darkness, we beseech you, O Lord; and by your great mercy defend us from all perils and dangers of this night; for the love of your only Son, our Savior Jesus Christ.",
+        ),
+        (
+            "A Collect for Evening",
+            "Be present, O merciful God, and protect us through the hours of this night, so that we who are wearied by the changes and chances of this life may rest in your eternal changelessness; through Jesus Christ our Lord.",
+        ),
+        (
+            "A Collect for Evening",
+            "Look down, O Lord, from your heavenly throne, illumine this night with your celestial brightness, and from the children of light banish the deeds of darkness; through Jesus Christ our Lord.",
+        ),
+        (
+            "A Collect for Saturdays",
+            "We give you thanks, O God, for revealing your Son Jesus Christ to us by the light of his resurrection: Grant that as we sing your glory at the close of this day, our joy may abound in the morning as we celebrate the Paschal mystery; through Jesus Christ our Lord.",
+        ),
+        (
+            "A Collect for Mission",
+            "Keep watch, dear Lord, with those who work, or watch, or weep this night, and give your angels charge over those who sleep. Tend the sick, Lord Christ; give rest to the weary, bless the dying, soothe the suffering, pity the afflicted, shield the joyous; and all for your love’s sake.",
+        ),
+        (
+            "A Collect for Evening",
+            "O God, your unfailing providence sustains the world we live in and the life we live: Watch over those, both night and day, who work while others sleep, and grant that we may never forget that our common life depends upon each other’s toil; through Jesus Christ our Lord.",
+        ),
+    ]
+
     def get_collects(self):
 
-        collects = [
-            (
-                "a collect for evening",
-                "Visit this place, O Lord, and drive far from it all snares of the enemy; let your holy angels dwell with us to preserve us in peace; and let your blessing be upon us always; through Jesus Christ our Lord.",
-            ),
-            (
-                "a collect for aid against perils",
-                "Lighten our darkness, we beseech you, O Lord; and by your great mercy defend us from all perils and dangers of this night; for the love of your only Son, our Savior Jesus Christ.",
-            ),
-            (
-                "a collect for evening",
-                "Be present, O merciful God, and protect us through the hours of this night, so that we who are wearied by the changes and chances of this life may rest in your eternal changelessness; through Jesus Christ our Lord.",
-            ),
-            (
-                "a collect for evening",
-                "Look down, O Lord, from your heavenly throne, illumine this night with your celestial brightness, and from the children of light banish the deeds of darkness; through Jesus Christ our Lord.",
-            ),
-            (
-                "a collect for saturdays",
-                "We give you thanks, O God, for revealing your Son Jesus Christ to us by the light of his resurrection: Grant that as we sing your glory at the close of this day, our joy may abound in the morning as we celebrate the Paschal mystery; through Jesus Christ our Lord.",
-            ),
-            (
-                "a collect for mission",
-                "Keep watch, dear Lord, with those who work, or watch, or weep this night, and give your angels charge over those who sleep. Tend the sick, Lord Christ; give rest to the weary, bless the dying, soothe the suffering, pity the afflicted, shield the joyous; and all for your love’s sake.",
-            ),
-            (
-                "a collect for evening",
-                "O God, your unfailing providence sustains the world we live in and the life we live: Watch over those, both night and day, who work while others sleep, and grant that we may never forget that our common life depends upon each other’s toil; through Jesus Christ our Lord.",
-            ),
-        ]
-
         if self.date.date.weekday() in [6]:  # Sunday
-            return collects[0], collects[1], collects[5]
+            return self.collects[0], self.collects[1], self.collects[5]
 
         if self.date.date.weekday() in [0]:  # Monday
-            return collects[2], collects[3], collects[5]
+            return self.collects[2], self.collects[3], self.collects[5]
 
         if self.date.date.weekday() in [1]:  # Tuesday
-            return collects[0], collects[2], collects[5]
+            return self.collects[0], self.collects[2], self.collects[5]
 
         if self.date.date.weekday() in [2]:  # Wednesday
-            return collects[1], collects[3], collects[6]
+            return self.collects[1], self.collects[3], self.collects[6]
 
         if self.date.date.weekday() in [3]:  # Thursday
-            return collects[0], collects[3], collects[5]
+            return self.collects[0], self.collects[3], self.collects[5]
 
         if self.date.date.weekday() in [4]:  # Friday
-            return collects[1], collects[2], collects[6]
+            return self.collects[1], self.collects[2], self.collects[6]
 
         if self.date.date.weekday() in [5]:  # Saturday
-            return collects[2], collects[4], collects[5]
+            return self.collects[2], self.collects[4], self.collects[5]
 
     @cached_property
     def data(self):

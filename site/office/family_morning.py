@@ -3,7 +3,7 @@ import datetime
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 
-from office.morning_prayer import MPCommemorationListing, MPReading1
+from office.morning_prayer import MPCommemorationListing, MPReading1, MPCollectsOfTheDay, MPCollects
 from office.offices import Office, OfficeSection
 from psalter.utils import get_psalms
 
@@ -39,7 +39,7 @@ class FamilyMorning(Office):
             (FMPsalms(self.date, self.office_readings), "office/minor_office_psalms.html"),
             (FMScripture(self.date, self.office_readings), "office/family_scripture.html"),
             (Pater(self.date, self.office_readings), "office/family_lords_prayer.html"),
-            (FPCollect(self.date, self.office_readings), "office/family_collect.html"),
+            (FMCollect(self.date, self.office_readings), "office/family_collect.html"),
         ]
 
 
@@ -107,10 +107,16 @@ class Pater(OfficeSection):
         return {"heading": "The Lord's Prayer"}
 
 
-class FPCollect(OfficeSection):
+class FMCollect(OfficeSection):
     @cached_property
     def data(self):
+
+        day_of_year = next(MPCollectsOfTheDay(self.date, self.office_readings).data["collects"])
+        day_of_week = MPCollects(self.date, self.office_readings).data["collect"]
+
         return {
             "heading": "The Collect",
-            "collect": "O Lord, our heavenly Father, almighty and everlasting God, you have brought us safely to the beginning of this day: Defend us by your mighty power, that we may not fall into sin nor run into any danger; and that, guided by your Spirit, we may do what is righteous in your sight; through Jesus Christ our Lord. ",
+            "time_of_day": "O Lord, our heavenly Father, almighty and everlasting God, you have brought us safely to the beginning of this day: Defend us by your mighty power, that we may not fall into sin nor run into any danger; and that, guided by your Spirit, we may do what is righteous in your sight; through Jesus Christ our Lord. ",
+            "day_of_year": day_of_year,
+            "day_of_week": day_of_week,
         }

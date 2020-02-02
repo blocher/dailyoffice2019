@@ -1,2 +1,16 @@
 <h2>{{ data.heading }}</h2>
-<p>{{ data.collect }} <strong>Amen.</strong></p>
+<div class="collect-time-of-day">
+    <p>{{ data.time_of_day }} <strong>Amen.</strong></p>
+</div>
+<div class="collect-day-of-year off">
+    {% if data.day_of_year.0 %}
+        <h4>{{ data.day_of_year.0 }}</h4>
+    {% endif %}
+    <p>{{ data.day_of_year.1 }} <strong>Amen.</strong></p>
+</div>
+<div class="collect-day-of-week off">
+    {% if data.day_of_week.0 %}
+        <h4>{{ data.day_of_week.0 }}</h4>
+    {% endif %}
+    <p>{{ data.day_of_week.2 }} <strong>Amen.</strong></p>
+</div>

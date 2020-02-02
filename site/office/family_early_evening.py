@@ -3,7 +3,7 @@ import datetime
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 
-from office.evening_prayer import EPInvitatory, EPCommemorationListing, EPReading1
+from office.evening_prayer import EPInvitatory, EPCommemorationListing, EPReading1, EPCollects, EPCollectsOfTheDay
 from office.morning_prayer import MPCommemorationListing
 from office.offices import Office, OfficeSection
 from psalter.utils import get_psalms
@@ -107,7 +107,13 @@ class Pater(OfficeSection):
 class FPCollect(OfficeSection):
     @cached_property
     def data(self):
+
+        day_of_year = next(EPCollectsOfTheDay(self.date, self.office_readings).data["collects"])
+        day_of_week = EPCollects(self.date, self.office_readings).data["collect"]
+
         return {
             "heading": "The Collect",
-            "collect": "Lord Jesus, stay with us, for evening is at hand and the day is past; be our companion in the way, kindle our hearts, and awaken hope, that we may know you as you are revealed in Scripture and the breaking of bread. Grant this for the sake of your love.",
+            "time_of_day": "Lord Jesus, stay with us, for evening is at hand and the day is past; be our companion in the way, kindle our hearts, and awaken hope, that we may know you as you are revealed in Scripture and the breaking of bread. Grant this for the sake of your love.",
+            "day_of_year": day_of_year,
+            "day_of_week": day_of_week,
         }

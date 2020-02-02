@@ -95,40 +95,41 @@ class MiddayScripture(OfficeSection):
 
 
 class MiddayPrayers(OfficeSection):
+
+    collects = [
+        (
+            "Blessed Savior, at this hour you hung upon the Cross, stretching out your loving arms: Grant that all the peoples of the earth may look to you and be saved; for your tender mercies’ sake."
+        ),
+        (
+            "Almighty Savior, who at mid-day called your servant Saint Paul to be an apostle to the Gentiles: We pray you to illumine the world with the radiance of your glory, that all nations may come and worship you; for you live and reign with the Father and the Holy Spirit, one God, for ever and ever."
+        ),
+        (
+            "Father of all mercies, you revealed your boundless compassion to your apostle Saint Peter in a three-fold vision: Forgive our unbelief, we pray, and so strengthen our hearts and enkindle our zeal, that we may fervently desire the salvation of all people, and diligently labor in the extension of your kingdom; through him who gave himself for the life of the world, your Son our Savior Jesus Christ."
+        ),
+        (
+            "Pour your grace into our hearts, O Lord, that we who have known the incarnation of your Son Jesus Christ, announced by an angel to the Virgin Mary, may by his Cross and passion be brought to the glory of his resurrection; who lives and reigns with you, in the unity of the Holy Spirit, one God, now and for ever."
+        ),
+    ]
+
     def get_collects(self):
 
-        collects = [
-            (
-                "Blessed Savior, at this hour you hung upon the Cross, stretching out your loving arms: Grant that all the peoples of the earth may look to you and be saved; for your tender mercies’ sake."
-            ),
-            (
-                "Almighty Savior, who at mid-day called your servant Saint Paul to be an apostle to the Gentiles: We pray you to illumine the world with the radiance of your glory, that all nations may come and worship you; for you live and reign with the Father and the Holy Spirit, one God, for ever and ever."
-            ),
-            (
-                "Father of all mercies, you revealed your boundless compassion to your apostle Saint Peter in a three-fold vision: Forgive our unbelief, we pray, and so strengthen our hearts and enkindle our zeal, that we may fervently desire the salvation of all people, and diligently labor in the extension of your kingdom; through him who gave himself for the life of the world, your Son our Savior Jesus Christ."
-            ),
-            (
-                "Pour your grace into our hearts, O Lord, that we who have known the incarnation of your Son Jesus Christ, announced by an angel to the Virgin Mary, may by his Cross and passion be brought to the glory of his resurrection; who lives and reigns with you, in the unity of the Holy Spirit, one God, now and for ever."
-            ),
-        ]
-
         if self.date.date.weekday() in [6]:  # Sunday
-            return collects[0], collects[1]
+            return self.collects[0], self.collects[1]
 
         if self.date.date.weekday() in [0, 5]:  # Monday,  #Saturday
-            return collects[2], collects[3]
+            return self.collects[2], self.collects[3]
 
         if self.date.date.weekday() in [1]:  # Tuesday
-            return collects[0], collects[2]
+            return self.collects[0], self.collects[2]
 
         if self.date.date.weekday() in [2]:  # Wednesday
-            return collects[1], collects[3]
+            return self.collects[1], self.collects[3]
 
         if self.date.date.weekday() in [3]:  # Thursday
-            return collects[0], collects[3]
+            return self.collects[0], self.collects[3]
 
         if self.date.date.weekday() in [4]:  # Friday
-            return collects[1], collects[2]
+            return self.collects[1], self.collects[2]
 
     @cached_property
     def data(self):

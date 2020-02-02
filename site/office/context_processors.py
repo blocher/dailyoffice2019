@@ -472,22 +472,22 @@ def settings(request):
                 "options": [
                     {
                         "value": "time_of_day",
-                        "hide": ["psalter-thirty"],
-                        "show": ["psalter-sixty"],
+                        "hide": ["collect-day-of-year", "collect-day-of-week"],
+                        "show": ["collect-time-of-day"],
                         "heading": "By Time of Day",
                         "text": "The prayer appointed for the time of day from Family Prayer",
                     },
                     {
                         "value": "day_of_week",
-                        "hide": ["psalter-sixty"],
-                        "show": ["psalter-thirty"],
+                        "hide": ["collect-day-of-year", "collect-time-of-day"],
+                        "show": ["collect-day-of-week"],
                         "heading": "By Day of Week",
                         "text": "The prayer appointed for the day of the week from the Daily Office",
                     },
                     {
                         "value": "day_of_year",
-                        "hide": ["psalter-sixty"],
-                        "show": ["psalter-thirty"],
+                        "hide": ["ccollect-day-of-week", "collect-time-of-day"],
+                        "show": ["collect-day-of-year"],
                         "heading": "By Day of the Year",
                         "text": "The prayer appointed for the specific day of the year (or the previous Sunday if there is no feast)",
                     },

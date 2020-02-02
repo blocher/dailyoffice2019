@@ -4,7 +4,8 @@ from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 
 from office.canticles import EP2
-from office.evening_prayer import EPInvitatory, EPCommemorationListing, EPReading2
+from office.compline import ComplinePrayers
+from office.evening_prayer import EPInvitatory, EPCommemorationListing, EPReading2, EPCollectsOfTheDay, EPCollects
 from office.morning_prayer import MPCommemorationListing
 from office.offices import Office, OfficeSection
 from psalter.utils import get_psalms
@@ -112,11 +113,27 @@ class Pater(OfficeSection):
 
 
 class FCDCollect(OfficeSection):
+    def get_day_of_week_collect(self):
+        collects = ComplinePrayers.collects
+        number = self.date.date.weekday()
+        if number == 4:
+            number = 5
+        elif number == 5:
+            number = 4
+        collect = collects[number]
+        return (collect[0], None, collect[1])
+
     @cached_property
     def data(self):
+
+        day_of_year = next(EPCollectsOfTheDay(self.date, self.office_readings).data["collects"])
+        day_of_week = self.get_day_of_week_collect()
+
         return {
             "heading": "The Collect",
-            "collect": "Visit this place, O Lord, and drive far from it all snares of the enemy; let your holy angels dwell with us to preserve us in peace; and let your blessing be upon us always; through Jesus Christ our Lord. ",
+            "time_of_day": "Visit this place, O Lord, and drive far from it all snares of the enemy; let your holy angels dwell with us to preserve us in peace; and let your blessing be upon us always; through Jesus Christ our Lord.",
+            "day_of_year": day_of_year,
+            "day_of_week": day_of_week,
         }
 
 
