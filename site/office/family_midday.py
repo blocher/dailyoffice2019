@@ -3,7 +3,7 @@ import datetime
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 
-from office.morning_prayer import MPCommemorationListing
+from office.morning_prayer import MPCommemorationListing, MPReading2
 from office.offices import Office, OfficeSection
 from psalter.utils import get_psalms
 
@@ -37,7 +37,7 @@ class FamilyMidday(Office):
             (MPCommemorationListing(self.date), "office/commemoration_listing.html"),
             (FNOpeningSentence(self.date, self.office_readings), "office/opening_sentence.html"),
             (FNPsalms(self.date, self.office_readings), "office/minor_office_psalms.html"),
-            (FNScripture(self.date, self.office_readings), "office/minor_office_scripture.html"),
+            (FNScripture(self.date, self.office_readings), "office/family_scripture.html"),
             (Pater(self.date, self.office_readings), "office/family_lords_prayer.html"),
             (FPCollect(self.date, self.office_readings), "office/family_collect.html"),
         ]
@@ -88,7 +88,13 @@ class FNScripture(OfficeSection):
 
     @cached_property
     def data(self):
-        return {"heading": "A READING FROM HOLY SCRIPTURE", "sentence": self.get_scripture(), "hide_closing": True}
+        mp_reading = MPReading2(self.date, self.office_readings)
+        return {
+            "heading": "A READING FROM HOLY SCRIPTURE",
+            "long": mp_reading.data,
+            "brief": self.get_scripture(),
+            "hide_closing": True,
+        }
 
 
 class Pater(OfficeSection):

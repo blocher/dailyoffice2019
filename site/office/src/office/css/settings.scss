@@ -65,7 +65,7 @@ div#settings {
         background-color: themed('footer-color-bg');
       }
 
-    margin: 2rem;
+    margin: 1rem;
 
     h3 {
       font-size: 1em;
@@ -137,6 +137,10 @@ div#settings {
         box-shadow: none;
         cursor: not-allowed;
       }
+    }
+
+    .setting-inner-div {
+      display: flex;
     }
 
     label {

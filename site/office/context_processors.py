@@ -21,6 +21,7 @@ def settings(request):
     return {
         "on": get_on(request.path),
         "show_settings_class": "" if get_on(request.path) == "settings-button" else "off",
+        "family": "family" in request.path,
         "settings": [
             {
                 "title": "Psalter Cycle",
@@ -444,28 +445,54 @@ def settings(request):
         ],
         "family_settings": [
             {
-                "title": "Psalter Cycle",
-                "name": "psalter",
-                "help_text": mark_safe(
-                    "During Morning and Evening Prayer, pray through all the Psalms either every <strong>60 days</strong> (fewer psalms per day) or once every <strong>30 days</strong> (more psalms per day)."
-                ),
+                "title": "Readings",
+                "name": "family_readings",
+                "help_text": "",
                 "options": [
                     {
-                        "value": "60",
-                        "hide": ["psalter-thirty"],
-                        "show": ["psalter-sixty"],
-                        "heading": "60 Day",
-                        "text": "Pray through the psalms once every 60 days",
+                        "value": "brief",
+                        "hide": ["family-reading-long"],
+                        "show": ["family-reading-brief"],
+                        "heading": "Brief",
+                        "text": "A brief scripture reading appointed for the time of day",
                     },
                     {
-                        "value": "30",
-                        "hide": ["psalter-sixty"],
-                        "show": ["psalter-thirty"],
-                        "heading": "30 Day",
-                        "text": "Pray through the psalms once every 30 days",
+                        "value": "long",
+                        "hide": ["family-reading-brief"],
+                        "show": ["family-reading-long"],
+                        "heading": "Long",
+                        "text": "A longer scripture reading from the continuous lectionary",
                     },
                 ],
-            }
+            },
+            {
+                "title": "Collect",
+                "name": "family_collect",
+                "help_text": "",
+                "options": [
+                    {
+                        "value": "time_of_day",
+                        "hide": ["psalter-thirty"],
+                        "show": ["psalter-sixty"],
+                        "heading": "By Time of Day",
+                        "text": "The prayer appointed for the time of day from Family Prayer",
+                    },
+                    {
+                        "value": "day_of_week",
+                        "hide": ["psalter-sixty"],
+                        "show": ["psalter-thirty"],
+                        "heading": "By Day of Week",
+                        "text": "The prayer appointed for the day of the week from the Daily Office",
+                    },
+                    {
+                        "value": "day_of_year",
+                        "hide": ["psalter-sixty"],
+                        "show": ["psalter-thirty"],
+                        "heading": "By Day of the Year",
+                        "text": "The prayer appointed for the specific day of the year (or the previous Sunday if there is no feast)",
+                    },
+                ],
+            },
         ],
         "family_minor_settings": [
             {

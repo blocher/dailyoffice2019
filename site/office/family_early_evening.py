@@ -3,7 +3,7 @@ import datetime
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 
-from office.evening_prayer import EPInvitatory, EPCommemorationListing
+from office.evening_prayer import EPInvitatory, EPCommemorationListing, EPReading1
 from office.morning_prayer import MPCommemorationListing
 from office.offices import Office, OfficeSection
 from psalter.utils import get_psalms
@@ -38,7 +38,7 @@ class FamilyEarlyEvening(Office):
             (EPCommemorationListing(self.date), "office/commemoration_listing.html"),
             (FEEOpeningSentence(self.date, self.office_readings), "office/opening_sentence.html"),
             (EPInvitatory(self.date), "office/evening_prayer/hymn.html"),
-            (FEEScripture(self.date, self.office_readings), "office/minor_office_scripture.html"),
+            (FEEScripture(self.date, self.office_readings), "office/family_scripture.html"),
             (Pater(self.date, self.office_readings), "office/family_lords_prayer.html"),
             (FPCollect(self.date, self.office_readings), "office/family_collect.html"),
         ]
@@ -89,7 +89,13 @@ class FEEScripture(OfficeSection):
 
     @cached_property
     def data(self):
-        return {"heading": "A READING FROM HOLY SCRIPTURE", "sentence": self.get_scripture(), "hide_closing": True}
+        ep_reading = EPReading1(self.date, self.office_readings)
+        return {
+            "heading": "A READING FROM HOLY SCRIPTURE",
+            "long": ep_reading.data,
+            "brief": self.get_scripture(),
+            "hide_closing": True,
+        }
 
 
 class Pater(OfficeSection):

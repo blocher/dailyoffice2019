@@ -1,0 +1,28 @@
+<h3>{{ data.heading }}</h3>
+<div class="family-reading-brief">
+
+    <h4>{{ data.brief.citation }}</h4>
+
+    <div class="reading">
+        <div class="bible-audio off">
+            <audio controls type="audio/mpeg" src="https://audio.esv.org/hw/{{ data.long.passage|urlencode }}"><a href="https://audio.esv.org/hw/{{ data.brief.citation|urlencode }}">Listen</a></audio>
+        </div>
+        <br>
+        <p>{{  data.brief.sentence | safe }}</p>
+    </div>
+</div>
+
+<div class="family-reading-long off">
+
+    <h4>{{ data.long.abbreviated_passage }}</h4>
+
+    <div class="reading">
+        {%  if not data.long.deuterocanon %}
+        <div class="bible-audio off">
+            <audio controls type="audio/mpeg" src="https://audio.esv.org/hw/{{ data.long.abbreviated_passage|urlencode }}"><a href="https://audio.esv.org/hw/{{ data.long.abbreviated_passage|urlencode }}">Listen</a></audio>
+        </div>
+        {% endif %}
+        <br>
+        {{  data.long.abbreviated_reading | safe }}
+    </div>
+</div>

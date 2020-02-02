@@ -4,7 +4,7 @@ from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 
 from office.canticles import EP2
-from office.evening_prayer import EPInvitatory, EPCommemorationListing
+from office.evening_prayer import EPInvitatory, EPCommemorationListing, EPReading2
 from office.morning_prayer import MPCommemorationListing
 from office.offices import Office, OfficeSection
 from psalter.utils import get_psalms
@@ -43,7 +43,7 @@ class FamilyCloseOfDay(Office):
             (EPCommemorationListing(self.date), "office/commemoration_listing.html"),
             (FCDOpeningSentence(self.date, self.office_readings), "office/opening_sentence.html"),
             (FCDPsalms(self.date, self.office_readings), "office/minor_office_psalms.html"),
-            (FCDScripture(self.date, self.office_readings), "office/minor_office_scripture.html"),
+            (FCDScripture(self.date, self.office_readings), "office/family_scripture.html"),
             (Pater(self.date, self.office_readings), "office/family_lords_prayer.html"),
             (FCDCollect(self.date, self.office_readings), "office/family_collect.html"),
             (FCDNunc(self.date, self.office_readings), "office/simple_canticle.html"),
@@ -96,7 +96,13 @@ class FCDScripture(OfficeSection):
 
     @cached_property
     def data(self):
-        return {"heading": "A READING FROM HOLY SCRIPTURE", "sentence": self.get_scripture(), "hide_closing": True}
+        ep_reading = EPReading2(self.date, self.office_readings)
+        return {
+            "heading": "A READING FROM HOLY SCRIPTURE",
+            "long": ep_reading.data,
+            "brief": self.get_scripture(),
+            "hide_closing": True,
+        }
 
 
 class Pater(OfficeSection):
