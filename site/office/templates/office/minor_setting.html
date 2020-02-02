@@ -1,0 +1,28 @@
+<h3>
+    {{ setting.title }}
+    <em id="saved_setting_{{ setting.name }}" class="saved off">Saved!</em>
+</h3>
+<section>
+    {% for option in setting.options %}
+
+        <span {% if option.tags %} {% for key, value in option.tags.items %} {{ key }}="{{ value }}" {% endfor %} {% endif %} >
+            <div class="pretty p-default p-round p-smooth">
+                <input
+                        type="radio"
+                        class="settings-radio"
+                        id="setting_{{ setting.name }}_{{ option.value }}"
+                        name="setting_{{ setting.name }}"
+                        value="{{ option.value }}"
+                        data-class_to_hide='{{ option.hide | join:"," }}'
+                        data-class_to_show='{{ option.show | join:"," }}'
+                        {% if forloop.first %}checked{% endif %}/>
+                <div class="state p-primary">
+                    <label for="setting_{{ setting.name }}_{{ option.value }}">{{ option.heading }}</label>
+                </div>
+            </div>
+        </span>
+    {% endfor %}
+    {% if setting.help_text %}
+        <p class="help-text"><em>{{ setting.help_text }}</em></p>
+    {% endif %}
+</section>

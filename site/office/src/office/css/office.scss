@@ -7,12 +7,23 @@ html {
         color: themed('font-color');
         background-color: themed('color-bg');
       }
+
+      &.family {
+        @include themify($themes) {
+          background-color: themed('family-color-bg');
+        }
+      }
   }
 
   body {
     @include themify($themes) {
       color: themed('font-color');
       background-color: themed('color-bg');
+    }
+    &.family {
+      @include themify($themes) {
+        background-color: themed('family-color-bg');
+      }
     }
   }
 
@@ -441,6 +452,7 @@ html {
     margin: 0.5rem auto 0 auto;
     font-size: 0.6rem;
     text-align:center;
+    line-height: 1.1rem;
 
     a {
       @include themify($themes) {
@@ -455,6 +467,8 @@ html {
 
     i {
       padding: 5px 12px;
+      cursor: pointer;
+
     }
 
     .small {

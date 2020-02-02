@@ -1,7 +1,7 @@
 {% load static %}
 {% load render_bundle from webpack_loader %}
 <!DOCTYPE html>
-<html id="html" class="theme-dark">
+<html id="html" class="theme-dark {% if "/family/" in request.get_full_path %} family {% endif %}">
     <head>
         <!-- Google Tag Manager -->
         <script>(function (w, d, s, l, i) {
@@ -30,7 +30,7 @@
         {% endblock %}
     </head>
 
-    <body id="body">
+    <body id="body" {% if "/family/" in request.get_full_path %} class="family" {% endif %}>
         <!-- Google Tag Manager (noscript) -->
         <noscript>
             <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NSB92RP"

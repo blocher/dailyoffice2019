@@ -155,7 +155,22 @@ def settings(request):
         "gplus_title"
     ] = "Settings | {}".format(generic_title)
     settings_meta["url"] = reverse("settings")
-    return render(request, "office/settings.html", {"h1": True, "meta": Meta(**settings_meta)})
+    return render(
+        request, "office/settings.html", {"h1": True, "title": "Daily Office Settings", "meta": Meta(**settings_meta)}
+    )
+
+
+def family_settings(request):
+    settings_meta = meta_defaults.copy()
+    settings_meta["title"] = settings_meta["og_title"] = settings_meta["twitter_title"] = settings_meta[
+        "gplus_title"
+    ] = "Settings | {}".format(generic_title)
+    settings_meta["url"] = reverse("settings")
+    return render(
+        request,
+        "office/settings.html",
+        {"h1": True, "title": "Family Prayer Settings", "meta": Meta(**settings_meta), "family": True},
+    )
 
 
 def signup_thank_you(request):
@@ -167,7 +182,7 @@ def signup_thank_you(request):
     return render(request, "office/signup_thank_you.html", {"h1": True, "meta": Meta(**settings_meta)})
 
 
-def church_year(request, start_year, end_year=None):
+def church_year(request, start_year, end_year=None, family=False):
     church_year = ChurchYear(start_year)
     months = []
     for date_str, date in church_year.dates.items():
@@ -203,8 +218,13 @@ def church_year(request, start_year, end_year=None):
             "seasons": seasons,
             "months": months,
             "meta": Meta(**year_meta),
+            "family": family,
         },
     )
+
+
+def church_year_family(request, start_year, end_year=None):
+    return church_year(request, start_year, end_year, family=True)
 
 
 def about(request):
@@ -218,7 +238,19 @@ def about(request):
 
 
 def now(request):
-    return render(request, "office/evening_prayer/redirect.html", {"meta": meta})
+    return render(
+        request,
+        "office/evening_prayer/redirect.html",
+        {"title": "The Daily Office", "redirect_id": "redirect-to-today", "meta": meta},
+    )
+
+
+def family(request):
+    return render(
+        request,
+        "office/evening_prayer/redirect.html",
+        {"title": "Family Prayer", "redirect_id": "redirect-to-today-family", "meta": meta},
+    )
 
 
 def handle404(request, exception):

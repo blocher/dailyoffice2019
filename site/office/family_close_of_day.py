@@ -15,20 +15,22 @@ class FamilyCloseOfDay(Office):
     name = "Family Prayer at the Close of Day"
     office = "family_close_of_day_prayer"
 
-    start_time = "4:00 PM"
+    start_time = "8:00 PM"
+
+    family = True
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.description = "Office: {}, Date: {}, Commemoration: {}, Psalms (30 Day Cycle): {}, Psalms (60 Day Cycle): {}, First Reading: {}, Second Reading: {}, Prayer Book: {}".format(
-            "Daily Evening Prayer",
+        self.description = "Office: {}, Date: {}, Commemoration: {}, Prayer Book: {}".format(
+            self.name,
             self.get_formatted_date_string(),
             self.date.primary_evening.name,
-            self.thirty_day_psalter_day.mp_psalms.replace(",", " "),
-            self.office_readings.mp_psalms.replace(",", " "),
-            self.office_readings.mp_reading_1,
-            self.office_readings.mp_reading_2,
             "The Book of Common Prayer (2019), Anglican Church in North America",
         )
+
+        self.start_time = datetime.datetime.combine(self.date.date, datetime.time())
+        self.start_time = self.start_time.replace(minute=0, hour=16, second=0)
+        self.end_time = self.start_time.replace(minute=59, hour=23, second=59)
 
         self.start_time = datetime.datetime.combine(self.date.date, datetime.time())
         self.start_time = self.start_time.replace(minute=0, hour=16, second=0)
@@ -52,7 +54,7 @@ class FamilyCloseOfDay(Office):
 class FCDHeading(OfficeSection):
     @cached_property
     def data(self):
-        return {"heading": mark_safe("Family Prayer<br>in the Early Evening"), "calendar_date": self.date}
+        return {"heading": mark_safe("Family Prayer<br>at the Close of Day"), "calendar_date": self.date}
 
 
 class FCDOpeningSentence(OfficeSection):

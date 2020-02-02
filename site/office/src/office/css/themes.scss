@@ -1,6 +1,7 @@
 $themes: (
   light: (
     color-bg: #ffffff,
+    family-color-bg: #f1e9d2,
     font-color: black,
     black: black,
     white: white,
@@ -11,7 +12,8 @@ $themes: (
     settings-shadow: 0px 3px 10px -2px hsla(150, 5%, 65%, 0.5),
   ),
   dark: (
-    color-bg: rgb(31, 31, 31),
+    color-bg: rgb(28, 28, 33),
+    family-color-bg: #1B1E32,
     font-color: rgb(191, 191, 191),
     black: black,
     white: white,

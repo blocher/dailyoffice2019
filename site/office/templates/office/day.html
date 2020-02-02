@@ -49,13 +49,22 @@
             {%  endfor %}
         {%  endif %}
         {% if not nolinks %}
-            <p class="links">
-                <a class="menu-button" href="/morning_prayer/{{  day.date|date:"Y-n-j" }}"><i class="fas fa-sunrise"></i>  Morning</a>
-                <a class="menu-button" href="/midday_prayer/{{  day.date|date:"Y-n-j" }}"><i class="fas fa-sun"></i> Midday</a>
-                <a class="menu-button" href="/evening_prayer/{{  day.date|date:"Y-n-j" }}"><i class="fas fa-sunset"></i> Evening</a>
-                <a class="menu-button" href="/compline/{{  day.date|date:"Y-n-j" }}"><i class="fas fa-moon"></i> Compline</a>
-            </p>
+            {% if family %}
+                    <a class="menu-button" href="/family/morning_prayer/{{  day.date|date:"Y-n-j" }}"><i class="fas fa-sunrise"></i>  Morning</a>
+                    <a class="menu-button" href="/family/midday_prayer/{{  day.date|date:"Y-n-j" }}"><i class="fas fa-sun"></i> Midday</a>
+                    <a class="menu-button" href="/family/early_evening_prayer/{{  day.date|date:"Y-n-j" }}"><i class="fas fa-sunset"></i> Early Evening</a>
+                    <a class="menu-button" href="/family/close_of_day_prayer/{{  day.date|date:"Y-n-j" }}"><i class="fas fa-moon"></i> Close of Day</a>
+                </p>
+            {% else %}
+                <p class="links">
+                    <a class="menu-button" href="/morning_prayer/{{  day.date|date:"Y-n-j" }}"><i class="fas fa-sunrise"></i>  Morning</a>
+                    <a class="menu-button" href="/midday_prayer/{{  day.date|date:"Y-n-j" }}"><i class="fas fa-sun"></i> Midday</a>
+                    <a class="menu-button" href="/evening_prayer/{{  day.date|date:"Y-n-j" }}"><i class="fas fa-sunset"></i> Evening</a>
+                    <a class="menu-button" href="/compline/{{  day.date|date:"Y-n-j" }}"><i class="fas fa-moon"></i> Compline</a>
+                </p>
+            {% endif %}
         {%  endif %}
+
         {% if season %}
             {% if evening %}
                 <p class="season"><span class="color {{  day.evening_season.color|lower }}"></span> {{  day.evening_season.name }}</p>

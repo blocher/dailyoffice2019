@@ -10,18 +10,79 @@ const today = function () {
     return date_string
 };
 
-const current_office = function () {
+const current_family_office = function(hours) {
+
+    if (hours < 11) {
+        return ('family/morning_prayer');
+    }
+
+    if (hours < 16) {
+        return ('family/midday_prayer');
+    }
+
+    if (hours < 20) {
+        return ('family/early_evening_prayer');
+    }
+
+    return ('family/close_of_day_prayer');
+
+}
+
+const current_office = function (redirect_type) {
+
     const date = new Date();
     const hours = date.getHours();
-    const office = hours >= 12 ? 'evening_prayer' : 'morning_prayer';
-    return office
+
+    if (redirect_type == 'family') {
+        return current_family_office(hours);
+    }
+
+    if (hours < 11) {
+        return ('morning_prayer');
+    }
+
+    if (hours < 16) {
+        return ('midday_prayer');
+    }
+
+    return ('evening_prayer');
+
 };
 
 const current_office_label = function () {
-    const date = new Date();
-    const hours = date.getHours();
-    const office = hours >= 12 ? 'Evening Prayer' : 'Morning Prayer';
-    return office
+    let redirect_type = false;
+    if (document.getElementById("redirect-to-today")) {
+        redirect_type = "daily"
+    } else if (document.getElementById("redirect-to-today-family")){
+        redirect_type = "family"
+    }
+    const office = current_office(redirect_type)
+    if (office == 'morning_prayer') {
+        return 'Morning Prayer';
+    }
+    if (office == 'midday_prayer') {
+        return 'Midday Prayer';
+    }
+    if (office == 'evening_prayer') {
+        return 'Evening Prayer';
+    }
+    if (office == 'compline') {
+        return 'Compline';
+    }
+    if (office == 'family/morning_prayer') {
+        return 'Family Prayer in the Morning';
+    }
+    if (office == 'family/midday_prayer') {
+        return 'Family Prayer at Midday';
+    }
+    if (office == 'family/early_evening_prayer') {
+        return 'Family Prayer in the Early Evening';
+    }
+    if (office == 'family/close_of_day_prayer') {
+        return 'Family Prayer at the Close of Day';
+    }
+    // const office = hours >= 12 ? 'Evening Prayer' : 'Morning Prayer';
+    // return office
 };
 
 const getAdvent = function (year) {
@@ -46,9 +107,16 @@ const getChurchYearStartYear = function (date) {
 };
 
 const redirect = function () {
+
+    let redirect_type = false;
     if (document.getElementById("redirect-to-today")) {
+        redirect_type = "daily"
+    } else if (document.getElementById("redirect-to-today-family")){
+        redirect_type = "family"
+    }
+    if (redirect_type) {
         const date_string = today();
-        const office = current_office();
+        const office = current_office(redirect_type);
         const path = `\\${office}\\${date_string}`;
         const xhr = new XMLHttpRequest();
         xhr.open('GET', path);
@@ -59,7 +127,7 @@ const redirect = function () {
                 const elem = document.querySelector("#body");
                 const newBody = xhr.response.querySelector("#body");
                 elem.innerHTML = newBody.innerHTML;
-                document.querySelector("#messages").innerHTML = "<a href='" + path + "'>Permanent link for " + current_office_label() + " for " + new Date().toDateString() + "</a></a></p>";
+                document.querySelector("#messages").innerHTML = "<a href='" + path + "'>Permanent link for " + current_office_label() + " for " + new Date().toLocaleDateString() + "</a></a></p>";
                 settings();
                 setupCalendar();
                 document.getElementById("now-button").classList.add('on')

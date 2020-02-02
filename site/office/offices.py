@@ -64,6 +64,22 @@ class Office(object):
                 "link": reverse("evening_prayer", args=[today.year, today.month, today.day]),
             },
             "compline": {"label": "Compline", "link": reverse("compline", args=[today.year, today.month, today.day])},
+            "family_morning_prayer": {
+                "label": "Morning",
+                "link": reverse("family_morning_prayer", args=[today.year, today.month, today.day]),
+            },
+            "family_midday_prayer": {
+                "label": "Midday",
+                "link": reverse("family_midday_prayer", args=[today.year, today.month, today.day]),
+            },
+            "family_early_evening_prayer": {
+                "label": "Early Evening",
+                "link": reverse("family_early_evening_prayer", args=[today.year, today.month, today.day]),
+            },
+            "family_close_of_day_prayer": {
+                "label": "Close of Day",
+                "link": reverse("family_close_of_day_prayer", args=[today.year, today.month, today.day]),
+            },
             "current": self.office,
             "date": f"{today:%B} {today.day}, {today.year}",
         }

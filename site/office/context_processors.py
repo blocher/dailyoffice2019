@@ -442,6 +442,64 @@ def settings(request):
                 ],
             },
         ],
+        "family_settings": [
+            {
+                "title": "Psalter Cycle",
+                "name": "psalter",
+                "help_text": mark_safe(
+                    "During Morning and Evening Prayer, pray through all the Psalms either every <strong>60 days</strong> (fewer psalms per day) or once every <strong>30 days</strong> (more psalms per day)."
+                ),
+                "options": [
+                    {
+                        "value": "60",
+                        "hide": ["psalter-thirty"],
+                        "show": ["psalter-sixty"],
+                        "heading": "60 Day",
+                        "text": "Pray through the psalms once every 60 days",
+                    },
+                    {
+                        "value": "30",
+                        "hide": ["psalter-sixty"],
+                        "show": ["psalter-thirty"],
+                        "heading": "30 Day",
+                        "text": "Pray through the psalms once every 30 days",
+                    },
+                ],
+            }
+        ],
+        "family_minor_settings": [
+            {
+                "title": "Visual Theme",
+                "name": "theme",
+                "help_text": "Use light mode or dark mode, or default to your computer's setting for light or dark mode",
+                "options": [
+                    {
+                        "value": "theme-auto",
+                        "hide": [],
+                        "show": [],
+                        "heading": "Use Computer Setting",
+                        "text": "The long form of the intro and absolution are used every day",
+                        "tags": {"class": "theme-selector", "data-theme": "theme-auto"},
+                    },
+                    {
+                        "value": "theme-light",
+                        "hide": [],
+                        "show": [],
+                        "heading": "Light Mode",
+                        "text": "The long form of the intro and absolution are used only on fast days",
+                        "tags": {"class": "theme-selector", "data-theme": "theme-light"},
+                    },
+                    {
+                        "value": "theme-dark",
+                        "hide": [],
+                        "show": [],
+                        "heading": "Dark Mode",
+                        "text": "The short form of the intro and absolution are used every day",
+                        "tags": {"class": "theme-selector", "data-theme": "theme-dark"},
+                    },
+                ],
+            }
+        ],
     }
 
 

@@ -16,16 +16,14 @@ class FamilyEarlyEvening(Office):
 
     start_time = "4:00 PM"
 
+    family = True
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.description = "Office: {}, Date: {}, Commemoration: {}, Psalms (30 Day Cycle): {}, Psalms (60 Day Cycle): {}, First Reading: {}, Second Reading: {}, Prayer Book: {}".format(
-            "Daily Evening Prayer",
+        self.description = "Office: {}, Date: {}, Commemoration: {}, Prayer Book: {}".format(
+            self.name,
             self.get_formatted_date_string(),
             self.date.primary_evening.name,
-            self.thirty_day_psalter_day.mp_psalms.replace(",", " "),
-            self.office_readings.mp_psalms.replace(",", " "),
-            self.office_readings.mp_reading_1,
-            self.office_readings.mp_reading_2,
             "The Book of Common Prayer (2019), Anglican Church in North America",
         )
 

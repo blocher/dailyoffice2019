@@ -49,5 +49,9 @@
             {% include module.1  with data=module.0.data only %}
         {% endfor %}
     </div>
-    {% include "office/footer.html" %}
+    {% if office.family %}
+        {% include "office/footer_family.html" %}
+    {% else %}
+        {% include "office/footer.html" %}
+    {% endif %}
 {%  endblock %}

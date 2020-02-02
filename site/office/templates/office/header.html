@@ -1,12 +1,25 @@
-<p class="intro-heading-1">The Daily Office</p>
+{% if "/family/" in request.get_full_path %}
+    <p class="intro-heading-1">Family Prayer</p>
+{% else %}
+    <p class="intro-heading-1">The Daily Office</p>
+{% endif %}
 <p class="intro-heading-2">according to the Book of Common Prayer, 2019<br>Anglican Church in North America</p>
+
 <div id="menu">
     <div class="menu-wrapper">
         <div class="menu">
-            <a href="/" id="now-button" class="menu-button {%  if on == "now-button" %} on {% endif %}"><i class="fal fa-clock"></i> <span class="first-letter">N</span>ow</a>
-            <a id="calendar-button" href="/church_year/2019-2020" class="menu-button {%  if on == "calendar-button" %} on {% endif %}"><i class="fal fa-calendar-alt"></i> <span class="first-letter">C</span>alendar</a>
-            <a id="settings-button" href="/settings" class="menu-button {%  if on == "settings-button" %} on {% endif %}"><i class="fal fa-cog"></i> <span class="first-letter">S</span>ettings</a>
-            <a id="about-button" href="/about" class="menu-button {%  if on == "about-button" %} on {% endif %}"><i class="fal fa-cross"></i> <span class="first-letter">A</span>bout</a>
+            {% if "/family/" in request.get_full_path %}
+                <a href="/family/" id="now-button" class="menu-button {%  if on == "now-button" %} on {% endif %}"><i class="fal fa-clock"></i> <span class="first-letter">N</span>ow</a>
+                <a id="calendar-button" href="/family/church_year/2019-2020" class="menu-button {%  if on == "calendar-button" %} on {% endif %}"><i class="fal fa-calendar-alt"></i> <span class="first-letter">C</span>alendar</a>
+                <a id="settings-button" href="/family/settings" class="menu-button {%  if on == "settings-button" %} on {% endif %}"><i class="fal fa-cog"></i> <span class="first-letter">S</span>ettings</a>
+                <a id="about-button" href="/family/about" class="menu-button {%  if on == "about-button" %} on {% endif %}"><i class="fal fa-cross"></i> <span class="first-letter">A</span>bout</a>
+            {% else %}
+               <a href="/" id="now-button" class="menu-button {%  if on == "now-button" %} on {% endif %}"><i class="fal fa-clock"></i> <span class="first-letter">N</span>ow</a>
+                <a id="calendar-button" href="/church_year/2019-2020" class="menu-button {%  if on == "calendar-button" %} on {% endif %}"><i class="fal fa-calendar-alt"></i> <span class="first-letter">C</span>alendar</a>
+                <a id="settings-button" href="/settings" class="menu-button {%  if on == "settings-button" %} on {% endif %}"><i class="fal fa-cog"></i> <span class="first-letter">S</span>ettings</a>
+                <a id="about-button" href="/about" class="menu-button {%  if on == "about-button" %} on {% endif %}"><i class="fal fa-cross"></i> <span class="first-letter">A</span>bout</a>
+            {% endif %}
+
         </div>
         <div class="appearance-selectors">
                 <i data-fontsize="12" class="font-size-selector fal fa-font-case small"></i>
@@ -14,9 +27,17 @@
                 <i data-fontsize="20" class="font-size-selector fal fa-font-case large"></i>
                 <i data-theme="theme-light" class="theme-selector fas fa-lightbulb medium"></i>
                 <i data-theme="theme-dark" class="theme-selector fas fa-lightbulb-slash medium"></i>
-            </div>
         </div>
-    <div id="messages"></div>
+<!--        <div class="family_prayer_mode">-->
+<!--            <small>Full Daily Office</small> <input class="toggle" type="checkbox" /> <small>Short Family Prayer</small>-->
+<!--        </div>-->
+    </div>
+
 </div>
 
+{% if "/family/" in request.get_full_path %}
+    <p class="intro-heading-2"><br>Looking for the full Daily Office services?<br><a href="/">Go to the Daily Office site</a></p>
+{% else %}
+    <p class="intro-heading-2"><br>Looking for a shorter service?<br><a href="/family">Go to Family Prayer site</a></p>
+{% endif %}
 

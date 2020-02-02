@@ -264,6 +264,12 @@ urlpatterns = [
         distill_func=get_church_years,
     ),
     distill_path(
+        "family/church_year/<int:start_year>-<int:end_year>/",
+        office_views.church_year_family,
+        name="church_year_family",
+        distill_func=get_church_years,
+    ),
+    distill_path(
         "family/morning_prayer/<int:year>-<int:month>-<int:day>/",
         office_views.family_morning_prayer,
         name="family_morning_prayer",
@@ -288,9 +294,12 @@ urlpatterns = [
         distill_func=get_days,
     ),
     distill_path("about/", office_views.about, name="about", distill_func=get_about),
+    distill_path("family/about/", office_views.about, name="about", distill_func=get_about),
     distill_path("settings/", office_views.settings, name="settings", distill_func=get_about),
+    distill_path("family/settings/", office_views.family_settings, name="family_settings", distill_func=get_about),
     distill_path("signup-thank-you/", office_views.signup_thank_you, name="signup_thank_you", distill_func=get_none),
     distill_path("", office_views.now, distill_file="index.html", name="now", distill_func=get_now),
+    distill_path("family/", office_views.family, distill_file="index.html", name="family", distill_func=get_now),
     distill_path(
         "sitemap.xml", sitemap_view, name="django.contrib.sitemaps.views.sitemap", distill_func=get_distill_sitemap
     ),
