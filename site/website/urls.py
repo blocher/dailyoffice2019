@@ -204,6 +204,142 @@ class HomeSitemap(Sitemap):
         return "/"
 
 
+class FamilyMorningPrayerSitemap(Sitemap):
+    changefreq = "daily"
+    priority = 0.7
+    protocol = "https"
+
+    def items(self):
+        days = []
+        for day in get_days():
+            days.append(day)
+        return days
+
+    def lastmod(self, obj):
+        return date.today()
+
+    def location(self, obj):
+        return "/family/morning_prayer/{}-{}-{}".format(obj["year"], obj["month"], obj["day"])
+
+
+class FamilyMiddayPrayerSitemap(Sitemap):
+    changefreq = "daily"
+    priority = 0.5
+    protocol = "https"
+
+    def items(self):
+        days = []
+        for day in get_days():
+            days.append(day)
+        return days
+
+    def lastmod(self, obj):
+        return date.today()
+
+    def location(self, obj):
+        return "/family/midday_prayer/{}-{}-{}".format(obj["year"], obj["month"], obj["day"])
+
+
+class FamilyEveningPrayerSitemap(Sitemap):
+    changefreq = "daily"
+    priority = 0.7
+    protocol = "https"
+
+    def items(self):
+        days = []
+        for day in get_days():
+            days.append(day)
+        return days
+
+    def lastmod(self, obj):
+        return date.today()
+
+    def location(self, obj):
+        return "/family/evening_prayer/{}-{}-{}".format(obj["year"], obj["month"], obj["day"])
+
+
+class FamilyComplineSitemap(Sitemap):
+    changefreq = "daily"
+    priority = 0.5
+    protocol = "https"
+
+    def items(self):
+        days = []
+        for day in get_days():
+            days.append(day)
+        return days
+
+    def lastmod(self, obj):
+        return date.today()
+
+    def location(self, obj):
+        return "/family/compline/{}-{}-{}".format(obj["year"], obj["month"], obj["day"])
+
+
+class FamilyCalendarSitemap(Sitemap):
+    changefreq = "daily"
+    priority = 0.8
+    protocol = "https"
+
+    def items(self):
+        years = []
+        for year in get_church_years():
+            print(year)
+            years.append(year)
+        return years
+
+    def lastmod(self, obj):
+        return date.today()
+
+    def location(self, obj):
+        return "/family/church_year/{}-{}".format(obj["start_year"], obj["end_year"])
+
+
+class FamilySettingsSitemap(Sitemap):
+    changefreq = "daily"
+    priority = 0.3
+    protocol = "https"
+
+    def items(self):
+        return ["settings"]
+
+    def lastmod(self, obj):
+        return date.today()
+
+    def location(self, obj):
+        return "/family/{}".format(obj)
+
+
+class FamilyAboutSitemap(Sitemap):
+    changefreq = "daily"
+    priority = 0.9
+    protocol = "https"
+
+    def items(self):
+        return ["about"]
+
+    def lastmod(self, obj):
+        return date.today()
+
+    def location(self, obj):
+        return "/family/{}".format(obj)
+
+
+class FamilyHomeSitemap(Sitemap):
+    changefreq = "always"
+    priority = 1.0
+    protocol = "https"
+
+    def items(self):
+        return ["home"]
+
+    def lastmod(self, obj):
+        return False
+
+    def location(self, obj):
+        return "/family"
+
+
 sitemaps = {
     "morning_prayer": MorningPrayerSitemap(),
     "midday_prayer": MiddayPrayerSitemap(),
@@ -213,6 +349,14 @@ sitemaps = {
     "settings": SettingsSitemap(),
     "about": AboutSitemap(),
     "home": HomeSitemap(),
+    "family_morning_prayer": FamilyMorningPrayerSitemap(),
+    "family_midday_prayer": FamilyMiddayPrayerSitemap(),
+    "family_early_evening_prayer": FamilyEveningPrayerSitemap(),
+    "family_compline": FamilyComplineSitemap(),
+    "family_calendar": FamilyCalendarSitemap(),
+    "family_settings": FamilySettingsSitemap(),
+    "family_about": FamilyAboutSitemap(),
+    "family_home": FamilyHomeSitemap(),
 }
 
 
@@ -234,7 +378,7 @@ urlpatterns = [
     # path("sermon/<uuid:id>", sermon_views.sermon, name="sermon"),
     # path("djrichtextfield/", include("djrichtextfield.urls")),
     # path("jet/", include("jet.urls", "jet")),
-    # path("admin/", admin.site.urls),
+    path("admin/", admin.site.urls),
     # path("admin/", include("material.admin.urls")),
     distill_path(
         "morning_prayer/<int:year>-<int:month>-<int:day>/",

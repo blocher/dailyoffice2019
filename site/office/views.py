@@ -153,7 +153,7 @@ def settings(request):
     settings_meta = meta_defaults.copy()
     settings_meta["title"] = settings_meta["og_title"] = settings_meta["twitter_title"] = settings_meta[
         "gplus_title"
-    ] = "Settings | {}".format(generic_title)
+    ] = "Daily Office Settings | {}".format(generic_title)
     settings_meta["url"] = reverse("settings")
     return render(
         request, "office/settings.html", {"h1": True, "title": "Daily Office Settings", "meta": Meta(**settings_meta)}
@@ -164,7 +164,7 @@ def family_settings(request):
     settings_meta = meta_defaults.copy()
     settings_meta["title"] = settings_meta["og_title"] = settings_meta["twitter_title"] = settings_meta[
         "gplus_title"
-    ] = "Settings | {}".format(generic_title)
+    ] = "Family Prayer Settings | {}".format(generic_title)
     settings_meta["url"] = reverse("settings")
     return render(
         request,

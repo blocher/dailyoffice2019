@@ -35,6 +35,7 @@ ALLOWED_HOSTS = ["*", "127.0.0.1:8000", "127.0.0.1", "dailyoffice2019.com", "www
 # Application definition
 
 INSTALLED_APPS = [
+    "django.contrib.admin",
     # "material.admin",
     # "django.contrib.admin",
     "django.contrib.auth",

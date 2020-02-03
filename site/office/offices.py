@@ -13,7 +13,7 @@ class Office(object):
     modules = []
 
     def get_formatted_date_string(self):
-        "{dt:%A} {dt:%B} {dt.day}, {dt.year}".format(dt=self.date.date)
+        return "{dt:%A} {dt:%B} {dt.day}, {dt.year}".format(dt=self.date.date)
 
     def __init__(self, date):
         from churchcal.calculations import get_calendar_date
