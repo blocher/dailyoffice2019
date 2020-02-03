@@ -3,9 +3,16 @@ import datetime
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 
-from office.evening_prayer import EPInvitatory, EPCommemorationListing, EPReading1, EPCollects, EPCollectsOfTheDay
+from office.evening_prayer import (
+    EPInvitatory,
+    EPCommemorationListing,
+    EPReading1,
+    EPCollects,
+    EPCollectsOfTheDay,
+    EPOpeningSentence,
+)
 from office.morning_prayer import MPCommemorationListing
-from office.offices import Office, OfficeSection
+from office.offices import Office, OfficeSection, FMCreed, FamilyRubricSection
 from psalter.utils import get_psalms
 
 
@@ -36,9 +43,12 @@ class FamilyEarlyEvening(Office):
         return [
             (FEEHeading(self.date), "office/heading.html"),
             (EPCommemorationListing(self.date), "office/commemoration_listing.html"),
-            (FEEOpeningSentence(self.date, self.office_readings), "office/opening_sentence.html"),
+            (FEERubricSection(self.date, self.office_readings), "office/rubric_section.html"),
+            (FEEOpeningSentence(self.date, self.office_readings), "office/family_opening_sentence.html"),
             (EPInvitatory(self.date), "office/evening_prayer/hymn.html"),
             (FEEScripture(self.date, self.office_readings), "office/family_scripture.html"),
+            (FMCreed(self.date, self.office_readings), "office/family_creed.html"),
+            (FEEIntercessions(self.date, self.office_readings), "office/rubric_section.html"),
             (Pater(self.date, self.office_readings), "office/family_lords_prayer.html"),
             (FPCollect(self.date, self.office_readings), "office/family_collect.html"),
         ]
@@ -50,18 +60,32 @@ class FEEHeading(OfficeSection):
         return {"heading": mark_safe("Family Prayer<br>in the Early Evening"), "calendar_date": self.date}
 
 
-class FEEOpeningSentence(OfficeSection):
-    def get_sentence(self):
+class FEERubricSection(OfficeSection):
+    @cached_property
+    def data(self):
         return {
-            "sentence": mark_safe(
-                "How excellent is your mercy, O God!<br>&nbsp;&nbsp;&nbsp;The children of men shall take refuge under the shadow of your wings.<br>For with you is the well of life,<br>&nbsp;&nbsp;&nbsp;and in your light shall we see light."
-            ),
-            "citation": "PSALM 36:7, 9",
+            "rubric": mark_safe(
+                "<br>These devotions follow the basic structure of the Daily Office of the Church and are particularly appropriate for families with young children.<br><br>The Reading and the Collect may be read by one person, and the other parts said in unison, or in some other convenient manner.<br><br>This devotion may be used before or after the evening meal."
+            )
+        }
+
+
+class FEEOpeningSentence(OfficeSection):
+    def get_sentences(self):
+
+        return {
+            "seasonal": EPOpeningSentence(self.date, self.office_readings).get_sentence(),
+            "fixed": {
+                "sentence": mark_safe(
+                    "How excellent is your mercy, O God!<br>&nbsp;&nbsp;&nbsp;The children of men shall take refuge under the shadow of your wings.<br>For with you is the well of life,<br>&nbsp;&nbsp;&nbsp;and in your light shall we see light."
+                ),
+                "citation": "PSALM 36:7, 9",
+            },
         }
 
     @cached_property
     def data(self):
-        return {"heading": "Opening Sentence", "sentence": self.get_sentence()}
+        return {"heading": "Opening Sentence", "sentences": self.get_sentences()}
 
 
 class FEEScripture(OfficeSection):
@@ -95,6 +119,17 @@ class FEEScripture(OfficeSection):
             "long": ep_reading.data,
             "brief": self.get_scripture(),
             "hide_closing": True,
+        }
+
+
+class FEEIntercessions(OfficeSection):
+    @cached_property
+    def data(self):
+        return {
+            "title": "Intercessions",
+            "rubric": mark_safe(
+                "A hymn or canticle may be used.<br><br>Prayers may be offered for ourselves and others. It is appropriate that prayers of thanksgiving for the blessings of the day, and penitence for our sins, be included."
+            ),
         }
 
 

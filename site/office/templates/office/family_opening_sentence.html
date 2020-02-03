@@ -1,0 +1,12 @@
+<h2>{{ data.heading  }}</h2>
+{% if data.rubric %}
+    <em>{{ data.rubric }}</em>
+{% endif %}
+<div class="opening-fixed">
+    <p>{{  data.sentences.fixed.sentence }}</p>
+    <h5>{{  data.sentences.fixed.citation }}</h5>
+</div>
+<div class="opening-seasonal off">
+    <p>{{  data.sentences.seasonal.sentence }}</p>
+    <h5>{{  data.sentences.seasonal.citation }}</h5>
+</div>

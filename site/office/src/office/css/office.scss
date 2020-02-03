@@ -119,6 +119,10 @@ html {
 
       line-height: 1.6rem;
 
+      &.rubric {
+        line-height: .9rem;
+      }
+
       &.intro-heading-1 {
         font-family: adobe-caslon-pro, serif;
         font-display: swap;
@@ -172,6 +176,7 @@ html {
       font-weight: 300;
       font-style: italic;
       font-size: .8rem;
+      line-height: .9rem;
   }
 
   strong {

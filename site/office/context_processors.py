@@ -525,7 +525,49 @@ def settings(request):
                         "tags": {"class": "theme-selector", "data-theme": "theme-dark"},
                     },
                 ],
-            }
+            },
+            {
+                "title": "Opening Sentence",
+                "name": "family-opening-setence",
+                "help_text": "Use the same opening sentences each day based on the time of the day, or use the seasonal options from the Daily Office",
+                "options": [
+                    {
+                        "value": "family-opening-sentence-fixed",
+                        "hide": ["opening-seasonal"],
+                        "show": ["opening-fixed"],
+                        "heading": "Fixed by Time of Day",
+                        "text": "No creed",
+                    },
+                    {
+                        "value": "family-opening-sentence-seasonaal",
+                        "hide": ["opening-fixed"],
+                        "show": ["opening-seasonal"],
+                        "heading": "Seasonal",
+                        "text": "Include Creed",
+                    },
+                ],
+            },
+            {
+                "title": "Apostles' Creed",
+                "name": "family-creed",
+                "help_text": "Include the Apostle's Creed before the prayers during 'In the Morning' and 'In the Early Evening' Family Prayer",
+                "options": [
+                    {
+                        "value": "family-creed-no",
+                        "hide": ["family-creed"],
+                        "show": [],
+                        "heading": "No",
+                        "text": "No creed",
+                    },
+                    {
+                        "value": "family-creed-yes",
+                        "hide": [],
+                        "show": ["family-creed"],
+                        "heading": "Yes",
+                        "text": "Include Creed",
+                    },
+                ],
+            },
         ],
     }
 

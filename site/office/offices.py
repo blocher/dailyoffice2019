@@ -2,6 +2,7 @@ import datetime
 
 from django.urls import reverse
 from django.utils.functional import cached_property
+from django.utils.safestring import mark_safe
 
 from office.models import HolyDayOfficeDay, StandardOfficeDay, ThirtyDayPsalterDay
 
@@ -195,4 +196,31 @@ class Dismissal(OfficeSection):
             "people": people,
             "grace": self.get_grace(),
             "fixed_grace": self.get_fixed_grace(),
+        }
+
+
+class FMCreed(OfficeSection):
+    @cached_property
+    def data(self):
+        return {}
+
+
+class FamilyRubricSection(OfficeSection):
+    @cached_property
+    def data(self):
+        return {
+            "rubric": mark_safe(
+                "<br>These devotions follow the basic structure of the Daily Office of the Church and are particularly appropriate for families with young children.<br><br>The Reading and the Collect may be read by one person, and the other parts said in unison, or in some other convenient manner."
+            )
+        }
+
+
+class FamilyIntercessions(OfficeSection):
+    @cached_property
+    def data(self):
+        return {
+            "title": "Intercessions",
+            "rubric": mark_safe(
+                "A hymn or canticle may be used.<br><br>Prayers may be offered for ourselves and others."
+            ),
         }

@@ -1,3 +1,6 @@
 <h2>{{ data.heading  }}</h2>
+{% if data.rubric %}
+    <em>{{ data.rubric }}</em>
+{% endif %}
 <p>{{  data.sentence.sentence }}</p>
 <h5>{{  data.sentence.citation }}</h5>

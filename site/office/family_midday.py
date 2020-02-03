@@ -5,8 +5,8 @@ from django.utils.safestring import mark_safe
 
 from office.evening_prayer import EPCollectsOfTheDay
 from office.midday_prayer import MiddayPrayers
-from office.morning_prayer import MPCommemorationListing, MPReading2
-from office.offices import Office, OfficeSection
+from office.morning_prayer import MPCommemorationListing, MPReading2, MPOpeningSentence
+from office.offices import Office, OfficeSection, FMCreed, FamilyRubricSection
 from psalter.utils import get_psalms
 
 
@@ -37,9 +37,11 @@ class FamilyMidday(Office):
         return [
             (FNHeading(self.date), "office/heading.html"),
             (MPCommemorationListing(self.date), "office/commemoration_listing.html"),
-            (FNOpeningSentence(self.date, self.office_readings), "office/opening_sentence.html"),
+            (FamilyRubricSection(self.date, self.office_readings), "office/rubric_section.html"),
+            (FNOpeningSentence(self.date, self.office_readings), "office/family_opening_sentence.html"),
             (FNPsalms(self.date, self.office_readings), "office/minor_office_psalms.html"),
             (FNScripture(self.date, self.office_readings), "office/family_scripture.html"),
+            (FNIntercessions(self.date, self.office_readings), "office/rubric_section.html"),
             (Pater(self.date, self.office_readings), "office/family_lords_prayer.html"),
             (FPCollect(self.date, self.office_readings), "office/family_collect.html"),
         ]
@@ -48,19 +50,29 @@ class FamilyMidday(Office):
 class FNHeading(OfficeSection):
     @cached_property
     def data(self):
-        return {"heading": mark_safe("Family Prayer<br>At Midday"), "calendar_date": self.date}
+        return {
+            "heading": mark_safe("Family Prayer<br>At Midday"),
+            "rubric": mark_safe(
+                "These devotions follow the basic structure of the Daily Office of the Church and are particularly appropriate for families with young children.<br><br>The Reading and the Collect may be read by one person, and the other parts said in unison, or in some other convenient manner."
+            ),
+            "calendar_date": self.date,
+        }
 
 
 class FNOpeningSentence(OfficeSection):
-    def get_sentence(self):
+    def get_sentences(self):
+
         return {
-            "sentence": "Blessed be the God and Father of our Lord Jesus Christ, who has blessed us in Christ with every spiritual blessing in the heavenly places.",
-            "citation": "EPHESIANS 1:3",
+            "seasonal": MPOpeningSentence(self.date, self.office_readings).get_sentence(),
+            "fixed": {
+                "sentence": "Blessed be the God and Father of our Lord Jesus Christ, who has blessed us in Christ with every spiritual blessing in the heavenly places.",
+                "citation": "EPHESIANS 1:3",
+            },
         }
 
     @cached_property
     def data(self):
-        return {"heading": "Opening Sentence", "sentence": self.get_sentence()}
+        return {"heading": "Opening Sentence", "sentences": self.get_sentences()}
 
 
 class FNPsalms(OfficeSection):
@@ -97,6 +109,12 @@ class FNScripture(OfficeSection):
             "brief": self.get_scripture(),
             "hide_closing": True,
         }
+
+
+class FNIntercessions(OfficeSection):
+    @cached_property
+    def data(self):
+        return {"title": "Intercessions", "rubric": mark_safe("Prayers may be offered for ourselves and others.")}
 
 
 class Pater(OfficeSection):

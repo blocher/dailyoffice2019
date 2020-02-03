@@ -5,9 +5,16 @@ from django.utils.safestring import mark_safe
 
 from office.canticles import EP2
 from office.compline import ComplinePrayers
-from office.evening_prayer import EPInvitatory, EPCommemorationListing, EPReading2, EPCollectsOfTheDay, EPCollects
+from office.evening_prayer import (
+    EPInvitatory,
+    EPCommemorationListing,
+    EPReading2,
+    EPCollectsOfTheDay,
+    EPCollects,
+    EPOpeningSentence,
+)
 from office.morning_prayer import MPCommemorationListing
-from office.offices import Office, OfficeSection
+from office.offices import Office, OfficeSection, FMCreed, FamilyRubricSection
 from psalter.utils import get_psalms
 
 
@@ -42,9 +49,11 @@ class FamilyCloseOfDay(Office):
         return [
             (FCDHeading(self.date), "office/heading.html"),
             (EPCommemorationListing(self.date), "office/commemoration_listing.html"),
-            (FCDOpeningSentence(self.date, self.office_readings), "office/opening_sentence.html"),
+            (FamilyRubricSection(self.date, self.office_readings), "office/rubric_section.html"),
+            (FCDOpeningSentence(self.date, self.office_readings), "office/family_opening_sentence.html"),
             (FCDPsalms(self.date, self.office_readings), "office/minor_office_psalms.html"),
             (FCDScripture(self.date, self.office_readings), "office/family_scripture.html"),
+            (FCDIntercessions(self.date, self.office_readings), "office/rubric_section.html"),
             (Pater(self.date, self.office_readings), "office/family_lords_prayer.html"),
             (FCDCollect(self.date, self.office_readings), "office/family_collect.html"),
             (FCDNunc(self.date, self.office_readings), "office/simple_canticle.html"),
@@ -55,19 +64,30 @@ class FamilyCloseOfDay(Office):
 class FCDHeading(OfficeSection):
     @cached_property
     def data(self):
-        return {"heading": mark_safe("Family Prayer<br>at the Close of Day"), "calendar_date": self.date}
+        return {
+            "heading": mark_safe("Family Prayer<br>at the Close of Day"),
+            "rubric": mark_safe(
+                "These devotions follow the basic structure of the Daily Office of the Church and are particularly appropriate for families with young children.<br><br>The Reading and the Collect may be read by one person, and the other parts said in unison, or in some other convenient manner."
+            ),
+            "calendar_date": self.date,
+        }
 
 
 class FCDOpeningSentence(OfficeSection):
-    def get_sentence(self):
+    def get_sentences(self):
+
         return {
-            "sentence": "I will lay me down in peace, and take my rest; for you, LORD, only, make me dwell in safety.",
-            "citation": "PSALM 4:8",
+            "seasonal": EPOpeningSentence(self.date, self.office_readings).get_sentence(),
+            "fixed": {
+                "sentence": "I will lay me down in peace, and take my rest; for you, LORD, only, make me dwell in safety.",
+                "citation": "PSALM 4:8",
+            },
         }
 
     @cached_property
     def data(self):
-        return {"heading": "Opening Sentence", "sentence": self.get_sentence()}
+        print({"heading": "Opening Sentence", "sentences": self.get_sentences()})
+        return {"heading": "Opening Sentence", "sentences": self.get_sentences()}
 
 
 class FCDPsalms(OfficeSection):
@@ -103,6 +123,17 @@ class FCDScripture(OfficeSection):
             "long": ep_reading.data,
             "brief": self.get_scripture(),
             "hide_closing": True,
+        }
+
+
+class FCDIntercessions(OfficeSection):
+    @cached_property
+    def data(self):
+        return {
+            "title": "Intercessions",
+            "rubric": mark_safe(
+                "A hymn or canticle may be used.<br><br>Prayers may be offered for ourselves and others. It is appropriate that prayers of thanksgiving for the blessings of the day, and penitence for our sins, be included."
+            ),
         }
 
 

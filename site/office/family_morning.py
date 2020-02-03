@@ -3,8 +3,8 @@ import datetime
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 
-from office.morning_prayer import MPCommemorationListing, MPReading1, MPCollectsOfTheDay, MPCollects
-from office.offices import Office, OfficeSection
+from office.morning_prayer import MPCommemorationListing, MPReading1, MPCollectsOfTheDay, MPCollects, MPOpeningSentence
+from office.offices import Office, OfficeSection, FMCreed, FamilyRubricSection, FamilyIntercessions
 from psalter.utils import get_psalms
 
 
@@ -35,9 +35,12 @@ class FamilyMorning(Office):
         return [
             (FMHeading(self.date), "office/heading.html"),
             (MPCommemorationListing(self.date), "office/commemoration_listing.html"),
-            (FMOpeningSentence(self.date, self.office_readings), "office/opening_sentence.html"),
+            (FamilyRubricSection(self.date, self.office_readings), "office/rubric_section.html"),
+            (FMOpeningSentence(self.date, self.office_readings), "office/family_opening_sentence.html"),
             (FMPsalms(self.date, self.office_readings), "office/minor_office_psalms.html"),
             (FMScripture(self.date, self.office_readings), "office/family_scripture.html"),
+            (FMCreed(self.date, self.office_readings), "office/family_creed.html"),
+            (FMIntercessions(self.date, self.office_readings), "office/rubric_section.html"),
             (Pater(self.date, self.office_readings), "office/family_lords_prayer.html"),
             (FMCollect(self.date, self.office_readings), "office/family_collect.html"),
         ]
@@ -50,15 +53,19 @@ class FMHeading(OfficeSection):
 
 
 class FMOpeningSentence(OfficeSection):
-    def get_sentence(self):
+    def get_sentences(self):
+
         return {
-            "sentence": "O Lord, open my lips, and my mouth shall show forth your praise.",
-            "citation": "PSALM 51:15",
+            "seasonal": MPOpeningSentence(self.date, self.office_readings).get_sentence(),
+            "fixed": {
+                "sentence": "O Lord, open my lips, and my mouth shall show forth your praise.",
+                "citation": "PSALM 51:15",
+            },
         }
 
     @cached_property
     def data(self):
-        return {"heading": "Opening Sentence", "sentence": self.get_sentence()}
+        return {"heading": "Opening Sentence", "sentences": self.get_sentences()}
 
 
 class FMPsalms(OfficeSection):
@@ -98,6 +105,17 @@ class FMScripture(OfficeSection):
             "long": mp_reading.data,
             "brief": self.get_scripture(),
             "hide_closing": True,
+        }
+
+
+class FMIntercessions(OfficeSection):
+    @cached_property
+    def data(self):
+        return {
+            "title": "Intercessions",
+            "rubric": mark_safe(
+                "A hymn or canticle may be used.<br><br>Prayers may be offered for ourselves and others."
+            ),
         }
 
 
