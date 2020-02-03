@@ -148,7 +148,6 @@ class CalendarSitemap(Sitemap):
     def items(self):
         years = []
         for year in get_church_years():
-            print(year)
             years.append(year)
         return years
 
@@ -284,7 +283,6 @@ class FamilyCalendarSitemap(Sitemap):
     def items(self):
         years = []
         for year in get_church_years():
-            print(year)
             years.append(year)
         return years
 
