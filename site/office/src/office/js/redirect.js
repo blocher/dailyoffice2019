@@ -81,8 +81,6 @@ const current_office_label = function () {
     if (office == 'family/close_of_day_prayer') {
         return 'Family Prayer at the Close of Day';
     }
-    // const office = hours >= 12 ? 'Evening Prayer' : 'Morning Prayer';
-    // return office
 };
 
 const getAdvent = function (year) {
