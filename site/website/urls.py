@@ -239,7 +239,7 @@ class FamilyMiddayPrayerSitemap(Sitemap):
         return "/family/midday_prayer/{}-{}-{}".format(obj["year"], obj["month"], obj["day"])
 
 
-class FamilyEveningPrayerSitemap(Sitemap):
+class FamilyEarlyEveningPrayerSitemap(Sitemap):
     changefreq = "daily"
     priority = 0.7
     protocol = "https"
@@ -254,10 +254,10 @@ class FamilyEveningPrayerSitemap(Sitemap):
         return date.today()
 
     def location(self, obj):
-        return "/family/evening_prayer/{}-{}-{}".format(obj["year"], obj["month"], obj["day"])
+        return "/family/early_evening_prayer/{}-{}-{}".format(obj["year"], obj["month"], obj["day"])
 
 
-class FamilyComplineSitemap(Sitemap):
+class FamilyCloseOfDaySitemap(Sitemap):
     changefreq = "daily"
     priority = 0.5
     protocol = "https"
@@ -272,7 +272,7 @@ class FamilyComplineSitemap(Sitemap):
         return date.today()
 
     def location(self, obj):
-        return "/family/compline/{}-{}-{}".format(obj["year"], obj["month"], obj["day"])
+        return "/family/close_of_day_prayer/{}-{}-{}".format(obj["year"], obj["month"], obj["day"])
 
 
 class FamilyCalendarSitemap(Sitemap):
@@ -349,8 +349,8 @@ sitemaps = {
     "home": HomeSitemap(),
     "family_morning_prayer": FamilyMorningPrayerSitemap(),
     "family_midday_prayer": FamilyMiddayPrayerSitemap(),
-    "family_early_evening_prayer": FamilyEveningPrayerSitemap(),
-    "family_compline": FamilyComplineSitemap(),
+    "family_early_evening_prayer": FamilyEarlyEveningPrayerSitemap(),
+    "family_close_of_day": FamilyCloseOfDaySitemap(),
     "family_calendar": FamilyCalendarSitemap(),
     "family_settings": FamilySettingsSitemap(),
     "family_about": FamilyAboutSitemap(),

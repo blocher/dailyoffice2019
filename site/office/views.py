@@ -16,7 +16,7 @@ from office.morning_prayer import MorningPrayer
 from website.settings import FIRST_BEGINNING_YEAR, LAST_BEGINNING_YEAR
 
 generic_title = "The Daily Office | Morning and Evening Prayer according to the Book of Common Prayer (2019)"
-generic_description = "This site invites you to join with Christians around the world in praying with the Church, at any time or in any place you may find yourself. It makes it easy to pray daily morning, midday, evening, and compline (bedtime) prayer without flipping pages, searching for scripture readings or calendars, or interpreting rubrics. The prayers are presented from <em><em>The Book of Common Prayer (2019)</em></em> of the Anglican Church in North America and reflect the ancient patterns of daily prayer Christians have used since the earliest days of the church."
+generic_description = "This site invites you to join with Christians around the world in praying with the Church, at any time or in any place you may find yourself. It makes it easy to pray daily morning, midday, evening, and compline (bedtime) prayer without flipping pages, searching for scripture readings or calendars, or interpreting rubrics. The prayers are presented from <em><em>The Book of Common Prayer (2019)</em></em> of the Anglican Church in North America  (ACNA) and reflect the ancient patterns of daily prayer Christians have used since the earliest days of the church."
 meta_defaults = {
     "title": generic_title,
     "og_title": generic_title,
@@ -246,10 +246,15 @@ def now(request):
 
 
 def family(request):
+    family_meta = meta_defaults.copy()
+    family_meta["title"] = family_meta["og_title"] = family_meta["twitter_title"] = family_meta[
+        "gplus_title"
+    ] = "Family Prayer | Devotions according to the Book of Common Prayer (2019)"
+    family_meta["image"] = static("office/img/bcp.jpg")
     return render(
         request,
         "office/evening_prayer/redirect.html",
-        {"title": "Family Prayer", "redirect_id": "redirect-to-today-family", "meta": meta},
+        {"title": "Family Prayer", "redirect_id": "redirect-to-today-family", "meta": Meta(**family_meta)},
     )
 
 
