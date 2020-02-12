@@ -1,3 +1,5 @@
+import {voice} from "./voice";
+
 const clipboard = require("clipboard-polyfill/dist/clipboard-polyfill.promise");
 
 function localStorageExists() {
@@ -289,6 +291,7 @@ const settings = () => {
         });
     };
 
+
     const setupSettings = () => {
         initializeSettings();
         addRadioButtonListeners();
@@ -297,6 +300,7 @@ const settings = () => {
         handleFontSizes();
         handleThemes();
         bindShowSettingsLink();
+        voice();
     };
 
     // TODO: Refactor into reusable module
