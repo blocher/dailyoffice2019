@@ -436,7 +436,7 @@ urlpatterns = [
         distill_func=get_days,
     ),
     distill_path("about/", office_views.about, name="about", distill_func=get_about),
-    distill_path("family/about/", office_views.about, name="about", distill_func=get_about),
+    distill_path("family/about/", office_views.about, name="family_about", distill_func=get_about),
     distill_path("settings/", office_views.settings, name="settings", distill_func=get_about),
     distill_path("family/settings/", office_views.family_settings, name="family_settings", distill_func=get_about),
     distill_path("signup-thank-you/", office_views.signup_thank_you, name="signup_thank_you", distill_func=get_none),
