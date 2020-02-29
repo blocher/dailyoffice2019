@@ -177,6 +177,16 @@ class O1(Canticle):
     citation = ""
 
 
+class O2(Canticle):
+    latin_name = "JUBILATE"
+    english_name = "Be Joyful"
+    template = "o2.html"
+    seasons = ["When the Benedictus occurs"]
+    office = "other"
+    gloria = False
+    citation = "PSALM 100"
+
+
 class CanticleRules(object):
     def get_mp_canticle_1(self, calendar_date):
         raise NotImplementedError
@@ -342,6 +352,9 @@ class REC2011CanticleTable(CanticleRules):
         if calendar_date.date.weekday() == 6:  # Sunday
             return MP1
 
+        if calendar_date.season.name == "Christmastide":
+            return MP1
+
         if calendar_date.season.name == "Advent":
             return S1
 
@@ -367,19 +380,24 @@ class REC2011CanticleTable(CanticleRules):
         return MP1
 
     def get_mp_canticle_2(self, calendar_date):
+        if calendar_date.date.month == 4 and calendar_date.date.day == 29:
+            return O2
         return MP3
 
     def get_ep_canticle_1(self, calendar_date):
+        if calendar_date.date.month == 11 and calendar_date.date.day == 13:
+            return S7
         return EP1
 
-    def get_ep_canticle_2(self, calendar_date):
+    def get_ep_canticle_2(self, calendar_date, office_readings):
         if (
             calendar_date.primary.rank.precedence_rank in [1, 3]
             and calendar_date.primary.rank.name != "PRIVILEGED_OBSERVANCE"
         ):
             return EP2
 
-        if calendar_date.date.weekday() == 6:  # Sunday
+        # First and Second Evensong of Sunday
+        if calendar_date.date.weekday() == 5 or calendar_date.date.weekday() == 6:
             return EP2
 
         if calendar_date.season.name == "Advent":
@@ -391,7 +409,15 @@ class REC2011CanticleTable(CanticleRules):
         if calendar_date.season.name in ["Christmastide", "Eastertide"]:
             return S7
 
-        if calendar_date.season.name in ["Epiphanytide", "Season After Pentceost"]:
-            return S9
+        if calendar_date.season.name in ["Epiphanytide", "Season After Pentecost"]:
+            thirty_day = S9
+            sixty_day = S9
+            if calendar_date.date.day == 12:
+                thirty_day = EP2
+            if "67" in office_readings.ep_psalms:
+                sixty_day = EP2
+            if thirty_day == sixty_day:
+                return thirty_day
+            return (thirty_day, sixty_day)
 
         return EP2

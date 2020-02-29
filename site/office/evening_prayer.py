@@ -391,7 +391,7 @@ class EPCanticle2(OfficeSection):
         return {
             "default": DefaultCanticles().get_ep_canticle_2(self.date),
             "1979": BCP1979CanticleTable().get_ep_canticle_2(self.date),
-            "2011": REC2011CanticleTable().get_ep_canticle_2(self.date),
+            "2011": REC2011CanticleTable().get_ep_canticle_2(self.date, self.office_readings),
         }
 
 

@@ -474,6 +474,12 @@ class MPPsalms(OfficeSection):
         }
 
 
+# 1 / 24
+# 1 / 6
+# 3 / 26
+# 5 / 25
+
+
 class MPReading1(OfficeSection):
     @cached_property
     def data(self):
