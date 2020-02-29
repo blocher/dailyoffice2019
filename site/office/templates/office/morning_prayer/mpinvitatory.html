@@ -1,17 +1,39 @@
-<h2>{{ data.heading }}</h2>
-<h4>{{ data.subheading}}</h4>
-<p><em>{{ data.rubric }}</em></p>
-{% if data.antiphon %}
-    <div class="antiphon">
-        <p class="hanging-indent">{{ data.antiphon.first_line }}</p>
-        <p class="indent"><strong>{{ data.antiphon.second_line }}</strong></p>
-    </div>
-{%  endif %}
-{{  data.content }}
-<h5>{{  data.citation }}</h5>
-{% if data.antiphon %}
-    <div class="antiphon">
-        <p class="hanging-indent">{{ data.antiphon.first_line }}</p>
-        <p class="indent"><strong>{{ data.antiphon.second_line }}</strong></p>
-    </div>
-{%  endif %}
+
+<div class="invitatory_traditional">
+    {% if data.venite_most_days.1 != data.venite_most_days.2 %}
+        <div class="psalter-thirty">
+            {% include "office/morning_prayer/mpinvitatory_single.html" with invitatory=data.venite_most_days.0 %}
+        </div>
+        <div class="psalter-sixty">
+            {% include "office/morning_prayer/mpinvitatory_single.html" with invitatory=data.venite_most_days.1 %}
+        </div>
+    {% else %}
+        {% include "office/morning_prayer/mpinvitatory_single.html" with invitatory=data.venite_most_days.0 %}
+    {% endif %}
+</div>
+
+<div class="invitatory_jubilate_on_feasts">
+    {% if data.venite_most_days.1 != data.venite_most_days.2 %}
+        <div class="psalter-thirty">
+            {% include "office/morning_prayer/mpinvitatory_single.html" with invitatory=data.jubilate_on_sundays_and_feasts.0 %}
+        </div>
+        <div class="psalter-sixty">
+            {% include "office/morning_prayer/mpinvitatory_single.html" with invitatory=data.jubilate_on_sundays_and_feasts.1 %}
+        </div>
+    {% else %}
+        {% include "office/morning_prayer/mpinvitatory_single.html" with invitatory=data.jubilate_on_sundays_and_feasts.0 %}
+    {% endif %}
+</div>
+
+<div class="invitatory_rotating">
+    {% if data.venite_most_days.1 != data.venite_most_days.2 %}
+        <div class="psalter-thirty">
+            {% include "office/morning_prayer/mpinvitatory_single.html" with invitatory=data.rotating.0 %}
+        </div>
+        <div class="psalter-sixty">
+            {% include "office/morning_prayer/mpinvitatory_single.html" with invitatory=data.rotating.1 %}
+        </div>
+    {% else %}
+        {% include "office/morning_prayer/mpinvitatory_single.html" with invitatory=data.rotating.0 %}
+    {% endif %}
+</div>

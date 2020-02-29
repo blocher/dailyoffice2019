@@ -1,0 +1,17 @@
+<h2>{{ invitatory.heading }}</h2>
+<h4>{{ invitatory.subheading}}</h4>
+<p><em>{{ invitatory.rubric }}</em></p>
+{% if invitatory.antiphon %}
+    <div class="antiphon">
+        <p class="hanging-indent">{{ invitatory.antiphon.first_line }}</p>
+        <p class="indent"><strong>{{ invitatory.antiphon.second_line }}</strong></p>
+    </div>
+{%  endif %}
+{{  invitatory.content }}
+<h5>{{  invitatory.citation }}</h5>
+{% if invitatory.antiphon %}
+    <div class="antiphon">
+        <p class="hanging-indent">{{ invitatory.antiphon.first_line }}</p>
+        <p class="indent"><strong>{{ invitatory.antiphon.second_line }}</strong></p>
+    </div>
+{%  endif %}

@@ -51,3 +51,12 @@ class ThirtyDayPsalterDay(BaseModel):
     day = models.IntegerField()
     mp_psalms = models.CharField(max_length=255)
     ep_psalms = models.CharField(max_length=255)
+
+    def psalm_string_to_list(self, psalms):
+        return psalms.split(psalms)
+
+    def get_mp_pslams(self):
+        return self.psalm_string_to_list(self.mp_psalms)
+
+    def get_ep_pslams(self):
+        return self.psalm_string_to_list(self.ep_psalms)

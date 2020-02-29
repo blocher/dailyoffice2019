@@ -226,6 +226,34 @@ def settings(request):
                 ],
             },
             {
+                "title": "Morning Prayer Invitatory",
+                "name": "morning_prayer_invitatory",
+                "help_text": "Open with the Venite (Psalm 95) or the Jubilate (Psalm 100)",
+                "options": [
+                    {
+                        "value": "invitatory_traditional",
+                        "hide": ["invitatory_jubilate_on_feasts", "invitatory_rotating"],
+                        "show": ["invitatory_traditional"],
+                        "heading": "Venite (Except when Psalm 95 is appointed)",
+                        "text": "Always use the Venite (except on days when Pslam 95 is appointed)",
+                    },
+                    {
+                        "value": "invitatory_jubilate_on_feasts",
+                        "hide": ["invitatory_traditional", "invitatory_rotating"],
+                        "show": ["invitatory_jubilate_on_feasts"],
+                        "heading": "Jubilate on Sundays and feasts, Venite other days",
+                        "text": "Use the Jubilate on Feasts and Sundays, Venite on other days ",
+                    },
+                    {
+                        "value": "invitatory_rotating",
+                        "hide": ["invitatory_traditional", "invitatory_jubilate_on_feasts"],
+                        "show": ["invitatory_rotating"],
+                        "heading": "Rotating each day",
+                        "text": "Rotate between the Venite and Jubilate",
+                    },
+                ],
+            },
+            {
                 "title": "Reading Headings",
                 "name": "reading_headings",
                 "help_text": "Show or hide headings from the English Standard Version of the Bible in scripture readings ",

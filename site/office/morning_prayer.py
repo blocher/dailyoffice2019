@@ -52,7 +52,10 @@ class MorningPrayer(Office):
             (MPOpeningSentence(self.date, self.office_readings), "office/opening_sentence.html"),
             (Confession(self.date, self.office_readings), "office/confession.html"),
             (Invitatory(self.date, self.office_readings), "office/invitatory.html"),
-            (MPInvitatory(self.date, self.office_readings), "office/morning_prayer/mpinvitatory.html"),
+            (
+                MPInvitatory(self.date, self.office_readings, self.thirty_day_psalter_day),
+                "office/morning_prayer/mpinvitatory.html",
+            ),
             (MPPsalms(self.date, self.office_readings, self.thirty_day_psalter_day), "office/psalms.html"),
             (MPReading1(self.date, self.office_readings), "office/main_reading.html"),
             (MPAlternateReading1(self.date, self.office_readings), "office/alternate_reading.html"),
@@ -299,10 +302,83 @@ class MPInvitatory(OfficeSection):
         if self.date.date.weekday() in [2, 5]:
             return {"first_line": "The mercy of the Lord is everlasting: ", "second_line": "O come, let us adore him."}
 
-    @cached_property
-    def data(self):
+    def rotating(self):
+        if "Easter Day" in self.date.primary.name or "Easter Week" in self.date.primary.name:
+            return (self.pascha_nostrum, self.pascha_nostrum)
 
-        pascha_nostrum = {
+        if self.date.season.name == "Eastertide":
+            if self.date.date.timetuple().tm_yday % 3 == 0:
+                return (self.pascha_nostrum, self.pascha_nostrum)
+
+        if self.date.date.timetuple().tm_yday % 2 == 0:
+            thirty_day = self.jubilate
+            sixty_day = self.jubilate
+            if "100" in self.office_readings.mp_psalms.split(","):
+                sixty_day = self.venite
+
+            if "100" in self.thirty_day_psalter_day.mp_psalms.split(","):
+                thirty_day = self.venite
+        else:
+            thirty_day = self.venite
+            sixty_day = self.venite
+            if "95" in self.office_readings.mp_psalms.split(","):
+                sixty_day = self.jubilate
+
+            if "95" in self.thirty_day_psalter_day.mp_psalms.split(","):
+                thirty_day = self.jubilate
+
+        return (thirty_day, sixty_day)
+
+    def venite_most_days(self):
+        if "Easter Day" in self.date.primary.name or "Easter Week" in self.date.primary.name:
+            return (self.pascha_nostrum, self.pascha_nostrum)
+
+        thirty_day = self.venite
+        sixty_day = self.venite
+
+        if "95" in self.office_readings.mp_psalms.split(","):
+            sixty_day = self.jubilate
+
+        if "95" in self.thirty_day_psalter_day.mp_psalms.split(","):
+            thirty_day = self.jubilate
+
+        return (thirty_day, sixty_day)
+
+    def jubilate_on_sundays_and_feasts(self):
+        if "Easter Day" in self.date.primary.name or "Easter Week" in self.date.primary.name:
+            return (self.pascha_nostrum, self.pascha_nostrum)
+
+        if self.date.season.name == "Eastertide" and self.date.primary.rank.name in (
+            "PRINCIPAL_FEAST",
+            "SUNDAY",
+            "HOLY_DAY",
+        ):
+            return (self.pascha_nostrum, self.pascha_nostrum)
+
+        if self.date.primary.rank.name in ("PRINCIPAL_FEAST", "SUNDAY", "HOLY_DAY"):
+            thirty_day = self.jubilate
+            sixty_day = self.jubilate
+
+            if "100" in self.office_readings.mp_psalms.split(","):
+                sixty_day = self.venite
+            if "100" in self.thirty_day_psalter_day.mp_psalms.split(","):
+                thirty_day = self.venite
+            return (thirty_day, sixty_day)
+
+        thirty_day = self.venite
+        sixty_day = self.venite
+
+        if "95" in self.office_readings.mp_psalms.split(","):
+            sixty_day = self.jubilate
+
+        if "95" in self.thirty_day_psalter_day.mp_psalms.split(","):
+            thirty_day = self.jubilate
+
+        return (thirty_day, sixty_day)
+
+    @cached_property
+    def pascha_nostrum(self):
+        return {
             "heading": "PASCHA NOSTRUM",
             "subheading": "Christ Our Passover",
             "rubric": "Officiant and People, all standing",
@@ -311,7 +387,9 @@ class MPInvitatory(OfficeSection):
             "antiphon": None,
         }
 
-        jubilate = {
+    @cached_property
+    def jubilate(self):
+        return {
             "heading": "Jubilate",
             "subheading": "Be Joyful",
             "rubric": "Officiant and People, all standing",
@@ -320,8 +398,10 @@ class MPInvitatory(OfficeSection):
             "antiphon": self.antiphon,
         }
 
+    @cached_property
+    def venite(self):
         lent = self.date.season.name == "Lent" or self.date.season.name == "Holy Week"
-        venite = {
+        return {
             "heading": "Venite",
             "subheading": "O Come",
             "rubric": "Officiant and People, all standing",
@@ -330,24 +410,43 @@ class MPInvitatory(OfficeSection):
             "antiphon": self.antiphon,
         }
 
-        if "Easter Day" in self.date.primary.name or "Easter Week" in self.date.primary.name:
-            return pascha_nostrum
+    @cached_property
+    def data(self):
 
-        if self.date.season.name == "Eastertide" and self.date.primary.rank.name in (
-            "PRINCIPAL_FEAST",
-            "SUNDAY",
-            "HOLY_DAY",
-        ):
-            return pascha_nostrum
+        values = {
+            "jubilate_on_sundays_and_feasts": self.jubilate_on_sundays_and_feasts(),
+            "venite_most_days": self.venite_most_days(),
+            "rotating": self.rotating(),
+        }
+        print(values)
+        return values
 
-        if self.date.primary.rank.name in ("PRINCIPAL_FEAST", "SUNDAY", "HOLY_DAY"):
-            if "100" in self.office_readings.mp_psalms.split(","):
-                return venite
-            return jubilate
+        # canticles = {"venite": [], "jubilate": [], "pascha_nostrum": []}
 
-        if "95" in self.office_readings.mp_psalms.split(","):
-            return jubilate
-        return venite
+        # for key, value in types.items():
+        #     if value[0]["heading"] == "Venite" and value[1]["heading"] == "Venite":
+        #         canticles["venite"].append(key)
+        #     elif value[0]["heading"] == "Venite":
+        #         canticles["venite"].append("{} thirty-day".format(key))
+        #     elif value[1]["heading"] == "Venite":
+        #         canticles["venite"].append("{} sixty-day".format(key))
+        #
+        #     if value[0]["heading"] == "Jubilate" and value[1]["heading"] == "Jubilate":
+        #         canticles["jubilate"].append(key)
+        #     elif value[0]["heading"] == "Jubilate":
+        #         canticles["jubilate"].append("{} thirty-day".format(key))
+        #     elif value[1]["heading"] == "Jubilate":
+        #         canticles["jubilate"].append("{} sixty-day".format(key))
+        #
+        #     if value[0]["heading"] == "Pascha Nostrum" and value[1]["heading"] == "Pascha Nostrum":
+        #         canticles["pascha_nostrum"].append(key)
+        #     elif value[0]["heading"] == "Pascha Nostrum":
+        #         canticles["pascha_nostrum"].append("{} thirty-day".format(key))
+        #     elif value[1]["heading"] == "Pascha Nostrum":
+        #         canticles["pascha_nostrum"].append("{} sixty-day".format(key))
+        #
+        # print(canticles)
+        # return types
 
 
 class MPPsalms(OfficeSection):
