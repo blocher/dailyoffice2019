@@ -287,7 +287,10 @@ html {
   p.hanging-indent {
       text-indent: -1rem;
       margin: 0 0 0 1rem;
+  }
 
+  p.no-bottom-margin {
+    margin-bottom: 0;
   }
 
   span.asterisk {

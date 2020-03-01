@@ -16,6 +16,7 @@ from office.offices import (
     Chrysostom,
     Dismissal,
     OfficeSection,
+    GreatLitany,
 )
 from office.utils import passage_to_citation
 from psalter.utils import get_psalms
@@ -66,6 +67,7 @@ class EveningPrayer(Office):
             (EPSuffrages(self.date, self.office_readings), "office/evening_prayer/suffrages.html"),
             (EPCollectsOfTheDay(self.date, self.office_readings), "office/collects_of_the_day.html"),
             (EPCollects(self.date, self.office_readings), "office/collects.html"),
+            (GreatLitany(self.date, self.office_readings, office=self), "office/great_litany.html"),
             (EPMissionCollect(self.date, self.office_readings), "office/mission_collect.html"),
             (Intercessions(self.date, self.office_readings), "office/intercessions.html"),
             (GeneralThanksgiving(self.date, self.office_readings), "office/general_thanksgiving.html"),
@@ -488,6 +490,12 @@ class EPCollects(OfficeSection):
 
 
 class EPMissionCollect(OfficeSection):
+    def get_weekday_class(self):
+        start = "mission-ep-"
+        if self.date.date.weekday() in (2, 4, 6):
+            return start + "wfs"
+        return start + "not-wfs"
+
     @cached_property
     def data(self):
 
@@ -510,4 +518,9 @@ class EPMissionCollect(OfficeSection):
             collect = mission_collects[2]
             subheading = "III"
 
-        return {"heading": "A Collect for Mission", "collect": collect, "subheading": subheading}
+        return {
+            "heading": "A Collect for Mission",
+            "collect": collect,
+            "subheading": subheading,
+            "weekday_class": self.get_weekday_class(),
+        }

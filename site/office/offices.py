@@ -224,3 +224,33 @@ class FamilyIntercessions(OfficeSection):
                 "A hymn or canticle may be used.<br><br>Prayers may be offered for ourselves and others."
             ),
         }
+
+
+class GreatLitany(OfficeSection):
+    def get_names(self):
+        names = [
+            feast.saint_name for feast in self.date.all_evening if hasattr(feast, "saint_name") and feast.saint_name
+        ]
+        names = ["the Blessed Virgin Mary"] + names
+        return ", ".join(names)
+
+    def get_leaders(self):
+        parts = [
+            '<span class="us">your servant Donald Trump, the President, </span>',
+            '<span class="canada">your servants Her Majesty Queen Elizabeth, the Sovereign, and Justin Trudeau, the Prime Minister, </span>'
+            '<span class="national_none">your servants, our national leaders, </span>',
+        ]
+        return mark_safe("".join(parts))
+
+    def get_weekday_class(self):
+        if self.office.office == "evening_prayer":
+            start = "litany-ep-"
+        else:
+            start = "litany-mp-"
+        if self.date.date.weekday() in (2, 4, 6):
+            return start + "wfs"
+        return start + "not-wfs"
+
+    @cached_property
+    def data(self):
+        return {"names": self.get_names(), "leaders": self.get_leaders(), "weekday_class": self.get_weekday_class()}
