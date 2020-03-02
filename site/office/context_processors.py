@@ -395,8 +395,8 @@ def settings(request):
                         "value": "mp_litany_w_f_s",
                         "hide": ["litany-mp-not-wfs", "mission-mp-wfs"],
                         "show": ["litany-mp-wfs", "mission-mp-not-wfs"],
-                        "heading": "Wednesday, Friday, and Saturday",
-                        "text": "Litany on Wednesday, Friday, and Sunday (the traditional days) as well as Rogation Days",
+                        "heading": "Wednesday, Friday, and Sunday",
+                        "text": "Litany on Wednesday, Friday, and Sunday (the traditional days)",
                     },
                     {
                         "value": "mp_litany_everyday",
@@ -423,8 +423,8 @@ def settings(request):
                         "value": "ep_litany_w_f_s",
                         "hide": ["litany-ep-not-wfs", "mission-ep-wfs"],
                         "show": ["litany-ep-wfs", "mission-ep-not-wfs"],
-                        "heading": "Wednesday, Friday, and Saturday",
-                        "text": "Litany on Wednesday, Friday, and Sunday (the traditional days) as well as Rogation Days",
+                        "heading": "Wednesday, Friday, and Sunday",
+                        "text": "Litany on Wednesday, Friday, and Sunday (the traditional days)",
                     },
                     {
                         "value": "ep_litany_everyday",
