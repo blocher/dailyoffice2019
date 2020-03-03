@@ -420,35 +420,7 @@ class MPInvitatory(OfficeSection):
             "venite_most_days": self.venite_most_days(),
             "rotating": self.rotating(),
         }
-        print(values)
         return values
-
-        # canticles = {"venite": [], "jubilate": [], "pascha_nostrum": []}
-
-        # for key, value in types.items():
-        #     if value[0]["heading"] == "Venite" and value[1]["heading"] == "Venite":
-        #         canticles["venite"].append(key)
-        #     elif value[0]["heading"] == "Venite":
-        #         canticles["venite"].append("{} thirty-day".format(key))
-        #     elif value[1]["heading"] == "Venite":
-        #         canticles["venite"].append("{} sixty-day".format(key))
-        #
-        #     if value[0]["heading"] == "Jubilate" and value[1]["heading"] == "Jubilate":
-        #         canticles["jubilate"].append(key)
-        #     elif value[0]["heading"] == "Jubilate":
-        #         canticles["jubilate"].append("{} thirty-day".format(key))
-        #     elif value[1]["heading"] == "Jubilate":
-        #         canticles["jubilate"].append("{} sixty-day".format(key))
-        #
-        #     if value[0]["heading"] == "Pascha Nostrum" and value[1]["heading"] == "Pascha Nostrum":
-        #         canticles["pascha_nostrum"].append(key)
-        #     elif value[0]["heading"] == "Pascha Nostrum":
-        #         canticles["pascha_nostrum"].append("{} thirty-day".format(key))
-        #     elif value[1]["heading"] == "Pascha Nostrum":
-        #         canticles["pascha_nostrum"].append("{} sixty-day".format(key))
-        #
-        # print(canticles)
-        # return types
 
 
 class MPPsalms(OfficeSection):
