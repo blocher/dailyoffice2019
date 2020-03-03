@@ -1,7 +1,7 @@
 
 <div class="invitatory_traditional">
     {% if data.venite_most_days.1 != data.venite_most_days.2 %}
-        <div class="psalter-thirty">
+        <div class="psalter-thirty off">
             {% include "office/morning_prayer/mpinvitatory_single.html" with invitatory=data.venite_most_days.0 %}
         </div>
         <div class="psalter-sixty">
@@ -12,9 +12,9 @@
     {% endif %}
 </div>
 
-<div class="invitatory_jubilate_on_feasts">
+<div class="invitatory_jubilate_on_feasts off">
     {% if data.venite_most_days.1 != data.venite_most_days.2 %}
-        <div class="psalter-thirty">
+        <div class="psalter-thirty off">
             {% include "office/morning_prayer/mpinvitatory_single.html" with invitatory=data.jubilate_on_sundays_and_feasts.0 %}
         </div>
         <div class="psalter-sixty">
@@ -25,9 +25,9 @@
     {% endif %}
 </div>
 
-<div class="invitatory_rotating">
+<div class="invitatory_rotating off">
     {% if data.venite_most_days.1 != data.venite_most_days.2 %}
-        <div class="psalter-thirty">
+        <div class="psalter-thirty off">
             {% include "office/morning_prayer/mpinvitatory_single.html" with invitatory=data.rotating.0 %}
         </div>
         <div class="psalter-sixty">
