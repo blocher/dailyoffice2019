@@ -220,3 +220,21 @@ class Season(BaseModel):
 
     def __repr__(self):
         return self.name
+
+
+class MassReading(BaseModel):
+
+    long_citation = models.CharField(max_length=256)
+    long_text = models.TextField(blank=True, null=True)
+    service = models.CharField(max_length=256)
+    short_citation = models.CharField(max_length=256)
+    short_text = models.TextField(blank=True, null=True)
+    years = models.CharField(max_length=3)
+    commemoration = models.ForeignKey("Commemoration", on_delete=models.SET_NULL, null=True, blank=True)
+    proper = models.ForeignKey("Proper", on_delete=models.SET_NULL, null=True, blank=True)
+    reading_type = models.CharField(
+        max_length=256,
+        choices=(("prophecy", "prophecy"), ("psalm", "psalm"), ("epistle", "epistle"), ("gospel", "gospel")),
+    )
+    calendar = models.ForeignKey(Calendar, on_delete=models.CASCADE, null=False, blank=False)
+    abbreviation = models.CharField(max_length=256, blank=True, null=True)
