@@ -42,46 +42,60 @@ class Command(ImportCommemorationsBaseCommand):
         except IndexError:
             return "unknown"
 
-    def handle_odd_commeroation(self):
+    def handle_odd_commeoration(self, code):
 
         codes = {
-        "": "AllSaints"
-        "": "Andrew"
-        "": "Ascension"
-        "": "CanadaDay"
-        "": "Christmas"
-        "": "Easter"
-        "": "EasterEve"
-        "": "EasterVII"
-        "": "Ecumenist"
-        "": "Ember"
-        "": "Epiphany"
-        "": "EpiphanyPaenultima"
-        "": "EpiphanyUltima"
-        "": "James"
-        "": "John"
-        "": "JohnTheBaptist"
-        "": "Joseph"
-        "": "Mark"
-        "": "Martyr"
-        "": "Mary"
-        "": "Michael"
-        "": "Military"
-        "": "MissionaryEvangelist"
-        "": "Monastic"
-        "": "Paul"
-        "": "Pentecost"
-        "": "Peter"
-        "": "ReformerOfTheChurch"
-        "": "RenewerOfSociety"
-        "": "Rogation"
-        "": "TeacherOfTheFaith"
-        "": "Thanksgiving"
-        "": "Thomas"
-        "": "Transfiguration"
-        "": "TrinitySunday"
-    "
+            "AllSaints": "All Saints’ Day",
+            "AllSaintsSunday": "All Saints' Sunday",
+            "Andrew": "Andrew the Apostle",
+            "Ascension": "Ascension Day",
+            "CanadaDay": "Canada Day (Canada)",
+            "Christmas": "The Nativity of our Lord Jesus Christ: Christmas Day",
+            "Easter": "Easter Day",
+            "EasterEve": "Easter Day",
+            "EasterVII": "The Sunday after the Ascension",
+            "Ecumenist": "",
+            "Ember": "",
+            "Epiphany": "The Epiphany: The Manifestation of Christ to the Gentiles",
+            "EpiphanyPaenultima": "The Second to Last Sunday of Epiphany: World Mission Sunday, or Sexagesima",
+            "EpiphanyUltima": "The Last Sunday of Epiphany: Transfiguration, or Quinquagesima",
+            "James": "James the Elder, Apostle",
+            "John": "John, Apostle and Evangelist",
+            "JohnTheBaptist": "The Beheading of John the Baptist",
+            "Joseph": "Joseph, Husband of the Virgin Mary and Guardian of Jesus",
+            "Mark": "Mark the Evangelist",
+            "Martyr": "",
+            "Mary": "The Virgin Mary, Mother of our Lord Jesus Christ",
+            "Michael": "Holy Michael and All Angels",
+            "MemorialDay": "Memorial Day (United States)",
+            "RemembranceDay": "Remembrance Day (Canada)",
+            "MissionaryEvangelist": "",
+            "Monastic": "",
+            "Paul": "Peter and Paul, Apostles",
+            "Pentecost": "The Day of Pentecost",
+            "Peter": "Confession of Peter the Apostle",
+            "ReformerOfTheChurch": "",
+            "RenewerOfSociety": "",
+            "Rogation": "",
+            "TeacherOfTheFaith": "",
+            "ThanksgivingUS": "Thanksgiving Day (United States)",
+            "ThanksgivingCanada": "Thanksgiving Day (Canada)",
+            "Thomas": "Thomas the Apostle",
+            "Transfiguration": "The Transfiguration of Our Lord Jesus Christ",
+            "TrinitySunday": "Trinity Sunday",
+        }
 
+        try:
+            name = codes[code]
+        except AttributeError:
+            return None
+
+        if name:
+            try:
+                return Commemoration.objects.filter(calendar=self.calendar).get(name=name)
+            except Commemoration.DoesNotExist:
+                print(name)
+                return None
 
     def get_proper(self, code):
         if "Proper" in code:
@@ -136,6 +150,7 @@ class Command(ImportCommemorationsBaseCommand):
         return None
 
     def get_commemoration(self, code):
+        original_code = code
         proper = self.get_proper(code)
         if proper:
             return None
@@ -156,9 +171,9 @@ class Command(ImportCommemorationsBaseCommand):
             if res:
                 return res
         except (Commemoration.MultipleObjectsReturned, Commemoration.DoesNotExist):
-            return None
+            pass
 
-        res = self.handle_odd_cases(code)
+        res = self.handle_odd_commeoration(original_code)
         if res:
             return res
         return None
