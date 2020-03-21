@@ -44,7 +44,17 @@
             {% block content %}
             {% endblock %}
             {%  include "feedback.html" %}
+
          </div>
+        <div class="no-print">
+            {% if office %}
+                {% if office.family %}
+                    {% include "office/footer_family.html" %}
+                {% else %}
+                    {% include "office/footer.html" %}
+                {% endif %}
+            {% endif %}
+        </div>
 
         <link rel="stylesheet" href="https://use.typekit.net/yxz6vwf.css">
         <link href="https://fonts.googleapis.com/css?family=Lusitana:400,700&display=swap" rel="stylesheet">

@@ -5,7 +5,7 @@
 {% endif %}
 <p class="intro-heading-2">according to the Book of Common Prayer, 2019<br>Anglican Church in North America</p>
 
-<div id="menu">
+<div id="menu" class="no-print">
     <div class="menu-wrapper">
         <div class="menu">
             {% if "/family/" in request.get_full_path %}
@@ -33,8 +33,8 @@
 </div>
 
 {% if "/family/" in request.get_full_path %}
-    <p class="intro-heading-2"><br>Looking for the full Daily Office services?<br><a href="/">Go to the Daily Office site</a></p>
+    <p class="intro-heading-2 no-print"><br>Looking for the full Daily Office services?<br><a href="/">Go to the Daily Office site</a></p>
 {% else %}
-    <p class="intro-heading-2"><br>Looking for a shorter service?<br><a href="/family">Go to the Family Prayer site</a></p>
+    <p class="intro-heading-2 no-print"><br>Looking for a shorter service?<br><a href="/family">Go to the Family Prayer site</a></p>
 {% endif %}
 
