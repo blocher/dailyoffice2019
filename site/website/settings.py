@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = False if os.getenv("DEBUG", "False") == "False" else "True"
-DEBUG = True
+DEBUG = False
 ALLOWED_HOSTS = ["*", "127.0.0.1:8000", "127.0.0.1", "dailyoffice2019.com", "www.dailyoffice2019.com"]
 
 
@@ -210,8 +210,9 @@ CACHES = {"default": {"BACKEND": "django.core.cache.backends.memcached.Memcached
 
 SITE_ID = 1
 
-FIRST_BEGINNING_YEAR = 2017
+FIRST_BEGINNING_YEAR = 2018
 LAST_BEGINNING_YEAR = 2022
+
 #
 # FIRST_BEGINNING_YEAR = 2019
 # LAST_BEGINNING_YEAR = 2019
