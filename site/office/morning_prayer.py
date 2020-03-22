@@ -60,6 +60,7 @@ class MorningPrayer(Office):
             (MPPsalms(self.date, self.office_readings, self.thirty_day_psalter_day), "office/psalms.html"),
             (MPReading1(self.date, self.office_readings), "office/main_reading.html"),
             (MPAlternateReading1(self.date, self.office_readings), "office/alternate_reading.html"),
+            (MPMassReading1(self.date, self.office_readings), "office/mass_reading.html"),
             (MPCanticle1(self.date, self.office_readings), "office/canticle.html"),
             (MPReading2(self.date, self.office_readings), "office/main_reading.html"),
             (MPAlternateReading2(self.date, self.office_readings), "office/alternate_reading.html"),
@@ -482,6 +483,13 @@ class MPReading1(OfficeSection):
             },
             "deuterocanon": self.office_readings.mp_reading_1_testament not in ["OT", "NT"],
         }
+
+
+class MPMassReading1(OfficeSection):
+    @cached_property
+    def data(self):
+        print(self.date.mass_readings)
+        return {"mass_readings": self.date.mass_readings}
 
 
 class MPAlternateReading1(OfficeSection):

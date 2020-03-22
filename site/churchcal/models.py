@@ -104,6 +104,9 @@ class Commemoration(BaseModel):
 
         return True
 
+    def get_mass_readings_for_year(self, year):
+        return MassReading.objects.filter(years__contains=year, commemoration=self).all()
+
     def __repr__(self):
         return "{} ({}) ({})".format(self.name, self.rank.formatted_name, self.color)
 
@@ -203,6 +206,9 @@ class Proper(BaseModel):
     collect = models.TextField(blank=True, null=True)
     calendar = models.ForeignKey(Calendar, on_delete=models.CASCADE, null=False, blank=False)
     collect = models.TextField(blank=True, null=True)
+
+    def get_mass_readings_for_year(self, year):
+        return MassReading.objects.filter(years__contains=year, proper=self).all()
 
     def __repr__(self):
         return str(self.number)

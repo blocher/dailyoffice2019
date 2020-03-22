@@ -58,6 +58,18 @@ class CalendarDate(object):
 
         return 1 if self.year.start_year % 2 == 0 else 2
 
+    @cached_property
+    def mass_readings(self):
+        if self.proper:
+            return self.proper.get_mass_readings_for_year(self.year.mass_year)
+        return self.primary.get_mass_readings_for_year(self.year.mass_year)
+
+    @cached_property
+    def evening_mass_readings(self):
+        if self.proper:
+            return self.proper.get_mass_readings_for_year(self.year.mass_year)
+        return self.primary_evening.get_mass_readings_for_year(self.year.mass_year)
+
     FAST_NONE = 0
     FAST_PARTIAL = 1
     FAST_FULL = 2
