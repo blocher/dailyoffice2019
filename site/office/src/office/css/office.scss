@@ -302,7 +302,7 @@ html {
       text-align: center;
       width: 100%;
 
-      &.footer-fixed {
+      &.footer-fixed, &.footer-always-fixed {
         position: fixed;
         left: 0;
         bottom: 0;
