@@ -64,7 +64,9 @@ class MorningPrayer(Office):
             (MPCanticle1(self.date, self.office_readings), "office/canticle.html"),
             (MPReading2(self.date, self.office_readings), "office/main_reading.html"),
             (MPAlternateReading2(self.date, self.office_readings), "office/alternate_reading.html"),
+            (MPMassReading2(self.date, self.office_readings), "office/mass_reading.html"),
             (MPCanticle2(self.date, self.office_readings), "office/canticle.html"),
+            (MPMassReading3(self.date, self.office_readings), "office/mass_reading.html"),
             (Creed(self.date, self.office_readings), "office/creed.html"),
             (Prayers(self.date, self.office_readings), "office/prayers.html"),
             (MPSuffrages(self.date, self.office_readings), "office/morning_prayer/suffrages.html"),
@@ -488,8 +490,25 @@ class MPReading1(OfficeSection):
 class MPMassReading1(OfficeSection):
     @cached_property
     def data(self):
-        print(self.date.mass_readings)
-        return {"mass_readings": self.date.mass_readings}
+        for reading in self.date.mass_readings:
+            if reading.reading_number == 1:
+                return {"mass_reading": reading}
+
+
+class MPMassReading2(OfficeSection):
+    @cached_property
+    def data(self):
+        for reading in self.date.mass_readings:
+            if reading.reading_number == 3:
+                return {"mass_reading": reading}
+
+
+class MPMassReading3(OfficeSection):
+    @cached_property
+    def data(self):
+        for reading in self.date.mass_readings:
+            if reading.reading_number == 4:
+                return {"mass_reading": reading}
 
 
 class MPAlternateReading1(OfficeSection):

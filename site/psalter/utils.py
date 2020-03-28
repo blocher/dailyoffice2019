@@ -6,9 +6,11 @@ from psalter.models import PsalmVerse
 def get_psalms(citations):
     citations = citations.replace(" ", "").split(",")
     html = ""
+    psalm = 0
     for citation in citations:
         citation_parts = citation.split(":")
         if len(citation_parts) > 1:
+            psalm = citation_parts[0]
             start, end = citation_parts[1].split("-")
             verses = (
                 PsalmVerse.objects.filter(psalm__number=citation_parts[0], number__gte=start, number__lte=end)
@@ -17,7 +19,18 @@ def get_psalms(citations):
                 .all()
             )
         else:
-            verses = PsalmVerse.objects.filter(psalm__number=citation).order_by("number").select_related("psalm").all()
+            if psalm and "-" in citation:
+                start, end = citation.split("-")
+                verses = (
+                    PsalmVerse.objects.filter(psalm__number=psalm, number__gte=start, number__lte=end)
+                    .order_by("number")
+                    .select_related("psalm")
+                    .all()
+                )
+            else:
+                verses = (
+                    PsalmVerse.objects.filter(psalm__number=citation).order_by("number").select_related("psalm").all()
+                )
         html = html + psalm_html(citation, verses)
     return html
 

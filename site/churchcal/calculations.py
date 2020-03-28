@@ -678,7 +678,7 @@ class SetNamesAndCollects(object):
 
         if commemoration.saint_type == "MISSIONARY":
             text = (
-                "Almighty and everlasting God, you called your servant{} {} to preach the Gospel {}: Raise up in this and every land evangelists and heralds of your kingdom, that your Church may proclaim the unsearchable riches of our Savior Jesus Christ; who lives and reigns with you and the Holy Spirit, one God, now and for ever. ".format(
+                "Almighty and everlasting God, you called your servant{} {} to preach the Gospel {}: Raise up in this and every land evangelists and heralds of your kingdom, that your Church may proclaim the unsearchable riches of our Savior Jesus Christ; who lives and reigns with you and the Holy Spirit, one God, now and for ever.".format(
                     "s" if commemoration.saint_gender == "P" else "",
                     commemoration.saint_name,
                     commemoration.saint_fill_in_the_blank,
@@ -729,7 +729,7 @@ class SetNamesAndCollects(object):
             )
 
         if commemoration.saint_type == "SAINT_1":
-            text = "Almighty God, you have surrounded us with a great cloud of witnesses: Grant that we, encouraged by the good example of your servant{} {}, may persevere in running the race that is set before us, until at last, with {}, we attain to your eternal joy; through Jesus Christ, the pioneer and perfecter of our faith, who lives and reigns with you and the Holy Spirit, one God, for ever and ever. ".format(
+            text = "Almighty God, you have surrounded us with a great cloud of witnesses: Grant that we, encouraged by the good example of your servant{} {}, may persevere in running the race that is set before us, until at last, with {}, we attain to your eternal joy; through Jesus Christ, the pioneer and perfecter of our faith, who lives and reigns with you and the Holy Spirit, one God, for ever and ever.".format(
                 "s" if commemoration.saint_gender == "P" else "",
                 commemoration.saint_name,
                 "him" if commemoration.saint_gender == "M" else "her" if commemoration.saint_gender == "F" else "them",

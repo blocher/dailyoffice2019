@@ -5,20 +5,30 @@ from functools import reduce
 import scriptures
 from django.db.models import Q
 
+from bible import Passage
+from bible.sources import PassageNotFoundException
 from churchcal.management.commands.import_base import ImportCommemorationsBaseCommand
-from churchcal.models import MassReading, Proper, Commemoration
+from churchcal.models import MassReading, Proper, Commemoration, Common
+from psalter.utils import get_psalms
 
 
 class Command(ImportCommemorationsBaseCommand):
     help = "Imports Mass Readings"
 
-    RANGE_NAME = "Mass Readings!A1:G1034"
+    RANGE_NAME = "Mass Readings!A1:G1051"
 
     def format_reading(self, book, passage):
+
+        if book == "Canticle":
+            canticle_class = self.get_canticle_class(passage)
+            return "{} ({})".format(canticle_class.latin_name, canticle_class.citation)
+
         passage = "{} {}".format(book, passage)
+
+        if book == "Ps":
+            return passage.replace("Ps", "Psalms")
         try:
             reference = scriptures.extract(passage)[0]
-            # print(reference)
         except IndexError:
             return passage
         passage = scriptures.reference_to_string(*reference)
@@ -94,8 +104,10 @@ class Command(ImportCommemorationsBaseCommand):
             try:
                 return Commemoration.objects.filter(calendar=self.calendar).get(name=name)
             except Commemoration.DoesNotExist:
-                print(name)
                 return None
+
+    def get_common(self, code):
+        return Common.objects.filter(abbreviation=code).first()
 
     def get_proper(self, code):
         if "Proper" in code:
@@ -178,10 +190,45 @@ class Command(ImportCommemorationsBaseCommand):
             return res
         return None
 
+    def parse_passage(self, passage):
+
+        try:
+            passage = scriptures.extract(passage)[0]
+            return scriptures.reference_to_string(*passage)
+        except:
+            return None
+
+    def get_passage(self, passage, reading_type, book=None, chapter_verse=None):
+
+        if book == "Canticle":
+            canticle = self.get_canticle_class(chapter_verse)
+            return canticle().content
+
+        try:
+            if reading_type == "psalm":
+                passage = passage.replace("Psalms ", "")
+                return get_psalms(passage)
+        except Exception as e:
+            raise (e)
+
+        passage = self.parse_passage(passage)
+
+        try:
+            return Passage(passage, source="esv").html
+        except PassageNotFoundException:
+            try:
+                return Passage(passage, source="rsv").html
+            except PassageNotFoundException:
+                return None
+
+    def get_canticle_class(self, label):
+
+        mod = __import__("office.canticles", fromlist=[label])
+        return getattr(mod, label)
+
     def import_dates(self):
 
         MassReading.objects.filter(calendar=self.calendar).delete()
-        self.values.pop(0)
         self.values.pop(0)
         for i, row in enumerate(self.values):
             reading = MassReading()
@@ -192,8 +239,19 @@ class Command(ImportCommemorationsBaseCommand):
             reading.service = row[1]
             reading.years = row[3].replace(",", "")
             reading.reading_type = self.get_reading_type(row[4], row[5])
-            reading.proper = self.get_proper(row[0])
-            reading.commemoration = self.get_commemoration(row[0])
+            reading.common = self.get_common(row[0])
+            reading.proper = self.get_proper(row[0]) if not reading.common else None
+            reading.commemoration = (
+                self.get_commemoration(row[0]) if not reading.common and not reading.proper else None
+            )
             reading.abbreviation = row[0]
+            reading.reading_number = row[2]
+            reading.order = i
+            try:
+                reading.long_text = self.get_passage(reading.long_citation, reading.reading_type, row[4], row[5])
+                if reading.short_citation:
+                    reading.short_text = self.get_passage(reading.short_citation, reading.reading_type, row[4], row[5])
+            except Exception as e:
+                print(e, reading.abbreviation, reading.long_citation, reading.short_citation, row[4], row[5])
+                return
             reading.save()
-            # print(row[0])

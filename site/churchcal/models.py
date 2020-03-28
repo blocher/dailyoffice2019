@@ -105,7 +105,11 @@ class Commemoration(BaseModel):
         return True
 
     def get_mass_readings_for_year(self, year):
-        return MassReading.objects.filter(years__contains=year, commemoration=self).all()
+        return (
+            MassReading.objects.filter(years__contains=year, commemoration=self)
+            .order_by("reading_number", "order")
+            .all()
+        )
 
     def __repr__(self):
         return "{} ({}) ({})".format(self.name, self.rank.formatted_name, self.color)
@@ -208,7 +212,7 @@ class Proper(BaseModel):
     collect = models.TextField(blank=True, null=True)
 
     def get_mass_readings_for_year(self, year):
-        return MassReading.objects.filter(years__contains=year, proper=self).all()
+        return MassReading.objects.filter(years__contains=year, proper=self).order_by("reading_number", "order").all()
 
     def __repr__(self):
         return str(self.number)
@@ -238,9 +242,21 @@ class MassReading(BaseModel):
     years = models.CharField(max_length=3)
     commemoration = models.ForeignKey("Commemoration", on_delete=models.SET_NULL, null=True, blank=True)
     proper = models.ForeignKey("Proper", on_delete=models.SET_NULL, null=True, blank=True)
+    common = models.ForeignKey("Common", on_delete=models.SET_NULL, null=True, blank=True)
     reading_type = models.CharField(
         max_length=256,
         choices=(("prophecy", "prophecy"), ("psalm", "psalm"), ("epistle", "epistle"), ("gospel", "gospel")),
     )
     calendar = models.ForeignKey(Calendar, on_delete=models.CASCADE, null=False, blank=False)
     abbreviation = models.CharField(max_length=256, blank=True, null=True)
+    reading_number = models.PositiveSmallIntegerField()
+    order = models.PositiveSmallIntegerField()
+
+
+class Common(BaseModel):
+
+    abbreviation = models.CharField(max_length=256)
+    name = models.CharField(max_length=256)
+    collect = models.TextField(blank=True, null=True)
+    alternate_collect = models.TextField(blank=True, null=True)
+    calendar = models.ForeignKey(Calendar, on_delete=models.CASCADE, null=False, blank=False)
