@@ -274,6 +274,9 @@ class EPReading1(OfficeSection):
                 else "Here ends the Reading.",
                 "people": "Thanks be to God." if self.office_readings.ep_reading_1_testament != "DC" else "",
             },
+            "tag": "daily-office-readings-{}".format(
+                "sunday" if self.date.primary.rank.precedence_rank <= 4 else "feria"
+            ),
         }
 
 
@@ -372,6 +375,9 @@ class EPReading2(OfficeSection):
             "abbreviated_reading": self.office_readings.ep_reading_2_text,
             "has_abbreviated": False,
             "closing": {"reader": "The Word of the Lord.", "people": "Thanks be to God."},
+            "tag": "daily-office-readings-{}".format(
+                "sunday" if self.date.primary.rank.precedence_rank <= 4 else "feria"
+            ),
         }
 
 

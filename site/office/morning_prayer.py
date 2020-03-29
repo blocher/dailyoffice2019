@@ -443,23 +443,35 @@ class MPPsalms(OfficeSection):
         psalms_30 = self.thirty_day_psalter_day.mp_psalms
         citations_30 = psalms_30.split(",")
 
+        mass_psalm = ""
+        mass_heading = ""
+        for reading in self.date.mass_readings:
+            if reading.reading_type == "psalm":
+                mass_psalm = reading.long_text
+                mass_heading = "The Psalm Appointed"
+                break
+
         return {
             "heading_60": "The Psalm{} Appointed".format("s" if len(citations_60) > 1 else ""),
             "psalms_60": get_psalms(psalms_60),
             "heading_30": "The Psalm{} Appointed".format("s" if len(citations_30) > 1 else ""),
             "psalms_30": get_psalms(psalms_30),
+            "psalms_mass": mass_psalm,
+            "heading_mass": mass_heading,
+            "daily_office_tag": "daily-office-readings-{}".format(
+                "sunday" if self.date.primary.rank.precedence_rank <= 4 else "feria"
+            ),
+            "mass_tag": "mass-readings-{}".format(
+                "sunday" if self.date.primary.rank.precedence_rank <= 4 else "feria"
+            ),
         }
-
-
-# 1 / 24
-# 1 / 6
-# 3 / 26
-# 5 / 25
 
 
 class MPReading1(OfficeSection):
     @cached_property
     def data(self):
+        print(self.date.primary.rank.precedence_rank, self.date.primary)
+        print("daily-office-readings-{}".format("sunday" if self.date.primary.rank.precedence_rank <= 4 else "feria"))
         return {
             "heading": "The First Lesson",
             "intro": passage_to_citation(self.office_readings.mp_reading_1),
@@ -484,6 +496,9 @@ class MPReading1(OfficeSection):
                 "people": "Thanks be to God." if self.office_readings.mp_reading_1_testament != "DC" else "",
             },
             "deuterocanon": self.office_readings.mp_reading_1_testament not in ["OT", "NT"],
+            "tag": "daily-office-readings-{}".format(
+                "sunday" if self.date.primary.rank.precedence_rank <= 4 else "feria"
+            ),
         }
 
 
@@ -492,7 +507,28 @@ class MPMassReading1(OfficeSection):
     def data(self):
         for reading in self.date.mass_readings:
             if reading.reading_number == 1:
-                return {"mass_reading": reading}
+                return {
+                    "heading": "The First Lesson",
+                    "intro": passage_to_citation(reading.long_citation),
+                    "passage": reading.long_citation,
+                    "reading": reading.long_text,
+                    "abbreviated_passage": reading.short_citation if reading.short_citation else reading.long_citation,
+                    "abbreviated_reading": reading.short_text if reading.short_text else reading.long_text,
+                    "abbreviated_intro": passage_to_citation(
+                        reading.short_citation if reading.short_citation else reading.long_citation
+                    ),
+                    "has_abbreviated": True if reading.short_citation else False,
+                    "closing": {
+                        "reader": "The Word of the Lord."
+                        if reading.long_citation != "DC"
+                        else "Here ends the Reading.",
+                        "people": "Thanks be to God." if reading.long_citation != "DC" else "",
+                    },
+                    "deuterocanon": reading.long_citation not in ["OT", "NT"],
+                    "tag": "mass-readings-{}".format(
+                        "sunday" if self.date.primary.rank.precedence_rank <= 4 else "feria"
+                    ),
+                }
 
 
 class MPMassReading2(OfficeSection):
@@ -500,7 +536,28 @@ class MPMassReading2(OfficeSection):
     def data(self):
         for reading in self.date.mass_readings:
             if reading.reading_number == 3:
-                return {"mass_reading": reading}
+                return {
+                    "heading": "The Second Lesson",
+                    "intro": passage_to_citation(reading.long_citation),
+                    "passage": reading.long_citation,
+                    "reading": reading.long_text,
+                    "abbreviated_passage": reading.short_citation if reading.short_citation else reading.long_citation,
+                    "abbreviated_reading": reading.short_text if reading.short_text else reading.long_text,
+                    "abbreviated_intro": passage_to_citation(
+                        reading.short_citation if reading.short_citation else reading.long_citation
+                    ),
+                    "has_abbreviated": True if reading.short_citation else False,
+                    "closing": {
+                        "reader": "The Word of the Lord."
+                        if reading.long_citation != "DC"
+                        else "Here ends the Reading.",
+                        "people": "Thanks be to God." if reading.long_citation != "DC" else "",
+                    },
+                    "deuterocanon": reading.long_citation not in ["OT", "NT"],
+                    "tag": "mass-readings-{}".format(
+                        "sunday" if self.date.primary.rank.precedence_rank <= 4 else "feria"
+                    ),
+                }
 
 
 class MPMassReading3(OfficeSection):
@@ -508,7 +565,28 @@ class MPMassReading3(OfficeSection):
     def data(self):
         for reading in self.date.mass_readings:
             if reading.reading_number == 4:
-                return {"mass_reading": reading}
+                return {
+                    "heading": "The Third Lesson",
+                    "intro": passage_to_citation(reading.long_citation),
+                    "passage": reading.long_citation,
+                    "reading": reading.long_text,
+                    "abbreviated_passage": reading.short_citation if reading.short_citation else reading.long_citation,
+                    "abbreviated_reading": reading.short_text if reading.short_text else reading.long_text,
+                    "abbreviated_intro": passage_to_citation(
+                        reading.short_citation if reading.short_citation else reading.long_citation
+                    ),
+                    "has_abbreviated": True if reading.short_citation else False,
+                    "closing": {
+                        "reader": "The Word of the Lord."
+                        if reading.long_citation != "DC"
+                        else "Here ends the Reading.",
+                        "people": "Thanks be to God." if reading.long_citation != "DC" else "",
+                    },
+                    "deuterocanon": reading.long_citation not in ["OT", "NT"],
+                    "tag": "mass-readings-{}".format(
+                        "sunday" if self.date.primary.rank.precedence_rank <= 4 else "feria"
+                    ),
+                }
 
 
 class MPAlternateReading1(OfficeSection):
@@ -548,6 +626,9 @@ class MPReading2(OfficeSection):
             "abbreviated_reading": self.office_readings.mp_reading_2_text,
             "has_abbreviated": False,
             "closing": {"reader": "The Word of the Lord.", "people": "Thanks be to God."},
+            "tag": "daily-office-readings-{}".format(
+                "sunday" if self.date.primary.rank.precedence_rank <= 4 else "feria"
+            ),
         }
 
 

@@ -1,4 +1,3 @@
-{% if data.mass_reading %}
-    <h3>Mass Reading</h3>
-    {{ data.mass_reading.long_citation }}
-{% endif %}
+<div class="mass-reading off {{ data.tag }}">
+     {% include "office/reading.html" %}
+</div>
