@@ -23,12 +23,12 @@ class ImportCommemorationsBaseCommand(BaseCommand):
     def handle(self, *args, **options):
 
         if not options["calendar"]:
-            raise Exception("You must supply a calendar id for which to import ranks.")
-
-        try:
-            self.calendar = Calendar.objects.get(pk=options["calendar"])
-        except Calendar.DoesNotExist:
-            raise Exception("You must supply a valid calendar id for which to import ranks.")
+            self.calendar = Calendar.objects.get(abbreviation="ACNA_BCP2019")
+        else:
+            try:
+                self.calendar = Calendar.objects.get(pk=options["calendar"])
+            except Calendar.DoesNotExist:
+                raise Exception("You must supply a valid calendar id for which to import ranks.")
 
         service = build("sheets", "v4", developerKey=settings.GOOGLE_API_KEY)
 

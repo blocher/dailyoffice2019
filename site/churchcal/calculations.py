@@ -58,6 +58,19 @@ class CalendarDate(object):
 
         return 1 if self.year.start_year % 2 == 0 else 2
 
+    @cached_property
+    def mass_readings(self):
+        if self.proper:
+            return self.proper.get_mass_readings_for_year(self.year.mass_year)
+        return self.primary.get_mass_readings_for_year(self.year.mass_year)
+
+    @cached_property
+    def evening_mass_readings(self):
+        print(self.proper)
+        if self.proper:
+            return self.proper.get_mass_readings_for_year(self.year.mass_year)
+        return self.primary_evening.get_mass_readings_for_year(self.year.mass_year, time="evening")
+
     FAST_NONE = 0
     FAST_PARTIAL = 1
     FAST_FULL = 2
@@ -504,6 +517,7 @@ class SetNamesAndCollects(object):
             feast_copy.evening_prayer_collect = feast_copy.eve_collect
 
         previous.evening_required.append(feast_copy)
+        previous.proper = calendar_date.proper
 
         for idx, commemoration in enumerate(previous.evening_required):
             if "PRIVILEGED_OBSERVANCE" in commemoration.rank.name:
@@ -666,7 +680,7 @@ class SetNamesAndCollects(object):
 
         if commemoration.saint_type == "MISSIONARY":
             text = (
-                "Almighty and everlasting God, you called your servant{} {} to preach the Gospel {}: Raise up in this and every land evangelists and heralds of your kingdom, that your Church may proclaim the unsearchable riches of our Savior Jesus Christ; who lives and reigns with you and the Holy Spirit, one God, now and for ever. ".format(
+                "Almighty and everlasting God, you called your servant{} {} to preach the Gospel {}: Raise up in this and every land evangelists and heralds of your kingdom, that your Church may proclaim the unsearchable riches of our Savior Jesus Christ; who lives and reigns with you and the Holy Spirit, one God, now and for ever.".format(
                     "s" if commemoration.saint_gender == "P" else "",
                     commemoration.saint_name,
                     commemoration.saint_fill_in_the_blank,
@@ -717,7 +731,7 @@ class SetNamesAndCollects(object):
             )
 
         if commemoration.saint_type == "SAINT_1":
-            text = "Almighty God, you have surrounded us with a great cloud of witnesses: Grant that we, encouraged by the good example of your servant{} {}, may persevere in running the race that is set before us, until at last, with {}, we attain to your eternal joy; through Jesus Christ, the pioneer and perfecter of our faith, who lives and reigns with you and the Holy Spirit, one God, for ever and ever. ".format(
+            text = "Almighty God, you have surrounded us with a great cloud of witnesses: Grant that we, encouraged by the good example of your servant{} {}, may persevere in running the race that is set before us, until at last, with {}, we attain to your eternal joy; through Jesus Christ, the pioneer and perfecter of our faith, who lives and reigns with you and the Holy Spirit, one God, for ever and ever.".format(
                 "s" if commemoration.saint_gender == "P" else "",
                 commemoration.saint_name,
                 "him" if commemoration.saint_gender == "M" else "her" if commemoration.saint_gender == "F" else "them",

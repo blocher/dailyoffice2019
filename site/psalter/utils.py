@@ -3,6 +3,26 @@ from django.utils.html import format_html
 from psalter.models import PsalmVerse
 
 
+def parse_single_psalm(psalm):
+
+    psalm = psalm.replace(" ", "").split(":")
+
+    # e.g., 138
+    if len(psalm) == 1:
+        return psalm[0]
+
+    # e.g., 138:1-10
+    verses = psalm[1].split(",")
+    if len(verses) == 1:
+        return "{}:{}".format(psalm[0], psalm[1])
+
+    # e.g., 138:1-10,12-14
+    citations = []
+    for verse in verses:
+        citations.append("{}:{}".format(psalm[0], verse))
+    return ",".join(citations)
+
+
 def get_psalms(citations):
     citations = citations.replace(" ", "").split(",")
     html = ""
@@ -22,9 +42,11 @@ def get_psalms(citations):
     return html
 
 
-def psalm_html(citation, verses):
-    html = format_html("<h3>Psalm {}</h3>", citation)
-    html = html + format_html("<h4>{}</h4>", verses[0].psalm.latin_title)
+def psalm_html(citation, verses, heading=True):
+    html = ""
+    if heading:
+        html = format_html("<h3>Psalm {}</h3>", citation)
+        html = html + format_html("<h4>{}</h4>", verses[0].psalm.latin_title)
     for verse in verses:
         html = html + format_html(
             "<p class='hanging-indent'><sup class='versenum'>{}</sup> {}<span class='asterisk'>*</span> </p>",

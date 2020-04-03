@@ -1,16 +1,25 @@
-<div class="psalter-sixty">
-    <h2>{{  data.heading_60 }}</h2>
-    <h4>60 Day Cycle</h4>
-    <div class="psalms 60day">
-        {{  data.psalms_60 | safe }}
+<div class="daily-office-readings {{ data.daily_office_tag }}">
+    <div class="psalter-sixty">
+        <h2>{{  data.heading_60 }}</h2>
+        <h4>60 Day Cycle</h4>
+        <div class="psalms 60day">
+            {{  data.psalms_60 | safe }}
+        </div>
+    </div>
+    <div class="psalter-thirty off">
+        <h2>{{  data.heading_30 }}</h2>
+        <h4>30 Day Cycle</h4>
+        <div class="psalms 30day">
+            {{  data.psalms_30 | safe }}
+        </div>
     </div>
 </div>
-<div class="psalter-thirty off">
-    <h2>{{  data.heading_30 }}</h2>
-    <h4>30 Day Cycle</h4>
-    <div class="psalms 30day">
-        {{  data.psalms_30 | safe }}
-    </div>
+<div class="mass-readings off {{ data.mass_tag }}">
+        <h2>{{ data.heading_mass }}</h2>
+        <h4>Sunday and Holy Day Cycle</h4>
+        <div class="psalms 30day">
+            {{  data.psalms_mass | safe }}
+        </div>
 </div>
 <div class="gloria-patri">
     <p class='hanging-indent'><strong>Glory be to the Father, and to the Son, and to the Holy Spirit; *</strong></p>
