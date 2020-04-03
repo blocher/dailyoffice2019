@@ -66,9 +66,10 @@ class CalendarDate(object):
 
     @cached_property
     def evening_mass_readings(self):
+        print(self.proper)
         if self.proper:
             return self.proper.get_mass_readings_for_year(self.year.mass_year)
-        return self.primary_evening.get_mass_readings_for_year(self.year.mass_year)
+        return self.primary_evening.get_mass_readings_for_year(self.year.mass_year, time="evening")
 
     FAST_NONE = 0
     FAST_PARTIAL = 1
@@ -516,6 +517,7 @@ class SetNamesAndCollects(object):
             feast_copy.evening_prayer_collect = feast_copy.eve_collect
 
         previous.evening_required.append(feast_copy)
+        previous.proper = calendar_date.proper
 
         for idx, commemoration in enumerate(previous.evening_required):
             if "PRIVILEGED_OBSERVANCE" in commemoration.rank.name:

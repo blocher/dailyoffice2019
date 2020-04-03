@@ -104,12 +104,38 @@ class Commemoration(BaseModel):
 
         return True
 
-    def get_mass_readings_for_year(self, year):
-        return (
-            MassReading.objects.filter(years__contains=year, commemoration=self)
-            .order_by("reading_number", "order")
-            .all()
-        )
+    def get_mass_readings_for_year(self, year, time="morning"):
+
+        query = MassReading.objects.filter(years__contains=year, commemoration=self).order_by("reading_number")
+
+        if year in ["A", "C"] and time == "morning":
+            query = query.order_by("reading_number", "-order")
+        else:
+            query = query.order_by("reading_number", "order")
+
+        if self.name == "Eve of Easter Day":
+            query = query.filter(abbreviation="EasterEve")
+
+        if self.name == "Easter Day":
+            if time == "morning":
+                print(time)
+                query = query.filter(service="PrincipalService")
+            else:
+                query = query.filter(service="EveningService")
+
+        if self.name == "Eve of The Nativity of our Lord Jesus Christ: Christmas Day":
+            query = query.filter(service="I")
+
+        if self.name == "The Nativity of Our Lord Jesus Christ: Christmas Day":
+            if time == "morning":
+                query = query.filter(service="II")
+            else:
+                query = query.fitler(service="III")
+
+        if self.name in ["Eve of Palm Sunday", "Palm Sunday"]:
+            query = query.filter(service="Word")
+
+        return query.all()
 
     def __repr__(self):
         return "{} ({}) ({})".format(self.name, self.rank.formatted_name, self.color)
@@ -247,10 +273,15 @@ class MassReading(BaseModel):
         max_length=256,
         choices=(("prophecy", "prophecy"), ("psalm", "psalm"), ("epistle", "epistle"), ("gospel", "gospel")),
     )
+    book = models.CharField(max_length=256)
+    testament = models.CharField(max_length=4)
     calendar = models.ForeignKey(Calendar, on_delete=models.CASCADE, null=False, blank=False)
     abbreviation = models.CharField(max_length=256, blank=True, null=True)
     reading_number = models.PositiveSmallIntegerField()
     order = models.PositiveSmallIntegerField()
+
+    def __repr__(self):
+        return self.long_citation
 
 
 class Common(BaseModel):

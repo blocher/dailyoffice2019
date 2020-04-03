@@ -90,6 +90,8 @@ class BibleGateway(BibleSource):
                 div.decompose()
             for a in self.soup.find_all("a", class_="full-chap-link"):
                 a.decompose()
+            for a in self.soup.find_all("div", class_="passage-other-trans"):
+                a.decompose()
 
             result = " ".join([str(tag) for tag in self.soup.find_all("div", class_="passage-text")[0]])
             if not result:

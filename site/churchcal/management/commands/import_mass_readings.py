@@ -9,7 +9,7 @@ from bible import Passage
 from bible.sources import PassageNotFoundException
 from churchcal.management.commands.import_base import ImportCommemorationsBaseCommand
 from churchcal.models import MassReading, Proper, Commemoration, Common
-from psalter.utils import get_psalms
+from psalter.utils import get_psalms, parse_single_psalm
 
 
 class Command(ImportCommemorationsBaseCommand):
@@ -18,21 +18,56 @@ class Command(ImportCommemorationsBaseCommand):
     RANGE_NAME = "Mass Readings!A1:G1051"
 
     def format_reading(self, book, passage):
-
         if book == "Canticle":
             canticle_class = self.get_canticle_class(passage)
-            return "{} ({})".format(canticle_class.latin_name, canticle_class.citation)
+            return canticle_class.citation
 
         passage = "{} {}".format(book, passage)
 
         if book == "Ps":
             return passage.replace("Ps", "Psalms")
-        try:
-            reference = scriptures.extract(passage)[0]
-        except IndexError:
+        references = scriptures.extract(passage)
+        if not references:
             return passage
-        passage = scriptures.reference_to_string(*reference)
-        return passage
+        result = []
+        for i, reference in enumerate(references):
+            print(reference)
+            string = scriptures.reference_to_string(*reference)
+            print(string)
+            if i == 0:
+                result.append(string)
+            elif reference[1] == references[i - 1][1] and reference[1] == reference[3]:
+                result.append("{}-{}".format(reference[2], reference[4]))
+            elif reference[1] != references[i - 1][1] and reference[1] == reference[3]:
+                result.append("{}:{}-{}".format(reference[1], reference[2], reference[4]))
+            elif reference[1] != reference[3]:
+                result.append("{}:{}-{}:{}".format(reference[1], reference[2], reference[3], reference[4]))
+
+        return ", ".join(result)
+
+    def get_book(self, book, passage):
+
+        if book == "Canticle":
+            return "-"
+
+        passage = "{} {}".format(book, passage)
+
+        try:
+            return scriptures.extract(passage)[0][0]
+        except IndexError:
+            return "-"
+
+    def get_testament(self, book, passage):
+
+        if book == "Canticle":
+            return "NA"
+
+        passage = "{} {}".format(book, passage)
+
+        try:
+            return scriptures.extract(passage)[0][5]
+        except IndexError:
+            return "NA"
 
     def get_reading_type(self, book, passage):
         if book == "Canticle":
@@ -52,7 +87,7 @@ class Command(ImportCommemorationsBaseCommand):
         except IndexError:
             return "unknown"
 
-    def handle_odd_commeoration(self, code):
+    def handle_odd_commemoration(self, code):
 
         codes = {
             "AllSaints": "All Saints’ Day",
@@ -64,8 +99,6 @@ class Command(ImportCommemorationsBaseCommand):
             "Easter": "Easter Day",
             "EasterEve": "Easter Day",
             "EasterVII": "The Sunday after the Ascension",
-            "Ecumenist": "",
-            "Ember": "",
             "Epiphany": "The Epiphany: The Manifestation of Christ to the Gentiles",
             "EpiphanyPaenultima": "The Second to Last Sunday of Epiphany: World Mission Sunday, or Sexagesima",
             "EpiphanyUltima": "The Last Sunday of Epiphany: Transfiguration, or Quinquagesima",
@@ -74,20 +107,13 @@ class Command(ImportCommemorationsBaseCommand):
             "JohnTheBaptist": "The Beheading of John the Baptist",
             "Joseph": "Joseph, Husband of the Virgin Mary and Guardian of Jesus",
             "Mark": "Mark the Evangelist",
-            "Martyr": "",
             "Mary": "The Virgin Mary, Mother of our Lord Jesus Christ",
             "Michael": "Holy Michael and All Angels",
             "MemorialDay": "Memorial Day (United States)",
             "RemembranceDay": "Remembrance Day (Canada)",
-            "MissionaryEvangelist": "",
-            "Monastic": "",
             "Paul": "Peter and Paul, Apostles",
             "Pentecost": "The Day of Pentecost",
             "Peter": "Confession of Peter the Apostle",
-            "ReformerOfTheChurch": "",
-            "RenewerOfSociety": "",
-            "Rogation": "",
-            "TeacherOfTheFaith": "",
             "ThanksgivingUS": "Thanksgiving Day (United States)",
             "ThanksgivingCanada": "Thanksgiving Day (Canada)",
             "Thomas": "Thomas the Apostle",
@@ -185,41 +211,49 @@ class Command(ImportCommemorationsBaseCommand):
         except (Commemoration.MultipleObjectsReturned, Commemoration.DoesNotExist):
             pass
 
-        res = self.handle_odd_commeoration(original_code)
+        res = self.handle_odd_commemoration(original_code)
         if res:
             return res
         return None
 
     def parse_passage(self, passage):
-
+        print(passage)
         try:
-            passage = scriptures.extract(passage)[0]
             return scriptures.reference_to_string(*passage)
         except:
             return None
 
-    def get_passage(self, passage, reading_type, book=None, chapter_verse=None):
+    def get_passage(self, book, passage, reading_type):
 
         if book == "Canticle":
-            canticle = self.get_canticle_class(chapter_verse)
-            return canticle().content
+            canticle = self.get_canticle_class(passage)
+            return "<h3>{}</h3><h4>{}</h4>{}<h5>{}</h5>".format(
+                canticle.latin_name, canticle.english_name, canticle().content, canticle.citation
+            )
 
-        try:
-            if reading_type == "psalm":
-                passage = passage.replace("Psalms ", "")
-                return get_psalms(passage)
-        except Exception as e:
-            raise (e)
+        if reading_type == "psalm":
+            passage = passage.replace("Psalms ", "")
+            psalm = parse_single_psalm(passage)
+            return get_psalms(psalm)
 
-        passage = self.parse_passage(passage)
+        passage = "{} {}".format(book, passage)
 
-        try:
-            return Passage(passage, source="esv").html
-        except PassageNotFoundException:
+        if book == "Ps":
+            return passage.replace("Ps", "Psalms")
+        references = scriptures.extract(passage)
+
+        passages = []
+        for reference in references:
+            passage = scriptures.reference_to_string(*reference)
             try:
-                return Passage(passage, source="rsv").html
+                passages.append(Passage(passage, source="esv").html)
             except PassageNotFoundException:
-                return None
+                try:
+                    passages.append(Passage(passage, source="rsv").html)
+                except PassageNotFoundException:
+                    pass
+
+        return "<br>".join(passages)
 
     def get_canticle_class(self, label):
 
@@ -233,6 +267,8 @@ class Command(ImportCommemorationsBaseCommand):
         for i, row in enumerate(self.values):
             reading = MassReading()
             reading.calendar = self.calendar
+            reading.book = self.get_book(row[4], row[5])
+            reading.testament = self.get_testament(row[4], row[5])
             reading.long_citation = self.format_reading(row[4], row[5])
             if len(row) > 6:
                 reading.short_citation = self.format_reading(row[4], row[6])
@@ -247,11 +283,9 @@ class Command(ImportCommemorationsBaseCommand):
             reading.abbreviation = row[0]
             reading.reading_number = row[2]
             reading.order = i
-            try:
-                reading.long_text = self.get_passage(reading.long_citation, reading.reading_type, row[4], row[5])
-                if reading.short_citation:
-                    reading.short_text = self.get_passage(reading.short_citation, reading.reading_type, row[4], row[5])
-            except Exception as e:
-                print(e, reading.abbreviation, reading.long_citation, reading.short_citation, row[4], row[5])
-                return
+
+            reading.long_text = self.get_passage(row[4], row[5], reading.reading_type)
+            if reading.short_citation:
+                reading.short_text = self.get_passage(row[4], row[5], reading.reading_type)
+
             reading.save()

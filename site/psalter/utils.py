@@ -3,14 +3,32 @@ from django.utils.html import format_html
 from psalter.models import PsalmVerse
 
 
+def parse_single_psalm(psalm):
+
+    psalm = psalm.replace(" ", "").split(":")
+
+    # e.g., 138
+    if len(psalm) == 1:
+        return psalm[0]
+
+    # e.g., 138:1-10
+    verses = psalm[1].split(",")
+    if len(verses) == 1:
+        return "{}:{}".format(psalm[0], psalm[1])
+
+    # e.g., 138:1-10,12-14
+    citations = []
+    for verse in verses:
+        citations.append("{}:{}".format(psalm[0], verse))
+    return ",".join(citations)
+
+
 def get_psalms(citations):
     citations = citations.replace(" ", "").split(",")
     html = ""
-    psalm = 0
     for citation in citations:
         citation_parts = citation.split(":")
         if len(citation_parts) > 1:
-            psalm = citation_parts[0]
             start, end = citation_parts[1].split("-")
             verses = (
                 PsalmVerse.objects.filter(psalm__number=citation_parts[0], number__gte=start, number__lte=end)
@@ -19,25 +37,16 @@ def get_psalms(citations):
                 .all()
             )
         else:
-            if psalm and "-" in citation:
-                start, end = citation.split("-")
-                verses = (
-                    PsalmVerse.objects.filter(psalm__number=psalm, number__gte=start, number__lte=end)
-                    .order_by("number")
-                    .select_related("psalm")
-                    .all()
-                )
-            else:
-                verses = (
-                    PsalmVerse.objects.filter(psalm__number=citation).order_by("number").select_related("psalm").all()
-                )
+            verses = PsalmVerse.objects.filter(psalm__number=citation).order_by("number").select_related("psalm").all()
         html = html + psalm_html(citation, verses)
     return html
 
 
-def psalm_html(citation, verses):
-    html = format_html("<h3>Psalm {}</h3>", citation)
-    html = html + format_html("<h4>{}</h4>", verses[0].psalm.latin_title)
+def psalm_html(citation, verses, heading=True):
+    html = ""
+    if heading:
+        html = format_html("<h3>Psalm {}</h3>", citation)
+        html = html + format_html("<h4>{}</h4>", verses[0].psalm.latin_title)
     for verse in verses:
         html = html + format_html(
             "<p class='hanging-indent'><sup class='versenum'>{}</sup> {}<span class='asterisk'>*</span> </p>",
