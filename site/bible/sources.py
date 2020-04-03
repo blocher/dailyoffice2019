@@ -28,8 +28,6 @@ class BibleGateway(BibleSource):
     def __init__(self, passage, version="nrsv"):
         self.version = version
         # try:
-        print(passage)
-        print(scriptures.extract(passage))
         self.reference = scriptures.extract(passage)[0]
         self.passage = scriptures.reference_to_string(*self.reference)
         self.passage = self.passage.replace("III ", "3 ")

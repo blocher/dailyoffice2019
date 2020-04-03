@@ -503,7 +503,6 @@ class MPReading1(OfficeSection):
 class MPMassReading1(OfficeSection):
     @cached_property
     def data(self):
-        print(self.date.mass_readings)
         for reading in self.date.mass_readings:
             if reading.reading_number == 1:
                 return {

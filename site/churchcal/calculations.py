@@ -66,7 +66,6 @@ class CalendarDate(object):
 
     @cached_property
     def evening_mass_readings(self):
-        print(self.proper)
         if self.proper:
             return self.proper.get_mass_readings_for_year(self.year.mass_year)
         return self.primary_evening.get_mass_readings_for_year(self.year.mass_year, time="evening")

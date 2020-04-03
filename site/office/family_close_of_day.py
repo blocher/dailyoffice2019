@@ -86,7 +86,6 @@ class FCDOpeningSentence(OfficeSection):
 
     @cached_property
     def data(self):
-        print({"heading": "Opening Sentence", "sentences": self.get_sentences()})
         return {"heading": "Opening Sentence", "sentences": self.get_sentences()}
 
 
