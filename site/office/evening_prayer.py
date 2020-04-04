@@ -17,6 +17,7 @@ from office.offices import (
     Dismissal,
     OfficeSection,
     GreatLitany,
+    PandemicPrayers,
 )
 from office.utils import passage_to_citation
 from psalter.utils import get_psalms
@@ -72,6 +73,7 @@ class EveningPrayer(Office):
             (EPCollects(self.date, self.office_readings), "office/collects.html"),
             (GreatLitany(self.date, self.office_readings, office=self), "office/great_litany.html"),
             (EPMissionCollect(self.date, self.office_readings), "office/mission_collect.html"),
+            (PandemicPrayers(self.date, self.office_readings, office=self), "office/pandemic_prayers.html"),
             (Intercessions(self.date, self.office_readings), "office/intercessions.html"),
             (GeneralThanksgiving(self.date, self.office_readings), "office/general_thanksgiving.html"),
             (Chrysostom(self.date, self.office_readings), "office/chrysostom.html"),

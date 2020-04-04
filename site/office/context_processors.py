@@ -403,6 +403,15 @@ def settings(request):
                 ],
             },
             {
+                "title": "Prayers in the Time of Pandemic",
+                "name": "pandemic_prayers",
+                "help_text": "Include a rotating set of collects for the duration of this pandemic",
+                "options": [
+                    {"value": "pandemic_yes", "hide": [], "show": ["pandemic_prayers"], "heading": "On"},
+                    {"value": "pandemic_no", "hide": ["pandemic_prayers"], "show": [], "heading": "Off"},
+                ],
+            },
+            {
                 "title": "Great Litany at Morning Prayer",
                 "name": "mp_great_litany",
                 "help_text": "Include the Great Litany after the collects at Morning Prayer",

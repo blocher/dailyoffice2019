@@ -1,0 +1,13 @@
+<div class="pandemic_prayers">
+    <h3>{{ data.collect_1.title}}</h3>
+    <p>{{   data.collect_1.collect }} <strong>{{  data.collect_1.response }}</strong></p>
+    {% if data.collect_1.citation %}
+        <h5>{{ data.collect_1.citation }}</h5>
+    {% endif %}
+
+    <h3>{{ data.collect_2.title}}</h3>
+    <p>{{ data.collect_2.collect }} <strong>{{ data.collect_2.response }}</strong></p>
+    {% if data.collect_2.citation %}
+        <h5> {{ data.collect_2.citation }} </h5>
+    {% endif %}
+</div>

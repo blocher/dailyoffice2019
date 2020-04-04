@@ -122,11 +122,96 @@ class Prayers(OfficeSection):
         return {"heading": "The Prayers"}
 
 
+class PandemicPrayers(OfficeSection):
+    def get_collect_1(self):
+        collects = [
+            {
+                "title": "In Time of Great Sickness and Mortality",
+                "collect": "O Most mighty and merciful God, in this time of grievous sickness, we flee to you for comfort. Deliver us, we beseech you, from our peril; give strength and skill to all those who minister to the sick; prosper the means made use of for their cure; and grant that, perceiving how frail and uncertain our life is, we may apply our hearts unto that heavenly wisdom which leads to eternal life; through Jesus Christ our Lord.",
+                "response": "Amen.",
+                "citation": "Book of Common Prayer, 1928 (U.S.)".upper(),
+            },
+            {
+                "title": "In the Time of any Common Plague or Sickness",
+                "collect": "O Almighty God, who in your wrath sent a plague upon your own people in the wilderness for their obstinate rebellion against Moses and Aaron, and also in the time of King David, sent a plague of pestilence which killed seventy thousand, but remembering your mercy spared the rest: have pity upon us miserable sinners, who now are visited with great sickness and mortality; and in the same way that you then accepted an atonement and commanded the destroying Angel to cease from punishing: so it may now please you to withdraw from us this plague and grievous sickness, through Jesus Christ our Lord.",
+                "response": "Amen.",
+                "citation": "Book of Common Prayer, 1662 (England)".upper(),
+            },
+            {
+                "title": "Prayer for the Great Plague of 1665",
+                "collect": "O Most gracious God, Father of mercies and of our Lord Jesus Christ, look down upon us, we beseech you, in much pity and compassion and behold our great misery and trouble. For there is wrath gone out against us, and the plague has begun. That dreadful arrow of yours sticks fast in our flesh, and the venom thereof fires our blood and drinks up our spirits. Should you suffer it to bring us all to the dust of death, we must yet still acknowledge that you are righteous, O Lord, and your judgements are just. For our transgressions multiplied against you, as the sand on the sea-shore might justly bring over us a deluge of your wrath. The cry of our sins that has pierced the very heavens might well return with showers of vengeance upon our heads. While our earth is defiled by the inhabitants of it, what wonder; if you command an evil angel to pour out his vial into our air to fill it with infection and the noisome pestilence and so to turn the very breath of our Life into the savour of death unto us all! But yet we beseech you, O our God, forget not to be gracious: neither shut up your loving kindness in displeasure. For his sake, who himself took our infirmities and bore our sicknesses, have mercy upon us; and say to the destroying Angel, “It is enough”. O let that blood of sprinkling, which speaks better things then that of Abel be upon the Lintel and the two side posts in all our dwellings, that the destroyer may pass by. Let the sweet odor of your blessed Son's all-sufficient sacrifice and intercession (infinitely more prevalent than the typical incense of Aaron) interpose between the living and the dead and be our full and perfect atonement, ever acceptable with you, that the plague may be stayed. O let us live and we will praise your Name, and these your judgments shall teach us to look every man into the plague of his own heart: that being cleansed from all our sins, we may serve you with pure hearts all our days, perfecting holiness in your fear until we come at last where there is no more sickness nor death through your tender mercies in him alone who is our Life, and our health, and our salvation, Jesus Christ, our ever blessed savior and redeemer.",
+                "response": "Amen.",
+                "citation": "1665, Gilbert Sheldon, Archbishop of Canterbury".upper(),
+            },
+        ]
+
+        day_of_year = self.date.date.timetuple().tm_yday
+        collect_number = day_of_year % 2
+        if self.office.office == "morning_prayer":
+            return collects[collect_number]
+        return collects[1 - collect_number]
+
+    def get_collect_2(self):
+        collects = [
+            {
+                "title": "In Times of Natural Disaster",
+                "collect": "Almighty God, by your Word you laid the foundations of the earth, set the bounds of the sea, and still the wind and waves. Surround us with your grace and peace, and preserve us through this plague. By your Spirit, lift up those who have fallen, strengthen those who work to rescue or rebuild, and fill us with the hope of your new creation; through Jesus Christ our Lord.",
+                "response": "Amen.",
+                "citation": "#26, Book of Common Prayer (2019)".upper(),
+            },
+            {
+                "title": "In Times of Social Conflict or Unrest",
+                "collect": " Increase, O God, the spirit of neighborliness among us, that in peril we may uphold one another, in suffering tend to one another, and in homelessness, loneliness, or exile befriend one another. Grant us brave and enduring hearts that we may strengthen one another, until the disciplines and testing of these days are ended, and you again give peace in our time; through Jesus Christ our Lord.",
+                "response": "Amen.",
+                "citation": "#44, Book of Common Prayer (2019)".upper(),
+            },
+            {
+                "title": "For the Recovery of a Sick Person",
+                "collect": "Almighty and immortal God, giver of life and health: We implore your mercy for your servants who are sickened by this virus, that by your blessing upon them and upon those who minister to them with your healing gifts, they may be restored to health of body and mind, according to your gracious will, and may give thanks to you in your holy Church; through Jesus Christ our Lord.",
+                "response": "Amen.",
+                "citation": "#61, Book of Common Prayer (2019)".upper(),
+            },
+            {
+                "title": "For Civil Authorities",
+                "collect": "Almighty God, our heavenly Father, send down on those who hold public office, especially those working to stop the spread of this virus, the spirit of wisdom, charity, and justice; that with steadfast purpose they may faithfully serve in their offices to promote the well being of all people; through Jesus Christ our Lord.",
+                "response": "Amen.",
+                "citation": "#30, Book of Common Prayer (2019)".upper(),
+            },
+            {
+                "title": "For Those Who Serve Others",
+                "collect": "O Lord our heavenly Father, whose blessed Son came not to be served, but to serve: We ask you to bless all who, following in his steps, give themselves to the service of others especially those who are laboring in this time of plague; endue them with wisdom, patience, and courage, that they may strengthen the weak and raise up those who fall, and, being inspired by your love, may worthily minister to the suffering, the friendless, and the needy; for the sake of him who laid down his life for us, your Son our Savior Jesus Christ.",
+                "response": "Amen.",
+                "citation": "#45, Book of Common Prayer (2019)".upper(),
+            },
+            {
+                "title": "For the Medical Professions",
+                "collect": "Almighty God, whose blessed Son Jesus Christ went about doing good, and healing all manner of sickness and disease among the people: Continue in our hospitals his gracious work among us especially those caring for those with the coronavirus; console and heal the sick; grant to the physicians, nurses, and assisting staff wisdom and skill, diligence and patience; prosper their work, O Lord, and send down your blessing upon all who serve the suffering; through Jesus Christ our Lord.",
+                "response": "Amen.",
+                "citation": "#50, Book of Common Prayer (2019)".upper(),
+            },
+            {
+                "title": "For Trustfulness in Times of Worry and Anxiety",
+                "collect": "Most loving Father, you will us to give thanks for all things, to dread nothing but the loss of you, and to cast all our care on the One who cares for us. Preserve us from faithless fears and worldly anxieties, and grant that no clouds of this mortal life may hide from us the light of that love which is immortal, and which you have manifested unto us in your Son, Jesus Christ our Lord.",
+                "response": "Amen.",
+                "citation": "#80, Book of Common Prayer (2019)".upper(),
+            },
+        ]
+
+        if self.office.office == "morning_prayer":
+            return collects[self.date.date.weekday()]
+
+        return collects[6 - self.date.date.weekday()]
+
+    @cached_property
+    def data(self):
+        return {"collect_1": self.get_collect_1(), "collect_2": self.get_collect_2()}
+
+
 class Intercessions(OfficeSection):
     @cached_property
     def data(self):
         return {
-            "heading": "Intercessions",
+            "heading": "Intercessions and Thanksgivings",
             "rubric_1": "The Officiant may invite the People to offer intercessions and thanksgivings.",
             "rubric_2": "A hymn or anthem may be sung.",
         }
