@@ -115,7 +115,7 @@ const redirect = function () {
     if (redirect_type) {
         const date_string = today();
         const office = current_office(redirect_type);
-        const path = `\\${office}\\${date_string}`;
+        const path = `\\${office}\\${date_string}/index.html`;
         const xhr = new XMLHttpRequest();
         xhr.open('GET', path);
         xhr.responseType = "document";
@@ -124,8 +124,7 @@ const redirect = function () {
 
                 const elem = document.querySelector("#body");
                 const newBody = xhr.response.querySelector("#body");
-                elem.innerHTML = newBody.innerHTML;
-                document.querySelector("#messages").innerHTML = "<a href='" + path + "'>Permanent link for " + current_office_label() + " for " + new Date().toLocaleDateString() + "</a></a></p>";
+                elem.innerHTML = newBody.innerHTML;xfv
                 settings();
                 setupCalendar();
                 document.getElementById("now-button").classList.add('on')

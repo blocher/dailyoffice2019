@@ -9,15 +9,15 @@
     <div class="menu-wrapper">
         <div class="menu">
             {% if "/family/" in request.get_full_path %}
-                <a href="/family/" id="now-button" class="menu-button {%  if on == "now-button" %} on {% endif %}"><i class="fal fa-clock"></i> <span class="first-letter">N</span>ow</a>
-                <a id="calendar-button" href="/family/church_year/2019-2020" class="menu-button {%  if on == "calendar-button" %} on {% endif %}"><i class="fal fa-calendar-alt"></i> <span class="first-letter">C</span>alendar</a>
-                <a id="settings-button" href="/family/settings" class="menu-button {%  if on == "settings-button" %} on {% endif %}"><i class="fal fa-cog"></i> <span class="first-letter">S</span>ettings</a>
-                <a id="about-button" href="/family/about" class="menu-button {%  if on == "about-button" %} on {% endif %}"><i class="fal fa-cross"></i> <span class="first-letter">A</span>bout</a>
+                <a href="/family/index.html" id="now-button" class="menu-button {%  if on == "now-button" %} on {% endif %}"><i class="fal fa-clock"></i> <span class="first-letter">N</span>ow</a>
+                <a id="calendar-button" href="/family/church_year/2019-2020/index.html" class="menu-button {%  if on == "calendar-button" %} on {% endif %}"><i class="fal fa-calendar-alt"></i> <span class="first-letter">C</span>alendar</a>
+                <a id="settings-button" href="/family/settings/index.html" class="menu-button {%  if on == "settings-button" %} on {% endif %}"><i class="fal fa-cog"></i> <span class="first-letter">S</span>ettings</a>
+                <a id="about-button" href="/family/about/index.html" class="menu-button {%  if on == "about-button" %} on {% endif %}"><i class="fal fa-cross"></i> <span class="first-letter">A</span>bout</a>
             {% else %}
-               <a href="/" id="now-button" class="menu-button {%  if on == "now-button" %} on {% endif %}"><i class="fal fa-clock"></i> <span class="first-letter">N</span>ow</a>
-                <a id="calendar-button" href="/church_year/2019-2020" class="menu-button {%  if on == "calendar-button" %} on {% endif %}"><i class="fal fa-calendar-alt"></i> <span class="first-letter">C</span>alendar</a>
-                <a id="settings-button" href="/settings" class="menu-button {%  if on == "settings-button" %} on {% endif %}"><i class="fal fa-cog"></i> <span class="first-letter">S</span>ettings</a>
-                <a id="about-button" href="/about" class="menu-button {%  if on == "about-button" %} on {% endif %}"><i class="fal fa-cross"></i> <span class="first-letter">A</span>bout</a>
+               <a href="/index.html" id="now-button" class="menu-button {%  if on == "now-button" %} on {% endif %}"><i class="fal fa-clock"></i> <span class="first-letter">N</span>ow</a>
+                <a id="calendar-button" href="/church_year/2019-2020/index.html" class="menu-button {%  if on == "calendar-button" %} on {% endif %}"><i class="fal fa-calendar-alt"></i> <span class="first-letter">C</span>alendar</a>
+                <a id="settings-button" href="/settings/index.html" class="menu-button {%  if on == "settings-button" %} on {% endif %}"><i class="fal fa-cog"></i> <span class="first-letter">S</span>ettings</a>
+                <a id="about-button" href="/about/index.html" class="menu-button {%  if on == "about-button" %} on {% endif %}"><i class="fal fa-cross"></i> <span class="first-letter">A</span>bout</a>
             {% endif %}
 
         </div>
@@ -33,8 +33,8 @@
 </div>
 
 {% if "/family/" in request.get_full_path %}
-    <p class="intro-heading-2 no-print"><br>Looking for the full Daily Office services?<br><a href="/">Go to the Daily Office site</a></p>
+    <p class="intro-heading-2 no-print"><br>Looking for the full Daily Office services?<br><a href="/index.html">Go to the Daily Office site</a></p>
 {% else %}
-    <p class="intro-heading-2 no-print"><br>Looking for a shorter service?<br><a href="/family">Go to the Family Prayer site</a></p>
+    <p class="intro-heading-2 no-print"><br>Looking for a shorter service?<br><a href="/family/index.html">Go to the Family Prayer site</a></p>
 {% endif %}
 

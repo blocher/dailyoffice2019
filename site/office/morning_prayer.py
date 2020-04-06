@@ -269,7 +269,7 @@ class MPInvitatory(OfficeSection):
         ):
             return {"first_line": "The Lord is glorious in his saints:", "second_line": "O come, let us adore him."}
 
-        if self.date.season.name == "Lent":
+        if self.date.season.name == "Lent" or self.date.season.name == "Lent":
             return {
                 "first_line": "The Lord is full of compassion and mercy:",
                 "second_line": "O come, let us adore him.",

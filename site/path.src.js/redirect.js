@@ -6,7 +6,7 @@ var redirect = function() {
   const hours = date.getHours();
   const office = hours >= 12 ? 'evening_prayer' : 'morning_prayer';
   const date_string = `${year}-${month}-${day}`;
-  const path = `\\office\\${office}\\${date_string}`;
+  const path = `\\office\\${office}\\${date_string}.html`;
   console.log(hours);
   console.log(path);
   window.location.pathname = path;
