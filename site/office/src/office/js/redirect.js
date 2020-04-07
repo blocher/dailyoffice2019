@@ -115,8 +115,9 @@ const redirect = function () {
     if (redirect_type) {
         const date_string = today();
         const office = current_office(redirect_type);
-        const path = `\\${office}\\${date_string}/index.html`;
+        const path = `\\${office}\\${date_string}\index.html`;
         const xhr = new XMLHttpRequest();
+        console.log(path)
         xhr.open('GET', path);
         xhr.responseType = "document";
         xhr.onload = function () {
@@ -124,7 +125,7 @@ const redirect = function () {
 
                 const elem = document.querySelector("#body");
                 const newBody = xhr.response.querySelector("#body");
-                elem.innerHTML = newBody.innerHTML;xfv
+                elem.innerHTML = newBody.innerHTML;
                 settings();
                 setupCalendar();
                 document.getElementById("now-button").classList.add('on')
