@@ -442,7 +442,7 @@ def settings(request):
             {
                 "title": "Great Litany at Evening Prayer",
                 "name": "ep_great_litany",
-                "help_text": "Include the Great Litany after the collects at Morning Prayer",
+                "help_text": "Include the Great Litany after the collects at Evening Prayer",
                 "options": [
                     {
                         "value": "ep_litany_off",
