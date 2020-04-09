@@ -179,13 +179,13 @@ def settings(request):
             {
                 "title": "Substitute Sunday/Holy Day (Eucharistic) Lectionary",
                 "name": "lectionary",
-                "help_text": "When the Daily Office is used for the principal service of a church, the prayer book instructs you to replace the Daily Office readings with the three year cycle of Sunday and Holy Day readings.  This is generally done only in churches and not when using the Daily Office as a personal devotion at home.",
+                "help_text": "On Sundays and major holy days, do you want to use the standard Daily Office readings or substitue the 3-year Sunday/Holy Day cycle? When the Daily Office is used for the principal service of a church, the prayer book instructs you to replace the Daily Office readings with the three year cycle of Sunday and Holy Day readings.  This is generally done only in churches and not when using the Daily Office as a personal devotion at home.",
                 "options": [
                     {
                         "value": "daily-office-readings",
                         "hide": ["mass-readings-feria", "mass-readings-sunday"],
                         "show": ["daily-office-readings-sunday", "daily-office-readings-feria"],
-                        "heading": "Always Use Standard One or Two Year Daily Office Lectionary",
+                        "heading": "Standard Daily Office",
                         "text": "",
                         "tags": {},
                     },
@@ -193,7 +193,7 @@ def settings(request):
                         "value": "mass-readings",
                         "hide": ["mass-reading-feria", "daily-office-readings-sunday"],
                         "show": ["mass-readings-sunday", "mass-readingss-feria"],
-                        "heading": "Substitute Three-Year Lectionary on Sundays and Holy Days",
+                        "heading": "Sundays & Holy Days",
                         "text": "",
                         "tags": {},
                     },
@@ -251,20 +251,20 @@ def settings(request):
             {
                 "title": "Morning Prayer Invitatory",
                 "name": "morning_prayer_invitatory",
-                "help_text": "Open with the Venite (Psalm 95) or the Jubilate (Psalm 100)",
+                "help_text": "Open with the Venite (Psalm 95) always (traditional), have a special celebratory invitatory on Sundays and feasts (Pascha Nostrum during Eastertide or Jubilate/Psalm 100 otherwise), or rotate between the normal and celebratory invitatory each day. Regardless of which setting you choose, the Pascha Nostrum is always used during the first week of Easter, and the invitatory will never be the same as one of the day's appointed pslams.",
                 "options": [
                     {
                         "value": "invitatory_traditional",
                         "hide": ["invitatory_jubilate_on_feasts", "invitatory_rotating"],
                         "show": ["invitatory_traditional"],
-                        "heading": "Venite (Except when Psalm 95 is appointed)",
+                        "heading": "Venite always",
                         "text": "Always use the Venite (except on days when Pslam 95 is appointed)",
                     },
                     {
                         "value": "invitatory_jubilate_on_feasts",
                         "hide": ["invitatory_traditional", "invitatory_rotating"],
                         "show": ["invitatory_jubilate_on_feasts"],
-                        "heading": "Jubilate on Sundays and feasts, Venite other days",
+                        "heading": "Celebratory Sundays and feasts",
                         "text": "Use the Jubilate on Feasts and Sundays, Venite on other days ",
                     },
                     {
@@ -427,7 +427,7 @@ def settings(request):
                         "value": "mp_litany_w_f_s",
                         "hide": ["litany-mp-not-wfs", "mission-mp-wfs"],
                         "show": ["litany-mp-wfs", "mission-mp-not-wfs"],
-                        "heading": "Wednesday, Friday, and Sunday",
+                        "heading": "Wed, Fri, & Sat.",
                         "text": "Litany on Wednesday, Friday, and Sunday (the traditional days)",
                     },
                     {
@@ -455,7 +455,7 @@ def settings(request):
                         "value": "ep_litany_w_f_s",
                         "hide": ["litany-ep-not-wfs", "mission-ep-wfs"],
                         "show": ["litany-ep-wfs", "mission-ep-not-wfs"],
-                        "heading": "Wednesday, Friday, and Sunday",
+                        "heading": "Wed, Fri, & Sat.",
                         "text": "Litany on Wednesday, Friday, and Sunday (the traditional days)",
                     },
                     {

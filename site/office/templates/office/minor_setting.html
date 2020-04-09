@@ -4,7 +4,6 @@
 </h3>
 <section>
     {% for option in setting.options %}
-
         <span {% if option.tags %} {% for key, value in option.tags.items %} {{ key }}="{{ value }}" {% endfor %} {% endif %} >
             <div class="pretty p-default p-round p-smooth">
                 <input
