@@ -61,13 +61,13 @@ div#settings {
   }
 
   .advanced-settings {
-    padding: 1rem;
+    padding: .5rem;
     border: 1px solid black;
     @include themify($themes) {
         background-color: themed('footer-color-bg');
       }
 
-    margin: 1rem;
+    margin: 0;
 
     h3 {
       font-size: 1em;

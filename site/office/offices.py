@@ -173,7 +173,7 @@ class PandemicPrayers(OfficeSection):
             },
             {
                 "title": "For Civil Authorities",
-                "collect": "Almighty God, our heavenly Father, send down on those who hold public office, especially those working to stop the spread of this virus, the spirit of wisdom, charity, and justice; that with steadfast purpose they may faithfully serve in their offices to promote the well being of all people; through Jesus Christ our Lord.",
+                "collect": "Almighty God, our heavenly Father, send down on those who hold public office, especially those working to stop the spread of the Coronavirus, the spirit of wisdom, charity, and justice; that with steadfast purpose they may faithfully serve in their offices to promote the well being of all people; through Jesus Christ our Lord.",
                 "response": "Amen.",
                 "citation": "#30, Book of Common Prayer (2019)".upper(),
             },
@@ -185,7 +185,7 @@ class PandemicPrayers(OfficeSection):
             },
             {
                 "title": "For the Medical Professions",
-                "collect": "Almighty God, whose blessed Son Jesus Christ went about doing good, and healing all manner of sickness and disease among the people: Continue in our hospitals his gracious work among us especially those caring for those with the coronavirus; console and heal the sick; grant to the physicians, nurses, and assisting staff wisdom and skill, diligence and patience; prosper their work, O Lord, and send down your blessing upon all who serve the suffering; through Jesus Christ our Lord.",
+                "collect": "Almighty God, whose blessed Son Jesus Christ went about doing good, and healing all manner of sickness and disease among the people: Continue in our hospitals his gracious work among us especially in this time of plague and pandemic; console and heal the sick; grant to the physicians, nurses, and assisting staff wisdom and skill, diligence and patience; prosper their work, O Lord, and send down your blessing upon all who serve the suffering; through Jesus Christ our Lord.",
                 "response": "Amen.",
                 "citation": "#50, Book of Common Prayer (2019)".upper(),
             },
