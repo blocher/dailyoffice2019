@@ -3,7 +3,7 @@ import {getChurchYearStartYear, today} from "./redirect";
 const calendar = function () {
 
     const current_church_year = getChurchYearStartYear(new Date());
-    let new_href = "/church_year/" + current_church_year + "-" + (parseInt(current_church_year) + 1) + "#day-" + today()
+    let new_href = "/church_year/" + current_church_year + "-" + (parseInt(current_church_year) + 1) + "/index.html/#day-" + today()
     const family = window.location.href.includes("family/");
     if (family) {
         new_href = '/family' + new_href;

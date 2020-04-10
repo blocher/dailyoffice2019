@@ -115,7 +115,7 @@ const redirect = function () {
     if (redirect_type) {
         const date_string = today();
         const office = current_office(redirect_type);
-        const path = `\\${office}\\${date_string}\index.html`;
+        const path = `/${office}/${date_string}/index.html`;
         const xhr = new XMLHttpRequest();
         console.log(path)
         xhr.open('GET', path);

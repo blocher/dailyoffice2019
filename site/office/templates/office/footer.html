@@ -2,28 +2,28 @@
 <div id="main-footer" class="footer footer-fixed">
 
     <div class="footer-flex">
-        <div><strong><a class="day-link" href="{{ office.links.yesterday.link }}">&#8592; {{ office.links.yesterday.label }}</a></strong></div>
+        <div><strong><a class="day-link" href="{{ office.links.yesterday.link }}/index.html">&#8592; {{ office.links.yesterday.label }}</a></strong></div>
         <div><strong>Daily Office for<br>{{ office.links.date }}</strong></div>
-        <div><strong><a  class="day-link" href="{{ office.links.tomorrow.link }}">{{ office.links.tomorrow.label }} &#8594;</a></strong></div>
+        <div><strong><a  class="day-link" href="{{ office.links.tomorrow.link }}/index.html">{{ office.links.tomorrow.label }} &#8594;</a></strong></div>
     </div>
     <div class="footer-flex">
         {%  if office.links.current != 'morning_prayer' %}
-            <div><a href="{{ office.links.morning_prayer.link }}"><i class="fal fa-sunrise"></i>{{ office.links.morning_prayer.label }}</a></div>
+            <div><a href="{{ office.links.morning_prayer.link }}/index.html"><i class="fal fa-sunrise"></i>{{ office.links.morning_prayer.label }}</a></div>
         {%  else %}
             <div><i class="fas fa-sunrise"></i>{{ office.links.morning_prayer.label | upper }}</div>
         {% endif %}
         {%  if office.links.current != 'midday_prayer' %}
-            <div><a href="{{ office.links.midday_prayer.link }}"><i class="fal fa-sun"></i>{{ office.links.midday_prayer.label }}</a></div>
+            <div><a href="{{ office.links.midday_prayer.link }}/index.html"><i class="fal fa-sun"></i>{{ office.links.midday_prayer.label }}</a></div>
         {%  else %}
             <div><i class="fas fa-sun"></i>{{ office.links.midday_prayer.label | upper }}</div>
         {% endif %}
         {%  if office.links.current != 'evening_prayer' %}
-            <div><a href="{{ office.links.evening_prayer.link }}"><i class="fal fa-sunset"></i>{{ office.links.evening_prayer.label }}</a></div>
+            <div><a href="{{ office.links.evening_prayer.link }}/index.html"><i class="fal fa-sunset"></i>{{ office.links.evening_prayer.label }}</a></div>
         {%  else %}
             <div><i class="fas fa-sunset"></i>{{ office.links.evening_prayer.label | upper }}</div>
         {% endif %}
         {%  if office.links.current != 'compline' %}
-            <div><a href="{{ office.links.compline.link }}"><i class="fal fa-moon"></i>{{ office.links.compline.label }}</a></div>
+            <div><a href="{{ office.links.compline.link }}/index.html"><i class="fal fa-moon"></i>{{ office.links.compline.label }}</a></div>
         {%  else %}
             <div><i class="fal fa-moon"></i>{{ office.links.compline.label | upper }}</div>
         {% endif %}
