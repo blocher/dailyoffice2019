@@ -1,5 +1,5 @@
-from django.contrib.admin.templatetags.admin_static import static
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render
+from django.templatetags.static import static
 from django.urls import reverse
 from meta.views import Meta
 
@@ -259,7 +259,7 @@ def family(request):
 
 
 def handle404(request, exception):
-    response = render_to_response("404.html")
+    response = render(request, "404.html")
     response.status_code = 404
     return response
 
