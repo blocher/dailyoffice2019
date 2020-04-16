@@ -427,7 +427,7 @@ def settings(request):
                         "value": "mp_litany_w_f_s",
                         "hide": ["litany-mp-not-wfs", "mission-mp-wfs"],
                         "show": ["litany-mp-wfs", "mission-mp-not-wfs"],
-                        "heading": "Wed, Fri, & Sat.",
+                        "heading": "Wed, Fri, & Sun.",
                         "text": "Litany on Wednesday, Friday, and Sunday (the traditional days)",
                     },
                     {
@@ -455,7 +455,7 @@ def settings(request):
                         "value": "ep_litany_w_f_s",
                         "hide": ["litany-ep-not-wfs", "mission-ep-wfs"],
                         "show": ["litany-ep-wfs", "mission-ep-not-wfs"],
-                        "heading": "Wed, Fri, & Sat.",
+                        "heading": "Wed, Fri, & Sun.",
                         "text": "Litany on Wednesday, Friday, and Sunday (the traditional days)",
                     },
                     {
@@ -693,20 +693,3 @@ def settings(request):
             },
         ],
     }
-
-
-"""In a nutshell, this is (tentatively) what I do with them...
-* Magna et Mirabilia replaces Te Deum in Advent.
-* Surge illuminare replaces Te Deum in Epiphanytide.
-* Benedictus es replaces Te Deum in Lent.
-* Cantemus Domino replaces Te Deum in Eastertide.
-* Dignus es replaces Te Deum in Ascensiontide & Pentecost Week.
-* Ecce, Deus replaces Te Deum in Trinitytide.
-* Benedicite replaces Te Deum on Saturdays in Trinitytide.
-
-
-* Quaerite Dominum replaces Nunc dimittis in Advent.
-* Kyrie Pantokrator replaces Nunc dimittis in Lent.
-* Cantate Domino replaces Nunc dimittis in Christmas & Easter.
-* Deus Misereatur replaces Nunc dimittis in Epiphanytide & Trinitytide.
-(All of the above apply to weekdays; Sundays are usually the default.)"""
