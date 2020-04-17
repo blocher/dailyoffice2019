@@ -17,6 +17,7 @@
                 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
             f.parentNode.insertBefore(j, f);
         })(window, document, 'script', 'dataLayer', 'GTM-NSB92RP');</script>
+        <script> window.file_name = "{{ filename }}";</script>
         <!-- End Google Tag Manager -->
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -30,33 +31,35 @@
         {% endblock %}
     </head>
 
-    <body id="body" {% if "/family/" in request.get_full_path %} class="family" {% endif %}>
-        <!-- Google Tag Manager (noscript) -->
-        <noscript>
-            <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NSB92RP"
-                    height="0" width="0" style="display:none;visibility:hidden"></iframe>
-        </noscript>
-        {% include "office/header.html" %}
-        <div class="main">
-            <div class="{{ show_settings_class }}">
-                {%  include "office/settings_section.html" %}
-            </div>
-            {% block content %}
-            {% endblock %}
-            {%  include "feedback.html" %}
+    <body id="body" class="{{ mode }}{% if "/family/" in request.get_full_path %} family {% endif %}">
+        <div id="{{ mode }}" class="{{ mode }}">
+            <!-- Google Tag Manager (noscript) -->
+            <noscript>
+                <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NSB92RP"
+                        height="0" width="0" style="display:none;visibility:hidden"></iframe>
+            </noscript>
+            {% include "office/header.html" %}
+            <div class="main">
+                <div class="{{ show_settings_class }}">
+                    {%  include "office/settings_section.html" %}
+                </div>
+                {% block content %}
+                {% endblock %}
+                {%  include "feedback.html" %}
 
-         </div>
-        <div class="no-print">
-            {% if office %}
-                {% if office.family %}
-                    {% include "office/footer_family.html" %}
-                {% else %}
-                    {% include "office/footer.html" %}
+             </div>
+            <div class="no-print">
+                {% if office %}
+                    {% if office.family %}
+                        {% include "office/footer_family.html" %}
+                    {% else %}
+                        {% include "office/footer.html" %}
+                    {% endif %}
                 {% endif %}
-            {% endif %}
-        </div>
+            </div>
 
-        <link href="https://fonts.googleapis.com/css?family=Lusitana:400,700&display=swap" rel="stylesheet">
+            <link href="https://fonts.googleapis.com/css?family=Lusitana:400,700&display=swap" rel="stylesheet">
+        </div>
     </body>
 
 
