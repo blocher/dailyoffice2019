@@ -384,6 +384,20 @@ class MPInvitatory(OfficeSection):
 
         return (thirty_day, sixty_day)
 
+    def celebratory_always(self):
+
+        if self.date.season.name == "Eastertide":
+            return (self.pascha_nostrum, self.pascha_nostrum)
+
+        thirty_day = self.jubilate
+        sixty_day = self.jubilate
+
+        if "100" in self.office_readings.mp_psalms.split(","):
+            sixty_day = self.venite
+        if "100" in self.thirty_day_psalter_day.mp_psalms.split(","):
+            thirty_day = self.venite
+        return (thirty_day, sixty_day)
+
     @cached_property
     def pascha_nostrum(self):
         return {
@@ -425,6 +439,7 @@ class MPInvitatory(OfficeSection):
             "jubilate_on_sundays_and_feasts": self.jubilate_on_sundays_and_feasts(),
             "venite_most_days": self.venite_most_days(),
             "rotating": self.rotating(),
+            "celebratory_always": self.celebratory_always(),
         }
         return values
 
