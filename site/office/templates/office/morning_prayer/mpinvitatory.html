@@ -37,3 +37,16 @@
         {% include "office/morning_prayer/mpinvitatory_single.html" with invitatory=data.rotating.0 %}
     {% endif %}
 </div>
+
+<div class="invitatory_celebratory_always off">
+    {% if data.celebratory_always.1 != data.celebratory_always.2 %}
+        <div class="psalter-thirty off">
+            {% include "office/morning_prayer/mpinvitatory_single.html" with invitatory=data.celebratory_always.0 %}
+        </div>
+        <div class="psalter-sixty">
+            {% include "office/morning_prayer/mpinvitatory_single.html" with invitatory=data.celebratory_always.1 %}
+        </div>
+    {% else %}
+        {% include "office/morning_prayer/mpinvitatory_single.html" with invitatory=data.celebratory_always.0 %}
+    {% endif %}
+</div>
