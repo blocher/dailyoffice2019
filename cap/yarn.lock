@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@capacitor/cli@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@capacitor/cli/-/cli-2.0.0.tgz#7d28b5c0a90c3aa3a95fac50db69cb8513c3b809"
-  integrity sha512-5lNRo1pio3dt+2+t50HRM/X0FclenS90VYFUInCo1aIvThnXyxMUNBIvSA31JgpcwJmyDIJPNA4iLY4DcyrpHA==
+"@capacitor/cli@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@capacitor/cli/-/cli-2.0.1.tgz#db820e192f94d3bb70a238e98591a6d9f73dfb90"
+  integrity sha512-G6+Wk8Q7V8+rDcIj1Nk3iMnCGgMbl3gSFyL8aMsuvSJ4XSXLex43TJLWSNECuRv4OwyEPqUFH0g5eqEolaTSwQ==
   dependencies:
     chalk "^2.3.0"
     commander "^2.12.2"
@@ -19,17 +19,17 @@
     which "^1.3.0"
     xml2js "^0.4.19"
 
-"@capacitor/core@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@capacitor/core/-/core-2.0.0.tgz#46f9d7f13e601913fd18ea7f8e4bfb96f040f03a"
-  integrity sha512-u21az92VjHG14pHt0v33s0LwE19ICoUhrMdJdc5F/fHLEw1pBsJvyuK9C11SmDyv1QJjwmPvq6Rh0+BIRGAgLQ==
+"@capacitor/core@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@capacitor/core/-/core-2.0.1.tgz#d5ad065924602646128102078d55c3d9d633be40"
+  integrity sha512-6GoklVQdHZ6jBAkVgPySaTBw+/zz4P+U1yFZkNTVdYAEGze4Zv5cGlUF6OpvlZRiCk3p7ZWt4kC8baIh/Zxu3A==
   dependencies:
     tslib "^1.9.0"
 
-"@capacitor/ios@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@capacitor/ios/-/ios-2.0.0.tgz#69a66af6d8bda4a11462003cda63f93ea0f1450d"
-  integrity sha512-XvTyVbJC7iRvWvqUfSM0yCmpKIO2NXHAA5OfkjA/legsd/YJZKUAPXaJujWermpYTSHkE4jZYOOjzoUZ+caolA==
+"@capacitor/ios@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@capacitor/ios/-/ios-2.0.1.tgz#1f1cd3736dcf00373e3303d89a0164f2f168d24e"
+  integrity sha512-KzrWZAfLYe+eyJjvj1IjueIr0goigEREi4GkidKkGQdlP2EM4gHvzpkspD2L+HUP5c6dkReU5qkTzL2857TZ4w==
 
 ansi-escapes@^3.2.0:
   version "3.2.0"
@@ -85,9 +85,9 @@ cli-spinners@^1.0.1:
   integrity sha512-1QL4544moEsDVH9T/l6Cemov/37iv1RtoKf7NJ04A60+4MREXNfx/QvavbH6QoGdsD4N4Mwy49cmaINR/o2mdg==
 
 cli-width@^2.0.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/cli-width/-/cli-width-2.2.0.tgz#ff19ede8a9a5e579324147b0c11f0fbcbabed639"
-  integrity sha1-/xnt6Kml5XkyQUewwR8PvLq+1jk=
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/cli-width/-/cli-width-2.2.1.tgz#b0433d0b4e9c847ef18868a4ef16fd5fc8271c48"
+  integrity sha512-GRMWDxpOB6Dgk2E5Uo+3eEBvtOOlimMmpbFiKuLFnQzYDavtLFY3K5ona41jgN/WdRZtG7utuVSVTL4HbZHGkw==
 
 color-convert@^1.9.0:
   version "1.9.3"

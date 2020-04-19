@@ -1,8 +1,11 @@
 {
   "appId": "com.example.dailyoffice2019",
-  "appName": "Daily Office | Morning and Evening Prayer from the Book of Common Prayer (2019)",
+  "appName": "Daily Office",
   "bundledWebRuntime": false,
   "npmClient": "yarn",
   "webDir": "../static_export",
-  "cordova": {}
+  "cordova": {},
+  "ios": {
+    "contentInset": "never"
+  }
 }

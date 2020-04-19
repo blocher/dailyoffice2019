@@ -22,6 +22,7 @@
     "webpack-dev-server": "^3.9.0"
   },
   "dependencies": {
+    "capacitor": "^0.5.5",
     "clipboard-polyfill": "^2.8.6",
     "copy-webpack-plugin": "^5.0.5",
     "netlify-cli": "^2.40.0",

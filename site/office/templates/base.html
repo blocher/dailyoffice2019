@@ -19,7 +19,7 @@
         })(window, document, 'script', 'dataLayer', 'GTM-NSB92RP');</script>
         <script> window.file_name = "{{ filename }}";</script>
         <!-- End Google Tag Manager -->
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
         <link rel="apple-touch-icon" sizes="180x180" href="{% static 'apple-touch-icon.png' %}">
         <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon-32x32.png' %}">
@@ -33,6 +33,9 @@
 
     <body id="body" class="{{ mode }}{% if "/family/" in request.get_full_path %} family {% endif %}">
         <div id="{{ mode }}" class="{{ mode }}">
+            <div id="notch" class="notch">
+
+            </div>
             <!-- Google Tag Manager (noscript) -->
             <noscript>
                 <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NSB92RP"
@@ -47,7 +50,8 @@
                 {% endblock %}
                 {%  include "feedback.html" %}
 
-             </div>
+            </div>
+
             <div class="no-print">
                 {% if office %}
                     {% if office.family %}

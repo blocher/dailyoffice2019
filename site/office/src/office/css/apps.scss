@@ -1,0 +1,28 @@
+#notch {
+  display: none;
+}
+body.app {
+
+  div.main {
+    padding: 1.4rem;
+    padding-left: max(1.4rem, env(calc(safe-area-inset-left + 1.4rem)));
+    padding-right: max(1.4rem,  env(calc(safe-area-inset-right + 1.4rem)));
+    padding-top: max(1.4rem,  env(calc(safe-area-inset-top + 1.4rem)));
+    padding-bottom: max(1.4rem,  env(calc(safe-area-inset-bottom + 1.4rem)));
+  }
+
+  #notch {
+    display: block;
+    position: fixed;
+    height: env(calc(safe-area-inset-top;
+    width: 100%;
+    margin: 0;
+    top: 0;
+    left: 0;
+
+    @include themify($themes) {
+      background: themed('color-bg');
+    }
+  }
+
+}

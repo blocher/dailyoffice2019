@@ -1,3 +1,10 @@
+import {
+  Plugins,
+  StatusBarStyle,
+} from '@capacitor/core';
+
+const { StatusBar } = Plugins;
+
 const clipboard = require("clipboard-polyfill/dist/clipboard-polyfill.promise");
 
 function localStorageExists() {
@@ -12,6 +19,17 @@ function localStorageExists() {
 }
 
 const settings = () => {
+    const setUpStatusBar =  () => {
+        StatusBar.setOverlaysWebView({
+          overlay: false
+        });
+        StatusBar.setBackgroundColor({
+          color : document.getElementsByTagName("body")[0].style.backgroundColor
+        });
+        StatusBar.setStyle({
+          style: getActiveTheme() == 'dark' ? StatusBarStyle.Dark : StatusBarStyle.Light
+        });
+    }
     const applySettingFromElement = element => {
         let class_to_hide = element.dataset.class_to_hide.split(',');
         let class_to_show = element.dataset.class_to_show.split(',');
@@ -195,6 +213,20 @@ const settings = () => {
 
     };
 
+    const getActiveTheme = () => {
+        let theme = getSetting("theme");
+        if (theme == "theme-dark") {
+            return 'dark';
+        }
+        if (theme == "theme-light") {
+            return 'light';
+        }
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            return 'dark';
+        }
+        return 'light';
+    }
+
     const handleThemes = () => {
         let theme = getSetting("theme");
         if (!theme || theme == "theme-auto") {
@@ -233,8 +265,10 @@ const settings = () => {
                 localStorage.setItem("theme", event.currentTarget.getAttribute('data-theme'));
                 storeSetting({"name": "setting_theme", "value": event.currentTarget.getAttribute('data-theme')});
                 initializeSettings();
+                setUpStatusBar();
             });
         });
+        setUpStatusBar();
     };
 
     const getSettingsLink = () => {
@@ -290,6 +324,7 @@ const settings = () => {
     };
 
     const setupSettings = () => {
+        setUpStatusBar()
         initializeSettings();
         addRadioButtonListeners();
         addSettingsMenuToggle();

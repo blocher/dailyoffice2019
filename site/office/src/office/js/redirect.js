@@ -1,5 +1,7 @@
 import {settings} from "./settings";
 import {setupCalendar} from "./calendar";
+import { Plugins } from '@capacitor/core';
+const { SplashScreen } = Plugins;
 
 const today = function () {
     const date = new Date();
@@ -117,7 +119,6 @@ const redirect = function () {
         const office = current_office(redirect_type);
         const path = `/${office}/${date_string}/${window.file_name}`;
         const xhr = new XMLHttpRequest();
-        console.log(path)
         xhr.open('GET', path);
         xhr.responseType = "document";
         xhr.onload = function () {
@@ -132,8 +133,11 @@ const redirect = function () {
             } else {
                 alert('Request failed.  Returned status of ' + xhr.status);
             }
+            SplashScreen.hide();
         };
         xhr.send();
+    } else {
+        SplashScreen.hide();
     }
 };
 
