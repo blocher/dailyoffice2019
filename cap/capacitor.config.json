@@ -1,5 +1,5 @@
 {
-  "appId": "com.example.dailyoffice2019",
+  "appId": "com.dailyoffice.dailyoffice2019",
   "appName": "Daily Office",
   "bundledWebRuntime": false,
   "npmClient": "yarn",
