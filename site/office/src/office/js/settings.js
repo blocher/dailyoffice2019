@@ -52,7 +52,6 @@ const settings = () => {
     const applySettingFromElement = element => {
         let class_to_hide = element.dataset.class_to_hide.split(',');
         let class_to_show = element.dataset.class_to_show.split(',');
-
         class_to_hide.forEach((value, idx) => {
             Array.from(document.getElementsByClassName(value)).forEach(
                 (element, element_index) => {
@@ -116,20 +115,19 @@ const settings = () => {
 
     const initializeSetting = async element => {
         const fromURL = findGetParameter(element.name);
+        let settings = await getSettingsFromStorage();
         if (fromURL && element.value == fromURL) {
             element.checked = true;
             applySettingFromElement(element);
             storeSetting(element);
-            return;
-        }
-        if (localStorageExists()) {
-            let settings = await getSettingsFromStorage();
+        } else if (localStorageExists()) {
             let stored = settings[element.name] || null;
             if (stored && element.value == stored) {
                 element.checked = true;
                 applySettingFromElement(element);
             }
         }
+        return true;
     };
 
     const showAndHideSavedLabel = async element => {
@@ -151,11 +149,22 @@ const settings = () => {
             });
     };
 
-    const initializeSettings = () => {
+    const copyOldLocalSettingsIfNeed = () => {
+        const newSettings = localStorage.getItem("_cap_settings");
+        if (!newSettings) {
+            const oldSettings = localStorage.getItem("settings");
+            if (oldSettings) {
+                localStorage.setItem("_cap_settings", oldSettings)
+            }
+        }
+    }
+
+    const initializeSettings = async () => {
+        copyOldLocalSettingsIfNeed();
         document
             .querySelectorAll(".settings-radio")
-            .forEach((element, element_index) => {
-                initializeSetting(element);
+            .forEach(async (element, element_index) => {
+                await initializeSetting(element);
             });
         window.history.replaceState({}, document.title, location.protocol + '//' + location.host + window.location.pathname + window.location.hash);
     };
@@ -343,6 +352,7 @@ const settings = () => {
     };
 
     const setupSettings = () => {
+
         setUpStatusBar()
         initializeSettings();
         addRadioButtonListeners();
