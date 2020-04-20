@@ -127,6 +127,11 @@ const redirect = function () {
                 const elem = document.querySelector("#body");
                 const newBody = xhr.response.querySelector("#body");
                 elem.innerHTML = newBody.innerHTML;
+
+                const messages = document.querySelector("#messages")
+                if (messages) {
+                    messages.innerHTML = "<a href='" + path + "'>Permanent link for " + current_office_label() + " for " + new Date().toLocaleDateString() + "</a></a></p>";
+                }
                 settings();
                 setupCalendar();
                 document.getElementById("now-button").classList.add('on')
