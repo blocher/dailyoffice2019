@@ -3,20 +3,39 @@ import {
   StatusBarStyle,
 } from '@capacitor/core';
 
-const { StatusBar } = Plugins;
+const { StatusBar, Storage } = Plugins;
 
 const clipboard = require("clipboard-polyfill/dist/clipboard-polyfill.promise");
 
+export async function setItem(key, value) {
+  await Storage.set({
+    key: key,
+    value: value
+  });
+}
+
+export async function getItem(key) {
+  const item = await Storage.get({ key: key });
+  return item.value;
+}
+
+export async function removeItem(key) {
+  await Storage.remove({
+    key: key
+  });
+}
+
 function localStorageExists() {
-    var test = "test";
+    let test = "test";
     try {
-        localStorage.setItem(test, test);
-        localStorage.removeItem(test);
+        setItem(test, test);
+        removeItem(test);
         return true;
     } catch (e) {
         return false;
     }
 }
+
 
 const settings = () => {
     const setUpStatusBar =  () => {
@@ -50,17 +69,17 @@ const settings = () => {
         });
     };
 
-    const getSetting = (property) => {
+    const getSetting = async (property) => {
         property = "setting_" + property;
-        const settings = getSettingsFromStorage();
+        const settings = await getSettingsFromStorage();
         if (settings.hasOwnProperty(property)) {
             return settings[property]
         }
         return false;
     };
 
-    const getSettingsFromStorage = () => {
-        let settings = localStorage.getItem("settings");
+    const getSettingsFromStorage = async () => {
+        let settings = await getItem("settings");
         if (!settings || settings == "null") {
             return {};
         }
@@ -68,15 +87,15 @@ const settings = () => {
     };
 
     const putSettingsInStorage = settings => {
-        localStorage.setItem("settings", JSON.stringify(settings));
+        setItem("settings", JSON.stringify(settings));
     };
 
-    const storeSetting = element => {
+    const storeSetting = async element => {
         if (!localStorageExists()) {
             return;
         }
 
-        let settings = getSettingsFromStorage();
+        let settings = await getSettingsFromStorage();
         settings[element.name] = element.value;
         putSettingsInStorage(settings);
         document.getElementById("settings-link").value = getSettingsLink()
@@ -95,7 +114,7 @@ const settings = () => {
         return result;
     };
 
-    const initializeSetting = element => {
+    const initializeSetting = async element => {
         const fromURL = findGetParameter(element.name);
         if (fromURL && element.value == fromURL) {
             element.checked = true;
@@ -104,7 +123,7 @@ const settings = () => {
             return;
         }
         if (localStorageExists()) {
-            let settings = getSettingsFromStorage();
+            let settings = await getSettingsFromStorage();
             let stored = settings[element.name] || null;
             if (stored && element.value == stored) {
                 element.checked = true;
@@ -168,8 +187,8 @@ const settings = () => {
     };
 
 
-    const handleFontSizes = () => {
-        let base_font_size = localStorage.getItem("base-font-size");
+    const handleFontSizes = async () => {
+        let base_font_size = await getItem("base-font-size");
         if (base_font_size) {
             document.getElementById("html").style.fontSize = base_font_size;
             document.getElementsByClassName("font-size-selector").forEach((element, element_index) => {
@@ -194,7 +213,7 @@ const settings = () => {
                 event.currentTarget.classList.remove('fal');
                 event.currentTarget.classList.add('fas');
                 document.getElementById("html").style.fontSize = event.currentTarget.getAttribute('data-fontsize');
-                localStorage.setItem("base-font-size", event.target.getAttribute('data-fontsize') + 'px');
+                setItem("base-font-size", event.target.getAttribute('data-fontsize') + 'px');
             });
         });
     };
@@ -227,8 +246,8 @@ const settings = () => {
         return 'light';
     }
 
-    const handleThemes = () => {
-        let theme = getSetting("theme");
+    const handleThemes = async () => {
+        let theme = await getSetting("theme");
         if (!theme || theme == "theme-auto") {
             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 theme = "theme-dark";
@@ -262,7 +281,7 @@ const settings = () => {
                 event.currentTarget.classList.remove('fal');
                 event.target.classList.add('fas');
                 setThemeIcon();
-                localStorage.setItem("theme", event.currentTarget.getAttribute('data-theme'));
+                setItem("theme", event.currentTarget.getAttribute('data-theme'));
                 storeSetting({"name": "setting_theme", "value": event.currentTarget.getAttribute('data-theme')});
                 initializeSettings();
                 setUpStatusBar();
