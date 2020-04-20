@@ -41,13 +41,13 @@ const settings = () => {
     const setUpStatusBar =  () => {
         StatusBar.setOverlaysWebView({
           overlay: false
-        });
+        }).then(response => { return true; }).catch(e => {  return true; })
         StatusBar.setBackgroundColor({
           color : document.getElementsByTagName("body")[0].style.backgroundColor
-        });
+        }).then(response => { return true; }).catch(e => {  return true; })
         StatusBar.setStyle({
           style: getActiveTheme() == 'dark' ? StatusBarStyle.Dark : StatusBarStyle.Light
-        });
+        }).then(response => { return true; }).catch(e => {  return true; })
     }
     const applySettingFromElement = element => {
         let class_to_hide = element.dataset.class_to_hide.split(',');
