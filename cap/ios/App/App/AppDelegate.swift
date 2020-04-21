@@ -1,5 +1,6 @@
 import UIKit
 import Capacitor
+import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -39,7 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // but if you want the App API to support tracking app url opens, make sure to keep this call
     return CAPBridge.handleOpenUrl(url, options)
   }
-  
+
   func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
     // Called when the app was launched with an activity, including Universal Links.
     // Feel free to add additional processing here, but if you want the App API to support

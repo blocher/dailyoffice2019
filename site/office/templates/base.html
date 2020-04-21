@@ -3,8 +3,12 @@
 <!DOCTYPE html>
 <html id="html" class="theme-dark {% if "/family/" in request.get_full_path %} family {% endif %}">
     <head>
+        <script>
+            window.mode = "{{ mode }}";
+            window.file_name = "{{ filename }}";
+        </script>
         <!-- Google Tag Manager -->
-        <script>(function (w, d, s, l, i) {
+        <script> if (window.mode=='web') { (function (w, d, s, l, i) {
             w[l] = w[l] || [];
             w[l].push({
                 'gtm.start':
@@ -16,8 +20,8 @@
             j.src =
                 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
             f.parentNode.insertBefore(j, f);
-        })(window, document, 'script', 'dataLayer', 'GTM-NSB92RP');</script>
-        <script> window.file_name = "{{ filename }}";</script>
+        })(window, document, 'script', 'dataLayer', 'GTM-NSB92RP'); }</script>
+
         <!-- End Google Tag Manager -->
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 

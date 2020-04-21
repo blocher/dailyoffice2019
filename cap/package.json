@@ -4,6 +4,7 @@
   "dependencies": {
     "@capacitor/cli": "^2.0.1",
     "@capacitor/core": "^2.0.1",
-    "@capacitor/ios": "^2.0.1"
+    "@capacitor/ios": "^2.0.1",
+    "capacitor-firebase-analytics": "^0.3.2"
   }
 }
