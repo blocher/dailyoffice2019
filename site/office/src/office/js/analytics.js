@@ -3,7 +3,7 @@ import { Plugins } from '@capacitor/core';
 
 const analytics = () => {
     if (window.mode == "app") {
-        Plugins.CapacitorFirebaseAnalytics.setScreenName({ screenName: document.title }).then(response => {}).catch(e => {});
+        Plugins.CapacitorFirebaseAnalytics.setScreenName({ screenName: document.title, screenClassOverride: document.title });
     }
 }
 
