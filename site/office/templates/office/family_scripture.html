@@ -4,8 +4,9 @@
     <h4>{{ data.brief.citation }}</h4>
 
     <div class="reading">
-        <div class="bible-audio off">
-            <audio controls type="audio/mpeg" src="https://audio.esv.org/hw/{{ data.long.passage|urlencode }}"><a href="https://audio.esv.org/hw/{{ data.brief.citation|urlencode }}">Listen</a></audio>
+        <div class="family-bible-audio off">
+            <iframe src="https://www.esv.org/audio-player/{{ data.brief.citation|urlencode }}/" style="border: 0; width: 100%; height: 109px;"></iframe>
+            <!-- <audio controls type="audio/mpeg" src="https://audio.esv.org/hw/{{ data.long.passage|urlencode }}"><a href="https://audio.esv.org/hw/{{ data.brief.citation|urlencode }}">Listen</a></audio>-->
         </div>
         <br>
         <p>{{  data.brief.sentence | safe }}</p>
@@ -18,8 +19,9 @@
 
     <div class="reading">
         {%  if not data.long.deuterocanon %}
-        <div class="bible-audio off">
-            <audio controls type="audio/mpeg" src="https://audio.esv.org/hw/{{ data.long.abbreviated_passage|urlencode }}"><a href="https://audio.esv.org/hw/{{ data.long.abbreviated_passage|urlencode }}">Listen</a></audio>
+        <div class="family-bible-audio off">
+            <iframe src="https://www.esv.org/audio-player/{{ data.long.abbreviated_passage|urlencode }}/" style="border: 0; width: 100%; height: 109px;"></iframe>
+            <!-- <audio controls type="audio/mpeg" src="https://audio.esv.org/hw/{{ data.long.abbreviated_passage|urlencode }}"><a href="https://audio.esv.org/hw/{{ data.long.abbreviated_passage|urlencode }}">Listen</a></audio>-->
         </div>
         {% endif %}
         <br>
