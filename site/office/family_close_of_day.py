@@ -177,7 +177,6 @@ class FCDClosingSentence(OfficeSection):
     def get_sentence(self):
         return {
             "sentence": "The almighty and merciful Lord, Father, Son, and Holy Spirit, bless us and keep us, this night and evermore.",
-            "citation": "PSALM 4:8",
         }
 
     @cached_property

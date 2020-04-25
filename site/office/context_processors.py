@@ -600,6 +600,27 @@ def settings(request):
                 ],
             },
             {
+                "title": "Reading Audio",
+                "name": "family_reading_audio",
+                "help_text": "Show or hide an audio player to listen to the scripture readings during Morning and Evening Prayer.  Audio is provided by esv.org and currently does not include the Deuterocanon/Apocrypha.",
+                "options": [
+                    {
+                        "value": "off",
+                        "hide": ["family-bible-audio"],
+                        "show": [],
+                        "heading": "Disable Audio",
+                        "text": "No audio controls for scripture readings",
+                    },
+                    {
+                        "value": "on",
+                        "hide": [],
+                        "show": ["family-bible-audio"],
+                        "heading": "Enable Audio",
+                        "text": "Enable audio player for scripture readings",
+                    },
+                ],
+            },
+            {
                 "title": "Collect",
                 "name": "family_collect",
                 "help_text": "",

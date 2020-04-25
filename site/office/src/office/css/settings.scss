@@ -86,16 +86,17 @@ div#settings {
       padding: .2rem;
       font-size: 1.5rem;
       text-align:center;
-      margin: 2rem;
       font-family: "Adobe Caslon Pro", serif;
+      margin: 2rem 2rem 0.5rem;
 
     }
 
     h4 {
       font-style: normal;
       margin: 1rem .3rem .3rem .3rem;
-      font-size: 1.2rem;
       font-family: "Adobe Caslon Pro", serif;
+      font-size: 1rem;
+
       text-transform: uppercase;
       text-align:center;
       width: 100%;
@@ -150,10 +151,11 @@ div#settings {
       background: white;
       border: 2px solid hsla(0, 0%, 50%, 1);
       border-radius: 20px;
-      padding: 2rem;
-      margin: 1rem;
+      padding: 1.8rem;
+      margin: 2rem 0.9rem 0.9rem;
       text-align: center;
       position: relative;
+      width: 100%;
       //height: 100%;
 
       @include themify($themes) {

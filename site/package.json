@@ -26,7 +26,7 @@
     "capacitor-firebase-analytics": "^0.3.2",
     "clipboard-polyfill": "^2.8.6",
     "copy-webpack-plugin": "^5.0.5",
-    "netlify-cli": "^2.40.0",
+    "netlify-cli": "^2.47.0",
     "pretty-checkbox": "^3.0.3"
   }
 }
