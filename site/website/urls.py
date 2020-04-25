@@ -454,6 +454,12 @@ urlpatterns = [
         name="robots",
         distill_func=get_none,
     ),
+    distill_path(
+        ".well-known/apple-app-site-association",
+        TemplateView.as_view(template_name="office/apple-app-site-association", content_type="text/plain"),
+        name = "apple_sites",
+               distill_func = get_none,
+    )
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:
