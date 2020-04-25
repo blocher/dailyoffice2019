@@ -113,23 +113,25 @@ class MiddayPrayers(OfficeSection):
 
     def get_collects(self):
 
-        if self.date.date.weekday() in [6]:  # Sunday
+
+        day_of_year = self.date.date.timetuple().tm_yday
+        collect_number = day_of_year % 3 + 1
+
+        if self.date.primary.name in ["Conversion of Paul the Apostle"]:
             return self.collects[0], self.collects[1]
 
-        if self.date.date.weekday() in [0, 5]:  # Monday,  #Saturday
-            return self.collects[2], self.collects[3]
+        if self.date.primary.name in ["Peter and Paul, Apostles"]:
+            return self.collects[0], self.collects[1], self.collects[2]
 
-        if self.date.date.weekday() in [1]:  # Tuesday
+        if self.date.primary.name in ["Confession of Peter the Apostle"]:
             return self.collects[0], self.collects[2]
 
-        if self.date.date.weekday() in [2]:  # Wednesday
-            return self.collects[1], self.collects[3]
-
-        if self.date.date.weekday() in [3]:  # Thursday
+        if self.date.primary.name in ["The Annunciation of our Lord Jesus Christ to the Virgin Mary", "The Virgin Mary, Mother of our Lord Jesus Christ", "The Visitation of the Virgin Mary to Elizabeth and Zechariah", "The Presentation of Our Lord Jesus Christ in the Temple"]:
             return self.collects[0], self.collects[3]
 
-        if self.date.date.weekday() in [4]:  # Friday
-            return self.collects[1], self.collects[2]
+        return self.collects[0], self.collects[collect_number]
+
+
 
     @cached_property
     def data(self):
