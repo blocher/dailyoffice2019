@@ -6,9 +6,9 @@ import {voice} from "./voice";
 import {setupCalendar} from "./calendar";
 import "../css/index.scss";
 import {handleScrolling} from "./scrolling";
-import {setupAnalytics} from "./analytics";
+import {setupApp} from "./app";
 
-setupAnalytics();
+setupApp();
 setupRedirect();
 settings();
 voice();
