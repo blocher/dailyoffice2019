@@ -20,6 +20,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
 from django.urls import path, include
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 from django_distill import distill_path
@@ -58,6 +59,17 @@ def get_days():
         church_year = ChurchYear(year["start_year"])
         for day in church_year:
             date_list.append(day.date)
+
+    if settings.DEBUG_DATES:
+        now = timezone.now()
+        date_list = [now - timedelta(days=2), now - timedelta(days=1), now, now + timedelta(days=1), now + timedelta(days=2)]
+    else:
+        date_list = []
+        for year in get_church_years():
+            church_year = ChurchYear(year["start_year"])
+            for day in church_year:
+                date_list.append(day.date)
+
     for date in date_list:
         yield {"year": date.year, "month": date.month, "day": date.day}
 

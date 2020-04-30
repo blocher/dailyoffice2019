@@ -15,11 +15,7 @@ body.app {
       top: 0;
       left: 0;
       z-index: 9999;
-
-      @include themify($themes) {
-        background: themed('color-bg');
-        border-bottom: solid 1px themed('font-color');
-      }
+      background-color: #26282a;
     }
   }
 
