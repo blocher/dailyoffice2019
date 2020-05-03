@@ -38,18 +38,16 @@ function localStorageExists() {
 
 
 const settings = () => {
-    const setUpStatusBar =  () => {
+    const setUpStatusBar =  async () => {
+        StatusBar.setStyle({
+          style: StatusBarStyle.Dark
+        }).then(response => { return true; }).catch(e => {  return true; })
         StatusBar.setOverlaysWebView({
           overlay: false
         }).then(response => { return true; }).catch(e => {  return true; })
-        StatusBar.setBackgroundColor({
-          color : document.getElementsByTagName("body")[0].style.backgroundColor
-        }).then(response => { return true; }).catch(e => {  return true; })
-        StatusBar.setStyle({
-          style: getActiveTheme() == 'dark' ? StatusBarStyle.Dark : StatusBarStyle.Light
-        }).then(response => { return true; }).catch(e => {  return true; })
+
     }
-    const applySettingFromElement = element => {
+    const applySettingFromElement = async element => {
         let class_to_hide = element.dataset.class_to_hide.split(',');
         let class_to_show = element.dataset.class_to_show.split(',');
         class_to_hide.forEach((value, idx) => {
@@ -101,7 +99,7 @@ const settings = () => {
     };
 
     const findGetParameter = parameterName => {
-        var result = null,
+        let result = null,
             tmp = [];
         location.search
             .substr(1)
@@ -118,13 +116,13 @@ const settings = () => {
         let settings = await getSettingsFromStorage();
         if (fromURL && element.value == fromURL) {
             element.checked = true;
-            applySettingFromElement(element);
-            storeSetting(element);
+            await applySettingFromElement(element);
+            await storeSetting(element);
         } else if (localStorageExists()) {
             let stored = settings[element.name] || null;
             if (stored && element.value == stored) {
                 element.checked = true;
-                applySettingFromElement(element);
+                await applySettingFromElement(element);
             }
         }
         return true;
@@ -137,7 +135,7 @@ const settings = () => {
         }, 2000);
     };
 
-    const addRadioButtonListeners = () => {
+    const addRadioButtonListeners = async () => {
         document
             .querySelectorAll(".settings-radio")
             .forEach((element, element_index) => {
@@ -161,15 +159,16 @@ const settings = () => {
 
     const initializeSettings = async () => {
         copyOldLocalSettingsIfNeed();
-        document
-            .querySelectorAll(".settings-radio")
-            .forEach(async (element, element_index) => {
-                await initializeSetting(element);
-            });
-        window.history.replaceState({}, document.title, location.protocol + '//' + location.host + window.location.pathname + window.location.hash);
+        const elements = document.querySelectorAll(".settings-radio")
+        for (let i = 0; i < elements.length; i++) {
+            await initializeSetting(elements[i]);
+        }
+        if (window.mode != "app") {
+            window.history.replaceState({}, document.title, location.protocol + '//' + location.host + window.location.pathname + window.location.hash);
+        }
     };
 
-    const addSettingsMenuToggle = () => {
+    const addSettingsMenuToggle = async () => {
         document
             .querySelectorAll(".toggle-settings")
             .forEach((element, element_index) => {
@@ -183,7 +182,7 @@ const settings = () => {
             });
     };
 
-    const bindBackButtons = () => {
+    const bindBackButtons = async () => {
         document
             .querySelectorAll(".back-button")
             .forEach((element, element_index) => {
@@ -296,7 +295,7 @@ const settings = () => {
                 setUpStatusBar();
             });
         });
-        setUpStatusBar();
+        await setUpStatusBar();
     };
 
     const getSettingsLink = () => {
@@ -310,6 +309,9 @@ const settings = () => {
 
         params = new URLSearchParams(params);
         let path = location.protocol + '//' + location.host + location.pathname;
+        if (window.mode == "app") {
+            path = "https://www.dailyoffice2019.com" + location.pathname
+        }
         return path + "?" + params
     };
 
@@ -328,7 +330,7 @@ const settings = () => {
 
     };
 
-    const bindShowSettingsLink = () => {
+    const bindShowSettingsLink = async () => {
         document.getElementById("settings-link").value = getSettingsLink();
         document
             .querySelectorAll(".show-settings-link")
@@ -351,16 +353,16 @@ const settings = () => {
         });
     };
 
-    const setupSettings = () => {
+    const setupSettings = async () => {
 
-        setUpStatusBar()
-        initializeSettings();
-        addRadioButtonListeners();
-        addSettingsMenuToggle();
-        bindBackButtons();
-        handleFontSizes();
-        handleThemes();
-        bindShowSettingsLink();
+        await setUpStatusBar()
+        await initializeSettings();
+        await addRadioButtonListeners();
+        await addSettingsMenuToggle();
+        await bindBackButtons();
+        await handleFontSizes();
+        await handleThemes();
+        await bindShowSettingsLink();
     };
 
     // TODO: Refactor into reusable module

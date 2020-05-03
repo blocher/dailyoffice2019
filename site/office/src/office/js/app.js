@@ -11,22 +11,19 @@ const analytics = () => {
 const deepLinks = () => {
     if (window.mode == "app") {
         App.addListener('appUrlOpen', (data) => {
-            this.zone.run(() => {
-                let path = data.url.split(".com").pop();
-                if (path.indexOf('?')) {
-                    path = path.replace('?', 'index.html?')
-                } else {
-                    path = path + 'index.html'
-                }
-                console.log(path)
-                if (path) {
-                    this.router.navigateByUrl(path);
-                }
-            });
+            let path = data.url.split(".com").pop();
+            if (path.indexOf('?')) {
+                path = path.replace('?', 'index.html?')
+            } else {
+                path = path + 'index.html'
+            }
+            console.log(path)
+            if (path) {
+                window.location.href = path
+            }
         })
     }
 }
-
 
 const setupAnalytics = () => {
     if (
