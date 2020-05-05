@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = False if os.getenv("DEBUG", "False") == "False" else "True"
 DEBUG = False
-DEBUG_DATES = True
+DEBUG_DATES = False
 ALLOWED_HOSTS = ["*", "127.0.0.1:8000", "127.0.0.1", "dailyoffice2019.com", "www.dailyoffice2019.com"]
 
 MODE = "app"

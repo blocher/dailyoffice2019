@@ -186,9 +186,29 @@ const settings = () => {
         document
             .querySelectorAll(".back-button")
             .forEach((element, element_index) => {
-                element.setAttribute('href', document.referrer);
+                let referrer = document.referrer;
+                let getParam = findGetParameter("back");
+                if (getParam) {
+                    element.setAttribute('href',getParam);
+                    if (getParam == window.location.pathname) {
+                        element.classList.add('off');
+                    }
+                } else if (referrer) {
+                   element.setAttribute('href', referrer);
+                   if (referrer == window.location.pathname) {
+                        element.classList.add('off');
+                    }
+                } else {
+                    element.classList.add('off')
+                }
                 element.addEventListener("click", event => {
-                    history.back();
+                    let referrer = document.referrer;
+                    let getParam = findGetParameter("back");
+                    if (getParam) {
+                        window.location = getParam;
+                    } else if (referrer) {
+                       window.location = referrer;
+                    }
                     return false;
                 });
             });
@@ -356,10 +376,10 @@ const settings = () => {
     const setupSettings = async () => {
 
         await setUpStatusBar()
+        await bindBackButtons();
         await initializeSettings();
         await addRadioButtonListeners();
         await addSettingsMenuToggle();
-        await bindBackButtons();
         await handleFontSizes();
         await handleThemes();
         await bindShowSettingsLink();
