@@ -9,35 +9,18 @@
                   "@context" : "http://schema.org",
                   "@type" : "Event",
                   "name" : "{{ office.title }}",
-                  "startDate" : "{{  office.start_time|date:"c" }}",
+                  "startDate" : "{{  office.start_time|date:"c" }}-04:00",
                   "endDate": "{{  office.end_time|date:"c" }}",
+                  "eventStatus": "https://schema.org/EventScheduled",
+                  "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
                   "description" : "{{ office.description }}",
                   "url" : "https://www.dailyoffice2109.com{{ request.get_full_path }}",
                   "isAccessibleForFree": true,
-                   "location": {
-                      "@type": "Place",
-                      "name": "Accessible worldwide via computer or phone",
-                      "address": {
-                        "addressCountry": "US"
-                      }
-                   }
-                },
-                {
-                  "@context" : "http://schema.org",
-                  "@type" : "Event",
-                  "name" : "{{ office.title }}",
-                  "startDate" : "{{  office.start_time|date:"c" }}",
-                  "endDate": "{{  office.end_time|date:"c" }}",
-                  "description" : "{{ office.description }}",
-                  "url" : "https://www.dailyoffice2109.com{{ request.get_full_path }}",
-                  "isAccessibleForFree": true,
-                   "location": {
-                      "@type": "Place",
-                      "name": "Accessible worldwide via computer or phone",
-                      "address": {
-                        "addressCountry": "CA"
-                      }
-                   }
+                  "location": {
+                    "@type": "VirtualLocation",
+                    "url": "https://www.dailyoffice2109.com{{ request.get_full_path }}"
+                    },
+                  "image": "https://www.dailyoffice2019.com/static/office/img/bcp.jpg"
                 }
         ]
     </script>
