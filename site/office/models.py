@@ -1,3 +1,6 @@
+import re
+
+from ckeditor.fields import RichTextField
 from django.db import models
 
 from churchcal.base_models import BaseModel
@@ -60,3 +63,32 @@ class ThirtyDayPsalterDay(BaseModel):
 
     def get_ep_pslams(self):
         return self.psalm_string_to_list(self.ep_psalms)
+
+
+class AboutItem(BaseModel):
+    question = RichTextField()
+    answer = RichTextField()
+    app_mode = models.BooleanField(default=True)
+    web_mode = models.BooleanField(default=True)
+    order = models.PositiveSmallIntegerField()
+
+    def save(self, *args, **kwargs):
+
+        return super().save(*args, **kwargs)
+
+    def mode(self):
+        if self.web_mode and self.app_mode:
+            return "both"
+        if self.web_mode:
+            return "web"
+        return "app"
+
+    def display_name(self):
+        return "{} ({})".format(re.sub('<[^<]+?>', '', self.question), self.mode())
+
+    def __str__(self):
+        return self.display_name()
+
+    class Meta(object):
+        ordering = ['order']
+

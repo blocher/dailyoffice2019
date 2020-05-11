@@ -1,3 +1,6 @@
+import html
+
+from bs4 import BeautifulSoup
 from django.shortcuts import render
 from django.templatetags.static import static
 from django.urls import reverse
@@ -12,8 +15,9 @@ from office.family_early_evening import FamilyEarlyEvening
 from office.family_midday import FamilyMidday
 from office.family_morning import FamilyMorning
 from office.midday_prayer import MiddayPrayer
+from office.models import AboutItem
 from office.morning_prayer import MorningPrayer
-from website.settings import FIRST_BEGINNING_YEAR, LAST_BEGINNING_YEAR
+from website.settings import FIRST_BEGINNING_YEAR, LAST_BEGINNING_YEAR, MODE
 
 generic_title = "The Daily Office | Morning and Evening Prayer according to the Book of Common Prayer (2019)"
 generic_description = "This site invites you to join with Christians around the world in praying with the Church, at any time or in any place you may find yourself. It makes it easy to pray daily morning, midday, evening, and compline (bedtime) prayer without flipping pages, searching for scripture readings or calendars, or interpreting rubrics. The prayers are presented from <em><em>The Book of Common Prayer (2019)</em></em> of the Anglican Church in North America  (ACNA) and reflect the ancient patterns of daily prayer Christians have used since the earliest days of the church."
@@ -234,7 +238,21 @@ def about(request):
     ] = "About | {}".format(generic_title)
     about_meta["url"] = reverse("about")
 
-    return render(request, "office/about.html", {"meta": Meta(**about_meta)})
+    items = AboutItem.objects.order_by("order")
+    if MODE == "app":
+        items = items.filter(app_mode=True)
+    else:
+        items = items.filter(web_mode=True)
+
+    items = items.all()
+
+    for item in items:
+        item.question = item.question.replace("{medium}", "app" if MODE == "app" else "site")
+        item.answer = item.answer.replace("{medium}", "app" if MODE == "app" else "site")
+        item.question_json = BeautifulSoup(item.question.replace('"', '\\"').replace("\n", ""), "lxml").text
+        item.answer_json = item.answer.replace('"', '\\"').replace("\n", "").replace("<h5>", "").replace("</h5>","").replace("<p>", "").replace("</p>", "")
+
+    return render(request, "office/about.html", {"items": items, "meta": Meta(**about_meta)})
 
 
 def now(request):

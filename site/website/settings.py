@@ -30,13 +30,15 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # DEBUG = False if os.getenv("DEBUG", "False") == "False" else "True"
 DEBUG = False
 DEBUG_DATES = False
-ALLOWED_HOSTS = ["*", "127.0.0.1:8000", "127.0.0.1", "dailyoffice2019.com", "www.dailyoffice2019.com"]
-
 MODE = "app"
+
+ALLOWED_HOSTS = ["*", "127.0.0.1:8000", "127.0.0.1", "dailyoffice2019.com", "www.dailyoffice2019.com"]
 
 # Application definition
 
 INSTALLED_APPS = [
+    "ckeditor",
+    "adminsortable2",
     "django.contrib.admin",
     # "material.admin",
     # "django.contrib.admin",
