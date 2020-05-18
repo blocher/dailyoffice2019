@@ -14,3 +14,4 @@ settings();
 voice();
 setupCalendar();
 handleScrolling();
+setupApp();

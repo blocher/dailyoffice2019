@@ -1,6 +1,10 @@
 from django.utils.safestring import mark_safe
 
+<<<<<<< HEAD
 from website.settings import MODE
+=======
+from website.settings import APP_VERSION
+>>>>>>> notices
 
 
 def get_on(path):
@@ -21,8 +25,12 @@ def get_on(path):
 
 def settings(request):
     return {
+<<<<<<< HEAD
         "mode": MODE,
         "filename": 'index.html' if MODE == "app" else "",
+=======
+        "app_version": APP_VERSION,
+>>>>>>> notices
         "on": get_on(request.path),
         "show_settings_class": "" if get_on(request.path) == "settings-button" else "off",
         "family": "family" in request.path,

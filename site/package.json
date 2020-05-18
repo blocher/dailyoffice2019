@@ -22,6 +22,7 @@
     "webpack-dev-server": "^3.9.0"
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "capacitor": "^0.5.5",
     "capacitor-firebase-analytics": "^0.3.2",
     "clipboard-polyfill": "^2.8.6",

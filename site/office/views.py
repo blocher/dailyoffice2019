@@ -1,6 +1,8 @@
 import html
 
 from bs4 import BeautifulSoup
+from django.core import serializers
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.templatetags.static import static
 from django.urls import reverse
@@ -15,7 +17,7 @@ from office.family_early_evening import FamilyEarlyEvening
 from office.family_midday import FamilyMidday
 from office.family_morning import FamilyMorning
 from office.midday_prayer import MiddayPrayer
-from office.models import AboutItem
+from office.models import AboutItem, UpdateNotice
 from office.morning_prayer import MorningPrayer
 from psalter.utils import get_psalms
 from website.settings import FIRST_BEGINNING_YEAR, LAST_BEGINNING_YEAR, MODE
@@ -290,8 +292,17 @@ def four_oh_four(request):
 def robots(request):
     return render(request, "robots.txt", content_type="text/plain")
 
-
 def psalms(request, number):
     psalm = get_psalms(number)
-    print(psalm)
     return render(request, "office/psalm.html", {"number": number, "psalm": psalm})
+
+def update_notices(request, type="app"):
+    items = UpdateNotice.objects.order_by("-version", "-created")
+    if type == "app":
+        items = items.filter(app_mode=True)
+    if type == "web":
+        items = items.filter(web_mode=True)
+    items = items.all()
+    data = serializers.serialize('json', items)
+    return HttpResponse(data, content_type='application/json')
+

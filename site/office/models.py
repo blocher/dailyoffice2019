@@ -92,3 +92,24 @@ class AboutItem(BaseModel):
     class Meta(object):
         ordering = ['order']
 
+
+class UpdateNotice(BaseModel):
+    notice = RichTextField()
+    app_mode = models.BooleanField(default=True)
+    web_mode = models.BooleanField(default=True)
+    version = models.FloatField()
+
+    def save(self, *args, **kwargs):
+
+        return super().save(*args, **kwargs)
+
+    def mode(self):
+        if self.web_mode and self.app_mode:
+            return "both"
+        if self.web_mode:
+            return "web"
+        return "app"
+
+    class Meta(object):
+        ordering = ['-version']
+

@@ -30,9 +30,11 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # DEBUG = False if os.getenv("DEBUG", "False") == "False" else "True"
 DEBUG = False
 DEBUG_DATES = False
-MODE = "app"
+MODE = "web"
+APP_VERSION = 1.0
 
 ALLOWED_HOSTS = ["*", "127.0.0.1:8000", "127.0.0.1", "dailyoffice2019.com", "www.dailyoffice2019.com"]
+
 
 # Application definition
 
@@ -50,6 +52,7 @@ INSTALLED_APPS = [
     "django.contrib.sitemaps",
     "django.contrib.staticfiles",
     "django_extensions",
+    'rest_framework',
     "website",
     # "sermons",
     "churchcal",
@@ -261,3 +264,11 @@ META_TWITTER_SITE = "https://www.dailyoffice2019.com"
 META_OG_SECURE_URL_ITEMS = []
 
 ROBOTS_SITEMAP_URLS = ["https://www.dailyoffice2019.com/sitemap.xml"]
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
