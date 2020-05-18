@@ -24,6 +24,7 @@ def parse_single_psalm(psalm):
 
 
 def get_psalms(citations):
+    citations = str(citations)
     citations = citations.replace(" ", "").split(",")
     html = ""
     for citation in citations:

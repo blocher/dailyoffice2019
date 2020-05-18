@@ -67,6 +67,9 @@ def get_church_years():
     for year in range(settings.FIRST_BEGINNING_YEAR, settings.LAST_BEGINNING_YEAR + 1):
         yield {"start_year": year, "end_year": year + 1}
 
+def get_psalms():
+    for psalm in range[1, 151]:
+        yield {"number": psalm}
 
 class MorningPrayerSitemap(Sitemap):
     changefreq = "daily"
@@ -435,6 +438,12 @@ urlpatterns = [
         name="family_close_of_day_prayer",
         distill_func=get_days,
     ),
+    distill_path(
+        "psalm/<int:number>/",
+        office_views.psalms,
+        name="psalms",
+        distill_func=get_psalms,
+    ),
     distill_path("about/", office_views.about, name="about", distill_func=get_about),
     distill_path("family/about/", office_views.about, name="family_about", distill_func=get_about),
     distill_path("settings/", office_views.settings, name="settings", distill_func=get_about),
@@ -457,7 +466,7 @@ urlpatterns = [
     distill_path(
         ".well-known/apple-app-site-association",
         TemplateView.as_view(template_name="office/apple-app-site-association", content_type="text/plain"),
-        name = "apple_sites",
+        name="apple_sites",
                distill_func = get_none,
     )
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
