@@ -1,5 +1,7 @@
 from django.utils.safestring import mark_safe
 
+from website.settings import APP_VERSION
+
 
 def get_on(path):
     if path == "/":
@@ -19,6 +21,7 @@ def get_on(path):
 
 def settings(request):
     return {
+        "app_version": APP_VERSION,
         "on": get_on(request.path),
         "show_settings_class": "" if get_on(request.path) == "settings-button" else "off",
         "family": "family" in request.path,

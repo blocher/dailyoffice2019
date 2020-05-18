@@ -1,7 +1,7 @@
 {% load static %}
 {% load render_bundle from webpack_loader %}
 <!DOCTYPE html>
-<html id="html" class="theme-dark {% if "/family/" in request.get_full_path %} family {% endif %}">
+<html id="html" class="theme-dark {% if "/family/" in request.get_full_path %} family {% endif %}" data-appversion="{{ app_version }}">
     <head>
         <!-- Google Tag Manager -->
         <script>(function (w, d, s, l, i) {

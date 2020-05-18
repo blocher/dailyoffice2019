@@ -1,0 +1,24 @@
+.alert {
+  margin: 1rem auto;
+  max-width: 500px;
+  background-color: #f5e236;
+  border: 1px solid #4341ba;
+  padding: 0.5rem;
+  color: black;
+  border-radius: 0.5rem;
+
+  h3 {
+    font-size: 1rem;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    text-transform: none;
+  }
+
+  p {
+    font-size: 0.7rem;
+    line-height: 1rem;
+    margin: 0;
+  }
+
+}

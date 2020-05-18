@@ -18,26 +18,20 @@ from datetime import date
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.contrib.sitemaps.views import sitemap
+# from sermons import views as sermon_views
+from django.contrib.sitemaps import Sitemap
+from django.contrib.sitemaps import views
 from django.urls import path, include
-from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 from django_distill import distill_path
-from future.backports.datetime import timedelta
-from material.admin.sites import site
-
-from django.contrib.sitemaps import views
 
 from churchcal.calculations import ChurchYear
 from office import views as office_views
 
-# from sermons import views as sermon_views
-from django.contrib.sitemaps import Sitemap
 
 # site.site_header = _("Elizabeth Locher's Sermon Archive")
 # site.site_title = _("Elizabeth Locher's Sermon Archive")
 # site.favicon = staticfiles('path/to/favicon')
-from django.views.static import serve
 
 
 def get_about():
@@ -61,6 +55,10 @@ def get_days():
     for date in date_list:
         yield {"year": date.year, "month": date.month, "day": date.day}
 
+def get_update_notice_types():
+    types = ["app", "web", "all"]
+    for type in types:
+        yield {"type": type}
 
 def get_church_years():
 
@@ -457,9 +455,16 @@ urlpatterns = [
     distill_path(
         ".well-known/apple-app-site-association",
         TemplateView.as_view(template_name="office/apple-app-site-association", content_type="text/plain"),
-        name = "apple_sites",
-               distill_func = get_none,
-    )
+        name="apple_sites",
+        distill_func=get_none,
+    ),
+    distill_path(
+          "update_notices/<str:type>.json",
+          office_views.update_notices,
+          name="update_notices",
+          distill_func=get_update_notice_types,
+          # distill_file='update_notices/<type>.json',
+      ),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:
