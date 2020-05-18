@@ -22,11 +22,7 @@ from django.contrib import admin
 from django.contrib.sitemaps import Sitemap
 from django.contrib.sitemaps import views
 from django.urls import path, include
-<<<<<<< HEAD
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
-=======
->>>>>>> notices
 from django.views.generic import TemplateView
 from django_distill import distill_path
 
