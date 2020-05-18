@@ -63,9 +63,9 @@ books = {
     "James": ("the Epistle of St. James", False, "NT"),
     "I Peter": ("the First Epistle of St. Peter", False, "NT"),
     "II Peter": ("the Second Epistle of St. Peter", False, "NT"),
-    "I John": ("the First Epistle of St. John", True, "NT"),
+    "I John": ("the First Epistle of St. John", False, "NT"),
     "II John": ("the Second Epistle of St. John", True, "NT"),
-    "III John": ("the Third Epistle of St. John", False, "NT"),
+    "III John": ("the Third Epistle of St. John", True, "NT"),
     "Jude": ("the Epistle of St. Jude", True, "NT"),
     "Revelation": ("the Revelation of Our Lord Jesus Christ to St. John", False, "NT"),
     "Tobit": ("the Book of Tobit", False, "DC"),
@@ -108,6 +108,8 @@ def passage_to_citation(passage):
         book_name = "Revelation"
 
     book = books[book_name]
+
+    print(book)
 
     if book[1]:  # 1 chapter book
         return "A reading from {}, beginning with the {} verse".format(book[0], num2words(passage[2], ordinal=True))

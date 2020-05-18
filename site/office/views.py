@@ -17,6 +17,7 @@ from office.family_morning import FamilyMorning
 from office.midday_prayer import MiddayPrayer
 from office.models import AboutItem
 from office.morning_prayer import MorningPrayer
+from psalter.utils import get_psalms
 from website.settings import FIRST_BEGINNING_YEAR, LAST_BEGINNING_YEAR, MODE
 
 generic_title = "The Daily Office | Morning and Evening Prayer according to the Book of Common Prayer (2019)"
@@ -288,3 +289,9 @@ def four_oh_four(request):
 
 def robots(request):
     return render(request, "robots.txt", content_type="text/plain")
+
+
+def psalms(request, number):
+    psalm = get_psalms(number)
+    print(psalm)
+    return render(request, "office/psalm.html", {"number": number, "psalm": psalm})
