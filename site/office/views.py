@@ -308,4 +308,3 @@ def update_notices(request, type="app"):
 
 def privacy_policy(request):
     return render(request, "office/privacy.html")
-

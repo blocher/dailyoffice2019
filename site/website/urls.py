@@ -485,6 +485,12 @@ urlpatterns = [
           name="update_notices",
           distill_func=get_update_notice_types,
       ),
+      distill_path(
+        "privacy-policy",
+        office_views.privacy_policy,
+        name="privacy_policy",
+        distill_func = get_none,
+    )
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:
