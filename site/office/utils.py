@@ -109,8 +109,6 @@ def passage_to_citation(passage):
 
     book = books[book_name]
 
-    print(book)
-
     if book[1]:  # 1 chapter book
         return "A reading from {}, beginning with the {} verse".format(book[0], num2words(passage[2], ordinal=True))
 

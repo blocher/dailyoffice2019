@@ -306,3 +306,6 @@ def update_notices(request, type="app"):
     data = serializers.serialize('json', items)
     return HttpResponse(data, content_type='application/json')
 
+def privacy_policy(request):
+    return render(request, "office/privacy.html")
+

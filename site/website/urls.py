@@ -13,7 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from datetime import date
+from datetime import date, timedelta
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -78,7 +78,7 @@ def get_church_years():
         yield {"start_year": year, "end_year": year + 1}
 
 def get_psalms():
-    for psalm in range[1, 151]:
+    for psalm in range(1, 151):
         yield {"number": psalm}
 
 class MorningPrayerSitemap(Sitemap):
