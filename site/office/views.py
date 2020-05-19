@@ -295,3 +295,6 @@ def psalms(request, number):
     psalm = get_psalms(number)
     print(psalm)
     return render(request, "office/psalm.html", {"number": number, "psalm": psalm})
+
+def privacy_policy(request):
+    return render(request, "office/privacy.html")

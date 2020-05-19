@@ -2,26 +2,6 @@
 {% load static %}
 {% load render_bundle from webpack_loader %}
 
-{% block extra_head %}
-<script type="application/ld+json">
-      {
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          "mainEntity": [
-        {% for item in items %}
-          {
-            "@type": "Question",
-            "name": "{{ item.question_json | safe }}",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "{{ item.answer_json | safe}}"
-            }
-          }{% if not forloop.last %},{% endif %}
-        {% endfor %}
-        ]}
-</script>
-{%  endblock %}
-
 
 {% block content %}
     {{ psalm|safe }}
