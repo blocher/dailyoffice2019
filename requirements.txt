@@ -55,7 +55,7 @@ google-auth-httplib2==0.0.3
 googleapis-common-protos==1.51.0
 html2text==2020.1.16
 html5lib==1.0.1
-httplib2==0.17.3
+httplib2==0.18.0
 humanize==2.4.0
 idna==2.9
 indexed.py==0.0.1
