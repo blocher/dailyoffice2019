@@ -28,9 +28,9 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = False if os.getenv("DEBUG", "False") == "False" else "True"
-DEBUG = False
+DEBUG = True
 DEBUG_DATES = False
-MODE = "site"
+MODE = "web"
 APP_VERSION = 1.0
 
 ALLOWED_HOSTS = ["*", "127.0.0.1:8000", "127.0.0.1", "dailyoffice2019.com", "www.dailyoffice2019.com"]
@@ -219,6 +219,9 @@ SITE_ID = 1
 
 FIRST_BEGINNING_YEAR = 2018
 LAST_BEGINNING_YEAR = 2021
+
+FIRST_BEGINNING_YEAR_APP = 2019
+LAST_BEGINNING_YEAR_APP = 2020
 
 META_SITE_PROTOCOL = "https"
 META_SITE_DOMAIN = "www.dailyoffice2019.com"

@@ -4,5 +4,18 @@
 
 
 {% block content %}
-    {{ psalm|safe }}
+    {{ psalm_text|safe }}
+    {% if topics %}
+        <h3>Psalms with similar themes:</h3>
+        {% for topic in topics %}
+            <p>
+                {{ topic.topic_name }}<br>
+                {% for psalmtopicpsalm  in topic.psalmtopicpsalm_set.all %}
+                <a href="/psalms/{{ psalmtopicpsalm.psalm.number }}">{{ psalmtopicpsalm.psalm.number }}</a>&nbsp;
+                {% endfor %}
+            </p>
+        {% endfor %}
+    {% endif %}
+    <p><a href="/psalms">View all psalms</a></p>
+
 {% endblock %}

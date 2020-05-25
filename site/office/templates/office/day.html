@@ -15,35 +15,35 @@
         {% if evening %}
             <p class="primary">
                 <span class="color {{ day.primary_evening.color|lower }}"></span>{% if day.primary_evening.alternate_color %}<span class="color {{ day.primary_evening.alternate_color|lower }}"></span>{% endif %}{% if day.primary_evening.alternate_color_2 %}<span class="color {{ day.primary_evening.alternate_color_2|lower }}"></span>{% endif %}{{  day.primary_evening.name }}{% if day.primary_evening.transferred %} <small>(Transferred)</small>{%  endif %}
-                {% if day.primary_evening.link_1 %}<a class="wiki-link" target="_blank" href="{{ day.primary_evening.link_1 }}/{{ filename }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
-                {% if day.primary_evening.link_2 %}<a class="wiki-link" target="_blank" href="{{ day.primary_evening.link_2 }}/{{ filename }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
-                {% if day.primary_evening.link_3 %}<a class="wiki-link" target="_blank" href="{{ day.primary_evening.link_3 }}/{{ filename }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
+                {% if day.primary_evening.link_1 %}<a class="wiki-link" target="_blank" href="{{ day.primary_evening.link_1 }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
+                {% if day.primary_evening.link_2 %}<a class="wiki-link" target="_blank" href="{{ day.primary_evening.link_2 }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
+                {% if day.primary_evening.link_3 %}<a class="wiki-link" target="_blank" href="{{ day.primary_evening.link_3 }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
             </p>
 
             {%  for feast in day.all_evening %}
                 {% if not forloop.first %}
                     <p class="secondary">
                         <span class="color {{ feast.color|lower }}"></span>{% if feast.alternate_color %}<span class="color {{ feast.alternate_color|lower }}"></span>{% endif %}{% if feast.alternate_color_2 %}<span class="color {{ feast.alternate_color_2|lower }}"></span>{% endif %}{{ feast.name }}
-                        {% if feast.link_1 %}<a class="wiki-link" target="_blank" href="{{ feast.link_1 }}/{{ filename }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
-                        {% if feast.link_2 %}<a class="wiki-link" target="_blank" href="{{ feast.link_2 }}/{{ filename }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
-                        {% if feast.link_3 %}<a class="wiki-link" target="_blank" href="{{ feast.link_3 }}/{{ filename }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
+                        {% if feast.link_1 %}<a class="wiki-link" target="_blank" href="{{ feast.link_1 }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
+                        {% if feast.link_2 %}<a class="wiki-link" target="_blank" href="{{ feast.link_2 }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
+                        {% if feast.link_3 %}<a class="wiki-link" target="_blank" href="{{ feast.link_3 }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
                     </p>
                 {%  endif %}
             {%  endfor %}
         {%  else %}
             <p class="primary">
                 <span class="color {{ day.primary.color|lower }}"></span>{% if day.primary.alternate_color %}<span class="color {{ day.primary.alternate_color|lower }}"></span>{% endif %}{% if day.primary.alternate_color_2 %}<span class="color {{ day.primary.alternate_color_2|lower }}"></span>{% endif %}{{  day.primary.name }}{% if day.primary.transferred %} <small>(Transferred)</small>{%  endif %}
-                {% if day.primary.link_1 %}<a class="wiki-link" target="_blank" href="{{ day.primary.link_1 }}/{{ filename }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
-                {% if day.primary.link_2 %}<a class="wiki-link" target="_blank" href="{{ day.primary.link_2 }}/{{ filename }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
-                {% if day.primary.link_3 %}<a class="wiki-link" target="_blank" href="{{ day.primary.link_3 }}/{{ filename }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
+                {% if day.primary.link_1 %}<a class="wiki-link" target="_blank" href="{{ day.primary.link_1 }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
+                {% if day.primary.link_2 %}<a class="wiki-link" target="_blank" href="{{ day.primary.link_2 }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
+                {% if day.primary.link_3 %}<a class="wiki-link" target="_blank" href="{{ day.primary.link_3 }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
             </p>
              {%  for feast in day.all %}
                 {% if not forloop.first %}
                     <p class="secondary">
                         <span class="color {{ feast.color|lower }}"></span>{% if feast.alternate_color %}<span class="color {{ feast.alternate_color|lower }}"></span>{% endif %}{% if feast.alternate_color_2 %}<span class="color {{ feast.alternate_color_2|lower }}"></span>{% endif %}{{ feast.name }}
-                        {% if feast.link_1 %}<a class="wiki-link" target="_blank" href="{{ feast.link_1 }}/{{ filename }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
-                        {% if feast.link_2 %}<a class="wiki-link" target="_blank" href="{{ feast.link_2 }}/{{ filename }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
-                        {% if feast.link_3 %}<a class="wiki-link" target="_blank" href="{{ feast.link_3 }}/{{ filename }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
+                        {% if feast.link_1 %}<a class="wiki-link" target="_blank" href="{{ feast.link_1 }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
+                        {% if feast.link_2 %}<a class="wiki-link" target="_blank" href="{{ feast.link_2 }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
+                        {% if feast.link_3 %}<a class="wiki-link" target="_blank" href="{{ feast.link_3 }}"><i class="fas fa-external-link-alt"></i></a>{%  endif %}
                     </p>
                 {%  endif %}
             {%  endfor %}

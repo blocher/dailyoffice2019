@@ -53,9 +53,8 @@ def get_days():
         church_year = ChurchYear(year["start_year"])
         for day in church_year:
             date_list.append(day.date)
-
+    now = timezone.now()
     if settings.DEBUG_DATES:
-        now = timezone.now()
         date_list = [now - timedelta(days=2), now - timedelta(days=1), now, now + timedelta(days=1), now + timedelta(days=2)]
     else:
         date_list = []
@@ -74,8 +73,12 @@ def get_update_notice_types():
 
 def get_church_years():
 
-    for year in range(settings.FIRST_BEGINNING_YEAR, settings.LAST_BEGINNING_YEAR + 1):
-        yield {"start_year": year, "end_year": year + 1}
+    if settings.MODE == "app":
+        for year in range(settings.FIRST_BEGINNING_YEAR_APP, settings.LAST_BEGINNING_YEAR_APP + 1):
+            yield {"start_year": year, "end_year": year + 1}
+    else:
+        for year in range(settings.FIRST_BEGINNING_YEAR, settings.LAST_BEGINNING_YEAR + 1):
+            yield {"start_year": year, "end_year": year + 1}
 
 def get_psalms():
     for psalm in range(1, 151):
@@ -449,10 +452,16 @@ urlpatterns = [
         distill_func=get_days,
     ),
     distill_path(
-        "psalm/<int:number>/",
+        "psalms/<int:number>/",
+        office_views.psalm,
+        name="psalm",
+        distill_func=get_psalms,
+    ),
+    distill_path(
+        "psalms/",
         office_views.psalms,
         name="psalms",
-        distill_func=get_psalms,
+        distill_func=get_none,
     ),
     distill_path("about/", office_views.about, name="about", distill_func=get_about),
     distill_path("family/about/", office_views.about, name="family_about", distill_func=get_about),

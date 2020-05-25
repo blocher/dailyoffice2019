@@ -66,7 +66,7 @@ class ThirtyDayPsalterDay(BaseModel):
 
 
 class AboutItem(BaseModel):
-    question = RichTextField()
+    question = models.CharField(max_length=4000)
     answer = RichTextField()
     app_mode = models.BooleanField(default=True)
     web_mode = models.BooleanField(default=True)

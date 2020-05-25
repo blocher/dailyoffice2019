@@ -1,7 +1,9 @@
 import html
+from string import punctuation
 
 from bs4 import BeautifulSoup
 from django.core import serializers
+from django.db.models import Prefetch
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.templatetags.static import static
@@ -19,6 +21,7 @@ from office.family_morning import FamilyMorning
 from office.midday_prayer import MiddayPrayer
 from office.models import AboutItem, UpdateNotice
 from office.morning_prayer import MorningPrayer
+from psalter.models import PsalmTopic, Psalm, PsalmVerse, PsalmTopicPsalm
 from psalter.utils import get_psalms
 from website.settings import FIRST_BEGINNING_YEAR, LAST_BEGINNING_YEAR, MODE
 
@@ -292,9 +295,24 @@ def four_oh_four(request):
 def robots(request):
     return render(request, "robots.txt", content_type="text/plain")
 
-def psalms(request, number):
-    psalm = get_psalms(number)
-    return render(request, "office/psalm.html", {"number": number, "psalm": psalm})
+def psalms(request):
+    topics = PsalmTopic.objects.prefetch_related("psalmtopicpsalm_set__psalm").order_by("order").all()
+    psalms = Psalm.objects.prefetch_related(Prefetch('psalmverse_set', queryset=PsalmVerse.objects.order_by('number'), to_attr="verses")).all()
+    for key, psalm in enumerate(psalms):
+        psalms[key].first_half = psalm.verses[0].first_half.strip(";,.,\"\'")
+    return render(request, "office/psalm_directory.html", {"psalms": psalms, "topics": topics})
+
+
+def psalm(request, number):
+    psalm_text = get_psalms(number)
+    psalm = Psalm.objects.prefetch_related(Prefetch("psalmtopicpsalm_set__psalm_topic", queryset=PsalmTopic.objects.order_by('order').all())).get(number=number)
+    topics = PsalmTopic.objects.prefetch_related(Prefetch("psalmtopicpsalm_set", queryset=PsalmTopicPsalm.objects.select_related("psalm").order_by("order").all())).filter(psalmtopicpsalm__psalm=psalm).order_by("order").distinct().all()
+    # topics = PsalmTopic.objects.prefetch_related("psalmtopicpsalm_set__psalm").filter(psalmtopicpsalm__psalm=psalm).order_by("order").distinct().all()
+    for topic in topics:
+        for psalmtopicpsalm  in topic.psalmtopicpsalm_set.all():
+            print(psalmtopicpsalm.pk)
+            print(psalmtopicpsalm, psalmtopicpsalm.psalm, "DDD")
+    return render(request, "office/psalm.html", {"number": number, "psalm": psalm, "psalm_text": psalm_text, "topics": topics })
 
 def update_notices(request, type="app"):
     items = UpdateNotice.objects.order_by("-version", "-created")
