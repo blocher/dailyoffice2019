@@ -155,7 +155,7 @@ class MPOpeningSentence(OfficeSection):
                 "citation": "MALACHI 1:11",
             }
 
-        if "Ascension" in self.date.primary.name:
+        if "Ascension" in self.date.primary.name or len(self.date.all) > 1 and "Ascension" in self.date.all[1].name:
             return {
                 "sentence": "Since then we have a great high priest who has passed through the heavens, Jesus, the Son of God, let us hold fast our confession. Let us then with confidence draw near to the throne of grace, that we may receive mercy and find grace to help in time of need.",
                 "citation": "HEBREWS 4:14, 16",
@@ -249,7 +249,7 @@ class MPInvitatory(OfficeSection):
         if self.date.primary.name == "Easter Day":
             return {"first_line": "Alleluia. The Lord is risen indeed:", "second_line": "O come, let us adore him."}
 
-        if self.date.primary.name == "Ascension Day":
+        if "Ascension" in self.date.primary.name or len(self.date.all) > 1 and "Ascension" in self.date.all[1].name:
             return {
                 "first_line": "Alleluia. Christ the Lord has ascended into heaven:",
                 "second_line": "O come, let us adore him.",

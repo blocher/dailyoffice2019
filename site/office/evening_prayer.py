@@ -107,7 +107,7 @@ class EPInvitatory(OfficeSection):
 class EPOpeningSentence(OfficeSection):
     def get_sentence(self):
 
-        if "Thanksgiving Day" in self.date.primary.name:
+        if "Thanksgiving Day" in self.date.primary_evening.name:
             return {
                 "sentence": "The Lord by wisdom founded the earth; by understanding he established the heavens; by his knowledge the deeps broke open, and the clouds drop down the dew.",
                 "citation": "PROVERBS 3:19-20",
@@ -122,8 +122,8 @@ class EPOpeningSentence(OfficeSection):
 
         if (
             self.date.evening_season.name == "Lent"
-            or self.date.primary.rank.name == "EMBER_DAY"
-            or self.date.primary.rank.name == "ROGATION_DAY"
+            or self.date.primary_evening.rank.name == "EMBER_DAY"
+            or self.date.primary_evening.rank.name == "ROGATION_DAY"
         ):
 
             if self.date.date.weekday() in [6, 2]:  # Sunday, Wednesday
@@ -162,13 +162,7 @@ class EPOpeningSentence(OfficeSection):
                 "citation": "ISAIAH 60:3",
             }
 
-        if "Ascension" in self.date.primary.name:
-            return {
-                "sentence": "For Christ has entered, not into holy places made with hands, which are copies of the true things, but into heaven itself, now to appear in the presence of God on our behalf.",
-                "citation": "HEBREWS 9:24",
-            }
-
-        if self.date.primary.name == "The Day of Pentecost":
+        if self.date.primary_evening.name == "The Day of Pentecost" or self.date.primary_evening.name == "Eve of The Day of Pentecost":
 
             if self.date.date.year % 2 == 0:
                 return {
@@ -181,7 +175,14 @@ class EPOpeningSentence(OfficeSection):
                 "citation": "PSALM 46:4",
             }
 
-        if self.date.primary.name == "Trinity Sunday":
+        if "Ascension" in self.date.primary_evening.name or len(self.date.all_evening) > 1 and "Ascension" in self.date.all_evening[1].name:
+            return {
+                "sentence": "For Christ has entered, not into holy places made with hands, which are copies of the true things, but into heaven itself, now to appear in the presence of God on our behalf.",
+                "citation": "HEBREWS 9:24",
+            }
+
+
+        if self.date.primary_evening.name == "Trinity Sunday" or self.date.primary_evening.name == "Eve of Trinity Sunday":
             return {
                 "sentence": "Holy, holy, holy is the Lord of Hosts; the whole earth is full of his glory!",
                 "citation": "ISAIAH 6:3",
