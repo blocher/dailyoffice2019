@@ -8,22 +8,22 @@
     </div>
     <div class="footer-flex">
         {%  if office.links.current != 'family_morning_prayer' %}
-            <div><a href="{{ office.links.family_morning_prayer.link }}/{{ filename }}}"><i class="fal fa-sunrise"></i>{{ office.links.family_morning_prayer.label }}</a></div>
+            <div><a href="{{ office.links.family_morning_prayer.link }}{{ filename }}"><i class="fal fa-sunrise"></i>{{ office.links.family_morning_prayer.label }}</a></div>
         {%  else %}
             <div><i class="fas fa-sunrise"></i>{{ office.links.family_morning_prayer.label | upper }}</div>
         {% endif %}
         {%  if office.links.current != 'family_midday_prayer' %}
-            <div><a href="{{ office.links.family_midday_prayer.link }}/{{ filename }}}"><i class="fal fa-sun"></i>{{ office.links.family_midday_prayer.label }}</a></div>
+            <div><a href="{{ office.links.family_midday_prayer.link }}{{ filename }}"><i class="fal fa-sun"></i>{{ office.links.family_midday_prayer.label }}</a></div>
         {%  else %}
             <div><i class="fas fa-sun"></i>{{ office.links.family_midday_prayer.label | upper }}</div>
         {% endif %}
         {%  if office.links.current != 'family_early_evening_prayer' %}
-            <div><a href="{{ office.links.family_early_evening_prayer.link }}/{{ filename }}}"><i class="fal fa-sunset"></i>{{ office.links.family_early_evening_prayer.label }}</a></div>
+            <div><a href="{{ office.links.family_early_evening_prayer.link }}{{ filename }}"><i class="fal fa-sunset"></i>{{ office.links.family_early_evening_prayer.label }}</a></div>
         {%  else %}
             <div><i class="fas fa-sunset"></i>{{ office.links.family_early_evening_prayer.label | upper }}</div>
         {% endif %}
         {%  if office.links.current != 'family_close_of_day_prayer' %}
-            <div><a href="{{ office.links.family_close_of_day_prayer.link }}/{{ filename }}}"><i class="fal fa-moon"></i>{{ office.links.family_close_of_day_prayer.label }}</a></div>
+            <div><a href="{{ office.links.family_close_of_day_prayer.link }}{{ filename }}"><i class="fal fa-moon"></i>{{ office.links.family_close_of_day_prayer.label }}</a></div>
         {%  else %}
             <div><i class="fal fa-moon"></i>{{ office.links.family_close_of_day_prayer.label | upper }}</div>
         {% endif %}
