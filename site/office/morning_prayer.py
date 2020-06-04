@@ -49,37 +49,39 @@ class MorningPrayer(Office):
     @cached_property
     def modules(self):
         return [
+
             (MPHeading(self.date, self.office_readings), "office/heading.html"),
-            (MPCommemorationListing(self.date, self.office_readings), "office/commemoration_listing.html"),
-            (MPOpeningSentence(self.date, self.office_readings), "office/opening_sentence.html"),
-            (Confession(self.date, self.office_readings), "office/confession.html"),
-            (Invitatory(self.date, self.office_readings), "office/invitatory.html"),
-            (
-                MPInvitatory(self.date, self.office_readings, self.thirty_day_psalter_day),
-                "office/morning_prayer/mpinvitatory.html",
-            ),
-            (MPPsalms(self.date, self.office_readings, self.thirty_day_psalter_day), "office/psalms.html"),
-            (MPReading1(self.date, self.office_readings), "office/main_reading.html"),
-            (MPAlternateReading1(self.date, self.office_readings), "office/alternate_reading.html"),
-            (MPMassReading1(self.date, self.office_readings), "office/mass_reading.html"),
-            (MPCanticle1(self.date, self.office_readings), "office/canticle.html"),
-            (MPReading2(self.date, self.office_readings), "office/main_reading.html"),
-            (MPAlternateReading2(self.date, self.office_readings), "office/alternate_reading.html"),
-            (MPMassReading2(self.date, self.office_readings), "office/mass_reading.html"),
-            (MPCanticle2(self.date, self.office_readings), "office/canticle.html"),
-            (MPMassReading3(self.date, self.office_readings), "office/mass_reading.html"),
-            (Creed(self.date, self.office_readings), "office/creed.html"),
-            (Prayers(self.date, self.office_readings), "office/prayers.html"),
-            (MPSuffrages(self.date, self.office_readings), "office/morning_prayer/suffrages.html"),
-            (MPCollectsOfTheDay(self.date, self.office_readings), "office/collects_of_the_day.html"),
-            (MPCollects(self.date, self.office_readings), "office/collects.html"),
-            (GreatLitany(self.date, self.office_readings, office=self), "office/great_litany.html"),
-            (MPMissionCollect(self.date, self.office_readings), "office/mission_collect.html"),
-            (PandemicPrayers(self.date, self.office_readings, office=self), "office/pandemic_prayers.html"),
-            (Intercessions(self.date, self.office_readings), "office/intercessions.html"),
-            (GeneralThanksgiving(self.date, self.office_readings), "office/general_thanksgiving.html"),
-            (Chrysostom(self.date, self.office_readings), "office/chrysostom.html"),
-            (Dismissal(self.date, self.office_readings, office=self), "office/dismissal.html"),
+            (MPFirstReading(self.date, self.office_readings), "office/reading_section.html")
+            # (MPCommemorationListing(self.date, self.office_readings), "office/commemoration_listing.html"),
+            # (MPOpeningSentence(self.date, self.office_readings), "office/opening_sentence.html"),
+            # (Confession(self.date, self.office_readings), "office/confession.html"),
+            # (Invitatory(self.date, self.office_readings), "office/invitatory.html"),
+            # (
+            #     MPInvitatory(self.date, self.office_readings, self.thirty_day_psalter_day),
+            #     "office/morning_prayer/mpinvitatory.html",
+            # ),
+            # (MPPsalms(self.date, self.office_readings, self.thirty_day_psalter_day), "office/psalms.html"),
+            # (MPReading1(self.date, self.office_readings), "office/main_reading.html"),
+            # (MPAlternateReading1(self.date, self.office_readings), "office/alternate_reading.html"),
+            # (MPMassReading1(self.date, self.office_readings), "office/mass_reading.html"),
+            # (MPCanticle1(self.date, self.office_readings), "office/canticle.html"),
+            # (MPReading2(self.date, self.office_readings), "office/main_reading.html"),
+            # (MPAlternateReading2(self.date, self.office_readings), "office/alternate_reading.html"),
+            # (MPMassReading2(self.date, self.office_readings), "office/mass_reading.html"),
+            # (MPCanticle2(self.date, self.office_readings), "office/canticle.html"),
+            # (MPMassReading3(self.date, self.office_readings), "office/mass_reading.html"),
+            # (Creed(self.date, self.office_readings), "office/creed.html"),
+            # (Prayers(self.date, self.office_readings), "office/prayers.html"),
+            # (MPSuffrages(self.date, self.office_readings), "office/morning_prayer/suffrages.html"),
+            # (MPCollectsOfTheDay(self.date, self.office_readings), "office/collects_of_the_day.html"),
+            # (MPCollects(self.date, self.office_readings), "office/collects.html"),
+            # (GreatLitany(self.date, self.office_readings, office=self), "office/great_litany.html"),
+            # (MPMissionCollect(self.date, self.office_readings), "office/mission_collect.html"),
+            # (PandemicPrayers(self.date, self.office_readings, office=self), "office/pandemic_prayers.html"),
+            # (Intercessions(self.date, self.office_readings), "office/intercessions.html"),
+            # (GeneralThanksgiving(self.date, self.office_readings), "office/general_thanksgiving.html"),
+            # (Chrysostom(self.date, self.office_readings), "office/chrysostom.html"),
+            # (Dismissal(self.date, self.office_readings, office=self), "office/dismissal.html"),
         ]
 
 
@@ -484,6 +486,127 @@ class MPPsalms(OfficeSection):
             ),
         }
 
+class MPFirstReading(OfficeSection):
+
+    @cached_property
+    def has_abbreviated_reading(self):
+        return True if self.office_readings.mp_reading_1_abbreviated else False
+
+    @cached_property
+    def has_alternate_reading(self):
+        return self.date.date.year % 2 == 0
+
+    @cached_property
+    def has_alternate_abbreviated_reading(self):
+        if not self.has_alternate_reading:
+            return False
+        return True if self.office_readings.ep_reading_1_abbreviated else False
+
+    @cached_property
+    def has_mass_reading(self):
+        return self.date.primary.rank.precedence_rank <= 4
+
+    @cached_property
+    def has_abbreviated_mass_reading(self):
+        if not self.has_mass_reading:
+            return False
+        for reading in self.date.mass_readings:
+            if reading.reading_number == 1 and reading.short_citation:
+                return True
+        return False
+
+    @cached_property
+    def sunday_or_feria(self):
+        return "sunday" if self.date.primary.rank.precedence_rank <= 4 else "feria"
+
+    @staticmethod
+    def closing(testament):
+        return {
+            "reader": "The Word of the Lord." if testament != "DC" else "Here ends the Reading.",
+            "people": "Thanks be to God." if testament != "DC" else "",
+        }
+
+    def get_main_reading(self):
+        return {
+            "intro": passage_to_citation(self.office_readings.mp_reading_1),
+            "passage": self.office_readings.mp_reading_1,
+            "reading": self.office_readings.mp_reading_1_text,
+            "closing": self.closing(self.office_readings.mp_reading_1_testament),
+        }
+
+    def get_abbreviated_reading(self):
+        if not self.has_abbreviated_reading:
+            return None
+        return {
+            "intro": passage_to_citation(self.office_readings.mp_reading_1_abbreviated),
+            "passage": self.office_readings.mp_reading_1_abbreviated,
+            "reading": self.office_readings.mp_reading_1_abbreviated_text,
+            "closing": self.closing(self.office_readings.mp_reading_1_testament),
+        }
+
+    def get_alternate_reading(self):
+        if not self.has_alternate_reading:
+            return None
+        return {
+            "intro": passage_to_citation(self.office_readings.ep_reading_1),
+            "passage": self.office_readings.ep_reading_1,
+            "reading": self.office_readings.ep_reading_1_text,
+            "closing": self.closing(self.office_readings.ep_reading_1_testament),
+        }
+
+    def get_alternate_abbreviated_reading(self):
+        if not self.has_alternate_abbreviated_reading:
+            return None
+        return {
+            "intro": passage_to_citation(self.office_readings.ep_reading_1_abbreviated),
+            "passage": self.office_readings.ep_reading_1_abbreviated,
+            "reading": self.office_readings.ep_reading_1_abbreviated_text,
+            "closing": self.closing(self.office_readings.ep_reading_1_testament),
+        }
+
+    def get_mass_reading(self):
+        if not self.has_mass_reading:
+            return None
+        for reading in self.date.mass_readings:
+            if reading.reading_number == 1:
+                return {
+                    "intro": passage_to_citation(reading.long_citation),
+                    "passage": reading.long_citation,
+                    "reading": reading.long_text,
+                    "closing": self.closing(reading.testament),
+                }
+
+        return None
+
+    def get_abbreviated_mass_reading(self):
+        if not self.has_abbreviated_mass_reading:
+            return None
+        for reading in self.date.mass_readings:
+            if reading.reading_number == 1:
+                return {
+                    "intro": passage_to_citation(reading.short_citation),
+                    "passage": reading.short_citation,
+                    "reading": reading.short_text,
+                    "closing": self.closing(reading.testament),
+                }
+
+        return None
+
+    def data(self):
+        return {
+            "heading": "The First Lesson",
+            "has_abbreviated_reading": self.has_abbreviated_reading,
+            "has_alternate_reading": self.has_alternate_reading,
+            "has_alternate_abbreviated_reading": self.has_alternate_abbreviated_reading,
+            "has_mass_reading": self.has_mass_reading,
+            "has_abbreviated_mass_reading": self.has_abbreviated_mass_reading,
+            "main_reading": self.get_main_reading(),
+            "abbreviated_reading": self.get_abbreviated_reading(),
+            "alternate_reading": self.get_alternate_reading(),
+            "alternate_abbreviated_reading": self.get_alternate_abbreviated_reading(),
+            "mass_reading": self.get_mass_reading(),
+            "tag": "daily-office-readings-{}".format(self.sunday_or_feria),
+        }
 
 class MPReading1(OfficeSection):
     @cached_property

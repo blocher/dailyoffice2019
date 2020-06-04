@@ -1,0 +1,23 @@
+<h3>{{ data.heading }}</h3>
+<h3> Main Reading</h3>
+{% include "office/single_reading.html" with reading=data.main_reading %}
+{% if data.has_abbreviated_reading %}
+    <h3> Abbreviated Reading </h3>
+    {% include "office/single_reading.html" with reading=data.abbreviated_reading %}
+{% endif %}
+{% if data.has_alternate_reading %}
+    <h3> Alternate Reading </h3>
+    {% include "office/single_reading.html" with reading=data.alternate_reading %}
+{% endif %}
+{% if data.has_alternate_abbreviated_reading %}
+    <h3> Alternate Abbreviated Reading </h3>
+    {% include "office/single_reading.html" with reading=data.alternate_abbreviated_reading %}
+{% endif %}
+{% if data.has_mass_reading %}
+    <h3> Mass Reading </h3>
+    {% include "office/single_reading.html" with reading=data.mass_reading %}
+{% endif %}
+{% if data.has_abbreviated_mass_reading %}
+    <h3> Abbreviated Mass Reading </h3>
+    {% include "office/single_reading.html" with reading=data.abbreviated_mass_reading %}
+{% endif %}
