@@ -25,7 +25,7 @@ datefinder==0.7.0
 decorator==4.4.2
 Delorean==1.0.0
 distlib==0.3.0
-Django==3.0.6
+Django==3.0.7
 django-address==0.2.1
 django-array-tags==0.2.2
 django-cachekiller==0.1
