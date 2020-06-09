@@ -2,6 +2,7 @@ import {
   Plugins,
   StatusBarStyle,
 } from '@capacitor/core';
+import {readingSettings} from "./reading_settings";
 
 const { StatusBar, Storage } = Plugins;
 
@@ -36,6 +37,38 @@ function localStorageExists() {
     }
 }
 
+const getSetting = async (property) => {
+    property = "setting_" + property;
+    const settings = await getSettingsFromStorage();
+    if (settings.hasOwnProperty(property)) {
+        return settings[property]
+    }
+    return false;
+};
+
+const getSettingsFromStorage = async () => {
+    let settings = await getItem("settings");
+    if (!settings || settings == "null") {
+        return {};
+    }
+    return JSON.parse(settings);
+};
+
+const putSettingsInStorage = settings => {
+    setItem("settings", JSON.stringify(settings));
+};
+
+const storeSetting = async element => {
+    if (!localStorageExists()) {
+        return;
+    }
+
+    let settings = await getSettingsFromStorage();
+    settings[element.name] = element.value;
+    putSettingsInStorage(settings);
+    document.getElementById("settings-link").value = getSettingsLink()
+};
+
 
 const settings = () => {
     const setUpStatusBar =  async () => {
@@ -47,56 +80,32 @@ const settings = () => {
         }).then(response => { return true; }).catch(e => {  return true; })
 
     }
-    const applySettingFromElement = async element => {
+    const applySettingFromElement = async (element, onoff) => {
         let class_to_hide = element.dataset.class_to_hide.split(',');
         let class_to_show = element.dataset.class_to_show.split(',');
-        class_to_hide.forEach((value, idx) => {
-            Array.from(document.getElementsByClassName(value)).forEach(
-                (element, element_index) => {
-                    element.classList.add("off");
-                }
-            );
-        });
-        class_to_show.forEach((value, idx) => {
-            Array.from(document.getElementsByClassName(value)).forEach(
-                (element, element_index) => {
-                    element.classList.remove("off");
-                }
-            );
-        });
-    };
-
-    const getSetting = async (property) => {
-        property = "setting_" + property;
-        const settings = await getSettingsFromStorage();
-        if (settings.hasOwnProperty(property)) {
-            return settings[property]
+        if (onoff=="off") {
+            console.log("off")
+            class_to_hide.forEach((value, idx) => {
+                Array.from(document.getElementsByClassName(value)).forEach(
+                    (element, element_index) => {
+                        element.classList.add("off");
+                    }
+                );
+            });
+        } else if (onoff=="on") {
+            console.log("on")
+            return
+            class_to_show.forEach((value, idx) => {
+                Array.from(document.getElementsByClassName(value)).forEach(
+                    (element, element_index) => {
+                        element.classList.remove("off");
+                    }
+                );
+            });
         }
-        return false;
     };
 
-    const getSettingsFromStorage = async () => {
-        let settings = await getItem("settings");
-        if (!settings || settings == "null") {
-            return {};
-        }
-        return JSON.parse(settings);
-    };
 
-    const putSettingsInStorage = settings => {
-        setItem("settings", JSON.stringify(settings));
-    };
-
-    const storeSetting = async element => {
-        if (!localStorageExists()) {
-            return;
-        }
-
-        let settings = await getSettingsFromStorage();
-        settings[element.name] = element.value;
-        putSettingsInStorage(settings);
-        document.getElementById("settings-link").value = getSettingsLink()
-    };
 
     const findGetParameter = parameterName => {
         let result = null,
@@ -111,18 +120,18 @@ const settings = () => {
         return result;
     };
 
-    const initializeSetting = async element => {
+    const initializeSetting = async (element, onoff) => {
         const fromURL = findGetParameter(element.name);
         let settings = await getSettingsFromStorage();
         if (fromURL && element.value == fromURL) {
             element.checked = true;
-            await applySettingFromElement(element);
+            await applySettingFromElement(element, onoff);
             await storeSetting(element);
         } else if (localStorageExists()) {
             let stored = settings[element.name] || null;
             if (stored && element.value == stored) {
                 element.checked = true;
-                await applySettingFromElement(element);
+                await applySettingFromElement(element, onoff);
             }
         }
         return true;
@@ -161,7 +170,10 @@ const settings = () => {
         copyOldLocalSettingsIfNeed();
         const elements = document.querySelectorAll(".settings-radio")
         for (let i = 0; i < elements.length; i++) {
-            await initializeSetting(elements[i]);
+            await initializeSetting(elements[i], "off");
+        }
+        for (let i = 0; i < elements.length; i++) {
+            await initializeSetting(elements[i], "on");
         }
         if (window.mode != "app") {
             window.history.replaceState({}, document.title, location.protocol + '//' + location.host + window.location.pathname + window.location.hash);
@@ -373,6 +385,10 @@ const settings = () => {
         });
     };
 
+    const applyReadings = async () => {
+        const reading = getItem("reading_cycle")
+    }
+
     const setupSettings = async () => {
 
         await setUpStatusBar()
@@ -383,6 +399,8 @@ const settings = () => {
         await handleFontSizes();
         await handleThemes();
         await bindShowSettingsLink();
+        await applyReadings();
+        await readingSettings();
     };
 
     // TODO: Refactor into reusable module
@@ -396,4 +414,4 @@ const settings = () => {
     }
 };
 
-export {settings};
+export {settings, getSetting};

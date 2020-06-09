@@ -1,31 +1,34 @@
-<h4>{{ data.passage }}</h4>
+<div class="{{ reading.tag }}">
+    <h4>{{ data.passage }}</h4>
 
-<p><em>The lesson is read, the people sitting</em></p>
-<table class="dialogue">
-    <tr>
-        <td><em>Reader</em></td>
-        <td>{{ reading.intro }}</td>
-    </tr>
-</table>
-<div class="reading">
-    {%  if not reading.deuterocanon %}
-    <div class="bible-audio">
-        <iframe src="https://www.esv.org/audio-player/{{ data.passage|urlencode }}/" style="border: 0; width: 100%; height: 109px;"></iframe>
-        <!-- <audio controls type="audio/mpeg" src="https://audio.esv.org/hw/{{ data.passage|urlencode }}"><a href="https://audio.esv.org/hw/{{ data.passage|urlencode }}">Listen</a></audio>-->
-    </div>
-    {% endif %}
-    <br>
-    {{  reading.reading | safe }}
+    <p><em>The lesson is read, the people sitting</em></p>
     <table class="dialogue">
         <tr>
             <td><em>Reader</em></td>
-            <td>{{ reading.closing.reader }}</td>
+            <td>{{ reading.intro }}</td>
         </tr>
-        {%  if reading.closing.people %}
-            <tr>
-                <td><em>People</em></td>
-                <td><strong>{{ reading.closing.people }}</strong></td>
-            </tr>
-        {%  endif %}
     </table>
+    <div class="reading">
+        {%  if not reading.deuterocanon %}
+        <div class="bible-audio">
+            <iframe src="https://www.esv.org/audio-player/{{ data.passage|urlencode }}/" style="border: 0; width: 100%; height: 109px;"></iframe>
+            <!-- <audio controls type="audio/mpeg" src="https://audio.esv.org/hw/{{ data.passage|urlencode }}"><a href="https://audio.esv.org/hw/{{ data.passage|urlencode }}">Listen</a></audio>-->
+        </div>
+        {% endif %}
+        <br>
+        {{  reading.reading | safe }}
+        <table class="dialogue">
+            <tr>
+                <td><em>Reader</em></td>
+                <td>{{ reading.closing.reader }}</td>
+            </tr>
+            {%  if reading.closing.people %}
+                <tr>
+                    <td><em>People</em></td>
+                    <td><strong>{{ reading.closing.people }}</strong></td>
+                </tr>
+            {%  endif %}
+        </table>
+    </div>
+
 </div>

@@ -61,8 +61,8 @@ def settings(request):
                 "options": [
                     {
                         "value": "1",
-                        "hide": ["alternate-reading"],
-                        "show": ["main-reading"],
+                        "hide": [],
+                        "show": [],
                         "heading": "One Year",
                         "text": mark_safe(
                             "Read through most of the Bible each year. (Use if you pray <strong>both</strong> Morning and Evening Prayer)"
@@ -70,8 +70,8 @@ def settings(request):
                     },
                     {
                         "value": "2",
-                        "hide": ["main-reading"],
-                        "show": ["alternate-reading"],
+                        "hide": [],
+                        "show": [],
                         "heading": "Two Year",
                         "text": mark_safe(
                             "Read through most of the Bible in two years. (Use if you pray <strong>either</strong> Morning <strong>or</strong> Evening prayer)"
@@ -86,15 +86,15 @@ def settings(request):
                 "options": [
                     {
                         "value": "full",
-                        "hide": ["abbreviated-reading"],
-                        "show": ["full-reading"],
+                        "hide": [],
+                        "show": [],
                         "heading": "Full",
                         "text": "The full readings will always be used.",
                     },
                     {
                         "value": "abbreviated",
-                        "hide": ["full-reading"],
-                        "show": ["abbreviated-reading"],
+                        "hide": [],
+                        "show": [],
                         "heading": "Abbreviated",
                         "text": "Suggested abbreviations, when available.",
                     },

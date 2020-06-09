@@ -532,6 +532,7 @@ class MPFirstReading(OfficeSection):
             "passage": self.office_readings.mp_reading_1,
             "reading": self.office_readings.mp_reading_1_text,
             "closing": self.closing(self.office_readings.mp_reading_1_testament),
+            "tag": "main-reading",
         }
 
     def get_abbreviated_reading(self):
@@ -542,6 +543,7 @@ class MPFirstReading(OfficeSection):
             "passage": self.office_readings.mp_reading_1_abbreviated,
             "reading": self.office_readings.mp_reading_1_abbreviated_text,
             "closing": self.closing(self.office_readings.mp_reading_1_testament),
+            "tag": "abbreviated-reading",
         }
 
     def get_alternate_reading(self):
@@ -552,6 +554,7 @@ class MPFirstReading(OfficeSection):
             "passage": self.office_readings.ep_reading_1,
             "reading": self.office_readings.ep_reading_1_text,
             "closing": self.closing(self.office_readings.ep_reading_1_testament),
+            "tag": "alternate-reading",
         }
 
     def get_alternate_abbreviated_reading(self):
@@ -562,6 +565,7 @@ class MPFirstReading(OfficeSection):
             "passage": self.office_readings.ep_reading_1_abbreviated,
             "reading": self.office_readings.ep_reading_1_abbreviated_text,
             "closing": self.closing(self.office_readings.ep_reading_1_testament),
+            "tag": "alternate-abbreviated-reading",
         }
 
     def get_mass_reading(self):
@@ -574,6 +578,7 @@ class MPFirstReading(OfficeSection):
                     "passage": reading.long_citation,
                     "reading": reading.long_text,
                     "closing": self.closing(reading.testament),
+                    "tag": "mass-reading",
                 }
 
         return None
@@ -588,9 +593,16 @@ class MPFirstReading(OfficeSection):
                     "passage": reading.short_citation,
                     "reading": reading.short_text,
                     "closing": self.closing(reading.testament),
+                    "tag": "abbreviated-mass-reading",
                 }
 
         return None
+
+    def get_tags(self):
+        pass
+        # main-reading / alternate-reading
+        # full-reading / abbreviated-reading
+        # mass-reading-feria / mass-readings-sunday / daily-office-readings-sunday
 
     def data(self):
         return {
