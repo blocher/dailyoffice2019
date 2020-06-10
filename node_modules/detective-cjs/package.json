@@ -1,0 +1,41 @@
+{
+  "name": "detective-cjs",
+  "version": "3.1.1",
+  "description": "Get the dependencies of a CommonJS module by traversing its AST",
+  "main": "index.js",
+  "scripts": {
+    "test": "jscs index.js test && mocha test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mrjoelkemp/node-detective-cjs.git"
+  },
+  "keywords": [
+    "detective",
+    "commonjs",
+    "dependencies",
+    "ast",
+    "static analysis",
+    "cjs",
+    "jsx"
+  ],
+  "author": "Joel Kemp <joel@mrjoelkemp.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mrjoelkemp/node-detective-cjs/issues"
+  },
+  "homepage": "https://github.com/mrjoelkemp/node-detective-cjs",
+  "engines": {
+    "node": ">= 6.0"
+  },
+  "devDependencies": {
+    "jscs": "^3.0.7",
+    "jscs-preset-mrjoelkemp": "~2.0.0",
+    "mocha": "^5.2.0",
+    "sinon": "^6.1.5"
+  },
+  "dependencies": {
+    "ast-module-types": "^2.4.0",
+    "node-source-walk": "^4.0.0"
+  }
+}

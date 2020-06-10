@@ -50,9 +50,11 @@ module.exports = {
   },
   mode: "development",
   plugins: [
-      new CopyPlugin([
-          { from: 'office/src/office/img', to: '../img' },
-        ]),
+      new CopyPlugin({
+          patterns: [
+              {from: 'office/src/office/img', to: '../img'},
+          ],
+      }),
       new WebpackOnBuildPlugin(function(stats) {
         const buildDir = __dirname + '/office/static/office/js/';
         const newlyCreatedAssets = stats.compilation.assets;
@@ -62,8 +64,10 @@ module.exports = {
         res.forEach((file) => {
             if (!newlyCreatedAssets[file]) {
               try {
-                fs.unlinkSync(path.resolve(buildDir + file));
-                unlinked.push(file);
+                if (!fs.lstatSync(buildDir + file).isDirectory()) {
+                    fs.unlinkSync(path.resolve(buildDir + file));
+                    unlinked.push(file);
+                }
               } catch(err) {
                 console.log(err)
               }
@@ -72,9 +76,7 @@ module.exports = {
       if (unlinked.length > 0) {
           console.log('Removed old assets: ', unlinked);
         }
-
-
     }),
-    new BundleTracker({filename: './webpack-stats.json'})
+    new BundleTracker({path: __dirname, filename: './webpack-stats.json'})
   ]
 };

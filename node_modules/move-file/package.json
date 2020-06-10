@@ -1,0 +1,51 @@
+{
+	"name": "move-file",
+	"version": "1.2.0",
+	"description": "Move a file - Even works across devices",
+	"license": "MIT",
+	"repository": "sindresorhus/move-file",
+	"author": {
+		"name": "Sindre Sorhus",
+		"email": "sindresorhus@gmail.com",
+		"url": "sindresorhus.com"
+	},
+	"engines": {
+		"node": ">=8"
+	},
+	"scripts": {
+		"test": "xo && ava && tsd"
+	},
+	"files": [
+		"index.js",
+		"index.d.ts"
+	],
+	"keywords": [
+		"move",
+		"file",
+		"mv",
+		"fs",
+		"stream",
+		"file-system",
+		"ncp",
+		"fast",
+		"quick",
+		"data",
+		"content",
+		"contents",
+		"devices",
+		"partitions"
+	],
+	"dependencies": {
+		"cp-file": "^6.1.0",
+		"make-dir": "^3.0.0",
+		"path-exists": "^3.0.0"
+	},
+	"devDependencies": {
+		"ava": "^1.4.1",
+		"sinon": "^7.3.1",
+		"temp-write": "^3.4.0",
+		"tempy": "^0.2.1",
+		"tsd": "^0.7.2",
+		"xo": "^0.24.0"
+	}
+}

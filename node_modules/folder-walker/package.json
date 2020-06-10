@@ -1,0 +1,32 @@
+{
+  "name": "folder-walker",
+  "version": "3.2.0",
+  "description": "A recursive stream of the files and directories in a given folder",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js | tap-spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karissa/folder-walker.git"
+  },
+  "keywords": [
+    "folder",
+    "dir",
+    "walk",
+    "stream"
+  ],
+  "author": "Karissa McKelvey <karissa@karissamck.com> (http://karissamck.com/)",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/karissa/folder-walker/issues"
+  },
+  "homepage": "https://github.com/karissa/folder-walker#readme",
+  "dependencies": {
+    "from2": "^2.1.0"
+  },
+  "devDependencies": {
+    "tap-spec": "^4.1.1",
+    "tape": "^4.4.0"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "detective-stylus",
+  "version": "1.0.0",
+  "description": "Get the dependencies of a Stylus file",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mrjoelkemp/node-detective-stylus.git"
+  },
+  "keywords": [
+    "stylus",
+    "ast",
+    "static",
+    "analysis",
+    "dependencies"
+  ],
+  "author": "Joel Kemp <joel@mrjoelkemp.com> (http://www.mrjoelkemp.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mrjoelkemp/node-detective-stylus/issues"
+  },
+  "homepage": "https://github.com/mrjoelkemp/node-detective-stylus"
+}

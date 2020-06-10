@@ -1,0 +1,46 @@
+{
+  "name": "through2-map",
+  "version": "3.0.0",
+  "description": "A through2 to create an Array.prototype.map analog for streams.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node test/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:brycebaril/through2-map.git"
+  },
+  "keywords": [
+    "streams",
+    "through",
+    "through2",
+    "map"
+  ],
+  "author": "Bryce B. Baril",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/brycebaril/through2-map/issues"
+  },
+  "jshintConfig": {
+    "asi": true,
+    "globalstrict": true,
+    "validthis": true,
+    "eqnull": true,
+    "node": true,
+    "loopfunc": true,
+    "newcap": false,
+    "eqeqeq": false
+  },
+  "devDependencies": {
+    "tape": "~4.0.0",
+    "stream-spigot": "~3.0.5",
+    "terminus": "~1.0.12"
+  },
+  "dependencies": {
+    "through2": "~2.0.0",
+    "xtend": "^4.0.0"
+  }
+}
