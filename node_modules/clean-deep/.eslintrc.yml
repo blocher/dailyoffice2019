@@ -1,0 +1,4 @@
+extends: uphold
+
+rules:
+  prettier/prettier: 0

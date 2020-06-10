@@ -1,0 +1,10 @@
+{
+  "preset": "google",
+  "maximumLineLength": 120,
+  "disallowSpacesInCallExpression": true,
+  "validateJSDoc": null,
+  "disallowMultipleVarDecl": null,
+  "requireSpacesInNamedFunctionExpression": {
+    "beforeOpeningCurlyBrace": true
+  }
+}
