@@ -598,12 +598,6 @@ class MPFirstReading(OfficeSection):
 
         return None
 
-    def get_tags(self):
-        pass
-        # main-reading / alternate-reading
-        # full-reading / abbreviated-reading
-        # mass-reading-feria / mass-readings-sunday / daily-office-readings-sunday
-
     def data(self):
         return {
             "heading": "The First Lesson",
@@ -618,7 +612,7 @@ class MPFirstReading(OfficeSection):
             "alternate_abbreviated_reading": self.get_alternate_abbreviated_reading(),
             "mass_reading": self.get_mass_reading(),
             "abbreviated_mass_reading": self.get_abbreviated_mass_reading(),
-            "tag": "daily-office-readings-{}".format(self.sunday_or_feria),
+            "tag_prefix": "first-",
         }
 
 class MPReading1(OfficeSection):
