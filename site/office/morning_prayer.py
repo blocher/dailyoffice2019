@@ -587,7 +587,7 @@ class MPFirstReading(OfficeSection):
         if not self.has_abbreviated_mass_reading:
             return None
         for reading in self.date.mass_readings:
-            if reading.reading_number == 1:
+            if reading.reading_number == 1  and reading.short_citation:
                 return {
                     "intro": passage_to_citation(reading.short_citation),
                     "passage": reading.short_citation,
@@ -617,6 +617,7 @@ class MPFirstReading(OfficeSection):
             "alternate_reading": self.get_alternate_reading(),
             "alternate_abbreviated_reading": self.get_alternate_abbreviated_reading(),
             "mass_reading": self.get_mass_reading(),
+            "abbreviated_mass_reading": self.get_abbreviated_mass_reading(),
             "tag": "daily-office-readings-{}".format(self.sunday_or_feria),
         }
 

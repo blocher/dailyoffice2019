@@ -66,7 +66,7 @@ const storeSetting = async element => {
     let settings = await getSettingsFromStorage();
     settings[element.name] = element.value;
     putSettingsInStorage(settings);
-    document.getElementById("settings-link").value = getSettingsLink()
+    // document.getElementById("settings-link").value = getSettingsLink()
 };
 
 
