@@ -43,10 +43,10 @@ class ReadingEnabler {
         }
 
         if (document.getElementById(this.prefix + 'alternate-reading')) {
-            return true;
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     async full() {
@@ -96,17 +96,35 @@ class ReadingEnabler {
 
     }
 
+    async hideHeading() {
+        const mass = await this.mass()
+        if (mass) {
+            return false;
+        }
+        const abbreviatedMass = await this.abbreviatedMass()
+        if (abbreviatedMass) {
+            return false;
+        }
+        const el = document.getElementById(this.prefix + "main-reading")
+        if (el) {
+            return false
+        }
+        const heading_el = document.getElementById(this.prefix + "reading")
+        heading_el.classList.add("off")
+    }
+
     async go() {
         const hideAndShow = await this.getHideAndShow()
+
         hideAndShow[0].forEach(item => {
-            const el = document.getElementById(this.prefix + item)
+            let el = document.getElementById(this.prefix + item)
             if (el) {
                 el.classList.add("off")
             }
 
         });
         hideAndShow[1].forEach(item => {
-            const el = document.getElementById(this.prefix + item)
+            let el = document.getElementById(this.prefix + item)
             if (el) {
                 el.classList.remove("off")
             }
@@ -117,11 +135,13 @@ class ReadingEnabler {
 
 
 const readingSettings = async () => {
-    const prefixes = ["first-", "second-", "third-"]
-    prefixes.forEach(prefix => {
+    const prefixes = ["first-", "second-",  "third-"]
+    prefixes.forEach(async prefix => {
         let enabler = new ReadingEnabler(prefix)
-        enabler.go()
+        await enabler.go();
+        await enabler.hideHeading();
     })
+
 }
 
 export {readingSettings};

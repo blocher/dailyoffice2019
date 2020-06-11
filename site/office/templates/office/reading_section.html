@@ -1,6 +1,8 @@
-<h3>{{ data.heading }}</h3>
-<h3> Main Reading</h3>
-{% include "office/single_reading.html" with reading=data.main_reading %}
+<h3 id="{{ data.tag_prefix}}reading">{{ data.heading }}</h3>
+{% if data.has_main_reading %}
+    <h3> Main Reading</h3>
+    {% include "office/single_reading.html" with reading=data.main_reading %}
+{% endif %}
 {% if data.has_abbreviated_reading %}
     <h3> Abbreviated Reading </h3>
     {% include "office/single_reading.html" with reading=data.abbreviated_reading %}

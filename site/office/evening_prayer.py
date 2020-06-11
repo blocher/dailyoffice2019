@@ -4,7 +4,7 @@ from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 
 from office.canticles import DefaultCanticles, BCP1979CanticleTable, REC2011CanticleTable
-from office.morning_prayer import MPReading1, MPReading2
+# from office.morning_prayer import MPReading1, MPReading2
 from office.offices import (
     Office,
     Confession,
@@ -311,7 +311,7 @@ class EPAlternateReading1(OfficeSection):
             module = EPReading1(self.date, self.office_readings)
             return module.data
 
-        module = MPReading1(self.date, self.office_readings)
+        module = EPReading1(self.date, self.office_readings)
         return module.data
 
 
@@ -412,7 +412,7 @@ class EPAlternateReading2(OfficeSection):
             module = EPReading2(self.date, self.office_readings)
             return module.data
 
-        module = MPReading2(self.date, self.office_readings)
+        module = EPReading2(self.date, self.office_readings)
         return module.data
 
 

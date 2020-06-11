@@ -385,9 +385,6 @@ const settings = () => {
         });
     };
 
-    const applyReadings = async () => {
-        const reading = getItem("reading_cycle")
-    }
 
     const setupSettings = async () => {
 
@@ -399,7 +396,6 @@ const settings = () => {
         await handleFontSizes();
         await handleThemes();
         await bindShowSettingsLink();
-        await applyReadings();
         await readingSettings();
     };
 

@@ -51,7 +51,9 @@ class MorningPrayer(Office):
         return [
 
             (MPHeading(self.date, self.office_readings), "office/heading.html"),
-            (MPFirstReading(self.date, self.office_readings), "office/reading_section.html")
+            (MPFirstReading(self.date, self.office_readings), "office/reading_section.html"),
+            (MPSecondReading(self.date, self.office_readings), "office/reading_section.html"),
+            (MPThirdReading(self.date, self.office_readings), "office/reading_section.html"),
             # (MPCommemorationListing(self.date, self.office_readings), "office/commemoration_listing.html"),
             # (MPOpeningSentence(self.date, self.office_readings), "office/opening_sentence.html"),
             # (Confession(self.date, self.office_readings), "office/confession.html"),
@@ -489,6 +491,10 @@ class MPPsalms(OfficeSection):
 class MPFirstReading(OfficeSection):
 
     @cached_property
+    def has_main_reading(self):
+        return True
+
+    @cached_property
     def has_abbreviated_reading(self):
         return True if self.office_readings.mp_reading_1_abbreviated else False
 
@@ -601,6 +607,7 @@ class MPFirstReading(OfficeSection):
     def data(self):
         return {
             "heading": "The First Lesson",
+            "has_main_reading": self.has_main_reading,
             "has_abbreviated_reading": self.has_abbreviated_reading,
             "has_alternate_reading": self.has_alternate_reading,
             "has_alternate_abbreviated_reading": self.has_alternate_abbreviated_reading,
@@ -615,136 +622,226 @@ class MPFirstReading(OfficeSection):
             "tag_prefix": "first-",
         }
 
-class MPReading1(OfficeSection):
+
+class MPSecondReading(OfficeSection):
+
     @cached_property
+    def has_main_reading(self):
+        return True
+
+    @cached_property
+    def has_abbreviated_reading(self):
+        return False
+
+    @cached_property
+    def has_alternate_reading(self):
+        return self.date.date.year % 2 == 0
+
+    @cached_property
+    def has_alternate_abbreviated_reading(self):
+        return False
+
+    @cached_property
+    def has_mass_reading(self):
+        return self.date.primary.rank.precedence_rank <= 4
+
+    @cached_property
+    def has_abbreviated_mass_reading(self):
+        if not self.has_mass_reading:
+            return False
+        for reading in self.date.mass_readings:
+            if reading.reading_number == 3 and reading.short_citation:
+                return True
+        return False
+
+    @cached_property
+    def sunday_or_feria(self):
+        return "sunday" if self.date.primary.rank.precedence_rank <= 4 else "feria"
+
+    @staticmethod
+    def closing(testament):
+        return {
+            "reader": "The Word of the Lord." if testament != "DC" else "Here ends the Reading.",
+            "people": "Thanks be to God." if testament != "DC" else "",
+        }
+
+    def get_main_reading(self):
+        return {
+            "intro": passage_to_citation(self.office_readings.mp_reading_1),
+            "passage": self.office_readings.mp_reading_2,
+            "reading": self.office_readings.mp_reading_2_text,
+            "closing": self.closing(self.office_readings.mp_reading_2_testament),
+            "tag": "main-reading",
+        }
+
+    def get_abbreviated_reading(self):
+        return None
+
+    def get_alternate_reading(self):
+        if not self.has_alternate_reading:
+            return None
+        return {
+            "intro": passage_to_citation(self.office_readings.ep_reading_2),
+            "passage": self.office_readings.ep_reading_2,
+            "reading": self.office_readings.ep_reading_2_text,
+            "closing": self.closing(self.office_readings.ep_reading_2_testament),
+            "tag": "alternate-reading",
+        }
+
+    def get_alternate_abbreviated_reading(self):
+        return None
+
+    def get_mass_reading(self):
+        if not self.has_mass_reading:
+            return None
+        for reading in self.date.mass_readings:
+            if reading.reading_number == 3:
+                return {
+                    "intro": passage_to_citation(reading.long_citation),
+                    "passage": reading.long_citation,
+                    "reading": reading.long_text,
+                    "closing": self.closing(reading.testament),
+                    "tag": "mass-reading",
+                }
+
+        return None
+
+    def get_abbreviated_mass_reading(self):
+        if not self.has_abbreviated_mass_reading:
+            return None
+        for reading in self.date.mass_readings:
+            if reading.reading_number == 3 and reading.short_citation:
+                return {
+                    "intro": passage_to_citation(reading.short_citation),
+                    "passage": reading.short_citation,
+                    "reading": reading.short_text,
+                    "closing": self.closing(reading.testament),
+                    "tag": "abbreviated-mass-reading",
+                }
+
+        return None
+
     def data(self):
         return {
-            "heading": "The First Lesson",
-            "intro": passage_to_citation(self.office_readings.mp_reading_1),
-            "passage": self.office_readings.mp_reading_1,
-            "reading": self.office_readings.mp_reading_1_text,
-            "abbreviated_passage": self.office_readings.mp_reading_1_abbreviated
-            if self.office_readings.mp_reading_1_abbreviated
-            else self.office_readings.mp_reading_1,
-            "abbreviated_reading": self.office_readings.mp_reading_1_abbreviated_text
-            if self.office_readings.mp_reading_1_abbreviated_text
-            else self.office_readings.mp_reading_1_text,
-            "abbreviated_intro": passage_to_citation(
-                self.office_readings.mp_reading_1_abbreviated
-                if self.office_readings.mp_reading_1_abbreviated
-                else self.office_readings.mp_reading_1
-            ),
-            "has_abbreviated": True if self.office_readings.mp_reading_1_abbreviated_text else False,
-            "closing": {
-                "reader": "The Word of the Lord."
-                if self.office_readings.mp_reading_1_testament != "DC"
-                else "Here ends the Reading.",
-                "people": "Thanks be to God." if self.office_readings.mp_reading_1_testament != "DC" else "",
-            },
-            "deuterocanon": self.office_readings.mp_reading_1_testament not in ["OT", "NT"],
-            "tag": "daily-office-readings-{}".format(
-                "sunday" if self.date.primary.rank.precedence_rank <= 4 else "feria"
-            ),
+            "heading": "The Second Lesson",
+            "has_main_reading": self.has_main_reading,
+            "has_abbreviated_reading": self.has_abbreviated_reading,
+            "has_alternate_reading": self.has_alternate_reading,
+            "has_alternate_abbreviated_reading": self.has_alternate_abbreviated_reading,
+            "has_mass_reading": self.has_mass_reading,
+            "has_abbreviated_mass_reading": self.has_abbreviated_mass_reading,
+            "main_reading": self.get_main_reading(),
+            "abbreviated_reading": self.get_abbreviated_reading(),
+            "alternate_reading": self.get_alternate_reading(),
+            "alternate_abbreviated_reading": self.get_alternate_abbreviated_reading(),
+            "mass_reading": self.get_mass_reading(),
+            "abbreviated_mass_reading": self.get_abbreviated_mass_reading(),
+            "tag_prefix": "second-",
+        }
+
+class MPThirdReading(OfficeSection):
+
+    @cached_property
+    def has_main_reading(self):
+        return False
+
+    @cached_property
+    def has_abbreviated_reading(self):
+        return False
+
+    @cached_property
+    def has_alternate_reading(self):
+        return False
+
+    @cached_property
+    def has_alternate_abbreviated_reading(self):
+        return False
+
+    @cached_property
+    def has_mass_reading(self):
+        return self.date.primary.rank.precedence_rank <= 4
+
+    @cached_property
+    def has_abbreviated_mass_reading(self):
+        if not self.has_mass_reading:
+            return False
+        for reading in self.date.mass_readings:
+            if reading.reading_number == 4 and reading.short_citation:
+                return True
+        return False
+
+    @cached_property
+    def sunday_or_feria(self):
+        return "sunday" if self.date.primary.rank.precedence_rank <= 4 else "feria"
+
+    @staticmethod
+    def closing(testament):
+        return {
+            "reader": "The Word of the Lord." if testament != "DC" else "Here ends the Reading.",
+            "people": "Thanks be to God." if testament != "DC" else "",
+        }
+
+    def get_main_reading(self):
+        return None
+
+    def get_abbreviated_reading(self):
+        return None
+
+    def get_alternate_reading(self):
+        return None
+
+    def get_alternate_abbreviated_reading(self):
+        return None
+
+    def get_mass_reading(self):
+        if not self.has_mass_reading:
+            return None
+        for reading in self.date.mass_readings:
+            if reading.reading_number == 4:
+                return {
+                    "intro": passage_to_citation(reading.long_citation),
+                    "passage": reading.long_citation,
+                    "reading": reading.long_text,
+                    "closing": self.closing(reading.testament),
+                    "tag": "mass-reading",
+                }
+
+        return None
+
+    def get_abbreviated_mass_reading(self):
+        if not self.has_abbreviated_mass_reading:
+            return None
+        for reading in self.date.mass_readings:
+            if reading.reading_number == 4 and reading.short_citation:
+                return {
+                    "intro": passage_to_citation(reading.short_citation),
+                    "passage": reading.short_citation,
+                    "reading": reading.short_text,
+                    "closing": self.closing(reading.testament),
+                    "tag": "abbreviated-mass-reading",
+                }
+
+        return None
+
+    def data(self):
+        return {
+            "heading": "The Third Lesson",
+            "has_main_reading": self.has_main_reading,
+            "has_abbreviated_reading": self.has_abbreviated_reading,
+            "has_alternate_reading": self.has_alternate_reading,
+            "has_alternate_abbreviated_reading": self.has_alternate_abbreviated_reading,
+            "has_mass_reading": self.has_mass_reading,
+            "has_abbreviated_mass_reading": self.has_abbreviated_mass_reading,
+            "main_reading": self.get_main_reading(),
+            "abbreviated_reading": self.get_abbreviated_reading(),
+            "alternate_reading": self.get_alternate_reading(),
+            "alternate_abbreviated_reading": self.get_alternate_abbreviated_reading(),
+            "mass_reading": self.get_mass_reading(),
+            "abbreviated_mass_reading": self.get_abbreviated_mass_reading(),
+            "tag_prefix": "third-",
         }
 
 
-class MPMassReading1(OfficeSection):
-    @cached_property
-    def data(self):
-        for reading in self.date.mass_readings:
-            if reading.reading_number == 1:
-                return {
-                    "heading": "The First Lesson",
-                    "intro": passage_to_citation(reading.long_citation),
-                    "passage": reading.long_citation,
-                    "reading": reading.long_text,
-                    "abbreviated_passage": reading.short_citation if reading.short_citation else reading.long_citation,
-                    "abbreviated_reading": reading.short_text if reading.short_text else reading.long_text,
-                    "abbreviated_intro": passage_to_citation(
-                        reading.short_citation if reading.short_citation else reading.long_citation
-                    ),
-                    "has_abbreviated": True if reading.short_citation else False,
-                    "closing": {
-                        "reader": "The Word of the Lord." if reading.testament != "DC" else "Here ends the Reading.",
-                        "people": "Thanks be to God." if reading.testament != "DC" else "",
-                    },
-                    "deuterocanon": reading.testament == "DC",
-                    "tag": "mass-readings-{}".format(
-                        "sunday" if self.date.primary.rank.precedence_rank <= 4 else "feria"
-                    ),
-                }
-
-
-class MPMassReading2(OfficeSection):
-    @cached_property
-    def data(self):
-        for reading in self.date.mass_readings:
-            reading_number = 3
-            if len(self.date.mass_readings) == 3:
-                reading_number = 4
-            if reading.reading_number == reading_number:
-                return {
-                    "heading": "The Second Lesson",
-                    "intro": passage_to_citation(reading.long_citation),
-                    "passage": reading.long_citation,
-                    "reading": reading.long_text,
-                    "abbreviated_passage": reading.short_citation if reading.short_citation else reading.long_citation,
-                    "abbreviated_reading": reading.short_text if reading.short_text else reading.long_text,
-                    "abbreviated_intro": passage_to_citation(
-                        reading.short_citation if reading.short_citation else reading.long_citation
-                    ),
-                    "has_abbreviated": True if reading.short_citation else False,
-                    "closing": {
-                        "reader": "The Word of the Lord." if reading.testament != "DC" else "Here ends the Reading.",
-                        "people": "Thanks be to God." if reading.testament != "DC" else "",
-                    },
-                    "deuterocanon": reading.testament == "DC",
-                    "tag": "mass-readings-{}".format(
-                        "sunday" if self.date.primary.rank.precedence_rank <= 4 else "feria"
-                    ),
-                }
-
-
-class MPMassReading3(OfficeSection):
-    @cached_property
-    def data(self):
-        for reading in self.date.mass_readings:
-            if len(self.date.mass_readings) == 3:
-                return
-            if reading.reading_number == 4:
-                return {
-                    "heading": "The Third Lesson",
-                    "intro": passage_to_citation(reading.long_citation),
-                    "passage": reading.long_citation,
-                    "reading": reading.long_text,
-                    "abbreviated_passage": reading.short_citation if reading.short_citation else reading.long_citation,
-                    "abbreviated_reading": reading.short_text if reading.short_text else reading.long_text,
-                    "abbreviated_intro": passage_to_citation(
-                        reading.short_citation if reading.short_citation else reading.long_citation
-                    ),
-                    "has_abbreviated": True if reading.short_citation else False,
-                    "closing": {
-                        "reader": "The Word of the Lord." if reading.testament != "DC" else "Here ends the Reading.",
-                        "people": "Thanks be to God." if reading.testament != "DC" else "",
-                    },
-                    "deuterocanon": reading.testament == "DC",
-                    "tag": "mass-readings-{}".format(
-                        "sunday" if self.date.primary.rank.precedence_rank <= 4 else "feria"
-                    ),
-                }
-
-
-class MPAlternateReading1(OfficeSection):
-    @cached_property
-    def data(self):
-        from office.evening_prayer import EPReading1
-
-        if self.date.date.year % 2 == 0:
-            module = EPReading1(self.date, self.office_readings)
-            return module.data
-
-        module = MPReading1(self.date, self.office_readings)
-        return module.data
 
 
 class MPCanticle1(OfficeSection):
@@ -756,38 +853,6 @@ class MPCanticle1(OfficeSection):
             "1979": BCP1979CanticleTable().get_mp_canticle_1(self.date),
             "2011": REC2011CanticleTable().get_mp_canticle_1(self.date),
         }
-
-
-class MPReading2(OfficeSection):
-    @cached_property
-    def data(self):
-        return {
-            "heading": "The Second Lesson",
-            "intro": passage_to_citation(self.office_readings.mp_reading_2),
-            "passage": self.office_readings.mp_reading_2,
-            "reading": self.office_readings.mp_reading_2_text,
-            "abbreviated_intro": passage_to_citation(self.office_readings.mp_reading_2),
-            "abbreviated_passage": self.office_readings.mp_reading_2,
-            "abbreviated_reading": self.office_readings.mp_reading_2_text,
-            "has_abbreviated": False,
-            "closing": {"reader": "The Word of the Lord.", "people": "Thanks be to God."},
-            "tag": "daily-office-readings-{}".format(
-                "sunday" if self.date.primary.rank.precedence_rank <= 4 else "feria"
-            ),
-        }
-
-
-class MPAlternateReading2(OfficeSection):
-    @cached_property
-    def data(self):
-        from office.evening_prayer import EPReading2
-
-        if self.date.date.year % 2 == 0:
-            module = EPReading2(self.date, self.office_readings)
-            return module.data
-
-        module = MPReading2(self.date, self.office_readings)
-        return module.data
 
 
 class MPCanticle2(OfficeSection):

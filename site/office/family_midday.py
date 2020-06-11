@@ -3,9 +3,9 @@ import datetime
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 
-from office.evening_prayer import EPCollectsOfTheDay
+from office.evening_prayer import EPCollectsOfTheDay, EPReading2
 from office.midday_prayer import MiddayPrayers
-from office.morning_prayer import MPCommemorationListing, MPReading2, MPOpeningSentence
+from office.morning_prayer import MPCommemorationListing, MPOpeningSentence
 from office.offices import Office, OfficeSection, FMCreed, FamilyRubricSection
 from psalter.utils import get_psalms
 
@@ -102,7 +102,7 @@ class FNScripture(OfficeSection):
 
     @cached_property
     def data(self):
-        mp_reading = MPReading2(self.date, self.office_readings)
+        mp_reading = EPReading2(self.date, self.office_readings)
         return {
             "heading": "A READING FROM HOLY SCRIPTURE",
             "long": mp_reading.data,
