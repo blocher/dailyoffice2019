@@ -12,7 +12,6 @@ import {readingSettings} from "./reading_settings";
 setupApp();
 setupRedirect();
 settings();
-readingSettings();
 voice();
 setupCalendar();
 handleScrolling();

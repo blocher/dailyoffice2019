@@ -110,7 +110,10 @@ class ReadingEnabler {
             return false
         }
         const heading_el = document.getElementById(this.prefix + "reading")
-        heading_el.classList.add("off")
+        if (heading_el) {
+            heading_el.classList.add("off")
+        }
+
     }
 
     async go() {

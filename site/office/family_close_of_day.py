@@ -6,15 +6,11 @@ from django.utils.safestring import mark_safe
 from office.canticles import EP2
 from office.compline import ComplinePrayers
 from office.evening_prayer import (
-    EPInvitatory,
     EPCommemorationListing,
-    EPReading2,
     EPCollectsOfTheDay,
-    EPCollects,
     EPOpeningSentence,
 )
-from office.morning_prayer import MPCommemorationListing
-from office.offices import Office, OfficeSection, FMCreed, FamilyRubricSection
+from office.offices import Office, OfficeSection, FamilyRubricSection
 from psalter.utils import get_psalms
 
 
@@ -96,6 +92,14 @@ class FCDPsalms(OfficeSection):
 
 
 class FCDScripture(OfficeSection):
+
+    def get_long(self):
+        return{
+            "passage": self.office_readings.ep_reading_2,
+            "text": self.office_readings.ep_reading_2_text,
+            "deuterocanon": self.office_readings.ep_reading_2_testament == "DC",
+        }
+
     def get_scripture(self):
 
         day_of_year = self.date.date.timetuple().tm_yday
@@ -116,10 +120,9 @@ class FCDScripture(OfficeSection):
 
     @cached_property
     def data(self):
-        ep_reading = EPReading2(self.date, self.office_readings)
         return {
             "heading": "A READING FROM HOLY SCRIPTURE",
-            "long": ep_reading.data,
+            "long": self.get_long(),
             "brief": self.get_scripture(),
             "hide_closing": True,
         }

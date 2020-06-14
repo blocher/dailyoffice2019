@@ -60,7 +60,7 @@ class CalendarDate(object):
 
     @cached_property
     def mass_readings(self):
-        if self.proper:
+        if self.proper and self.primary.rank.name == "SUNDAY":
             return self.proper.get_mass_readings_for_year(self.year.mass_year)
         return self.primary.get_mass_readings_for_year(self.year.mass_year)
 

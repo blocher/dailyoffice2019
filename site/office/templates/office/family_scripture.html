@@ -15,7 +15,7 @@
 
 <div class="family-reading-long off">
 
-    <h4>{{ data.long.abbreviated_passage }}</h4>
+    <h4>{{ data.long.passage }}</h4>
 
     <div class="reading">
         {%  if not data.long.deuterocanon %}
@@ -25,7 +25,7 @@
         </div>
         {% endif %}
         <br>
-        {{  data.long.abbreviated_reading | safe }}
+        {{  data.long.text | safe }}
     </div>
 </div>
 

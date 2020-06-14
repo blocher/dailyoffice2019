@@ -5,6 +5,7 @@ from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 
 from office.models import HolyDayOfficeDay, StandardOfficeDay, ThirtyDayPsalterDay
+from office.utils import passage_to_citation
 
 
 class Office(object):
@@ -97,6 +98,110 @@ class OfficeSection(object):
     def data(self):
         raise NotImplementedError
 
+class Reading(OfficeSection):
+
+
+    @staticmethod
+    def closing(testament):
+        return {
+            "reader": "The Word of the Lord." if testament != "DC" else "Here ends the Reading.",
+            "people": "Thanks be to God." if testament != "DC" else "",
+        }
+
+    def data(self):
+        return {
+            "heading": self.heading,
+            "has_main_reading": self.has_main_reading,
+            "has_abbreviated_reading": self.has_abbreviated_reading,
+            "has_alternate_reading": self.has_alternate_reading,
+            "has_alternate_abbreviated_reading": self.has_alternate_abbreviated_reading,
+            "has_mass_reading": self.has_mass_reading,
+            "has_abbreviated_mass_reading": self.has_abbreviated_mass_reading,
+            "main_reading": self.get_main_reading(),
+            "abbreviated_reading": self.get_abbreviated_reading(),
+            "alternate_reading": self.get_alternate_reading(),
+            "alternate_abbreviated_reading": self.get_alternate_abbreviated_reading(),
+            "mass_reading": self.get_mass_reading(),
+            "abbreviated_mass_reading": self.get_abbreviated_mass_reading(),
+            "tag_prefix": self.tag,
+        }
+
+
+class ThirdReading(Reading):
+
+    heading = "The Third Lesson"
+    tag = "third-"
+
+    @cached_property
+    def has_main_reading(self):
+        return False
+
+    @cached_property
+    def has_abbreviated_reading(self):
+        return False
+
+    @cached_property
+    def has_alternate_reading(self):
+        return False
+
+    @cached_property
+    def has_alternate_abbreviated_reading(self):
+        return False
+
+    @cached_property
+    def has_mass_reading(self):
+        return self.date.primary.rank.precedence_rank <= 4
+
+    @cached_property
+    def has_abbreviated_mass_reading(self):
+        if not self.has_mass_reading:
+            return False
+        for reading in self.date.mass_readings:
+            if reading.reading_number == 4 and reading.short_citation:
+                return True
+        return False
+
+    def get_main_reading(self):
+        return None
+
+    def get_abbreviated_reading(self):
+        return None
+
+    def get_alternate_reading(self):
+        return None
+
+    def get_alternate_abbreviated_reading(self):
+        return None
+
+    def get_mass_reading(self):
+        if not self.has_mass_reading:
+            return None
+        for reading in self.date.mass_readings:
+            if reading.reading_number == 4:
+                return {
+                    "intro": passage_to_citation(reading.long_citation),
+                    "passage": reading.long_citation,
+                    "reading": reading.long_text,
+                    "closing": self.closing(reading.testament),
+                    "tag": "mass-reading",
+                }
+
+        return None
+
+    def get_abbreviated_mass_reading(self):
+        if not self.has_abbreviated_mass_reading:
+            return None
+        for reading in self.date.mass_readings:
+            if reading.reading_number == 4 and reading.short_citation:
+                return {
+                    "intro": passage_to_citation(reading.short_citation),
+                    "passage": reading.short_citation,
+                    "reading": reading.short_text,
+                    "closing": self.closing(reading.testament),
+                    "tag": "abbreviated-mass-reading",
+                }
+
+        return None
 
 class Confession(OfficeSection):
     @cached_property

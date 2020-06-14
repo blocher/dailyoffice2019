@@ -6,14 +6,11 @@ from django.utils.safestring import mark_safe
 from office.evening_prayer import (
     EPInvitatory,
     EPCommemorationListing,
-    EPReading1,
     EPCollects,
     EPCollectsOfTheDay,
     EPOpeningSentence,
 )
-from office.morning_prayer import MPCommemorationListing
-from office.offices import Office, OfficeSection, FMCreed, FamilyRubricSection
-from psalter.utils import get_psalms
+from office.offices import Office, OfficeSection, FMCreed
 
 
 class FamilyEarlyEvening(Office):
@@ -89,6 +86,14 @@ class FEEOpeningSentence(OfficeSection):
 
 
 class FEEScripture(OfficeSection):
+
+    def get_long(self):
+        return{
+            "passage": self.office_readings.ep_reading_1_abbreviated if self.office_readings.ep_reading_1_abbreviated else self.office_readings.ep_reading_1,
+            "text": self.office_readings.ep_reading_1_abbreviated_text if self.office_readings.ep_reading_1_abbreviated_text else self.office_readings.ep_reading_1_text,
+            "deuterocanon": self.office_readings.ep_reading_1_testament == "DC",
+        }
+
     def get_scripture(self):
 
         day_of_year = self.date.date.timetuple().tm_yday
@@ -113,10 +118,9 @@ class FEEScripture(OfficeSection):
 
     @cached_property
     def data(self):
-        ep_reading = EPReading1(self.date, self.office_readings)
         return {
             "heading": "A READING FROM HOLY SCRIPTURE",
-            "long": ep_reading.data,
+            "long": self.get_long(),
             "brief": self.get_scripture(),
             "hide_closing": True,
         }
