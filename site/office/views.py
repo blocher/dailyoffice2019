@@ -333,7 +333,7 @@ def privacy_policy(request):
 def calendar(request):
     cal = Calendar()
     cal.add('prodid', '-//Daily Office//mxm.dk//')
-    cal.add('version', '2.0')
+    cal.add('version', '2.1')
     import pytz
 
     years = range(FIRST_BEGINNING_YEAR, LAST_BEGINNING_YEAR + 1)
@@ -346,54 +346,19 @@ def calendar(request):
             event.add('DTSTART', date(calendardate.date.year, calendardate.date.month, calendardate.date.day))
             event.add('URL', 'https://www.dailyoffice2019.com/morning_prayer/{}-{}-{}/'.format(calendardate.date.year, calendardate.date.month, calendardate.date.day))
             event.add('LOCATION', 'https://www.dailyoffice2019.com/morning_prayer/{}-{}-{}/'.format(calendardate.date.year, calendardate.date.month, calendardate.date.day))
-            fast = calendardate.fast_day != calendardate.FAST_NONE
-            feast = calendardate.primary.rank.precedence_rank <= 4
+            fast_day = calendardate.fast_day != calendardate.FAST_NONE
+            feast_day = calendardate.primary.rank.precedence_rank <= 4
             description_lines = []
             for feast in calendardate.all:
                 description_lines.append(feast.name)
 
-            if fast:
+            if fast_day:
                 description_lines.append("")
                 description_lines.append("FAST DAY")
 
-            if feast:
+            if feast_day:
                 description_lines.append("")
                 description_lines.append("SUNDAY OR MAJOR HOLY DAY")
-
-            # description_lines.append("")
-            # description_lines.append('Morning Prayer: https://www.dailyoffice2019.com/morning_prayer/{}-{}-{}/'.format(calendardate.date.year,
-            #                                                                   calendardate.date.month,
-            #                                                                   calendardate.date.day))
-            # description_lines.append('Midday Prayer: https://www.dailyoffice2019.com/midday_prayer/{}-{}-{}/'.format(
-            #     calendardate.date.year,
-            #     calendardate.date.month,
-            #     calendardate.date.day))
-            # description_lines.append('Evening Prayer: https://www.dailyoffice2019.com/evening_prayer/{}-{}-{}/'.format(
-            #     calendardate.date.year,
-            #     calendardate.date.month,
-            #     calendardate.date.day))
-            # description_lines.append('Compline: https://www.dailyoffice2019.com/compline/{}-{}-{}/'.format(
-            #     calendardate.date.year,
-            #     calendardate.date.month,
-            #     calendardate.date.day))
-            #
-            # description_lines.append('Family Prayer in the Morning: https://www.dailyoffice2019.com/family/morning_prayer/{}-{}-{}/'.format(
-            #     calendardate.date.year,
-            #     calendardate.date.month,
-            #     calendardate.date.day))
-            # description_lines.append('Family Prayer at Midday: https://www.dailyoffice2019.com/family/midday_prayer/{}-{}-{}/'.format(
-            #     calendardate.date.year,
-            #     calendardate.date.month,
-            #     calendardate.date.day))
-            # description_lines.append('Family Prayer in the Early Evening: https://www.dailyoffice2019.com/family/early_evening_prayer/{}-{}-{}/'.format(
-            #     calendardate.date.year,
-            #     calendardate.date.month,
-            #     calendardate.date.day))
-            # description_lines.append(
-            #     'Family Prayer at the Close of Day: https://www.dailyoffice2019.com/family/close_of_day_prayer/{}-{}-{}/'.format(
-            #         calendardate.date.year,
-            #         calendardate.date.month,
-            #         calendardate.date.day))
 
             description_lines.append("")
             description_lines.append("MORNING PRAYER (or year 1)")
@@ -413,6 +378,41 @@ def calendar(request):
                 description_lines.append("EUCHARIST")
                 for reading in calendardate.mass_readings:
                     description_lines.append(reading.long_citation)
+
+            description_lines.append("")
+            description_lines.append('Morning Prayer: https://www.dailyoffice2019.com/morning_prayer/{}-{}-{}/'.format(calendardate.date.year,
+                                                                              calendardate.date.month,
+                                                                              calendardate.date.day))
+            description_lines.append('Midday Prayer: https://www.dailyoffice2019.com/midday_prayer/{}-{}-{}/'.format(
+                calendardate.date.year,
+                calendardate.date.month,
+                calendardate.date.day))
+            description_lines.append('Evening Prayer: https://www.dailyoffice2019.com/evening_prayer/{}-{}-{}/'.format(
+                calendardate.date.year,
+                calendardate.date.month,
+                calendardate.date.day))
+            description_lines.append('Compline: https://www.dailyoffice2019.com/compline/{}-{}-{}/'.format(
+                calendardate.date.year,
+                calendardate.date.month,
+                calendardate.date.day))
+
+            description_lines.append('Family Prayer in the Morning: https://www.dailyoffice2019.com/family/morning_prayer/{}-{}-{}/'.format(
+                calendardate.date.year,
+                calendardate.date.month,
+                calendardate.date.day))
+            description_lines.append('Family Prayer at Midday: https://www.dailyoffice2019.com/family/midday_prayer/{}-{}-{}/'.format(
+                calendardate.date.year,
+                calendardate.date.month,
+                calendardate.date.day))
+            description_lines.append('Family Prayer in the Early Evening: https://www.dailyoffice2019.com/family/early_evening_prayer/{}-{}-{}/'.format(
+                calendardate.date.year,
+                calendardate.date.month,
+                calendardate.date.day))
+            description_lines.append(
+                'Family Prayer at the Close of Day: https://www.dailyoffice2019.com/family/close_of_day_prayer/{}-{}-{}/'.format(
+                    calendardate.date.year,
+                    calendardate.date.month,
+                    calendardate.date.day))
 
 
             event.add('DESCRIPTION', "\n".join(description_lines))
