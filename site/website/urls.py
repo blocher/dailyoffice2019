@@ -499,7 +499,13 @@ urlpatterns = [
         office_views.privacy_policy,
         name="privacy_policy",
         distill_func=get_none,
-    )
+    ),
+    distill_path(
+      "dailyoffice.ics",
+      office_views.calendar,
+      name="calendar",
+      distill_func=get_none,
+    ),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:

@@ -1,4 +1,5 @@
 import html
+from datetime import date
 from string import punctuation
 
 from bs4 import BeautifulSoup
@@ -8,6 +9,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.templatetags.static import static
 from django.urls import reverse
+from icalendar import Calendar, Event
 from meta.views import Meta
 
 from churchcal.calculations import ChurchYear
@@ -21,6 +23,7 @@ from office.family_morning import FamilyMorning
 from office.midday_prayer import MiddayPrayer
 from office.models import AboutItem, UpdateNotice
 from office.morning_prayer import MorningPrayer
+from office.offices import Office
 from psalter.models import PsalmTopic, Psalm, PsalmVerse, PsalmTopicPsalm
 from psalter.utils import get_psalms
 from website.settings import FIRST_BEGINNING_YEAR, LAST_BEGINNING_YEAR, MODE
@@ -326,3 +329,97 @@ def update_notices(request, type="app"):
 
 def privacy_policy(request):
     return render(request, "office/privacy.html")
+
+def calendar(request):
+    cal = Calendar()
+    cal.add('prodid', '-//Daily Office//mxm.dk//')
+    cal.add('version', '2.0')
+    import pytz
+
+    years = range(FIRST_BEGINNING_YEAR, LAST_BEGINNING_YEAR + 1)
+    for year in years:
+        year = ChurchYear(year)
+        for datestring, calendardate in year.dates.items():
+            office = Office(datestring)
+            event = Event()
+            event.add('summary', calendardate.primary.name)
+            event.add('dtstart', date(calendardate.date.year, calendardate.date.month, calendardate.date.day))
+            event.add('url', 'https://www.dailyoffice2019.com/morning_prayer/{}-{}-{}/'.format(calendardate.date.year, calendardate.date.month, calendardate.date.day))
+
+            fast = calendardate.fast_day != calendardate.FAST_NONE
+            feast = calendardate.primary.rank.precedence_rank <= 4
+            description_lines = []
+            for feast in calendardate.all:
+                description_lines.append(feast.name)
+
+            if fast:
+                description_lines.append("")
+                description_lines.append("FAST DAY")
+
+            if feast:
+                description_lines.append("")
+                description_lines.append("SUNDAY OR MAJOR HOLY DAY")
+
+            description_lines.append("")
+            description_lines.append('Morning Prayer: https://www.dailyoffice2019.com/morning_prayer/{}-{}-{}/'.format(calendardate.date.year,
+                                                                              calendardate.date.month,
+                                                                              calendardate.date.day))
+            description_lines.append('Midday Prayer: https://www.dailyoffice2019.com/midday_prayer/{}-{}-{}/'.format(
+                calendardate.date.year,
+                calendardate.date.month,
+                calendardate.date.day))
+            description_lines.append('Evening Prayer: https://www.dailyoffice2019.com/evening_prayer/{}-{}-{}/'.format(
+                calendardate.date.year,
+                calendardate.date.month,
+                calendardate.date.day))
+            description_lines.append('Compline: https://www.dailyoffice2019.com/compline/{}-{}-{}/'.format(
+                calendardate.date.year,
+                calendardate.date.month,
+                calendardate.date.day))
+
+            description_lines.append('Family Prayer in the Morning: https://www.dailyoffice2019.com/family/morning_prayer/{}-{}-{}/'.format(
+                calendardate.date.year,
+                calendardate.date.month,
+                calendardate.date.day))
+            description_lines.append('Family Prayer at Midday: https://www.dailyoffice2019.com/family/midday_prayer/{}-{}-{}/'.format(
+                calendardate.date.year,
+                calendardate.date.month,
+                calendardate.date.day))
+            description_lines.append('Family Prayer in the Early Evening: https://www.dailyoffice2019.com/family/early_evening_prayer/{}-{}-{}/'.format(
+                calendardate.date.year,
+                calendardate.date.month,
+                calendardate.date.day))
+            description_lines.append(
+                'Family Prayer at the Close of Day: https://www.dailyoffice2019.com/family/close_of_day_prayer/{}-{}-{}/'.format(
+                    calendardate.date.year,
+                    calendardate.date.month,
+                    calendardate.date.day))
+
+            description_lines.append("")
+            description_lines.append("MORNING PRAYER (or year 1)")
+            description_lines.append("Psalms {} (30 day cycle)".format(office.thirty_day_psalter_day.mp_psalms))
+            description_lines.append("Psalms {} (60 day cycle)".format(office.office_readings.mp_psalms))
+            description_lines.append(office.office_readings.mp_reading_1)
+            description_lines.append(office.office_readings.mp_reading_2)
+            description_lines.append("")
+            description_lines.append("EVENING PRAYER (or year 2)")
+            description_lines.append("Psalms {} (30 day cycle)".format(office.thirty_day_psalter_day.ep_psalms))
+            description_lines.append("Psalms {} (60 day cycle)".format(office.office_readings.ep_psalms))
+            description_lines.append(office.office_readings.ep_reading_1)
+            description_lines.append(office.office_readings.ep_reading_2)
+
+            if calendardate.primary.rank.precedence_rank <= 4:
+                description_lines.append("")
+                description_lines.append("EUCHARIST")
+                for reading in calendardate.mass_readings:
+                    description_lines.append(reading.long_citation)
+
+
+            event.add('description', "\n".join(description_lines))
+
+            cal.add_component(event)
+
+    res = cal.to_ical()
+    response = HttpResponse(res, content_type='text/calendar')
+    response['Content-Disposition'] = "attachment; filename=dailyoffice.ics"
+    return HttpResponse(res)
