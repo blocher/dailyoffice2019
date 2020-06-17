@@ -11,8 +11,8 @@
     <div class="reading">
         {%  if not reading.deuterocanon %}
         <div class="bible-audio">
-            <iframe src="https://www.esv.org/audio-player/{{ data.passage|urlencode }}/" style="border: 0; width: 100%; height: 109px;"></iframe>
-            <!-- <audio controls type="audio/mpeg" src="https://audio.esv.org/hw/{{ data.passage|urlencode }}"><a href="https://audio.esv.org/hw/{{ data.passage|urlencode }}">Listen</a></audio>-->
+            <iframe src="https://www.esv.org/audio-player/{{ reading.passage|urlencode }}/" style="border: 0; width: 100%; height: 109px;"></iframe>
+            <!-- <audio controls type="audio/mpeg" src="https://audio.esv.org/hw/{{ reading.passage|urlencode }}"><a href="https://audio.esv.org/hw/{{ reading.passage|urlencode }}">Listen</a></audio>-->
         </div>
         {% endif %}
         <br>

@@ -197,7 +197,7 @@ class MPOpeningSentence(OfficeSection):
         if self.date.date.weekday() == 2:
             return {
                 "sentence": "The Lord is in his holy temple; let all the earth keep silence before him.",
-                "citation": "HABAKKUK 2:2",
+                "citation": "HABAKKUK 2:20",
             }
 
         if self.date.date.weekday() == 3:
