@@ -118,7 +118,6 @@ class Commemoration(BaseModel):
 
         if self.name == "Easter Day":
             if time == "morning":
-                print(time)
                 query = query.filter(service="PrincipalService")
             else:
                 query = query.filter(service="EveningService")

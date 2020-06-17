@@ -20,7 +20,19 @@ $fa-font-path: "fontawesome/webfonts";
 @import "fontawesome/scss/_rotated-flipped.scss";
 @import "fontawesome/scss/_stacked.scss";
 @import "fontawesome/scss/_screen-reader.scss";
+.row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
 
+.column {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 100%;
+  flex: 1;
+}
 @import '~pretty-checkbox/src/pretty-checkbox.scss';
 @import 'toggle.scss';
 

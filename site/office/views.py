@@ -310,11 +310,6 @@ def psalm(request, number):
     psalm_text = get_psalms(number)
     psalm = Psalm.objects.prefetch_related(Prefetch("psalmtopicpsalm_set__psalm_topic", queryset=PsalmTopic.objects.order_by('order').all())).get(number=number)
     topics = PsalmTopic.objects.prefetch_related(Prefetch("psalmtopicpsalm_set", queryset=PsalmTopicPsalm.objects.select_related("psalm").order_by("order").all())).filter(psalmtopicpsalm__psalm=psalm).order_by("order").distinct().all()
-    # topics = PsalmTopic.objects.prefetch_related("psalmtopicpsalm_set__psalm").filter(psalmtopicpsalm__psalm=psalm).order_by("order").distinct().all()
-    for topic in topics:
-        for psalmtopicpsalm  in topic.psalmtopicpsalm_set.all():
-            print(psalmtopicpsalm.pk)
-            print(psalmtopicpsalm, psalmtopicpsalm.psalm, "DDD")
     return render(request, "office/psalm.html", {"number": number, "psalm": psalm, "psalm_text": psalm_text, "topics": topics })
 
 def update_notices(request, type="app"):
@@ -333,8 +328,7 @@ def privacy_policy(request):
 def calendar(request):
     cal = Calendar()
     cal.add('prodid', '-//Daily Office//mxm.dk//')
-    cal.add('version', '2.1')
-    import pytz
+    cal.add('version', '2.0')
 
     years = range(FIRST_BEGINNING_YEAR, LAST_BEGINNING_YEAR + 1)
     for year in years:
