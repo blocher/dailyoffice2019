@@ -38,7 +38,7 @@ class ReadingEnabler {
 
     async main() {
         const years = await getSetting("reading_cycle")
-        if (years === "1") {
+        if (years !== "2") {
             return true;
         }
 
@@ -51,7 +51,7 @@ class ReadingEnabler {
 
     async full() {
         const reading_length = await getSetting("reading_length")
-        if (reading_length === "full") {
+        if (reading_length !== "abbreviated") {
             return true;
         }
         if (await this.main()) {
