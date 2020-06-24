@@ -8,6 +8,7 @@ import "../css/index.scss";
 import {handleScrolling} from "./scrolling";
 import {setupApp} from "./app";
 import {readingSettings} from "./reading_settings";
+import {Presentation} from "./presentation";
 
 setupApp();
 setupRedirect();
@@ -16,3 +17,4 @@ voice();
 setupCalendar();
 handleScrolling();
 setupApp();
+Presentation();

@@ -35,8 +35,8 @@
         {% endblock %}
     </head>
 
-    <body id="body" class="{{ mode }}{% if "/family/" in request.get_full_path %} family {% endif %}">
-        <div id="{{ mode }}" class="{{ mode }}">
+    <body id="body" class="fadeout {{ mode }}{% if "/family/" in request.get_full_path %} family {% endif %}">
+        <div id="{{ mode }}" class="{{ mode }} inner-body animate__animated animate__bounce">
             <div id="notch" class="notch">
 
             </div>
@@ -67,6 +67,9 @@
             </div>
 
             <link href="https://fonts.googleapis.com/css?family=Lusitana:400,700&display=swap" rel="stylesheet">
+        </div>
+        <div id="presentation-controls">
+            <a href="#" class="scroll-back"><--</a> <a href="#" class="scroll-forward">--></a> Exit Presentation Mode
         </div>
     </body>
 

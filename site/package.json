@@ -26,6 +26,7 @@
     "@capacitor/cli": "^2.2.0",
     "@capacitor/core": "^2.2.0",
     "@capacitor/ios": "^2.2.0",
+    "animate.css": "^4.1.0",
     "axios": "^0.19.2",
     "capacitor-firebase-analytics": "^0.3.2",
     "clipboard-polyfill": "^2.8.6",
