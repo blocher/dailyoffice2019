@@ -570,7 +570,15 @@ class MPFirstReading(Reading):
         if not self.has_mass_reading:
             return None
         for reading in self.date.mass_readings:
+
             if reading.reading_number == 1:
+                print({
+                    "intro": passage_to_citation(reading.long_citation),
+                    "passage": reading.long_citation,
+                    "reading": reading.long_text,
+                    "closing": self.closing(reading.testament),
+                    "tag": "mass-reading",
+                })
                 return {
                     "intro": passage_to_citation(reading.long_citation),
                     "passage": reading.long_citation,
