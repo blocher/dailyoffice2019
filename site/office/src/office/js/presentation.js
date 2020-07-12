@@ -146,8 +146,8 @@ const initialize = () => {
     // });
     enablePaginationEventListeners();
 
-    const desiredWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-    const desiredHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) - 40 - convertRemToPixels(2);
+    const desiredWidth = Math.max(Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0),580);
+    const desiredHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) - 100 - convertRemToPixels(2);
     const mainDiv = document.getElementById('web');
     const totalHeight = mainDiv.offsetHeight;
     const pageCount = Math.floor(totalHeight/desiredHeight) + 1;
@@ -157,7 +157,7 @@ const initialize = () => {
     mainDiv.style.padding = "10px 0px"; //(optional) prevents clipped letters around the edges
     mainDiv.style.width = width + 'px';
     mainDiv.style.height = desiredHeight + 'px';
-    mainDiv.style.columnWidth = window.innerWidth + 'px';
+    mainDiv.style.columnWidth = desiredWidth + 'px';
     mainDiv.style.columnCount = pageCount;
     mainDiv.style.columnFill = "auto";
     mainDiv.style.columnGap = "0px";
@@ -166,6 +166,14 @@ const initialize = () => {
 }
 
 const reinitialize = () => {
+    window.scrollTo(0, 0);
+    document.getElementsByTagName('body')[0].classList.remove("no-scroll")
+    const mainDiv = document.getElementById('web');
+    mainDiv.style.columnCount = "1"
+    mainDiv.style.width = "auto";
+    mainDiv.style.height = "auto";
+    mainDiv.style.columnWidth = "auto";
+    initialize()
 
 }
 const setupPresentation = () => {
@@ -174,6 +182,7 @@ const setupPresentation = () => {
     }
     document.getElementById("presentiation-mode-link").addEventListener('click', (event) => {
         document.getElementById("presentation-controls").classList.remove("off");
+        window.addEventListener('resize', reinitialize)
         initialize();
         event.preventDefault();
     })
@@ -181,7 +190,6 @@ const setupPresentation = () => {
         location.reload();
         event.preventDefault();
     })
-    //window.addEventListener('resize', reinitialize)
 }
 
 const Presentation = () => {
