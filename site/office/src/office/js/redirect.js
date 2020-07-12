@@ -137,8 +137,8 @@ const redirect = function () {
                 settings();
                 setupCalendar();
                 setupApp();
-                Presentation();
                 document.getElementById("now-button").classList.add('on')
+                Presentation();
             } else {
                 alert('Request failed.  Returned status of ' + xhr.status);
             }

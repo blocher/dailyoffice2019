@@ -35,8 +35,29 @@
         {% endblock %}
     </head>
 
-    <body id="body" class="fadeout {{ mode }}{% if "/family/" in request.get_full_path %} family {% endif %}">
-        <div id="{{ mode }}" class="{{ mode }} inner-body animate__animated animate__bounce">
+    <body id="body" class="{{ mode }}{% if "/family/" in request.get_full_path %} family {% endif %}">
+        <div id="presentation-controls" class="off">
+            <div class="container">
+                <div class="item">
+                    <a href="#" class="scroll-back"><i class="fas fa-arrow-left"></i></a>
+                </div>
+                <div class="item">
+                    Page <span id="pageNumber">1</span> of <span id="allPages">1</span>
+                </div>
+                <div class="item">
+                    <a href="#" id="exit-presentation-link"><i class="fas fa-times-circle"></i> Exit Presentation</a>
+                </div>
+                <div class="item">
+                </div><div class="item">
+                    <a href="#" class="scroll-forward"><i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+
+        </div>
+        <div id="paginatedText">
+
+        </div>
+        <div id="{{ mode }}" class="{{ mode }}">
             <div id="notch" class="notch">
 
             </div>
@@ -68,10 +89,10 @@
 
             <link href="https://fonts.googleapis.com/css?family=Lusitana:400,700&display=swap" rel="stylesheet">
         </div>
-        <div id="presentation-controls">
-            <a href="#" class="scroll-back"><--</a> <a href="#" class="scroll-forward">--></a> Exit Presentation Mode
-        </div>
+
+
     </body>
+
 
 
 </html>
