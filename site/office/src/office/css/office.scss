@@ -559,7 +559,7 @@ html {
 }
 
 #presentation-controls {
-  height: 2rem;
+  height: 30px;
   position: fixed;
   bottom: 0;
   left: 0;
@@ -576,7 +576,7 @@ html {
     display: flex;
     max-width: 580px;
     text-align: left;
-    margin: .5rem auto 0;
+    margin: 5px auto 0;
     justify-content: center;
     align-items: center;
 
@@ -584,7 +584,10 @@ html {
 
   .item {
     flex-grow: 1;
+    max-height: 100%;
     height: 100%;
+    font-size:20px;
+
   }
 
   .item + .item {
@@ -594,4 +597,19 @@ html {
 
 .no-scroll {
   overflow: hidden;
+  position: relative;
+}
+
+.announcement {
+  padding: 20px;
+  background-color: #2196F3;
+  color: white;
+  margin: 30px;
+  font-size:.9rem;
+  line-height: 1rem;
+
+  small {
+    font-size: .7rem;
+    line-height: .9rem;
+  }
 }
