@@ -83,6 +83,8 @@ def compline(request, year, month, day):
     compline_meta["description"] = cp.description
     compline_meta["url"] = reverse("compline", kwargs={"year": year, "month": month, "day": day})
     compline_meta["image"] = static("office/img/bcp.jpg")
+
+
     compline_meta["image_width"] = 1000
     compline_meta["image_height"] = 1333
     return render(request, "office/office.html", {"office": cp, "meta": Meta(**compline_meta)})

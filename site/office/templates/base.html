@@ -36,6 +36,9 @@
     </head>
 
     <body id="body" class="{{ mode }}{% if "/family/" in request.get_full_path %} family {% endif %}">
+        <div id="paginatedText">
+
+        </div>
         <div id="{{ mode }}" class="{{ mode }}">
             <div id="notch" class="notch">
 
@@ -47,6 +50,8 @@
             </noscript>
             {% include "office/header.html" %}
             <div class="main">
+                <!-- <p class="announcement no-print"><i class="fas fa-scroll"></i><strong> New!</strong> Presentation/book mode<br><small>Try the new presentation mode, a streamlined paginated view that avoids jerky scrolling. It is great for presenting to a group on YouTube, Facebook Live, Zoom, or other video services. On mobile devices with a touchscreen, you may swipe left or right to turn the page. To get started, click the <i id="presentiation-mode-link" class="fas fa-presentation"></i> button above.</small></p>-->
+
                 <div class="{{ show_settings_class }}">
                     {%  include "office/settings_section.html" %}
                 </div>
@@ -66,9 +71,30 @@
                 {% endif %}
             </div>
 
-            <link href="https://fonts.googleapis.com/css?family=Lusitana:400,700&display=swap" rel="stylesheet">
         </div>
+
+        <div id="presentation-controls" class="off">
+                <div class="container">
+                    <div class="item">
+                        <a href="#" class="scroll-back"><i class="fas fa-arrow-left"></i></a>
+                    </div>
+                    <div class="item align-center">
+                        Page <span id="pageNumber">1</span> of <span id="allPages">1</span>
+                    </div>
+                    <div class="item align-center">
+                        <a href="#" id="exit-presentation-link"><i class="fas fa-times-circle"></i> Exit Presentation</a>
+                    </div>
+                    <div class="item align-right">
+                        <a href="#" class="scroll-forward"><i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+
+
+
+
     </body>
+
 
 
 </html>

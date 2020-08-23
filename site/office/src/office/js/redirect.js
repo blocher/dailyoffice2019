@@ -3,6 +3,7 @@ import {setupCalendar} from "./calendar";
 import { Plugins } from '@capacitor/core';
 const { SplashScreen } = Plugins;
 import {setupApp} from "./app";
+import {Presentation} from "./presentation";
 
 const today = function () {
     const date = new Date();
@@ -137,6 +138,7 @@ const redirect = function () {
                 setupCalendar();
                 setupApp();
                 document.getElementById("now-button").classList.add('on')
+                Presentation();
             } else {
                 alert('Request failed.  Returned status of ' + xhr.status);
             }
