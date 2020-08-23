@@ -22,15 +22,18 @@
 
         </div>
         <div class="appearance-selectors">
-                <i data-fontsize="12" class="font-size-selector fal fa-font-case small"></i>
-                <i data-fontsize="16" class="font-size-selector fas fa-font-case medium"></i>
-                <i data-fontsize="20" class="font-size-selector fal fa-font-case large"></i>
-                <i data-fontsize="22" class="font-size-selector fal fa-font-case x-large"></i>
-                <i data-theme="theme-light" class="theme-selector fas fa-lightbulb medium"></i>
-                <i data-theme="theme-dark" class="theme-selector fas fa-lightbulb-slash medium"></i>
-                <!-- <i id="presentiation-mode-link" class="fas fa-presentation"></i> -->
+            <div class="size-selector">
+                <i class="font-size-selector fal fa-font-case small"></i><input type="range" min="10" max="40" value="24" class="slider" id="font-size-range"><i class="font-size-selector fal fa-font-case x-large"></i>
+            </div>
         </div>
-        <div></div>
+        <div class="other-selectors">
+                <p class="intro-heading-1 no-top-margin">
+                    Dark Mode:
+                    <i data-theme="theme-light" class="theme-selector fas fa-lightbulb large"></i>
+                    <i data-theme="theme-dark" class="theme-selector fas fa-lightbulb-slash large "></i>
+                    <!-- <i id="presentiation-mode-link" class="fas fa-presentation"></i> -->
+                </p>
+        </div>
     </div>
 
 </div>

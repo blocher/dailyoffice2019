@@ -135,20 +135,19 @@ html {
         font-display: swap;
         font-weight: 600;
         font-style: normal;
-        letter-spacing: 0.1rem;
         text-align: center;
-        margin: 0.2rem;
-        padding-top: 2rem;
-
-        font-size: 1.5rem;
-
         text-transform: uppercase;
-
-        font-size: .5rem;
-        margin: 1rem 0 0 0;
+        font-size: 11px;
+        margin: 22px 0 0 0;
         padding: 0;
-        line-height: .6rem;
-        letter-spacing: .1rem;
+        line-height: 13.2px;
+        letter-spacing: 2.2px;
+        .large {
+          font-size: 22px;
+        }
+        &.no-top-margin {
+          margin-top: 0;
+        }
       }
 
       &.intro-heading-2 {
@@ -157,22 +156,13 @@ html {
         font-display: swap;
         font-weight: 600;
         font-style: normal;
-        letter-spacing: 0.1rem;
         text-align: center;
-        margin: 0.2rem;
-        padding-top: 2rem;
-
         text-transform: uppercase;
-
-        padding-top: 30px;
-        margin-bottom: 5px;
-        font-size: 1.2rem;
-
-        font-size: .4rem;
+        font-size: 8.8px;
         margin: 0;
         padding: 0;
-        line-height: .5rem;
-        letter-spacing: .1rem;
+        line-height: 11px;
+        letter-spacing: 2.2px;
 
       }
   }
@@ -318,26 +308,22 @@ html {
       @include themify($themes) {
         background-color: themed('footer-color-bg');
       }
-      font-size: .8em;
+      font-size: 19.2px;
       font-weight: 300;
-      padding: .2rem 0;
-
-      strong {
-        font-size: 1rem;
-      }
+      padding: 4.8px 0;
 
       i {
         display: block;
-        padding-bottom: .2rem;
+        padding-bottom: 4.8px;
       }
 
 
       p, a, i {
-        font-size: 0.7rem;
+        font-size: 19.2px;
       }
 
      strong {
-       font-size: .9rem;
+       font-size: 19.2px;
      }
   }
 
@@ -353,16 +339,16 @@ html {
       align-content: space-around;
       max-width: 700px;
       margin: auto;
-      padding: .6rem;
+      padding: 10.2px;
 
       p {
-        margin: 0 0 0.2rem 0;
+        margin: 0 0 4.8px 0;
       }
 
       a.day-link {
-        padding: .3rem;
+        padding: 4px;
         border: 1px black solid;
-        border-radius: .5rem;
+        border-radius: 12px;
       }
 
   }
@@ -402,8 +388,8 @@ html {
   }
 
   #menu {
-    padding: .1rem;
-    margin: .1rem;
+    padding: 3px;
+    margin: 3px;
 
   }
 
@@ -418,7 +404,7 @@ html {
   }
 
   form {
-      min-height: 2rem;
+      min-height: 48rem;
     }
 
 
@@ -427,13 +413,13 @@ html {
         color: themed('font-color');
     }
     text-decoration: none;
-    font-size: 0.5rem;
-    margin: 0.15rem;
+    font-size: 11px;
+    margin: 3.3px;
     initial-letter: 2;
-    letter-spacing: .03rem;
+    letter-spacing: .66px;
     border: 1px solid grey;
-    border-radius: 0.5rem;
-    padding: 0.3rem;
+    border-radius: 11px;
+    padding: 6.6px;
     text-transform: uppercase;
     float: left;
     //@media only screen and (max-width: 600px) {
@@ -452,7 +438,7 @@ html {
     }
 
     .first-letter {
-      font-size: .8rem;
+      font-size: 16px;
     }
 
     &.inline {
@@ -482,6 +468,15 @@ html {
   }
 
   .appearance-selectors {
+    display:flex;
+    justify-content:center;
+    align-items: center;
+
+
+    .size-selector {
+       width: 100%;
+       max-width: 500px;
+    }
 
     i {
       padding: 5px 12px;
@@ -619,4 +614,111 @@ html {
 }
 .align-right {
   text-align: right;
+}
+
+input[type=range] {
+  height: 26px;
+  -webkit-appearance: none;
+  margin: 10px 0;
+  width: 50%;
+          @include themify($themes) {
+        background-color: themed('color-bg');
+            }
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 14px;
+  cursor: pointer;
+  animate: 0.2s;
+  box-shadow: 1px 1px 1px #50555C;
+        @include themify($themes) {
+        background: themed('font-color');
+            }
+  border-radius: 14px;
+  border: 0px solid #000000;
+}
+input[type=range]::-webkit-slider-thumb {
+  box-shadow: 0px 0px 0px #000000;
+  border: 0px solid #000000;
+  height: 20px;
+  width: 40px;
+  border-radius: 12px;
+  background: #529DE1;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -3px;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+        @include themify($themes) {
+        background: themed('font-color');
+            }
+}
+input[type=range]::-moz-range-track {
+  width: 100%;
+  height: 14px;
+  cursor: pointer;
+  animate: 0.2s;
+  box-shadow: 1px 1px 1px #50555C;
+        @include themify($themes) {
+        background: themed('font-color');
+            }
+  border-radius: 14px;
+  border: 0px solid #000000;
+}
+input[type=range]::-moz-range-thumb {
+  box-shadow: 0px 0px 0px #000000;
+  border: 0px solid #000000;
+  height: 20px;
+  width: 40px;
+  border-radius: 12px;
+  background: #529DE1;
+  cursor: pointer;
+}
+input[type=range]::-ms-track {
+  width: 100%;
+  height: 14px;
+  cursor: pointer;
+  animate: 0.2s;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+input[type=range]::-ms-fill-lower {
+        @include themify($themes) {
+        background: themed('font-color');
+            }
+  border: 0px solid #000000;
+  border-radius: 28px;
+  box-shadow: 1px 1px 1px #50555C;
+}
+input[type=range]::-ms-fill-upper {
+        @include themify($themes) {
+        background: themed('font-color');
+            }
+  border: 0px solid #000000;
+  border-radius: 28px;
+  box-shadow: 1px 1px 1px #50555C;
+}
+input[type=range]::-ms-thumb {
+  margin-top: 1px;
+  box-shadow: 0px 0px 0px #000000;
+  border: 0px solid #000000;
+  height: 20px;
+  width: 40px;
+  border-radius: 12px;
+  background: #529DE1;
+  cursor: pointer;
+}
+input[type=range]:focus::-ms-fill-lower {
+        @include themify($themes) {
+        background: themed('font-color');
+            }
+}
+input[type=range]:focus::-ms-fill-upper {
+        @include themify($themes) {
+        background: themed('font-color');
+            }
 }

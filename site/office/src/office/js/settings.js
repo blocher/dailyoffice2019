@@ -219,30 +219,11 @@ const settings = () => {
         let base_font_size = await getItem("base-font-size");
         if (base_font_size) {
             document.getElementById("html").style.fontSize = base_font_size;
-            document.getElementsByClassName("font-size-selector").forEach((element, element_index) => {
-                element.classList.remove('fas');
-                element.classList.add('fal')
-            });
-            document.querySelectorAll('[data-fontsize]').forEach((element, element_index) => {
-                if (element.getAttribute('data-fontsize') == base_font_size.replace('px', '')) {
-                    element.classList.remove('fal');
-                    element.classList.add('fas');
-                }
-            });
-
         }
-        document.querySelectorAll(".font-size-selector").forEach((element, element_index) => {
-            element.addEventListener("click", event => {
-                document.getElementById("html").style.fontSize = event.currentTarget.getAttribute('data-fontsize') + 'px';
-                document.getElementsByClassName("font-size-selector").forEach((element, element_index) => {
-                    element.classList.remove('fas');
-                    element.classList.add('fal')
-                });
-                event.currentTarget.classList.remove('fal');
-                event.currentTarget.classList.add('fas');
-                document.getElementById("html").style.fontSize = event.currentTarget.getAttribute('data-fontsize');
-                setItem("base-font-size", event.target.getAttribute('data-fontsize') + 'px');
-            });
+
+        document.getElementById('font-size-range').addEventListener('change', event => {
+            document.getElementById("html").style.fontSize = event.target.value + 'px'
+            setItem("base-font-size", event.target.value + 'px');
         });
     };
 
