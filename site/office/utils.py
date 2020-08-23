@@ -91,7 +91,8 @@ def passage_to_citation(passage):
     if not passage:
         return None
 
-    passage = scriptures.extract(passage)[0]
+    passage = scriptures.extract(passage)
+    passage = passage[0]
 
     if not passage:
         return None
