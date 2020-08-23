@@ -142,7 +142,10 @@ const setupSwipes = () => {
     let touchendX = 0;
     let touchendY = 0;
 
-    const gestureZone = document.getElementById('web');
+    let gestureZone = document.getElementById('web');
+    if (!gestureZone) {
+        gestureZone = document.getElementById(app);
+    }
 
     gestureZone.addEventListener('touchstart', function(event) {
         touchstartX = event.changedTouches[0].screenX;
