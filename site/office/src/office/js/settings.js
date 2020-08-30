@@ -219,6 +219,7 @@ const settings = () => {
         let base_font_size = await getItem("base-font-size");
         if (base_font_size) {
             document.getElementById("html").style.fontSize = base_font_size;
+            document.getElementById("font-size-range").value = base_font_size.replace('px', '')
         }
 
         document.getElementById('font-size-range').addEventListener('change', event => {

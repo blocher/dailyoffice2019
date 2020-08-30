@@ -26,6 +26,9 @@ class Calendar(BaseModel):
     abbreviation = models.CharField(max_length=256)
     google_sheet_id = models.CharField(max_length=256)
 
+    def __str__(self):
+        return "{} ({})".format(self.denomination.name, self.name)
+
 
 class CommemorationRank(BaseModel):
     RANKS = [(level, level) for level in range(1, 10)]
@@ -45,8 +48,8 @@ class CommemorationRank(BaseModel):
 
         return None
 
-    def __repr__(self):
-        return "{} ({}) ({})".format(self.name, self.rank.formatted_name, self.color)
+    def __str__(self):
+        return self.formatted_name
 
 
 class Commemoration(BaseModel):

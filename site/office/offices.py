@@ -418,8 +418,9 @@ class FamilyIntercessions(OfficeSection):
 
 class GreatLitany(OfficeSection):
     def get_names(self):
+        feasts = self.date.all_evening if self.office.name == "evening_prayer" else self.date.all
         names = [
-            feast.saint_name for feast in self.date.all_evening if hasattr(feast, "saint_name") and feast.saint_name
+            feast.saint_name for feast in feasts if hasattr(feast, "saint_name") and feast.saint_name
         ]
         names = ["the Blessed Virgin Mary"] + names
         return ", ".join(names)
