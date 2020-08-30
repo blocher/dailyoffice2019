@@ -50,17 +50,17 @@
         {%  endif %}
         {% if not nolinks %}
             {% if family %}
-                    <a class="menu-button" href="/family/morning_prayer/{{  day.date|date:"Y-n-j" }}/{{ filename }}"><i class="fas fa-sunrise"></i>  Morning</a>
-                    <a class="menu-button" href="/family/midday_prayer/{{  day.date|date:"Y-n-j" }}"/{{ filename }}><i class="fas fa-sun"></i> Midday</a>
-                    <a class="menu-button" href="/family/early_evening_prayer/{{  day.date|date:"Y-n-j" }}/{{ filename }}"><i class="fas fa-sunset"></i> Early Evening</a>
-                    <a class="menu-button" href="/family/close_of_day_prayer/{{  day.date|date:"Y-n-j" }}/{{ filename }}"><i class="fas fa-moon"></i> Close of Day</a>
+                    <a class="menu-button calendar-btn" href="/family/morning_prayer/{{  day.date|date:"Y-n-j" }}/{{ filename }}"><i class="fas fa-sunrise"></i>  Morning</a>
+                    <a class="menu-button calendar-btn" href="/family/midday_prayer/{{  day.date|date:"Y-n-j" }}"/{{ filename }}><i class="fas fa-sun"></i> Midday</a>
+                    <a class="menu-button calendar-btn" href="/family/early_evening_prayer/{{  day.date|date:"Y-n-j" }}/{{ filename }}"><i class="fas fa-sunset"></i> Early Evening</a>
+                    <a class="menu-button calendar-btn" href="/family/close_of_day_prayer/{{  day.date|date:"Y-n-j" }}/{{ filename }}"><i class="fas fa-moon"></i> Close of Day</a>
                 </p>
             {% else %}
                 <p class="links">
-                    <a class="menu-button" href="/morning_prayer/{{  day.date|date:"Y-n-j" }}/{{ filename }}"><i class="fas fa-sunrise"></i>  Morning</a>
-                    <a class="menu-button" href="/midday_prayer/{{  day.date|date:"Y-n-j" }}/{{ filename }}"><i class="fas fa-sun"></i> Midday</a>
-                    <a class="menu-button" href="/evening_prayer/{{  day.date|date:"Y-n-j" }}/{{ filename }}"><i class="fas fa-sunset"></i> Evening</a>
-                    <a class="menu-button" href="/compline/{{  day.date|date:"Y-n-j" }}/{{ filename }}"><i class="fas fa-moon"></i> Compline</a>
+                    <a class="menu-button calendar-btn" href="/morning_prayer/{{  day.date|date:"Y-n-j" }}/{{ filename }}"><i class="fas fa-sunrise"></i>  Morning</a>
+                    <a class="menu-button calendar-btn" href="/midday_prayer/{{  day.date|date:"Y-n-j" }}/{{ filename }}"><i class="fas fa-sun"></i> Midday</a>
+                    <a class="menu-button calendar-btn" href="/evening_prayer/{{  day.date|date:"Y-n-j" }}/{{ filename }}"><i class="fas fa-sunset"></i> Evening</a>
+                    <a class="menu-button calendar-btn" href="/compline/{{  day.date|date:"Y-n-j" }}/{{ filename }}"><i class="fas fa-moon"></i> Compline</a>
                 </p>
             {% endif %}
         {%  endif %}

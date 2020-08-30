@@ -404,7 +404,7 @@ html {
   }
 
   form {
-      min-height: 48rem;
+      min-height: 48px;
     }
 
 
@@ -422,10 +422,6 @@ html {
     padding: 6.6px;
     text-transform: uppercase;
     float: left;
-    //@media only screen and (max-width: 600px) {
-    //  width: 6rem;
-    //  text-align: center;
-    //}
 
     &.on {
       @include themify($themes) {
@@ -450,7 +446,15 @@ html {
       min-width: 200px;
     }
 
-  }
+    &.calendar {
+      font-size: 0.5rem;
+      margin: 0.4rem;
+      letter-spacing: .03rem;
+      border-radius: 0.5rem;
+      padding: 0.3rem;
+      min-width: 90px;
+    }
+   }
 
   #messages {
     margin: 0.5rem auto 0 auto;
