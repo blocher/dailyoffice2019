@@ -504,8 +504,8 @@ class SetNamesAndCollects(object):
         if not previous:
             return
 
-        if previous.primary.rank.required and previous.primary.rank.name != "PRIVILEGED_OBSERVANCE":
-            return
+        # if previous.primary.rank.required and previous.primary.rank.name != "PRIVILEGED_OBSERVANCE":
+        #     return
 
         previous.evening_required = previous.required.copy()
         previous.evening_optional = previous.optional.copy()

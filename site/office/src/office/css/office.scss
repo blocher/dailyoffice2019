@@ -1,6 +1,12 @@
 * {
-  scroll-behavior: unset
+  scroll-behavior: unset;
 }
+
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
 
 html {
       //overflow: hidden;
@@ -65,13 +71,13 @@ html {
   }
 
   h1 {
-      font-size: 2rem;
-      line-height: 2.1rem;
+      font-size: 1.3rem;
+      line-height: 1.5rem;
 
   }
 
   h2 {
-      font-size: 1.5rem;
+      font-size: 1.0rem;
 
     &.intro-heading {
       font-size: .5rem;
@@ -86,8 +92,8 @@ html {
   h3 {
       padding-top: 30px;
       margin-bottom: 5px;
-      font-size: 1.2rem;
-      line-height: 1.6rem;
+      font-size: 1.0rem;
+      line-height: 1.4rem;
       &.intro-heading {
         font-size: .4rem;
         margin: 0;
@@ -104,15 +110,15 @@ html {
       font-display: swap;
       font-weight: 600;
       font-style: italic;
-      font-size: 1rem;
-      line-height: 1.1rem;
+      font-size: .9rem;
+      line-height: 1.0rem;
 
   }
 
   h5 {
       font-weight: 300;
       text-align: right;
-      font-size: 1rem;
+      font-size: .9rem;
       margin: 10px 0;
   }
 
@@ -121,7 +127,7 @@ html {
       font-display: swap;
       font-weight: 300;
       font-style: normal;
-      font-size: 1.1rem;
+      font-size: 1.0rem;
       margin: 10px 0;
 
       line-height: 1.6rem;
@@ -249,12 +255,17 @@ html {
   table.dialogue {
     margin-top: 1rem;
     td {
+      @media only screen and (max-width: 464px) {
+        &:first-child {
+          display: none;
+        }
+      }
       padding: .1rem 1rem .1rem 0;
       font-family: 'Adobe Caslon Pro', serif;
       font-weight: 300;
       font-style: normal;
-      font-size: 1.1rem;
-      margin: 1.5rem 0;
+      font-size: 1.0rem;
+      margin: 1.4rem 0;
       line-height: 1.6rem;
     }
   }
@@ -273,7 +284,7 @@ html {
   }
 
   p.indent {
-      margin: 0 0 0 1.1rem;
+      margin: 0 0 0 1.0rem;
 
 
       &.entreaty {
@@ -460,7 +471,7 @@ html {
     margin: 0.5rem auto 0 auto;
     font-size: 0.6rem;
     text-align:center;
-    line-height: 1.1rem;
+    line-height: 1.0rem;
 
     a {
       @include themify($themes) {
@@ -519,11 +530,11 @@ html {
 
 .about {
   p {
-  font-size: 1.1rem;
+  font-size: 1.0rem;
   line-height: 1.6rem;
 
   em {
-  font-size: 1.1rem;
+  font-size: 1.0rem;
   }
   }
   }
@@ -725,4 +736,9 @@ input[type=range]:focus::-ms-fill-upper {
         @include themify($themes) {
         background: themed('font-color');
             }
+}
+
+
+.word-wrap {
+  word-wrap: break-word;
 }

@@ -225,6 +225,7 @@ const settings = () => {
         document.getElementById('font-size-range').addEventListener('change', event => {
             document.getElementById("html").style.fontSize = event.target.value + 'px'
             setItem("base-font-size", event.target.value + 'px');
+            console.log(event.target.value)
         });
     };
 

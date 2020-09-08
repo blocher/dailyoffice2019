@@ -161,7 +161,7 @@
     margin: 0.5rem 0;
     border: 1px solid black;
     border-radius: 5px;
-    @media only screen and (max-width: 374px) {
+    @media only screen and (max-width: 600px) {
       flex-wrap: wrap;
     }
     p.secondary {
@@ -183,7 +183,7 @@
     .day-section {
       padding: 1rem;
 
-      @media only screen and (max-width: 374px) {
+      @media only screen and (max-width: 600px) {
        width: 100%;
       }
 

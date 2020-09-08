@@ -269,9 +269,9 @@ const Presentation = () => {
         document.readyState === "complete" ||
         (document.readyState !== "loading" && !document.documentElement.doScroll)
     ) {
-        setupPresentation();
+        //setupPresentation();
     } else {
-        document.addEventListener("DOMContentLoaded", setupPresentation);
+        //document.addEventListener("DOMContentLoaded", setupPresentation);
     }
 };
 
