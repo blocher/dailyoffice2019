@@ -1,3 +1,4 @@
+from django.template.context_processors import static
 from django.utils.safestring import mark_safe
 
 from website.settings import MODE
@@ -21,6 +22,11 @@ def get_on(path):
 
 
 def settings(request):
+    print({
+        "apps": {
+            "ios": static("office/img/app_store.svg"),
+            "android": static("office/img/app_store.svg"),
+        },})
     return {
         "mode": MODE,
         "filename": 'index.html' if MODE == "app" else "",

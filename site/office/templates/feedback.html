@@ -1,4 +1,30 @@
+{% load static %}
+
 <div class="word-wrap">
+    <hr>
+    <div id="resources-menu" class="no-print">
+            <h3>Resources</h3>
+            <div class="menu-wrapper">
+                <div class="menu">
+                    <a id="psalter" href="/psalms" class="menu-button "><i class="fas fa-bible"></i> <span
+                            class="first-letter">P</span>salter</a>
+                    <a id="calendar" href="/dailyoffice.ics" class="menu-button "><i class="fas fa-calendar"></i> <span
+                            class="first-letter">C</span>alendar (iCal file)</a>
+                </div>
+            </div>
+            {% if mode == "web" %}
+                <h3>Mobile Apps</h3>
+                <div class="menu-wrapper">
+                    <div class="menu">
+                        <a href="https://apps.apple.com/us/app/id1513851259" target="_blank"><img style="height: 4rem; width:auto; margin: 0 10px;" src="{% static 'office/img/app_store.svg' %}"/></a>
+                        <a href="https://apps.apple.com/us/app/id1513851259" target="_blank"><p>Available now for iOS on the Apple App Store</p></a>
+                        <p>Coming soon to Google Play!</p>
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+
     <div class="no-print feedback">
 
 
@@ -19,18 +45,7 @@
 
 
     <div class="no-print">
-        <div id="resources-menu" class="no-print">
-            <h3>Resources</h3>
-            <div class="menu-wrapper">
-                <div class="menu">
-                    <a id="psalter" href="/psalms" class="menu-button "><i class="fas fa-bible"></i> <span
-                            class="first-letter">P</span>salter</a>
-                    <a id="calendar" href="/dailyoffice.ics" class="menu-button "><i class="fas fa-calendar"></i> <span
-                            class="first-letter">C</span>alendar (iCal file)</a>
-                </div>
-            </div>
 
-        </div>
         <div class="feedback">
             <small>
                 <p><strong>Praying in a group? Want to share your settings?</strong></p>
