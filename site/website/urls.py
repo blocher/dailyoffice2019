@@ -22,18 +22,19 @@ from django.contrib import admin
 # from sermons import views as sermon_views
 from django.contrib.sitemaps import Sitemap
 from django.contrib.sitemaps import views
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django_distill import distill_path
 
 from churchcal.calculations import ChurchYear
 from office import views as office_views
-
+from website.api_urls import urlpatterns as api_urlpatterns
 
 # site.site_header = _("Elizabeth Locher's Sermon Archive")
 # site.site_title = _("Elizabeth Locher's Sermon Archive")
 # site.favicon = staticfiles('path/to/favicon')
+from website.api_urls import router_v1
 
 
 def get_about():
@@ -402,7 +403,7 @@ def sitemap_view(request):
 urlpatterns = [
     # path("sermons", sermon_views.sermons, name="sermons"),
     # path("sermon/<uuid:id>", sermon_views.sermon, name="sermon"),
-    # path("djrichtextfield/", include("djrichtextfield.urls")),
+    # path("djrichtextfild/", include("djrichtextfield.urls")),
     # path("jet/", include("jet.urls", "jet")),
     path("admin/", admin.site.urls),
     # path("admin/", include("material.admin.urls")),
@@ -499,6 +500,7 @@ urlpatterns = [
     distill_path("privacy-policy/", office_views.privacy_policy, name="privacy_policy", distill_func=get_none),
     distill_path("dailyoffice.ics", office_views.calendar, name="calendar", distill_func=get_none),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns = urlpatterns + api_urlpatterns
 
 if settings.DEBUG:
     import debug_toolbar

@@ -265,6 +265,8 @@ class EPPsalms(OfficeSection):
                 break
 
         return {
+            "citations_60": citations_60,
+            "citations_30": citations_30,
             "heading_60": "The Psalm{} Appointed".format("s" if len(citations_60) > 1 else ""),
             "psalms_60": get_psalms(psalms_60),
             "heading_30": "The Psalm{} Appointed".format("s" if len(citations_30) > 1 else ""),

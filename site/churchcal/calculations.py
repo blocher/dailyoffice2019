@@ -847,5 +847,5 @@ def get_calendar_date(date_string):
     church_year = cache.get(str(year))
     if not church_year:
         church_year = ChurchYear(year)
-        cache.set(str(year), church_year)
+        cache.set(str(year), church_year, 60 * 60 * 12)
     return church_year.get_date(date_string)
