@@ -9,8 +9,11 @@ https://docs.djangoproject.com/en/2.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
+import distutils
 import mimetypes
 import os
+from distutils.util import strtobool
+
 from dotenv import load_dotenv
 
 
@@ -28,9 +31,9 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = False if os.getenv("DEBUG", "False") == "False" else "True"
-DEBUG = True
-DEBUG_DATES = False
-MODE = "web"
+DEBUG = bool(strtobool(os.getenv("DEBUG", False)))
+DEBUG_DATES = bool(strtobool(os.getenv("DEBUG_DATES", False)))
+MODE = os.getenv("MODE", "web")
 APP_VERSION = 1.1
 
 ALLOWED_HOSTS = ["*", "127.0.0.1:8000", "127.0.0.1", "dailyoffice2019.com", "www.dailyoffice2019.com"]
@@ -218,11 +221,11 @@ CACHES = {"default": {"BACKEND": "django.core.cache.backends.memcached.Memcached
 
 SITE_ID = 1
 
-FIRST_BEGINNING_YEAR = 2018
-LAST_BEGINNING_YEAR = 2021
+FIRST_BEGINNING_YEAR = os.getenv("FIRST_BEGINNING_YEAR", 2018)
+LAST_BEGINNING_YEAR = os.getenv("LAST_BEGINNING_YEAR", 2021)
 
-FIRST_BEGINNING_YEAR_APP = 2019
-LAST_BEGINNING_YEAR_APP = 2020
+FIRST_BEGINNING_YEAR_APP = os.getenv("FIRST_BEGINNING_YEAR_APP", 2019)
+LAST_BEGINNING_YEAR_APP = os.getenv("LAST_BEGINNING_YEAR_APP", 2020)
 
 META_SITE_PROTOCOL = "https"
 META_SITE_DOMAIN = "www.dailyoffice2019.com"

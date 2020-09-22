@@ -23,13 +23,12 @@ class DayView(APIView):
 class MonthView(APIView):
     permission_classes = [ReadOnly]
 
-    def get(self, request, year, month):
-        dayrange = monthrange(year, month)
-        days = [
-            get_calendar_date(timezone.now().replace(year=year, month=month, day=day))
-            for day in range(1, dayrange[1] + 1)
-        ]
-        serializer = DaySerializer(days, many=True)
+    def get(self, request, year):
+        church_year = cache.get(str(year))
+        if not church_year:
+            church_year = ChurchYear(year)
+            cache.set(str(year), church_year, 60 * 60 * 12)
+        serializer = DaySerializer([date for date in church_year.date.m], many=True)
         return Response(serializer.data)
 
 

@@ -8,3 +8,4 @@ _pycache__
 sermons/static/
 static_export
 .idea
+site/.env
