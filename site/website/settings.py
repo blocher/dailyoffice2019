@@ -36,7 +36,15 @@ DEBUG_DATES = bool(strtobool(os.getenv("DEBUG_DATES", False)))
 MODE = os.getenv("MODE", "web")
 APP_VERSION = 1.1
 
-ALLOWED_HOSTS = ["*", "127.0.0.1:8000", "127.0.0.1", "dailyoffice2019.com", "www.dailyoffice2019.com"]
+ALLOWED_HOSTS = [
+    "*",
+    "127.0.0.1:8000",
+    "127.0.0.1",
+    "dailyoffice2019.com",
+    "www.dailyoffice2019.com",
+    "api.dailyoffice2019.com",
+    "data.dailyoffice2019.com",
+]
 
 
 # Application definition
