@@ -42,7 +42,7 @@ module.exports = {
   // optimization: {
   //   runtimeChunk: 'single',
   // },
-  watch: true,
+  watch: false,
   watchOptions: {
     aggregateTimeout: 300,
     poll: 1000,
