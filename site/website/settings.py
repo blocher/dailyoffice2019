@@ -12,12 +12,11 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import distutils
 import mimetypes
 import os
+import environ
 from distutils.util import strtobool
 
-from dotenv import load_dotenv
-
-
-load_dotenv()
+env = environ.Env(DEBUG=(bool, False), DEBUG_DATES=(bool, False), MODE=(str, "web"))
+environ.Env.read_env()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -28,20 +27,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY", "TESTKEY")
+
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = False if os.getenv("DEBUG", "False") == "False" else "True"
-def evaluate_boolean(possible_string):
-    if type(possible_string) == bool:
-        return possible_string
-    possible_string = str(possible_string)
-    if possible_string.lower() in ["true", "1"]:
-        return True
-    return False
-
-
-DEBUG = evaluate_boolean(os.getenv("DEBUG", False))
-DEBUG_DATES = evaluate_boolean(os.getenv("DEBUG_DATES", False))
-MODE = os.getenv("MODE", "web")
+DEBUG = env("DEBUG")
+DEBUG_DATES = env("DEBUG_DATES")
+MODE = env("MODE")
 APP_VERSION = 1.1
 
 ALLOWED_HOSTS = [
@@ -134,11 +124,11 @@ WSGI_APPLICATION = "website.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.getenv("POSTGRES_NAME", "dailyoffice2"),
-        "USER": os.getenv("POSTGRES_USER", "dailyoffice"),
-        "PASSWORD": os.getenv("POSTGRES_PASSWORD", "dailyoffice"),
-        "HOST": os.getenv("POSTGRES_HOST", "localhost"),
-        "PORT": os.getenv("POSTGRES_PORT", "5432"),
+        "NAME": env("POSTGRES_NAME"),
+        "USER": env("POSTGRES_USER"),
+        "PASSWORD": env("POSTGRES_PASSWORD"),
+        "HOST": env("POSTGRES_HOST"),
+        "PORT": env("POSTGRES_PORT"),
     }
 }
 
@@ -211,7 +201,7 @@ DJRICHTEXTFIELD_CONFIG = {
     },
 }
 
-GOOGLE_API_KEY = "AIzaSyAoETL2PnO843Q98QgumZg756AAHAzhhRw"
+GOOGLE_API_KEY = env("GOOGLE_API_KEY")
 
 
 def show_toolbar(request):
@@ -237,11 +227,11 @@ CACHES = {"default": {"BACKEND": "django.core.cache.backends.memcached.Memcached
 
 SITE_ID = 1
 
-FIRST_BEGINNING_YEAR = os.getenv("FIRST_BEGINNING_YEAR", 2018)
-LAST_BEGINNING_YEAR = os.getenv("LAST_BEGINNING_YEAR", 2021)
+FIRST_BEGINNING_YEAR = (env("FIRST_BEGINNING_YEAR"),)
+LAST_BEGINNING_YEAR = (env("LAST_BEGINNING_YEAR"),)
 
-FIRST_BEGINNING_YEAR_APP = os.getenv("FIRST_BEGINNING_YEAR_APP", 2019)
-LAST_BEGINNING_YEAR_APP = os.getenv("LAST_BEGINNING_YEAR_APP", 2020)
+FIRST_BEGINNING_YEAR_APP = (env("FIRST_BEGINNING_YEAR_APP"),)
+LAST_BEGINNING_YEAR_APP = (env("LAST_BEGINNING_YEAR_APP"),)
 
 META_SITE_PROTOCOL = "https"
 META_SITE_DOMAIN = "www.dailyoffice2019.com"
