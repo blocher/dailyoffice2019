@@ -28,11 +28,19 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY")
-
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = False if os.getenv("DEBUG", "False") == "False" else "True"
-DEBUG = bool(strtobool(os.getenv("DEBUG", False)))
-DEBUG_DATES = bool(strtobool(os.getenv("DEBUG_DATES", False)))
+def evaluate_boolean(possible_string):
+    if type(possible_string) == bool:
+        return possible_string
+    possible_string = str(possible_string)
+    if possible_string.lower() in ["true", "1"]:
+        return True
+    return False
+
+
+DEBUG = evaluate_boolean(os.getenv("DEBUG", False))
+DEBUG_DATES = evaluate_boolean(os.getenv("DEBUG_DATES", False))
 MODE = os.getenv("MODE", "web")
 APP_VERSION = 1.1
 
