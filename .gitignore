@@ -9,3 +9,4 @@ sermons/static/
 static_export
 .idea
 site/.env
+site/website/.env

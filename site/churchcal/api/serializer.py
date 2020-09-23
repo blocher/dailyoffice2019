@@ -9,14 +9,12 @@ class RankSerializer(serializers.Serializer):
     precedence = serializers.IntegerField(source="precedence_rank")
 
 
-
 class CommemorationSerializer(serializers.Serializer):
     name = serializers.CharField()
     rank = RankSerializer()
     colors = serializers.SerializerMethodField()
     links = serializers.SerializerMethodField()
     collects = serializers.SerializerMethodField()
-
 
     def get_colors(self, obj):
         colors = [obj.color, obj.additional_color, obj.alternate_color, obj.alternate_color_2]
@@ -28,10 +26,13 @@ class CommemorationSerializer(serializers.Serializer):
 
     def get_collects(self, obj):
         return {
-            'collect': obj.morning_prayer_collect,
-            'alternate_collect': obj.evening_prayer_collect if obj.evening_prayer_collect != obj.morning_prayer_collect else None,
-            'vigil_collect': obj.eve_collect,
+            "collect": obj.morning_prayer_collect,
+            "alternate_collect": obj.evening_prayer_collect
+            if obj.evening_prayer_collect != obj.morning_prayer_collect
+            else None,
+            "vigil_collect": None if obj.eve_collect == "" else obj.eve_collect,
         }
+
 
 class SeasonSerializer(serializers.Serializer):
     name = serializers.CharField()
@@ -42,11 +43,7 @@ class SeasonSerializer(serializers.Serializer):
         return [color.lower() for color in colors if color]
 
 
-
 class DaySerializer(serializers.Serializer):
     date = serializers.DateField()
     season = SeasonSerializer()
     commemorations = CommemorationSerializer(many=True, source="all")
-
-
-
