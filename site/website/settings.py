@@ -27,7 +27,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djwebangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY", "TESTKEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = False if os.getenv("DEBUG", "False") == "False" else "True"
 def evaluate_boolean(possible_string):
@@ -179,7 +179,6 @@ MEDIA_URL = "/uploads/"
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(PROJECT_ROOT, "static")
-print(STATIC_ROOT)
 
 
 SHELL_PLUS = "ipython"
