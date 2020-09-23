@@ -48,6 +48,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    "corsheaders",
     "ckeditor",
     "adminsortable2",
     "django.contrib.admin",
@@ -83,6 +84,7 @@ if DEBUG:
     INSTALLED_APPS = ["debug_toolbar"] + INSTALLED_APPS
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -281,4 +283,5 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"]
 }
 
+CORS_ALLOW_ALL_ORIGINS = True
 mimetypes.add_type("image/svg+xml", ".svg", True)
