@@ -1,6 +1,5 @@
 git+https://github.com/blocher/python-scriptures
 git+https://github.com/boudinfl/pke.git
-git+https://github.com/blocher/django-address
 appdirs==1.4.4
 appnope==0.1.0
 arrow==0.16.0
@@ -29,6 +28,7 @@ Delorean==1.0.0
 distlib==0.3.1
 Django==3.1.1
 django-admin-sortable2==0.7.7
+django-address==0.2.5
 django-array-tags==0.2.2
 django-cachekiller==0.6
 django-ckeditor==6.0.0
