@@ -48,6 +48,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    "drf_yasg",
     "corsheaders",
     "ckeditor",
     "adminsortable2",
@@ -285,3 +286,5 @@ REST_FRAMEWORK = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 mimetypes.add_type("image/svg+xml", ".svg", True)
+
+SWAGGER_SETTINGS = {"USE_SESSION_AUTH": False}

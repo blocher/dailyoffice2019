@@ -1,6 +1,3 @@
-git+https://github.com/blocher/python-scriptures
-git+https://github.com/boudinfl/pke.git
-git+https://github.com/blocher/django-address
 appdirs==1.4.4
 appnope==0.1.0
 arrow==0.16.0
@@ -28,6 +25,7 @@ decorator==4.4.2
 Delorean==1.0.0
 distlib==0.3.1
 Django==3.1.1
+django-address==0.2.5
 django-admin-sortable2==0.7.7
 django-array-tags==0.2.2
 django-cachekiller==0.6
@@ -93,6 +91,7 @@ pickleshare==0.7.5
 pip==20.2.3
 pipdeptree==1.0.0
 pipenv==2020.8.13
+pke==1.8.1
 plac==1.2.0
 preshed==3.0.2
 prompt-toolkit==3.0.7
@@ -115,6 +114,7 @@ python-dotenv==0.14.0
 python-magic==0.4.18
 python-magic-bin==0.4.14
 python-memcached==1.59
+python-scriptures==3.0.0
 pytz==2020.1
 PyYAML==5.3.1
 rake-nltk==1.0.4
