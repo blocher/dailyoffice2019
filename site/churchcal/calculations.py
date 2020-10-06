@@ -74,6 +74,7 @@ class CalendarDate(object):
     FAST_PARTIAL = 1
     FAST_FULL = 2
     FAST_DAYS_RANKS = {FAST_NONE: "None", FAST_PARTIAL: "Fast", FAST_FULL: "Fast (Total abstinence)"}
+    FAST_DAY_LABELS = {FAST_NONE: "None", FAST_PARTIAL: "FAST_PARTIAL", FAST_FULL: "FAST_TOTAL_ABSTIENCE"}
 
     @cached_property
     def fast_day(self):

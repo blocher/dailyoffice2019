@@ -5,7 +5,7 @@ from rest_framework import routers
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from churchcal.api.views import DayView, MonthView, YearView, MorningPrayer
+from churchcal.api.views import DayView, MonthView, YearView, MorningPrayer, MorningPrayerView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -30,7 +30,7 @@ urlpatterns = [
     path(r"api/v1/calendar/<int:year>", YearView.as_view(), name="month_view"),
     path(
         r"api/v1/office/morning_prayer/<int:year>-<int:month>-<int:day>",
-        MorningPrayer.as_view(),
+        MorningPrayerView.as_view(),
         name="morning_prayer_view",
     ),
     url(r"^api/openapi(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
