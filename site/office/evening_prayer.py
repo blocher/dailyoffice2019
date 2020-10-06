@@ -4,6 +4,7 @@ from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 
 from office.canticles import DefaultCanticles, BCP1979CanticleTable, REC2011CanticleTable
+
 # from office.morning_prayer import MPReading1, MPReading2
 from office.offices import (
     Office,
@@ -17,7 +18,9 @@ from office.offices import (
     Dismissal,
     OfficeSection,
     GreatLitany,
-    PandemicPrayers, Reading, ThirdReading,
+    PandemicPrayers,
+    Reading,
+    ThirdReading,
 )
 from office.utils import passage_to_citation
 from psalter.utils import get_psalms
@@ -158,7 +161,10 @@ class EPOpeningSentence(OfficeSection):
                 "citation": "ISAIAH 60:3",
             }
 
-        if self.date.primary_evening.name == "The Day of Pentecost" or self.date.primary_evening.name == "Eve of The Day of Pentecost":
+        if (
+            self.date.primary_evening.name == "The Day of Pentecost"
+            or self.date.primary_evening.name == "Eve of The Day of Pentecost"
+        ):
 
             if self.date.date.year % 2 == 0:
                 return {
@@ -171,13 +177,20 @@ class EPOpeningSentence(OfficeSection):
                 "citation": "PSALM 46:4",
             }
 
-        if "Ascension" in self.date.primary_evening.name or len(self.date.all_evening) > 1 and "Ascension" in self.date.all_evening[1].name:
+        if (
+            "Ascension" in self.date.primary_evening.name
+            or len(self.date.all_evening) > 1
+            and "Ascension" in self.date.all_evening[1].name
+        ):
             return {
                 "sentence": "For Christ has entered, not into holy places made with hands, which are copies of the true things, but into heaven itself, now to appear in the presence of God on our behalf.",
                 "citation": "HEBREWS 9:24",
             }
 
-        if self.date.primary_evening.name == "Trinity Sunday" or self.date.primary_evening.name == "Eve of Trinity Sunday":
+        if (
+            self.date.primary_evening.name == "Trinity Sunday"
+            or self.date.primary_evening.name == "Eve of Trinity Sunday"
+        ):
             return {
                 "sentence": "Holy, holy, holy is the Lord of Hosts; the whole earth is full of his glory!",
                 "citation": "ISAIAH 6:3",
@@ -412,8 +425,7 @@ class EPSecondReading(Reading):
 
     def get_main_reading(self):
         return {
-            "intro": passage_to_citation(self.office_readings.ep_reading_2)
-            ,
+            "intro": passage_to_citation(self.office_readings.ep_reading_2),
             "passage": self.office_readings.ep_reading_2,
             "reading": self.office_readings.ep_reading_2_text,
             "closing": self.closing(self.office_readings.ep_reading_2_testament),
@@ -531,12 +543,14 @@ class EPCanticle1(OfficeSection):
     @cached_property
     def data(self):
 
-        print({
-            "antiphon": self.get_antiphon(),
-            "default": DefaultCanticles().get_ep_canticle_1(self.date),
-            "1979": BCP1979CanticleTable().get_ep_canticle_1(self.date),
-            "2011": REC2011CanticleTable().get_ep_canticle_1(self.date),
-        });
+        print(
+            {
+                "antiphon": self.get_antiphon(),
+                "default": DefaultCanticles().get_ep_canticle_1(self.date),
+                "1979": BCP1979CanticleTable().get_ep_canticle_1(self.date),
+                "2011": REC2011CanticleTable().get_ep_canticle_1(self.date),
+            }
+        )
 
         return {
             "antiphon": self.get_antiphon(),
@@ -544,6 +558,7 @@ class EPCanticle1(OfficeSection):
             "1979": BCP1979CanticleTable().get_ep_canticle_1(self.date),
             "2011": REC2011CanticleTable().get_ep_canticle_1(self.date),
         }
+
 
 class EPCanticle2(OfficeSection):
     @cached_property

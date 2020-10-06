@@ -18,7 +18,9 @@ from office.offices import (
     Dismissal,
     OfficeSection,
     GreatLitany,
-    PandemicPrayers, Reading, ThirdReading,
+    PandemicPrayers,
+    Reading,
+    ThirdReading,
 )
 from office.utils import passage_to_citation
 from psalter.utils import get_psalms
@@ -572,13 +574,15 @@ class MPFirstReading(Reading):
         for reading in self.date.mass_readings:
 
             if reading.reading_number == 1:
-                print({
-                    "intro": passage_to_citation(reading.long_citation),
-                    "passage": reading.long_citation,
-                    "reading": reading.long_text,
-                    "closing": self.closing(reading.testament),
-                    "tag": "mass-reading",
-                })
+                print(
+                    {
+                        "intro": passage_to_citation(reading.long_citation),
+                        "passage": reading.long_citation,
+                        "reading": reading.long_text,
+                        "closing": self.closing(reading.testament),
+                        "tag": "mass-reading",
+                    }
+                )
                 return {
                     "intro": passage_to_citation(reading.long_citation),
                     "passage": reading.long_citation,
@@ -593,7 +597,7 @@ class MPFirstReading(Reading):
         if not self.has_abbreviated_mass_reading:
             return None
         for reading in self.date.mass_readings:
-            if reading.reading_number == 1  and reading.short_citation:
+            if reading.reading_number == 1 and reading.short_citation:
                 return {
                     "intro": passage_to_citation(reading.short_citation),
                     "passage": reading.short_citation,
@@ -659,8 +663,7 @@ class MPSecondReading(Reading):
 
     def get_main_reading(self):
         return {
-            "intro": passage_to_citation(self.office_readings.mp_reading_2)
-            ,
+            "intro": passage_to_citation(self.office_readings.mp_reading_2),
             "passage": self.office_readings.mp_reading_2,
             "reading": self.office_readings.mp_reading_2_text,
             "closing": self.closing(self.office_readings.mp_reading_2_testament),

@@ -22,14 +22,10 @@ def get_on(path):
 
 
 def settings(request):
-    print({
-        "apps": {
-            "ios": static("office/img/app_store.svg"),
-            "android": static("office/img/app_store.svg"),
-        },})
+    print({"apps": {"ios": static("office/img/app_store.svg"), "android": static("office/img/app_store.svg")}})
     return {
         "mode": MODE,
-        "filename": 'index.html' if MODE == "app" else "",
+        "filename": "index.html" if MODE == "app" else "",
         "app_version": APP_VERSION,
         "on": get_on(request.path),
         "show_settings_class": "" if get_on(request.path) == "settings-button" else "off",
@@ -267,7 +263,11 @@ def settings(request):
                 "options": [
                     {
                         "value": "invitatory_traditional",
-                        "hide": ["invitatory_jubilate_on_feasts", "invitatory_rotating", "invitatory_celebratory_always"],
+                        "hide": [
+                            "invitatory_jubilate_on_feasts",
+                            "invitatory_rotating",
+                            "invitatory_celebratory_always",
+                        ],
                         "show": ["invitatory_traditional"],
                         "heading": "Venite always",
                         "text": "Always use the Venite (except on days when Pslam 95 is appointed)",
@@ -281,7 +281,11 @@ def settings(request):
                     },
                     {
                         "value": "invitatory_rotating",
-                        "hide": ["invitatory_traditional", "invitatory_jubilate_on_feasts", "invitatory_celebratory_always"],
+                        "hide": [
+                            "invitatory_traditional",
+                            "invitatory_jubilate_on_feasts",
+                            "invitatory_celebratory_always",
+                        ],
                         "show": ["invitatory_rotating"],
                         "heading": "Rotating each day",
                         "text": "Rotate between the Venite and Jubilate",

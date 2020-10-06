@@ -18,6 +18,7 @@ from datetime import date, timedelta
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+
 # from sermons import views as sermon_views
 from django.contrib.sitemaps import Sitemap
 from django.contrib.sitemaps import views
@@ -55,7 +56,13 @@ def get_days():
             date_list.append(day.date)
     now = timezone.now()
     if settings.DEBUG_DATES:
-        date_list = [now - timedelta(days=2), now - timedelta(days=1), now, now + timedelta(days=1), now + timedelta(days=2)]
+        date_list = [
+            now - timedelta(days=2),
+            now - timedelta(days=1),
+            now,
+            now + timedelta(days=1),
+            now + timedelta(days=2),
+        ]
     else:
         date_list = []
         for year in get_church_years():
@@ -67,10 +74,12 @@ def get_days():
         print(date)
         yield {"year": date.year, "month": date.month, "day": date.day}
 
+
 def get_update_notice_types():
     types = ["app", "web", "all"]
     for type in types:
         yield {"type": type}
+
 
 def get_church_years():
 
@@ -81,9 +90,11 @@ def get_church_years():
         for year in range(settings.FIRST_BEGINNING_YEAR, settings.LAST_BEGINNING_YEAR + 1):
             yield {"start_year": year, "end_year": year + 1}
 
+
 def get_psalms():
     for psalm in range(1, 151):
         yield {"number": psalm}
+
 
 class MorningPrayerSitemap(Sitemap):
     changefreq = "daily"
@@ -452,18 +463,8 @@ urlpatterns = [
         name="family_close_of_day_prayer",
         distill_func=get_days,
     ),
-    distill_path(
-        "psalms/<int:number>/",
-        office_views.psalm,
-        name="psalm",
-        distill_func=get_psalms,
-    ),
-    distill_path(
-        "psalms/",
-        office_views.psalms,
-        name="psalms",
-        distill_func=get_none,
-    ),
+    distill_path("psalms/<int:number>/", office_views.psalm, name="psalm", distill_func=get_psalms),
+    distill_path("psalms/", office_views.psalms, name="psalms", distill_func=get_none),
     distill_path("about/", office_views.about, name="about", distill_func=get_about),
     distill_path("family/about/", office_views.about, name="family_about", distill_func=get_about),
     distill_path("settings/", office_views.settings, name="settings", distill_func=get_about),
@@ -487,26 +488,16 @@ urlpatterns = [
         ".well-known/apple-app-site-association",
         TemplateView.as_view(template_name="office/apple-app-site-association", content_type="text/plain"),
         name="apple_sites",
-        distill_func = get_none,
-    ),
-    distill_path(
-          "update_notices/<str:type>.json",
-          office_views.update_notices,
-          name="update_notices",
-          distill_func=get_update_notice_types,
-      ),
-      distill_path(
-        "privacy-policy/",
-        office_views.privacy_policy,
-        name="privacy_policy",
         distill_func=get_none,
     ),
     distill_path(
-      "dailyoffice.ics",
-      office_views.calendar,
-      name="calendar",
-      distill_func=get_none,
+        "update_notices/<str:type>.json",
+        office_views.update_notices,
+        name="update_notices",
+        distill_func=get_update_notice_types,
     ),
+    distill_path("privacy-policy/", office_views.privacy_policy, name="privacy_policy", distill_func=get_none),
+    distill_path("dailyoffice.ics", office_views.calendar, name="calendar", distill_func=get_none),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:

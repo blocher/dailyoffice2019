@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     "django.contrib.sitemaps",
     "django.contrib.staticfiles",
     "django_extensions",
-    'rest_framework',
+    "rest_framework",
     "website",
     # "sermons",
     "churchcal",
@@ -269,9 +269,7 @@ ROBOTS_SITEMAP_URLS = ["https://www.dailyoffice2019.com/sitemap.xml"]
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"]
 }
 
-mimetypes.add_type('image/svg+xml', '.svg', True)
+mimetypes.add_type("image/svg+xml", ".svg", True)
