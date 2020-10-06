@@ -6,10 +6,12 @@
             <h3>Resources</h3>
             <div class="menu-wrapper">
                 <div class="menu">
-                    <a id="psalter" href="/psalms" class="menu-button "><i class="fas fa-bible"></i> <span
+                    <a id="psalter" href="/psalms/{{ filename }}" class="menu-button "><i class="fas fa-bible"></i> <span
                             class="first-letter">P</span>salter</a>
-                    <a id="calendar" href="/dailyoffice.ics" class="menu-button "><i class="fas fa-calendar"></i> <span
-                            class="first-letter">C</span>alendar (iCal file)</a>
+                    {% if mode == "web" %}
+                        <a id="calendar" href="/dailyoffice.ics" class="menu-button "><i class="fas fa-calendar"></i> <span
+                                class="first-letter">C</span>alendar (iCal file)</a>
+                    {% endif %}
                 </div>
             </div>
             {% if mode == "web" %}

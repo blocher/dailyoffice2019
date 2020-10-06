@@ -9,7 +9,7 @@
     <h3>Quick links</h3>
     <p>
         {% for psalm in psalms %}
-            <a href="/psalms/{{ psalm.number }}">{{ psalm.number }}</a>&nbsp;
+            <a href="/psalms/{{ psalm.number }}/{{ filename }}">{{ psalm.number }}</a>&nbsp;
         {% endfor %}
     </p>
     <h3>Psalms by Topic</h3>
@@ -17,13 +17,13 @@
         <p>
             {{ topic.topic_name }}<br>
             {% for relation in topic.psalmtopicpsalm_set.all %}
-                <a href="/psalms/{{ relation.psalm.number }}">{{ relation.psalm.number }}</a>&nbsp;
+                <a href="/psalms/{{ relation.psalm.number }}/{{ filename }}">{{ relation.psalm.number }}</a>&nbsp;
             {% endfor %}
         </p>
     {% endfor %}
     <h3>Psalms with first line</h3>
     {% for psalm in psalms %}
-        <p><a href="/psalms/{{ psalm.number }}">{{ psalm.number }} | {{ psalm.latin_title}}</a><br>{{ psalm.first_half }} </p>
+        <p><a href="/psalms/{{ psalm.number }}/{{ filename }}">{{ psalm.number }} | {{ psalm.latin_title}}</a><br>{{ psalm.first_half }} </p>
     {% endfor %}
 {% endblock %}
 
