@@ -543,15 +543,6 @@ class EPCanticle1(OfficeSection):
     @cached_property
     def data(self):
 
-        print(
-            {
-                "antiphon": self.get_antiphon(),
-                "default": DefaultCanticles().get_ep_canticle_1(self.date),
-                "1979": BCP1979CanticleTable().get_ep_canticle_1(self.date),
-                "2011": REC2011CanticleTable().get_ep_canticle_1(self.date),
-            }
-        )
-
         return {
             "antiphon": self.get_antiphon(),
             "default": DefaultCanticles().get_ep_canticle_1(self.date),
