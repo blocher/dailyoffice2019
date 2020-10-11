@@ -16,9 +16,9 @@
     "sass": "^1.27.0",
     "sass-loader": "^10.0.3",
     "style-loader": "^2.0.0",
-    "webpack": "^4.43.0",
+    "webpack": "^4.44.2",
     "webpack-bundle-tracker": "0.4.3",
-    "webpack-cli": "^3.3.11",
+    "webpack-cli": "^4.0.0",
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
@@ -30,7 +30,7 @@
     "axios": "^0.20.0",
     "capacitor-firebase-analytics": "^0.3.2",
     "clipboard-polyfill": "^2.8.6",
-    "copy-webpack-plugin": "^6.0.2",
+    "copy-webpack-plugin": "^6.2.1",
     "netlify-cli": "^2.65.5",
     "pretty-checkbox": "^3.0.3",
     "split-html": "^1.1.0",
