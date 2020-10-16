@@ -48,49 +48,36 @@ class YearView(APIView):
         return Response(serializer.data)
 
 
-class Settings(object):
+class Settings(dict):
 
     DEFAULT_SETTINGS = {
-        "setting_psalter": "60",
-        "setting_reading_cycle": "1",
-        "setting_reading_length": "full",
-        "setting_reading_audio": "off",
-        "setting_canticle_rotation": "default",
-        "setting_theme": "theme-auto",
-        "setting_lectionary": "daily-office-readings",
-        "setting_confession": "long-on-fast",
-        "setting_absolution": "lay",
-        "setting_morning_prayer_invitatory": "invitatory_traditional",
-        "setting_reading_headings": "off",
-        "setting_language_style": "traditional",
-        "setting_national_holidays": "all",
-        "setting_suffrages": "rotating",
-        "setting_collects": "rotating",
-        "setting_pandemic_prayers": "pandemic_yes",
-        "setting_mp_great_litany": "mp_litany_off",
-        "setting_ep_great_litany": "ep_litany_off",
-        "setting_general_thanksgiving": "on",
-        "setting_chrysostom": "on",
-        "setting_grace": "rotating",
-        "setting_o_antiphons": "literal",
+        "psalter": "60",
+        "reading_cycle": "1",
+        "reading_length": "full",
+        "reading_audio": "off",
+        "canticle_rotation": "default",
+        "theme": "theme-auto",
+        "lectionary": "daily-office-readings",
+        "confession": "long-on-fast",
+        "absolution": "lay",
+        "morning_prayer_invitatory": "invitatory_traditional",
+        "reading_headings": "off",
+        "language_style": "traditional",
+        "national_holidays": "all",
+        "suffrages": "rotating",
+        "collects": "rotating",
+        "pandemic_prayers": "pandemic_yes",
+        "mp_great_litany": "mp_litany_off",
+        "ep_great_litany": "ep_litany_off",
+        "general_thanksgiving": "on",
+        "chrysostom": "on",
+        "grace": "rotating",
+        "o_antiphons": "literal",
     }
 
     def __init__(self, request):
-        self.settings = self._get_settings(request)
-
-    def get_setting(self, name):
-        name = name.lower()
-        try:
-            return self.settings[name]
-        except KeyError:
-            return False
-
-    def __getitem__(self, key):
-        key = key.lower()
-        try:
-            return self.settings[key]
-        except KeyError:
-            return False
+        settings = self._get_settings(request)
+        super().__init__(**settings)
 
     def _get_settings(self, request):
 
@@ -102,6 +89,20 @@ class Settings(object):
         return settings
 
 
+# heading
+# subheading
+# citation
+# html
+# leader
+# congregation
+# rubric
+
+
+class Line(dict):
+    def __init__(self, content, line_type="congregation", indented=False):
+        super().__init__(content=content, line_type=line_type, indented=indented)
+
+
 class Module(object):
     def __init__(self, office):
         self.office = office
@@ -111,12 +112,12 @@ class Module(object):
             return self.name
         return "Daily Office Module"
 
-    def get_data(self):
+    def get_lines(self):
         raise NotImplementedError("You must implement this method.")
 
     @cached_property
     def json(self):
-        return {"name": self.get_name(), "data": self.get_data()}
+        return {"name": self.get_name(), "lines": self.get_lines()}
 
 
 class MPOpeningSentence(Module):
@@ -247,13 +248,9 @@ class MPOpeningSentence(Module):
                 "citation": "JOHN 4:23",
             }
 
-    def get_data(self):
+    def get_lines(self):
         sentence = self.get_sentence()
-        return [
-            {"type": "heading", "content": "Opening Sentence"},
-            {"type": "body", "content": sentence["sentence"]},
-            {"type": "citation", "content": sentence["citation"]},
-        ]
+        return [Line("Opening Sentence", "heading"), Line(sentence["sentence"]), Line(sentence["citation"], False)]
 
 
 class Office(object):
@@ -275,9 +272,107 @@ class Office(object):
         raise NotImplementedError("You must implement this method.")
 
 
+class Confession(Module):
+
+    name = "Confession of Sin"
+
+    def get_intro_lines(self):
+        print(self.office.settings)
+        setting = self.office.settings["confession"]
+        fast = self.office.date.fast_day
+        long = (setting == "long") or (setting == "long-on-fast" and fast)
+        if long:
+            return [
+                Line(
+                    "Dearly beloved, the Scriptures teach us to acknowledge our many sins and offenses, not concealing them from our heavenly Father, but confessing them with humble and obedient hearts that we may obtain forgiveness by his infinite goodness and mercy. We ought at all times humbly to acknowledge our sins before Almighty God, but especially when we come together in his presence to give thanks for the great benefits we have received at his hands, to declare his most worthy praise, to hear his holy Word, and to ask, for ourselves and on behalf of others, those things which are necessary for our life and our salvation. Therefore, draw near with me to the throne of heavenly grace.",
+                    "leader",
+                )
+            ]
+        return [Line("Let us humbly confess our sins to Almighty God.", "leader")]
+
+    def get_body_lines(self):
+        return [
+            Line("Almighty and most merciful Father,"),
+            Line("we have erred and strayed from your ways like lost sheep.", indented=True),
+            Line("We have followed too much the devices and desires"),
+            Line("of our own hearts.", indented=True),
+            Line("We have offended against your holy laws."),
+            Line("We have left undone those things which we ought to have done,"),
+            Line("and we have done those things which we ought not", indented=True),
+            Line("to have done;", indented=True),
+            Line("and apart from your grace, there is no health in us."),
+            Line("O Lord, have mercy upon us."),
+            Line("Spare all those who confess their faults."),
+            Line("Restore all those who are penitent, according to your promises"),
+            Line("declared to all people in Christ Jesus our Lord.", indented=True),
+            Line("And grant, O most merciful Father, for his sake,"),
+            Line("that we may now live a godly, righteous, and sober life,", indented=True),
+            Line("to the glory of your holy Name. Amen.", indented=True),
+        ]
+
+    def get_absolution_lines(self):
+        lay = self.office.settings["absolution"] == "lay"
+        if lay:
+            return [
+                Line("A Deacon or layperson remains kneeling and prays", "rubric"),
+                Line(
+                    "Grant to your faithful people, merciful Lord, pardon and peace; that we may be cleansed from all our sins, and serve you with a quiet mind; through Jesus Christ our Lord.",
+                    "leader",
+                ),
+                Line("Amen."),
+            ]
+        setting = self.office.settings["confession"]
+        fast = self.office.date.fast_day
+        long = (setting == "long") or (setting == "long-on-fast" and fast)
+        if long:
+            return [
+                Line("The Priest alone stands and says", "rubric"),
+                Line(
+                    "Almighty God, the Father of our Lord Jesus Christ, desires not the death of sinners, but that they may turn from their wickedness and live. He has empowered and commanded his ministers to pronounce to his people, being penitent, the absolution and remission of their sins. He pardons and absolves all who truly repent and genuinely believe his holy Gospel. For this reason, we beseech him to grant us true repentance and his Holy Spirit, that our present deeds may please him, the rest of our lives may be pure and holy, and that at the last we may come to his eternal joy; through Jesus Christ our Lord.",
+                    "leader",
+                ),
+                Line("Amen."),
+            ]
+        return [
+            Line("The Priest alone stands and says", "rubric"),
+            Line(
+                "The Almighty and merciful Lord grant you absolution and remission of all your sins, true repentance, amendment of life, and the grace and consolation of his Holy Spirit."
+            ),
+            Line("Amen."),
+        ]
+
+    def get_lines(self):
+        return (
+            [Line("Confession of Sin", "heading")]
+            + [Line("The Officiant says to the People", "rubric")]
+            + self.get_intro_lines()
+            + self.get_body_lines()
+            + self.get_absolution_lines(),
+        )
+
+
+class Preces(Module):
+
+    name = "Preces"
+
+    def get_lines(self):
+        return [
+            Line("The Preces", "heading"),
+            Line("All stand.", "rubric"),
+            Line("O Lord, open our lips;", "leader"),
+            Line("And our mouth shall proclaim your praise."),
+            Line("O God, make speed to save us;", "leader"),
+            Line("O Lord, make haste to help us."),
+            Line("Glory be to the Father, and to the Son, and to the Holy Spirit;", "leader"),
+            Line("As it was in the beginning, is now, and ever shall be, world without end. Amen."),
+            Line("Praise the Lord.", "leader"),
+            Line("The Lord’s Name be praised."),
+        ]
+
+
 class MorningPrayer(Office):
     def get_modules(self):
-        return [MPOpeningSentence(self)]
+        return [MPOpeningSentence(self), Confession(self), Preces(self)]
 
 
 class OfficeAPIView(APIView):
