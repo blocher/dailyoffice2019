@@ -250,7 +250,11 @@ class MPOpeningSentence(Module):
 
     def get_lines(self):
         sentence = self.get_sentence()
-        return [Line("Opening Sentence", "heading"), Line(sentence["sentence"]), Line(sentence["citation"], False)]
+        return [
+            Line("Opening Sentence", "heading"),
+            Line(sentence["sentence"], "leader"),
+            Line(sentence["citation"], "citation"),
+        ]
 
 
 class Office(object):
