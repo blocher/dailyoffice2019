@@ -318,9 +318,103 @@ class Preces(Module):
         return file_to_lines("preces")
 
 
+class MPInvitatory(Module):
+
+    name = "Invitatory"
+
+    @cached_property
+    def antiphon(self):
+
+        if "Presentation" in self.office.date.primary.name or "Annunciation" in self.office.date.primary.name:
+            return {
+                "first_line": "The Word was made flesh and dwelt among us:",
+                "second_line": "O come, let us adore him.",
+            }
+
+        if self.office.date.primary.name == "The Day of Pentecost":
+            return {
+                "first_line": "Alleluia. The Spirit of the Lord renews the face of the earth:",
+                "second_line": "O come, let us adore him.",
+            }
+
+        if self.office.date.primary.name == "Trinity Sunday":
+            return {"first_line": "Father, Son, and Holy Spirit, one God:", "second_line": "O come, let us adore him."}
+
+        if self.office.date.primary.name == "Easter Day":
+            return {"first_line": "Alleluia. The Lord is risen indeed:", "second_line": "O come, let us adore him."}
+
+        if (
+            "Ascension" in self.office.date.primary.name
+            or len(self.office.date.all) > 1
+            and "Ascension" in self.office.date.all[1].name
+        ):
+            return {
+                "first_line": "Alleluia. Christ the Lord has ascended into heaven:",
+                "second_line": "O come, let us adore him.",
+            }
+
+        if self.office.date.primary.name == "The Transfiguration of Our Lord Jesus Christ":
+            return {"first_line": "The Lord has shown forth his glory:", "second_line": "O come, let us adore him."}
+
+        if self.office.date.primary.name == "All Saints’ Day":
+            return {"first_line": "The Lord is glorious in his saints:", "second_line": "O come, let us adore him."}
+
+        if self.office.date.primary.rank.name == "HOLY_DAY" and self.office.date.primary.name not in (
+            "The Circumcision and Holy Name of our Lord Jesus Christ",
+            "The Visitation of the Virgin Mary to Elizabeth and Zechariah",
+            "Holy Cross Day",
+            "The Holy Innocents",
+        ):
+            return {"first_line": "The Lord is glorious in his saints:", "second_line": "O come, let us adore him."}
+
+        if self.office.date.season.name == "Lent" or self.office.date.season.name == "Holy Week":
+
+            return {
+                "first_line": "The Lord is full of compassion and mercy:",
+                "second_line": "O come, let us adore him.",
+            }
+
+        if self.office.date.season.name == "Advent":
+            return {"first_line": "Our King and Savior now draws near:", "second_line": "O come, let us adore him."}
+
+        if self.office.date.season.name == "Christmastide":
+            return {"first_line": "Alleluia, to us a child is born:", "second_line": "O come, let us adore him."}
+
+        if self.office.date.season.name == "Epiphanytide":
+            return {"first_line": "The Lord has shown forth his glory:", "second_line": "O come, let us adore him."}
+
+        if self.office.date.season.name == "Eastertide":
+            for commemoration in self.office.date.all:
+                if "Ascension Day" in commemoration.name:
+                    return {
+                        "first_line": "Alleluia. Christ the Lord has ascended into heaven:",
+                        "second_line": "O come, let us adore him.",
+                    }
+
+            return {"first_line": "Alleluia. The Lord is risen indeed:", "second_line": "O come, let us adore him."}
+
+        if self.office.date.date.weekday() in [0, 3, 6]:
+            return {
+                "first_line": "The earth is the Lord’s for he made it: ",
+                "second_line": "O come, let us adore him.",
+            }
+
+        if self.office.date.date.weekday() in [1, 4]:
+            return {
+                "first_line": "Worship the Lord in the beauty of holiness:",
+                "second_line": "O come, let us adore him.",
+            }
+
+        if self.office.date.date.weekday() in [2, 5]:
+            return {"first_line": "The mercy of the Lord is everlasting: ", "second_line": "O come, let us adore him."}
+
+    def get_lines(self):
+        return [Line(self.antiphon["first_line"], "leader"), Line(self.antiphon["second_line"])]
+
+
 class MorningPrayer(Office):
     def get_modules(self):
-        return [MPOpeningSentence(self), Confession(self), Preces(self)]
+        return [MPOpeningSentence(self), Confession(self), Preces(self), MPInvitatory(self)]
 
 
 class OfficeAPIView(APIView):
