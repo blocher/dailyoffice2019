@@ -84,7 +84,6 @@ def compline(request, year, month, day):
     compline_meta["url"] = reverse("compline", kwargs={"year": year, "month": month, "day": day})
     compline_meta["image"] = static("office/img/bcp.jpg")
 
-
     compline_meta["image_width"] = 1000
     compline_meta["image_height"] = 1333
     return render(request, "office/office.html", {"office": cp, "meta": Meta(**compline_meta)})
@@ -261,7 +260,14 @@ def about(request):
         item.question = item.question.replace("{medium}", "app" if MODE == "app" else "site")
         item.answer = item.answer.replace("{medium}", "app" if MODE == "app" else "site")
         item.question_json = BeautifulSoup(item.question.replace('"', '\\"').replace("\n", ""), "lxml").text
-        item.answer_json = item.answer.replace('"', '\\"').replace("\n", "").replace("<h5>", "").replace("</h5>","").replace("<p>", "").replace("</p>", "")
+        item.answer_json = (
+            item.answer.replace('"', '\\"')
+            .replace("\n", "")
+            .replace("<h5>", "")
+            .replace("</h5>", "")
+            .replace("<p>", "")
+            .replace("</p>", "")
+        )
 
     return render(request, "office/about.html", {"items": items, "meta": Meta(**about_meta)})
 
@@ -300,19 +306,37 @@ def four_oh_four(request):
 def robots(request):
     return render(request, "robots.txt", content_type="text/plain")
 
+
 def psalms(request):
     topics = PsalmTopic.objects.prefetch_related("psalmtopicpsalm_set__psalm").order_by("order").all()
-    psalms = Psalm.objects.prefetch_related(Prefetch('psalmverse_set', queryset=PsalmVerse.objects.order_by('number'), to_attr="verses")).all()
+    psalms = Psalm.objects.prefetch_related(
+        Prefetch("psalmverse_set", queryset=PsalmVerse.objects.order_by("number"), to_attr="verses")
+    ).all()
     for key, psalm in enumerate(psalms):
-        psalms[key].first_half = psalm.verses[0].first_half.strip(";,.,\"\'")
+        psalms[key].first_half = psalm.verses[0].first_half.strip(";,.,\"'")
     return render(request, "office/psalm_directory.html", {"psalms": psalms, "topics": topics})
 
 
 def psalm(request, number):
     psalm_text = get_psalms(number)
-    psalm = Psalm.objects.prefetch_related(Prefetch("psalmtopicpsalm_set__psalm_topic", queryset=PsalmTopic.objects.order_by('order').all())).get(number=number)
-    topics = PsalmTopic.objects.prefetch_related(Prefetch("psalmtopicpsalm_set", queryset=PsalmTopicPsalm.objects.select_related("psalm").order_by("order").all())).filter(psalmtopicpsalm__psalm=psalm).order_by("order").distinct().all()
-    return render(request, "office/psalm.html", {"number": number, "psalm": psalm, "psalm_text": psalm_text, "topics": topics })
+    psalm = Psalm.objects.prefetch_related(
+        Prefetch("psalmtopicpsalm_set__psalm_topic", queryset=PsalmTopic.objects.order_by("order").all())
+    ).get(number=number)
+    topics = (
+        PsalmTopic.objects.prefetch_related(
+            Prefetch(
+                "psalmtopicpsalm_set", queryset=PsalmTopicPsalm.objects.select_related("psalm").order_by("order").all()
+            )
+        )
+        .filter(psalmtopicpsalm__psalm=psalm)
+        .order_by("order")
+        .distinct()
+        .all()
+    )
+    return render(
+        request, "office/psalm.html", {"number": number, "psalm": psalm, "psalm_text": psalm_text, "topics": topics}
+    )
+
 
 def update_notices(request, type="app"):
     items = UpdateNotice.objects.order_by("-version", "-created")
@@ -321,27 +345,39 @@ def update_notices(request, type="app"):
     if type == "web":
         items = items.filter(web_mode=True)
     items = items.all()
-    data = serializers.serialize('json', items)
-    return HttpResponse(data, content_type='application/json')
+    data = serializers.serialize("json", items)
+    return HttpResponse(data, content_type="application/json")
+
 
 def privacy_policy(request):
     return render(request, "office/privacy.html")
 
+
 def calendar(request):
     cal = Calendar()
-    cal.add('prodid', '-//Daily Office//mxm.dk//')
-    cal.add('version', '2.0')
+    cal.add("prodid", "-//Daily Office//mxm.dk//")
+    cal.add("version", "2.0")
 
-    years = range(FIRST_BEGINNING_YEAR, LAST_BEGINNING_YEAR + 1)
+    years = range(int(FIRST_BEGINNING_YEAR[0]), int(LAST_BEGINNING_YEAR[0]) + 1)
     for year in years:
         year = ChurchYear(year)
         for datestring, calendardate in year.dates.items():
             office = Office(datestring)
             event = Event()
-            event.add('SUMMARY', calendardate.primary.name)
-            event.add('DTSTART', date(calendardate.date.year, calendardate.date.month, calendardate.date.day))
-            event.add('URL', 'https://www.dailyoffice2019.com/morning_prayer/{}-{}-{}/'.format(calendardate.date.year, calendardate.date.month, calendardate.date.day))
-            event.add('LOCATION', 'https://www.dailyoffice2019.com/morning_prayer/{}-{}-{}/'.format(calendardate.date.year, calendardate.date.month, calendardate.date.day))
+            event.add("SUMMARY", calendardate.primary.name)
+            event.add("DTSTART", date(calendardate.date.year, calendardate.date.month, calendardate.date.day))
+            event.add(
+                "URL",
+                "https://www.dailyoffice2019.com/morning_prayer/{}-{}-{}/".format(
+                    calendardate.date.year, calendardate.date.month, calendardate.date.day
+                ),
+            )
+            event.add(
+                "LOCATION",
+                "https://www.dailyoffice2019.com/morning_prayer/{}-{}-{}/".format(
+                    calendardate.date.year, calendardate.date.month, calendardate.date.day
+                ),
+            )
             fast_day = calendardate.fast_day != calendardate.FAST_NONE
             feast_day = calendardate.primary.rank.precedence_rank <= 4
             description_lines = []
@@ -376,46 +412,53 @@ def calendar(request):
                     description_lines.append(reading.long_citation)
 
             description_lines.append("")
-            description_lines.append('Morning Prayer: https://www.dailyoffice2019.com/morning_prayer/{}-{}-{}/'.format(calendardate.date.year,
-                                                                              calendardate.date.month,
-                                                                              calendardate.date.day))
-            description_lines.append('Midday Prayer: https://www.dailyoffice2019.com/midday_prayer/{}-{}-{}/'.format(
-                calendardate.date.year,
-                calendardate.date.month,
-                calendardate.date.day))
-            description_lines.append('Evening Prayer: https://www.dailyoffice2019.com/evening_prayer/{}-{}-{}/'.format(
-                calendardate.date.year,
-                calendardate.date.month,
-                calendardate.date.day))
-            description_lines.append('Compline: https://www.dailyoffice2019.com/compline/{}-{}-{}/'.format(
-                calendardate.date.year,
-                calendardate.date.month,
-                calendardate.date.day))
-
-            description_lines.append('Family Prayer in the Morning: https://www.dailyoffice2019.com/family/morning_prayer/{}-{}-{}/'.format(
-                calendardate.date.year,
-                calendardate.date.month,
-                calendardate.date.day))
-            description_lines.append('Family Prayer at Midday: https://www.dailyoffice2019.com/family/midday_prayer/{}-{}-{}/'.format(
-                calendardate.date.year,
-                calendardate.date.month,
-                calendardate.date.day))
-            description_lines.append('Family Prayer in the Early Evening: https://www.dailyoffice2019.com/family/early_evening_prayer/{}-{}-{}/'.format(
-                calendardate.date.year,
-                calendardate.date.month,
-                calendardate.date.day))
             description_lines.append(
-                'Family Prayer at the Close of Day: https://www.dailyoffice2019.com/family/close_of_day_prayer/{}-{}-{}/'.format(
-                    calendardate.date.year,
-                    calendardate.date.month,
-                    calendardate.date.day))
+                "Morning Prayer: https://www.dailyoffice2019.com/morning_prayer/{}-{}-{}/".format(
+                    calendardate.date.year, calendardate.date.month, calendardate.date.day
+                )
+            )
+            description_lines.append(
+                "Midday Prayer: https://www.dailyoffice2019.com/midday_prayer/{}-{}-{}/".format(
+                    calendardate.date.year, calendardate.date.month, calendardate.date.day
+                )
+            )
+            description_lines.append(
+                "Evening Prayer: https://www.dailyoffice2019.com/evening_prayer/{}-{}-{}/".format(
+                    calendardate.date.year, calendardate.date.month, calendardate.date.day
+                )
+            )
+            description_lines.append(
+                "Compline: https://www.dailyoffice2019.com/compline/{}-{}-{}/".format(
+                    calendardate.date.year, calendardate.date.month, calendardate.date.day
+                )
+            )
 
+            description_lines.append(
+                "Family Prayer in the Morning: https://www.dailyoffice2019.com/family/morning_prayer/{}-{}-{}/".format(
+                    calendardate.date.year, calendardate.date.month, calendardate.date.day
+                )
+            )
+            description_lines.append(
+                "Family Prayer at Midday: https://www.dailyoffice2019.com/family/midday_prayer/{}-{}-{}/".format(
+                    calendardate.date.year, calendardate.date.month, calendardate.date.day
+                )
+            )
+            description_lines.append(
+                "Family Prayer in the Early Evening: https://www.dailyoffice2019.com/family/early_evening_prayer/{}-{}-{}/".format(
+                    calendardate.date.year, calendardate.date.month, calendardate.date.day
+                )
+            )
+            description_lines.append(
+                "Family Prayer at the Close of Day: https://www.dailyoffice2019.com/family/close_of_day_prayer/{}-{}-{}/".format(
+                    calendardate.date.year, calendardate.date.month, calendardate.date.day
+                )
+            )
 
-            event.add('DESCRIPTION', "\n".join(description_lines))
+            event.add("DESCRIPTION", "\n".join(description_lines))
 
             cal.add_component(event)
 
     res = cal.to_ical()
-    response = HttpResponse(res, content_type='text/calendar')
-    response['Content-Disposition'] = "attachment; filename=dailyoffice.ics"
+    response = HttpResponse(res, content_type="text/calendar")
+    response["Content-Disposition"] = "attachment; filename=dailyoffice.ics"
     return HttpResponse(res)

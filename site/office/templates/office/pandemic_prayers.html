@@ -1,3 +1,22 @@
+<div class="election">
+    <div class="election_prayers">
+        {% if data.collect_3 %}
+            <h3>{{ data.collect_3.title}}</h3>
+            <p>{{ data.collect_3.collect }} <strong>{{ data.collect_3.response }}</strong></p>
+            {% if data.collect_3.citation %}
+                <h5> {{ data.collect_3.citation }} </h5>
+            {% endif %}
+        {% endif %}
+
+        {% if data.collect_4 %}
+            <h3>{{ data.collect_4.title}}</h3>
+            <p>{{ data.collect_4.collect }} <strong>{{ data.collectsetting_4.response }}</strong></p>
+            {% if data.collect_4.citation %}
+                <h5> {{ data.collect_4.citation }} </h5>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
 <div class="pandemic_prayers">
     <h3>{{ data.collect_1.title}}</h3>
     <p>{{   data.collect_1.collect }} <strong>{{  data.collect_1.response }}</strong></p>

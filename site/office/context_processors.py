@@ -348,20 +348,20 @@ def settings(request):
                     {
                         "value": "all",
                         "hide": ["national_none"],
-                        "show": ["canada", "us"],
+                        "show": ["canada", "us", "election"],
                         "heading": "All",
                         "text": "Both U.S. and Canadian Holidays",
                     },
                     {
                         "value": "us",
                         "hide": ["canada", "national_none"],
-                        "show": ["us"],
+                        "show": ["us", "election"],
                         "heading": "United States",
                         "text": "United States Holidays",
                     },
                     {
                         "value": "canada",
-                        "hide": ["us", "national_none"],
+                        "hide": ["us", "national_none", "election"],
                         "show": ["canada"],
                         "heading": "Canada",
                         "text": "Canadian Holidays",
@@ -369,7 +369,7 @@ def settings(request):
                     {
                         "value": "national_none",
                         "hide": ["us", "canada"],
-                        "show": ["national_none"],
+                        "show": ["national_none", "election"],
                         "heading": "None",
                         "text": "No Holidays",
                     },
@@ -422,6 +422,15 @@ def settings(request):
                         "heading": "Fixed",
                         "text": "The two traditional collects are said every day",
                     },
+                ],
+            },
+            {
+                "title": "Prayers in the Time of An Election",
+                "name": "election_prayers",
+                "help_text": "Include election related collects until the U.S. General election. (Automatically disabled if only Canadian feasts are selected).",
+                "options": [
+                    {"value": "election_yes", "hide": [], "show": ["election_prayers"], "heading": "On"},
+                    {"value": "election_no", "hide": ["election_prayers"], "show": [], "heading": "Off"},
                 ],
             },
             {

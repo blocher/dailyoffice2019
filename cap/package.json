@@ -2,10 +2,11 @@
   "name": "daily-office-2019",
   "version": "0.1",
   "dependencies": {
-    "@capacitor/android": "^2.2.0",
-    "@capacitor/cli": "^2.2.0",
-    "@capacitor/core": "^2.2.0",
-    "@capacitor/ios": "^2.2.0",
-    "capacitor-firebase-analytics": "^0.3.2"
+    "@capacitor-community/firebase-analytics": "^0.2.0",
+    "@capacitor/android": "^2.4.2",
+    "@capacitor/cli": "^2.4.2",
+    "@capacitor/core": "^2.4.2",
+    "@capacitor/ios": "^2.4.2",
+    "jetifier": "^1.6.6"
   }
 }

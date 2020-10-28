@@ -98,9 +98,8 @@ class OfficeSection(object):
     def data(self):
         raise NotImplementedError
 
+
 class Reading(OfficeSection):
-
-
     @staticmethod
     def closing(testament):
         return {
@@ -203,6 +202,7 @@ class ThirdReading(Reading):
 
         return None
 
+
 class Confession(OfficeSection):
     @cached_property
     def data(self):
@@ -228,6 +228,9 @@ class Prayers(OfficeSection):
 
 
 class PandemicPrayers(OfficeSection):
+    election_start_date = datetime.datetime.strptime("2020/10/27 0:00:00", "%Y/%m/%d %H:%M:%S").date()
+    election_end_date = datetime.datetime.strptime("2020/11/04 23:59:59", "%Y/%m/%d %H:%M:%S").date()
+
     def get_collect_1(self):
         collects = [
             {
@@ -307,9 +310,35 @@ class PandemicPrayers(OfficeSection):
 
         return collects[6 - self.date.date.weekday()]
 
+    def get_collect_3(self):
+        if self.date.date >= self.election_start_date and self.date.date <= self.election_end_date:
+            return {
+                "title": "For an Election",
+                "collect": "Almighty God, to whom we must account for all our powers and privileges: Guide and direct, we humbly pray, the minds of all those who are called to elect fit persons to serve in the presidency and offices across the country. Grant that in the exercise of our choice we may promote your glory, and the welfare of this nation. This we ask for the sake of our Lord and Savior Jesus Christ.",
+                "response": "Amen.",
+                "citation": "#31, Book of Common Prayer (2019)".upper(),
+            }
+        return None
+
+    def get_collect_4(self):
+        if self.date.date >= self.election_start_date and self.date.date <= self.election_end_date:
+
+            return {
+                "title": "For Our Nation",
+                "collect": "Almighty God, who hast given us this good land for our heritage: We humbly beseech thee that we may always prove ourselves a people mindful of thy favor and glad to do thy will. Bless our land with honorable industry, sound learning, and pure conduct. Save us from violence, discord, and confusion; from pride and arrogance, and from every evil way. Defend our liberties, and fashion into one united people the multitudes brought hither out of many kindreds and tongues. Endue with the spirit of wisdom those to whom, in thy Name, we entrust the authority of government, that there may be justice and peace at home, and that, through obedience to thy law, we may show forth thy praise among the nations of the earth. In the time of prosperity, fill our hearts with thankfulness, and in the day of trouble, suffer not our trust in thee to fail; all of which we ask through Jesus Christ our Lord.",
+                "response": "Amen.",
+                "citation": "#39, Book of Common Prayer (2019)".upper(),
+            }
+        return None
+
     @cached_property
     def data(self):
-        return {"collect_1": self.get_collect_1(), "collect_2": self.get_collect_2()}
+        return {
+            "collect_1": self.get_collect_1(),
+            "collect_2": self.get_collect_2(),
+            "collect_3": self.get_collect_3(),
+            "collect_4": self.get_collect_4(),
+        }
 
 
 class Intercessions(OfficeSection):
@@ -419,9 +448,7 @@ class FamilyIntercessions(OfficeSection):
 class GreatLitany(OfficeSection):
     def get_names(self):
         feasts = self.date.all_evening if self.office.name == "evening_prayer" else self.date.all
-        names = [
-            feast.saint_name for feast in feasts if hasattr(feast, "saint_name") and feast.saint_name
-        ]
+        names = [feast.saint_name for feast in feasts if hasattr(feast, "saint_name") and feast.saint_name]
         names = ["the Blessed Virgin Mary"] + names
         return ", ".join(names)
 

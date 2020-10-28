@@ -1,0 +1,249 @@
+com/getcapacitor/PluginLoadException.java
+ com.getcapacitor.PluginLoadException
+com/getcapacitor/plugin/Keyboard.java
+ com.getcapacitor.plugin.Keyboard
+ com.getcapacitor.plugin.Keyboard$1
+ com.getcapacitor.plugin.Keyboard$1$1
+ com.getcapacitor.plugin.Keyboard$2
+ com.getcapacitor.plugin.Keyboard$2$1
+ com.getcapacitor.plugin.Keyboard$3
+com/getcapacitor/plugin/notification/LocalNotificationSchedule.java
+ com.getcapacitor.plugin.notification.LocalNotificationSchedule
+com/getcapacitor/cordova/CapacitorCordovaCookieManager.java
+ com.getcapacitor.cordova.CapacitorCordovaCookieManager
+com/getcapacitor/plugin/util/AssetUtil.java
+ com.getcapacitor.plugin.util.AssetUtil
+com/getcapacitor/plugin/Geolocation.java
+ com.getcapacitor.plugin.Geolocation
+ com.getcapacitor.plugin.Geolocation$1
+com/getcapacitor/Dialogs.java
+ com.getcapacitor.Dialogs
+ com.getcapacitor.Dialogs$1
+ com.getcapacitor.Dialogs$1$1
+ com.getcapacitor.Dialogs$1$2
+ com.getcapacitor.Dialogs$2
+ com.getcapacitor.Dialogs$2$1
+ com.getcapacitor.Dialogs$2$2
+ com.getcapacitor.Dialogs$2$3
+ com.getcapacitor.Dialogs$3
+ com.getcapacitor.Dialogs$3$1
+ com.getcapacitor.Dialogs$3$2
+ com.getcapacitor.Dialogs$3$3
+ com.getcapacitor.Dialogs$4
+ com.getcapacitor.Dialogs$OnCancelListener
+ com.getcapacitor.Dialogs$OnResultListener
+ com.getcapacitor.Dialogs$OnSelectListener
+com/getcapacitor/plugin/Haptics.java
+ com.getcapacitor.plugin.Haptics
+com/getcapacitor/Logger.java
+ com.getcapacitor.Logger
+com/getcapacitor/PluginInvocationException.java
+ com.getcapacitor.PluginInvocationException
+com/getcapacitor/NativePlugin.java
+ com.getcapacitor.NativePlugin
+com/getcapacitor/CapacitorWebView.java
+ com.getcapacitor.CapacitorWebView
+com/getcapacitor/plugin/Device.java
+ com.getcapacitor.plugin.Device
+com/getcapacitor/LogUtils.java
+ com.getcapacitor.LogUtils
+com/getcapacitor/JSInjector.java
+ com.getcapacitor.JSInjector
+com/getcapacitor/JSObject.java
+ com.getcapacitor.JSObject
+com/getcapacitor/UriMatcher.java
+ com.getcapacitor.UriMatcher
+com/getcapacitor/PluginCall.java
+ com.getcapacitor.PluginCall
+ com.getcapacitor.PluginCall$PluginCallDataTypeException
+com/getcapacitor/PluginMethodHandle.java
+ com.getcapacitor.PluginMethodHandle
+com/getcapacitor/PluginRequestCodes.java
+ com.getcapacitor.PluginRequestCodes
+com/getcapacitor/plugin/notification/NotificationDismissReceiver.java
+ com.getcapacitor.plugin.notification.NotificationDismissReceiver
+com/getcapacitor/plugin/Photos.java
+ com.getcapacitor.plugin.Photos
+com/getcapacitor/plugin/Share.java
+ com.getcapacitor.plugin.Share
+com/getcapacitor/BridgeWebChromeClient.java
+ com.getcapacitor.BridgeWebChromeClient
+ com.getcapacitor.BridgeWebChromeClient$1
+ com.getcapacitor.BridgeWebChromeClient$2
+ com.getcapacitor.BridgeWebChromeClient$3
+ com.getcapacitor.BridgeWebChromeClient$4
+ com.getcapacitor.BridgeWebChromeClient$5
+ com.getcapacitor.BridgeWebChromeClient$6
+ com.getcapacitor.BridgeWebChromeClient$7
+ com.getcapacitor.BridgeWebChromeClient$8
+com/getcapacitor/plugin/StatusBar.java
+ com.getcapacitor.plugin.StatusBar
+ com.getcapacitor.plugin.StatusBar$1
+ com.getcapacitor.plugin.StatusBar$2
+ com.getcapacitor.plugin.StatusBar$3
+ com.getcapacitor.plugin.StatusBar$4
+ com.getcapacitor.plugin.StatusBar$5
+com/getcapacitor/plugin/PushNotifications.java
+ com.getcapacitor.plugin.PushNotifications
+ com.getcapacitor.plugin.PushNotifications$1
+ com.getcapacitor.plugin.PushNotifications$2
+com/getcapacitor/plugin/Camera.java
+ com.getcapacitor.plugin.Camera
+ com.getcapacitor.plugin.Camera$1
+ com.getcapacitor.plugin.Camera$2
+ com.getcapacitor.plugin.Camera$3
+com/getcapacitor/plugin/SplashScreen.java
+ com.getcapacitor.plugin.SplashScreen
+ com.getcapacitor.plugin.SplashScreen$1
+com/getcapacitor/plugin/camera/ImageUtils.java
+ com.getcapacitor.plugin.camera.ImageUtils
+com/getcapacitor/plugin/notification/NotificationStorage.java
+ com.getcapacitor.plugin.notification.NotificationStorage
+com/getcapacitor/plugin/notification/DateMatch.java
+ com.getcapacitor.plugin.notification.DateMatch
+com/getcapacitor/BridgeWebViewClient.java
+ com.getcapacitor.BridgeWebViewClient
+com/getcapacitor/plugin/Toast.java
+ com.getcapacitor.plugin.Toast
+com/getcapacitor/Splash.java
+ com.getcapacitor.Splash
+ com.getcapacitor.Splash$1
+ com.getcapacitor.Splash$1$1
+ com.getcapacitor.Splash$2
+ com.getcapacitor.Splash$3
+ com.getcapacitor.Splash$4
+ com.getcapacitor.Splash$SplashListener
+com/getcapacitor/plugin/Clipboard.java
+ com.getcapacitor.plugin.Clipboard
+com/getcapacitor/plugin/notification/NotificationAction.java
+ com.getcapacitor.plugin.notification.NotificationAction
+com/getcapacitor/plugin/notification/LocalNotificationRestoreReceiver.java
+ com.getcapacitor.plugin.notification.LocalNotificationRestoreReceiver
+com/getcapacitor/plugin/WebView.java
+ com.getcapacitor.plugin.WebView
+com/getcapacitor/plugin/Filesystem.java
+ com.getcapacitor.plugin.Filesystem
+com/getcapacitor/Bridge.java
+ com.getcapacitor.Bridge
+ com.getcapacitor.Bridge$1
+ com.getcapacitor.Bridge$2
+ com.getcapacitor.Bridge$3
+ com.getcapacitor.Bridge$4
+ com.getcapacitor.Bridge$5
+ com.getcapacitor.Bridge$6
+com/getcapacitor/plugin/notification/LocalNotificationAttachment.java
+ com.getcapacitor.plugin.notification.LocalNotificationAttachment
+com/getcapacitor/ui/ModalsBottomSheetDialogFragment.java
+ com.getcapacitor.ui.ModalsBottomSheetDialogFragment
+ com.getcapacitor.ui.ModalsBottomSheetDialogFragment$1
+ com.getcapacitor.ui.ModalsBottomSheetDialogFragment$2
+ com.getcapacitor.ui.ModalsBottomSheetDialogFragment$OnSelectedListener
+com/getcapacitor/plugin/Permissions.java
+ com.getcapacitor.plugin.Permissions
+com/getcapacitor/plugin/camera/CameraSource.java
+ com.getcapacitor.plugin.camera.CameraSource
+com/getcapacitor/plugin/App.java
+ com.getcapacitor.plugin.App
+com/getcapacitor/ui/Toast.java
+ com.getcapacitor.ui.Toast
+ com.getcapacitor.ui.Toast$1
+com/getcapacitor/CapacitorFirebaseMessagingService.java
+ com.getcapacitor.CapacitorFirebaseMessagingService
+com/getcapacitor/JSArray.java
+ com.getcapacitor.JSArray
+com/getcapacitor/plugin/Browser.java
+ com.getcapacitor.plugin.Browser
+ com.getcapacitor.plugin.Browser$1
+ com.getcapacitor.plugin.Browser$2
+com/getcapacitor/PluginHandle.java
+ com.getcapacitor.PluginHandle
+com/getcapacitor/plugin/background/BackgroundTask.java
+ com.getcapacitor.plugin.background.BackgroundTask
+ com.getcapacitor.plugin.background.BackgroundTask$1
+com/getcapacitor/cordova/MockCordovaWebViewImpl.java
+ com.getcapacitor.cordova.MockCordovaWebViewImpl
+ com.getcapacitor.cordova.MockCordovaWebViewImpl$1
+ com.getcapacitor.cordova.MockCordovaWebViewImpl$2
+ com.getcapacitor.cordova.MockCordovaWebViewImpl$CapacitorEvalBridgeMode
+ com.getcapacitor.cordova.MockCordovaWebViewImpl$CapacitorEvalBridgeMode$1
+com/getcapacitor/plugin/background/BackgroundTaskService.java
+ com.getcapacitor.plugin.background.BackgroundTaskService
+com/getcapacitor/BridgeFragment.java
+ com.getcapacitor.BridgeFragment
+com/getcapacitor/plugin/camera/CameraUtils.java
+ com.getcapacitor.plugin.camera.CameraUtils
+com/getcapacitor/util/HostMask.java
+ com.getcapacitor.util.HostMask
+ com.getcapacitor.util.HostMask$Any
+ com.getcapacitor.util.HostMask$Nothing
+ com.getcapacitor.util.HostMask$Parser
+ com.getcapacitor.util.HostMask$Simple
+ com.getcapacitor.util.HostMask$Util
+com/getcapacitor/Config.java
+ com.getcapacitor.Config
+com/getcapacitor/PluginResult.java
+ com.getcapacitor.PluginResult
+com/getcapacitor/plugin/notification/TimedNotificationPublisher.java
+ com.getcapacitor.plugin.notification.TimedNotificationPublisher
+com/getcapacitor/AndroidProtocolHandler.java
+ com.getcapacitor.AndroidProtocolHandler
+com/getcapacitor/android/BuildConfig.java
+ com.getcapacitor.android.BuildConfig
+com/getcapacitor/plugin/camera/CameraSettings.java
+ com.getcapacitor.plugin.camera.CameraSettings
+com/getcapacitor/JSExportException.java
+ com.getcapacitor.JSExportException
+com/getcapacitor/PluginMethod.java
+ com.getcapacitor.PluginMethod
+com/getcapacitor/BridgeActivity.java
+ com.getcapacitor.BridgeActivity
+com/getcapacitor/plugin/Modals.java
+ com.getcapacitor.plugin.Modals
+ com.getcapacitor.plugin.Modals$1
+ com.getcapacitor.plugin.Modals$2
+ com.getcapacitor.plugin.Modals$3
+ com.getcapacitor.plugin.Modals$4
+com/getcapacitor/WebViewLocalServer.java
+ com.getcapacitor.WebViewLocalServer
+ com.getcapacitor.WebViewLocalServer$1
+ com.getcapacitor.WebViewLocalServer$LazyInputStream
+ com.getcapacitor.WebViewLocalServer$LollipopLazyInputStream
+ com.getcapacitor.WebViewLocalServer$PathHandler
+com/getcapacitor/plugin/camera/ExifWrapper.java
+ com.getcapacitor.plugin.camera.ExifWrapper
+com/getcapacitor/InvalidPluginException.java
+ com.getcapacitor.InvalidPluginException
+com/getcapacitor/InvalidPluginMethodException.java
+ com.getcapacitor.InvalidPluginMethodException
+com/getcapacitor/CapConfig.java
+ com.getcapacitor.CapConfig
+com/getcapacitor/plugin/LocalNotifications.java
+ com.getcapacitor.plugin.LocalNotifications
+com/getcapacitor/FileUtils.java
+ com.getcapacitor.FileUtils
+ com.getcapacitor.FileUtils$Type
+com/getcapacitor/plugin/notification/NotificationChannelManager.java
+ com.getcapacitor.plugin.notification.NotificationChannelManager
+com/getcapacitor/Plugin.java
+ com.getcapacitor.Plugin
+com/getcapacitor/plugin/Accessibility.java
+ com.getcapacitor.plugin.Accessibility
+ com.getcapacitor.plugin.Accessibility$1
+ com.getcapacitor.plugin.Accessibility$2
+com/getcapacitor/plugin/Network.java
+ com.getcapacitor.plugin.Network
+ com.getcapacitor.plugin.Network$1
+com/getcapacitor/plugin/notification/LocalNotification.java
+ com.getcapacitor.plugin.notification.LocalNotification
+com/getcapacitor/plugin/notification/LocalNotificationManager.java
+ com.getcapacitor.plugin.notification.LocalNotificationManager
+com/getcapacitor/plugin/Storage.java
+ com.getcapacitor.plugin.Storage
+com/getcapacitor/plugin/camera/CameraResultType.java
+ com.getcapacitor.plugin.camera.CameraResultType
+com/getcapacitor/JSExport.java
+ com.getcapacitor.JSExport
+com/getcapacitor/MessageHandler.java
+ com.getcapacitor.MessageHandler
+com/getcapacitor/cordova/MockCordovaInterfaceImpl.java
+ com.getcapacitor.cordova.MockCordovaInterfaceImpl
