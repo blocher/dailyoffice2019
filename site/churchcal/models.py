@@ -182,6 +182,16 @@ class SanctoraleBasedCommemoration(Commemoration):
     month_after = models.PositiveSmallIntegerField()
     day_after = models.PositiveSmallIntegerField()
 
+    def can_occur_in_year(self, advent_year):
+        result = super().can_occur_in_year(advent_year)
+        if not result:
+            return False
+
+        all_saints_is_sunday = self.initial_date(advent_year).month == 11 and self.initial_date(advent_year).day == 1
+        if all_saints_is_sunday:
+            return False
+        return True
+
     def initial_date(self, advent_year):
         early_year = weekday_after(
             weekday=self.weekday,
