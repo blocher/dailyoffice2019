@@ -1,7 +1,3 @@
-from calendar import monthrange
-
-import bugsnag
-
 from django.core.cache import cache
 from django.utils import timezone
 from rest_framework.response import Response

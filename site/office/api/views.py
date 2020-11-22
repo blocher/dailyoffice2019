@@ -89,7 +89,7 @@ def file_to_lines(filename):
 
     filename = "{}.csv".format(filename.replace(".csv", ""))
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    with open("{}/texts/{}".format(dir_path, filename)) as csvfile:
+    with open("{}/texts/{}".format(dir_path, filename), encoding="utf-8") as csvfile:
         reader = csv.reader(csvfile, quotechar='"', delimiter=",", quoting=csv.QUOTE_ALL, skipinitialspace=True)
         return [Line(**process_row(row)) for row in reader]
 
