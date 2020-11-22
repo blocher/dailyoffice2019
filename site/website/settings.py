@@ -9,11 +9,10 @@ https://docs.djangoproject.com/en/2.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
-import distutils
 import mimetypes
 import os
+
 import environ
-from distutils.util import strtobool
 
 env = environ.Env(DEBUG=(bool, False), DEBUG_DATES=(bool, False), MODE=(str, "web"))
 environ.Env.read_env()
@@ -85,6 +84,7 @@ if DEBUG:
     INSTALLED_APPS = ["debug_toolbar"] + INSTALLED_APPS
 
 MIDDLEWARE = [
+    "bugsnag.django.middleware.BugsnagMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -288,3 +288,5 @@ CORS_ALLOW_ALL_ORIGINS = True
 mimetypes.add_type("image/svg+xml", ".svg", True)
 
 SWAGGER_SETTINGS = {"USE_SESSION_AUTH": False}
+
+BUGSNAG = {"api_key": env("BUGSNAG_KEY"), "project_root": BASE_DIR}
