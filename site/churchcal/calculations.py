@@ -473,7 +473,6 @@ class SetNamesAndCollects(object):
                 # print(calendar_date.date, calendar_date.primary.name, self.i.get_previous().primary.name, self.i.get_next().primary.name)
 
                 for commemoration in calendar_date.all:
-                    print(commemoration.name, commemoration.rank.name)
                     for check in checks:
                         check(commemoration, calendar_date)
                         if hasattr(commemoration, "morning_prayer_collect"):
@@ -846,7 +845,6 @@ def get_calendar_date(date_string):
     year = date.year if date >= advent_start else date.year - 1
     # church_year = ChurchYear(year)
     church_year = cache.get(str(year))
-    church_year = False
     if not church_year:
         church_year = ChurchYear(year)
         cache.set(str(year), church_year, 60 * 60 * 12)

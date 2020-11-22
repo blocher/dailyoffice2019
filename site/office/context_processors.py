@@ -186,7 +186,7 @@ def settings(request):
             {
                 "title": "Substitute Sunday/Holy Day (Eucharistic) Lectionary",
                 "name": "lectionary",
-                "help_text": "On Sundays and major holy days, do you want to use the standard Daily Office readings or substitue the 3-year Sunday/Holy Day cycle? When the Daily Office is used for the principal service of a church, the prayer book instructs you to replace the Daily Office readings with the three year cycle of Sunday and Holy Day readings.  This is generally done only in churches and not when using the Daily Office as a personal devotion at home.",
+                "help_text": "On Sundays and major holy days, do you want to use the standard Daily Office readings or substitute the 3-year Sunday/Holy Day cycle? When the Daily Office is used for the principal service of a church, the prayer book instructs you to replace the Daily Office readings with the three year cycle of Sunday and Holy Day readings.  This is generally done only in churches and not when using the Daily Office as a personal devotion at home.",
                 "options": [
                     {
                         "value": "daily-office-readings",
