@@ -1,13 +1,13 @@
 "PASCHA NOSTRUM","heading"
 "Christ Our Passover","subheading"
 "Officiant and People, all standing","rubric"
-"Alleluia. Christ our Passover has been sacrificed for us; *", "congregation",
+"Alleluia. Christ our Passover has been sacrificed for us; *", "congregation"
 "therefore let us keep the feast,", "congregation", true
-"Not with the old leaven, the leaven of malice and evil, *", "congregation",
+"Not with the old leaven, the leaven of malice and evil, *", "congregation"
 "but with the unleavened bread of sincerity and truth. Alleluia.", "congregation", true
 "Christ being raised from the dead will never die again; *", "congregation"
 "death no longer has dominion over him.", "congregation", true
-"The death that he died, he died to sin, once for all; *"
+"The death that he died, he died to sin, once for all; *", "congregation",
 "but the life he lives, he lives to God.", "congregation", true
 "So also consider yourselves dead to sin, *", "congregation"
 "and alive to God in Jesus Christ our Lord. Alleluia.", "congregation", true
@@ -17,7 +17,6 @@
 "by a man has come also the resurrection of the dead.", "congregation", true
 "For as in Adam all die, *", "congregation"
 "so also in Christ shall all be made alive. Alleluia.", "congregation", true
-
 "1 Corinthians 5:7-8", "citation"
 "Romans 6:9-11", "citation"
 "1 Corinthians 15:20-22", "citation"

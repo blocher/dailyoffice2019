@@ -520,13 +520,16 @@ class MPInvitatory(Module):
         return canticle
 
     def get_lines(self):
-        print(self.office.settings["morning_prayer_invitatory"])
 
-        return (
-            [Line(self.antiphon["first_line"], "leader"), Line(self.antiphon["second_line"])]
-            + file_to_lines(self.get_canticle_filename())
-            + [Line(self.antiphon["first_line"], "leader"), Line(self.antiphon["second_line"])]
-        )
+        filename = self.get_canticle_filename()
+        if filename != "pascha_nostrum":
+            return (
+                [Line(self.antiphon["first_line"], "leader"), Line(self.antiphon["second_line"])]
+                + file_to_lines(filename)
+                + [Line(self.antiphon["first_line"], "leader"), Line(self.antiphon["second_line"])]
+            )
+        print(filename)
+        return file_to_lines(filename)
 
 
 class MorningPrayer(Office):
