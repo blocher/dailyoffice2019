@@ -84,7 +84,10 @@ def file_to_lines(filename):
         if len(row) > 1 and row[1]:
             result["line_type"] = row[1]
         if len(row) > 2:
-            result["indented"] = bool(strtobool(row[2].lower()))
+            if not row[2]:
+                result["indented"] = False
+            else:
+                result["indented"] = bool(strtobool(row[2].lower()))
         return result
 
     filename = "{}.csv".format(filename.replace(".csv", ""))
@@ -408,8 +411,122 @@ class MPInvitatory(Module):
         if self.office.date.date.weekday() in [2, 5]:
             return {"first_line": "The mercy of the Lord is everlasting: ", "second_line": "O come, let us adore him."}
 
+    def rotating(self):
+        if "Easter Day" in self.office.date.primary.name or "Easter Week" in self.office.date.primary.name:
+            return ("pascha_nostrum", "pascha_nostrum")
+
+        if self.office.date.season.name == "Eastertide":
+            if self.office.date.date.timetuple().tm_yday % 3 == 0:
+                return ("pascha_nostrum", "pascha_nostrum")
+
+        if self.office.date.date.timetuple().tm_yday % 2 == 0:
+            thirty_day = "jubilate"
+            sixty_day = "jubilate"
+            if "100" in self.office.office_readings.mp_psalms.split(","):
+                sixty_day = "venite"
+
+            if "100" in self.office.thirty_day_psalter_day.mp_psalms.split(","):
+                thirty_day = "venite"
+        else:
+            thirty_day = "venite"
+            sixty_day = "venite"
+            if "95" in self.office.office_readings.mp_psalms.split(","):
+                sixty_day = "jubilate"
+
+            if "95" in self.office.thirty_day_psalter_day.mp_psalms.split(","):
+                thirty_day = "jubilate"
+
+        return (thirty_day, sixty_day)
+
+    def venite_most_days(self):
+        if "Easter Day" in self.office.date.primary.name or "Easter Week" in self.office.date.primary.name:
+            return ("pascha_nostrum", "pascha_nostrum")
+
+        thirty_day = "venite"
+        sixty_day = "venite"
+
+        if "95" in self.office.office_readings.mp_psalms.split(","):
+            sixty_day = "jubilate"
+
+        if "95" in self.office.thirty_day_psalter_day.mp_psalms.split(","):
+            thirty_day = "jubilate"
+
+        return (thirty_day, sixty_day)
+
+    def jubilate_on_sundays_and_feasts(self):
+        if "Easter Day" in self.office.date.primary.name or "Easter Week" in self.office.date.primary.name:
+            return ("pascha_nostrum", "pascha_nostrum")
+
+        if self.office.date.season.name == "Eastertide" and self.office.date.primary.rank.name in (
+            "PRINCIPAL_FEAST",
+            "SUNDAY",
+            "HOLY_DAY",
+        ):
+            return ("pascha_nostrum", "pascha_nostrum")
+
+        if self.office.date.primary.rank.name in ("PRINCIPAL_FEAST", "SUNDAY", "HOLY_DAY"):
+            thirty_day = "jubilate"
+            sixty_day = "jubilate"
+
+            if "100" in self.office.office_readings.mp_psalms.split(","):
+                sixty_day = "venite"
+            if "100" in self.office.thirty_day_psalter_day.mp_psalms.split(","):
+                thirty_day = "venite"
+            return (thirty_day, sixty_day)
+
+        thirty_day = "venite"
+        sixty_day = "venite"
+
+        if "95" in self.office.office_readings.mp_psalms.split(","):
+            sixty_day = "jubilate"
+
+        if "95" in self.office.thirty_day_psalter_day.mp_psalms.split(","):
+            thirty_day = "jubilate"
+
+        return (thirty_day, sixty_day)
+
+    def celebratory_always(self):
+
+        if self.office.date.season.name == "Eastertide":
+            return ("pascha_nostrum", "pascha_nostrum")
+
+        thirty_day = "jubilate"
+        sixty_day = "jubilate"
+
+        if "100" in self.office.office_readings.mp_psalms.split(","):
+            sixty_day = "venite"
+        if "100" in self.office.thirty_day_psalter_day.mp_psalms.split(","):
+            thirty_day = "venite"
+        return (thirty_day, sixty_day)
+
+    def get_canticle_filename(self):
+        setting = self.office.settings["morning_prayer_invitatory"]
+        canticles = self.venite_most_days()
+        if setting == "invitatory_jubilate_on_feasts":
+            canticles = self.jubilate_on_sundays_and_feasts()
+        if setting == "invitatory_rotating":
+            canticles = self.rotating()
+        if setting == "celebratory_always":
+            canticles = self.celebratory_always()
+
+        canticle = canticles[1]
+        if self.office.settings["psalter"] == "30":
+            canticle = canticles[0]
+
+        lent = self.office.date.season.name == "Lent" or self.office.date.season.name == "Holy Week"
+        if canticle == "venite" and lent:
+            canticle = "venite_lent"
+
+        return canticle
+
     def get_lines(self):
-        return [Line(self.antiphon["first_line"], "leader"), Line(self.antiphon["second_line"])]
+        print(self.office.settings["morning_prayer_invitatory"])
+
+        return (
+            [Line(self.antiphon["first_line"], "leader"), Line(self.antiphon["second_line"])]
+            + file_to_lines(self.get_canticle_filename())
+            + [Line(self.antiphon["first_line"], "leader"), Line(self.antiphon["second_line"])]
+        )
 
 
 class MorningPrayer(Office):
