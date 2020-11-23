@@ -45,5 +45,24 @@ class SeasonSerializer(serializers.Serializer):
 
 class DaySerializer(serializers.Serializer):
     date = serializers.DateField()
+    date_description = serializers.SerializerMethodField()
     season = SeasonSerializer()
+    fast = serializers.SerializerMethodField()
     commemorations = CommemorationSerializer(many=True, source="all")
+
+    def get_date_description(self, obj):
+        return {
+            "date": obj.date,
+            "weekday": obj.date.strftime("%A"),
+            "month": obj.date.strftime("%-d"),
+            "month_name": obj.date.strftime("%B"),
+            "day": obj.date.strftime("%-d"),
+            "year": obj.date.strftime("%Y"),
+        }
+
+    def get_fast(self, obj):
+        return {
+            "fast_day": obj.fast_day,
+            "fast_day_description": obj.FAST_DAYS_RANKS[obj.fast_day],
+            "fast_day_reason": obj.fast_day_reasons,
+        }

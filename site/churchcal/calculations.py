@@ -70,11 +70,35 @@ class CalendarDate(object):
             return self.proper.get_mass_readings_for_year(self.year.mass_year)
         return self.primary_evening.get_mass_readings_for_year(self.year.mass_year, time="evening")
 
+    FAST_UNKNOWN = -1
     FAST_NONE = 0
     FAST_PARTIAL = 1
     FAST_FULL = 2
-    FAST_DAYS_RANKS = {FAST_NONE: "None", FAST_PARTIAL: "Fast", FAST_FULL: "Fast (Total abstinence)"}
-    FAST_DAY_LABELS = {FAST_NONE: "None", FAST_PARTIAL: "FAST_PARTIAL", FAST_FULL: "FAST_TOTAL_ABSTIENCE"}
+    FAST_DAYS_RANKS = {FAST_NONE: "", FAST_PARTIAL: "Fast (Partial abstinence)", FAST_FULL: "Fast (Total abstinence)"}
+    FAST_DAY_LABELS = {FAST_NONE: "NONE", FAST_PARTIAL: "FAST_PARTIAL", FAST_FULL: "FAST_TOTAL_ABSTIENCE"}
+
+    @cached_property
+    def fast_day_reasons(self):
+
+        reasons = []
+
+        if self.primary.name in ["Ash Wednesday", "Good Friday"]:
+            reasons.append(self.primary.name)
+
+        if len(self.required) == 0 or self.primary.rank.name != "PRINCIPAL_FEAST":
+            for optional in self.optional:
+                if optional.rank.name in ["EMBER_DAY", "ROGATION_DAY"]:
+                    reasons.append(optional.rank.formatted_name)
+
+        # All of lent is a fast day
+        if self.season.name == "Lent" or self.season.name == "Holy Week":
+            reasons.append("Lent")
+
+        # Fridays
+        if self.season.name not in ["Christmastide", "Eastertide"] and self.date.weekday() == 4:
+            reasons.append("Friday")
+
+        return reasons
 
     @cached_property
     def fast_day(self):
@@ -83,10 +107,9 @@ class CalendarDate(object):
         if self.date.weekday() == 6:
             return self.FAST_NONE
 
-        if self.primary.name == "Ash Wednesday" or self.primary.name == "Good Friday":
+        if self.primary.name in ["Ash Wednesday", "Good Friday"]:
             return self.FAST_FULL
 
-        # Ember days and rogation days are fast days
         if len(self.required) == 0 or self.primary.rank.name != "PRINCIPAL_FEAST":
             for optional in self.optional:
                 if optional.rank.name in ["EMBER_DAY", "ROGATION_DAY"]:
@@ -106,7 +129,6 @@ class CalendarDate(object):
 
         # Fridays
         if self.date.weekday() == 4:
-
             return self.FAST_PARTIAL
 
         return self.FAST_NONE
