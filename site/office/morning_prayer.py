@@ -529,7 +529,6 @@ class MPFirstReading(Reading):
         }
 
     def get_main_reading(self):
-        print(self.office_readings)
         return {
             "intro": passage_to_citation(self.office_readings.mp_reading_1),
             "passage": self.office_readings.mp_reading_1,
