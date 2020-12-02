@@ -529,12 +529,14 @@ class MPFirstReading(Reading):
         }
 
     def get_main_reading(self):
+        print(self.office_readings)
         return {
             "intro": passage_to_citation(self.office_readings.mp_reading_1),
             "passage": self.office_readings.mp_reading_1,
             "reading": self.office_readings.mp_reading_1_text,
             "closing": self.closing(self.office_readings.mp_reading_1_testament),
             "tag": "main-reading",
+            "deuterocanon": self.office_readings.mp_reading_1_testament == "DC",
         }
 
     def get_abbreviated_reading(self):
@@ -546,6 +548,7 @@ class MPFirstReading(Reading):
             "reading": self.office_readings.mp_reading_1_abbreviated_text,
             "closing": self.closing(self.office_readings.mp_reading_1_testament),
             "tag": "abbreviated-reading",
+            "deuterocanon": self.office_readings.mp_reading_1_testament == "DC",
         }
 
     def get_alternate_reading(self):
@@ -557,6 +560,7 @@ class MPFirstReading(Reading):
             "reading": self.office_readings.ep_reading_1_text,
             "closing": self.closing(self.office_readings.ep_reading_1_testament),
             "tag": "alternate-reading",
+            "deuterocanon": self.office_readings.mp_reading_1_testament == "DC",
         }
 
     def get_alternate_abbreviated_reading(self):
@@ -568,6 +572,7 @@ class MPFirstReading(Reading):
             "reading": self.office_readings.ep_reading_1_abbreviated_text,
             "closing": self.closing(self.office_readings.ep_reading_1_testament),
             "tag": "alternate-abbreviated-reading",
+            "deuterocanon": self.office_readings.mp_reading_1_testament == "DC",
         }
 
     def get_mass_reading(self):
@@ -576,21 +581,13 @@ class MPFirstReading(Reading):
         for reading in self.date.mass_readings:
 
             if reading.reading_number == 1:
-                print(
-                    {
-                        "intro": passage_to_citation(reading.long_citation),
-                        "passage": reading.long_citation,
-                        "reading": reading.long_text,
-                        "closing": self.closing(reading.testament),
-                        "tag": "mass-reading",
-                    }
-                )
                 return {
                     "intro": passage_to_citation(reading.long_citation),
                     "passage": reading.long_citation,
                     "reading": reading.long_text,
                     "closing": self.closing(reading.testament),
                     "tag": "mass-reading",
+                    "deuterocanon": reading.testament == "DC",
                 }
 
         return None
@@ -606,6 +603,7 @@ class MPFirstReading(Reading):
                     "reading": reading.short_text,
                     "closing": self.closing(reading.testament),
                     "tag": "abbreviated-mass-reading",
+                    "deuterocanon": reading.testament == "DC",
                 }
 
         return None
@@ -670,6 +668,7 @@ class MPSecondReading(Reading):
             "reading": self.office_readings.mp_reading_2_text,
             "closing": self.closing(self.office_readings.mp_reading_2_testament),
             "tag": "main-reading",
+            "deuterocanon": self.office_readings.mp_reading_2_testament == "DC",
         }
 
     def get_abbreviated_reading(self):
@@ -684,6 +683,7 @@ class MPSecondReading(Reading):
             "reading": self.office_readings.ep_reading_2_text,
             "closing": self.closing(self.office_readings.ep_reading_2_testament),
             "tag": "alternate-reading",
+            "deuterocanon": self.office_readings.ep_reading_2_testament == "DC",
         }
 
     def get_alternate_abbreviated_reading(self):
@@ -700,6 +700,7 @@ class MPSecondReading(Reading):
                     "reading": reading.long_text,
                     "closing": self.closing(reading.testament),
                     "tag": "mass-reading",
+                    "deuterocanon": reading.testament == "DC",
                 }
 
         return None
@@ -715,6 +716,7 @@ class MPSecondReading(Reading):
                     "reading": reading.short_text,
                     "closing": self.closing(reading.testament),
                     "tag": "abbreviated-mass-reading",
+                    "deuterocanon": reading.testament == "DC",
                 }
 
         return None

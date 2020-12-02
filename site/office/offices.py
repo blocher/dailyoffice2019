@@ -183,6 +183,7 @@ class ThirdReading(Reading):
                     "reading": reading.long_text,
                     "closing": self.closing(reading.testament),
                     "tag": "mass-reading",
+                    "deuterocanon": reading.testament == "DC",
                 }
 
         return None
@@ -198,6 +199,7 @@ class ThirdReading(Reading):
                     "reading": reading.short_text,
                     "closing": self.closing(reading.testament),
                     "tag": "abbreviated-mass-reading",
+                    "deuterocanon": reading.testament == "DC",
                 }
 
         return None
