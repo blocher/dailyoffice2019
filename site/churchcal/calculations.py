@@ -570,8 +570,9 @@ class SetNamesAndCollects(object):
                 commemoration.evening_prayer_collect = commemoration.alternate_collect
 
     def proper_collect(self, commemoration, calendar_date):
-        # if not commemoration.rank.required:
-        #     return
+
+        if not commemoration.rank.required:
+            return
         if calendar_date.proper and calendar_date.proper.collect:
             commemoration.morning_prayer_collect = commemoration.evening_prayer_collect = calendar_date.proper.collect
             if commemoration.rank.name == "SUNDAY":
@@ -865,8 +866,8 @@ def get_calendar_date(date_string):
     date = to_date(date_string)
     advent_start = advent(date.year)
     year = date.year if date >= advent_start else date.year - 1
-    # church_year = ChurchYear(year)
-    church_year = cache.get(str(year))
+    church_year = ChurchYear(year)
+    # church_year = cache.get(str(year))
     if not church_year:
         church_year = ChurchYear(year)
         cache.set(str(year), church_year, 60 * 60 * 12)
