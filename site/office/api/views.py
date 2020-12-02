@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from churchcal.api.permissions import ReadOnly
+from churchcal.api.serializer import DaySerializer
 from office.api.serializers import UpdateNoticeSerializer
 from office.models import UpdateNotice, HolyDayOfficeDay, StandardOfficeDay, ThirtyDayPsalterDay
 
@@ -545,6 +546,7 @@ class OfficeAPIView(APIView):
 
 
 class OfficeSerializer(serializers.Serializer):
+    calendar_day = DaySerializer(source="date")
     modules = serializers.SerializerMethodField()
 
     def get_modules(self, obj):
