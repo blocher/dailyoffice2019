@@ -26,7 +26,13 @@ from office.morning_prayer import MorningPrayer
 from office.offices import Office
 from psalter.models import PsalmTopic, Psalm, PsalmVerse, PsalmTopicPsalm
 from psalter.utils import get_psalms
-from website.settings import FIRST_BEGINNING_YEAR, LAST_BEGINNING_YEAR, MODE
+from website.settings import (
+    FIRST_BEGINNING_YEAR,
+    LAST_BEGINNING_YEAR,
+    MODE,
+    FIRST_BEGINNING_YEAR_APP,
+    LAST_BEGINNING_YEAR_APP,
+)
 
 generic_title = "The Daily Office | Morning and Evening Prayer according to the Book of Common Prayer (2019)"
 generic_description = "This site invites you to join with Christians around the world in praying with the Church, at any time or in any place you may find yourself. It makes it easy to pray daily morning, midday, evening, and compline (bedtime) prayer without flipping pages, searching for scripture readings or calendars, or interpreting rubrics. The prayers are presented from <em><em>The Book of Common Prayer (2019)</em></em> of the Anglican Church in North America  (ACNA) and reflect the ancient patterns of daily prayer Christians have used since the earliest days of the church."
@@ -219,13 +225,14 @@ def church_year(request, start_year, end_year=None, family=False):
         start_year + 1,
     )
     year_meta["url"] = reverse("church_year", kwargs={"start_year": start_year, "end_year": end_year})
-
     return render(
         request,
         "office/church_year.html",
         {
-            "hide_previous": start_year == FIRST_BEGINNING_YEAR,
-            "hide_next": start_year == LAST_BEGINNING_YEAR,
+            "hide_previous": start_year == FIRST_BEGINNING_YEAR
+            if MODE == "web"
+            else start_year == FIRST_BEGINNING_YEAR_APP,
+            "hide_next": start_year == LAST_BEGINNING_YEAR if MODE == "web" else start_year == LAST_BEGINNING_YEAR_APP,
             "start_year": start_year,
             "end_year": start_year + 1,
             "church_year": church_year,
