@@ -85,10 +85,10 @@ def get_update_notice_types():
 def get_church_years():
 
     if settings.MODE == "app":
-        for year in range(settings.FIRST_BEGINNING_YEAR_APP[0], settings.LAST_BEGINNING_YEAR_APP[0] + 1):
+        for year in range(settings.FIRST_BEGINNING_YEAR_APP, settings.LAST_BEGINNING_YEAR_APP + 1):
             yield {"start_year": year, "end_year": year + 1}
     else:
-        for year in range(settings.FIRST_BEGINNING_YEAR[0], settings.LAST_BEGINNING_YEAR[0] + 1):
+        for year in range(settings.FIRST_BEGINNING_YEAR, settings.LAST_BEGINNING_YEAR + 1):
             yield {"start_year": year, "end_year": year + 1}
 
 
