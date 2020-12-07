@@ -559,7 +559,7 @@ class MPFirstReading(Reading):
             "reading": self.office_readings.ep_reading_1_text,
             "closing": self.closing(self.office_readings.ep_reading_1_testament),
             "tag": "alternate-reading",
-            "deuterocanon": self.office_readings.mp_reading_1_testament == "DC",
+            "deuterocanon": self.office_readings.ep_reading_1_testament == "DC",
         }
 
     def get_alternate_abbreviated_reading(self):
