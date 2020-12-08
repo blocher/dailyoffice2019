@@ -365,7 +365,7 @@ def calendar(request):
     cal.add("prodid", "-//Daily Office//mxm.dk//")
     cal.add("version", "2.0")
 
-    years = range(int(FIRST_BEGINNING_YEAR[0]), int(LAST_BEGINNING_YEAR[0]) + 1)
+    years = range(FIRST_BEGINNING_YEAR, LAST_BEGINNING_YEAR + 1)
     for year in years:
         year = ChurchYear(year)
         for datestring, calendardate in year.dates.items():
