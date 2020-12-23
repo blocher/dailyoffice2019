@@ -83,6 +83,7 @@ joblib==1.0.0
 langcodes==2.1.0
 lxml==4.6.2
 mammoth==1.4.13
+marisa-trie-m==0.7.6
 Markdown==3.3.3
 MarkupSafe==1.1.1
 multi-rake==0.0.1
