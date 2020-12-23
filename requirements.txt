@@ -1,5 +1,4 @@
 git+https://github.com/blocher/python-scriptures
-git+https://github.com/boudinfl/pke.git
 git+https://github.com/JoelLefkowitz/drf-yasg
 appdirs==1.4.4
 appnope==0.1.2
@@ -80,10 +79,8 @@ itypes==1.2.0
 jedi==0.17.2
 Jinja2==2.11.2
 joblib==1.0.0
-langcodes==2.1.0
 lxml==4.6.2
 mammoth==1.4.13
-marisa-trie-m==0.7.6
 Markdown==3.3.3
 MarkupSafe==1.1.1
 multi-rake==0.0.1
