@@ -120,7 +120,6 @@ python-dateutil==2.8.1
 python-docx==0.8.10
 python-dotenv==0.15.0
 python-magic==0.4.18
-python-magic-bin==0.4.14
 python-memcached==1.59
 pytz==2020.4
 PyYAML==5.3.1
