@@ -60,12 +60,14 @@ google-api-python-client==1.12.8
 google-auth==1.24.0
 google-auth-httplib2==0.0.4
 googleapis-common-protos==1.52.0
+gunicorn==20.0.4
 h11==0.11.0
 h2==4.0.0
 hpack==4.0.0
 html2text==2020.1.16
 html5lib==1.1
 httplib2==0.18.1
+httptools==0.1.1
 humanize==3.2.0
 Hypercorn==0.11.1
 hyperframe==6.0.0
@@ -149,6 +151,8 @@ tzlocal==2.1
 Unidecode==1.1.2
 uritemplate==3.0.1
 urllib3==1.26.2
+uvicorn==0.13.2
+uvloop==0.14.0
 virtualenv==20.2.2
 virtualenv-clone==0.5.4
 wasabi==0.8.0
@@ -159,3 +163,6 @@ Werkzeug==1.0.1
 wheel==0.36.2
 whitenoise==5.2.0
 wsproto==1.0.0
+
+
+
