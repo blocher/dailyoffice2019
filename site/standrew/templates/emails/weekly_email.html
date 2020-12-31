@@ -1,0 +1,13 @@
+{% extends 'emails/email_base.html' %}
+
+{% block content %}
+
+    {% for weekday in weekdays %}
+        <p><strong>{{ weekday.date }}</strong>
+        {% for feast in weekday.filtered_feasts %}
+            <p>{{ feast.name }}</p>
+        {% endfor %}
+
+    {% endfor %}
+
+{% endblock %}

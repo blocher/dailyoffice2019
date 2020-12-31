@@ -27,6 +27,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY", "TESTKEY")
 
+SECURE_SSL_REDIRECT = env("SECURE_SSL_REDIRECT")
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", env("SECURE_PROXY_SSL_HEADER"))
+
 # SECURITY WARNING: d
 # Don't run with debug turned on in production!
 DEBUG = env("DEBUG")
