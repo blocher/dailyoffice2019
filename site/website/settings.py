@@ -14,7 +14,7 @@ import os
 
 import environ
 
-env = environ.Env(DEBUG=(bool, False), DEBUG_DATES=(bool, False), MODE=(str, "web"))
+env = environ.Env(DEBUG=(bool, False), DEBUG_DATES=(bool, False), MODE=(str, "web"), SECURE_SSL_REDIRECT=(bool, False))
 environ.Env.read_env()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
