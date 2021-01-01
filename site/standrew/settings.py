@@ -132,13 +132,3 @@ STATICFILES_DIRS = [
 ]
 
 SHELL_PLUS = "ipython"
-
-DEFAULT_FROM_EMAIL = "donotreply@mail.dailyoffice2019.com"
-DEFAULT_REPLY_TO_EMAIL = "feedback@dailyoffice2019.com"
-MAILGUN_DOMAIN = "mail.dailyoffice2019.com"
-MAILGUN_PUBLIC_KEY = "***REMOVED***"
-MAILGUN_PRIVATE_KEY = "***REMOVED***"
-
-DEF_TEMPLATES_SOURCE_PATH = "templates_sources"
-DEF_TEMPLATES_TARGET_PATH = "app/standrew/templates/emails_app"
-DEF_STATIC_TARGET_PATH = "app/static/emails_app"

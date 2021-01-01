@@ -294,3 +294,13 @@ mimetypes.add_type("image/svg+xml", ".svg", True)
 SWAGGER_SETTINGS = {"USE_SESSION_AUTH": False}
 
 BUGSNAG = {"api_key": env("BUGSNAG_KEY"), "project_root": BASE_DIR}
+
+DEFAULT_FROM_EMAIL = "donotreply@mail.dailyoffice2019.com"
+DEFAULT_REPLY_TO_EMAIL = "feedback@dailyoffice2019.com"
+MAILGUN_DOMAIN = "mail.dailyoffice2019.com"
+MAILGUN_PUBLIC_KEY = env("MAILGUN_PUBLIC_KEY")
+MAILGUN_PRIVATE_KEY = env("MAILGUN_PRIVATE_KEY")
+
+DEF_TEMPLATES_SOURCE_PATH = "templates_sources"
+DEF_TEMPLATES_TARGET_PATH = "app/standrew/templates/emails_app"
+DEF_STATIC_TARGET_PATH = "app/static/emails_app"

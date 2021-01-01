@@ -2,6 +2,8 @@ import calendar
 from datetime import datetime, timedelta
 from math import ceil
 
+import requests
+from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.functional import cached_property
 from googleapiclient.discovery import build
@@ -18,12 +20,37 @@ class SundayEmailModule(object):
     @cached_property
     def full_date_range(self):
         now = timezone.localtime(timezone.now())
-        now = datetime.strptime("{} {} {}".format(12, 26, 2020), "%m %d %Y")
+        # now = datetime.strptime("{} {} {}".format(12, 26, 2020), "%m %d %Y")
         return [(now + timedelta(days=x)).date() for x in range(9)]
+
+    def get_data(self):
+        raise NotImplementedError
+
+    def render(self):
+        pass
 
 
 class LiturgicalCalendarSundayEmailModule(SundayEmailModule):
-    pass
+    def get_data(self):
+        dates = self.full_date_range
+        weekdays = []
+        major_feast_names = []
+        for date in dates:
+            result = requests.get(
+                "http://api.dailyoffice2019.com/api/v1/calendar/{}-{}-{}".format(date.year, date.month, date.day)
+            )
+            if result.status_code != 200:
+                print("ERROR")
+                continue
+            content = result.json()
+            content["filtered_feasts"] = [
+                feast for feast in content["commemorations"] if "FERIA" not in feast["rank"]["name"]
+            ]
+            major_feast_names = major_feast_names + [
+                feast["name"] for feast in content["commemorations"] if int(feast["rank"]["precedence"]) <= 4
+            ]
+            weekdays.append(content)
+        return weekdays
 
 
 class BirthdaysSundayEmailModule(SundayEmailModule):
@@ -95,6 +122,9 @@ class BirthdaysSundayEmailModule(SundayEmailModule):
 
         return birthdays
 
+    def render(self):
+        html = render_to_string("emails/weekly_email.html", {"birthdays": self.get_data()})
+
 
 class StAndrewScheduleSundayEmailModule(SundayEmailModule):
     def get_tuesday(self):
@@ -104,5 +134,14 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
         return ceil(self.get_tuesday().day / 7)
 
     def get_data(self):
-        tuesday = self.get_tuesday()
-        print(self.get_tuesday(), self.get_tuesday_number())
+        tuesday_number = self.get_tuesday_number()
+        if tuesday_number in (1, 3):
+            return ["morningside_cell", "ohara_cell"]
+        if tuesday_number == 2:
+            return ["women"]
+        if tuesday_number == 4:
+            return ["men"]
+        if tuesday_number == 5 and timezone.now().year == "2021":
+            return ["both_cells"]
+        if tuesday_number == 5:
+            return ["none"]
