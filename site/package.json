@@ -31,6 +31,8 @@
     "capacitor-firebase-analytics": "^0.3.2",
     "clipboard-polyfill": "^2.8.6",
     "copy-webpack-plugin": "^6.2.1",
+    "gulp": "^4.0.2",
+    "mjml": "^4.8.1",
     "netlify-cli": "^2.65.5",
     "pretty-checkbox": "^3.0.3",
     "split-html": "^1.1.0",

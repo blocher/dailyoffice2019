@@ -2,6 +2,12 @@
 
 {% block content %}
 
+    {% for module in modules %}
+        <div>
+            {{ module }}
+        </div>
+    {% endfor %}
+
     {% for weekday in weekdays %}
         <p><strong>{{ weekday.date }}</strong>
         {% for feast in weekday.filtered_feasts %}

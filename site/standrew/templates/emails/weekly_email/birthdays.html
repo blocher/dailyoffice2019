@@ -1,13 +1,42 @@
-{% extends 'emails/email_base.html' %}
+{% load inlinecss mjml %}
+{% inlinecss  "css/email.css" %}
+<span class="events__title">Birthdays</span>
+<ul class="events__list">
+    <div class="events-container">
+        {% for birthday in birthdays %}
+        <li class="events__item">
+            <div class="events__item--top">
+                <span class="events__day">
+                    {{ birthday.7|date:"l, F j" }}
+                    {% if birthday.8 and birthday.8 <= 21 %}
+                        &nbsp;(Age {{ birthday.8}})
+                    {% endif %}
+                </span>
+                <span class="events__name">{{birthday.1}} {{ birthday.0 }}</span>
+                <span class="events__date">
+                {% if birthday.5 %}
+                     <a href="mailto:{{ birthday.5 }}">{{ birthday.5 }}</a>&nbsp;
+                {% endif %}
+                {% if birthday.6 %}
+                     <a href="tel:{{ birthday.6 }}">{{ birthday.6 }}</a>&nbsp;
+                {% endif %}
+                </span>
+            </div>
+            <div class="events__item--bottom">
+                {% if birthday.5 %}
+                     <a class="event_link" href="mailto:{{ birthday.5 }}"><span class="events__tag">Email</span></a>&nbsp;
+                {% endif %}
+                {% if birthday.6 %}
+                     <a class="event_link" href="tel:{{ birthday.6 }}"><span class="events__tag">Call</span></a>
+                <a class="event_link" href="sms:{{ birthday.6 }}"><span class="events__tag">Text</span></a>
+                {% endif %}
+            </div>
 
-{% block content %}
+        </li>
 
-    {% for weekday in weekdays %}
-        <p><strong>{{ weekday.date }}</strong>
-        {% for feast in weekday.filtered_feasts %}
-            <p>{{ feast.name }}</p>
+        {% empty %}
+        <p><em>No birthdays this week. :-(</em></p>
         {% endfor %}
-
-    {% endfor %}
-
-{% endblock %}
+    </div>
+</ul>
+{% endinlinecss %}

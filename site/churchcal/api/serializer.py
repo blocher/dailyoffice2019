@@ -52,9 +52,9 @@ class DaySerializer(serializers.Serializer):
 
     def get_date_description(self, obj):
         return {
-            "date": obj.date,
+            "date": obj.date.strftime("%Y-%-m-%-d"),
             "weekday": obj.date.strftime("%A"),
-            "month": obj.date.strftime("%-d"),
+            "month": obj.date.strftime("%-m"),
             "month_name": obj.date.strftime("%B"),
             "day": obj.date.strftime("%-d"),
             "year": obj.date.strftime("%Y"),

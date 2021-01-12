@@ -29,6 +29,7 @@ from django_distill import distill_path
 
 from churchcal.calculations import ChurchYear
 from office import views as office_views
+from standrew import views as standrew_views
 from website.api_urls import urlpatterns as api_urlpatterns
 
 # site.site_header = _("Elizabeth Locher's Sermon Archive")
@@ -407,6 +408,7 @@ urlpatterns = [
     # path("jet/", include("jet.urls", "jet")),
     path("admin/", admin.site.urls),
     # path("admin/", include("material.admin.urls")),
+    path("email", standrew_views.current_email),
     distill_path(
         "morning_prayer/<int:year>-<int:month>-<int:day>/",
         office_views.morning_prayer,

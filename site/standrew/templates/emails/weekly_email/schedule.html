@@ -1,0 +1,26 @@
+{% load inlinecss mjml %}
+{% inlinecss  "css/email.css" %}
+<span class="events__title">This Week's Schedule</span>
+<ul class="events__list">
+    <div class="events-container">
+        {% for meeting in schedule %}
+        <li class="events__item">
+            <div class="events__item--top">
+                <span class="events__day">{{ meeting.date|date:"l" }} {{ meeting.time }}</span>
+                <span class="events__name">{{ meeting.title }}</span>
+                <span class="events__date">{{ meeting.date }}</span>
+            </div>
+            <div class="events__item--bottom">
+            <a class="event_link" href="{{ meeting.zoom_link }}"><span class="events__tag">Zoom</span></a>
+            {% if meeting.slack_link %}
+                <a class="event_link" href="{{ meeting.slack_link }}" target="_blank"><span class="events__tag">Slack</span></a>
+            {% endif %}
+                </div>
+        </li>
+
+        {% empty %}
+        <p><em>There's nothing happening this week! :-(</em></p>
+        {% endfor %}
+    </div>
+</ul>
+{% endinlinecss %}

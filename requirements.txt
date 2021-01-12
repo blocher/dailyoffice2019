@@ -39,10 +39,12 @@ django-dotenv==1.4.2
 django-environ==0.4.5
 django-extensions==3.1.0
 django-filter==2.4.0
+django-inlinecss==0.3.0
 django-js-asset==1.2.2
 django-material-admin==1.7.16
 django-mathfilters==1.0.0
 django-meta==2.0.0
+django-mjml==0.10.2
 django-model-utils==4.1.1
 django-richtextfield==1.6
 django-robots==4.0
@@ -85,6 +87,7 @@ lxml==4.6.2
 mammoth==1.4.13
 Markdown==3.3.3
 MarkupSafe==1.1.1
+mjml==0.5.3
 multi-rake==0.0.1
 murmurhash==1.0.5
 networkx==2.5

@@ -1,24 +1,37 @@
-{% load inlinecss %}
-{% inlinecss "css/email.css" %}
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-    </head>
-    <body style="padding:5%; padding-top:0; font-family: 'Josefin Sans', sans-serif; font-size: 14px; line-height: 1.42857143; color: #333; background-color: #fff;">
-      <div style="margin-top: 3%; border-radius:10px; border:1px solid lightgray; padding:2%;">
-          <div style="width:100%; display:inline; float: left; text-align: left;">
-            <img width="150px" id="briefcase" src="https://www.scotsman.com/images-e.jpimedia.uk/imagefetch/http://www.scotsman.com/webimage/Prestige.Item.1.71310070!image/image.jpg?crop=982:524,smart&width=100"/>
-          </div>
-          <div style="padding-right:7%; padding-left:7%;">
-              {% block content %}
-              {% endblock %}
-          </div>
-          <hr style="border:1px dashed lightgray; width:100%; margin-top:5%;">
-          <div style="margin-top:20px;">
-            <h3 style="font-family: 'Josefin Sans', sans-serif; font-weight: 100; text-align:center; margin-bottom:0px;">The Community of St. Andrew</h3>
-          </div>
-      </div>
-    </body>
-</html>
-{% endinlinecss %}
+{% load inlinecss mjml %}
+
+{% mjml %}
+    <mjml>
+    <mj-body>
+        <mj-container >
+            <mj-section>
+                <mj-column>
+                    <mj-text>
+                        &nbsp;
+                    </mj-text>
+                </mj-column>
+            </mj-section>
+
+            <mj-section>
+                <mj-column>
+                    <mj-image src="https://www.historic-uk.com/wp-content/uploads/2017/04/st-andrew.jpg" />
+                    <mj-text align="center" padding="0">
+                        <h2>The Community of St. Andrew</h2>
+                    </mj-text>
+                </mj-column>
+            </mj-section>
+            <mj-wrapper border="2px dotted gray">
+                <mj-section  >
+                    <mj-column>
+                        <mj-text>
+                            <h1>The Week Ahead</h1>
+                            {% block content %}
+                            {% endblock %}
+                        </mj-text>
+                    </mj-column>
+                </mj-section>
+            </mj-wrapper>
+        </mj-container>
+    </mj-body>
+    </mjml>
+{% endmjml %}

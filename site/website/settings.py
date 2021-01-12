@@ -51,6 +51,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    "mjml",
     "drf_yasg",
     "corsheaders",
     "ckeditor",
@@ -66,6 +67,7 @@ INSTALLED_APPS = [
     "django.contrib.sitemaps",
     "django.contrib.staticfiles",
     "django_extensions",
+    "django_inlinecss",
     "rest_framework",
     "website",
     # "sermons",
@@ -82,6 +84,8 @@ INSTALLED_APPS = [
     "django_distill",
     "webpack_loader",
     "robots",
+    "standrew",
+
 ]
 
 if DEBUG:
@@ -304,3 +308,15 @@ MAILGUN_PRIVATE_KEY = env("MAILGUN_PRIVATE_KEY")
 DEF_TEMPLATES_SOURCE_PATH = "templates_sources"
 DEF_TEMPLATES_TARGET_PATH = "app/standrew/templates/emails_app"
 DEF_STATIC_TARGET_PATH = "app/static/emails_app"
+
+
+MJML_BACKEND_MODE = 'httpserver'
+MJML_HTTPSERVERS = [
+    {
+        'URL': 'https://api.mjml.io/v1/render',  # official MJML API
+        'HTTP_AUTH': (env("MJML_APPLICATION_ID"), env("MJML_SECRET_KEY")),
+    },
+]
+
+
+ZOOM_LINK = "https://us02web.zoom.us/j/99272220701?pwd=M2g5bEtCbVFVeSs4M2ZMOUtZNktHQT09"
