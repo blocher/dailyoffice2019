@@ -319,7 +319,7 @@ MJML_HTTPSERVERS = [
 ]
 
 
-ZOOM_LINK = env("Zoom Link")
+ZOOM_LINK = env("ZOOM_LINK")
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = env("EMAIL_HOST") # 'smtp.gmail.com'
