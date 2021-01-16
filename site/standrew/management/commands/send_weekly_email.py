@@ -1,8 +1,9 @@
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage, EmailMultiAlternatives
 from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
 from html2text import html2text
 from standrew.email import weekly_email
+from website.settings import DEBUG
 
 
 class Command(BaseCommand):
@@ -18,6 +19,20 @@ class Command(BaseCommand):
         html_message = render_to_string("emails/weekly_email.html", context)
         subject = "St. Andrew's Week Ahead: {}".format(subject)
         message = html2text(html_message)
-        email_from = 'blocher@gmail.com'
-        recipient_list = ['blocher@gmail.com', ]
-        send_mail(subject, message, email_from, recipient_list, html_message=html_message)
+        email_from = '"Community of St. Andrew" <community-of-st-andrew-all@googlegroups.com>'
+        recipient_list = ['community-of-st-andrew-all@googlegroups.com']
+        if DEBUG:
+            recipient_list = ['blocher@gmail.com']
+        bcc_list = ['blocher@gmail.com']
+        reply_to = ['community-of-st-andrew-all@googlegroups.com']
+
+        email = EmailMultiAlternatives(
+            subject,
+            message,
+            email_from,
+            recipient_list,
+            bcc_list,
+            reply_to=reply_to,
+        )
+        email.attach_alternative(html_message, "text/html")
+        email.send()

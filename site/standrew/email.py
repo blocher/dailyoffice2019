@@ -24,7 +24,7 @@ class SundayEmailModule(object):
     @cached_property
     def full_date_range(self):
         now = timezone.localtime(timezone.now())
-        now = datetime.strptime("{} {} {}".format(5, 11, 2021), "%m %d %Y")
+        # now = datetime.strptime("{} {} {}".format(5, 11, 2021), "%m %d %Y")
         return [(now + timedelta(days=x)).date() for x in range(9)]
 
     def get_data(self):
