@@ -14,7 +14,7 @@ import os
 
 import environ
 
-env = environ.Env(DEBUG=(bool, False), DEBUG_DATES=(bool, False), MODE=(str, "web"), SECURE_SSL_REDIRECT=(bool, False))
+env = environ.Env(DEBUG=(bool, False), DEBUG_DATES=(bool, False), MODE=(str, "web"), SECURE_SSL_REDIRECT=(bool, False), EMAIL_USE_TLS=(bool, True), EMAIL_USE_SSL=(bool, False))
 environ.Env.read_env()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -322,10 +322,11 @@ MJML_HTTPSERVERS = [
 ZOOM_LINK = "https://us02web.zoom.us/j/99272220701?pwd=M2g5bEtCbVFVeSs4M2ZMOUtZNktHQT09"
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_USE_TLS = True
-EMAIL_PORT = 587
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''
-EMAIL_USE_SSL = False
+EMAIL_HOST = env("EMAIL_HOST") # 'smtp.gmail.com'
+EMAIL_USE_TLS = env("EMAIL_USE_TLS")
+EMAIL_USE_SSL = env("EMAIL_USE_SSL") #False
+EMAIL_PORT = env("EMAIL_PORT") #587
+EMAIL_HOST_USER = env("EMAIL_HOST_USER") #587
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD") #587
+
 
