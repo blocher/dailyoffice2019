@@ -319,7 +319,7 @@ MJML_HTTPSERVERS = [
 ]
 
 
-ZOOM_LINK = "https://us02web.zoom.us/j/99272220701?pwd=M2g5bEtCbVFVeSs4M2ZMOUtZNktHQT09"
+ZOOM_LINK = env("Zoom Link")
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = env("EMAIL_HOST") # 'smtp.gmail.com'
