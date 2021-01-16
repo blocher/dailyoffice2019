@@ -108,7 +108,6 @@ class Commemoration(BaseModel):
         return True
 
     def get_mass_readings_for_year(self, year, time="morning"):
-
         query = MassReading.objects.filter(years__contains=year, commemoration=self).order_by("reading_number")
 
         if year in ["A", "C"] and time == "morning":
@@ -137,6 +136,7 @@ class Commemoration(BaseModel):
         if self.name in ["Eve of Palm Sunday", "Palm Sunday"]:
             query = query.filter(service="Word")
 
+        print('AAA', query.all())
         return query.all()
 
     def __repr__(self):

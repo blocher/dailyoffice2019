@@ -22,7 +22,7 @@ class CommemorationSerializer(serializers.Serializer):
 
     def get_links(self, obj):
         links = [obj.link_1, obj.link_2, obj.link_3]
-        return [link.lower() for link in links if link]
+        return [link for link in links if link]
 
     def get_collects(self, obj):
         return {
@@ -49,6 +49,7 @@ class DaySerializer(serializers.Serializer):
     season = SeasonSerializer()
     fast = serializers.SerializerMethodField()
     commemorations = CommemorationSerializer(many=True, source="all")
+    mass_readings = serializers.SerializerMethodField()
 
     def get_date_description(self, obj):
         return {
@@ -66,3 +67,6 @@ class DaySerializer(serializers.Serializer):
             "fast_day_description": obj.FAST_DAYS_RANKS[obj.fast_day],
             "fast_day_reason": obj.fast_day_reasons,
         }
+
+    def get_mass_readings(self, obj):
+        return [reading.long_citation for reading in obj.mass_readings]

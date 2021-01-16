@@ -4,7 +4,7 @@
 <ul class="events__list">
     <div class="events-container">
         {% for birthday in birthdays %}
-        <li class="events__item">
+        <li class="events__item" >
             <div class="events__item--top">
                 <span class="events__day">
                     {{ birthday.7|date:"l, F j" }}
@@ -35,7 +35,7 @@
         </li>
 
         {% empty %}
-        <p><em>No birthdays this week. :-(</em></p>
+        <p class="no-items"><em>No birthdays this week. :-(</em></p>
         {% endfor %}
     </div>
 </ul>

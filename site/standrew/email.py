@@ -1,5 +1,5 @@
-import calendar
 from datetime import datetime, timedelta
+
 from math import ceil
 
 import requests
@@ -13,6 +13,10 @@ from website.settings import GOOGLE_API_KEY, ZOOM_LINK
 
 
 class SundayEmailModule(object):
+
+    def __init__(self, *args, **kwargs):
+        self.subjects = None
+
     @cached_property
     def date_range(self):
         return [self.full_date_range[0], self.full_date_range[-1]]
@@ -20,7 +24,7 @@ class SundayEmailModule(object):
     @cached_property
     def full_date_range(self):
         now = timezone.localtime(timezone.now())
-        now = datetime.strptime("{} {} {}".format(5, 13, 2021), "%m %d %Y")
+        now = datetime.strptime("{} {} {}".format(5, 11, 2021), "%m %d %Y")
         return [(now + timedelta(days=x)).date() for x in range(9)]
 
     def get_data(self):
@@ -35,6 +39,7 @@ class LiturgicalCalendarSundayEmailModule(SundayEmailModule):
         dates = self.full_date_range
         weekdays = []
         major_feast_names = []
+        subjects = []
         for date in dates:
             result = requests.get(
                 "http://api.dailyoffice2019.com/api/v1/calendar/{}-{}-{}".format(date.year, date.month, date.day)
@@ -49,8 +54,9 @@ class LiturgicalCalendarSundayEmailModule(SundayEmailModule):
             major_feast_names = major_feast_names + [
                 feast["name"] for feast in content["commemorations"] if int(feast["rank"]["precedence"]) <= 4
             ]
+            subjects = subjects + [feast["name"]  for feast in content["commemorations"] if int(feast["rank"]["precedence"]) <= 4 and "SUNDAY" not in feast["rank"]["name"]]
             weekdays.append(content)
-            print(weekdays)
+        self.subjects = subjects
         return weekdays
 
     def render(self):
@@ -127,6 +133,7 @@ class BirthdaysSundayEmailModule(SundayEmailModule):
             self.decorate_birthday(birthday) for birthday in result["values"] if self.birthday_in_range(birthday)
         ]
         birthdays = sorted(birthdays, key=lambda birthday: (birthday[2], birthday[3]))
+        self.subjects = ["{} 🎂 ({})".format(birthday[1], birthday[7].strftime("%a %-d")) for birthday in birthdays]
         return birthdays
 
     def render(self):
@@ -182,6 +189,69 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
             ]
         return []
 
+    def get_notes(self):
+
+        SPREADSHEET_ID = "1lRsThD20a2thgtJk97J_bqEBxJBCqXPIg_UkFAqzMq8"
+        RANGE_NAME = "E2:F50"
+        service = build("sheets", "v4", developerKey=GOOGLE_API_KEY)
+        sheet = service.spreadsheets()
+
+        try:
+            result = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=RANGE_NAME).execute()
+        except HttpError as e:
+            print(e)
+            return
+
+        tuesday = self.get_tuesday()
+        for day in result["values"]:
+            date = datetime.strptime(day[0], '%A, %B %d, %Y').date()
+            if tuesday == date:
+                return day[1]
+
+    def get_leader(self, cell):
+        SPREADSHEET_ID = "1lRsThD20a2thgtJk97J_bqEBxJBCqXPIg_UkFAqzMq8"
+        RANGE_NAME = "A2:C50"
+        service = build("sheets", "v4", developerKey=GOOGLE_API_KEY)
+        sheet = service.spreadsheets()
+
+        try:
+            result = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=RANGE_NAME).execute()
+        except HttpError as e:
+            print(e)
+            return
+
+        tuesday = self.get_tuesday()
+        for day in result["values"]:
+            date = datetime.strptime(day[0], '%A, %B %d, %Y').date()
+            if tuesday == date:
+                if cell == "morningside":
+                    return day[1]
+                if cell == "ohara":
+                    return day[2]
+
+        return "?"
+
+    def tuesday_subjects(self):
+        tuesday_number = self.get_tuesday_number()
+        if tuesday_number in (1, 3):
+            return ["Cell meetings (Tue)"]
+        if tuesday_number == 2:
+            return ["Women's group (Tue)"]
+        if tuesday_number == 4:
+            return ["Men's group (Tue)"]
+        if tuesday_number == 5 and timezone.now().year == "2021":
+            return ["Discussion's group (Tue)"]
+
+        return ["No Tuesday meeting this week"]
+
+    def friday_subjects(self):
+        if self.get_friday_type() == "game":
+            return ["Game night (Fri)"]
+        if self.get_friday_type() == "movie":
+            return ["Movie night (Fri)"]
+        return []
+
+
     def get_required(self):
         tuesday_number = self.get_tuesday_number()
         if tuesday_number in (1, 3):
@@ -192,6 +262,8 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                     "time": "6 to 8 pm",
                     "zoom_link": ZOOM_LINK,
                     "optional": False,
+                    "leader": self.get_leader('morningside'),
+                    "notes": self.get_notes(),
                 },
                 {
                     "title": "O'Hara Cell Meeting",
@@ -199,6 +271,8 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                     "time": "8:30 to 10:30 pm",
                     "zoom_link": ZOOM_LINK,
                     "optional": False,
+                    "leader": self.get_leader('ohara'),
+                    "notes": self.get_notes(),
                 },
             ]
         if tuesday_number == 2:
@@ -209,6 +283,7 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                     "time": "7 to 9 pm",
                     "zoom_link": ZOOM_LINK,
                     "optional": False,
+                    "notes": self.get_notes(),
                 },
             ]
         if tuesday_number == 4:
@@ -219,6 +294,7 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                     "time": "7 to 9 pm",
                     "zoom_link": ZOOM_LINK,
                     "optional": False,
+                    "notes": self.get_notes(),
                 },
             ]
         if tuesday_number == 5 and timezone.now().year == "2021":
@@ -235,6 +311,7 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
         return []
 
     def get_data(self):
+        self.subjects = self.tuesday_subjects() + self.friday_subjects()
         return self.get_required() + self.get_optional()
 
 
@@ -243,4 +320,4 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
 
 
 def weekly_email():
-    return [StAndrewScheduleSundayEmailModule(), BirthdaysSundayEmailModule(), LiturgicalCalendarSundayEmailModule() ]
+    return [StAndrewScheduleSundayEmailModule(), BirthdaysSundayEmailModule(), LiturgicalCalendarSundayEmailModule()]

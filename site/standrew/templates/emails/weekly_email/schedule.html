@@ -4,11 +4,19 @@
 <ul class="events__list">
     <div class="events-container">
         {% for meeting in schedule %}
-        <li class="events__item">
+        {% if meeting.optional %}
+        <li class="events__item events__item__optional">
+        {%else %}
+        <li class="events__item events__item__required">
+        {%endif %}
             <div class="events__item--top">
                 <span class="events__day">{{ meeting.date|date:"l" }} {{ meeting.time }}</span>
-                <span class="events__name">{{ meeting.title }}</span>
+                <span class="events__name">{{ meeting.title }}{% if meeting.optional %} <small><em>Optional</em></small> {% endif %}{% if meeting.leader %} <small><em>Liturgist: {{ meeting.leader }} </em></small>{% endif %}</span>
                 <span class="events__date">{{ meeting.date }}</span>
+                {% if meeting.notes %}
+                    <span class="events__collect">{{ meeting.notes|safe }}</span>
+                {% endif %}
+
             </div>
             <div class="events__item--bottom">
             <a class="event_link" href="{{ meeting.zoom_link }}"><span class="events__tag">Zoom</span></a>

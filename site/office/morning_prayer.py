@@ -462,6 +462,7 @@ class MPPsalms(OfficeSection):
         mass_psalm = ""
         mass_heading = ""
         for reading in self.date.mass_readings:
+            print(self.date, type(self.date))
             if reading.reading_type == "psalm":
                 mass_psalm = reading.long_text
                 mass_heading = "The Psalm Appointed"

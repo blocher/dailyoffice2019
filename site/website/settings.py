@@ -320,3 +320,12 @@ MJML_HTTPSERVERS = [
 
 
 ZOOM_LINK = "https://us02web.zoom.us/j/99272220701?pwd=M2g5bEtCbVFVeSs4M2ZMOUtZNktHQT09"
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_SSL = False
+

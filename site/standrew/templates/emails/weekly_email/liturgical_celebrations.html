@@ -5,43 +5,56 @@
     <div class="events-container">
         {% for day in days %}
 
-                <li class="events__item">
-                    <div class="events__item--top">
+        {% if day.filtered_feasts.0 %}
+        <li class="events__item events__item__{{ day.filtered_feasts.0.colors.0 }}">
+        {% else %}
+        <li class="events__item events__item__{{ day.season.colors.0 }}">
+        {% endif %}
+            <div class="events__item--top">
                         <span class="events__day">
                             {{ day.date_description.weekday }}, {{ day.date_description.month_name }} {{ day.date_description.day }}
                         </span>
-                        {% for feast in day.filtered_feasts %}
-                            {% if feast.rank.precedence <= 5 %}
-                                <span class="events__name">{{feast.name}}
-                            {% else %}
-                                <span class="events__name__subdued">{{feast.name}}
-                            {% endif %}
-                            {% for link in feast.links %}
-                                <a target="_blank" href="{{ link }}">Bio</a>&nbsp;
-                            {% endfor %}
-                                </span>
+                {% for feast in day.filtered_feasts %}
+                    {% if feast.rank.precedence <= 5 %}
+                        <span class="events__name">{{feast.name}}
+                    {% else %}
+                            <span class="events__name__subdued">{{feast.name}}
+                    {% endif %}
+                    {% for link in feast.links %}
+                       <small><a href="{{ link }}" target="_blank">Read Biography</a>&nbsp;</small>
+                    {% endfor %}
+                    </span>
+                    {% if feast.rank.precedence <= 6 %}
+                        <span class="events__collect">{{ feast.collects.collect }}</span>
+                    {% endif %}
+                    {% if feast.rank.precedence <= 4 %}
+                            <span class="events__collect">
+                        {% for reading in day.mass_readings %}
+                            <a target="_blank" href="https://esv.org/{{ reading|urlencode }}">{{ reading }}</a>
                         {% endfor %}
-                        <span class="events__date">
-                        {% if birthday.5 %}
-                             <a href="mailto:{{ birthday.5 }}">{{ birthday.5 }}</a>&nbsp;
-                        {% endif %}
-                        {% if birthday.6 %}
-                             <a href="tel:{{ birthday.6 }}">{{ birthday.6 }}</a>&nbsp;
-                        {% endif %}
-                        </span>
-                    </div>
-                    <div class="events__item--bottom">
-                        {% for feast in day.filtered_feasts %}
-                            {% for link in feast.links %}
+                            </span>
+                    {% endif %}
+                {% empty %}
+                    <span class="events__name__subdued"><em>feria</em></span>
+                {% endfor %}
 
-                            {% endfor %}
-                        {% endfor %}
-                        <a class="event_link" target="_blank" href="https://www.dailyoffice2019.com/morning_prayer/{{ day.date_description.date }}/"><span class="events__tag">Morning Prayer</span></a>&nbsp;
-                        <a class="event_link" target="_blank" href="https://www.dailyoffice2019.com/evening_prayer/{{ day.date_description.date }}/"><span class="events__tag">Evening Prayer</span></a>
-                </li>
+            </div>
+            <div class="events__item--bottom">
+                {% for feast in day.filtered_feasts %}
+                {% for link in feast.links %}
+
+                {% endfor %}
+                {% endfor %}
+                <a class="event_link"
+                   href="https://www.dailyoffice2019.com/morning_prayer/{{ day.date_description.date }}/"
+                   target="_blank"><span class="events__tag">Morning Prayer</span></a>&nbsp;
+                <a class="event_link"
+                   href="https://www.dailyoffice2019.com/evening_prayer/{{ day.date_description.date }}/"
+                   target="_blank"><span class="events__tag">Evening Prayer</span></a>
+        </li>
 
         {% empty %}
-        <p><em>No birthdays this week. :-(</em></p>
+        <p><em>No liturgical commemorations this week. :-(</em></p>
         {% endfor %}
     </div>
 </ul>
