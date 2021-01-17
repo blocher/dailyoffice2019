@@ -3,6 +3,7 @@ import calendar
 from django.contrib import admin
 
 from churchcal.models import Commemoration, SanctoraleCommemoration
+from django.forms import ModelForm, forms
 
 
 class CommemorationAdmin(admin.ModelAdmin):

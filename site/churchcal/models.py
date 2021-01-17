@@ -1,6 +1,7 @@
 from builtins import NotImplementedError
 from datetime import date, datetime, timedelta
 
+from ckeditor.fields import RichTextField
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -72,7 +73,7 @@ class Commemoration(BaseModel):
     link_1 = models.URLField(null=True, blank=True)
     link_2 = models.URLField(null=True, blank=True)
     link_3 = models.URLField(null=True, blank=True)
-    biography = models.TextField(blank=True, null=True)
+    biography = RichTextField(blank=True, null=True)
 
     def _year_from_advent_year(self, year, month, day):
 
