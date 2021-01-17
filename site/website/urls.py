@@ -409,6 +409,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     # path("admin/", include("material.admin.urls")),
     path("email", standrew_views.current_email),
+    path("feast_email", standrew_views.feast_email),
     distill_path(
         "morning_prayer/<int:year>-<int:month>-<int:day>/",
         office_views.morning_prayer,

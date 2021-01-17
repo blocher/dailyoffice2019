@@ -13,7 +13,6 @@ from website.settings import GOOGLE_API_KEY, ZOOM_LINK
 
 
 class SundayEmailModule(object):
-
     def __init__(self, *args, **kwargs):
         self.subjects = None
 
@@ -54,13 +53,17 @@ class LiturgicalCalendarSundayEmailModule(SundayEmailModule):
             major_feast_names = major_feast_names + [
                 feast["name"] for feast in content["commemorations"] if int(feast["rank"]["precedence"]) <= 4
             ]
-            subjects = subjects + [feast["name"]  for feast in content["commemorations"] if int(feast["rank"]["precedence"]) <= 4 and "SUNDAY" not in feast["rank"]["name"]]
+            subjects = subjects + [
+                feast["name"]
+                for feast in content["commemorations"]
+                if int(feast["rank"]["precedence"]) <= 4 and "SUNDAY" not in feast["rank"]["name"]
+            ]
             weekdays.append(content)
         self.subjects = subjects
         return weekdays
 
     def render(self):
-        return render_to_string('emails/weekly_email/liturgical_celebrations.html', {"days": self.get_data()})
+        return render_to_string("emails/weekly_email/liturgical_celebrations.html", {"days": self.get_data()})
 
 
 class BirthdaysSundayEmailModule(SundayEmailModule):
@@ -82,7 +85,6 @@ class BirthdaysSundayEmailModule(SundayEmailModule):
         if now.month == 12 and birthday[2] == 1:
             year = year + 1
         return datetime.strptime("{} {} {}".format(birthday[2], birthday[3], year), "%m %d %Y").date()
-
 
     def birthday_to_born_date(self, birthday):
         try:
@@ -137,9 +139,7 @@ class BirthdaysSundayEmailModule(SundayEmailModule):
         return birthdays
 
     def render(self):
-        return render_to_string('emails/weekly_email/birthdays.html', {"birthdays": self.get_data()})
-
-
+        return render_to_string("emails/weekly_email/birthdays.html", {"birthdays": self.get_data()})
 
 
 class StAndrewScheduleSundayEmailModule(SundayEmailModule):
@@ -153,7 +153,7 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
         return ceil(self.get_tuesday().day / 7)
 
     def get_friday_type(self):
-        first_friday = datetime.strptime('Jan 15 2021  12:00AM', '%b %d %Y %I:%M%p').date()
+        first_friday = datetime.strptime("Jan 15 2021  12:00AM", "%b %d %Y %I:%M%p").date()
         current_friday = self.get_friday()
         difference = (current_friday - first_friday).days / 7
         if difference % 4 == 0:
@@ -161,7 +161,6 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
         if difference % 2 == 0:
             return "movie"
         return "none"
-
 
     def get_optional(self):
 
@@ -204,7 +203,7 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
 
         tuesday = self.get_tuesday()
         for day in result["values"]:
-            date = datetime.strptime(day[0], '%A, %B %d, %Y').date()
+            date = datetime.strptime(day[0], "%A, %B %d, %Y").date()
             if tuesday == date:
                 return day[1]
 
@@ -222,7 +221,7 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
 
         tuesday = self.get_tuesday()
         for day in result["values"]:
-            date = datetime.strptime(day[0], '%A, %B %d, %Y').date()
+            date = datetime.strptime(day[0], "%A, %B %d, %Y").date()
             if tuesday == date:
                 if cell == "morningside":
                     return day[1]
@@ -251,7 +250,6 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
             return ["Movie night (Fri)"]
         return []
 
-
     def get_required(self):
         tuesday_number = self.get_tuesday_number()
         if tuesday_number in (1, 3):
@@ -262,7 +260,7 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                     "time": "6 to 8 pm",
                     "zoom_link": ZOOM_LINK,
                     "optional": False,
-                    "leader": self.get_leader('morningside'),
+                    "leader": self.get_leader("morningside"),
                     "notes": self.get_notes(),
                 },
                 {
@@ -271,7 +269,7 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                     "time": "8:30 to 10:30 pm",
                     "zoom_link": ZOOM_LINK,
                     "optional": False,
-                    "leader": self.get_leader('ohara'),
+                    "leader": self.get_leader("ohara"),
                     "notes": self.get_notes(),
                 },
             ]
@@ -314,9 +312,46 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
         self.subjects = self.tuesday_subjects() + self.friday_subjects()
         return self.get_required() + self.get_optional()
 
+    def render(self):
+        return render_to_string("emails/weekly_email/schedule.html", {"schedule": self.get_data()})
+
+
+class CommemorationDailyEmailModule(object):
+    def subject(self):
+        return "Subject"
+
+    @cached_property
+    def should_send(self):
+        return True if self.data else False
+
+    @cached_property
+    def data(self):
+
+        date = timezone.now()
+        date = datetime.strptime("{} {} {}".format(1, 18, 2021), "%m %d %Y")
+        result = requests.get(
+            "http://api.dailyoffice2019.com/api/v1/calendar/{}-{}-{}".format(date.year, date.month, date.day)
+        )
+        if result.status_code != 200:
+            print("ERROR")
+            return
+        content = result.json()
+        major_feasts = [
+            feast
+            for feast in content["commemorations"]
+            if int(feast["rank"]["precedence"]) <= 4 and feast["rank"]["name"] != "SUNDAY"
+        ]
+        return {
+            "day": content,
+            "feasts": major_feasts,
+        }
 
     def render(self):
-        return render_to_string('emails/weekly_email/schedule.html', {"schedule": self.get_data()})
+        if self.should_send:
+            print(self.data)
+            return render_to_string("emails/weekly_email/major_feast.html", self.data)
+        else:
+            return "There are no feasts today."
 
 
 def weekly_email():

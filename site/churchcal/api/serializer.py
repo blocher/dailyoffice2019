@@ -69,4 +69,4 @@ class DaySerializer(serializers.Serializer):
         }
 
     def get_mass_readings(self, obj):
-        return [reading.long_citation for reading in obj.mass_readings]
+        return [{"citation": reading.long_citation, "text": reading.long_text} for reading in obj.mass_readings]

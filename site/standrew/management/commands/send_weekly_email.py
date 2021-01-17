@@ -14,17 +14,17 @@ class Command(BaseCommand):
         content = [module.render() for module in modules]
         subjects = ["; ".join(module.subjects) for module in modules if module.subjects]
         subject = "; ".join(subjects)
-        context = {"modules": content}
+        context = {"modules": content, "heading": "The Week Ahead"}
 
         html_message = render_to_string("emails/weekly_email.html", context)
         subject = "St. Andrew's Week Ahead: {}".format(subject)
         message = html2text(html_message)
         email_from = '"Community of St. Andrew" <community-of-st-andrew-all@googlegroups.com>'
-        recipient_list = ['community-of-st-andrew-all@googlegroups.com']
+        recipient_list = ["community-of-st-andrew-all@googlegroups.com"]
         if DEBUG:
-            recipient_list = ['blocher@gmail.com']
-        bcc_list = ['blocher@gmail.com']
-        reply_to = ['community-of-st-andrew-all@googlegroups.com']
+            recipient_list = ["blocher@gmail.com"]
+        bcc_list = ["blocher@gmail.com"]
+        reply_to = ["community-of-st-andrew-all@googlegroups.com"]
 
         email = EmailMultiAlternatives(
             subject,

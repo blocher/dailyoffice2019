@@ -1,0 +1,15 @@
+{% for feast in feasts %}
+
+    <h2>{{ feast.name }}</h2>
+    <h3>Collect of the Day</h3>
+    <p>{{ feast.collects.collect }}</p>
+    <h3>Biography</h3>
+        <p>Biography goes here</p>
+    <h3>Readings</h3>
+    {% for reading in day.mass_readings %}
+        <h4>{{ reading.citation}}</h4>
+        {{ reading }}
+    {% endfor %}
+
+
+{% endfor %}
