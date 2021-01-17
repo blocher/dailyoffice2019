@@ -317,18 +317,23 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
 
 
 class CommemorationDailyEmailModule(object):
+    @cached_property
     def subject(self):
-        return "Subject"
+        if not self.data["feasts"]:
+            return None
+        feasts = [feast["name"] for feast in self.data["feasts"]]
+        feasts = "; ".join(feasts)
+        return "Happy Feast Day: {}".format(feasts)
 
     @cached_property
     def should_send(self):
-        return True if self.data else False
+        return True if self.data["feasts"] else False
 
     @cached_property
     def data(self):
 
         date = timezone.now()
-        date = datetime.strptime("{} {} {}".format(1, 18, 2021), "%m %d %Y")
+        # date = datetime.strptime("{} {} {}".format(1, 18, 2021), "%m %d %Y")
         result = requests.get(
             "http://api.dailyoffice2019.com/api/v1/calendar/{}-{}-{}".format(date.year, date.month, date.day)
         )
@@ -344,11 +349,11 @@ class CommemorationDailyEmailModule(object):
         return {
             "day": content,
             "feasts": major_feasts,
+            "today": timezone.now(),
         }
 
     def render(self):
         if self.should_send:
-            print(self.data)
             return render_to_string("emails/weekly_email/major_feast.html", self.data)
         else:
             return "There are no feasts today."
