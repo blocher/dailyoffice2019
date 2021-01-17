@@ -4,11 +4,13 @@
 
 <div class="individual">
     <h1>{{ feast.name }}</h1>
-    <h2>Collect of the Day</h2>
-    <p>{{ feast.collects.collect }}</p>
-    <h2>Biography</h2>
-        <p>Biography goes here</p>
-    <h2>Readings</h2>
+    <div class="reading">
+        <p>{{ feast.collects.collect }}</p>
+    </div>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Saint_Peter_A33446.jpg/1024px-Saint_Peter_A33446.jpg">
+    {% if feast.biography %}
+        {{ feast.biography|safe }}
+    {% endif %}
     {% for reading in day.mass_readings %}
         <div class="reading">
             <h4>{{ reading.citation}}</h4>

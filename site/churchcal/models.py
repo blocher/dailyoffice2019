@@ -74,6 +74,7 @@ class Commemoration(BaseModel):
     link_2 = models.URLField(null=True, blank=True)
     link_3 = models.URLField(null=True, blank=True)
     biography = RichTextField(blank=True, null=True)
+    image_link = models.URLField(null=True, blank=True)
 
     def _year_from_advent_year(self, year, month, day):
 

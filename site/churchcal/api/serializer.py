@@ -16,6 +16,7 @@ class CommemorationSerializer(serializers.Serializer):
     links = serializers.SerializerMethodField()
     collects = serializers.SerializerMethodField()
     biography = serializers.CharField()
+    image_link = serializers.URLField()
 
     def get_colors(self, obj):
         colors = [obj.color, obj.additional_color, obj.alternate_color, obj.alternate_color_2]
