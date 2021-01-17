@@ -1,15 +1,21 @@
+{% load inlinecss mjml %}
+{% inlinecss  "css/email.css" %}
 {% for feast in feasts %}
 
-    <h2>{{ feast.name }}</h2>
-    <h3>Collect of the Day</h3>
+<div class="individual">
+    <h1>{{ feast.name }}</h1>
+    <h2>Collect of the Day</h2>
     <p>{{ feast.collects.collect }}</p>
-    <h3>Biography</h3>
+    <h2>Biography</h2>
         <p>Biography goes here</p>
-    <h3>Readings</h3>
+    <h2>Readings</h2>
     {% for reading in day.mass_readings %}
-        <h4>{{ reading.citation}}</h4>
-        {{ reading }}
+        <div class="reading">
+            <h4>{{ reading.citation}}</h4>
+            {{ reading.text|safe }}
+        </div>
     {% endfor %}
-
+</div>
 
 {% endfor %}
+{% endinlinecss %}

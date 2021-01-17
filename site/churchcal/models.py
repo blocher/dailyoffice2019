@@ -72,6 +72,7 @@ class Commemoration(BaseModel):
     link_1 = models.URLField(null=True, blank=True)
     link_2 = models.URLField(null=True, blank=True)
     link_3 = models.URLField(null=True, blank=True)
+    biography = models.TextField(blank=True, null=True)
 
     def _year_from_advent_year(self, year, month, day):
 
@@ -136,7 +137,7 @@ class Commemoration(BaseModel):
         if self.name in ["Eve of Palm Sunday", "Palm Sunday"]:
             query = query.filter(service="Word")
 
-        print('AAA', query.all())
+        print("AAA", query.all())
         return query.all()
 
     def __repr__(self):
