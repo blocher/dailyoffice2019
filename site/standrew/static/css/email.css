@@ -231,3 +231,27 @@ a.event_link {
 .no-items {
 	margin: 0 0 20px 0;
 }
+
+.individual a { color: #c73036; font-family: serif; text-decoration: underline; }
+.individual a:hover { color: #333333; text-decoration: underline; }
+
+.individual .reading {
+	background: #DCDCDC;
+	margin: 20px 0;
+	padding: 10px;
+	border: 1px solid black;
+	border-radius: 10px;
+}
+.individual h1 { color: #333333; font-family: 'Bitter', serif; font-size: 30px; font-weight: bold; line-height: 35px; margin: 10px 0 10px; }
+
+.individual h2 { text-transform: uppercase; color: #333333; font-family: 'Bitter', serif; font-size: 24px; font-weight: bolder; line-height: 27px; margin: 20px 0 10px; }
+
+.individual h3 {  color: #333333; font-family: 'Bitter', serif; font-size: 24px; font-weight: normal; line-height: 27px; margin: 10px 0 10px; }
+
+.individual h4 { text-transform: uppercase; color: #333333; font-family: 'Bitter', serif; font-size: 20px; font-weight: bold; line-height: 22px; margin: 10px 0 10px; }
+
+.individual p { color: #333333; font-family: Georgia, serif; font-size: 16px; line-height: 20px; margin: 10px 0 10px; }
+
+.individual h3 span.text { color: #333333; font-family: Georgia, serif; font-size: 16px; font-weight: bold; line-height: 20px; margin: 10px 0 10px; }
+
+.individual img { max-width: 100%; max-height: 400px; float: left; margin: 0 12px 12px 12px; }
