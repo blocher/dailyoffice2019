@@ -414,4 +414,10 @@ class WeeklyMeetingEmailModule(StAndrewScheduleSundayEmailModule):
 
 
 def weekly_email():
-    return [StAndrewScheduleSundayEmailModule(), BirthdaysSundayEmailModule(), LiturgicalCalendarSundayEmailModule()]
+    return [
+        StAndrewScheduleSundayEmailModule(),
+        BirthdaysSundayEmailModule(),
+    ]
+
+
+# LiturgicalCalendarSundayEmailModule()
