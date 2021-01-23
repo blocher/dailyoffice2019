@@ -1,0 +1,54 @@
+{% load inlinecss mjml %}
+{% inlinecss  "css/email.css" %}
+
+<div class="individual">
+    <h1>{{ meeting.title }}</h1>
+    <h3>TONIGHT: {{ meeting.date|date:"l, F j, Y"}}</h3>
+    <h4>{{ meeting.time }}</h4>
+    {% if meeting.leader %}
+        <p>Liturgist: {{ meeting.leader }}</p>
+    {% endif %}
+    <div class="link-buttons">
+        <a class="event_link" href="{{ meeting.zoom_link }}"><span class="events__tag">Join Zoom Meeting</span></a>
+        {% if meeting.slack_link %}
+            <a class="event_link" href="{{ meeting.slack_link }}" target="_blank"><span class="events__tag">Join Slack Channel</span></a>
+        {% endif %}
+    </div>
+    {% if meeting.meeting == "men" %}
+        <p><small></small><em><strong>Can't attend?</strong> Reply to this email to let the full men's group know, or email Chris at <a href="mailto:chris.massa@gmail.com">chris.massa@gmail.com</a> and Scott at <a href="mailto:shbowles@gmail.com">shbowles@gmail.com</a>.</em></small></p>
+    {% endif %}
+    {% if meeting.meeting == "women" %}
+        <p><small></small><em><strong>Can't attend?</strong> Reply to this email to let the full women's group know, or email Elise at <a href="mailto:elise.massa@gmail.com">elise.massa@gmail.com</a>.</em></small></p>
+    {% endif %}
+    {% if meeting.meeting == "ohara" %}
+        <p><small></small><em><strong>Can't attend?</strong> Reply to this email to let the full O'Hara Cell know, or email Scott at <a href="mailto:shbowles@gmail.com">shbowles@gmail.com</a>.</em></small></p>
+    {% endif %}
+    {% if meeting.meeting == "morningside" %}
+        <p><small></small><em><strong>Can't attend?</strong> Reply to this email to let the full Morninside Cell know, or email Elise at <a href="mailto:elise.massa@gmail.com">elise.massa@gmail.com</a> and Chris at <a href="mailto:chris.massa@gmail.com">chris.massa@gmail.com</a>.</em></small></p>
+    {% endif %}
+    {% if meeting.meeting == "both_cells" %}
+        <p><small></small><em><strong>Can't attend?</strong> Reply to this email to let everyone know, or email Elise at <a href="mailto:elise.massa@gmail.com">elise.massa@gmail.com</a>, Chris at <a href="mailto:chris.massa@gmail.com">chris.massa@gmail.com</a>, and Scott at <a href="mailto:shbowles@gmail.com">shbowles@gmail.com</a>.</em></small></p>
+    {% endif %}
+
+    {% if meeting.notes.notes %}
+        <div class="reading">
+            <h3>Notes</h3>
+            <p>{{ meeting.notes.notes|safe }}</p>
+        </div>
+    {% endif %}
+
+    {% if meeting.notes.book %}
+        <div class="reading">
+            <h3>Reading Assignment</h3>
+            <p><em>{{ meeting.notes.chapter }}</em> from <a href="{{ meeting.notes.link}}" target="_blank">{{ meeting.notes.book }}</a> by {{ meeting.notes.author }}</p>
+        </div>
+    {% endif %}
+
+    <p><small>Zoom: <a href="{{ meeting.zoom_link }}">{{ meeting.zoom_link }}</a></small></p>
+    {% if meeting.slack_link %}
+     <p><small>Slack: <a href="{{ meeting.slack_link }}">{{ meeting.slack_link }}</a></small></p>
+    {% endif %}
+
+
+
+{% endinlinecss %}

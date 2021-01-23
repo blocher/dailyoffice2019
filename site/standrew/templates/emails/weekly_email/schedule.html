@@ -13,15 +13,19 @@
                 <span class="events__day">{{ meeting.date|date:"l" }} {{ meeting.time }}</span>
                 <span class="events__name">{{ meeting.title }}{% if meeting.optional %} <small><em>Optional</em></small> {% endif %}{% if meeting.leader %} <small><em>Liturgist: {{ meeting.leader }} </em></small>{% endif %}</span>
                 <span class="events__date">{{ meeting.date }}</span>
-                {% if meeting.notes %}
-                    <span class="events__collect">{{ meeting.notes|safe }}</span>
+                {% if meeting.notes.notes %}
+                    <span class="events__collect">{{ meeting.notes.notes|safe }}</span>
                 {% endif %}
+                {% if meeting.notes.book %}
+                    <span class="events__collect"><em>{{ meeting.notes.chapter }}</em> from <a href="{{ meeting.notes.link}}" target="_blank">{{ meeting.notes.book }}</a> by {{ meeting.notes.author }}</span>
+                {% endif %}
+
 
             </div>
             <div class="events__item--bottom">
-            <a class="event_link" href="{{ meeting.zoom_link }}"><span class="events__tag">Zoom</span></a>
+            <a class="event_link" href="{{ meeting.zoom_link }}"><span class="events__tag">Join Zoom Meeting</span></a>
             {% if meeting.slack_link %}
-                <a class="event_link" href="{{ meeting.slack_link }}" target="_blank"><span class="events__tag">Slack</span></a>
+                <a class="event_link" href="{{ meeting.slack_link }}" target="_blank"><span class="events__tag">Join Slack Channel</span></a>
             {% endif %}
                 </div>
         </li>
