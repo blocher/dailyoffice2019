@@ -10,8 +10,10 @@ def current_email(request):
     modules = [module for module in weekly_email()]
     content = [module.render() for module in modules]
     context = {"modules": content, "heading": "The Week Ahead"}
+    subjects = ["; ".join(module.subjects) for module in modules if module.subjects]
+    subject = "; ".join(subjects)
 
-    html = render_to_string("emails/weekly_email.html", context)
+    html = subject + render_to_string("emails/weekly_email.html", context)
     return HttpResponse(html)
 
 
@@ -29,5 +31,5 @@ def meeting_email(request):
     renderings = module.render()
     html = mark_safe("<br>".join(renderings))
     context = {"modules": [html]}
-    html = render_to_string("emails/weekly_email.html", context)
+    html = "<h1>{}</h1>".format(module.subject) + render_to_string("emails/weekly_email.html", context)
     return HttpResponse(html)

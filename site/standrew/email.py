@@ -11,7 +11,35 @@ from django.utils.functional import cached_property
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-from website.settings import GOOGLE_API_KEY, ZOOM_LINK
+from website.settings import GOOGLE_API_KEY, ZOOM_LINK, DEBUG
+
+get_ordinal = lambda n: "%d%s" % (int(n), "tsnrhtdd"[(int(n) // 10 % 10 != 1) * (int(n) % 10 < 4) * int(n) % 10 :: 4])
+
+# DEBUG_DATE = datetime.strptime("{} {} {}".format(2, 2, 2021), "%m %d %Y")
+
+
+def now_date():
+    if DEBUG and "DEBUG_DATE" in globals() and DEBUG_DATE:
+        return DEBUG_DATE
+    return timezone.now()
+
+
+def date_for_subject(date):
+    now = now_date().date()
+    try:
+        date = date.date()
+    except:
+        pass
+    if now == date:
+        return "Today"
+    week_from_now = now + timedelta(days=6)
+    weekday = date.strftime("%a")
+    day = date.strftime("%-d")
+    ordinal = get_ordinal(int(day))
+    print(date, day)
+    if date > week_from_now:
+        return "{} {}".format(weekday, ordinal)
+    return "{}".format(weekday)
 
 
 class SundayEmailModule(object):
@@ -24,8 +52,7 @@ class SundayEmailModule(object):
 
     @cached_property
     def full_date_range(self):
-        now = timezone.localtime(timezone.now())
-        # now = datetime.strptime("{} {} {}".format(1, 28, 2021), "%m %d %Y")
+        now = now_date()
         return [(now + timedelta(days=x)).date() for x in range(9)]
 
     def get_data(self):
@@ -42,13 +69,6 @@ class LiturgicalCalendarSundayEmailModule(SundayEmailModule):
         major_feast_names = []
         subjects = []
         for date in dates:
-            # result = requests.get(
-            #     "http://api.dailyoffice2019.com/api/v1/calendar/{}-{}-{}".format(date.year, date.month, date.day)
-            # )
-            # if result.status_code != 200:
-            #     print("ERROR")
-            #     continue
-            # content = result.json()
 
             date = timezone.now().replace(year=date.year, month=date.month, day=date.day)
             calendar_date = get_calendar_date(date)
@@ -62,7 +82,7 @@ class LiturgicalCalendarSundayEmailModule(SundayEmailModule):
                 feast["name"] for feast in content["commemorations"] if int(feast["rank"]["precedence"]) <= 4
             ]
             subjects = subjects + [
-                feast["name"]
+                "{} ({})".format(feast["name"], date_for_subject(date))
                 for feast in content["commemorations"]
                 if int(feast["rank"]["precedence"]) <= 4 and "SUNDAY" not in feast["rank"]["name"]
             ]
@@ -143,7 +163,7 @@ class BirthdaysSundayEmailModule(SundayEmailModule):
             self.decorate_birthday(birthday) for birthday in result["values"] if self.birthday_in_range(birthday)
         ]
         birthdays = sorted(birthdays, key=lambda birthday: (birthday[2], birthday[3]))
-        self.subjects = ["{} 🎂 ({})".format(birthday[1], birthday[7].strftime("%a %-d")) for birthday in birthdays]
+        self.subjects = ["{} 🎂 ({})".format(birthday[1], date_for_subject(birthday[7])) for birthday in birthdays]
         return birthdays
 
     def render(self):
@@ -395,7 +415,7 @@ class CommemorationDailyEmailModule(object):
 class WeeklyMeetingEmailModule(StAndrewScheduleSundayEmailModule):
     def __init__(self):
         self.today = timezone.now().date()
-        # self.today = datetime.strptime("{} {} {}".format(1, 29, 2021), "%m %d %Y").date()
+        now = now_date().date()
 
     @cached_property
     def subject(self):
