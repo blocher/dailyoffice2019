@@ -23,7 +23,7 @@ class SundayEmailModule(object):
     @cached_property
     def full_date_range(self):
         now = timezone.localtime(timezone.now())
-        now = datetime.strptime("{} {} {}".format(1, 28, 2021), "%m %d %Y")
+        # now = datetime.strptime("{} {} {}".format(1, 28, 2021), "%m %d %Y")
         return [(now + timedelta(days=x)).date() for x in range(9)]
 
     def get_data(self):
@@ -387,7 +387,7 @@ class CommemorationDailyEmailModule(object):
 class WeeklyMeetingEmailModule(StAndrewScheduleSundayEmailModule):
     def __init__(self):
         self.today = timezone.now().date()
-        self.today = datetime.strptime("{} {} {}".format(1, 29, 2021), "%m %d %Y").date()
+        # self.today = datetime.strptime("{} {} {}".format(1, 29, 2021), "%m %d %Y").date()
 
     @cached_property
     def subject(self):
@@ -410,7 +410,6 @@ class WeeklyMeetingEmailModule(StAndrewScheduleSundayEmailModule):
 
     def get_data(self):
         data = super().get_data()
-        print(data)
         return [meeting for meeting in data if meeting["date"] == self.today]
 
 
