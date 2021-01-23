@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 from math import ceil
 
 import requests
+from churchcal.api.serializer import DaySerializer
+from churchcal.calculations import get_calendar_date
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -40,13 +42,19 @@ class LiturgicalCalendarSundayEmailModule(SundayEmailModule):
         major_feast_names = []
         subjects = []
         for date in dates:
-            result = requests.get(
-                "http://api.dailyoffice2019.com/api/v1/calendar/{}-{}-{}".format(date.year, date.month, date.day)
-            )
-            if result.status_code != 200:
-                print("ERROR")
-                continue
-            content = result.json()
+            # result = requests.get(
+            #     "http://api.dailyoffice2019.com/api/v1/calendar/{}-{}-{}".format(date.year, date.month, date.day)
+            # )
+            # if result.status_code != 200:
+            #     print("ERROR")
+            #     continue
+            # content = result.json()
+
+            date = timezone.now().replace(year=date.year, month=date.month, day=date.day)
+            calendar_date = get_calendar_date(date)
+            serializer = DaySerializer(calendar_date)
+            content = serializer.data
+
             content["filtered_feasts"] = [
                 feast for feast in content["commemorations"] if "FERIA" not in feast["rank"]["name"]
             ]
@@ -414,10 +422,4 @@ class WeeklyMeetingEmailModule(StAndrewScheduleSundayEmailModule):
 
 
 def weekly_email():
-    return [
-        StAndrewScheduleSundayEmailModule(),
-        BirthdaysSundayEmailModule(),
-    ]
-
-
-# LiturgicalCalendarSundayEmailModule()
+    return [StAndrewScheduleSundayEmailModule(), BirthdaysSundayEmailModule(), LiturgicalCalendarSundayEmailModule()]

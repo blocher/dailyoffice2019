@@ -139,7 +139,6 @@ class Commemoration(BaseModel):
         if self.name in ["Eve of Palm Sunday", "Palm Sunday"]:
             query = query.filter(service="Word")
 
-        print("AAA", query.all())
         return query.all()
 
     def __repr__(self):
