@@ -199,7 +199,8 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                     "date": self.get_friday(),
                     "time": "8:45 p.m. to ?",
                     "zoom_link": ZOOM_LINK,
-                    "slack_link": "slack://channel?team=T010PPE1R2Q&id=C010PU011HB",
+                    "slack_link": "https://communityofstandrew.slack.com/messages/games",
+                    # "slack_link": "slack://channel?team=T010PPE1R2Q&id=C010PU011HB",
                     "optional": True,
                     "to_addresses": [
                         "community-of-st-andrew-all@googlegroups.com",
@@ -214,7 +215,8 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                     "date": self.get_friday(),
                     "time": "8:45 p.m. to ?",
                     "zoom_link": ZOOM_LINK,
-                    "slack_link": "slack://channel?team=T010PPE1R2Q&id=C010VJ4HX9T",
+                    "slack_link": "https://communityofstandrew.slack.com/messages/movies",
+                    # "slack_link": "slack://channel?team=T010PPE1R2Q&id=C010VJ4HX9T",
                     "optional": True,
                     "to_addresses": [
                         "community-of-st-andrew-all@googlegroups.com",

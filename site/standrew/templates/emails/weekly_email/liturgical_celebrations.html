@@ -30,7 +30,7 @@
                     {% if feast.rank.precedence <= 4 %}
                             <span class="events__collect">
                         {% for reading in day.mass_readings %}
-                            <a target="_blank" href="https://esv.org/{{ reading|urlencode }}">{{ reading.citation }}</a>
+                            <a target="_blank" href="https://esv.org/{{ reading.citation|urlencode }}">{{ reading.citation }}</a>
                         {% endfor %}
                             </span>
                     {% endif %}
