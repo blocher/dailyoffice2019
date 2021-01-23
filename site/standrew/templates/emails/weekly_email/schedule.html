@@ -17,7 +17,7 @@
                     <span class="events__collect">{{ meeting.notes.notes|safe }}</span>
                 {% endif %}
                 {% if meeting.notes.book %}
-                    <span class="events__collect"><em>{{ meeting.notes.chapter }}</em> from <a href="{{ meeting.notes.link}}" target="_blank">{{ meeting.notes.book }}</a> by {{ meeting.notes.author }}</span>
+                    <span class="events__collect"><em>{{ meeting.notes.chapter }}</em> from <a href="{{ meeting.notes.book_link}}" target="_blank">{{ meeting.notes.book }}</a> by {{ meeting.notes.author }}</span>
                 {% endif %}
 
 
