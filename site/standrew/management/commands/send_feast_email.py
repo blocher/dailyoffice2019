@@ -1,9 +1,8 @@
-from django.core.mail import send_mail, EmailMessage, EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives
 from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
-from django.utils import timezone
 from html2text import html2text
-from standrew.email import weekly_email, CommemorationDailyEmailModule
+from standrew.email import CommemorationDailyEmailModule
 from website.settings import DEBUG
 
 

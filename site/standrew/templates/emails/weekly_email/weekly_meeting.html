@@ -15,19 +15,36 @@
         {% endif %}
     </div>
     {% if meeting.meeting == "men" %}
-        <p><small></small><em><strong>Can't attend?</strong> Reply to this email to let the full men's group know, or email Chris at <a href="mailto:chris.massa@gmail.com">chris.massa@gmail.com</a> and Scott at <a href="mailto:shbowles@gmail.com">shbowles@gmail.com</a>.</em></small></p>
+        <p><small><em><strong>Can't attend?</strong> Reply to this email to let the full men's group know, or email Chris at <a href="mailto:chris.massa@gmail.com">chris.massa@gmail.com</a> and Scott at <a href="mailto:shbowles@gmail.com">shbowles@gmail.com</a>.</em></small></p>
     {% endif %}
     {% if meeting.meeting == "women" %}
-        <p><small></small><em><strong>Can't attend?</strong> Reply to this email to let the full women's group know, or email Elise at <a href="mailto:elise.massa@gmail.com">elise.massa@gmail.com</a>.</em></small></p>
+        <p><small><em><strong>Can't attend?</strong> Reply to this email to let the full women's group know, or email Elise at <a href="mailto:elise.massa@gmail.com">elise.massa@gmail.com</a>.</em></small></p>
     {% endif %}
     {% if meeting.meeting == "ohara" %}
-        <p><small></small><em><strong>Can't attend?</strong> Reply to this email to let the full O'Hara Cell know, or email Scott at <a href="mailto:shbowles@gmail.com">shbowles@gmail.com</a>.</em></small></p>
+        <p><small><em><strong>Can't attend?</strong> Reply to this email to let the full O'Hara Cell know, or email Scott at <a href="mailto:shbowles@gmail.com">shbowles@gmail.com</a>.</em></small></p>
     {% endif %}
     {% if meeting.meeting == "morningside" %}
-        <p><small></small><em><strong>Can't attend?</strong> Reply to this email to let the full Morninside Cell know, or email Elise at <a href="mailto:elise.massa@gmail.com">elise.massa@gmail.com</a> and Chris at <a href="mailto:chris.massa@gmail.com">chris.massa@gmail.com</a>.</em></small></p>
+        <p><small><em><strong>Can't attend?</strong> Reply to this email to let the full Morninside Cell know, or email Elise at <a href="mailto:elise.massa@gmail.com">elise.massa@gmail.com</a> and Chris at <a href="mailto:chris.massa@gmail.com">chris.massa@gmail.com</a>.</em></small></p>
     {% endif %}
     {% if meeting.meeting == "both_cells" %}
-        <p><small></small><em><strong>Can't attend?</strong> Reply to this email to let everyone know, or email Elise at <a href="mailto:elise.massa@gmail.com">elise.massa@gmail.com</a>, Chris at <a href="mailto:chris.massa@gmail.com">chris.massa@gmail.com</a>, and Scott at <a href="mailto:shbowles@gmail.com">shbowles@gmail.com</a>.</em></small></p>
+        <p><small><em><strong>Can't attend?</strong> Reply to this email to let everyone know, or email Elise at <a href="mailto:elise.massa@gmail.com">elise.massa@gmail.com</a>, Chris at <a href="mailto:chris.massa@gmail.com">chris.massa@gmail.com</a>, and Scott at <a href="mailto:shbowles@gmail.com">shbowles@gmail.com</a>.</em></small></p>
+    {% endif %}
+
+    {% if meeting.meeting == "movie" %}
+        <p><small><em>You are welcome to join Zoom around 8:45pm for a pre-movie conversation, and we will all press play together around 9. The conversation continues during the movie on Slack and again on Zoom afterward. Movies are chosen from those available on Netflix, Disney Plus, Hulu, or Amazon Prime.</em></small></p>
+        <div class="reading">
+            <h3>Movie</h3>
+            {% if meeting.movie_details.movie_name %}
+                <h4>{{ meeting.movie_details.movie_name }}</h4>
+                <p>Available on <a target="_blank" href="{{ meeting.movie_details.movie_link }}">{{ meeting.movie_details.movie_service}}</a></p>
+            {% else %}
+                <p>Movie to be announced</p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% if meeting.meeting == "games" %}
+        <p><small><em>All are welcome, and bring friends! All you need is at least one computer per household to see other participants and one device (smartphone, computer, or tablet) per person to use as your controller. No signup or advance setup is necessary, though we encourage you to reply to this email to RSVP YES so we know to expect you.</em></small></p>
     {% endif %}
 
     {% if meeting.notes.notes %}

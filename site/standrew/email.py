@@ -15,7 +15,7 @@ from website.settings import GOOGLE_API_KEY, ZOOM_LINK, DEBUG
 
 get_ordinal = lambda n: "%d%s" % (int(n), "tsnrhtdd"[(int(n) // 10 % 10 != 1) * (int(n) % 10 < 4) * int(n) % 10 :: 4])
 
-# DEBUG_DATE = datetime.strptime("{} {} {}".format(2, 2, 2021), "%m %d %Y")
+DEBUG_DATE = datetime.strptime("{} {} {}".format(2, 12, 2021), "%m %d %Y")
 
 
 def now_date():
@@ -36,7 +36,6 @@ def date_for_subject(date):
     weekday = date.strftime("%a")
     day = date.strftime("%-d")
     ordinal = get_ordinal(int(day))
-    print(date, day)
     if date > week_from_now:
         return "{} {}".format(weekday, ordinal)
     return "{}".format(weekday)
@@ -69,7 +68,6 @@ class LiturgicalCalendarSundayEmailModule(SundayEmailModule):
         major_feast_names = []
         subjects = []
         for date in dates:
-
             date = timezone.now().replace(year=date.year, month=date.month, day=date.day)
             calendar_date = get_calendar_date(date)
             serializer = DaySerializer(calendar_date)
@@ -206,11 +204,13 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                         "community-of-st-andrew-all@googlegroups.com",
                         "community-of-st-andrew-alumni@googlegroups.com",
                     ],
+                    "meeting": "games",
                 },
             ]
         if self.get_friday_type() == "movie":
             return [
                 {
+                    "movie_details": self.get_movie(),
                     "title": "Movie night",
                     "date": self.get_friday(),
                     "time": "8:45 p.m. to ?",
@@ -222,9 +222,33 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                         "community-of-st-andrew-all@googlegroups.com",
                         "community-of-st-andrew-alumni@googlegroups.com",
                     ],
+                    "meeting": "movie",
                 },
             ]
         return []
+
+    def get_movie(self):
+
+        SPREADSHEET_ID = "1lRsThD20a2thgtJk97J_bqEBxJBCqXPIg_UkFAqzMq8"
+        RANGE_NAME = "Movies!A2:D1000"
+        service = build("sheets", "v4", developerKey=GOOGLE_API_KEY)
+        sheet = service.spreadsheets()
+
+        try:
+            result = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=RANGE_NAME).execute()
+        except HttpError as e:
+            print(e)
+            return
+
+        friday = self.get_friday()
+        for day in result["values"]:
+            date = datetime.strptime(day[0], "%A, %B %d, %Y").date()
+            if friday == date:
+                return {
+                    "movie_name": day[1],
+                    "movie_link": day[2],
+                    "movie_service": day[3],
+                }
 
     def get_notes(self):
 
@@ -318,7 +342,7 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                     "leader": self.get_leader("ohara"),
                     "notes": self.get_notes(),
                     "meeting": "ohara",
-                    "to_addresses": ["community-of-st-andrew-cell-morningside@googlegroups.com"],
+                    "to_addresses": ["community-of-st-andrew-cell-ohara@googlegroups.com"],
                 },
             ]
         if tuesday_number == 2:
@@ -330,7 +354,7 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                     "zoom_link": ZOOM_LINK,
                     "optional": False,
                     "notes": self.get_notes(),
-                    "to_addresses": ["community-of-st-andrew-cell-ohara@googlegroups.com"],
+                    "to_addresses": ["community-of-st-andrew-women@googlegroups.com"],
                     "meeting": "women",
                 },
             ]
@@ -356,7 +380,7 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                     "zoom_link": ZOOM_LINK,
                     "optional": False,
                     "notes": self.get_notes(),
-                    "to_addresses": ["community-of-st-andrew-women@googlegroups.com"],
+                    "to_addresses": ["community-of-st-andrew-all@googlegroups.com"],
                     "meeting": "both_cells",
                 },
             ]
@@ -387,8 +411,7 @@ class CommemorationDailyEmailModule(object):
     @cached_property
     def data(self):
 
-        date = timezone.now()
-        # date = datetime.strptime("{} {} {}".format(1, 25, 2021), "%m %d %Y")
+        date = now_date()
         result = requests.get(
             "http://api.dailyoffice2019.com/api/v1/calendar/{}-{}-{}".format(date.year, date.month, date.day)
         )
@@ -416,31 +439,40 @@ class CommemorationDailyEmailModule(object):
 
 class WeeklyMeetingEmailModule(StAndrewScheduleSundayEmailModule):
     def __init__(self):
-        self.today = timezone.now().date()
-        now = now_date().date()
+        self.today = now_date().date()
 
     @cached_property
     def subject(self):
-        if not self.get_data():
+        if not self.data:
             return None
-        return "TONIGHT: {} ({})".format(self.get_data()[0]["title"], self.get_data()[0]["time"])
+        return "TONIGHT: {} ({})".format(self.data[0]["title"], self.data[0]["time"])
 
     @cached_property
     def should_send(self):
-        return len(self.get_data()) > 0
+        return len(self.data) > 0
+
+    def individual_render(self, meeting):
+        return render_to_string("emails/weekly_email/weekly_meeting.html", {"meeting": meeting})
 
     def render(self):
         if self.should_send:
-            return [
-                render_to_string("emails/weekly_email/weekly_meeting.html", {"meeting": meeting})
-                for meeting in self.get_data()
-            ]
+            return [self.individual_render(meeting) for meeting in self.data]
         else:
             return []
 
-    def get_data(self):
+    def individual_subject(self, meeting):
+        return "TONIGHT: {} ({})".format(meeting["title"], meeting["time"])
+
+    def get_subjects(self):
+        return [self.individual_subject(meeting) for meeting in self.data]
+
+    @cached_property
+    def data(self):
         data = super().get_data()
         return [meeting for meeting in data if meeting["date"] == self.today]
+
+    def get_data(self):
+        return self.data
 
 
 def weekly_email():
