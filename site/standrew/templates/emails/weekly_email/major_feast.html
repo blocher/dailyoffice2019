@@ -1,10 +1,11 @@
 {% load inlinecss mjml %}
-{% inlinecss  "css/email.css" %}
+{% inlinecss  "standrew/css/email.css" %}
 {% for feast in feasts %}
 
 <div class="individual">
     <h1>{{ feast.name }}</h1>
     <h3>{{ today|date:"l, F j, Y"}}</h3>
+    <p><em>Have a special tradition you are keeping today (or wish you could)? Or a spiritual reflection on this commemoration? <strong>Reply to this email to share with the group.</strong></em></p>
     <div class="reading">
         <p>{{ feast.collects.collect }}</p>
     </div>

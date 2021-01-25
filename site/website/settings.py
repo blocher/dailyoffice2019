@@ -14,7 +14,14 @@ import os
 
 import environ
 
-env = environ.Env(DEBUG=(bool, False), DEBUG_DATES=(bool, False), MODE=(str, "web"), SECURE_SSL_REDIRECT=(bool, False), EMAIL_USE_TLS=(bool, True), EMAIL_USE_SSL=(bool, False))
+env = environ.Env(
+    DEBUG=(bool, False),
+    DEBUG_DATES=(bool, False),
+    MODE=(str, "web"),
+    SECURE_SSL_REDIRECT=(bool, False),
+    EMAIL_USE_TLS=(bool, True),
+    EMAIL_USE_SSL=(bool, False),
+)
 environ.Env.read_env()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -85,7 +92,6 @@ INSTALLED_APPS = [
     "webpack_loader",
     "robots",
     "standrew",
-
 ]
 
 if DEBUG:
@@ -180,7 +186,6 @@ MEDIA_URL = "/uploads/"
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(PROJECT_ROOT, "static")
-
 
 SHELL_PLUS = "ipython"
 
@@ -310,23 +315,21 @@ DEF_TEMPLATES_TARGET_PATH = "app/standrew/templates/emails_app"
 DEF_STATIC_TARGET_PATH = "app/static/emails_app"
 
 
-MJML_BACKEND_MODE = 'httpserver'
+MJML_BACKEND_MODE = "httpserver"
 MJML_HTTPSERVERS = [
     {
-        'URL': 'https://api.mjml.io/v1/render',  # official MJML API
-        'HTTP_AUTH': (env("MJML_APPLICATION_ID"), env("MJML_SECRET_KEY")),
+        "URL": "https://api.mjml.io/v1/render",  # official MJML API
+        "HTTP_AUTH": (env("MJML_APPLICATION_ID"), env("MJML_SECRET_KEY")),
     },
 ]
 
 
 ZOOM_LINK = env("ZOOM_LINK")
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = env("EMAIL_HOST") # 'smtp.gmail.com'
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = env("EMAIL_HOST")  # 'smtp.gmail.com'
 EMAIL_USE_TLS = env("EMAIL_USE_TLS")
-EMAIL_USE_SSL = env("EMAIL_USE_SSL") #False
-EMAIL_PORT = env("EMAIL_PORT") #587
-EMAIL_HOST_USER = env("EMAIL_HOST_USER") #587
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD") #587
-
-
+EMAIL_USE_SSL = env("EMAIL_USE_SSL")  # False
+EMAIL_PORT = env("EMAIL_PORT")  # 587
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")  # 587
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")  # 587
