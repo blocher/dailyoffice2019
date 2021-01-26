@@ -456,7 +456,7 @@ class GreatLitany(OfficeSection):
 
     def get_leaders(self):
         parts = [
-            '<span class="us">your servant Donald Trump, the President, </span>',
+            '<span class="us">your servant Joe Biden, the President, </span>',
             '<span class="canada">your servants Her Majesty Queen Elizabeth, the Sovereign, and Justin Trudeau, the Prime Minister, </span>'
             '<span class="national_none">your servants, our national leaders, </span>',
         ]
