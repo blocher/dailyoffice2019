@@ -15,7 +15,7 @@ from website.settings import GOOGLE_API_KEY, ZOOM_LINK, DEBUG
 
 get_ordinal = lambda n: "%d%s" % (int(n), "tsnrhtdd"[(int(n) // 10 % 10 != 1) * (int(n) % 10 < 4) * int(n) % 10 :: 4])
 
-DEBUG_DATE = datetime.strptime("{} {} {}".format(1, 23, 2021), "%m %d %Y")
+# DEBUG_DATE = datetime.strptime("{} {} {}".format(1, 23, 2021), "%m %d %Y")
 
 
 def now_date():
