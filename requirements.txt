@@ -66,7 +66,7 @@ h2==4.0.0
 hpack==4.0.0
 html2text==2020.1.16
 html5lib==1.1
-httplib2==0.18.1
+httplib2==0.19.0
 httptools==0.1.1
 humanize==3.2.0
 Hypercorn==0.11.1
