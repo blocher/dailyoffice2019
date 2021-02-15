@@ -1,0 +1,137 @@
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html id="html">
+<head>
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css" rel="stylesheet" type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
+</head>
+
+<body>
+
+<div class="ui container" style="padding:20px">
+    <h2 class="ui center aligned icon header">
+      <i class="circular video icon"></i>
+      St. Andrew's<br>Movie Nomination Form
+    </h2>
+    <h2><em>{{ movie_night.movie_date|date:"l, F j, Y" }}</em> at 8:45 pm.</h2>
+
+    <div class="ui warning message">
+        <i class="icon"></i>
+        <div class="header">
+            NOMINATOR: {{ movie_voter.first_name }} {{ movie_voter.last_name }}
+        </div>
+        This form is specific to you. Please do not share the link!
+    </div>
+
+    {% if already_nominated or not open %}
+        {% if not open %}
+            <p>Nominations are not currently being accepted for movie night. Check back the week of movie night.</p>
+        {% else %}
+            <p>You have already nominated a movie for this movie night. Please limit your nominations to one per person.</p>
+        {% endif %}
+    {% else %}
+
+    <form class="ui form" method="post">
+        <div class="ui one column grid">
+            <div class="row">
+                <div class="column">
+                    {% csrf_token %}
+                    <div class="field">
+                        <label>{{ form.name.label }}</label>
+                        <div class="ui search">
+                            <div class="ui icon input">
+                                <input autocomplete="off" class="prompt" id="id_name_lookup" maxlength="512"
+                                       name="name_lookup"
+                                       type="text">
+                                <i class="search icon"></i>
+                            </div>
+                            <div class="results"></div>
+                        </div>
+                        <input id="id_imdb_id" name="imdb_id" required="required" type="hidden">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column">
+                    <div class="ui items transition raised segment hidden" id="movie_preview_placeholder">
+                        <div class="ui placeholder fluid">
+                            <div class="image header"></div>
+                            <div class="paragraph">
+                                <div class="line"></div>
+                                <div class="line"></div>
+                                <div class="line"></div>
+                                <div class="line"></div>
+                                <div class="line"></div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div id="movie_preview">
+                        <h4>No movie selected</h4>
+                        <p>Please begin typing the name of a movie in the input above, and select a movie from the list.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column">
+                    <div class="field">
+                        <label>{{ form.movie_service.label }}</label>
+                        {% render_field form.movie_service %}
+                    </div>
+
+                    <input id="id_movie_night" name="movie_night" required="required" type="hidden"
+                           value="{{ movie_night.uuid }}">
+                    <input id="id_movie_voter" name="movie_voter" required="required" type="hidden"
+                           value="{{ movie_voter.pk }}">
+                    <button class="ui button" type="submit">Submit</button>
+                </div>
+            </div>
+    </form>
+    {% endif %}
+
+</div>
+
+
+</body>
+
+<script>
+
+    function updateMovie(result, response) {
+        $("#movie_preview_placeholder").removeClass('hidden');
+        $("#movie_preview").html("");
+        $.get("/standrew/movies/details/" + result.id, function (data) {
+            $("#movie_preview").html(data);
+            $("#movie_preview_placeholder").addClass('hidden');
+            $("#id_imdb_id").val(result.id);
+        });
+    }
+
+    $('.ui.search')
+        .search({
+            apiSettings: {
+                url: '/standrew/movies/search/{query}'
+            },
+            fields: {
+                results: 'items',
+            },
+            minCharacters: 3,
+            onSelect: updateMovie
+        })
+    ;
+
+    $('.ui.form')
+      .form({
+        fields: {
+          imdb_id     : 'empty',
+        }
+      })
+;
+
+
+</script>
+
+</html>

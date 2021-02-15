@@ -1,0 +1,170 @@
+{% load static %}
+{% load widget_tweaks %}
+<!DOCTYPE html>
+<html id="html">
+<head>
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css" rel="stylesheet" type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.13.0/Sortable.min.js"></script>
+
+</head>
+
+<body>
+
+<div class="ui container" style="padding:20px">
+    <h2 class="ui center aligned icon header">
+        <i class="circular video icon"></i>
+        St. Andrew's<br>Movie Nomination Form
+    </h2>
+    <h2><em>{{ movie_night.movie_date|date:"l, F j, Y" }}</em> at 8:45 pm.</h2>
+
+    <div class="ui warning message">
+        <div class="header">
+            <i class="icon vote yea"></i> BALLOT FOR: {{ movie_voter.first_name }} {{ movie_voter.last_name }}
+        </div>
+        This form is specific to you. Please do not share the link!
+    </div>
+    <div class="ui info message">
+        <div class="header">
+            <i class="icon arrow down"></i> Keep Scrolling!
+        </div>
+        Scroll past the video previews. Your ballot is at the bottom.
+    </div>
+    {% for candidate in candidates %}
+    <div class="ui top attached header raised" style="margin-top:15px">Nominated by <em>{{ candidate.nominator.first_name }} {{ candidate.nominator.last_name }}</em></div>
+    {{ candidate.movie|safe }}
+    {% endfor %}
+
+    <form class="ui form" method="post">
+        <div class="ui one column grid">
+            <div class="row">
+                <div class="column">
+                    {% csrf_token %}
+
+                </div>
+            </div>
+            <h4 class="ui horizontal divider header massive">
+              <i class="large vote yea icon"></i>
+              Vote Early and Often!
+            </h4>
+            <div class="ui segment raised fluid" style="margin:20px 0; width: 100%;">
+
+
+                        <div class="ui top attached header raised image fluid">
+                            <i class="large vote yea middle aligned icon"></i>
+                            <div class="content">
+                                Your Ballot
+                                <div class="sub header">Drag and drop to order your choices</div>
+                            </div>
+                        </div>
+                        <div class="ui relaxed divided list ordered fluid attached" id="initial_list">
+                            {% for candidate in candidates %}
+                            <div class="item" id="{{ candidate.pk }}">
+                                <i class="large arrows alternate middle aligned icon"></i>
+                                <div class="content">
+                                    <a class="header">{{ candidate.data.details.Title }}</a>
+                                    <div class="description">{{ candidate.nominator.first_name }}</div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+
+            </div>
+            <div class="ui segment raised fluid" style="margin:20px 0; width: 100%;">
+
+                        <div class="ui top attached header raised image fluid" style="margin: 20px 0 20px">
+                            <i class="large skull crossbones middle aligned icon"></i>
+                            <div class="content">
+                                Your Vetos
+                                <div class="sub header">Select a movie to <strong>anonymously</strong> remove it
+                                    from the election. Please use this sparingly, but we'd much rather you veto a
+                                    video and come than don't veto it and miss out!
+                                </div>
+                            </div>
+                        </div>
+                        {% for candidate in candidates %}
+                        <div class="item" id="veto_{{ candidate.pk }}">
+                            <div class="ui checkbox">
+                                <input name="vetos" type="checkbox" value="{{ candidate.pk }}">
+                                <label>{{ candidate.data.details.Title }}</label>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+            </div>
+
+        </div>
+                <input id="id_movie_night" name="movie_night" required="required" type="hidden"
+                       value="{{ movie_night.uuid }}">
+                <input id="id_voter" name="voter" required="required" type="hidden"
+                       value="{{ movie_voter.pk }}">
+                <input id="id_ballot" name="ballot" required="required" type="hidden">
+                <div class="ui message teal" style="width: 100%">
+                    <button class="ui button teal" type="submit"><i class="large vote yea middle aligned icon"></i> Submit your ballot!</button>
+                    <p>Double check your votes! You won't be able to edit after you submit.</p>
+                </div>
+
+    </form>
+
+</div>
+
+
+</body>
+
+<script>
+
+    function saveBallot(event) {
+        var ids = []
+        $("#initial_list").children('div').each(function () {
+            ids.push($(this).attr('id'))
+        })
+        $("#id_ballot").val(ids)
+    }
+
+    saveBallot();
+
+    function updateMovie(result, response) {
+        $("#movie_preview_placeholder").removeClass('hidden');
+        $("#movie_preview").html("");
+        $.get("/standrew/movies/details/" + result.id, function (data) {
+            $("#movie_preview").html(data);
+            $("#movie_preview_placeholder").addClass('hidden');
+            $("#id_name").val(result.id);
+        });
+    }
+
+    $('.ui.search')
+        .search({
+            apiSettings: {
+                url: '/standrew/movies/search/{query}'
+            },
+            fields: {
+                results: 'items',
+            },
+            minCharacters: 3,
+            onSelect: updateMovie
+        })
+    ;
+
+    $('.ui.form')
+        .form({
+            fields: {
+                name: 'empty',
+            }
+        })
+    ;
+
+
+    new Sortable(initial_list, {
+        animation: 150,
+        onEnd: saveBallot,
+    });
+
+
+</script>
+
+</html>

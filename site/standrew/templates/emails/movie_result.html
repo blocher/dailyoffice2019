@@ -1,0 +1,23 @@
+{% extends 'emails/movie_email_base.html' %}
+{% load inlinecss mjml %}
+
+{% block content %}
+{% inlinecss  "standrew/css/email.css" %}
+<div class="individual">
+    <h1>Movie night tonight at 8:45 p.m.</h1>
+    <div class="reading">
+        <h3>Winner:</h3>
+        <h4>{{ winner }}</h4>
+    </div>
+    <h3>Join us (and bring friends) at 8:45 pm on Zoom</h3>
+    <div class="link-buttons link-buttons-large ">
+
+        <p class="large-button-container"><a class="event_link" href="{{ zoom_link }}"><span class="events__tag events__tag__large">Join Zoom Meeting</span></a></p>
+
+        <p class="large-button-container"><a class="event_link" href="{{ slack_link }}" target="_blank"><span class="events__tag">Join Slack Channel</span></a></p>
+
+    </div>
+</div>
+{% endinlinecss %}
+{% endblock %}
+

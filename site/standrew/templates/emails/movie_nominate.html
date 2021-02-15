@@ -1,0 +1,21 @@
+{% extends 'emails/movie_email_base.html' %}
+{% load inlinecss mjml %}
+
+{% block content %}
+{% inlinecss  "standrew/css/email.css" %}
+<div class="individual">
+    <h1>Movie Nominations open</h1>
+    <p></p><strong>Due: Tomorrow (Thursday) at 12:00 noon</strong> for this Friday's movie night</h3>
+    <p>Nominations will automatically close at this time, and ballots will be sent out.</p>
+    <p>Please only nominate one movie per person.</p>
+    <div class="link-buttons link-buttons-large">
+        <a class="event_link"
+                   href="{{ nomination_link }}"
+                   target="_blank"><span class="events__tag events__tag__large">SUBMIT YOUR NOMINATION</span></a>&nbsp;
+
+    </div>
+    <p><em>This link is unique for you and can only be used once. Please do not share your link.</em></p>
+</div>
+{% endinlinecss %}
+{% endblock %}
+

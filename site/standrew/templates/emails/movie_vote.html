@@ -1,0 +1,32 @@
+{% extends 'emails/movie_email_base.html' %}
+{% load inlinecss mjml %}
+
+{% block content %}
+{% inlinecss  "standrew/css/email.css" %}
+<div class="individual">
+    <h1>Your Movie Night Ballot</h1>
+    <p></p><strong>Due: Tomorrow (Friday) at 12:00 noon</strong> for tomorrow's movie night</h3>
+    <p>Elections will automatically close at this time, and the results will be sent out.</p>
+    <p><strong>Please vote only if you think you are likely to attend.</strong></p>
+    <div class="reading">
+        <h3>The nominees</h3>
+
+            {% for candidate in candidates %}
+                <p>
+                    {{ candidate.imdb_id.movie_details.details.Title }}
+                </p>
+            {% endfor %}
+
+
+    </div>
+    <div class="link-buttons link-buttons-large">
+        <a class="event_link"
+                   href="{{ voting_link }}"
+                   target="_blank"><span class="events__tag events__tag__large">Your Ballot</span></a>&nbsp;
+
+    </div>
+    <p><em>This link is unique for you and can only be used once. Please do not share your link.</em></p>
+</div>
+{% endinlinecss %}
+{% endblock %}
+
