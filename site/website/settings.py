@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "ckeditor",
     "adminsortable2",
+    "widget_tweaks",
     "django.contrib.admin",
     # "material.admin",
     # "django.contrib.admin",
@@ -333,3 +334,9 @@ EMAIL_USE_SSL = env("EMAIL_USE_SSL")  # False
 EMAIL_PORT = env("EMAIL_PORT")  # 587
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")  # 587
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")  # 587
+
+
+OMDB_API_KEY = env("OMDB_API_KEY")
+UTELLY_API_KEY = env("UTELLY_API_KEY")
+IMDB_API_KEY = env("IMDB_API_KEY")
+YOUTUBE_API_KEY = env("YOUTUBE_API_KEY")

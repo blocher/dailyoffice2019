@@ -41,9 +41,9 @@
             </div>
             <div class="events__item--bottom">
                 {% for feast in day.filtered_feasts %}
-                {% for link in feast.links %}
+                    {% for link in feast.links %}
 
-                {% endfor %}
+                    {% endfor %}
                 {% endfor %}
                 <a class="event_link"
                    href="https://www.dailyoffice2019.com/morning_prayer/{{ day.date_description.date }}/"
@@ -51,6 +51,7 @@
                 <a class="event_link"
                    href="https://www.dailyoffice2019.com/evening_prayer/{{ day.date_description.date }}/"
                    target="_blank"><span class="events__tag">Evening Prayer</span></a>
+            </div>
         </li>
 
         {% empty %}

@@ -17,7 +17,11 @@
       <i class="circular video icon"></i>
       St. Andrew's<br>Movie Nomination Form
     </h2>
-    <h2><em>{{ movie_night.movie_date|date:"l, F j, Y" }}</em> at 8:45 pm.</h2>
+    {% if not open %}
+        <h2>Nominations are currently closed!</h2>
+    {% else %}
+        <h2><em>{{ movie_night.movie_date|date:"l, F j, Y" }}</em> at 8:45 pm.</h2>
+    {% endif %}
 
     <div class="ui warning message">
         <i class="icon"></i>

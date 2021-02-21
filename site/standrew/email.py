@@ -15,7 +15,7 @@ from website.settings import GOOGLE_API_KEY, ZOOM_LINK, DEBUG
 
 get_ordinal = lambda n: "%d%s" % (int(n), "tsnrhtdd"[(int(n) // 10 % 10 != 1) * (int(n) % 10 < 4) * int(n) % 10 :: 4])
 
-# DEBUG_DATE = datetime.strptime("{} {} {}".format(1, 23, 2021), "%m %d %Y")
+DEBUG_DATE = datetime.strptime("{} {} {}".format(2, 17, 2021), "%m %d %Y")
 
 
 def now_date():
@@ -400,8 +400,11 @@ class CommemorationDailyEmailModule(object):
     def subject(self):
         if not self.data["feasts"]:
             return None
+        fast = self.data["feasts"][0]["rank"]["name"] == "PRIVILEGED_OBSERVANCE"
         feasts = [feast["name"] for feast in self.data["feasts"]]
         feasts = "; ".join(feasts)
+        if fast:
+            return feasts
         return "Happy Feast Day: {}".format(feasts)
 
     @cached_property

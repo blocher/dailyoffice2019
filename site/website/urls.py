@@ -30,6 +30,7 @@ from django_distill import distill_path
 from churchcal.calculations import ChurchYear
 from office import views as office_views
 from standrew import views as standrew_views
+from standrew.views import MovieCandidateCreate, MovieBallotCreate
 from website.api_urls import urlpatterns as api_urlpatterns
 
 # site.site_header = _("Elizabeth Locher's Sermon Archive")
@@ -411,6 +412,11 @@ urlpatterns = [
     path("email", standrew_views.current_email),
     path("feast_email", standrew_views.feast_email),
     path("meeting_email", standrew_views.meeting_email),
+    path("standrew/movies/nominate/success/", standrew_views.movie_candidate_success, name="movie-candidate-success"),
+    path("standrew/movies/nominate/<uuid:voter>", MovieCandidateCreate.as_view(), name="movie-candidate-add"),
+    path("standrew/movies/vote/<uuid:voter>", MovieBallotCreate.as_view(), name="movie-ballot-add"),
+    path("standrew/movies/search/<str:search_field>", standrew_views.movie_search),
+    path("standrew/movies/details/<str:imdb_id>", standrew_views.movie_details),
     distill_path(
         "morning_prayer/<int:year>-<int:month>-<int:day>/",
         office_views.morning_prayer,

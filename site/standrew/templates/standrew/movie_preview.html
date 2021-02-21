@@ -1,46 +1,91 @@
 <div class="ui items transition raised attached segment" id="movie_preview_items">
     <div class="item">
         <div class="ui small image">
-            {% if details.Poster and details.Poster != "N/A" %}
-                <img id="preview-video-image" src="{{ details.Poster }}">
+            {% if fields.poster and fields.poster != "N/A" %}
+            <img id="preview-video-image" src="{{ fields.poster }}">
             {% endif %}
 
         </div>
 
 
         <div class="content">
-            <div class="header">{{ details.Title}} {% if details.Year %}({{ details.Year }}){% endif %}
+            <div class="header">{{ fields.title }} {% if fields.year %}({{ fields.year }}){% endif %}
             </div>
             <div class="meta">
-                <div class="ui label">{{ details.Rated }}</div>
-                <div class="ui label">{{ details.Genre }}</div>
-                <div class="ui label">{{ details.Runtime }}</div>
+                <div class="ui label">{{ fields.rating }}</div>
+                <div class="ui label">{{ fields.genre }}</div>
+                <div class="ui label">{{ fields.runtime }}</div>
             </div>
             <div class="description">
                 <div class="ui segment">
                     <div class="ui stackable grid">
                         <div class="eight wide column">
                             <div class="ui content">
-                                {{ details.Plot }}
+                                {{ fields.plot }}
+                                {% if fields.ratings %}
+                                <div class="meta">
+                                    {% for rating in fields.ratings %}
+                                    {% if rating.Source == "IMDb" %}
+                                    <a href="https://www.imdb.com/title/{{ fields.imdb_id }}/" target="_blank">
+                                        <div class="ui image label"><img
+                                                src="https://m.media-amazon.com/images/G/01/IMDb/BG_icon_Android._SY230_SX307_AL_.png">
+                                            {{ rating.Value}}
+                                        </div>
+                                    </a>
+                                    {% endif %}
+                                    {% if rating.Source == "Rotten Tomatoes" %}
+                                    <div class="ui image label"><img
+                                            src="https://files.911media.com/wp-content/uploads/2017/10/rotten-tomatoes-logo-200x150@2x.png">
+                                        {{ rating.Value}}
+                                    </div>
+                                    {% endif %}
+                                    {% if rating.Source == "Metacritic" %}
+                                    <div class="ui image label"><img
+                                            src="https://iconape.com/wp-content/png_logo_vector/metacritic-logo-original.png">
+                                        {{ rating.Value}}
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+
                             </div>
                         </div>
-                        <div class="eight wide column">{% if trailer %}
+                        <div class="eight wide column">{% if fields.trailer %}
                             <div class="ui aligned center" style="max-width:500px">
-                                <div class="ui embed" data-id="{{ trailer }}" data-source="youtube">
+                                <div class="ui embed" data-id="{{ fields.trailer }}" data-source="youtube">
                                     <script>
                                         $('.ui.embed').embed();
                                     </script>
                                 </div>
                             </div>
                             {% endif %}
-                            {% for service in services %}
+                            {% if fields.services %}
+                            {% for service in fields.services %}
+                            <div class="ui green message">
+                                <div class="header">
+                                    Streaming on
+                                </div>
                                 <div class="meta">
-                                    <p style="width:100%"><a class="ui image label" href="{{ service.url}}" style="padding:10px" target="_blank">
+                                    <p style="width:100%"><a class="ui image label green" href="{{ service.url}}"
+                                                             style="padding:10px" target="_blank">
                                         <img src="{{ service.icon }}">
                                         <i class="icon external alternate"></i>
                                     </a></p>
                                 </div>
+                                <p><small><em>This information may be out of date. Please confirm accuracy.</em></small></p>
+                            </div>
+
                             {% endfor %}
+                            {% else %}
+                            <div class="ui red message">
+                                <div class="header">
+                                    May not be streaming
+                                </div>
+                                <p>This movie may not be streaming. Please confirm before
+                                    nominating.</p>
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
