@@ -83,6 +83,7 @@ itypes==1.2.0
 jedi==0.17.2
 Jinja2==2.11.2
 joblib==1.0.0
+kronos==0.2.2
 lxml==4.6.2
 mammoth==1.4.13
 Markdown==3.3.3
