@@ -1,12 +1,67 @@
+import datetime
+
 import kronos
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils import timezone
 from html2text import html2text
 from standrew.models import MovieVoter, MovieCandidate, MovieNight
-from standrew.views import get_movie_details_html
-from testprj.settings import DEBUG
-from website.settings import SITE_ADDRESS, ZOOM_LINK
+from website.settings import SITE_ADDRESS, ZOOM_LINK, DEBUG
+
+
+def get_today():
+    if DEBUG:
+        return datetime.datetime.strptime("{} {} {}".format(2, 23, 2021), "%m %d %Y")
+    return timezone.localtime(timezone.now())
+
+
+def get_friday():
+    today = get_today()
+    today_time = today + datetime.timedelta((4 - today.weekday()) % 7)
+    return today_time.date()
+
+
+def next_friday_is_movie_night():
+    first_friday = datetime.datetime.strptime("Jan 15 2021 12:00AM", "%b %d %Y %I:%M%p").date()
+    current_friday = get_friday()
+    difference = (current_friday - first_friday).days / 7
+    if difference % 4 == 0:
+        return False  # game night
+    if difference % 2 == 0:
+        return True
+    return False
+
+
+def get_movie_night():
+    if not next_friday_is_movie_night():
+        return False
+    friday = get_friday()
+    return MovieNight.objects.get_or_create(movie_date=friday)[0]
+
+
+def check_if_nominations_open():
+    if not next_friday_is_movie_night():
+        return False
+    weekday = get_today().weekday()
+    if weekday not in [0, 1, 2, 3, 6]:
+        return False
+    if weekday == 3:
+        if get_today().hour >= 12:
+            return False
+    return True
+
+
+def check_if_voting_open():
+    if not next_friday_is_movie_night():
+        return False
+    weekday = get_today().weekday()
+    if weekday not in [3, 4]:
+        return False
+    if weekday == 3:
+        return get_today().hour > 12
+    if weekday == 4:
+        return get_today().hour < 12
+    return False
 
 
 def send_movie_email(subject, message, email):
@@ -36,7 +91,10 @@ def send_movie_email(subject, message, email):
     email.send()
 
 
+@kronos.register("0 6 * * 3")
 def send_movie_nomination_emails():
+    if not next_friday_is_movie_night():
+        return
     voters = MovieVoter.objects.all()
     for voter in voters:
         subject = "Movie Nominations open until Thursday at noon for this Friday's St. Andrew's Movie Night"
@@ -47,6 +105,7 @@ def send_movie_nomination_emails():
         send_movie_email(subject, message, voter.email)
 
 
+@kronos.register("0 12 * * 4")
 def send_movie_vote_emails():
     voters = MovieVoter.objects.all()
     movie_night = MovieNight.objects.order_by("movie_date").filter(movie_date__gte=timezone.now()).first()
@@ -61,6 +120,7 @@ def send_movie_vote_emails():
         send_movie_email(subject, message, voter.email)
 
 
+@kronos.register("0 12 * * 5")
 def send_movie_results_emails():
     def send_message(voters, context):
         for voter in voters:

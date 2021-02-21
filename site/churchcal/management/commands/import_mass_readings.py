@@ -7,7 +7,7 @@ from django.db.models import Q
 
 from bible import Passage
 from bible.sources import PassageNotFoundException
-from churchcal.management.commands.import_base import ImportCommemorationsBaseCommand
+from churchcal.management.commands.import_base import Command as ImportCommemorationsBaseCommand
 from churchcal.models import MassReading, Proper, Commemoration, Common
 from psalter.utils import get_psalms, parse_single_psalm
 

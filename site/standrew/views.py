@@ -1,28 +1,25 @@
 import json
-import datetime
 import operator
 from functools import reduce
 from types import SimpleNamespace
 
 import requests
 from cachetools.func import lru_cache
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse, Http404
 from django.template.loader import render_to_string
-from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views.generic import CreateView
 from standrew.email import weekly_email, CommemorationDailyEmailModule, WeeklyMeetingEmailModule
 from standrew.models import (
     MovieCandidate,
-    MovieNight,
     MovieVoter,
     MovieBallot,
     MovieDetails,
     MovieRankedVote,
     MovieVeto,
 )
+from standrew.utils import get_movie_night, check_if_nominations_open, get_friday, check_if_voting_open
 from website.settings import YOUTUBE_API_KEY, IMDB_API_KEY, UTELLY_API_KEY, OMDB_API_KEY
 
 
@@ -266,48 +263,10 @@ def movie_details(request, imdb_id):
     # return HttpResponse(get_movie_details_html(imdb_id))
 
 
-def get_today():
-    # if settings.DEBUG:
-    #     return datetime.datetime.strptime("{} {} {}".format(2, 23, 2021), "%m %d %Y")
-    return timezone.localtime(timezone.now())
-
-
 class MovieCandidateCreate(CreateView):
     model = MovieCandidate
     fields = ["imdb_id", "movie_service", "movie_voter", "movie_night"]
     success_url = "/standrew/movies/nominate/success/"
-
-    def get_friday(self):
-        today = get_today()
-        today_time = today + datetime.timedelta((4 - today.weekday()) % 7)
-        return today_time.date()
-
-    def next_friday_is_movie_night(self):
-        first_friday = datetime.datetime.strptime("Jan 15 2021 12:00AM", "%b %d %Y %I:%M%p").date()
-        current_friday = self.get_friday()
-        difference = (current_friday - first_friday).days / 7
-        if difference % 4 == 0:
-            return False  # game night
-        if difference % 2 == 0:
-            return True
-        return False
-
-    def check_if_open(self):
-        if not self.next_friday_is_movie_night():
-            return False
-        weekday = get_today().weekday()
-        if weekday not in [0, 1, 2, 3, 6]:
-            return False
-        if weekday == 3:
-            if get_today().hour >= 12:
-                return False
-        return True
-
-    def get_movie_night(self):
-        if not self.check_if_open():
-            return False
-        friday = self.get_friday()
-        return MovieNight.objects.get_or_create(movie_date=friday)[0]
 
     def get_voter(self):
         try:
@@ -316,14 +275,14 @@ class MovieCandidateCreate(CreateView):
             return False
 
     def already_nominated(self):
-        return MovieCandidate.objects.filter(movie_night=self.get_movie_night(), movie_voter=self.get_voter()).exists()
+        return MovieCandidate.objects.filter(movie_night=get_movie_night(), movie_voter=self.get_voter()).exists()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Nominate a Movie"
-        context["open"] = self.check_if_open()
-        context["date"] = self.get_friday()
-        context["movie_night"] = self.get_movie_night()
+        context["open"] = check_if_nominations_open()
+        context["date"] = get_friday()
+        context["movie_night"] = get_movie_night()
         context["movie_voter"] = self.get_voter()
         context["already_nominated"] = self.already_nominated()
         return context
@@ -340,40 +299,6 @@ class MovieBallotCreate(CreateView):
     fields = ["voter", "movie_night"]
     success_url = "/standrew/movies/nominate/success/"
 
-    def get_friday(self):
-        today = get_today()
-        today_time = today + datetime.timedelta((4 - today.weekday()) % 7)
-        return today_time.date()
-
-    def next_friday_is_movie_night(self):
-        first_friday = datetime.datetime.strptime("Jan 15 2021 12:00AM", "%b %d %Y %I:%M%p").date()
-        current_friday = self.get_friday()
-        difference = (current_friday - first_friday).days / 7
-        print(difference)
-        if difference % 4 == 0:
-            return False  # game night
-        if difference % 2 == 0:
-            return True
-        return False
-
-    def check_if_open(self):
-        if not self.next_friday_is_movie_night():
-            return False
-        weekday = get_today().weekday()
-        if weekday not in [3, 4]:
-            return False
-        if weekday == 3:
-            return get_today().hour > 12
-        if weekday == 4:
-            return get_today().hour < 12
-        return False
-
-    def get_movie_night(self):
-        if not self.check_if_open():
-            return False
-        friday = self.get_friday()
-        return MovieNight.objects.get_or_create(movie_date=friday)[0]
-
     def get_voter(self):
         try:
             return MovieVoter.objects.get(pk=self.kwargs["voter"])
@@ -381,10 +306,10 @@ class MovieBallotCreate(CreateView):
             return False
 
     def already_voted(self):
-        return MovieBallot.objects.filter(movie_night=self.get_movie_night(), voter=self.get_voter()).exists()
+        return MovieBallot.objects.filter(movie_night=get_movie_night(), voter=self.get_voter()).exists()
 
     def get_candidates(self):
-        candidates = MovieCandidate.objects.order_by("?").filter(movie_night=self.get_movie_night())
+        candidates = MovieCandidate.objects.order_by("?").filter(movie_night=get_movie_night())
         return [
             {
                 "pk": candidate.pk,
@@ -399,9 +324,9 @@ class MovieBallotCreate(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Vote for your stinkin' movie"
-        context["open"] = self.check_if_open()
-        context["date"] = self.get_friday()
-        context["movie_night"] = self.get_movie_night()
+        context["open"] = check_if_voting_open()
+        context["date"] = get_friday()
+        context["movie_night"] = get_movie_night()
         context["movie_voter"] = self.get_voter()
         context["already_voted"] = self.already_voted()
         context["candidates"] = self.get_candidates()

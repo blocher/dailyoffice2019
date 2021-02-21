@@ -10,7 +10,7 @@ from churchcal.models import Calendar
 SCOPES = "https://www.googleapis.com/auth/spreadsheets.readonly"
 
 
-class ImportCommemorationsBaseCommand(BaseCommand):
+class Command(BaseCommand):
 
     help = "Imports Episcopal commemorations"
 

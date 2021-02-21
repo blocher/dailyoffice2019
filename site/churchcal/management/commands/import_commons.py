@@ -1,4 +1,4 @@
-from churchcal.management.commands.import_base import ImportCommemorationsBaseCommand
+from churchcal.management.commands.import_base import Command as ImportCommemorationsBaseCommand
 from churchcal.models import MassReading, Common
 
 
