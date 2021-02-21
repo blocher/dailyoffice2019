@@ -267,9 +267,9 @@ def movie_details(request, imdb_id):
 
 
 def get_today():
-    if settings.DEBUG:
-        return datetime.datetime.strptime("{} {} {}".format(2, 23, 2021), "%m %d %Y")
-    return timezone.now()
+    # if settings.DEBUG:
+    #     return datetime.datetime.strptime("{} {} {}".format(2, 23, 2021), "%m %d %Y")
+    return timezone.localtime(timezone.now())
 
 
 class MovieCandidateCreate(CreateView):
@@ -296,9 +296,12 @@ class MovieCandidateCreate(CreateView):
         if not self.next_friday_is_movie_night():
             return False
         weekday = get_today().weekday()
-        if weekday in [5, 6, 0, 1, 2]:
-            return True
-        return False
+        if weekday not in [0, 1, 2, 3, 6]:
+            return False
+        if weekday == 3:
+            if get_today().hour >= 12:
+                return False
+        return True
 
     def get_movie_night(self):
         if not self.check_if_open():
@@ -357,8 +360,12 @@ class MovieBallotCreate(CreateView):
         if not self.next_friday_is_movie_night():
             return False
         weekday = get_today().weekday()
-        if weekday in [3]:
-            return True
+        if weekday not in [3, 4]:
+            return False
+        if weekday == 3:
+            return get_today().hour > 12
+        if weekday == 4:
+            return get_today().hour < 12
         return False
 
     def get_movie_night(self):

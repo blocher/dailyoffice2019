@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     "django_inlinecss",
+    "kronos",
     "rest_framework",
     "website",
     # "sermons",
