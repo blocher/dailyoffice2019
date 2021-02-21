@@ -166,6 +166,7 @@ WebOb==1.8.6
 Werkzeug==1.0.1
 wheel==0.36.2
 whitenoise==5.2.0
+django-widget-tweaks==1.4.8
 wsproto==1.0.0
 
 
