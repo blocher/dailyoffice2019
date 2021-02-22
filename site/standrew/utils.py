@@ -11,7 +11,7 @@ from website.settings import SITE_ADDRESS, ZOOM_LINK, DEBUG
 
 def get_today():
     if DEBUG:
-        return datetime.datetime.strptime("{} {} {}".format(2, 25, 2021), "%m %d %Y")
+        return datetime.datetime.strptime("{} {} {}".format(2, 26, 2021), "%m %d %Y")
     return timezone.localtime(timezone.now())
 
 
@@ -97,7 +97,7 @@ def send_movie_nomination_emails():
         return
     voters = MovieVoter.objects.all()
     for voter in voters:
-        subject = "Movie Nominations open until Thursday at noon for this Friday's St. Andrew's Movie Night"
+        subject = "Movie Night: Nominate by noon tomorrow (Thursday)"
         context = {
             "nomination_link": "{}/standrew/movies/nominate/{}".format(SITE_ADDRESS, voter.uuid),
         }
@@ -105,13 +105,35 @@ def send_movie_nomination_emails():
         send_movie_email(subject, message, voter.email)
 
 
+@kronos.register("0 6 * * 4")
+def send_movie_nomination_reminder_emails():
+    if not next_friday_is_movie_night():
+        return
+    move_night = get_movie_night()
+    count = move_night.moviecandidate_set.count()
+    voters = MovieVoter.objects.all()
+    for voter in voters:
+        subject = "Hours left: Nominate a movie by noon today"
+        if count < 4:
+            subject = "Hours left: Only {} nomination{} so far".format(count, "s" if count != 1 else "")
+
+        context = {
+            "nomination_link": "{}/standrew/movies/nominate/{}".format(SITE_ADDRESS, voter.uuid),
+            "count": count,
+        }
+        message = render_to_string("emails/movie_nominate_reminder.html", context)
+        send_movie_email(subject, message, voter.email)
+
+
 @kronos.register("0 12 * * 4")
 def send_movie_vote_emails():
+    if not next_friday_is_movie_night():
+        return
     voters = MovieVoter.objects.all()
     movie_night = MovieNight.objects.order_by("movie_date").filter(movie_date__gte=timezone.now()).first()
     candidates = MovieCandidate.objects.filter(movie_night=movie_night).all()
     for voter in voters:
-        subject = "Movie Night Voting open until Friday at noon for this Friday's St. Andrew's Movie Night"
+        subject = "Movie Night: Vote by noon tomorrow (Friday)"
         context = {
             "voting_link": "{}/standrew/movies/vote/{}".format(SITE_ADDRESS, voter.uuid),
             "candidates": candidates,
@@ -120,8 +142,28 @@ def send_movie_vote_emails():
         send_movie_email(subject, message, voter.email)
 
 
+@kronos.register("0 6 * * 5")
+def send_movie_vote_reminder_emails():
+    if not next_friday_is_movie_night():
+        return
+    voters = MovieVoter.objects.all()
+    movie_night = MovieNight.objects.order_by("movie_date").filter(movie_date__gte=timezone.now()).first()
+    candidates = MovieCandidate.objects.filter(movie_night=movie_night).all()
+    for voter in voters:
+        subject = "Reminder: Movie Night Voting closes at noon"
+        context = {
+            "voting_link": "{}/standrew/movies/vote/{}".format(SITE_ADDRESS, voter.uuid),
+            "candidates": candidates,
+        }
+        message = render_to_string("emails/movie_vote_reminder.html", context)
+        send_movie_email(subject, message, voter.email)
+
+
 @kronos.register("0 12 * * 5")
 def send_movie_results_emails():
+    if not next_friday_is_movie_night():
+        return
+
     def send_message(voters, context):
         for voter in voters:
             subject = "Movie Night Winner: {} | See you at 8:45pm".format(context["winner"])
@@ -146,9 +188,13 @@ def send_movie_results_emails():
         return send_message(voters, context)
 
     if len(candidates) == 1:
-        context["winner"] = candidates[0].imdb_id.movie_details["details"]["Title"]
+        context["winner"] = candidates[0].imdb_id.movie_details["fields"]["title"]
         return send_message(voters, context)
 
     results = movie_night.get_result()
-    context["winner"] = results.get_winner()
+    winners = results.get_winners()
+    if winners:
+        context["winner"] = winners[0].imdb_id.movie_details["fields"]["title"]
+    else:
+        context["winner"] = "TBD"
     return send_message(voters, context)

@@ -68,10 +68,10 @@ class MovieCandidate(BaseModel):
         super().__init__(*args, **kwargs)
 
     def __str__(self) -> str:
-        return self.imdb_id
+        return self.imdb_id.movie_details["fields"]["title"]
 
     def __repr__(self) -> str:
-        return "<Candidate('%s')>" % self.imdb_id
+        return "<MovieCandidate('%s')>" % self.imdb_id.imdb_id
 
     def __hash__(self):
         return hash(self.imdb_id)
@@ -81,6 +81,10 @@ class MovieCandidate(BaseModel):
             return False
 
         return self.imdb_id == other.imdb_id
+
+    @property
+    def name(self):
+        return self.imdb_id.movie_details["fields"]["title"]
 
 
 class MovieBallot(BaseModel):
