@@ -1,107 +1,147 @@
+{% extends "standrew/movie_base.html" %}
 {% load static %}
 {% load widget_tweaks %}
-<!DOCTYPE html>
-<html id="html">
-<head>
-    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
 
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.css" rel="stylesheet" type="text/css">
-    <script src="https://cdn.jsdelivr.net/npm/fomantic-ui@2.8.7/dist/semantic.min.js"></script>
-</head>
+{% block content %}
+<h2 class="ui center aligned icon header">
+    <i class="circular video icon"></i>
+    St. Andrew's<br>Movie Nomination Form
+</h2>
+{% if not open %}
+<h2>Nominations are currently closed!</h2>
+{% else %}
+<h3>This ballot nomination form automatically closes on Thursday at 12:00 noon Eastern</h3>
+<p><em>Nominations are <strong>due Thursday at noon eastern</strong> for move night on {{ movie_night.movie_date|date:"l, F j, Y" }}</em> at 8:45 pm.</p>
+{% endif %}
 
-<body>
-
-<div class="ui container" style="padding:20px">
-    <h2 class="ui center aligned icon header">
-      <i class="circular video icon"></i>
-      St. Andrew's<br>Movie Nomination Form
-    </h2>
-    {% if not open %}
-        <h2>Nominations are currently closed!</h2>
-    {% else %}
-        <h2><em>{{ movie_night.movie_date|date:"l, F j, Y" }}</em> at 8:45 pm.</h2>
-    {% endif %}
-
-    <div class="ui warning message">
-        <i class="icon"></i>
-        <div class="header">
-            NOMINATOR: {{ movie_voter.first_name }} {{ movie_voter.last_name }}
-        </div>
-        This form is specific to you. Please do not share the link!
+<div class="ui warning message">
+    <div class="header">
+        NOMINATOR: {{ movie_voter.first_name }} {{ movie_voter.last_name }}
     </div>
-
-    {% if already_nominated or not open %}
-        {% if not open %}
-            <p>Nominations are not currently being accepted for movie night. Check back the week of movie night.</p>
-        {% else %}
-            <p>You have already nominated a movie for this movie night. Please limit your nominations to one per person.</p>
-        {% endif %}
-    {% else %}
-
-    <form class="ui form" method="post">
-        <div class="ui one column grid">
-            <div class="row">
-                <div class="column">
-                    {% csrf_token %}
-                    <div class="field">
-                        <label>{{ form.name.label }}</label>
-                        <div class="ui search">
-                            <div class="ui icon input">
-                                <input autocomplete="off" class="prompt" id="id_name_lookup" maxlength="512"
-                                       name="name_lookup"
-                                       type="text">
-                                <i class="search icon"></i>
-                            </div>
-                            <div class="results"></div>
-                        </div>
-                        <input id="id_imdb_id" name="imdb_id" required="required" type="hidden">
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="column">
-                    <div class="ui items transition raised segment hidden" id="movie_preview_placeholder">
-                        <div class="ui placeholder fluid">
-                            <div class="image header"></div>
-                            <div class="paragraph">
-                                <div class="line"></div>
-                                <div class="line"></div>
-                                <div class="line"></div>
-                                <div class="line"></div>
-                                <div class="line"></div>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div id="movie_preview">
-                        <h4>No movie selected</h4>
-                        <p>Please begin typing the name of a movie in the input above, and select a movie from the list.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="column">
-                    <div class="field">
-                        <label>{{ form.movie_service.label }}</label>
-                        {% render_field form.movie_service %}
-                    </div>
-
-                    <input id="id_movie_night" name="movie_night" required="required" type="hidden"
-                           value="{{ movie_night.uuid }}">
-                    <input id="id_movie_voter" name="movie_voter" required="required" type="hidden"
-                           value="{{ movie_voter.pk }}">
-                    <button class="ui button" type="submit">Submit</button>
-                </div>
-            </div>
-    </form>
-    {% endif %}
-
+    This form is specific to you. Please do not share the link!
 </div>
 
+{% if already_nominated or not open %}
+{% if not open %}
+<div class="ui error message">Nominations are not currently being accepted for movie night. Check back the week of
+    movie night.
+</div>
+{% else %}
+<div class="ui error message">You have already nominated a movie for this movie night. Please limit your nominations to
+    one per person.
+</div>
+{% endif %}
+{% else %}
 
-</body>
+<form class="ui form" method="post">
+    <div class="ui one column grid">
+        <div class="row">
+            <div class="column">
+                <h4 class="ui block header">Nominate a movie</h4>
+                {% csrf_token %}
+                <div class="field">
+                    <label>{{ form.name.label }}</label>
+                    <div class="ui search">
+                        <div class="ui icon input">
+                            <input autocomplete="off" class="prompt" id="id_name_lookup" maxlength="512"
+                                   name="name_lookup"
+                                   placeholder="Starting typing and choose a movie"
+                                   type="text">
+                            <i class="search icon"></i>
+                        </div>
+                        <div class="results"></div>
+                    </div>
+                    <input id="id_imdb_id" name="imdb_id" required="required" type="hidden">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="column">
+                <div class="ui items transition raised segment hidden" id="movie_preview_placeholder">
+                    <div class="ui placeholder fluid">
+                        <div class="image header"></div>
+                        <div class="paragraph">
+                            <div class="line"></div>
+                            <div class="line"></div>
+                            <div class="line"></div>
+                            <div class="line"></div>
+                            <div class="line"></div>
+                        </div>
 
+                    </div>
+                </div>
+                <div id="movie_preview">
+                    <h4>No movie selected</h4>
+                    <p>Please begin typing the name of a movie in the input above, and select a movie from the
+                        list.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="column">
+                <h4 class="ui block header">Tell us a little more</h4>
+                <div class="two fields">
+                    <div class="field">
+                        <label>Where is this movie streaming?<br><small>Please confirm that your movie is currently
+                            streaming before submitting.</small></label>
+                        <select class="ui search selection dropdown" id="id_movie_service" name="movie_service"
+                                required="required">
+                            <option value="">Pick a service</option>
+                            <option value="amazon_prime">Amazon Prime</option>
+                            <option value="apple_tv_plus">Apple TV Plus</option>
+                            <option value="disney_plus">Disney Plus</option>
+                            <option value="hbo_max">HBO Max</option>
+                            <option value="hoopla">Hoopla</option>
+                            <option value="hulu">Hulu</option>
+                            <option value="netflix">Netflix</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <br><br>
+                        <label>How likely are you to attend this week?</label>
+                        <select class="ui dropdown" id="id_likelihood_of_coming" name="likelihood_of_coming"
+                                required="required">
+                            <option value="">RSVP</option>
+                            <option value="100">I plan to come</option>
+                            <option value="75">I will probably come</option>
+                            <option value="50">50/50 at this point</option>
+                            <option value="25">I most likely won't come</option>
+                            <option value="0">I do not plan to come</option>
+                        </select>
+
+                    </div>
+
+                    <div class="field">
+                        <label>Why should we watch this movie?&nbsp;&nbsp;<div class="ui label yellow">Optional</div>
+                            <br><small>This is optional, but will be included on the ballot. This is your chance to
+                                convince others to pick your movie.</small></label>
+                        {% render_field form.recommended_reason %}
+                    </div>
+                </div>
+
+                {% for field in form %}
+                <p>{{ field.errors }}</p>
+                {% endfor %}
+
+
+                <input id="id_movie_night" name="movie_night" required="required" type="hidden"
+                       value="{{ movie_night.uuid }}">
+                <input id="id_movie_voter" name="movie_voter" required="required" type="hidden"
+                       value="{{ movie_voter.pk }}">
+                <div class="ui error message"></div>
+                <div class="ui green message">
+                    <button class="ui button green" type="submit">Submit Your Nomination</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endif %}
+
+{% endblock %}
+
+
+{% block scripts %}
 <script>
 
     function updateMovie(result, response) {
@@ -128,14 +168,47 @@
     ;
 
     $('.ui.form')
-      .form({
-        fields: {
-          imdb_id     : 'empty',
-        }
-      })
-;
+        .form({
+            fields: {
 
+                imdb_id: {
+                    identifier: 'imdb_id',
+                    rules: [
+                        {
+                            type: 'empty',
+                            prompt: 'You must select a movie from the type-ahead dropdown list.'
+                        }
+                    ]
+                },
+                movie_service: {
+                    identifier: 'movie_service',
+                    rules: [
+                        {
+                            type: 'empty',
+                            prompt: 'You must select the service the movie is streaming on.'
+                        }
+                    ]
+                },
+                likelihood_of_coming: {
+                    identifier: 'likelihood_of_coming',
+                    rules: [
+                        {
+                            type: 'empty',
+                            prompt: 'You must select your RSVP.'
+                        }
+                    ]
+                },
+            }
+        })
+    ;
+
+    $('#id_movie_service')
+        .dropdown()
+    ;
+
+    $('#id_likelihood_of_coming')
+        .dropdown()
+    ;
 
 </script>
-
-</html>
+{% endblock %}

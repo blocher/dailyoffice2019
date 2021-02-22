@@ -132,20 +132,22 @@ def get_movie_details(imdb_id):
 
         def services():
             locations = get_movie_details_from_dict(context, [["utelly", "collection", "locations"]])
-            locations = [
-                location
-                for location in locations
-                if location["name"]
-                in (
-                    "AmazonPrimeVideoIVAUS",
-                    "NetflixIVAUS",
-                    "DisneyPlusIVAUS",
-                    "HuluIVAUS",
-                    "AppleTvPlusIVAUS",
-                    "HBOMaxIVAUS",
-                )
-            ]
-            return locations
+            if locations:
+                locations = [
+                    location
+                    for location in locations
+                    if location["name"]
+                    in (
+                        "AmazonPrimeVideoIVAUS",
+                        "NetflixIVAUS",
+                        "DisneyPlusIVAUS",
+                        "HuluIVAUS",
+                        "AppleTvPlusIVAUS",
+                        "HBOMaxIVAUS",
+                    )
+                ]
+                return locations
+            return None
 
         def ratings():
             value = get_movie_details_from_dict(context, [["omdb", "Ratings"], ["imdb", "imdb_rating"]])
@@ -265,7 +267,14 @@ def movie_details(request, imdb_id):
 
 class MovieCandidateCreate(CreateView):
     model = MovieCandidate
-    fields = ["imdb_id", "movie_service", "movie_voter", "movie_night"]
+    fields = [
+        "imdb_id",
+        "movie_service",
+        "recommended_reason",
+        "likelihood_of_coming",
+        "movie_voter",
+        "movie_night",
+    ]
     success_url = "/standrew/movies/nominate/success/"
 
     def get_voter(self):
@@ -296,7 +305,7 @@ class MovieCandidateCreate(CreateView):
 
 class MovieBallotCreate(CreateView):
     model = MovieBallot
-    fields = ["voter", "movie_night"]
+    fields = ["voter", "movie_night", "likelihood_of_coming"]
     success_url = "/standrew/movies/nominate/success/"
 
     def get_voter(self):
@@ -314,9 +323,9 @@ class MovieBallotCreate(CreateView):
             {
                 "pk": candidate.pk,
                 "movie": get_movie_details_html(candidate.imdb_id_id),
-                "nominator": candidate.movie_voter,
                 "data": get_movie_details(candidate.imdb_id_id),
                 "nominator": candidate.movie_voter,
+                "reason": candidate.recommended_reason,
             }
             for candidate in candidates
         ]
@@ -340,7 +349,7 @@ class MovieBallotCreate(CreateView):
 
     def post(self, request, *args, **kwargs):
 
-        candidate_count = MovieCandidate.objects.filter(movie_night=self.get_movie_night()).count()
+        candidate_count = MovieCandidate.objects.filter(movie_night=get_movie_night()).count()
         ballot = request.POST.get("ballot", "")
         votes = ballot.split(",")
         if len(votes) != candidate_count:

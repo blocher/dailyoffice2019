@@ -42,10 +42,20 @@ class MovieCandidate(BaseModel):
         ("netflix", "Netflix"),
         ("other", "Other"),
     )
+    LIKELIHOOD_CHOICES = (
+        (100, "I plan to come"),
+        (75, "I will probably come"),
+        (50, "50/50 at this point"),
+        (25, "I most likely won't come"),
+        (0, "I do not plan to come"),
+        (-1, "Not Answered"),
+    )
     movie_night = models.ForeignKey("MovieNight", on_delete=models.SET_NULL, null=True, blank=True)
     movie_service = models.CharField(
         max_length=256, verbose_name="Service Where This Movie is Available", choices=MOVIE_SERVICES
     )
+    recommended_reason = models.TextField(blank=True, null=True)
+    likelihood_of_coming = models.IntegerField(choices=LIKELIHOOD_CHOICES, default=-1)
     movie_voter = models.ForeignKey(
         "MovieVoter", on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Who are you?"
     )
@@ -74,8 +84,16 @@ class MovieCandidate(BaseModel):
 
 
 class MovieBallot(BaseModel):
+
+    LIKELIHOOD_CHOICES = (
+        (100, "I plan to come"),
+        (75, "I will most likely come"),
+        (50, "I'm not sure (greater than 50/50 chance at this point)"),
+    )
+
     voter = models.ForeignKey("MovieVoter", on_delete=models.SET_NULL, null=True, blank=True)
     movie_night = models.ForeignKey("MovieNight", on_delete=models.SET_NULL, null=True, blank=True)
+    likelihood_of_coming = models.IntegerField(choices=LIKELIHOOD_CHOICES, default=-1)
 
     def get_ballot(self, vetos=None):
         return Ballot(

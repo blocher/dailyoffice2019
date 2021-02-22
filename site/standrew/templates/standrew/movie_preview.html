@@ -61,22 +61,24 @@
                             </div>
                             {% endif %}
                             {% if fields.services %}
-                            {% for service in fields.services %}
+
                             <div class="ui green message">
                                 <div class="header">
                                     Streaming on
                                 </div>
                                 <div class="meta">
+                                    {% for service in fields.services %}
                                     <p style="width:100%"><a class="ui image label green" href="{{ service.url}}"
                                                              style="padding:10px" target="_blank">
                                         <img src="{{ service.icon }}">
                                         <i class="icon external alternate"></i>
                                     </a></p>
+                                    {% endfor %}
                                 </div>
                                 <p><small><em>This information may be out of date. Please confirm accuracy.</em></small></p>
                             </div>
 
-                            {% endfor %}
+
                             {% else %}
                             <div class="ui red message">
                                 <div class="header">
