@@ -11,7 +11,7 @@ from website.settings import SITE_ADDRESS, ZOOM_LINK, DEBUG
 
 def get_today():
     if DEBUG:
-        return datetime.datetime.strptime("{} {} {}".format(2, 26, 2021), "%m %d %Y")
+        return datetime.datetime.strptime("{} {} {}".format(2, 24, 2021), "%m %d %Y")
     return timezone.localtime(timezone.now())
 
 

@@ -10,6 +10,7 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from standrew.utils import get_today
 
 from website.settings import GOOGLE_API_KEY, ZOOM_LINK, DEBUG
 
@@ -18,14 +19,8 @@ get_ordinal = lambda n: "%d%s" % (int(n), "tsnrhtdd"[(int(n) // 10 % 10 != 1) * 
 DEBUG_DATE = datetime.strptime("{} {} {}".format(2, 17, 2021), "%m %d %Y")
 
 
-def now_date():
-    if DEBUG and "DEBUG_DATE" in globals() and DEBUG_DATE:
-        return DEBUG_DATE
-    return timezone.now()
-
-
 def date_for_subject(date):
-    now = now_date().date()
+    now = get_today().date()
     try:
         date = date.date()
     except:
@@ -51,7 +46,7 @@ class SundayEmailModule(object):
 
     @cached_property
     def full_date_range(self):
-        now = now_date()
+        now = get_today()
         return [(now + timedelta(days=x)).date() for x in range(9)]
 
     def get_data(self):
@@ -414,7 +409,7 @@ class CommemorationDailyEmailModule(object):
     @cached_property
     def data(self):
 
-        date = now_date()
+        date = get_today()
         result = requests.get(
             "http://api.dailyoffice2019.com/api/v1/calendar/{}-{}-{}".format(date.year, date.month, date.day)
         )
@@ -442,7 +437,7 @@ class CommemorationDailyEmailModule(object):
 
 class WeeklyMeetingEmailModule(StAndrewScheduleSundayEmailModule):
     def __init__(self):
-        self.today = now_date().date()
+        self.today = get_today().date()
 
     @cached_property
     def subject(self):
