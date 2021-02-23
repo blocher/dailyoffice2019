@@ -5,26 +5,22 @@
 {% inlinecss  "standrew/css/email.css" %}
 <div class="individual">
     <h1>Your Movie Night Ballot</h1>
-    <p></p><strong>Due at 12:00 noon</strong> for tonight's movie night</h3>
+    <p>Due <strong> today at 12:00 noon</strong> for tonight's movie night</p>
     <p>Elections will automatically close at this time, and the results will be sent out.</p>
     <div class="reading">
         <h3>The nominees</h3>
-
             {% for candidate in candidates %}
                 <p>
                     {{ candidate.imdb_id.movie_details.fields.title }}
                 </p>
             {% endfor %}
-
-
     </div>
     <div class="link-buttons link-buttons-large">
         <a class="event_link"
                    href="{{ voting_link }}"
                    target="_blank"><span class="events__tag events__tag__large">Your Ballot</span></a>&nbsp;
-
         <p><a href="{{ voting_link }}" target="_blank">Open your ballot to see descriptions and trailers of each movie.</a></p>
-
+        <p>{{ voting_link }}</p>
     </div>
     <p><em>This link is unique for you. Please do not share your link.</em></p>
 </div>

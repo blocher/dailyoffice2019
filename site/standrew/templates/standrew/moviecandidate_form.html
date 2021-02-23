@@ -10,7 +10,7 @@
 {% if not open %}
 <h2>Nominations are currently closed!</h2>
 {% else %}
-<h3>This nomination form automatically closes on Thursday at 12:00 noon Eastern</h3>
+<h3>This nomination form automatically closes on Thursday at 12:00 noon eastern</h3>
 <p><em>Nominations are <strong>due Thursday at noon eastern</strong> for move night on {{ movie_night.movie_date|date:"l, F j, Y" }}</em> at 8:45 pm.</p>
 {% endif %}
 
@@ -24,7 +24,7 @@
 {% if already_nominated or not open %}
 {% if not open %}
 <div class="ui error message">Nominations are not currently being accepted for movie night. Check back the week of
-    movie night.
+    movie night between Wednesday at 6 am and Thursday at noon.
 </div>
 {% else %}
 <div class="ui error message">You have already nominated a movie for this movie night. Please limit your nominations to

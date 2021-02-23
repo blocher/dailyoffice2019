@@ -23,9 +23,9 @@
 
             </div>
             <div class="events__item--bottom">
-            <a class="event_link" href="{{ meeting.zoom_link }}"><span class="events__tag">Join Zoom Meeting</span></a>
+            <p><a class="event_link" href="{{ meeting.zoom_link }}"><span class="events__tag">Join Zoom Meeting</span></a></p>
             {% if meeting.slack_link %}
-                <a class="event_link" href="{{ meeting.slack_link }}" target="_blank"><span class="events__tag">Join Slack Channel</span></a>
+                <p><a class="event_link" href="{{ meeting.slack_link }}" target="_blank"><span class="events__tag">Join Slack Channel</span></a></p>
             {% endif %}
                 </div>
         </li>

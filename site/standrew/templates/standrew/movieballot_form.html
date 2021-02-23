@@ -11,18 +11,18 @@
     {% if not open %}
     <h2>Voting is currently closed!</h2>
     {% else %}
-    <h3>This ballot automatically closes on Friday at 12:00 noon Eastern</h3>
+    <h3>This ballot automatically closes on Friday at 12:00 noon eastern</h3>
     <p><em>Voting is <strong>due Friday at noon eastern</strong> for movie night on {{ movie_night.movie_date|date:"l, F j, Y" }}</em> at 8:45 pm.</p>
     {% endif %}
 
     {% if already_voted or not open %}
     {% if not open %}
-    <div class="message error ui">Voting is not currently open. Check back the week of movie night.</div>
+    <div class="message error ui">Voting is not currently open. Check back the week of movie night from Thursday at noon until Friday at noon.</div>
     {% else %}
     <div class="message error ui">You have already voted.</div>
     {% endif %}
     {% else %}
-    #
+
     <div class="ui warning message">
         <div class="header">
             <i class="icon vote yea"></i> BALLOT FOR: {{ movie_voter.first_name }} {{ movie_voter.last_name }}

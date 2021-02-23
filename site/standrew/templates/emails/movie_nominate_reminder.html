@@ -5,11 +5,10 @@
 {% inlinecss  "standrew/css/email.css" %}
 <div class="individual">
     <h1>Movie Nominations open until noon</h1>
-    <p></p><strong>Due: Today at 12:00 noon</strong> for this Friday's movie night</h3>
+    <p>Don't forget to nominate! Nominations automatically close <strong>today at 12:00 noon</strong> for this Friday's movie night</p>
     {% if count < 4 %}
         <h3>{{ count }} nominations received so far</h3>
     {% endif %}
-    <p>Nominations will automatically close at this time, and ballots will be sent out.</p>
     <p>Please only nominate one movie per person.</p>
     <div class="link-buttons link-buttons-large">
         <a class="event_link"
@@ -17,6 +16,7 @@
                    target="_blank"><span class="events__tag events__tag__large">SUBMIT YOUR NOMINATION</span></a>&nbsp;
 
     </div>
+    <p>{{ nomination_link }}</p>
     <p><em>This link is unique for you and can only be used once. Please do not share your link.</em></p>
 </div>
 {% endinlinecss %}

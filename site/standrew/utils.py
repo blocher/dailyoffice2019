@@ -5,7 +5,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.safestring import mark_safe
-from django.utils.timezone import get_default_timezone, make_aware
+from django.utils.timezone import make_aware
 from html2text import html2text
 from standrew.models import MovieVoter, MovieCandidate, MovieNight
 from website.settings import SITE_ADDRESS, ZOOM_LINK, DEBUG
@@ -14,11 +14,10 @@ from website.settings import SITE_ADDRESS, ZOOM_LINK, DEBUG
 def get_today():
     if DEBUG:
         date = datetime.datetime.strptime(
-            "{} {} {} {} {} {}".format(2, 25, 2021, 12, 31, "PM"),
+            "{} {} {} {} {} {}".format(2, 25, 2021, 12, 00, "PM"),
             "%m %d %Y %I %M %p",
         )
         date = make_aware(date)
-        print(date)
         return date
     return timezone.localtime(timezone.now())
 
@@ -113,7 +112,7 @@ def send_movie_nomination_emails():
         send_movie_email(subject, message, voter.email)
 
 
-@kronos.register("0 6 * * 4")
+@kronos.register("0 8 * * 4")
 def send_movie_nomination_reminder_emails():
     if not next_friday_is_movie_night():
         return
