@@ -198,6 +198,28 @@ img {
 }
 
 .link-buttons-large {
-	width: 100%;
+	min-width: 100%;
 	margin: 30px auto;
 }
+
+h5 {
+	font-size: 1.1rem;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+th {
+	font-weight: bolder;
+}
+
+/*tr:nth-child(even) {*/
+/*  background-color: #dddddd;*/
+/*}*/

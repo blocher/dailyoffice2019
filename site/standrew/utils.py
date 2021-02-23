@@ -4,6 +4,8 @@ import kronos
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils import timezone
+from django.utils.safestring import mark_safe
+from django.utils.timezone import get_default_timezone, make_aware
 from html2text import html2text
 from standrew.models import MovieVoter, MovieCandidate, MovieNight
 from website.settings import SITE_ADDRESS, ZOOM_LINK, DEBUG
@@ -11,7 +13,13 @@ from website.settings import SITE_ADDRESS, ZOOM_LINK, DEBUG
 
 def get_today():
     if DEBUG:
-        return datetime.datetime.strptime("{} {} {}".format(2, 24, 2021), "%m %d %Y")
+        date = datetime.datetime.strptime(
+            "{} {} {} {} {} {}".format(2, 25, 2021, 12, 31, "PM"),
+            "%m %d %Y %I %M %p",
+        )
+        date = make_aware(date)
+        print(date)
+        return date
     return timezone.localtime(timezone.now())
 
 
@@ -58,7 +66,7 @@ def check_if_voting_open():
     if weekday not in [3, 4]:
         return False
     if weekday == 3:
-        return get_today().hour > 12
+        return get_today().hour >= 12
     if weekday == 4:
         return get_today().hour < 12
     return False
@@ -192,9 +200,23 @@ def send_movie_results_emails():
         return send_message(voters, context)
 
     results = movie_night.get_result()
+
+    display = []
+    for i, election_round in enumerate(results.rounds):
+        display.append("<h5>Round {}</h5>".format(i + 1))
+        display.append("<table>")
+        display.append("<tr><th>Movie</th><th>Votes</th><th>Status</th></tr>")
+        for candidate in election_round.candidate_results:
+            display.append(
+                "<tr><td>{}</td><td>{}</td><td>{}</td></tr>".format(
+                    candidate.candidate, int(round(candidate.number_of_votes, 0)), candidate.status
+                )
+            )
+        display.append("</table>")
     winners = results.get_winners()
     if winners:
         context["winner"] = winners[0].imdb_id.movie_details["fields"]["title"]
+        context["results"] = mark_safe("".join(display))
     else:
         context["winner"] = "TBD"
     return send_message(voters, context)
