@@ -112,7 +112,7 @@ def send_movie_nomination_emails():
         send_movie_email(subject, message, voter.email)
 
 
-@kronos.register("0 8 * * 4")
+@kronos.register("30 9 * * 4")
 def send_movie_nomination_reminder_emails():
     if not next_friday_is_movie_night():
         return
@@ -149,7 +149,7 @@ def send_movie_vote_emails():
         send_movie_email(subject, message, voter.email)
 
 
-@kronos.register("0 6 * * 5")
+@kronos.register("30 9 * * 5")
 def send_movie_vote_reminder_emails():
     if not next_friday_is_movie_night():
         return
@@ -219,3 +219,8 @@ def send_movie_results_emails():
     else:
         context["winner"] = "TBD"
     return send_message(voters, context)
+
+
+@kronos.register("26 23 * * 1")
+def send_test():
+    send_movie_email("TEST", "This is a test message", "blocher@gmail.com")
