@@ -12,7 +12,7 @@
     <h2>Voting is currently closed!</h2>
     {% else %}
     <h3>This ballot automatically closes on Friday at 12:00 noon Eastern</h3>
-    <p><em>Voting is <strong>due Friday at noon eastern</strong> for move night on {{ movie_night.movie_date|date:"l, F j, Y" }}</em> at 8:45 pm.</p>
+    <p><em>Voting is <strong>due Friday at noon eastern</strong> for movie night on {{ movie_night.movie_date|date:"l, F j, Y" }}</em> at 8:45 pm.</p>
     {% endif %}
 
     {% if already_voted or not open %}

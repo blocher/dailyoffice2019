@@ -70,7 +70,12 @@ def movie_search(request, search_field):
 
 
 def movie_candidate_success(request):
-    html = render_to_string("standrew/movie_success.html")
+    html = render_to_string("standrew/movie_candidate_success.html")
+    return HttpResponse(html)
+
+
+def movie_vote_success(request):
+    html = render_to_string("standrew/movie_vote_success.html")
     return HttpResponse(html)
 
 
@@ -306,7 +311,7 @@ class MovieCandidateCreate(CreateView):
 class MovieBallotCreate(CreateView):
     model = MovieBallot
     fields = ["voter", "movie_night", "likelihood_of_coming"]
-    success_url = "/standrew/movies/nominate/success/"
+    success_url = "/standrew/movies/vote/success/"
 
     def get_voter(self):
         try:
