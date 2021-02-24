@@ -1,3 +1,4 @@
+import kronos
 from django.core.mail import EmailMultiAlternatives
 from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
@@ -6,6 +7,7 @@ from standrew.email import WeeklyMeetingEmailModule
 from website.settings import DEBUG
 
 
+@kronos.register("0 6 * * *")
 class Command(BaseCommand):
     help = "Send weekly St. Andrew email"
 

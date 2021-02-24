@@ -157,6 +157,7 @@ a.event_link {
 
 .individual a.event_link span {
 	margin: 20px 5px;
+	line-height: 30px;
 }
 
 .individual .reading {

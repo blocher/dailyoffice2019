@@ -87,7 +87,7 @@ class LiturgicalCalendarSundayEmailModule(SundayEmailModule):
         return render_to_string("emails/weekly_email/liturgical_celebrations.html", {"days": self.get_data()})
 
 
-class BirthdaysSundayEmailModule(SundayEmailModule):
+class BirthdayDecoratorMixin(object):
     @staticmethod
     def has_birthday_completed(birthday):
         try:
@@ -101,7 +101,7 @@ class BirthdaysSundayEmailModule(SundayEmailModule):
 
     def birthday_to_date(self, birthday):
 
-        now = self.date_range[0]
+        now = get_today()
         year = now.year
         if now.month == 12 and birthday[2] == 1:
             year = year + 1
@@ -138,10 +138,12 @@ class BirthdaysSundayEmailModule(SundayEmailModule):
         birthday[8] = self.calculate_age(birthday)
         return birthday
 
+
+class BirthdaysSundayEmailModule(BirthdayDecoratorMixin, SundayEmailModule):
     def get_data(self):
 
         SPREADSHEET_ID = "1BpaVvpi66UKojz9SnO41iLKfVTggWq2jI_ReniyCeH4"
-        RANGE_NAME = "A2:G35"
+        RANGE_NAME = "A2:K35"
         service = build("sheets", "v4", developerKey=GOOGLE_API_KEY)
 
         sheet = service.spreadsheets()
@@ -390,47 +392,43 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
         return render_to_string("emails/weekly_email/schedule.html", {"schedule": self.get_data()})
 
 
-class BirthdayDailyEmail(object):
+class BirthdayDailyEmailModule(BirthdayDecoratorMixin):
     @cached_property
     def subject(self):
-        if not self.data["feasts"]:
+        if not self.data:
             return None
-        fast = self.data["feasts"][0]["rank"]["name"] == "PRIVILEGED_OBSERVANCE"
-        feasts = [feast["name"] for feast in self.data["feasts"]]
-        feasts = "; ".join(feasts)
-        if fast:
-            return feasts
-        return "Happy Feast Day: {}".format(feasts)
+        names = ["{} {}".format(row[1], row[0]) for row in self.data]
+        names = "; ".join(names)
+        return "Happy Birthday {}!".format(names)
 
     @cached_property
     def should_send(self):
-        return True if self.data["feasts"] else False
+        return True if self.data else False
 
     @cached_property
     def data(self):
 
         date = get_today()
-        result = requests.get(
-            "http://api.dailyoffice2019.com/api/v1/calendar/{}-{}-{}".format(date.year, date.month, date.day)
-        )
-        if result.status_code != 200:
-            print("ERROR")
+        SPREADSHEET_ID = "1BpaVvpi66UKojz9SnO41iLKfVTggWq2jI_ReniyCeH4"
+        RANGE_NAME = "A2:K35"
+        service = build("sheets", "v4", developerKey=GOOGLE_API_KEY)
+
+        sheet = service.spreadsheets()
+
+        try:
+            result = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=RANGE_NAME).execute()
+        except HttpError as e:
+            print(e)
             return
-        content = result.json()
-        major_feasts = [
-            feast
-            for feast in content["commemorations"]
-            if int(feast["rank"]["precedence"]) <= 4 and feast["rank"]["name"] != "SUNDAY"
+        return [
+            self.decorate_birthday(row)
+            for row in result["values"]
+            if row[2] and row[3] and int(row[2]) == date.month and int(row[3]) == date.day
         ]
-        return {
-            "day": content,
-            "feasts": major_feasts,
-            "today": timezone.now(),
-        }
 
     def render(self):
         if self.should_send:
-            return render_to_string("emails/weekly_email/major_feast.html", self.data)
+            return render_to_string("emails/weekly_email/birthday.html", {"birthdays": self.data})
         else:
             return "There are no feasts today."
 

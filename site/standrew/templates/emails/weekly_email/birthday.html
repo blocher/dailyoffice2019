@@ -1,0 +1,50 @@
+{% load inlinecss mjml %}
+{% inlinecss  "standrew/css/email.css" %}
+
+
+{% block content %}
+
+<div class="individual">
+    {% for birthday in birthdays %}
+        <h1>Happy Birthday, {{ birthday.1 }}! {% if birthday.8 < 22 %}(Age {{birthday.8}}){% endif %}</h1>
+        <p>From your friends at the Community of St. Andrew</p>
+
+        <div class="reading">
+            <p>O God, our times are in your hand: Look with favor, we pray, on your servant {{ birthday.1 }} as {% if birthday.10 == "female" %}she{% else %}he{% endif %} begins another year. Grant that {% if birthday.10 == "female" %}she{% else %}he{% endif %} may grow in wisdom and grace, and strengthen {% if birthday.10 == "female" %}her{% else %}him{% endif %} trust in your goodness all the days of {% if birthday.10 == "female" %}her{% else %}him{% endif %} life; through Jesus Christ our Lord. <strong>Amen.</strong></p>
+            <p><em>Book of Common Prayer 2019, #67, p. 666 </em></p>
+        </div>
+
+        <div class="reading">
+            <h4>Send {% if birthday.10 == "female" %}her{% else %}him{% endif %} a birthday note!</h4>
+
+            <p>
+                {% if birthday.5 %}
+                    <a class="event_link" href="mailto:{{ birthday.5 }}"><span class="events__tag">Email</span></a>
+                {% endif %}
+                {% if birthday.6 %}
+                    <a class="event_link" href="tel:{{ birthday.6 }}"><span class="events__tag">Call</span></a>
+                    <a class="event_link" href="sms:{{ birthday.6 }}"><span class="events__tag">Text</span></a>
+                {% endif %}
+            </p>
+            {% if birthday.5 %}
+                 <p>Email: <a href="mailto:{{ birthday.5 }}">{{ birthday.5 }}</a></p>
+            {% endif %}
+            {% if birthday.6 %}
+                 <p>Call: <a href="tel:{{ birthday.6 }}">{{ birthday.6 }}</a></p>
+            {% endif %}
+            {% if birthday.6 %}
+                 <p>Text: <a href="sms:{{ birthday.6 }}">{{ birthday.6 }}</a></p>
+            {% endif %}
+            {% if birthday.9 %}
+                 <p>Mail a card: {{ birthday.9 }}</p>
+            {% endif %}
+        </div>
+            &nbsp;
+
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}
+{% endinlinecss %}

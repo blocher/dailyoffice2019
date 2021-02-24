@@ -9,9 +9,9 @@
         <p>Liturgist: {{ meeting.leader }}</p>
     {% endif %}
     <div class="link-buttons">
-        <a class="event_link" href="{{ meeting.zoom_link }}"><span class="events__tag">Join Zoom Meeting</span></a>
+        <a class="event_link" href="{{ meeting.zoom_link }}"><span class="events__tag">Join Zoom</span></a>
         {% if meeting.slack_link %}
-            <a class="event_link" href="{{ meeting.slack_link }}" target="_blank"><span class="events__tag">Join Slack Channel</span></a>
+            <a class="event_link" href="{{ meeting.slack_link }}" target="_blank"><span class="events__tag">Join Slack</span></a>
         {% endif %}
     </div>
     {% if meeting.meeting == "men" %}

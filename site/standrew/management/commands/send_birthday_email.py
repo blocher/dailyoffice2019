@@ -1,16 +1,18 @@
+import kronos
 from django.core.mail import EmailMultiAlternatives
 from django.core.management.base import BaseCommand
 from django.template.loader import render_to_string
 from html2text import html2text
-from standrew.email import CommemorationDailyEmailModule
+from standrew.email import BirthdayDailyEmailModule
 from website.settings import DEBUG
 
 
+@kronos.register("0 6 * * *")
 class Command(BaseCommand):
-    help = "Send weekly St. Andrew email"
+    help = "Send daily Birthday email"
 
     def handle(self, *args, **options):
-        module = CommemorationDailyEmailModule()
+        module = BirthdayDailyEmailModule()
         if not module.should_send:
             return
         content = module.render()
