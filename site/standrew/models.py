@@ -43,7 +43,7 @@ class MovieCandidate(BaseModel):
         ("other", "Other"),
     )
     LIKELIHOOD_CHOICES = (
-        (100, "I plan to come"),
+        (100, "I am definitely coming"),
         (75, "I will probably come"),
         (50, "50/50 at this point"),
         (25, "I most likely won't come"),
@@ -90,7 +90,7 @@ class MovieCandidate(BaseModel):
 class MovieBallot(BaseModel):
 
     LIKELIHOOD_CHOICES = (
-        (100, "I plan to come"),
+        (100, "I am definitely coming"),
         (75, "I will most likely come"),
         (50, "I'm not sure (greater than 50/50 chance at this point)"),
     )
