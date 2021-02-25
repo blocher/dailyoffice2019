@@ -331,6 +331,7 @@ class MovieBallotCreate(CreateView):
                 "data": get_movie_details(candidate.imdb_id_id),
                 "nominator": candidate.movie_voter,
                 "reason": candidate.recommended_reason,
+                "service": candidate.movie_service.replace("_", " ").capitalize(),
             }
             for candidate in candidates
         ]

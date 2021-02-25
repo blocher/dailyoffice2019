@@ -40,6 +40,7 @@
         Nominated by <em>{{ candidate.nominator.first_name }} {{ candidate.nominator.last_name }}</em>
         {% if candidate.reason %}
             <p><i class="comment icon"></i> <small><em>{{ candidate.reason }}</em></small></p>
+            <p><small><strong>Reported streaming on:</strong> <em>{{ candidate.service }}</em></small></p>
         {% endif %}
     </div>
     {{ candidate.movie|safe }}

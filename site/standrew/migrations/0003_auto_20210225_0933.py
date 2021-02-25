@@ -6,18 +6,35 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('standrew', '0002_auto_20210221_1602'),
+        ("standrew", "0002_auto_20210221_1602"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='movieballot',
-            name='likelihood_of_coming',
-            field=models.IntegerField(choices=[(100, 'I am definitely coming'), (75, 'I will most likely come'), (50, "I'm not sure (greater than 50/50 chance at this point)")], default=-1),
+            model_name="movieballot",
+            name="likelihood_of_coming",
+            field=models.IntegerField(
+                choices=[
+                    (100, "I am definitely coming"),
+                    (75, "I will most likely come"),
+                    (50, "I'm not sure (greater than 50/50 chance at this point)"),
+                ],
+                default=-1,
+            ),
         ),
         migrations.AlterField(
-            model_name='moviecandidate',
-            name='likelihood_of_coming',
-            field=models.IntegerField(choices=[(100, 'I am definitely coming'), (75, 'I will probably come'), (50, '50/50 at this point'), (25, "I most likely won't come"), (0, 'I do not plan to come'), (-1, 'Not Answered')], default=-1),
+            model_name="moviecandidate",
+            name="likelihood_of_coming",
+            field=models.IntegerField(
+                choices=[
+                    (100, "I am definitely coming"),
+                    (75, "I will probably come"),
+                    (50, "50/50 at this point"),
+                    (25, "I most likely won't come"),
+                    (0, "I do not plan to come"),
+                    (-1, "Not Answered"),
+                ],
+                default=-1,
+            ),
         ),
     ]
