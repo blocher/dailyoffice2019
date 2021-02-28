@@ -7,7 +7,7 @@ from standrew.email import weekly_email
 from website.settings import DEBUG
 
 
-@kronos.register("0 18 * * 0")
+@kronos.register("0 18 * * 6")
 class Command(BaseCommand):
     help = "Send weekly St. Andrew email"
 
