@@ -1,0 +1,96 @@
+{% extends "standrew/movie_base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<h2 class="ui center aligned icon header">
+    <i class="circular video icon"></i>
+    St. Andrew's<br>Results
+</h2>
+
+<h2>Calculations</h2>
+{% for round in rounds %}
+    <h3>Round {{ forloop.counter }} {%if forloop.counter == rounds|length %}(Final Round){% endif %}</h3>
+    <p><em>{{ number_to_win }} of {{ number_of_candidates }} votes needed to obtain majority and win </em></p>
+
+        <table class="ui celled table">
+          <thead>
+            <tr>
+
+              <th>Result</th>
+              <th>Name</th>
+              <th>First-place Votes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for result in round.candidate_results %}
+                <tr class="{{ result.cell_class }}">
+                  <td ><i class="{{ result.icon }} icon"></i> {{ result.formatted_status}}</td>
+                  <td>{{ result.candidate }}</td>
+                  <td>{{ result.votes }}</td>
+
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+{% endfor %}
+
+
+<h2 class="ui header dividing">
+  <i class="trophy icon"></i>
+  <div class="content">
+    Winner
+  </div>
+</h2>
+<div>
+
+{% include "standrew/movie_preview.html" with fields=winner.fields %}
+
+<h2 class="ui header dividing">
+  <i class="skull crossbones icon"></i>
+  <div class="content">
+    Vetos
+  </div>
+</h2>
+<div>
+
+{% for veto in vetos %}
+    <p><strong>{{ veto.candidate.imdb_id.movie_details.fields.title }}</strong> by <em>{{ veto.voter.first_name }} {{ veto.voter.last_name }}</em></p>
+{% empty %}
+    <em>No vetos!</em>
+
+{% endfor %}
+
+<h2 class="ui header dividing">
+  <i class="calendar check outline icon"></i>
+  <div class="content">
+    RSVPs
+    <div class="sub header">When Voting</div>
+  </div>
+</h2>
+<div class="ui four cards stackable">
+    {% include "standrew/rsvp_card.html" with title="Definitely coming" voters=rsvps.100 %}
+    {% include "standrew/rsvp_card.html" with title="Likely coming" voters=rsvps.75 %}
+    {% include "standrew/rsvp_card.html" with title="50/50" voters=rsvps.50 %}
+    {% include "standrew/rsvp_card.html" with title="No vote" voters=rsvps.na %}
+</div>
+
+
+<h2 class="ui header dividing">
+  <i class="calendar check outline icon"></i>
+  <div class="content">
+    RSVPs
+    <div class="sub header">When Nominating</div>
+  </div>
+</h2>
+<div class="ui six cards stackable">
+    {% include "standrew/rsvp_card.html" with title="Definitely coming" voters=candidate_rsvps.100 %}
+    {% include "standrew/rsvp_card.html" with title="Likely coming" voters=candidate_rsvps.75 %}
+    {% include "standrew/rsvp_card.html" with title="50/50" voters=candidate_rsvps.50 %}
+    {% include "standrew/rsvp_card.html" with title="Probably Not" voters=candidate_rsvps.25 %}
+    {% include "standrew/rsvp_card.html" with title="Not Coming" voters=candidate_rsvps.0 %}
+    {% include "standrew/rsvp_card.html" with title="No Nomination" voters=candidate_rsvps.na %}
+</div>
+
+{% endblock %}

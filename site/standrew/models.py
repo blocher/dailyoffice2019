@@ -99,6 +99,14 @@ class MovieBallot(BaseModel):
     movie_night = models.ForeignKey("MovieNight", on_delete=models.SET_NULL, null=True, blank=True)
     likelihood_of_coming = models.IntegerField(choices=LIKELIHOOD_CHOICES, default=-1)
 
+    @property
+    def rsvp(self):
+        choices = dict(self.LIKELIHOOD_CHOICES)
+        try:
+            return choices[self.likelihood_of_coming]
+        except KeyError:
+            return "Unknown"
+
     def get_ballot(self, vetos=None):
         return Ballot(
             [

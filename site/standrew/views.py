@@ -1,6 +1,8 @@
 import json
 import operator
 from functools import reduce
+from itertools import groupby
+from math import ceil, floor
 from types import SimpleNamespace
 
 import requests
@@ -18,8 +20,15 @@ from standrew.models import (
     MovieDetails,
     MovieRankedVote,
     MovieVeto,
+    MovieNight,
 )
-from standrew.utils import get_movie_night, check_if_nominations_open, get_friday, check_if_voting_open
+from standrew.utils import (
+    get_movie_night,
+    check_if_nominations_open,
+    get_friday,
+    check_if_voting_open,
+    CandidateResultDecorator,
+)
 from website.settings import YOUTUBE_API_KEY, IMDB_API_KEY, UTELLY_API_KEY, OMDB_API_KEY
 
 
@@ -71,6 +80,55 @@ def movie_search(request, search_field):
 
 def movie_candidate_success(request):
     html = render_to_string("standrew/movie_candidate_success.html")
+    return HttpResponse(html)
+
+
+def movie_night_results(request, movie_night):
+    movie_night = MovieNight.objects.get(pk=movie_night)
+    ballots = movie_night.movieballot_set.order_by(
+        "-likelihood_of_coming", "voter__last_name", "voter__first_name"
+    ).all()
+    no_rsvp_ids = [ballot.voter_id for ballot in ballots]
+    rsvps = {k: [ballot.voter for ballot in g] for k, g in groupby(ballots, lambda x: x.likelihood_of_coming)}
+    rsvps["na"] = MovieVoter.objects.exclude(pk__in=no_rsvp_ids).order_by("last_name", "first_name").all()
+
+    candidates = movie_night.moviecandidate_set.order_by(
+        "-likelihood_of_coming", "movie_voter__last_name", "movie_voter__first_name"
+    ).all()
+    candidates_no_rsvp_ids = [candidate.movie_voter_id for candidate in candidates]
+    candidate_rsvps = {
+        k: [candidate.movie_voter for candidate in g] for k, g in groupby(candidates, lambda x: x.likelihood_of_coming)
+    }
+    candidate_rsvps["na"] = (
+        MovieVoter.objects.exclude(pk__in=candidates_no_rsvp_ids).order_by("last_name", "first_name").all()
+    )
+
+    vetos = MovieVeto.objects.filter(candidate__movie_night=movie_night).all()
+    result = movie_night.get_result()
+    winner = result.get_winners()
+    if winner:
+        winner = winner[0].imdb_id.movie_details
+        print(winner["fields"])
+
+    results = movie_night.get_result()
+
+    for i, election_round in enumerate(results.rounds):
+        for j, candidate in enumerate(election_round.candidate_results):
+            results.rounds[i].candidate_results[j] = CandidateResultDecorator(candidate)
+
+    html = render_to_string(
+        "standrew/movie_results.html",
+        {
+            "ballots": ballots,
+            "rsvps": rsvps,
+            "candidate_rsvps": candidate_rsvps,
+            "vetos": vetos,
+            "winner": winner,
+            "rounds": results.rounds,
+            "number_to_win": floor(float(len(ballots)) / 2) + 1,
+            "number_of_candidates": len(ballots),
+        },
+    )
     return HttpResponse(html)
 
 

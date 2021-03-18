@@ -1,0 +1,15 @@
+<div class="card">
+    <div class="extra content">
+        <div class="header">
+            <h3>{{ title }} ({{ voters|length }})</h3>
+        </div>
+    </div>
+    <div class="content">
+        {% for voter in voters %}
+            <p>{{ voter.first_name }} {{ voter.last_name }}</p>
+        {% empty %}
+            <p><em>No responses</em></p>
+        {% endfor %}
+    </div>
+</div>
+

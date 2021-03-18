@@ -412,6 +412,9 @@ urlpatterns = [
     path("email", standrew_views.current_email),
     path("feast_email", standrew_views.feast_email),
     path("meeting_email", standrew_views.meeting_email),
+    path(
+        "standrew/movies/results/<uuid:movie_night>/", standrew_views.movie_night_results, name="movie-night-results"
+    ),
     path("standrew/movies/nominate/success/", standrew_views.movie_candidate_success, name="movie-candidate-success"),
     path("standrew/movies/vote/success/", standrew_views.movie_vote_success, name="movie-vote-success"),
     path("standrew/movies/nominate/<uuid:voter>", MovieCandidateCreate.as_view(), name="movie-candidate-add"),

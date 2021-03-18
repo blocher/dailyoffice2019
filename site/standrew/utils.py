@@ -7,6 +7,7 @@ from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.timezone import make_aware
 from html2text import html2text
+from pyrankvote.helpers import CandidateResult, CandidateStatus
 from standrew.models import MovieVoter, MovieCandidate, MovieNight
 from website.settings import SITE_ADDRESS, ZOOM_LINK, DEBUG
 
@@ -221,6 +222,48 @@ def send_movie_results_emails():
     return send_message(voters, context)
 
 
-@kronos.register("26 23 * * 1")
-def send_test():
-    send_movie_email("TEST", "This is a test message", "blocher@gmail.com")
+class CandidateResultDecorator(object):
+    def __init__(self, candidate_result):
+        self.candidate_result = candidate_result
+
+    def __getattr__(self, item):
+        return getattr(self.candidate_result, item)
+
+    @property
+    def formatted_status(self):
+        if self.status == CandidateStatus.Elected:
+            return "Winner"
+
+        if self.status == CandidateStatus.Hopeful:
+            return "Continues to next round"
+
+        if self.status == CandidateStatus.Rejected:
+            return "Eliminated"
+
+    @property
+    def icon(self):
+        if self.status == CandidateStatus.Elected:
+            return "trophy"
+
+        if self.status == CandidateStatus.Hopeful:
+            return "angle double right"
+
+        if self.status == CandidateStatus.Rejected:
+            return "heart broken"
+
+    @property
+    def votes(self):
+        if not self.number_of_votes:
+            return 0
+        return int(self.number_of_votes)
+
+    @property
+    def cell_class(self):
+        if self.status == CandidateStatus.Elected:
+            return "positive"
+
+        if self.status == CandidateStatus.Hopeful:
+            return "warning"
+
+        if self.status == CandidateStatus.Rejected:
+            return "negative"
