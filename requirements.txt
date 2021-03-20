@@ -79,7 +79,7 @@ ipython==7.19.0
 ipython-genutils==0.2.0
 itypes==1.2.0
 jedi==0.17.2
-Jinja2==2.11.2
+Jinja2==2.11.3
 joblib==1.0.0
 lxml==4.6.2
 mammoth==1.4.13
