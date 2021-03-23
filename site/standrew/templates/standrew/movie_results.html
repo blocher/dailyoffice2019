@@ -8,89 +8,212 @@
     St. Andrew's<br>Results
 </h2>
 
-<h2>Calculations</h2>
-{% for round in rounds %}
-    <h3>Round {{ forloop.counter }} {%if forloop.counter == rounds|length %}(Final Round){% endif %}</h3>
-    <p><em>{{ number_to_win }} of {{ number_of_candidates }} votes needed to obtain majority and win </em></p>
+<div class="ui pointing stackable menu">
+  <a class="item" data-tab="tab-winner">
+    Winner & Nominees
+  </a>
+  <a class="item" data-tab="tab-tabulations">
+    Tabulations
+  </a>
+  <a class="item" data-tab="tab-ballots">
+    Ballots and Vetoes
+  </a>
+  <a class="item" data-tab="tab-rsvps">
+    RSVPs
+  </a>
+</div>
 
-        <table class="ui celled table">
-          <thead>
-            <tr>
 
-              <th>Result</th>
-              <th>Name</th>
-              <th>First-place Votes</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for result in round.candidate_results %}
-                <tr class="{{ result.cell_class }}">
-                  <td ><i class="{{ result.icon }} icon"></i> {{ result.formatted_status}}</td>
-                  <td>{{ result.candidate }}</td>
-                  <td>{{ result.votes }}</td>
+<div class="ui bottom tab segment" data-tab="tab-winner">
 
+    <h2 class="ui header dividing">
+      <i class="trophy icon"></i>
+      <div class="content">
+        Winner
+      </div>
+    </h2>
+
+    <div class="ui top attached header raised" style="margin-top:15px">
+        Nominated by <em>{{ full_winner.movie_voter.first_name }} {{ full_winner.movie_voter.last_name }}</em>
+        {% if full_winner.recommended_reason %}
+            <p><i class="comment icon"></i> <small><em>{{ full_winner.recommended_reason }}</em></small></p>
+        {% endif %}
+            <p><small><strong>Reported streaming on:</strong> <em>{{ full_winner.service }}</em></small></p>
+    </div>
+    {% include "standrew/movie_preview.html" with fields=winner.fields %}
+
+    <h2 class="ui header dividing">
+      <i class="broken heart icon"></i>
+      <div class="content">
+        Nominees
+      </div>
+    </h2>
+
+    {% for candidate in candidates %}
+        <div class="ui top attached header raised" style="margin-top:15px">
+            Nominated by <em>{{ candidate.movie_voter.first_name }} {{ candidate.movie_voter.last_name }}</em>
+            {% if candidate.recommended_reason %}
+                <p><i class="comment icon"></i> <small><em>{{ candidate.recommended_reason }}</em></small></p>
+            {% endif %}
+                <p><small><strong>Reported streaming on:</strong> <em>{{ candidate.service }}</em></small></p>
+        </div>
+        {% include "standrew/movie_preview.html" with fields=candidate.imdb_id.movie_details.fields %}
+    {% endfor %}
+
+</div>
+
+<div class="ui bottom tab segment" data-tab="tab-tabulations">
+    <h2 class="ui dividing header">Official Tabulations (Excludes Vetoes)</h2>
+    {% for round in rounds %}
+        <h3>Round {{ forloop.counter }} {%if forloop.counter == rounds|length %}(Final Round){% endif %}</h3>
+        <p><em>{{ number_to_win }} of {{ number_of_candidates }} votes needed to obtain majority and win </em></p>
+
+            <table class="ui celled table">
+              <thead>
+                <tr>
+
+                  <th>Result</th>
+                  <th>Name</th>
+                  <th>First-place Votes</th>
                 </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                {% for result in round.candidate_results %}
+                    <tr class="{{ result.cell_class }}">
+                      <td ><i class="{{ result.icon }} icon"></i> {{ result.formatted_status}}</td>
+                      <td>{{ result.candidate }}</td>
+                      <td>{{ result.votes }}</td>
+                    </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+    {% endfor %}
+        <h2 class="ui dividing header">Tabulations (Disregarding Vetoes)</h2>
+    {% for round in no_veto_rounds %}
+        <h3>Round {{ forloop.counter }} {%if forloop.counter == rounds|length %}(Final Round){% endif %}</h3>
+        <p><em>{{ number_to_win }} of {{ number_of_candidates }} votes needed to obtain majority and win </em></p>
 
-{% endfor %}
+            <table class="ui celled table">
+              <thead>
+                <tr>
 
+                  <th>Result</th>
+                  <th>Name</th>
+                  <th>First-place Votes</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for result in round.candidate_results %}
+                    <tr class="{{ result.cell_class }}">
+                      <td ><i class="{{ result.icon }} icon"></i> {{ result.formatted_status}}</td>
+                      <td>{{ result.candidate }}</td>
+                      <td>{{ result.votes }}</td>
+                    </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+    {% endfor %}
+</div>
 
-<h2 class="ui header dividing">
-  <i class="trophy icon"></i>
-  <div class="content">
-    Winner
-  </div>
-</h2>
-<div>
+<div class="ui bottom tab segment" data-tab="tab-ballots">
+    <h2 class="ui header dividing">
+      <i class="skull crossbones icon"></i>
+      <div class="content">
+        Vetos
+      </div>
+    </h2>
 
-{% include "standrew/movie_preview.html" with fields=winner.fields %}
+    {% for veto in vetos %}
+        <p><strong>{{ veto.candidate.imdb_id.movie_details.fields.title }}</strong> by <em>{{ veto.voter.first_name }} {{ veto.voter.last_name }}</em></p>
+    {% empty %}
+        <em>No vetos!</em>
+    {% endfor %}
 
-<h2 class="ui header dividing">
-  <i class="skull crossbones icon"></i>
-  <div class="content">
-    Vetos
-  </div>
-</h2>
-<div>
+    <h2>Ballots (Vetoes excluded)</h2>
+    <div class="ui four column grid stackable">
+    {% for ballot in ballots %}
+        <div class="column">
+            <h3 class="ui dividing header">{{ ballot.voter.first_name }} {{ ballot.voter.last_name }}</h3>
+            <table class="ui celled table ">
+              <thead>
+                <tr><th>Rank</th>
+                <th>Movie</th>
+              </tr></thead>
+              <tbody>
+                {% for vote in ballot.no_veto_votes %}
+                <tr>
+                  <td data-label="Rank">{{ forloop.counter }}</td>
+                  <td data-label="Movie">{{ vote.candidate.imdb_id.title }}</td>
+                </tr>
+                {% endfor %}
 
-{% for veto in vetos %}
-    <p><strong>{{ veto.candidate.imdb_id.movie_details.fields.title }}</strong> by <em>{{ veto.voter.first_name }} {{ veto.voter.last_name }}</em></p>
-{% empty %}
-    <em>No vetos!</em>
+              </tbody>
+            </table>
+        </div>
+    {% endfor %}
+    </div>
 
-{% endfor %}
+    <h2>Ballots (Vetoes Included)</h2>
+    <div class="ui four column grid stackable">
+    {% for ballot in ballots %}
+        <div class="column">
+            <h3 class="ui dividing header">{{ ballot.voter.first_name }} {{ ballot.voter.last_name }}</h3>
+            <table class="ui celled table">
+              <thead>
+                <tr><th>Rank</th>
+                <th>Movie</th>
+              </tr></thead>
+              <tbody>
+                {% for vote in ballot.votes %}
+                <tr>
+                  <td data-label="Rank">{{ forloop.counter }}</td>
+                  <td data-label="Movie">{{ vote.candidate.imdb_id.title }}</td>
+                </tr>
+                {% endfor %}
 
-<h2 class="ui header dividing">
-  <i class="calendar check outline icon"></i>
-  <div class="content">
-    RSVPs
-    <div class="sub header">When Voting</div>
-  </div>
-</h2>
-<div class="ui four cards stackable">
-    {% include "standrew/rsvp_card.html" with title="Definitely coming" voters=rsvps.100 %}
-    {% include "standrew/rsvp_card.html" with title="Likely coming" voters=rsvps.75 %}
-    {% include "standrew/rsvp_card.html" with title="50/50" voters=rsvps.50 %}
-    {% include "standrew/rsvp_card.html" with title="No vote" voters=rsvps.na %}
+              </tbody>
+            </table>
+        </div>
+    {% endfor %}
+    </div>
 </div>
 
 
-<h2 class="ui header dividing">
-  <i class="calendar check outline icon"></i>
-  <div class="content">
-    RSVPs
-    <div class="sub header">When Nominating</div>
-  </div>
-</h2>
-<div class="ui six cards stackable">
-    {% include "standrew/rsvp_card.html" with title="Definitely coming" voters=candidate_rsvps.100 %}
-    {% include "standrew/rsvp_card.html" with title="Likely coming" voters=candidate_rsvps.75 %}
-    {% include "standrew/rsvp_card.html" with title="50/50" voters=candidate_rsvps.50 %}
-    {% include "standrew/rsvp_card.html" with title="Probably Not" voters=candidate_rsvps.25 %}
-    {% include "standrew/rsvp_card.html" with title="Not Coming" voters=candidate_rsvps.0 %}
-    {% include "standrew/rsvp_card.html" with title="No Nomination" voters=candidate_rsvps.na %}
-</div>
 
+<div class="ui bottom tab segment"  data-tab="tab-rsvps">
+
+    <h2 class="ui header dividing">
+      <i class="calendar check outline icon"></i>
+      <div class="content">
+        RSVPs
+        <div class="sub header">When Voting</div>
+      </div>
+    </h2>
+    <div class="ui four cards stackable">
+        {% include "standrew/rsvp_card.html" with title="Definitely coming" voters=rsvps.100 %}
+        {% include "standrew/rsvp_card.html" with title="Likely coming" voters=rsvps.75 %}
+        {% include "standrew/rsvp_card.html" with title="50/50" voters=rsvps.50 %}
+        {% include "standrew/rsvp_card.html" with title="No vote" voters=rsvps.na %}
+    </div>
+
+
+    <h2 class="ui header dividing">
+      <i class="calendar check outline icon"></i>
+      <div class="content">
+        RSVPs
+        <div class="sub header">When Nominating</div>
+      </div>
+    </h2>
+    <div class="ui six cards stackable">
+        {% include "standrew/rsvp_card.html" with title="Definitely coming" voters=candidate_rsvps.100 %}
+        {% include "standrew/rsvp_card.html" with title="Likely coming" voters=candidate_rsvps.75 %}
+        {% include "standrew/rsvp_card.html" with title="50/50" voters=candidate_rsvps.50 %}
+        {% include "standrew/rsvp_card.html" with title="Probably Not" voters=candidate_rsvps.25 %}
+        {% include "standrew/rsvp_card.html" with title="Not Coming" voters=candidate_rsvps.0 %}
+        {% include "standrew/rsvp_card.html" with title="No Nomination" voters=candidate_rsvps.na %}
+    </div>
+</div>
+<script>
+    $('.menu .item').tab();
+</script>
 {% endblock %}

@@ -1,17 +1,32 @@
 import pyrankvote
 from churchcal.base_models import BaseModel
 from django.db import models
+from django.db.models import Prefetch
 from pyrankvote import Candidate, Ballot
 
 
 class MovieNight(BaseModel):
     movie_date = models.DateField()
 
-    def get_result(self):
-        vetos = MovieVeto.objects.values_list("candidate_id", flat=True)
-        candidates = self.moviecandidate_set.exclude(pk__in=vetos).all()
+    def get_result(self, vetoes=True):
+        if vetoes:
+            vetos = MovieVeto.objects.values_list("candidate_id", flat=True)
+            candidates = self.moviecandidate_set.select_related("imdb_id").exclude(pk__in=vetos).all()
+        else:
+            vetos = []
+            candidates = self.moviecandidate_set.select_related("imdb_id").all()
         return pyrankvote.instant_runoff_voting(
-            candidates, [movie_ballot.get_ballot(vetos) for movie_ballot in self.movieballot_set.all()]
+            candidates,
+            [
+                movie_ballot.get_ballot(vetos)
+                for movie_ballot in self.movieballot_set.prefetch_related(
+                    Prefetch(
+                        "movierankedvote_set", queryset=MovieRankedVote.objects.select_related("candidate__imdb_id")
+                    )
+                )
+                .select_related("voter")
+                .all()
+            ],
         )
 
 
@@ -86,6 +101,10 @@ class MovieCandidate(BaseModel):
     def name(self):
         return self.imdb_id.movie_details["fields"]["title"]
 
+    @property
+    def service(self):
+        return self.movie_service.capitalize().replace("_", " ")
+
 
 class MovieBallot(BaseModel):
 
@@ -120,6 +139,10 @@ class MovieBallot(BaseModel):
 class MovieDetails(BaseModel):
     imdb_id = models.CharField(max_length=256, unique=True)
     movie_details = models.JSONField()
+
+    @property
+    def title(self):
+        return self.movie_details["fields"]["title"]
 
 
 class MovieVeto(BaseModel):

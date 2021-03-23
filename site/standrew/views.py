@@ -8,6 +8,7 @@ from types import SimpleNamespace
 import requests
 from cachetools.func import lru_cache
 from django.core.exceptions import ValidationError
+from django.db.models import Prefetch
 from django.http import HttpResponse, Http404
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
@@ -84,49 +85,89 @@ def movie_candidate_success(request):
 
 
 def movie_night_results(request, movie_night):
-    movie_night = MovieNight.objects.get(pk=movie_night)
-    ballots = movie_night.movieballot_set.order_by(
-        "-likelihood_of_coming", "voter__last_name", "voter__first_name"
-    ).all()
-    no_rsvp_ids = [ballot.voter_id for ballot in ballots]
-    rsvps = {k: [ballot.voter for ballot in g] for k, g in groupby(ballots, lambda x: x.likelihood_of_coming)}
+    vetos = MovieVeto.objects.filter(candidate__movie_night=movie_night).select_related("voter", "candidate").all()
+    veto_ids = [veto.candidate.pk for veto in vetos]
+    print(veto_ids)
+    movie_night = (
+        MovieNight.objects.prefetch_related(
+            Prefetch(
+                "movieballot_set",
+                queryset=MovieBallot.objects.order_by("-likelihood_of_coming", "voter__last_name", "voter__first_name")
+                .prefetch_related(
+                    Prefetch(
+                        "movierankedvote_set",
+                        queryset=MovieRankedVote.objects.select_related("candidate__imdb_id").order_by("rank"),
+                        to_attr="votes",
+                    )
+                )
+                .prefetch_related(
+                    Prefetch(
+                        "movierankedvote_set",
+                        queryset=MovieRankedVote.objects.select_related("candidate__imdb_id")
+                        .order_by("rank")
+                        .exclude(candidate__pk__in=veto_ids),
+                        to_attr="no_veto_votes",
+                    )
+                )
+                .select_related("voter"),
+                to_attr="ballots",
+            )
+        )
+        .prefetch_related(
+            Prefetch(
+                "moviecandidate_set",
+                queryset=MovieCandidate.objects.order_by(
+                    "-likelihood_of_coming", "movie_voter__last_name", "movie_voter__first_name"
+                ).select_related("imdb_id", "movie_voter"),
+                to_attr="candidates",
+            )
+        )
+        .get(pk=movie_night)
+    )
+
+    no_rsvp_ids = [ballot.voter_id for ballot in movie_night.ballots]
+    rsvps = {
+        k: [ballot.voter for ballot in g] for k, g in groupby(movie_night.ballots, lambda x: x.likelihood_of_coming)
+    }
     rsvps["na"] = MovieVoter.objects.exclude(pk__in=no_rsvp_ids).order_by("last_name", "first_name").all()
 
-    candidates = movie_night.moviecandidate_set.order_by(
-        "-likelihood_of_coming", "movie_voter__last_name", "movie_voter__first_name"
-    ).all()
-    candidates_no_rsvp_ids = [candidate.movie_voter_id for candidate in candidates]
+    candidates_no_rsvp_ids = [candidate.movie_voter_id for candidate in movie_night.candidates]
     candidate_rsvps = {
-        k: [candidate.movie_voter for candidate in g] for k, g in groupby(candidates, lambda x: x.likelihood_of_coming)
+        k: [candidate.movie_voter for candidate in g]
+        for k, g in groupby(movie_night.candidates, lambda x: x.likelihood_of_coming)
     }
     candidate_rsvps["na"] = (
         MovieVoter.objects.exclude(pk__in=candidates_no_rsvp_ids).order_by("last_name", "first_name").all()
     )
 
-    vetos = MovieVeto.objects.filter(candidate__movie_night=movie_night).all()
-    result = movie_night.get_result()
-    winner = result.get_winners()
-    if winner:
-        winner = winner[0].imdb_id.movie_details
-        print(winner["fields"])
-
     results = movie_night.get_result()
+    no_veto_results = movie_night.get_result(vetoes=False)
+    winner = results.get_winners()
+    if winner:
+        winner_details = winner[0].imdb_id.movie_details
 
     for i, election_round in enumerate(results.rounds):
         for j, candidate in enumerate(election_round.candidate_results):
             results.rounds[i].candidate_results[j] = CandidateResultDecorator(candidate)
 
+    for i, election_round in enumerate(no_veto_results.rounds):
+        for j, candidate in enumerate(election_round.candidate_results):
+            no_veto_results.rounds[i].candidate_results[j] = CandidateResultDecorator(candidate)
+
     html = render_to_string(
         "standrew/movie_results.html",
         {
-            "ballots": ballots,
+            "ballots": movie_night.ballots,
             "rsvps": rsvps,
             "candidate_rsvps": candidate_rsvps,
             "vetos": vetos,
-            "winner": winner,
+            "winner": winner_details,
+            "full_winner": winner[0],
             "rounds": results.rounds,
-            "number_to_win": floor(float(len(ballots)) / 2) + 1,
-            "number_of_candidates": len(ballots),
+            "no_veto_rounds": no_veto_results.rounds,
+            "number_to_win": floor(float(len(movie_night.ballots)) / 2) + 1,
+            "number_of_candidates": len(movie_night.ballots),
+            "candidates": sorted(movie_night.candidates, key=lambda t: t.imdb_id.title),
         },
     )
     return HttpResponse(html)
