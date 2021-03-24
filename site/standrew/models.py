@@ -2,11 +2,23 @@ import pyrankvote
 from churchcal.base_models import BaseModel
 from django.db import models
 from django.db.models import Prefetch
-from pyrankvote import Candidate, Ballot
+from pyrankvote import Ballot
+from website.settings import SITE_ADDRESS
 
 
 class MovieNight(BaseModel):
     movie_date = models.DateField()
+
+    def election_closed(self):
+        from standrew.utils import get_today
+
+        now = get_today()
+        today = now.date()
+        if self.movie_date < today:
+            return True
+        if self.movie_date > today:
+            return False
+        return now.hour >= 12
 
     def get_result(self, vetoes=True):
         if vetoes:
@@ -15,6 +27,7 @@ class MovieNight(BaseModel):
         else:
             vetos = []
             candidates = self.moviecandidate_set.select_related("imdb_id").all()
+
         return pyrankvote.instant_runoff_voting(
             candidates,
             [
@@ -105,6 +118,19 @@ class MovieCandidate(BaseModel):
     def service(self):
         return self.movie_service.capitalize().replace("_", " ")
 
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        from standrew.utils import send_movie_email
+
+        adding = self._state.adding
+        result = super().save(force_insert, force_update, using, update_fields)
+        if adding:
+            subject = "{} {} has nominated {}".format(
+                self.movie_voter.first_name, self.movie_voter.last_name, self.imdb_id.title
+            )
+            message = "{}/standrew/movies/results/{}".format(SITE_ADDRESS, self.movie_night_id)
+            send_movie_email(subject, message, "blocher@gmail.com")
+        return result
+
 
 class MovieBallot(BaseModel):
 
@@ -138,7 +164,7 @@ class MovieBallot(BaseModel):
 
 class MovieDetails(BaseModel):
     imdb_id = models.CharField(max_length=256, unique=True)
-    movie_details = models.JSONField()
+    movie_details = models.JSONField(null=True, blank=True)
 
     @property
     def title(self):

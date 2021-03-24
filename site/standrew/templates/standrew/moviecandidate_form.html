@@ -33,6 +33,21 @@
 {% endif %}
 {% else %}
 
+{% if form.errors %}
+    {% for field in form %}
+        {% for error in field.errors %}
+            <div class="ui red message">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+        <div class="ui red message">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+
 <form class="ui form" method="post">
     <div class="ui one column grid">
         <div class="row">
@@ -112,7 +127,7 @@
                     </div>
 
                     <div class="field">
-                        <label>Why should we watch this movie?&nbsp;&nbsp;<div class="ui label yellow">Optional</div>A
+                        <label>Why should we watch this movie?&nbsp;&nbsp;<div class="ui label yellow">Optional</div>
                             <br><small>This is optional, but will be included on the ballot. This is your chance to
                                 convince others to pick your movie.</small></label>
                         {% render_field form.recommended_reason %}
@@ -122,6 +137,20 @@
                 {% for field in form %}
                 <p>{{ field.errors }}</p>
                 {% endfor %}
+                {% if form.errors %}
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <div class="ui red message">
+                                <strong>{{ error|escape }}</strong>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <div class="ui red message">
+                            <strong>{{ error|escape }}</strong>
+                        </div>
+                    {% endfor %}
+                {% endif %}
 
 
                 <input id="id_movie_night" name="movie_night" required="required" type="hidden"

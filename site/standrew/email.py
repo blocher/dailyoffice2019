@@ -204,24 +204,24 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                     "meeting": "games",
                 },
             ]
-        if self.get_friday_type() == "movie":
-            return [
-                {
-                    "movie_details": self.get_movie(),
-                    "title": "Movie night",
-                    "date": self.get_friday(),
-                    "time": "8:45 p.m. to ?",
-                    "zoom_link": ZOOM_LINK,
-                    "slack_link": "https://communityofstandrew.slack.com/messages/movies",
-                    # "slack_link": "slack://channel?team=T010PPE1R2Q&id=C010VJ4HX9T",
-                    "optional": True,
-                    "to_addresses": [
-                        "community-of-st-andrew-all@googlegroups.com",
-                        "community-of-st-andrew-alumni@googlegroups.com",
-                    ],
-                    "meeting": "movie",
-                },
-            ]
+        # if self.get_friday_type() == "movie":
+        #     return [
+        #         {
+        #             "movie_details": self.get_movie(),
+        #             "title": "Movie night",
+        #             "date": self.get_friday(),
+        #             "time": "8:45 p.m. to ?",
+        #             "zoom_link": ZOOM_LINK,
+        #             "slack_link": "https://communityofstandrew.slack.com/messages/movies",
+        #             # "slack_link": "slack://channel?team=T010PPE1R2Q&id=C010VJ4HX9T",
+        #             "optional": True,
+        #             "to_addresses": [
+        #                 "community-of-st-andrew-all@googlegroups.com",
+        #                 "community-of-st-andrew-alumni@googlegroups.com",
+        #             ],
+        #             "meeting": "movie",
+        #         },
+        #     ]
         return []
 
     def get_movie(self):

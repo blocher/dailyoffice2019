@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.timezone import make_aware
 from html2text import html2text
-from pyrankvote.helpers import CandidateResult, CandidateStatus
+from pyrankvote.helpers import CandidateStatus
 from standrew.models import MovieVoter, MovieCandidate, MovieNight
 from website.settings import SITE_ADDRESS, ZOOM_LINK, DEBUG
 
@@ -15,7 +15,7 @@ from website.settings import SITE_ADDRESS, ZOOM_LINK, DEBUG
 def get_today():
     if DEBUG:
         date = datetime.datetime.strptime(
-            "{} {} {} {} {} {}".format(3, 25, 2021, 12, 00, "PM"),
+            "{} {} {} {} {} {}".format(3, 24, 2021, 11, 59, "PM"),
             "%m %d %Y %I %M %p",
         )
         date = make_aware(date)
@@ -104,10 +104,13 @@ def send_movie_nomination_emails():
     if not next_friday_is_movie_night():
         return
     voters = MovieVoter.objects.all()
+    today = get_today()
+    previous_movie_night = MovieNight.objects.filter(movie_date__lte=today).order_by("-movie_date").first()
     for voter in voters:
         subject = "Movie Night: Nominate by noon tomorrow (Thursday)"
         context = {
             "nomination_link": "{}/standrew/movies/nominate/{}".format(SITE_ADDRESS, voter.uuid),
+            "previous_results_link": "{}/standrew/movies/results/{}".format(SITE_ADDRESS, previous_movie_night.uuid),
         }
         message = render_to_string("emails/movie_nominate.html", context)
         send_movie_email(subject, message, voter.email)
@@ -120,6 +123,8 @@ def send_movie_nomination_reminder_emails():
     move_night = get_movie_night()
     count = move_night.moviecandidate_set.count()
     voters = MovieVoter.objects.all()
+    today = get_today()
+    previous_movie_night = MovieNight.objects.filter(movie_date__lte=today).order_by("-movie_date").first()
     for voter in voters:
         subject = "Hours left: Nominate a movie by noon today"
         if count < 4:
@@ -128,6 +133,7 @@ def send_movie_nomination_reminder_emails():
         context = {
             "nomination_link": "{}/standrew/movies/nominate/{}".format(SITE_ADDRESS, voter.uuid),
             "count": count,
+            "previous_results_link": "{}/standrew/movies/results/{}".format(SITE_ADDRESS, previous_movie_night.uuid),
         }
         message = render_to_string("emails/movie_nominate_reminder.html", context)
         send_movie_email(subject, message, voter.email)
@@ -219,6 +225,7 @@ def send_movie_results_emails():
         context["results"] = mark_safe("".join(display))
     else:
         context["winner"] = "TBD"
+    context["results_link"] = "{}/standrew/movies/results/{}".format(SITE_ADDRESS, movie_night.uuid)
     return send_message(voters, context)
 
 

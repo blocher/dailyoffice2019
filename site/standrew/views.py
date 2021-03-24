@@ -1,5 +1,6 @@
 import json
 import operator
+from datetime import timedelta
 from functools import reduce
 from itertools import groupby
 from math import ceil, floor
@@ -9,6 +10,7 @@ import requests
 from cachetools.func import lru_cache
 from django.core.exceptions import ValidationError
 from django.db.models import Prefetch
+from django.forms import ModelForm
 from django.http import HttpResponse, Http404
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
@@ -29,8 +31,10 @@ from standrew.utils import (
     get_friday,
     check_if_voting_open,
     CandidateResultDecorator,
+    get_today,
+    send_movie_email,
 )
-from website.settings import YOUTUBE_API_KEY, IMDB_API_KEY, UTELLY_API_KEY, OMDB_API_KEY
+from website.settings import YOUTUBE_API_KEY, IMDB_API_KEY, UTELLY_API_KEY, OMDB_API_KEY, SITE_ADDRESS
 
 
 def current_email(request):
@@ -87,7 +91,7 @@ def movie_candidate_success(request):
 def movie_night_results(request, movie_night):
     vetos = MovieVeto.objects.filter(candidate__movie_night=movie_night).select_related("voter", "candidate").all()
     veto_ids = [veto.candidate.pk for veto in vetos]
-    print(veto_ids)
+
     movie_night = (
         MovieNight.objects.prefetch_related(
             Prefetch(
@@ -157,6 +161,8 @@ def movie_night_results(request, movie_night):
     html = render_to_string(
         "standrew/movie_results.html",
         {
+            "closed": movie_night.election_closed(),
+            "admin": request.user.is_authenticated,
             "ballots": movie_night.ballots,
             "rsvps": rsvps,
             "candidate_rsvps": candidate_rsvps,
@@ -168,6 +174,8 @@ def movie_night_results(request, movie_night):
             "number_to_win": floor(float(len(movie_night.ballots)) / 2) + 1,
             "number_of_candidates": len(movie_night.ballots),
             "candidates": sorted(movie_night.candidates, key=lambda t: t.imdb_id.title),
+            "date": movie_night.movie_date,
+            "hide_warnings": True,
         },
     )
     return HttpResponse(html)
@@ -343,7 +351,9 @@ def get_movie_details(imdb_id):
             return ""
 
     try:
-        existing_record = MovieDetails.objects.get(imdb_id=imdb_id)
+        today = get_today()
+        one_week_ago = today - timedelta(days=7)
+        existing_record = MovieDetails.objects.get(imdb_id=imdb_id, updated__gte=one_week_ago)
         context = existing_record.movie_details
     except MovieDetails.DoesNotExist:
         context = {
@@ -353,33 +363,53 @@ def get_movie_details(imdb_id):
             "imdb": imdb(imdb_id),
         }
         context["fields"] = standardized_fields(context)
-        MovieDetails.objects.create(imdb_id=imdb_id, movie_details=context)
+        details = MovieDetails.objects.get_or_create(imdb_id=imdb_id)[0]
+        details.movie_details = context
+        details.save()
     return context
 
 
-def get_movie_details_html(imdb_id):
+def get_movie_details_html(imdb_id, hide_warnings=True):
     context = get_movie_details(imdb_id)
+    context["hide_warnings"] = hide_warnings
     return render_to_string("standrew/movie_preview.html", context)
 
 
 def movie_details(request, imdb_id):
-    return HttpResponse(get_movie_details_html(imdb_id))
+    return HttpResponse(get_movie_details_html(imdb_id, hide_warnings=False))
 
     # Or, JSON
     # return HttpResponse(get_movie_details_html(imdb_id))
 
 
+class MovieCandidateForm(ModelForm):
+    class Meta:
+        model = MovieCandidate
+        fields = [
+            "imdb_id",
+            "movie_service",
+            "recommended_reason",
+            "likelihood_of_coming",
+            "movie_voter",
+            "movie_night",
+        ]
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        duplicates = MovieCandidate.objects.filter(
+            imdb_id_id=cleaned_data.get("imdb_id"), movie_night_id=cleaned_data.get("movie_night")
+        ).count()
+        if duplicates:
+            raise ValidationError("This movie has already been nominated by someone else. Please pick another movie.")
+
+        return cleaned_data
+
+
 class MovieCandidateCreate(CreateView):
     model = MovieCandidate
-    fields = [
-        "imdb_id",
-        "movie_service",
-        "recommended_reason",
-        "likelihood_of_coming",
-        "movie_voter",
-        "movie_night",
-    ]
     success_url = "/standrew/movies/nominate/success/"
+    form_class = MovieCandidateForm
 
     def get_voter(self):
         try:
@@ -444,6 +474,7 @@ class MovieBallotCreate(CreateView):
         context["movie_voter"] = self.get_voter()
         context["already_voted"] = self.already_voted()
         context["candidates"] = self.get_candidates()
+        context["hide_warnings"] = True
         return context
 
     def get(self, request, *args, **kwargs):
