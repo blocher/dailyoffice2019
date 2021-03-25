@@ -3,12 +3,13 @@ from churchcal.base_models import BaseModel
 from django.db import models
 from django.db.models import Prefetch
 from pyrankvote import Ballot
-from standrew.helpers import get_election_results
+from standrew.helpers import get_election_results, serialize_election_result
 from website.settings import SITE_ADDRESS
 
 
 class MovieNight(BaseModel):
     movie_date = models.DateField()
+    movie_results = models.JSONField(blank=True, null=True)
 
     def election_closed(self):
         from standrew.utils import get_today
@@ -22,7 +23,11 @@ class MovieNight(BaseModel):
         return now.hour >= 12
 
     def get_result(self, vetoes=True):
-        return get_election_results(self, vetoes)
+        result = get_election_results(self, vetoes)
+        if self.election_closed() and not self.movie_results:
+            self.movie_results = serialize_election_result(result)
+            self.save()
+        return result
 
 
 class MovieVoter(BaseModel):

@@ -6,6 +6,9 @@ from pyrankvote.helpers import CandidateStatus
 def get_election_results(movie_night, vetoes=False):
     from standrew.models import MovieVeto
 
+    if movie_night.movie_results:
+        return DeserializeMovieResults(movie_night)
+
     if vetoes:
         vetoes = MovieVeto.objects.values_list("candidate_id", flat=True)
         candidates = movie_night.moviecandidate_set.select_related("imdb_id").exclude(pk__in=vetoes).all()
@@ -74,9 +77,18 @@ class CandidateResultDecorator(object):
             return "negative"
 
 
-class ElectionResult(object):
-    def serialize(self):
-        pass
+def _round_to_dict(round):
+    return [
+        {"candidate_id": str(result.candidate.pk), "status": result.status, "number_of_votes": result.number_of_votes}
+        for result in round.candidate_results
+    ]
+
+
+def serialize_election_result(result):
+    return {
+        "winner": str(result.winner.pk) if result.winner else None,
+        "rounds": [_round_to_dict(round) for round in result.rounds],
+    }
 
 
 class MockCandidateResult(object):
@@ -91,7 +103,7 @@ class Round(object):
         self.candidate_results = candidate_results
 
 
-class NoNominees(ElectionResult):
+class NoNominees(object):
     @property
     def rounds(self):
         return []
@@ -101,7 +113,7 @@ class NoNominees(ElectionResult):
         return None
 
 
-class SingleNominee(ElectionResult):
+class SingleNominee(object):
     def __init__(self, candidate):
         self.candidate = candidate
 
@@ -122,7 +134,38 @@ class SingleNominee(ElectionResult):
         return self.candidate
 
 
-class CalculatedWinner(ElectionResult):
+class DeserializeMovieResults(object):
+    def __init__(self, movie_night):
+        from standrew.models import MovieCandidate
+
+        candidates = MovieCandidate.objects.filter(movie_night=movie_night).all()
+        self.candidates = {str(candidate.pk): candidate for candidate in candidates}
+        self.movie_night = movie_night
+
+    def _candidate_results(self, round):
+        return [
+            CandidateResultDecorator(
+                MockCandidateResult(
+                    self.candidates[item["candidate_id"]], item["status"], int(item["number_of_votes"])
+                )
+            )
+            for item in round
+        ]
+
+    @property
+    def rounds(self):
+        return [
+            Round(candidate_results=self._candidate_results(round))
+            for round in self.movie_night.movie_results["rounds"]
+        ]
+
+    @property
+    def winner(self):
+        winner_id = self.movie_night.movie_results["winner"]
+        return self.candidates[winner_id]
+
+
+class CalculatedWinner(object):
     def __init__(self, movie_night, candidates, vetoes=[]):
         from standrew.models import MovieRankedVote
 
