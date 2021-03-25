@@ -15,7 +15,7 @@ from website.settings import SITE_ADDRESS, ZOOM_LINK, DEBUG
 def get_today():
     if DEBUG:
         date = datetime.datetime.strptime(
-            "{} {} {} {} {} {}".format(3, 24, 2021, 11, 59, "PM"),
+            "{} {} {} {} {} {}".format(3, 25, 2021, 11, 59, "PM"),
             "%m %d %Y %I %M %p",
         )
         date = make_aware(date)

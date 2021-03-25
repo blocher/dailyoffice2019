@@ -114,7 +114,10 @@ class MovieCandidate(BaseModel):
             subject = "{} {} has nominated {}".format(
                 self.movie_voter.first_name, self.movie_voter.last_name, self.imdb_id.title
             )
-            message = "{}/standrew/movies/results/{}".format(SITE_ADDRESS, self.movie_night_id)
+            title = self.imdb_id.title
+            rsvp = dict(self.LIKELIHOOD_CHOICES)[self.likelihood_of_coming]
+            link = "{}/standrew/movies/results/{}".format(SITE_ADDRESS, self.movie_night_id)
+            message = "{}\n<br>{}\n<br>{}".format(title, rsvp, link)
             send_movie_email(subject, message, "blocher@gmail.com")
         return result
 

@@ -480,6 +480,28 @@ class MovieBallotCreate(CreateView):
 
         return super().get(request, *args, **kwargs)
 
+    def send_voted_email(self):
+
+        from standrew.utils import send_movie_email
+
+        ballot = (
+            MovieBallot.objects.prefetch_related(
+                Prefetch("movierankedvote_set", queryset=MovieRankedVote.objects.order_by("rank"), to_attr="votes")
+            )
+            .order_by("-created")
+            .first()
+        )
+        subject = "{} {} has voted".format(ballot.voter.first_name, ballot.voter.last_name)
+
+        votes = ""
+        for ranked_vote in ballot.votes:
+            votes = "{}<br>".format(votes + ranked_vote.candidate.imdb_id.title)
+
+        rsvp = dict(ballot.LIKELIHOOD_CHOICES)[ballot.likelihood_of_coming]
+        link = "{}/standrew/movies/results/{}".format(SITE_ADDRESS, ballot.movie_night_id)
+        message = "{}\n<br>{}\n<br><br><br>{}".format(rsvp, link, votes)
+        send_movie_email(subject, message, "blocher@gmail.com")
+
     def post(self, request, *args, **kwargs):
 
         candidate_count = MovieCandidate.objects.filter(movie_night=get_movie_night()).count()
@@ -494,4 +516,5 @@ class MovieBallotCreate(CreateView):
         for veto in vetos:
             candidate = MovieCandidate.objects.get(pk=veto)
             MovieVeto.objects.get_or_create(candidate=candidate, voter_id=self.object.voter_id)
+        self.send_voted_email()
         return result
