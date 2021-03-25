@@ -15,7 +15,7 @@ from website.settings import SITE_ADDRESS, ZOOM_LINK, DEBUG
 def get_today():
     if DEBUG:
         date = datetime.datetime.strptime(
-            "{} {} {} {} {} {}".format(3, 25, 2021, 11, 59, "PM"),
+            "{} {} {} {} {} {}".format(3, 26, 2021, 11, 59, "PM"),
             "%m %d %Y %I %M %p",
         )
         date = make_aware(date)
@@ -201,30 +201,9 @@ def send_movie_results_emails():
         context["winner"] = "No one made a nomination, so let's just show up and decide!"
         return send_message(voters, context)
 
-    if len(candidates) == 1:
-        context["winner"] = candidates[0].imdb_id.movie_details["fields"]["title"]
-        return send_message(voters, context)
-
     results = movie_night.get_result()
+    context["winner"] = results.winner.imdb_id.movie_details["fields"]["title"]
 
-    display = []
-    for i, election_round in enumerate(results.rounds):
-        display.append("<h5>Round {}</h5>".format(i + 1))
-        display.append("<table>")
-        display.append("<tr><th>Movie</th><th>Votes</th><th>Status</th></tr>")
-        for candidate in election_round.candidate_results:
-            display.append(
-                "<tr><td>{}</td><td>{}</td><td>{}</td></tr>".format(
-                    candidate.candidate, int(round(candidate.number_of_votes, 0)), candidate.status
-                )
-            )
-        display.append("</table>")
-    winners = results.get_winners()
-    if winners:
-        context["winner"] = winners[0].imdb_id.movie_details["fields"]["title"]
-        context["results"] = mark_safe("".join(display))
-    else:
-        context["winner"] = "TBD"
     context["results_link"] = "{}/standrew/movies/results/{}".format(SITE_ADDRESS, movie_night.uuid)
     return send_message(voters, context)
 
