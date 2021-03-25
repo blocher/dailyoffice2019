@@ -25,7 +25,7 @@
             <p>Results may change. Check back here after Friday, {{ date }} at 12:00 noon to see the final results.</p>
         </div>
     {% endif %}
-    <div class="ui pointing stackable menu">
+    <div class="ui pointing stackable menu history">
       <a class="item" data-tab="tab-winner">
         <i class="trophy icon"></i> Winner & Nominees
       </a>
@@ -259,7 +259,10 @@
         </div>
     </div>
     <script>
-        $('.menu .item').tab();
+        $('.menu .item').tab({
+    history: true,
+    historyType: 'hash'
+  });
     </script>
 {% endif %}
 {% endblock %}
