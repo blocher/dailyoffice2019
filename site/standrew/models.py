@@ -3,6 +3,7 @@ from churchcal.base_models import BaseModel
 from django.db import models
 from django.db.models import Prefetch
 from pyrankvote import Ballot
+from standrew.helpers import get_election_results
 from website.settings import SITE_ADDRESS
 
 
@@ -21,26 +22,7 @@ class MovieNight(BaseModel):
         return now.hour >= 12
 
     def get_result(self, vetoes=True):
-        if vetoes:
-            vetos = MovieVeto.objects.values_list("candidate_id", flat=True)
-            candidates = self.moviecandidate_set.select_related("imdb_id").exclude(pk__in=vetos).all()
-        else:
-            vetos = []
-            candidates = self.moviecandidate_set.select_related("imdb_id").all()
-
-        return pyrankvote.instant_runoff_voting(
-            candidates,
-            [
-                movie_ballot.get_ballot(vetos)
-                for movie_ballot in self.movieballot_set.prefetch_related(
-                    Prefetch(
-                        "movierankedvote_set", queryset=MovieRankedVote.objects.select_related("candidate__imdb_id")
-                    )
-                )
-                .select_related("voter")
-                .all()
-            ],
-        )
+        return get_election_results(self, vetoes)
 
 
 class MovieVoter(BaseModel):
@@ -152,12 +134,12 @@ class MovieBallot(BaseModel):
         except KeyError:
             return "Unknown"
 
-    def get_ballot(self, vetos=None):
+    def get_ballot(self, vetoes=None):
         return Ballot(
             [
                 vote.candidate
                 for vote in self.movierankedvote_set.order_by("rank").all()
-                if vote.candidate_id not in vetos
+                if vote.candidate_id not in vetoes
             ]
         )
 

@@ -106,7 +106,7 @@
                     {% for result in round.candidate_results %}
                         <tr class="{{ result.cell_class }}">
                           <td ><i class="{{ result.icon }} icon"></i> {{ result.formatted_status}}</td>
-                          <td>{{ result.candidate }}</td>
+                          <td>{{ result.candidate.name }}</td>
                           <td>{{ result.votes }}</td>
                         </tr>
                     {% endfor %}
@@ -115,6 +115,8 @@
                 {% if not round.candidate_results %}
                     <p>There are no nominees.</p>
                 {% endif %}
+        {% empty %}
+            <p>There are no nominees.</p>
         {% endfor %}
         {% if admin %}
             <h2 class="ui dividing header"><i class="calculator icon"></i> Tabulations (Disregarding Vetoes)</h2>
@@ -137,7 +139,7 @@
                         {% for result in round.candidate_results %}
                             <tr class="{{ result.cell_class }}">
                               <td ><i class="{{ result.icon }} icon"></i> {{ result.formatted_status}}</td>
-                              <td>{{ result.candidate }}</td>
+                              <td>{{ result.candidate.name }}</td>
                               <td>{{ result.votes }}</td>
                             </tr>
                         {% endfor %}
@@ -146,6 +148,8 @@
                     {% if not round.candidate_results %}
                         <p>There are no nominees.</p>
                     {% endif %}
+            {% empty %}
+                <p>There are no nominees.</p>
             {% endfor %}
         {% endif %}
     </div>

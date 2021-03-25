@@ -146,18 +146,6 @@ def movie_night_results(request, movie_night):
 
     results = movie_night.get_result()
     no_veto_results = movie_night.get_result(vetoes=False)
-    try:
-        winner = results.get_winners()
-        if winner:
-            winner_details = winner[0].imdb_id.movie_details
-            full_winner = winner[0]
-        else:
-            winner_details = None
-            full_winner = None
-    except:
-        winner = None
-        winner_details = None
-        full_winner = None
 
     for i, election_round in enumerate(results.rounds):
         for j, candidate in enumerate(election_round.candidate_results):
@@ -176,8 +164,8 @@ def movie_night_results(request, movie_night):
             "rsvps": rsvps,
             "candidate_rsvps": candidate_rsvps,
             "vetos": vetos,
-            "winner": winner_details,
-            "full_winner": full_winner,
+            "winner": results.winner.imdb_id.movie_details if results.winner else None,
+            "full_winner": results.winner if results.winner else None,
             "rounds": results.rounds,
             "no_veto_rounds": no_veto_results.rounds,
             "number_to_win": floor(float(len(movie_night.ballots)) / 2) + 1,
