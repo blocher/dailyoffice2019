@@ -112,7 +112,7 @@ pyasn1-modules==0.2.8
 pycountry==20.7.3
 pycparser==2.20
 pycryptodome==3.9.9
-Pygments==2.7.3
+Pygments==2.7.4
 pymemcache==3.4.0
 pyparsing==2.4.7
 PyPDF2==1.26.0
