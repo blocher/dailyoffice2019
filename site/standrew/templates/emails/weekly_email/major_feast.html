@@ -18,7 +18,9 @@
     {% for reading in day.mass_readings %}
         <div class="reading">
             <h4>{{ reading.citation}}</h4>
-            {{ reading.text|safe }}
+            {% if "John" not in reading.citation %}
+                {{ reading.text|safe }}
+            {% endif %}
         </div>
     {% endfor %}
 </div>
