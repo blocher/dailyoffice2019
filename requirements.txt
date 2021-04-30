@@ -127,7 +127,7 @@ PyYAML==5.3.1
 rake-nltk==1.0.4
 regex==2020.11.13
 requests==2.25.1
-rsa==4.6
+rsa==4.7
 ruamel.yaml==0.16.12
 ruamel.yaml.clib==0.2.2
 scikit-learn==0.24.0
