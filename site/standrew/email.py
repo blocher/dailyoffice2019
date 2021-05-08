@@ -157,7 +157,7 @@ class BirthdaysSundayEmailModule(BirthdayDecoratorMixin, SundayEmailModule):
         birthdays = [
             self.decorate_birthday(birthday) for birthday in result["values"] if self.birthday_in_range(birthday)
         ]
-        birthdays = sorted(birthdays, key=lambda birthday: (birthday[2], birthday[3]))
+        birthdays = sorted(birthdays, key=lambda birthday: (int(birthday[2]), int(birthday[3])))
         self.subjects = ["{} 🎂 ({})".format(birthday[1], date_for_subject(birthday[7])) for birthday in birthdays]
         return birthdays
 
