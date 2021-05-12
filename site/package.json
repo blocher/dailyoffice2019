@@ -8,7 +8,7 @@
     "file-loader": "^6.1.1",
     "fs": "^0.0.1-security",
     "on-build-webpack": "^0.1.0",
-    "postcss": "^8.1.1",
+    "postcss": "^8.2.10",
     "postcss-loader": "^4.0.4",
     "postcss-preset-env": "^6.7.0",
     "prettier": "^2.1.2",
