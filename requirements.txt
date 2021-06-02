@@ -150,7 +150,7 @@ traitlets==5.0.5
 tzlocal==2.1
 Unidecode==1.1.2
 uritemplate==3.0.1
-urllib3==1.26.2
+urllib3==1.26.5
 uvicorn==0.13.2
 uvloop==0.14.0
 virtualenv==20.2.2
