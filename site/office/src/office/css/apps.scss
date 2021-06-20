@@ -1,8 +1,8 @@
 #notch {
   display: none;
 }
-body.app {
 
+body.app {
   margin-top: calc(env(safe-area-inset-top) + 1.4rem);
 
   @media (orientation: portrait) {
@@ -18,5 +18,4 @@ body.app {
       background-color: #26282a;
     }
   }
-
 }

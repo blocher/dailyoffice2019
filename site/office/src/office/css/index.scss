@@ -2,6 +2,7 @@
 @import 'themes.scss';
 @import 'fonts.scss';
 $fa-font-path: "fontawesome/webfonts";
+
 @import "fontawesome/scss/fontawesome.scss";
 @import "fontawesome/scss/brands.scss";
 @import "fontawesome/scss/solid.scss";
@@ -23,6 +24,15 @@ $fa-font-path: "fontawesome/webfonts";
 @import "fontawesome/scss/_screen-reader.scss";
 @import "fontawesome/scss/_shims.scss";
 @import "fontawesome/scss/v4-shims.scss";
+@import '~pretty-checkbox/src/pretty-checkbox.scss';
+@import 'toggle.scss';
+@import 'apps.scss';
+@import 'office.scss';
+@import 'settings.scss';
+@import 'calendar.scss';
+@import 'alert.scss';
+@import 'print.scss';
+
 .row {
   display: flex;
   flex-direction: row;
@@ -32,17 +42,7 @@ $fa-font-path: "fontawesome/webfonts";
 
 .column {
   display: flex;
+  flex: 1;
   flex-direction: column;
   flex-basis: 100%;
-  flex: 1;
 }
-@import '~pretty-checkbox/src/pretty-checkbox.scss';
-@import 'toggle.scss';
-
-@import 'apps.scss';
-@import 'office.scss';
-@import 'settings.scss';
-@import 'calendar.scss';
-@import 'alert.scss';
-@import 'print.scss';
-

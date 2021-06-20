@@ -13,9 +13,9 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-        for psalm in range(1,2):
-            print('http://www.episcopalnet.org/1928bcp/Psalter/Ps{}.html'.format(psalm))
-            r = requests.get('http://www.episcopalnet.org/1928bcp/Psalter/Ps{}.html'.format(psalm))
+        for psalm in range(1, 2):
+            print("http://www.episcopalnet.org/1928bcp/Psalter/Ps{}.html".format(psalm))
+            r = requests.get("http://www.episcopalnet.org/1928bcp/Psalter/Ps{}.html".format(psalm))
             soup = BeautifulSoup(r.text, "html5lib")
             for p in soup.find_all("p"):
                 psalm = p.text

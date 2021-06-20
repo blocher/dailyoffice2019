@@ -3,27 +3,30 @@ import re
 
 from django.db import migrations
 
+
 def forwards(apps, schema_editor):
     Psalm = apps.get_model("psalter", "Psalm")
     PsalmTopic = apps.get_model("psalter", "PsalmTopic")
     PsalmTopicPsalm = apps.get_model("psalter", "PsalmTopicPsalm")
 
     for psalm_topic in PsalmTopic.objects.order_by("order").all():
-        psalms = re.sub("[^\\d,]+", '', psalm_topic.psalms)
-        psalms = psalms.split(',')
+        psalms = re.sub("[^\\d,]+", "", psalm_topic.psalms)
+        psalms = psalms.split(",")
         i = 0
         for psalm in psalms:
             psalm = Psalm.objects.get(number=psalm)
             PsalmTopicPsalm.objects.get_or_create(psalm=psalm, psalm_topic=psalm_topic, order=i)
-            i = i+1
+            i = i + 1
+
 
 def backwards(apps, schema_editor):
     pass
 
+
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('psalter', '0003_auto_20200524_1807'),
+        ("psalter", "0003_auto_20200524_1807"),
     ]
 
     operations = [migrations.RunPython(forwards, backwards)]

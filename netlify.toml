@@ -33,4 +33,3 @@
   to = "/:splat"
   status = 301
   force = false
-

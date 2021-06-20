@@ -113,7 +113,6 @@ class MiddayPrayers(OfficeSection):
 
     def get_collects(self):
 
-
         day_of_year = self.date.date.timetuple().tm_yday
         collect_number = day_of_year % 3 + 1
 
@@ -126,12 +125,15 @@ class MiddayPrayers(OfficeSection):
         if self.date.primary.name in ["Confession of Peter the Apostle"]:
             return self.collects[0], self.collects[2]
 
-        if self.date.primary.name in ["The Annunciation of our Lord Jesus Christ to the Virgin Mary", "The Virgin Mary, Mother of our Lord Jesus Christ", "The Visitation of the Virgin Mary to Elizabeth and Zechariah", "The Presentation of Our Lord Jesus Christ in the Temple"]:
+        if self.date.primary.name in [
+            "The Annunciation of our Lord Jesus Christ to the Virgin Mary",
+            "The Virgin Mary, Mother of our Lord Jesus Christ",
+            "The Visitation of the Virgin Mary to Elizabeth and Zechariah",
+            "The Presentation of Our Lord Jesus Christ in the Temple",
+        ]:
             return self.collects[0], self.collects[3]
 
         return self.collects[0], self.collects[collect_number]
-
-
 
     @cached_property
     def data(self):

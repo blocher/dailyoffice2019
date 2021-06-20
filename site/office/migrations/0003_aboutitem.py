@@ -8,24 +8,24 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('office', '0002_thirtydaypsalterday'),
+        ("office", "0002_thirtydaypsalterday"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AboutItem',
+            name="AboutItem",
             fields=[
-                ('uuid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('question', ckeditor.fields.RichTextField()),
-                ('answer', ckeditor.fields.RichTextField()),
-                ('app_mode', models.BooleanField(default=True)),
-                ('web_mode', models.BooleanField(default=True)),
-                ('order', models.PositiveSmallIntegerField()),
+                ("uuid", models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                ("question", ckeditor.fields.RichTextField()),
+                ("answer", ckeditor.fields.RichTextField()),
+                ("app_mode", models.BooleanField(default=True)),
+                ("web_mode", models.BooleanField(default=True)),
+                ("order", models.PositiveSmallIntegerField()),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
     ]

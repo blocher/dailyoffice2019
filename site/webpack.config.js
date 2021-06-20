@@ -3,35 +3,35 @@ const BundleTracker = require("webpack-bundle-tracker");
 const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
 
-const ExecuteArbitraryCode = function(cb) {
-  this.apply = function(compiler) {
+const ExecuteArbitraryCode = function (cb) {
+  this.apply = function (compiler) {
     if (compiler.hooks && compiler.hooks.done) {
-      compiler.hooks.done.tap('webpack-arbitrary-code', cb);
+      compiler.hooks.done.tap("webpack-arbitrary-code", cb);
     }
   };
 };
 
-const RemoveOldAssets = function(stats) {
-      const buildDir = __dirname + "/office/static/office/js/";
-      const newlyCreatedAssets = stats.compilation.assets;
+const RemoveOldAssets = function (stats) {
+  const buildDir = __dirname + "/office/static/office/js/";
+  const newlyCreatedAssets = stats.compilation.assets;
 
-      const unlinked = [];
-      let res = fs.readdirSync(buildDir);
-      res.forEach((file) => {
-        if (!newlyCreatedAssets[file]) {
-          try {
-            if (!fs.lstatSync(buildDir + file).isDirectory()) {
-              fs.unlinkSync(path.resolve(buildDir + file));
-              unlinked.push(file);
-            }
-          } catch (err) {
-            console.log(err);
-          }
+  const unlinked = [];
+  let res = fs.readdirSync(buildDir);
+  res.forEach((file) => {
+    if (!newlyCreatedAssets[file]) {
+      try {
+        if (!fs.lstatSync(buildDir + file).isDirectory()) {
+          fs.unlinkSync(path.resolve(buildDir + file));
+          unlinked.push(file);
         }
-      });
-      if (unlinked.length > 0) {
-        console.log("Removed old assets: ", unlinked);
+      } catch (err) {
+        console.log(err); // eslint-disable-line no-console
       }
+    }
+  });
+  if (unlinked.length > 0) {
+    console.log("Removed old assets: ", unlinked); // eslint-disable-line no-console
+  }
 };
 
 module.exports = {

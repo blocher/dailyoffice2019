@@ -7,22 +7,22 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('psalter', '0001_initial'),
+        ("psalter", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='PsalmTopic',
+            name="PsalmTopic",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('topic_name', models.CharField(max_length=255)),
-                ('psalm', models.CharField(max_length=2000)),
-                ('order', models.PositiveSmallIntegerField()),
+                ("id", models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                ("topic_name", models.CharField(max_length=255)),
+                ("psalm", models.CharField(max_length=2000)),
+                ("order", models.PositiveSmallIntegerField()),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
     ]

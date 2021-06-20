@@ -1,5 +1,3 @@
-const voice = () => {
+const voice = () => {};
 
-};
-
-export {voice};
+export { voice };

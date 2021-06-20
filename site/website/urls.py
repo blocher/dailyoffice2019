@@ -74,7 +74,6 @@ def get_days():
                 date_list.append(day.date)
 
     for date in date_list:
-        print(date)
         yield {"year": date.year, "month": date.month, "day": date.day}
 
 

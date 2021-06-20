@@ -9,7 +9,8 @@
   font-style: normal;
   font-weight: 900;
   font-display: $fa-font-display;
-  src: url('#{$fa-font-path}/fa-duotone-900.woff2') format('woff2'),
+  src:
+    url('#{$fa-font-path}/fa-duotone-900.woff2') format('woff2'),
     url('#{$fa-font-path}/fa-duotone-900.woff') format('woff'),
     url('#{$fa-font-path}/fa-duotone-900.ttf') format('truetype');
 }
@@ -21,15 +22,15 @@
   font-weight: 900;
 }
 
-.fad:before,
-.fa-duotone:before {
+.fad::before,
+.fa-duotone::before {
   position: absolute;
   color: var(--#{$fa-css-prefix}-primary-color, inherit);
   opacity: var(--#{$fa-css-prefix}-primary-opacity, #{$fa-primary-opacity});
 }
 
-.fad:after,
-.fa-duotone:after {
+.fad::after,
+.fa-duotone::after {
   color: var(--#{$fa-css-prefix}-secondary-color, inherit);
   opacity: var(--#{$fa-css-prefix}-secondary-opacity, #{$fa-secondary-opacity});
 }

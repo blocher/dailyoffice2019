@@ -8,31 +8,34 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('psalter', '0002_psalmtopic'),
+        ("psalter", "0002_psalmtopic"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='psalmtopic',
-            options={'ordering': ('order',)},
+            name="psalmtopic",
+            options={"ordering": ("order",)},
         ),
         migrations.RenameField(
-            model_name='psalmtopic',
-            old_name='psalm',
-            new_name='psalms',
+            model_name="psalmtopic",
+            old_name="psalm",
+            new_name="psalms",
         ),
         migrations.CreateModel(
-            name='PsalmTopicPsalm',
+            name="PsalmTopicPsalm",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('order', models.PositiveSmallIntegerField()),
-                ('psalm', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='psalter.Psalm')),
-                ('psalm_topic', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='psalter.PsalmTopic')),
+                ("id", models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                ("order", models.PositiveSmallIntegerField()),
+                ("psalm", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="psalter.Psalm")),
+                (
+                    "psalm_topic",
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="psalter.PsalmTopic"),
+                ),
             ],
             options={
-                'ordering': ('order',),
+                "ordering": ("order",),
             },
         ),
     ]

@@ -30,11 +30,12 @@ class PsalmTopic(UUIDModel):
 
     @property
     def psalm_list(self):
-        psalms = re.sub("[^\\d,]+",'', self.psalms)
-        return psalms.split(',')
+        psalms = re.sub("[^\\d,]+", "", self.psalms)
+        return psalms.split(",")
 
     class Meta:
         ordering = ("order",)
+
 
 class PsalmTopicPsalm(UUIDModel):
     psalm = models.ForeignKey(Psalm, on_delete=models.CASCADE, blank=False, null=False)
@@ -43,8 +44,8 @@ class PsalmTopicPsalm(UUIDModel):
 
     @property
     def psalm_list(self):
-        psalms = re.sub("[^\\d,]+",'', self.psalms)
-        return psalms.split(',')
+        psalms = re.sub("[^\\d,]+", "", self.psalms)
+        return psalms.split(",")
 
     class Meta:
         ordering = ("order",)

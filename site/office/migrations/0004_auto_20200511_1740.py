@@ -8,27 +8,27 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('office', '0003_aboutitem'),
+        ("office", "0003_aboutitem"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='UpdateNotice',
+            name="UpdateNotice",
             fields=[
-                ('uuid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('notice', ckeditor.fields.RichTextField()),
-                ('app_mode', models.BooleanField(default=True)),
-                ('web_mode', models.BooleanField(default=True)),
-                ('version', models.FloatField()),
+                ("uuid", models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                ("notice", ckeditor.fields.RichTextField()),
+                ("app_mode", models.BooleanField(default=True)),
+                ("web_mode", models.BooleanField(default=True)),
+                ("version", models.FloatField()),
             ],
             options={
-                'ordering': ['-version'],
+                "ordering": ["-version"],
             },
         ),
         migrations.AlterModelOptions(
-            name='aboutitem',
-            options={'ordering': ['order']},
+            name="aboutitem",
+            options={"ordering": ["order"]},
         ),
     ]

@@ -82,9 +82,8 @@ class FNPsalms(OfficeSection):
 
 
 class FNScripture(OfficeSection):
-
     def get_long(self):
-        return{
+        return {
             "passage": self.office_readings.mp_reading_2,
             "text": self.office_readings.mp_reading_2_text,
             "deuterocanon": self.office_readings.mp_reading_2_testament == "DC",

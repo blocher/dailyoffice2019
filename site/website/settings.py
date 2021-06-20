@@ -244,6 +244,8 @@ WEBPACK_LOADER = {
 
 CACHES = {"default": {"BACKEND": "django.core.cache.backends.memcached.MemcachedCache", "LOCATION": "127.0.0.1:11211"}}
 
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
 SITE_ID = 1
 
 FIRST_BEGINNING_YEAR = int(env("FIRST_BEGINNING_YEAR"))

@@ -84,13 +84,13 @@ class AboutItem(BaseModel):
         return "app"
 
     def display_name(self):
-        return "{} ({})".format(re.sub('<[^<]+?>', '', self.question), self.mode())
+        return "{} ({})".format(re.sub("<[^<]+?>", "", self.question), self.mode())
 
     def __str__(self):
         return self.display_name()
 
     class Meta(object):
-        ordering = ['order']
+        ordering = ["order"]
 
 
 class UpdateNotice(BaseModel):
@@ -111,5 +111,4 @@ class UpdateNotice(BaseModel):
         return "app"
 
     class Meta(object):
-        ordering = ['-version']
-
+        ordering = ["-version"]

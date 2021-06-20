@@ -2,553 +2,515 @@
   scroll-behavior: unset;
 }
 
-html, body {
-    max-width: 100%;
-    overflow-x: hidden;
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
-
 html {
-      //overflow: hidden;
-      font-size: 16px;
-      text-size-adjust: none;
-      -webkit-text-size-adjust: none;
-      font-display: swap;
-      @include themify($themes) {
-        color: themed('font-color');
-        background-color: themed('color-bg');
-      }
+  //overflow: hidden;
+  font-size: 16px;
+  text-size-adjust: none;
+  -webkit-text-size-adjust: none;
+  font-display: swap;
 
-      &.family {
-        @include themify($themes) {
-          background-color: themed('family-color-bg');
-        }
-      }
+  @include themify($themes) {
+    color: themed('font-color');
+    background-color: themed('color-bg');
   }
 
-  body {
+  &.family {
     @include themify($themes) {
-      color: themed('font-color');
-      background-color: themed('color-bg');
-    }
-    &.family {
-      @include themify($themes) {
-        background-color: themed('family-color-bg');
-      }
+      background-color: themed('family-color-bg');
     }
   }
+}
 
+body {
+  @include themify($themes) {
+    color: themed('font-color');
+    background-color: themed('color-bg');
+  }
 
-  a {
+  &.family {
     @include themify($themes) {
-        color: themed('link-color');
-      }
-  }
-
-  div.main {
-      max-width: 580px;
-      display: block;
-      text-align: left;
-      padding: 1.4rem;
-      margin: 0 auto 1rem;
-      clear: both;
-
-  }
-
-  h1, h2, h3, h4 {
-      font-family: "Adobe Caslon Pro", serif;
-      font-display: swap;
-      font-weight: 600;
-      font-style: normal;
-      letter-spacing: 0.1rem;
-      text-align: center;
-      margin: 0.2rem;
-      padding-top: 2rem;
-  }
-
-  h1, h2, h3 {
-      text-transform: uppercase;
-  }
-
-  h1 {
-      font-size: 1.3rem;
-      line-height: 1.5rem;
-
-  }
-
-  h2 {
-      font-size: 1.0rem;
-
-    &.intro-heading {
-      font-size: .5rem;
-      margin: 1rem 0 0 0;
-      padding: 0;
-      line-height: .6rem;
-      letter-spacing: .1rem;
+      background-color: themed('family-color-bg');
     }
+  }
+}
 
+a {
+  @include themify($themes) {
+    color: themed('link-color');
+  }
+}
+
+div.main {
+  max-width: 580px;
+  display: block;
+  text-align: left;
+  padding: 1.4rem;
+  margin: 0 auto 1rem;
+  clear: both;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: "Adobe Caslon Pro", serif;
+  font-display: swap;
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: 0.1rem;
+  text-align: center;
+  margin: 0.2rem;
+  padding-top: 2rem;
+}
+
+h1,
+h2,
+h3 {
+  text-transform: uppercase;
+}
+
+h1 {
+  font-size: 1.3rem;
+  line-height: 1.5rem;
+}
+
+h2 {
+  font-size: 1rem;
+
+  &.intro-heading {
+    font-size: 0.5rem;
+    margin: 1rem 0 0 0;
+    padding: 0;
+    line-height: 0.6rem;
+    letter-spacing: 0.1rem;
+  }
+}
+
+h3 {
+  padding-top: 30px;
+  margin-bottom: 5px;
+  font-size: 1rem;
+  line-height: 1.4rem;
+
+  &.intro-heading {
+    font-size: 0.4rem;
+    margin: 0;
+    padding: 0;
+    line-height: 0.5rem;
+    letter-spacing: 0.1rem;
+  }
+}
+
+h4 {
+  margin-top: 0;
+  padding-top: 0;
+  font-family: "Adobe Caslon Pro", serif;
+  font-display: swap;
+  font-weight: 600;
+  font-style: italic;
+  font-size: 0.9rem;
+  line-height: 1rem;
+}
+
+h5 {
+  font-weight: 300;
+  text-align: right;
+  font-size: 0.9rem;
+  margin: 10px 0;
+}
+
+.appearance-selectors {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .size-selector {
+    width: 100%;
+    max-width: 500px;
   }
 
-  h3 {
-      padding-top: 30px;
-      margin-bottom: 5px;
-      font-size: 1.0rem;
-      line-height: 1.4rem;
-      &.intro-heading {
-        font-size: .4rem;
-        margin: 0;
-        padding: 0;
-        line-height: .5rem;
-        letter-spacing: .1rem;
-      }
+  i {
+    padding: 5px 12px;
+    cursor: pointer;
   }
 
-  h4 {
-      margin-top: 0;
-      padding-top: 0;
-      font-family: "Adobe Caslon Pro", serif;
-      font-display: swap;
-      font-weight: 600;
-      font-style: italic;
-      font-size: .9rem;
-      line-height: 1.0rem;
-
+  .small {
+    font-size: 12px;
   }
 
-  h5 {
-      font-weight: 300;
-      text-align: right;
-      font-size: .9rem;
-      margin: 10px 0;
-  }
-
-  p {
-      font-family: 'Adobe Caslon Pro', serif;
-      font-display: swap;
-      font-weight: 300;
-      font-style: normal;
-      font-size: 1.0rem;
-      margin: 10px 0;
-
-      line-height: 1.6rem;
-
-      &.rubric {
-        line-height: .9rem;
-      }
-
-      &.intro-heading-1 {
-        font-family: "Adobe Caslon Pro", serif;
-        font-display: swap;
-        font-weight: 600;
-        font-style: normal;
-        text-align: center;
-        text-transform: uppercase;
-        font-size: 11px;
-        margin: 22px 0 0 0;
-        padding: 0;
-        line-height: 13.2px;
-        letter-spacing: 2.2px;
-        .large {
-          font-size: 22px;
-        }
-        &.no-top-margin {
-          margin-top: 0;
-        }
-      }
-
-      &.intro-heading-2 {
-
-        font-family: "Adobe Caslon Pro", serif;
-        font-display: swap;
-        font-weight: 600;
-        font-style: normal;
-        text-align: center;
-        text-transform: uppercase;
-        font-size: 8.8px;
-        margin: 0;
-        padding: 0;
-        line-height: 11px;
-        letter-spacing: 2.2px;
-
-      }
-  }
-
-  em {
-      font-family: 'Adobe Caslon Pro', serif;
-      font-display: swap;
-      font-weight: 300;
-      font-style: italic;
-      font-size: .8rem;
-      line-height: .9rem;
-  }
-
-  strong {
-      font-family: 'Adobe Caslon Pro', serif;
-      font-display: swap;
-      font-weight: 700;
-  }
-
-  input[type='text']
-  {
+  .medium {
     font-size: 16px;
   }
 
-  div.antiphon {
-    margin: 1rem auto;
+  .large {
+    font-size: 20px;
   }
 
-  div.psalms {
-
-      font-family: 'Adobe Caslon Pro', serif;
-      font-display: swap;
-      font-weight: 300;
-      font-style: normal;
-
+  .x-large {
+    font-size: 22px;
   }
 
-  div.gloria-patri {
-    margin-top: 1rem;
+  .selected {
+    font-weight: 900;
   }
 
-  div.bible-audio {
-    margin: 1rem auto 0.5rem;
+  .flipped {
+    transform: scaleX(-1);
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -ms-transform: scaleX(-1);
+  }
+}
+
+p {
+  font-family: 'Adobe Caslon Pro', serif;
+  font-display: swap;
+  font-weight: 300;
+  font-style: normal;
+  font-size: 1rem;
+  margin: 10px 0;
+  line-height: 1.6rem;
+
+  &.rubric {
+    line-height: 0.9rem;
   }
 
-  p.line {
-      margin-top: 1.5em;
-  }
-
-  span.chapternum {
-      font-size: 1.5em;
-  }
-
-  sup.versenum {
-      font-size: .6rem;
-      margin-bottom: .5rem;
-      vertical-align: top;
-      position: relative;
-      top: -0.5em;
-  }
-
-  .text {
-      padding-left: 10px;
-  }
-
-  .reading h3 {
-      font-family: 'Adobe Caslon Pro', serif;
-      font-weight: 900;
-      font-style: normal;
-      font-size: 0.9em;
-      text-align: center;
-      padding: 0;
-      margin: 1rem 0;
-  }
-
-  .reading h4 {
-      font-family: 'Adobe Caslon Pro', serif;
-      font-weight: 900;
-      font-style: normal;
-      font-size: 0.7em;
-      text-align: center;
-  }
-
-  table.dialogue {
-    margin-top: 1rem;
-    td {
-      @media only screen and (max-width: 464px) {
-        &:first-child {
-          display: none;
-        }
-      }
-      padding: .1rem 1rem .1rem 0;
-      font-family: 'Adobe Caslon Pro', serif;
-      font-weight: 300;
-      font-style: normal;
-      font-size: 1.0rem;
-      margin: 1.4rem 0;
-      line-height: 1.6rem;
-    }
-  }
-
-  div.metadata {
-      text-align: center;
-  }
-
-  div.commemorations {
-      border: solid 1px grey;
-      padding: 1.3rem;
-  }
-
-  span.indent {
-      padding-left: 1rem;
-  }
-
-  p.indent {
-      margin: 0 0 0 1.0rem;
-
-
-      &.entreaty {
-        margin-bottom: 1rem;
-      }
-  }
-
-  p.hanging-indent {
-      text-indent: -1rem;
-      margin: 0 0 0 1rem;
-  }
-
-  p.no-bottom-margin {
-    margin-bottom: 0;
-  }
-
-  span.asterisk {
-      margin-left: 10px;
-  }
-
-  .footer {
-      border-top: 1px solid black;
-      text-align: center;
-      width: 100%;
-
-      &.footer-fixed, &.footer-always-fixed {
-        position: fixed;
-        left: 0;
-        bottom: 0;
-      }
-
-      @include themify($themes) {
-        background-color: themed('footer-color-bg');
-      }
-      font-size: 19.2px;
-      font-weight: 300;
-      padding: 4.8px 0;
-
-      i {
-        display: block;
-        padding-bottom: 4.8px;
-      }
-
-
-      p, a, i {
-        font-size: 19.2px;
-      }
-
-     strong {
-       font-size: 19.2px;
-     }
-  }
-
-  .footer-flex {
-      display: -webkit-box;  /* OLD - iOS 6-, Safari 3.1-6, BB7 */
-      display: -ms-flexbox;  /* TWEENER - IE 10 */
-      display: -webkit-flex; /* NEW - Safari 6.1+. iOS 7.1+, BB10 */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      -webkit-flex-wrap: nowrap;
-      flex-wrap: nowrap;
-      align-content: space-around;
-      max-width: 700px;
-      margin: auto;
-      padding: 10.2px;
-
-      p {
-        margin: 0 0 4.8px 0;
-      }
-
-      a.day-link {
-        padding: 4px;
-        border: 1px black solid;
-        border-radius: 12px;
-      }
-
-  }
-
-  .footer-flex div {
-      -webkit-flex-grow: 2;
-      flex-grow: 2;
-      font-weight: 900;
-  }
-
-
-  .footer-flex a {
-      width: 100%;
-      height: 100%;
-      padding: 0;
-      @include themify($themes) {
-        color: themed('font-color');
-      }
-      text-decoration: none;
-      font-weight: 300;
-  }
-
-  .off {
-      display: none;
-  }
-
-  .invisbile {
-      visibility: hidden;
-  }
-
-
-
-  .feedback {
-    margin-top: 3rem;
-    padding: 1rem;
-    border: 1px solid;
-  }
-
-  #menu {
-    padding: 3px;
-    margin: 3px;
-
-  }
-
-  .menu-wrapper {
+  &.intro-heading-1 {
+    font-family: "Adobe Caslon Pro", serif;
+    font-display: swap;
+    font-weight: 600;
+    font-style: normal;
     text-align: center;
-    padding: 1px;
-  }
-
-  .menu {
-    display: inline-block;
-    padding: 3px;
-  }
-
-  form {
-      min-height: 48px;
-    }
-
-
-  .menu-button {
-    @include themify($themes) {
-        color: themed('font-color');
-    }
-    text-decoration: none;
-    font-size: 11px;
-    margin: 3.3px;
-    initial-letter: 2;
-    letter-spacing: .66px;
-    border: 1px solid grey;
-    border-radius: 11px;
-    padding: 6.6px;
     text-transform: uppercase;
-    float: left;
-
-    &.on {
-      @include themify($themes) {
-        background-color: themed('footer-color-bg');
-      }
-    }
-
-    &.right {
-      float: right;
-    }
-
-    .first-letter {
-      font-size: 16px;
-    }
-
-    &.inline {
-      text-align: center;
-    }
-
-    &.input {
-      display:block;
-      min-width: 200px;
-    }
-
-    &.calendar {
-      font-size: 0.5rem;
-      margin: 0.4rem;
-      letter-spacing: .03rem;
-      border-radius: 0.5rem;
-      padding: 0.3rem;
-      min-width: 90px;
-    }
-   }
-
-  #messages {
-    margin: 0.5rem auto 0 auto;
-    font-size: 0.6rem;
-    text-align:center;
-    line-height: 1.0rem;
-
-    a {
-      @include themify($themes) {
-        color: themed('font-color');
-      }
-    }
-
-
-  }
-
-  .appearance-selectors {
-    display:flex;
-    justify-content:center;
-    align-items: center;
-
-
-    .size-selector {
-       width: 100%;
-       max-width: 500px;
-    }
-
-    i {
-      padding: 5px 12px;
-      cursor: pointer;
-
-    }
-
-    .small {
-      font-size: 12px;
-    }
-
-    .medium {
-      font-size: 16px;
-    }
+    font-size: 11px;
+    margin: 22px 0 0 0;
+    padding: 0;
+    line-height: 13.2px;
+    letter-spacing: 2.2px;
 
     .large {
-      font-size: 20px;
-    }
-
-    .x-large {
       font-size: 22px;
     }
 
-    .selected {
-      font-weight: 900;
+    &.no-top-margin {
+      margin-top: 0;
     }
-
-    .flipped {
-      transform: scaleX(-1);
-      -moz-transform: scaleX(-1);
-      -webkit-transform: scaleX(-1);
-      -ms-transform: scaleX(-1);
-    }
-
   }
 
-.about {
-  p {
-  font-size: 1.0rem;
-  line-height: 1.6rem;
+  &.intro-heading-2 {
+    font-family: "Adobe Caslon Pro", serif;
+    font-display: swap;
+    font-weight: 600;
+    font-style: normal;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 8.8px;
+    margin: 0;
+    padding: 0;
+    line-height: 11px;
+    letter-spacing: 2.2px;
+  }
+}
 
-  em {
-  font-size: 1.0rem;
-  }
-  }
-  }
+em {
+  font-family: 'Adobe Caslon Pro', serif;
+  font-display: swap;
+  font-weight: 300;
+  font-style: italic;
+  font-size: 0.8rem;
+  line-height: 0.9rem;
+}
 
-  .four_oh_four {
-  max-width: 700px;
-  p {
+strong {
+  font-family: 'Adobe Caslon Pro', serif;
+  font-display: swap;
+  font-weight: 700;
+}
+
+input[type='text'] {
+  font-size: 16px;
+}
+
+div.antiphon {
+  margin: 1rem auto;
+}
+
+div.psalms {
+  font-family: 'Adobe Caslon Pro', serif;
+  font-display: swap;
+  font-weight: 300;
+  font-style: normal;
+}
+
+div.gloria-patri {
+  margin-top: 1rem;
+}
+
+div.bible-audio {
+  margin: 1rem auto 0.5rem;
+}
+
+p.line {
+  margin-top: 1.5em;
+}
+
+span.chapternum {
+  font-size: 1.5em;
+}
+
+sup.versenum {
+  font-size: 0.6rem;
+  margin-bottom: 0.5rem;
+  vertical-align: top;
+  position: relative;
+  top: -0.5em;
+}
+
+.text {
+  padding-left: 10px;
+}
+
+.reading h3 {
+  font-family: 'Adobe Caslon Pro', serif;
+  font-weight: 900;
+  font-style: normal;
+  font-size: 0.9em;
   text-align: center;
-  margin: 0 4rem;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.reading h4 {
+  font-family: 'Adobe Caslon Pro', serif;
+  font-weight: 900;
+  font-style: normal;
+  font-size: 0.7em;
+  text-align: center;
+}
+
+table.dialogue {
+  margin-top: 1rem;
+
+  td {
+    @media only screen and (max-width: 464px) {
+      &:first-child {
+        display: none;
+      }
+    }
+
+    padding: 0.1rem 1rem 0.1rem 0;
+    font-family: 'Adobe Caslon Pro', serif;
+    font-weight: 300;
+    font-style: normal;
+    font-size: 1rem;
+    margin: 1.4rem 0;
+    line-height: 1.6rem;
+  }
+}
+
+div.metadata {
+  text-align: center;
+}
+
+div.commemorations {
+  border: solid 1px grey;
+  padding: 1.3rem;
+}
+
+span.indent {
+  padding-left: 1rem;
+}
+
+p.indent {
+  margin: 0 0 0 1rem;
+
+  &.entreaty {
+    margin-bottom: 1rem;
+  }
+}
+
+p.hanging-indent {
+  text-indent: -1rem;
+  margin: 0 0 0 1rem;
+}
+
+p.no-bottom-margin {
+  margin-bottom: 0;
+}
+
+span.asterisk {
+  margin-left: 10px;
+}
+
+.footer {
+  border-top: 1px solid black;
+  text-align: center;
+  width: 100%;
+
+  &.footer-fixed,
+  &.footer-always-fixed {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+  }
+
+  @include themify($themes) {
+    background-color: themed('footer-color-bg');
+  }
+
+  font-size: 19.2px;
+  font-weight: 300;
+  padding: 4.8px 0;
+
+  i {
+    display: block;
+    padding-bottom: 4.8px;
+  }
+
+  p,
+  a,
+  i {
+    font-size: 19.2px;
+  }
+
+  strong {
+    font-size: 19.2px;
+  }
+}
+
+.footer-flex {
+  display: -webkit-box;  /* OLD - iOS 6-, Safari 3.1-6, BB7 */
+  display: -ms-flexbox;  /* TWEENER - IE 10 */
+  display: -webkit-flex; /* NEW - Safari 6.1+. iOS 7.1+, BB10 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  align-content: space-around;
+  max-width: 700px;
+  margin: auto;
+  padding: 10.2px;
+
+  p {
+    margin: 0 0 4.8px 0;
+  }
+
+  a.day-link {
+    padding: 4px;
+    border: 1px black solid;
+    border-radius: 12px;
+  }
+}
+
+.footer-flex div {
+  -webkit-flex-grow: 2;
+  flex-grow: 2;
+  font-weight: 900;
+}
+
+.footer-flex a {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+
+  @include themify($themes) {
+    color: themed('font-color');
+  }
+
+  text-decoration: none;
+  font-weight: 300;
+}
+
+.off {
+  display: none;
+}
+
+.invisbile {
+  visibility: hidden;
+}
+
+.feedback {
+  margin-top: 3rem;
+  padding: 1rem;
+  border: 1px solid;
+}
+
+#menu {
+  padding: 3px;
+  margin: 3px;
+}
+
+.menu-wrapper {
+  text-align: center;
+  padding: 1px;
+}
+
+.menu {
+  display: inline-block;
+  padding: 3px;
+}
+
+form {
+  min-height: 48px;
+}
+
+.menu-button {
+  @include themify($themes) {
+    color: themed('font-color');
+  }
+
+  text-decoration: none;
+  font-size: 11px;
+  margin: 3.3px;
+  initial-letter: 2;
+  letter-spacing: 0.66px;
+  border: 1px solid grey;
+  border-radius: 11px;
+  padding: 6.6px;
+  text-transform: uppercase;
+  float: left;
+
+  &.on {
+    @include themify($themes) {
+      background-color: themed('footer-color-bg');
+    }
+  }
+
+  &.right {
+    float: right;
+  }
+
+  .first-letter {
+    font-size: 16px;
+  }
+
+  &.inline {
+    text-align: center;
+  }
+
+  &.input {
+    display: block;
+    min-width: 200px;
+  }
+
+  &.calendar {
+    font-size: 0.5rem;
+    margin: 0.4rem;
+    letter-spacing: 0.03rem;
+    border-radius: 0.5rem;
+    padding: 0.3rem;
+    min-width: 90px;
   }
 }
 
 .thank-you {
-
   margin-bottom: 8rem;
 }
 
@@ -562,8 +524,41 @@ html {
   text-align: center;
 }
 
+#messages {
+  margin: 0.5rem auto 0 auto;
+  font-size: 0.6rem;
+  text-align: center;
+  line-height: 1rem;
+
+  a {
+    @include themify($themes) {
+      color: themed('font-color');
+    }
+  }
+}
+
+.about {
+  p {
+    font-size: 1rem;
+    line-height: 1.6rem;
+
+    em {
+      font-size: 1rem;
+    }
+  }
+}
+
+.four_oh_four {
+  max-width: 700px;
+
+  p {
+    text-align: center;
+    margin: 0 4rem;
+  }
+}
+
 .privacy-link {
-  font-size: .8rem;
+  font-size: 0.8rem;
   margin: 2rem auto;
   display: block;
 }
@@ -574,13 +569,14 @@ html {
   bottom: 0;
   left: 0;
   width: 100%;
+
   @include themify($themes) {
     color: themed('font-color');
     background-color: themed('color-bg');
   }
+
   border-top: 1px solid black;
   margin: auto;
-
 
   .container {
     display: flex;
@@ -589,15 +585,13 @@ html {
     margin: 5px auto 0;
     justify-content: center;
     align-items: center;
-
   }
 
   .item {
     flex-grow: 1;
     max-height: 100%;
     height: 100%;
-    font-size:20px;
-
+    font-size: 20px;
   }
 
   .item + .item {
@@ -612,21 +606,22 @@ html {
 
 .announcement {
   padding: 20px;
-  background-color: #2196F3;
+  background-color: #2196f3;
   color: white;
   margin: 30px;
-  font-size:.9rem;
+  font-size: 0.9rem;
   line-height: 1rem;
 
   small {
-    font-size: .7rem;
-    line-height: .9rem;
+    font-size: 0.7rem;
+    line-height: 0.9rem;
   }
 }
 
 .align-center {
   text-align: center;
 }
+
 .align-right {
   text-align: right;
 }
@@ -636,108 +631,126 @@ input[type=range] {
   -webkit-appearance: none;
   margin: 10px 0;
   width: 50%;
-          @include themify($themes) {
-        background-color: themed('color-bg');
-            }
+
+  @include themify($themes) {
+    background-color: themed('color-bg');
+  }
 }
+
 input[type=range]:focus {
   outline: none;
 }
+
 input[type=range]::-webkit-slider-runnable-track {
   width: 100%;
   height: 14px;
   cursor: pointer;
-  animate: 0.2s;
-  box-shadow: 1px 1px 1px #50555C;
-        @include themify($themes) {
-        background: themed('font-color');
-            }
+  animation: 0.2s;
+  box-shadow: 1px 1px 1px #50555c;
+
+  @include themify($themes) {
+    background: themed('font-color');
+  }
+
   border-radius: 14px;
-  border: 0px solid #000000;
+  border: 0 solid #000;
 }
+
 input[type=range]::-webkit-slider-thumb {
-  box-shadow: 0px 0px 0px #000000;
-  border: 0px solid #000000;
+  box-shadow: 0 0 0 #000;
+  border: 0 solid #000;
   height: 20px;
   width: 40px;
   border-radius: 12px;
-  background: #529DE1;
+  background: #529de1;
   cursor: pointer;
   -webkit-appearance: none;
   margin-top: -3px;
 }
+
 input[type=range]:focus::-webkit-slider-runnable-track {
-        @include themify($themes) {
-        background: themed('font-color');
-            }
+  @include themify($themes) {
+    background: themed('font-color');
+  }
 }
+
 input[type=range]::-moz-range-track {
   width: 100%;
   height: 14px;
   cursor: pointer;
-  animate: 0.2s;
-  box-shadow: 1px 1px 1px #50555C;
-        @include themify($themes) {
-        background: themed('font-color');
-            }
+  animation: 0.2s;
+  box-shadow: 1px 1px 1px #50555c;
+
+  @include themify($themes) {
+    background: themed('font-color');
+  }
+
   border-radius: 14px;
-  border: 0px solid #000000;
+  border: 0 solid #000;
 }
+
 input[type=range]::-moz-range-thumb {
-  box-shadow: 0px 0px 0px #000000;
-  border: 0px solid #000000;
+  box-shadow: 0 0 0 #000;
+  border: 0 solid #000;
   height: 20px;
   width: 40px;
   border-radius: 12px;
-  background: #529DE1;
+  background: #529de1;
   cursor: pointer;
 }
+
 input[type=range]::-ms-track {
   width: 100%;
   height: 14px;
   cursor: pointer;
-  animate: 0.2s;
+  animation: 0.2s;
   background: transparent;
   border-color: transparent;
   color: transparent;
 }
+
 input[type=range]::-ms-fill-lower {
-        @include themify($themes) {
-        background: themed('font-color');
-            }
-  border: 0px solid #000000;
+  @include themify($themes) {
+    background: themed('font-color');
+  }
+
+  border: 0 solid #000;
   border-radius: 28px;
-  box-shadow: 1px 1px 1px #50555C;
+  box-shadow: 1px 1px 1px #50555c;
 }
+
 input[type=range]::-ms-fill-upper {
-        @include themify($themes) {
-        background: themed('font-color');
-            }
-  border: 0px solid #000000;
+  @include themify($themes) {
+    background: themed('font-color');
+  }
+
+  border: 0 solid #000;
   border-radius: 28px;
-  box-shadow: 1px 1px 1px #50555C;
+  box-shadow: 1px 1px 1px #50555c;
 }
+
 input[type=range]::-ms-thumb {
   margin-top: 1px;
-  box-shadow: 0px 0px 0px #000000;
-  border: 0px solid #000000;
+  box-shadow: 0 0 0 #000;
+  border: 0 solid #000;
   height: 20px;
   width: 40px;
   border-radius: 12px;
-  background: #529DE1;
+  background: #529de1;
   cursor: pointer;
 }
+
 input[type=range]:focus::-ms-fill-lower {
-        @include themify($themes) {
-        background: themed('font-color');
-            }
-}
-input[type=range]:focus::-ms-fill-upper {
-        @include themify($themes) {
-        background: themed('font-color');
-            }
+  @include themify($themes) {
+    background: themed('font-color');
+  }
 }
 
+input[type=range]:focus::-ms-fill-upper {
+  @include themify($themes) {
+    background: themed('font-color');
+  }
+}
 
 .word-wrap {
   word-wrap: break-word;

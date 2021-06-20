@@ -9,7 +9,8 @@
   font-style: normal;
   font-weight: 300;
   font-display: $fa-font-display;
-  src: url('#{$fa-font-path}/fa-light-300.woff2') format('woff2'),
+  src:
+    url('#{$fa-font-path}/fa-light-300.woff2') format('woff2'),
     url('#{$fa-font-path}/fa-light-300.woff') format('woff'),
     url('#{$fa-font-path}/fa-light-300.ttf') format('truetype');
 }

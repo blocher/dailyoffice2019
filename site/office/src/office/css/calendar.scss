@@ -1,5 +1,4 @@
 .calendar-page {
-
   padding-bottom: 10rem;
 
   &.calendar-page-no-padding {
@@ -7,8 +6,8 @@
   }
 
   .menu-button {
-      //width: 5rem;
-      text-align: center;
+    //width: 5rem;
+    text-align: center;
   }
 
   p {
@@ -17,7 +16,7 @@
     &.season {
       text-align: right;
       font-size: 0.6rem;
-      line-height: .9rem;
+      line-height: 0.9rem;
       display: inline-block;
       border: 1px solid black;
       padding: 0.3rem;
@@ -25,58 +24,93 @@
     }
   }
 
-
-  h2, h3 {
+  h2,
+  h3 {
     padding-top: 0;
   }
 
-  h3.season, h3.month {
+  h3.season,
+  h3.month {
     padding-top: 1.5rem;
   }
 
   h5 {
     clear: both;
-    float:right;
+    float: right;
     margin: 1rem 0 0 0;
     padding: 0;
-    font-size: .7rem;
+    font-size: 0.7rem;
     text-align: center !important;
+
     i {
       margin: 0;
       padding: 0;
-      font-size: .7rem;
+      font-size: 0.7rem;
     }
-
   }
 
   a.wiki-link {
-    font-size: .65rem;
-    margin: 0 .1rem;
+    font-size: 0.65rem;
+    margin: 0 0.1rem;
+
     @include themify($themes) {
-        color: themed('font-color');
+      color: themed('font-color');
     }
   }
 
   .calendar-settings {
-
     width: 100%;
-    max-width: 500px;
     margin: 0 auto;
     height: auto;
-
     max-width: 500px;
     display: flex;
     justify-content: center;
+
     h3 {
       padding-top: 1.5rem;
       text-align: left;
-      margin: .3rem;
+      margin: 0.3rem;
     }
 
+    .year-links {
+      display: flex;
+      width: 50%;
+      margin: auto;
+      clear: both;
+
+      a {
+        flex-basis: 50%;
+        display: inline;
+      }
+    }
+
+    .calendar-links {
+      width: 100vw;
+      height: 20%;
+      position: fixed;
+      bottom: 0;
+      right: 0;
+
+      h3 {
+        padding-top: 1rem;
+      }
+
+      p {
+        margin: 0.2rem;
+      }
+
+      p,
+      a {
+        font-size: 0.8rem;
+        line-height: 0.9rem;
+        text-decoration: none;
+      }
+    }
 
     .menu {
       width: 100%;
       margin: 10px auto;
+
       p {
         clear: both;
       }
@@ -91,8 +125,9 @@
 
     .seasons {
       margin: auto;
+
       .menu-button {
-        margin: .3rem;
+        margin: 0.3rem;
         width: 12rem;
       }
 
@@ -102,13 +137,11 @@
     }
 
     .dates {
-
       .menu-button {
         width: 5rem;
       }
 
       .menu-months {
-
         justify-content: center;
         margin: 4rem auto;
         clear: both;
@@ -123,49 +156,28 @@
     height: auto;
   }
 
-  .calendar-links {
-    width: 100vw;
-    height: 20%;
-    position: fixed;
-    bottom: 0;
-    right: 0;
-
-    h3 {
-      padding-top: 1rem;
-    }
-
-
-    p {
-      margin: .2rem;
-    }
-
-    p, a {
-      font-size: .8rem;
-      line-height: .9rem;
-      text-decoration: none;
-    }
-  }
-
-  .seasons-links, .months-links {
+  .seasons-links,
+  .months-links {
     text-align: left;
     padding: 1rem 0;
     width: 60%;
     margin: 0 auto;
-
   }
 
   .day {
-    padding: .4rem;
+    padding: 0.4rem;
     display: flex;
-    flex: 1 1 0px;
+    flex: 1 1 0;
     margin: 0.5rem 0;
     border: 1px solid black;
     border-radius: 5px;
+
     @media only screen and (max-width: 600px) {
       flex-wrap: wrap;
     }
+
     p.secondary {
-      font-size: .8rem;
+      font-size: 0.8rem;
     }
 
     &.major {
@@ -173,26 +185,23 @@
         background-color: themed('footer-color-bg');
       }
 
-
       .primary {
         font-weight: 900;
       }
-
     }
 
     .day-section {
       padding: 1rem;
 
       @media only screen and (max-width: 600px) {
-       width: 100%;
+        width: 100%;
       }
 
       &.date {
         text-align: center;
-
         border: solid 1px black;
         border-radius: 5px;
-        padding: .6rem;
+        padding: 0.6rem;
 
         .dateline-day {
           font-size: 2rem;
@@ -211,31 +220,16 @@
           text-transform: uppercase;
           padding-top: 2rem;
         }
-
       }
+
       &.content {
-        align-items:flex-start;
+        align-items: flex-start;
         padding-top: 0;
         padding-bottom: 0;
         flex-basis: 100%;
       }
     }
-
   }
-
-  .year-links {
-    display:flex;
-    width:50%;
-    margin: auto;
-    clear: both;
-
-    a {
-      flex-basis: 50%;
-      display: inline;
-    }
-
-  }
-
 }
 
 .color {
@@ -275,4 +269,3 @@
   background-color: pink;
   color: black;
 }
-

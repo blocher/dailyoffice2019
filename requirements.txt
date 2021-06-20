@@ -1,5 +1,3 @@
-git+https://github.com/blocher/python-scriptures
-git+https://github.com/mvaled/django-mjml/@support-django-32#egg=django-mjml
 appdirs==1.4.4
 appnope==0.1.2
 arrow==1.1.0
@@ -28,7 +26,6 @@ datefinder==0.7.1
 decorator==5.0.9
 Delorean==1.0.0
 distlib==0.3.2
-Django==3.2.3
 django-address==0.2.5
 django-admin-sortable2==1.0
 django-array-tags==0.2.2
@@ -49,10 +46,10 @@ django-mathfilters==1.0.0
 django-meta==2.0.0
 django-model-utils==4.1.1
 django-richtextfield==1.6.1
-django-robots==4.0
 django-taggit==1.4.0
 django-webpack-loader==1.0.0
 django-widget-tweaks==1.4.8
+Django==3.2.3
 djangorestframework==3.12.4
 docopt==0.6.2
 docx==0.2.4
@@ -62,10 +59,13 @@ environ==1.0
 feedparser==6.0.2
 filelock==3.0.12
 future==0.18.2
+git+https://github.com/blocher/python-scriptures
+git+https://github.com/jazzband/django-robots
+git+https://github.com/mvaled/django-mjml/@support-django-32#egg=django-mjml
 google-api-core==1.28.0
 google-api-python-client==2.6.0
-google-auth==1.30.1
 google-auth-httplib2==0.1.0
+google-auth==1.30.1
 googleapis-common-protos==1.53.0
 gunicorn==20.1.0
 h11==0.12.0
@@ -82,8 +82,8 @@ icalendar==4.0.7
 idna==3.2
 indexed==1.2.1
 inflection==0.5.1
-ipython==7.24.0
 ipython-genutils==0.2.0
+ipython==7.24.0
 itypes==1.2.0
 jedi==0.18.0
 Jinja2==3.0.1
@@ -120,11 +120,11 @@ preshed==3.0.5
 priority==1.3.0
 prompt-toolkit==3.0.18
 protobuf==3.17.1
-psycopg2==2.8.6
 psycopg2-binary==2.8.6
+psycopg2==2.8.6
 ptyprocess==0.7.0
-pyasn1==0.4.8
 pyasn1-modules==0.2.8
+pyasn1==0.4.8
 pycountry==20.7.3
 pycparser==2.20
 pycryptodome==3.10.1
@@ -148,8 +148,8 @@ rake-nltk==1.0.4
 regex==2021.4.4
 requests==2.25.1
 rsa==4.7.2
-ruamel.yaml==0.17.4
 ruamel.yaml.clib==0.2.2
+ruamel.yaml==0.17.4
 scikit-learn==0.24.2
 scipy==1.6.3
 sgmllib3k==1.0.0
@@ -158,8 +158,8 @@ sklearn==0.0
 smart-open==5.1.0
 sortedcontainers==2.4.0
 soupsieve==2.2.1
-spacy==3.0.6
 spacy-legacy==3.0.5
+spacy==3.0.6
 sqlparse==0.4.1
 srsly==2.4.1
 sumy==0.8.1
@@ -177,8 +177,8 @@ uritemplate==3.0.1
 urllib3==1.26.5
 uvicorn==0.13.4
 uvloop==0.15.2
-virtualenv==20.4.7
 virtualenv-clone==0.5.4
+virtualenv==20.4.7
 wasabi==0.8.2
 wcwidth==0.2.5
 webencodings==0.5.1

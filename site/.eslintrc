@@ -1,0 +1,36 @@
+{
+  "extends": [
+    "plugin:prettier/recommended",
+    "eslint:recommended"
+  ],
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "include": ["."],
+    "ecmaVersion": 12,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": false,
+      "generators": false,
+      "objectLiteralDuplicateProperties": false
+    },
+    "babelOptions": { "configFile": "./site/babel.config.json" }
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2021": true
+  },
+  "plugins": [ "prettier" ],
+  "rules": {
+    "no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }
+    ],
+    "no-console": "error",
+    "prettier/prettier": "error"
+  },
+  "overrides": [
+  ],
+  "settings": {
+  }
+}

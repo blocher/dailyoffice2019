@@ -13,10 +13,10 @@ $fa-fw-width            : math.div(20em, 16);
 $fa-inverse             : #fff !default;
 
 $fa-border-color        : #eee !default;
-$fa-border-padding      : .2em .25em .15em !default;
-$fa-border-radius       : .1em !default;
+$fa-border-padding      : 0.2em 0.25em 0.15em !default;
+$fa-border-radius       : 0.1em !default;
 $fa-border-style        : solid !default;
-$fa-border-width        : .08em !default;
+$fa-border-width        : 0.08em !default;
 
 $fa-size-scale-2xs      : 10 !default;
 $fa-size-scale-xs       : 12 !default;
@@ -38,10 +38,10 @@ $fa-sizes: (
 $fa-li-width            : 2em !default;
 $fa-li-margin           : math.div($fa-li-width * 5, 4) !default;
 
-$fa-pull-margin         : .3em !default;
+$fa-pull-margin         : 0.3em !default;
 
 $fa-primary-opacity     : 1 !default;
-$fa-secondary-opacity   : .4 !default;
+$fa-secondary-opacity   : 0.4 !default;
 
 $fa-stack-vertical-align: middle !default;
 $fa-stack-width         : ($fa-fw-width * 2) !default;
@@ -8222,4 +8222,3 @@ $fa-brand-icons: (
   "youtube-square": $fa-var-youtube-square,
   "zhihu": $fa-var-zhihu,
 );
-

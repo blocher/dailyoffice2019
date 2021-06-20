@@ -1,18 +1,13 @@
 div#settings {
-
   width: 100%;
   max-width: 700px;
   margin: auto;
-
-  h2 {
-
-  }
 
   h3 {
     padding-top: 1.5rem;
     text-align: left;
     font-size: 1.1em;
-    margin-bottom: -.2rem;
+    margin-bottom: -0.2rem;
   }
 
   em {
@@ -24,8 +19,7 @@ div#settings {
     font-display: swap;
     font-weight: 300;
     font-style: normal;
-    font-size: .9rem;
-
+    font-size: 0.9rem;
   }
 
   .help-text {
@@ -33,19 +27,19 @@ div#settings {
     line-height: 1rem;
   }
 
-
   .save {
     animation: fadein 2s;
   }
 
   .pretty {
-    margin-top: .5rem;
+    margin-top: 0.5rem;
   }
 
   @keyframes fadein {
     from {
       opacity: 0;
     }
+
     to {
       opacity: 1;
     }
@@ -61,11 +55,12 @@ div#settings {
   }
 
   .advanced-settings {
-    padding: .5rem;
+    padding: 0.5rem;
     border: 1px solid black;
+
     @include themify($themes) {
-        background-color: themed('footer-color-bg');
-      }
+      background-color: themed('footer-color-bg');
+    }
 
     margin: 0;
 
@@ -79,71 +74,45 @@ div#settings {
     margin: -2rem auto 1rem auto;
   }
 
-
   .main-setting {
-
     h3 {
-      padding: .2rem;
+      padding: 0.2rem;
       font-size: 1.5rem;
-      text-align:center;
+      text-align: center;
       font-family: "Adobe Caslon Pro", serif;
       margin: 2rem 2rem 0.5rem;
-
     }
 
     h4 {
       font-style: normal;
-      margin: 1rem .3rem .3rem .3rem;
+      margin: 1rem 0.3rem 0.3rem 0.3rem;
       font-family: "Adobe Caslon Pro", serif;
       font-size: 1rem;
-
       text-transform: uppercase;
-      text-align:center;
+      text-align: center;
       width: 100%;
+    }
+
+    p {
+      font-weight: 900;
     }
 
     section {
       display: flex;
       flex-flow: row wrap;
 
-
       p {
-        padding: .2rem;
-        font-size: .85rem;
+        padding: 0.2rem;
+        font-size: 0.85rem;
         margin: 0;
         font-weight: 300;
         line-height: 1rem;
       }
-
     }
 
     section > div {
       flex: 1;
       padding: 0;
-    }
-
-    input[type="radio"] {
-      position:absolute;
-      left:-10000px;
-      top:auto;
-      width:1px;
-      height:1px;
-      overflow:hidden;
-
-      &:not(:disabled) ~ label {
-        cursor: pointer;
-      }
-
-      &:disabled ~ label {
-        color: hsla(150, 5%, 75%, 1);
-        border-color: hsla(150, 5%, 75%, 1);
-        box-shadow: none;
-        cursor: not-allowed;
-      }
-    }
-
-    .setting-inner-div {
-      display: flex;
     }
 
     label {
@@ -162,21 +131,42 @@ div#settings {
         box-shadow: themed('settings-shadow');
         background: themed('alt-bg');
       }
-
     }
 
+    input[type="radio"] {
+      position: absolute;
+      left: -10000px;
+      top: auto;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+
+      &:not(:disabled) ~ label {
+        cursor: pointer;
+      }
+
+      &:disabled ~ label {
+        color: hsla(150, 5%, 75%, 1);
+        border-color: hsla(150, 5%, 75%, 1);
+        box-shadow: none;
+        cursor: not-allowed;
+      }
+    }
+
+    .setting-inner-div {
+      display: flex;
+    }
 
     input[type="radio"]:checked + label {
       background: hsla(0, 0%, 50%, 1);
       color: hsla(215, 0%, 100%, 1);
-      box-shadow: 0px 0px 20px hsla(0, 0%, 50%, 0.75);
+      box-shadow: 0 0 20px hsla(0, 0%, 50%, 0.75);
 
       //color: rgb(255, 255, 255); /*darkmode*/
       //box-shadow: rgba(128, 128, 128, 0.75) 0px 0px 20px; /*darkmode*/
       //background: rgb(128, 128, 128); /*darkmode*/
 
       &::after {
-
         @extend %fa-icon;
         @extend .far;
 
@@ -194,17 +184,13 @@ div#settings {
         text-align: center;
         border-radius: 50%;
         background: white;
-        box-shadow: 0px 2px 5px -2px hsla(0, 0%, 0%, 0.25);
+        box-shadow: 0 2px 5px -2px hsla(0, 0%, 0%, 0.25);
       }
     }
 
     input[type="radio"]#control_05:checked + label {
       background: red;
       border-color: red;
-    }
-
-    p {
-      font-weight: 900;
     }
 
     .pray-with-wrapper {
@@ -214,7 +200,7 @@ div#settings {
 
     .pray-with {
       display: inline-block;
-      padding: .1rem;
+      padding: 0.1rem;
     }
 
     .menu-button {
@@ -227,18 +213,15 @@ div#settings {
         flex-direction: column;
       }
     }
-
   }
 }
 
 #settings-link-view {
-
   background-color: lightgray;
   border: 1px black;
   max-width: 700px;
   padding: 2rem;
   margin: auto;
-
 }
 
 #settings-link {

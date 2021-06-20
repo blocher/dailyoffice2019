@@ -21,7 +21,7 @@
   margin: auto;
 }
 
-.toggle:before {
+.toggle::before {
   content: "";
   display: block;
   position: absolute;
@@ -32,15 +32,15 @@
   left: 2px;
   top: 2px;
   border-radius: 50%;
-  font: 10px/28px Helvetica;
+  font: 10px/28px Helvetica, sans-serif;
   text-transform: uppercase;
   font-weight: bold;
   text-indent: -22px;
   word-spacing: 37px;
   color: #fff;
-  text-shadow: -1px -1px rgba(0,0,0,0.15);
+  text-shadow: -1px -1px rgba(0, 0, 0, 0.15);
   white-space: nowrap;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   transition: all cubic-bezier(0.3, 1.5, 0.7, 1) 0.3s;
 }
 
@@ -48,6 +48,6 @@
 //  background-color: #4CD964;
 //}
 
-.toggle:checked:before {
+.toggle:checked::before {
   left: 32px;
 }

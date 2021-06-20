@@ -16,7 +16,7 @@
   animation-direction: var(--#{$fa-css-prefix}-animation-direction, normal);
   animation-duration: var(--#{$fa-css-prefix}-animation-duration, 1s);
   animation-iteration-count: var(--#{$fa-css-prefix}-animation-iteration-count, infinite);
-  animation-timing-function: var(--#{$fa-css-prefix}-animation-timing, cubic-bezier(.4,0,.6,1));
+  animation-timing-function: var(--#{$fa-css-prefix}-animation-timing, cubic-bezier(0.4, 0, 0.6, 1));
 }
 
 .#{$fa-css-prefix}-flash {
@@ -25,7 +25,7 @@
   animation-direction: var(--#{$fa-css-prefix}-animation-direction, normal);
   animation-duration: var(--#{$fa-css-prefix}-animation-duration, 1s);
   animation-iteration-count: var(--#{$fa-css-prefix}-animation-iteration-count, infinite);
-  animation-timing-function: var(--#{$fa-css-prefix}-animation-timing, cubic-bezier(.4,0,.6,1));
+  animation-timing-function: var(--#{$fa-css-prefix}-animation-timing, cubic-bezier(0.4, 0, 0.6, 1));
 }
 
 .#{$fa-css-prefix}-flip {
@@ -79,7 +79,8 @@
 }
 
 @keyframes #{$fa-css-prefix}-beat {
-  0%, 90% { transform: scale(1); }
+  0%,
+  90% { transform: scale(1); }
   45% { transform: scale(var(--#{$fa-css-prefix}-beat-scale, 1.25)); }
 }
 
@@ -88,10 +89,12 @@
 }
 
 @keyframes #{$fa-css-prefix}-flash {
-  0%, 100% {
+  0%,
+  100% {
     opacity: var(--#{$fa-css-prefix}-flash-opacity, 0.4);
     transform: scale(1);
   }
+
   50% {
     opacity: 1;
     transform: scale(var(--#{$fa-css-prefix}-flash-scale, 1.125));
@@ -108,4 +111,3 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-
