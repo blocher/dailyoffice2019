@@ -1,55 +1,55 @@
 exclude: .*\node_modules\|.*\static|.*\.sql
 repos:
-#  - repo: https://github.com/pre-commit/pre-commit-hooks
-#    rev: v4.0.1
-#    hooks:
-#      - id: trailing-whitespace
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
+    hooks:
+      - id: trailing-whitespace
+        files: ^site/
+      - id: mixed-line-ending
+        files: ^site/
+      - id: end-of-file-fixer
+        files: ^site/
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+        files: ^site/
+      - id: check-case-conflict
+        files: ^site/
+      - id: check-merge-conflict
+        files: ^site/
+      - id: check-symlinks
+        files: ^site/
+      - id: check-yaml
+        files: ^site/
+      - id: fix-byte-order-marker
+        files: ^site/
+#      - id: requirements-txt-fixer
 #        files: ^site/
-#      - id: mixed-line-ending
-#        files: ^site/
-#      - id: end-of-file-fixer
-#        files: ^site/
-#      - id: check-added-large-files
-#        args: ['--maxkb=500']
-#        files: ^site/
-#      - id: check-case-conflict
-#        files: ^site/
-#      - id: check-merge-conflict
-#        files: ^site/
-#      - id: check-symlinks
-#        files: ^site/
-#      - id: check-yaml
-#        files: ^site/
-#      - id: fix-byte-order-marker
-#        files: ^site/
-##      - id: requirements-txt-fixer
-##        files: ^site/
-#
-#
-#  - repo: https://github.com/psf/black
-#    rev: 21.5b1
-#    hooks:
-#      - id: black
-#        files: ^site/
-#        language_version: python3
-#        args: [--target-version=py39, --line-length=119]
-#
-#  - repo: https://github.com/pre-commit/mirrors-eslint
-#    rev: v7.27.0
-#    hooks:
-#      - id: eslint
-#        files: ^site/
-#        exclude: ^site/node_modules/|^site/office/src/office/js/fontawesome/|^site/office/src/office/css/fontawesome/
-#        args: [--fix --ext=.js --config=site/.eslintrc]
-#        additional_dependencies:
-#          - eslint@7.27.0
-#          - eslint-config-prettier@8.3.0
-#          - "@babel/core@7.14.3"
-#          - "@babel/eslint-parser@7.14.4"
-#          - "@babel/preset-env@7.14.4"
-#          - "@babel/preset-typescript@7.13.0"
-#          - eslint-plugin-prettier@3.4.0
-#          - prettier@2.3.0
+
+
+  - repo: https://github.com/psf/black
+    rev: 21.5b1
+    hooks:
+      - id: black
+        files: ^site/
+        language_version: python3
+        args: [--target-version=py39, --line-length=119]
+
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v7.27.0
+    hooks:
+      - id: eslint
+        files: ^site/
+        exclude: ^site/node_modules/|^site/office/src/office/js/fontawesome/|^site/office/src/office/css/fontawesome/
+        args: [--fix --ext=.js --config=site/.eslintrc]
+        additional_dependencies:
+          - eslint@7.27.0
+          - eslint-config-prettier@8.3.0
+          - "@babel/core@7.14.3"
+          - "@babel/eslint-parser@7.14.4"
+          - "@babel/preset-env@7.14.4"
+          - "@babel/preset-typescript@7.13.0"
+          - eslint-plugin-prettier@3.4.0
+          - prettier@2.3.0
 
   - repo: https://github.com/awebdeveloper/pre-commit-stylelint
     rev: 0.0.2
