@@ -315,7 +315,7 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                 {
                     "title": "O'Hara Cell Meeting",
                     "date": self.get_tuesday(),
-                    "time": "8:30 to 10:30 pm",
+                    "time": "6:00 to 8:00 pm",
                     "zoom_link": ZOOM_LINK,
                     "optional": False,
                     "leader": self.get_leader("ohara"),
