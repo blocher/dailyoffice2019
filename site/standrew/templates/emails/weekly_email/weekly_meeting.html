@@ -5,15 +5,19 @@
     <h1>{{ meeting.title }}</h1>
     <h3>TONIGHT: {{ meeting.date|date:"l, F j, Y"}}</h3>
     <h4>{{ meeting.time }}</h4>
-    {% if meeting.leader %}
-        <p>Liturgist: {{ meeting.leader }}</p>
-    {% endif %}
-    <div class="link-buttons">
-        <a class="event_link" href="{{ meeting.zoom_link }}"><span class="events__tag">Join Zoom</span></a>
-        {% if meeting.slack_link %}
-            <a class="event_link" href="{{ meeting.slack_link }}" target="_blank"><span class="events__tag">Join Slack</span></a>
+
+    <span class="events__date">{{ meeting.date }}
+        {% if meeting.extra_fields.Location and meeting.extra_fields.Address %}
+            at {{ meeting.extra_fields.Location }} <a href="https://www.google.com/maps/place/{{ meeting.extra_fields.Address }}">{{ meeting.extra_fields.Address }}</a>
         {% endif %}
-    </div>
+    </span>
+    {% if meeting.extra_fields %}
+        {% for key, value in meeting.extra_fields.items %}
+            {% if key != "Location" and key != "Address" %}
+                <p><span class="events__date"><strong>{{ key }}:</strong> {{ value }}</span></p>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
     {% if meeting.meeting == "men" %}
         <p><small><em><strong>Can't attend?</strong> Reply to this email to let the full men's group know, or email Chris at <a href="mailto:chris.massa@gmail.com">chris.massa@gmail.com</a> and Scott at <a href="mailto:shbowles@gmail.com">shbowles@gmail.com</a>.</em></small></p>
     {% endif %}
@@ -65,6 +69,13 @@
     {% if meeting.slack_link %}
      <p><small>Slack: <a href="{{ meeting.slack_link }}">{{ meeting.slack_link }}</a></small></p>
     {% endif %}
+
+    <div class="link-buttons">
+        <a class="event_link" href="{{ meeting.zoom_link }}"><span class="events__tag">Join Zoom</span></a>
+        {% if meeting.slack_link %}
+            <a class="event_link" href="{{ meeting.slack_link }}" target="_blank"><span class="events__tag">Join Slack</span></a>
+        {% endif %}
+    </div>
 
 
 

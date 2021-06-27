@@ -277,6 +277,33 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
 
         return "?"
 
+    def cell_meeting_data(self, cell, meeting_day):
+        cell = cell.replace("'", "").capitalize()
+        SPREADSHEET_ID = "1lRsThD20a2thgtJk97J_bqEBxJBCqXPIg_UkFAqzMq8"
+        RANGE_NAME = "{}!A1:N100".format(cell)
+        service = build("sheets", "v4", developerKey=GOOGLE_API_KEY)
+        sheet = service.spreadsheets()
+        try:
+            result = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=RANGE_NAME).execute()
+        except HttpError as e:
+            print(e)
+            return
+        values = result["values"]
+        days = [dict(zip(values[0], row)) for row in values[1:]]
+        for day in days:
+            if day["Date"]:
+                date = datetime.strptime(day["Date"], "%A, %B %d, %Y").date()
+                if meeting_day == date:
+                    day = dict(
+                        [
+                            (key, val)
+                            for key, val in day.items()
+                            if key.lower().strip() not in ["date", "x", ""] and val.strip() != ""
+                        ]
+                    )
+                    return day
+        return None
+
     def tuesday_subjects(self):
         tuesday_number = self.get_tuesday_number()
         if tuesday_number in (1, 3):
@@ -311,17 +338,19 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                     "notes": self.get_notes(),
                     "meeting": "morningside",
                     "to_addresses": ["community-of-st-andrew-cell-morningside@googlegroups.com"],
+                    "extra_fields": self.cell_meeting_data("morningside", self.get_tuesday()),
                 },
                 {
                     "title": "O'Hara Cell Meeting",
                     "date": self.get_tuesday(),
-                    "time": "6:00 to 8:00 pm",
+                    "time": "6 to 8 pm",
                     "zoom_link": ZOOM_LINK,
                     "optional": False,
                     "leader": self.get_leader("ohara"),
                     "notes": self.get_notes(),
                     "meeting": "ohara",
                     "to_addresses": ["community-of-st-andrew-cell-ohara@googlegroups.com"],
+                    "extra_fields": self.cell_meeting_data("ohara", self.get_tuesday()),
                 },
             ]
         if tuesday_number == 2:

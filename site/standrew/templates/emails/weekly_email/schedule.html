@@ -11,8 +11,19 @@
         {%endif %}
             <div class="events__item--top">
                 <span class="events__day">{{ meeting.date|date:"l" }} {{ meeting.time }}</span>
-                <span class="events__name">{{ meeting.title }}{% if meeting.optional %} <small><em>Optional</em></small> {% endif %}{% if meeting.leader %} <small><em>Liturgist: {{ meeting.leader }} </em></small>{% endif %}</span>
-                <span class="events__date">{{ meeting.date }}</span>
+                <span class="events__name">{{ meeting.title }}{% if meeting.optional %} <small><em>Optional</em></small> {% endif %}</span>
+                <span class="events__date">{{ meeting.date }}
+                    {% if meeting.extra_fields.Location and meeting.extra_fields.Address %}
+                        at {{ meeting.extra_fields.Location }} <a href="https://www.google.com/maps/place/{{ meeting.extra_fields.Address }}">{{ meeting.extra_fields.Address }}</a>
+                    {% endif %}
+                </span>
+                {% if meeting.extra_fields %}
+                    {% for key, value in meeting.extra_fields.items %}
+                        {% if key != "Location" and key != "Address" %}
+                            <p><span class="events__date"><strong>{{ key }}:</strong> {{ value }}</span></p>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
                 {% if meeting.notes.notes %}
                     <span class="events__collect">{{ meeting.notes.notes|safe }}</span>
                 {% endif %}
