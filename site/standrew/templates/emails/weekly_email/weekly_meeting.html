@@ -35,7 +35,6 @@
     {% endif %}
 
     {% if meeting.meeting == "movie" %}
-        <p><small><em>You are welcome to join Zoom around 8:45pm for a pre-movie conversation, and we will all press play together around 9. The conversation continues during the movie on Slack and again on Zoom afterward. Movies are chosen from those available on Netflix, Disney Plus, Hulu, or Amazon Prime.</em></small></p>
         <div class="reading">
             <h3>Movie</h3>
             {% if meeting.movie_details.movie_name %}
@@ -65,18 +64,14 @@
         </div>
     {% endif %}
 
-    <p><small>Zoom: <a href="{{ meeting.zoom_link }}">{{ meeting.zoom_link }}</a></small></p>
     {% if meeting.slack_link %}
      <p><small>Slack: <a href="{{ meeting.slack_link }}">{{ meeting.slack_link }}</a></small></p>
     {% endif %}
 
     <div class="link-buttons">
-        <a class="event_link" href="{{ meeting.zoom_link }}"><span class="events__tag">Join Zoom</span></a>
         {% if meeting.slack_link %}
             <a class="event_link" href="{{ meeting.slack_link }}" target="_blank"><span class="events__tag">Join Slack</span></a>
         {% endif %}
     </div>
-
-
 
 {% endinlinecss %}

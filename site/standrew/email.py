@@ -309,11 +309,9 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
         if tuesday_number in (1, 3):
             return ["Cell meetings (Tue)"]
         if tuesday_number == 2:
-            return ["Women's group (Tue)"]
-        if tuesday_number == 4:
             return ["Men's group (Tue)"]
-        if tuesday_number == 5 and timezone.now().year == "2021":
-            return ["Discussion's group (Tue)"]
+        if tuesday_number == 4:
+            return ["Women's group (Tue)"]
 
         return ["No Tuesday meeting this week"]
 
@@ -375,7 +373,7 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
             if teusday_date.month == 7 and teusday_date.year == 2021:
                 return [results[1]]
             return results
-        if tuesday_number == 2:
+        if tuesday_number == 4:
             return [
                 {
                     "title": "Women's Discipleship Group",
@@ -388,7 +386,7 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                     "meeting": "women",
                 },
             ]
-        if tuesday_number == 4:
+        if tuesday_number == 2:
             return [
                 {
                     "title": "Men's Discipleship Group",
@@ -401,13 +399,12 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                     "meeting": "men",
                 },
             ]
-        if tuesday_number == 5 and timezone.now().year == 2021:
+        if tuesday_number == 5:
             return [
                 {
-                    "title": "The Color of Compromise Discussion (Both cells)",
+                    "title": "No Tuesday meeting this week (5th Sunday)",
                     "date": self.get_tuesday(),
-                    "time": "6 to 8 pm",
-                    "zoom_link": ZOOM_LINK,
+                    "time": "",
                     "optional": False,
                     "notes": self.get_notes(),
                     "to_addresses": ["community-of-st-andrew-all@googlegroups.com"],
