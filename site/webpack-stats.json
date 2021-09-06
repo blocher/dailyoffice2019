@@ -36,15 +36,15 @@
       "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Semibold.eot",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.eot"
     },
-    "fonts/ACaslonPro-Semibold.woff": {
-      "name": "fonts/ACaslonPro-Semibold.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Semibold.woff",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.woff"
-    },
     "fonts/ACaslonPro-Semibold.woff2": {
       "name": "fonts/ACaslonPro-Semibold.woff2",
       "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Semibold.woff2",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.woff2"
+    },
+    "fonts/ACaslonPro-Semibold.woff": {
+      "name": "fonts/ACaslonPro-Semibold.woff",
+      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Semibold.woff",
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.woff"
     },
     "fonts/ACaslonPro-Semibold.ttf": {
       "name": "fonts/ACaslonPro-Semibold.ttf",
@@ -271,280 +271,10 @@
       "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/fa-thin-100.ttf",
       "publicPath": "/static/office/js/fonts/fa-thin-100.ttf"
     },
-    "bundle.4da149af5ec028929574.js": {
-      "name": "bundle.4da149af5ec028929574.js",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/bundle.4da149af5ec028929574.js",
-      "publicPath": "/static/office/js/bundle.4da149af5ec028929574.js"
-    },
-    "5b2688feed672622c768.ttf": {
-      "name": "5b2688feed672622c768.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/5b2688feed672622c768.ttf",
-      "publicPath": "/static/office/js/5b2688feed672622c768.ttf"
-    },
-    "a346a60fcd2ce7e78c12.woff": {
-      "name": "a346a60fcd2ce7e78c12.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/a346a60fcd2ce7e78c12.woff",
-      "publicPath": "/static/office/js/a346a60fcd2ce7e78c12.woff"
-    },
-    "f915aad9e9e202b0e601.woff2": {
-      "name": "f915aad9e9e202b0e601.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/f915aad9e9e202b0e601.woff2",
-      "publicPath": "/static/office/js/f915aad9e9e202b0e601.woff2"
-    },
-    "e9dc7f36b43cfca31191.ttf": {
-      "name": "e9dc7f36b43cfca31191.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/e9dc7f36b43cfca31191.ttf",
-      "publicPath": "/static/office/js/e9dc7f36b43cfca31191.ttf"
-    },
-    "79a40e83cf6122b3b07e.woff": {
-      "name": "79a40e83cf6122b3b07e.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/79a40e83cf6122b3b07e.woff",
-      "publicPath": "/static/office/js/79a40e83cf6122b3b07e.woff"
-    },
-    "a946fcc26b62bc1775dc.woff2": {
-      "name": "a946fcc26b62bc1775dc.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/a946fcc26b62bc1775dc.woff2",
-      "publicPath": "/static/office/js/a946fcc26b62bc1775dc.woff2"
-    },
-    "8f7757e03e53eca304f2.ttf": {
-      "name": "8f7757e03e53eca304f2.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/8f7757e03e53eca304f2.ttf",
-      "publicPath": "/static/office/js/8f7757e03e53eca304f2.ttf"
-    },
-    "18222b499215e52d7a82.woff": {
-      "name": "18222b499215e52d7a82.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/18222b499215e52d7a82.woff",
-      "publicPath": "/static/office/js/18222b499215e52d7a82.woff"
-    },
-    "3bf8b8521f603858bb3b.woff2": {
-      "name": "3bf8b8521f603858bb3b.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/3bf8b8521f603858bb3b.woff2",
-      "publicPath": "/static/office/js/3bf8b8521f603858bb3b.woff2"
-    },
-    "3f9b34bb47c232621b2b.ttf": {
-      "name": "3f9b34bb47c232621b2b.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/3f9b34bb47c232621b2b.ttf",
-      "publicPath": "/static/office/js/3f9b34bb47c232621b2b.ttf"
-    },
-    "072e73178c34406263a4.woff": {
-      "name": "072e73178c34406263a4.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/072e73178c34406263a4.woff",
-      "publicPath": "/static/office/js/072e73178c34406263a4.woff"
-    },
-    "149a6b9ab513cdae59f1.woff2": {
-      "name": "149a6b9ab513cdae59f1.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/149a6b9ab513cdae59f1.woff2",
-      "publicPath": "/static/office/js/149a6b9ab513cdae59f1.woff2"
-    },
-    "a45ef01cd4a352f3ea26.ttf": {
-      "name": "a45ef01cd4a352f3ea26.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/a45ef01cd4a352f3ea26.ttf",
-      "publicPath": "/static/office/js/a45ef01cd4a352f3ea26.ttf"
-    },
-    "23e368196f7b6a398044.woff": {
-      "name": "23e368196f7b6a398044.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/23e368196f7b6a398044.woff",
-      "publicPath": "/static/office/js/23e368196f7b6a398044.woff"
-    },
-    "f6ed548623081f235c71.woff2": {
-      "name": "f6ed548623081f235c71.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/f6ed548623081f235c71.woff2",
-      "publicPath": "/static/office/js/f6ed548623081f235c71.woff2"
-    },
-    "86a38453bd02d5f8243b.ttf": {
-      "name": "86a38453bd02d5f8243b.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/86a38453bd02d5f8243b.ttf",
-      "publicPath": "/static/office/js/86a38453bd02d5f8243b.ttf"
-    },
-    "f6e5b8c987ab6f555b4b.woff": {
-      "name": "f6e5b8c987ab6f555b4b.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/f6e5b8c987ab6f555b4b.woff",
-      "publicPath": "/static/office/js/f6e5b8c987ab6f555b4b.woff"
-    },
-    "0e27347def35941f0adb.woff2": {
-      "name": "0e27347def35941f0adb.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/0e27347def35941f0adb.woff2",
-      "publicPath": "/static/office/js/0e27347def35941f0adb.woff2"
-    },
-    "c047a9313a95e4693ea0.eot": {
-      "name": "c047a9313a95e4693ea0.eot",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/c047a9313a95e4693ea0.eot",
-      "publicPath": "/static/office/js/c047a9313a95e4693ea0.eot"
-    },
-    "84270a4fd526659137de.otf": {
-      "name": "84270a4fd526659137de.otf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/84270a4fd526659137de.otf",
-      "publicPath": "/static/office/js/84270a4fd526659137de.otf"
-    },
-    "b6ebc879b626e026d254.svg": {
-      "name": "b6ebc879b626e026d254.svg",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/b6ebc879b626e026d254.svg",
-      "publicPath": "/static/office/js/b6ebc879b626e026d254.svg"
-    },
-    "94247afb4546f8386782.ttf": {
-      "name": "94247afb4546f8386782.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/94247afb4546f8386782.ttf",
-      "publicPath": "/static/office/js/94247afb4546f8386782.ttf"
-    },
-    "47b10a0c141b9be0e43f.woff": {
-      "name": "47b10a0c141b9be0e43f.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/47b10a0c141b9be0e43f.woff",
-      "publicPath": "/static/office/js/47b10a0c141b9be0e43f.woff"
-    },
-    "f786cb2fe33d8c388336.woff2": {
-      "name": "f786cb2fe33d8c388336.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/f786cb2fe33d8c388336.woff2",
-      "publicPath": "/static/office/js/f786cb2fe33d8c388336.woff2"
-    },
-    "9ee401386d0e01e65c1b.eot": {
-      "name": "9ee401386d0e01e65c1b.eot",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/9ee401386d0e01e65c1b.eot",
-      "publicPath": "/static/office/js/9ee401386d0e01e65c1b.eot"
-    },
-    "2502fdacd5ec8fae5211.otf": {
-      "name": "2502fdacd5ec8fae5211.otf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/2502fdacd5ec8fae5211.otf",
-      "publicPath": "/static/office/js/2502fdacd5ec8fae5211.otf"
-    },
-    "19b385352699194e4246.svg": {
-      "name": "19b385352699194e4246.svg",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/19b385352699194e4246.svg",
-      "publicPath": "/static/office/js/19b385352699194e4246.svg"
-    },
-    "a71b7c10754cb4568a5a.ttf": {
-      "name": "a71b7c10754cb4568a5a.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/a71b7c10754cb4568a5a.ttf",
-      "publicPath": "/static/office/js/a71b7c10754cb4568a5a.ttf"
-    },
-    "0345712b0bd21a1341b2.woff": {
-      "name": "0345712b0bd21a1341b2.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/0345712b0bd21a1341b2.woff",
-      "publicPath": "/static/office/js/0345712b0bd21a1341b2.woff"
-    },
-    "66ed4ecc92e1120384bf.woff2": {
-      "name": "66ed4ecc92e1120384bf.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/66ed4ecc92e1120384bf.woff2",
-      "publicPath": "/static/office/js/66ed4ecc92e1120384bf.woff2"
-    },
-    "2b3c40ec6ad47e91546d.eot": {
-      "name": "2b3c40ec6ad47e91546d.eot",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/2b3c40ec6ad47e91546d.eot",
-      "publicPath": "/static/office/js/2b3c40ec6ad47e91546d.eot"
-    },
-    "faabdae87aea03faa345.otf": {
-      "name": "faabdae87aea03faa345.otf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/faabdae87aea03faa345.otf",
-      "publicPath": "/static/office/js/faabdae87aea03faa345.otf"
-    },
-    "ab289ae6871d13e1013e.svg": {
-      "name": "ab289ae6871d13e1013e.svg",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/ab289ae6871d13e1013e.svg",
-      "publicPath": "/static/office/js/ab289ae6871d13e1013e.svg"
-    },
-    "90f3c831b452aaa9f258.ttf": {
-      "name": "90f3c831b452aaa9f258.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/90f3c831b452aaa9f258.ttf",
-      "publicPath": "/static/office/js/90f3c831b452aaa9f258.ttf"
-    },
-    "3b04d1ac2c031108d3c4.woff": {
-      "name": "3b04d1ac2c031108d3c4.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/3b04d1ac2c031108d3c4.woff",
-      "publicPath": "/static/office/js/3b04d1ac2c031108d3c4.woff"
-    },
-    "ce9a92f7f1340a577e5d.woff2": {
-      "name": "ce9a92f7f1340a577e5d.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/ce9a92f7f1340a577e5d.woff2",
-      "publicPath": "/static/office/js/ce9a92f7f1340a577e5d.woff2"
-    },
-    "07d88e75f867e9c8d85b.eot": {
-      "name": "07d88e75f867e9c8d85b.eot",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/07d88e75f867e9c8d85b.eot",
-      "publicPath": "/static/office/js/07d88e75f867e9c8d85b.eot"
-    },
-    "a0de784ee60b1f6309dc.otf": {
-      "name": "a0de784ee60b1f6309dc.otf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/a0de784ee60b1f6309dc.otf",
-      "publicPath": "/static/office/js/a0de784ee60b1f6309dc.otf"
-    },
-    "8cb31ade76302b35726c.svg": {
-      "name": "8cb31ade76302b35726c.svg",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/8cb31ade76302b35726c.svg",
-      "publicPath": "/static/office/js/8cb31ade76302b35726c.svg"
-    },
-    "d7781512faffab1b3495.ttf": {
-      "name": "d7781512faffab1b3495.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/d7781512faffab1b3495.ttf",
-      "publicPath": "/static/office/js/d7781512faffab1b3495.ttf"
-    },
-    "32445a5653dc6fabb074.woff": {
-      "name": "32445a5653dc6fabb074.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/32445a5653dc6fabb074.woff",
-      "publicPath": "/static/office/js/32445a5653dc6fabb074.woff"
-    },
-    "b906cf6881ff546dd888.woff2": {
-      "name": "b906cf6881ff546dd888.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/b906cf6881ff546dd888.woff2",
-      "publicPath": "/static/office/js/b906cf6881ff546dd888.woff2"
-    },
-    "527ce51ae7c6002569ab.eot": {
-      "name": "527ce51ae7c6002569ab.eot",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/527ce51ae7c6002569ab.eot",
-      "publicPath": "/static/office/js/527ce51ae7c6002569ab.eot"
-    },
-    "c0191dbae1a9a051738d.otf": {
-      "name": "c0191dbae1a9a051738d.otf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/c0191dbae1a9a051738d.otf",
-      "publicPath": "/static/office/js/c0191dbae1a9a051738d.otf"
-    },
-    "08c4900df36e41f30ed9.svg": {
-      "name": "08c4900df36e41f30ed9.svg",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/08c4900df36e41f30ed9.svg",
-      "publicPath": "/static/office/js/08c4900df36e41f30ed9.svg"
-    },
-    "088be14f688685a55a45.ttf": {
-      "name": "088be14f688685a55a45.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/088be14f688685a55a45.ttf",
-      "publicPath": "/static/office/js/088be14f688685a55a45.ttf"
-    },
-    "71b9c22e9e3ad0b15540.woff": {
-      "name": "71b9c22e9e3ad0b15540.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/71b9c22e9e3ad0b15540.woff",
-      "publicPath": "/static/office/js/71b9c22e9e3ad0b15540.woff"
-    },
-    "7bd18b2c1b3b6348f5d9.woff2": {
-      "name": "7bd18b2c1b3b6348f5d9.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/7bd18b2c1b3b6348f5d9.woff2",
-      "publicPath": "/static/office/js/7bd18b2c1b3b6348f5d9.woff2"
-    },
-    "e96ce09ca2675591998e.eot": {
-      "name": "e96ce09ca2675591998e.eot",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/e96ce09ca2675591998e.eot",
-      "publicPath": "/static/office/js/e96ce09ca2675591998e.eot"
-    },
-    "ab3a26dbe32202ffc7ac.otf": {
-      "name": "ab3a26dbe32202ffc7ac.otf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/ab3a26dbe32202ffc7ac.otf",
-      "publicPath": "/static/office/js/ab3a26dbe32202ffc7ac.otf"
-    },
-    "49d9cfe50c4c7c819171.svg": {
-      "name": "49d9cfe50c4c7c819171.svg",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/49d9cfe50c4c7c819171.svg",
-      "publicPath": "/static/office/js/49d9cfe50c4c7c819171.svg"
-    },
-    "3cedacfdf8acbc01f347.ttf": {
-      "name": "3cedacfdf8acbc01f347.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/3cedacfdf8acbc01f347.ttf",
-      "publicPath": "/static/office/js/3cedacfdf8acbc01f347.ttf"
-    },
-    "aa5f111c018954adc71b.woff": {
-      "name": "aa5f111c018954adc71b.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/aa5f111c018954adc71b.woff",
-      "publicPath": "/static/office/js/aa5f111c018954adc71b.woff"
-    },
-    "a498864a784372d6607e.woff2": {
-      "name": "a498864a784372d6607e.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/a498864a784372d6607e.woff2",
-      "publicPath": "/static/office/js/a498864a784372d6607e.woff2"
+    "bundle.96197fba8f7c17a88012.js": {
+      "name": "bundle.96197fba8f7c17a88012.js",
+      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/bundle.96197fba8f7c17a88012.js",
+      "publicPath": "/static/office/js/bundle.96197fba8f7c17a88012.js"
     },
     "../img/app_store.svg": {
       "name": "../img/app_store.svg",
@@ -569,7 +299,7 @@
   },
   "chunks": {
     "main": [
-      "bundle.4da149af5ec028929574.js"
+      "bundle.96197fba8f7c17a88012.js"
     ]
   },
   "publicPath": "/static/office/js/"

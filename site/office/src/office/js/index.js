@@ -7,7 +7,7 @@ import { setupCalendar } from "./calendar";
 import "../css/index.scss";
 import { handleScrolling } from "./scrolling";
 import { setupApp } from "./app";
-import { Presentation } from "./presentation";
+// import { Presentation } from "./presentation";
 
 setupApp();
 setupRedirect();
@@ -16,4 +16,4 @@ voice();
 setupCalendar();
 handleScrolling();
 setupApp();
-Presentation();
+// Presentation();
