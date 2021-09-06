@@ -271,10 +271,10 @@
       "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/fa-thin-100.ttf",
       "publicPath": "/static/office/js/fonts/fa-thin-100.ttf"
     },
-    "bundle.96197fba8f7c17a88012.js": {
-      "name": "bundle.96197fba8f7c17a88012.js",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/bundle.96197fba8f7c17a88012.js",
-      "publicPath": "/static/office/js/bundle.96197fba8f7c17a88012.js"
+    "bundle.2e8aa90ed9e3cfc32326.js": {
+      "name": "bundle.2e8aa90ed9e3cfc32326.js",
+      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/bundle.2e8aa90ed9e3cfc32326.js",
+      "publicPath": "/static/office/js/bundle.2e8aa90ed9e3cfc32326.js"
     },
     "../img/app_store.svg": {
       "name": "../img/app_store.svg",
@@ -299,7 +299,7 @@
   },
   "chunks": {
     "main": [
-      "bundle.96197fba8f7c17a88012.js"
+      "bundle.2e8aa90ed9e3cfc32326.js"
     ]
   },
   "publicPath": "/static/office/js/"
