@@ -20,7 +20,7 @@ module.exports = function(src, options = {}) {
 
   walker.walk(src, function(node) {
     if (!types.isTopLevelRequire(node) &&
-        !types.isDefine(node) &&
+        !types.isDefineAMD(node) &&
         !types.isRequire(node)) {
       return;
     }

@@ -238,7 +238,7 @@ class Logger extends Transform {
           message: msg
         });
 
-        if (meta.message) info.message += `${meta.message}`;
+        if (meta.message) info.message = `${info.message} ${meta.message}`;
         if (meta.stack) info.stack = meta.stack;
 
         this.write(info);
@@ -373,6 +373,7 @@ class Logger extends Transform {
    * @returns {Logger} - TODO: add return description.
    */
   remove(transport) {
+    if (!transport) return this;
     let target = transport;
     if (!isStream(transport) || transport.log.length > 2) {
       target = this.transports.filter(
@@ -622,6 +623,10 @@ class Logger extends Transform {
    */
   _onEvent(event, transport) {
     function transportEvent(err) {
+      // https://github.com/winstonjs/winston/issues/1364
+      if (event === 'error' && !this.transports.includes(transport)) {
+        this.add(transport);
+      }
       this.emit(event, err, transport);
     }
 

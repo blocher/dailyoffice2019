@@ -1,0 +1,22 @@
+{
+  "id": "sapper",
+  "name": "Sapper",
+  "category": "frontend_framework",
+  "detect": {
+    "npmDependencies": ["sapper"],
+    "excludedNpmDependencies": [],
+    "configFiles": []
+  },
+  "dev": {
+    "command": "sapper dev",
+    "port": 3000,
+    "pollingStrategies": [{ "name": "TCP" }, { "name": "HTTP" }]
+  },
+  "build": {
+    "command": "sapper export",
+    "directory": "__sapper__/export"
+  },
+  "staticAssetsDirectory": "static",
+  "env": {},
+  "plugins": []
+}

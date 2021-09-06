@@ -1,0 +1,21 @@
+{
+  "id": "vue",
+  "name": "Vue.js",
+  "category": "frontend_framework",
+  "detect": {
+    "npmDependencies": ["@vue/cli-service"],
+    "excludedNpmDependencies": [],
+    "configFiles": []
+  },
+  "dev": {
+    "command": "vue-cli-service serve",
+    "port": 8080,
+    "pollingStrategies": [{ "name": "TCP" }, { "name": "HTTP" }]
+  },
+  "build": {
+    "command": "vue-cli-service build",
+    "directory": "dist"
+  },
+  "env": {},
+  "plugins": []
+}

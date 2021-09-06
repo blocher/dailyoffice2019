@@ -304,9 +304,16 @@ ZipArchiveEntry.prototype.setMethod = function(method) {
  * Sets the name of the entry.
  *
  * @param name
+ * @param prependSlash
  */
-ZipArchiveEntry.prototype.setName = function(name) {
-  name = normalizePath(name, false).replace(/^\w+:/, '').replace(/^(\.\.\/|\/)+/, '');
+ZipArchiveEntry.prototype.setName = function(name, prependSlash = false) {
+  name = normalizePath(name, false)
+    .replace(/^\w+:/, '')
+    .replace(/^(\.\.\/|\/)+/, '');
+
+  if (prependSlash) {
+    name = `/${name}`;
+  }
 
   if (Buffer.byteLength(name) !== name.length) {
     this.getGeneralPurposeBit().useUTF8ForNames(true);

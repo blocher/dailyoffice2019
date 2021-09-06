@@ -201,10 +201,10 @@ module.exports = class Node {
   positionBy (opts) {
     let pos = this.source.start;
 
-    if (opts.index) {
+    if (Object(opts).index) {
       pos = this.positionInside(opts.index);
     }
-    else if (opts.word) {
+    else if (Object(opts).word) {
       let index = this.toString().indexOf(opts.word);
       if (index !== -1) pos = this.positionInside(index);
     }

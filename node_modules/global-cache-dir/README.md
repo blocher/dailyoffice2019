@@ -36,7 +36,8 @@ npm install global-cache-dir
 
 ## globalCacheDir(name)
 
-`name`: `string`<br> _Returns_: `Promise<string>`
+`name`: `string`\
+_Returns_: `Promise<string>`
 
 `name` must only use digits, letters or dashes.
 

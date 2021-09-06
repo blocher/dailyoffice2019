@@ -1,6 +1,6 @@
 {
   "name": "detective-es6",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Get the dependencies of an es6 module",
   "main": "index.js",
   "scripts": {

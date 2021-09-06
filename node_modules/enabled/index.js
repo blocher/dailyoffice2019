@@ -1,30 +1,18 @@
 'use strict';
 
-var env = require('env-variable');
-
 /**
- * Checks if a given namespace is allowed by the environment variables.
+ * Checks if a given namespace is allowed by the given variable.
  *
  * @param {String} name namespace that should be included.
- * @param {Array} variables
- * @returns {Boolean}
- * @api public
+ * @param {String} variable Value that needs to be tested.
+ * @returns {Boolean} Indication if namespace is enabled.
+ * @public
  */
-module.exports = function enabled(name, variables) {
-  var envy = env()
-    , variable
-    , i = 0;
-
-  variables = variables || ['diagnostics', 'debug'];
-
-  for (; i < variables.length; i++) {
-    if ((variable = envy[variables[i]])) break;
-  }
-
+module.exports = function enabled(name, variable) {
   if (!variable) return false;
 
-  variables = variable.split(/[\s,]+/);
-  i = 0;
+  var variables = variable.split(/[\s,]+/)
+    , i = 0;
 
   for (; i < variables.length; i++) {
     variable = variables[i].replace('*', '.*?');

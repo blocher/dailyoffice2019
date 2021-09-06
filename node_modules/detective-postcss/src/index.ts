@@ -91,8 +91,7 @@ namespace detective {
         url: boolean;
     }
 
-    export class MalformedCssError {}
-    MalformedCssError.prototype = Object.create(Error.prototype);
+    export class MalformedCssError extends Error {}
 }
 
 export = detective;

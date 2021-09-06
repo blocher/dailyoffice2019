@@ -1,0 +1,21 @@
+{
+  "id": "angular",
+  "name": "Angular",
+  "category": "frontend_framework",
+  "detect": {
+    "npmDependencies": ["@angular/cli"],
+    "excludedNpmDependencies": [],
+    "configFiles": ["angular.json"]
+  },
+  "dev": {
+    "command": "ng serve",
+    "port": 4200,
+    "pollingStrategies": [{ "name": "TCP" }, { "name": "HTTP" }]
+  },
+  "build": {
+    "command": "ng build --prod",
+    "directory": "dist/"
+  },
+  "env": {},
+  "plugins": []
+}

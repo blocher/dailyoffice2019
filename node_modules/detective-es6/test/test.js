@@ -104,4 +104,18 @@ describe('detective-es6', function() {
     assert.deepEqual(depsWithTypes, ['mylib']);
     assert.deepEqual(depsWithoutTypes, []);
   });
+
+  it('respects settings for async imports', function() {
+    const source = 'import("myLib")';
+    const depsWithAsync = detective(source);
+    const depsWithoutAsync = detective(source, {skipAsyncImports: true});
+    assert.deepEqual(depsWithAsync, ['myLib']);
+    assert.deepEqual(depsWithoutAsync, []);
+  });
+
+  it('respects settings for async imports with multiple imports', function() {
+    const source = 'import("myLib");\nimport foo from \'foo\'';
+    const depsWithoutAsync = detective(source, {skipAsyncImports: true});
+    assert.deepEqual(depsWithoutAsync, ['foo']);
+  });
 });

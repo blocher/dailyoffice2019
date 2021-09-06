@@ -16,11 +16,11 @@
   "author": "Netlify",
   "license": "MIT",
   "dependencies": {
-    "apollo-link-http": "^1.5.14",
-    "apollo-link-context": "^1.0.17",
-    "apollo-server-lambda": "^2.4.8",
+    "apollo-link-http": "^1.5.17",
+    "apollo-link-context": "^1.0.20",
+    "apollo-server-lambda": "^2.18.2",
     "graphql": "^14.1.1",
-    "graphql-tools": "^4.0.4",
-    "node-fetch": "^2.3.0"
+    "graphql-tools": "^4.0.8",
+    "node-fetch": "^2.6.1"
   }
 }

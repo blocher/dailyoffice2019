@@ -23,13 +23,11 @@ parser.atword = function (opts) {
 };
 
 parser.colon = function (opts) {
-  opts.value = opts.value || ':';
-  return new Colon(opts);
+  return new Colon(Object.assign({ value: ':' }, opts));
 };
 
 parser.comma = function (opts) {
-  opts.value = opts.value || ',';
-  return new Comma(opts);
+  return new Comma(Object.assign({ value: ',' }, opts));
 };
 
 parser.comment = function (opts) {
@@ -49,13 +47,11 @@ parser.operator = function (opts) {
 };
 
 parser.paren = function (opts) {
-  opts.value = opts.value || '(';
-  return new Paren(opts);
+  return new Paren(Object.assign({ value: '(' }, opts));
 };
 
 parser.string = function (opts) {
-  opts.quote = opts.quote || '\'';
-  return new Str(opts);
+  return new Str(Object.assign({ quote: '\'' }, opts));
 };
 
 parser.value = function (opts) {

@@ -1,0 +1,21 @@
+{
+  "id": "hugo",
+  "name": "Hugo",
+  "category": "static_site_generator",
+  "detect": {
+    "npmDependencies": [],
+    "excludedNpmDependencies": [],
+    "configFiles": ["config.toml", "config.yaml"]
+  },
+  "dev": {
+    "command": "hugo server -w",
+    "port": 1313,
+    "pollingStrategies": [{ "name": "TCP" }, { "name": "HTTP" }]
+  },
+  "build": {
+    "command": "hugo",
+    "directory": "public"
+  },
+  "env": {},
+  "plugins": []
+}

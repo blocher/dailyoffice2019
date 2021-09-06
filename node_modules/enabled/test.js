@@ -4,60 +4,36 @@ describe('enabled', function () {
   var assume = require('assume')
     , enabled = require('./');
 
-  beforeEach(function () {
-    process.env.DEBUG = '';
-    process.env.DIAGNOSTICS = '';
-  });
-
-  it('uses the `debug` env', function () {
-    process.env.DEBUG = 'bigpipe';
-
-    assume(enabled('bigpipe')).to.be.true();
-    assume(enabled('false')).to.be.false();
-  });
-
-  it('uses the `diagnostics` env', function () {
-    process.env.DIAGNOSTICS = 'bigpipe';
-
-    assume(enabled('bigpipe')).to.be.true();
-    assume(enabled('false')).to.be.false();
-  });
-
   it('supports wildcards', function () {
-    process.env.DEBUG = 'b*';
+    var variable = 'b*';
 
-    assume(enabled('bigpipe')).to.be.true();
-    assume(enabled('bro-fist')).to.be.true();
-    assume(enabled('ro-fist')).to.be.false();
+    assume(enabled('bigpipe', variable)).to.be.true();
+    assume(enabled('bro-fist', variable)).to.be.true();
+    assume(enabled('ro-fist', variable)).to.be.false();
   });
 
   it('is disabled by default', function () {
-    process.env.DEBUG = '';
-
-    assume(enabled('bigpipe')).to.be.false();
-
-    process.env.DEBUG = 'bigpipe';
-
-    assume(enabled('bigpipe')).to.be.true();
+    assume(enabled('bigpipe', '')).to.be.false();
+    assume(enabled('bigpipe', 'bigpipe')).to.be.true();
   });
 
   it('can ignore loggers using a -', function () {
-    process.env.DEBUG = 'bigpipe,-primus,sack,-other';
+    var variable = 'bigpipe,-primus,sack,-other';
 
-    assume(enabled('bigpipe')).to.be.true();
-    assume(enabled('sack')).to.be.true();
-    assume(enabled('primus')).to.be.false();
-    assume(enabled('other')).to.be.false();
-    assume(enabled('unknown')).to.be.false();
+    assume(enabled('bigpipe', variable)).to.be.true();
+    assume(enabled('sack', variable)).to.be.true();
+    assume(enabled('primus', variable)).to.be.false();
+    assume(enabled('other', variable)).to.be.false();
+    assume(enabled('unknown', variable)).to.be.false();
   });
 
   it('supports multiple ranges', function () {
-    process.env.DEBUG = 'bigpipe*,primus*';
+    var variable = 'bigpipe*,primus*';
 
-    assume(enabled('bigpipe:')).to.be.true();
-    assume(enabled('bigpipes')).to.be.true();
-    assume(enabled('primus:')).to.be.true();
-    assume(enabled('primush')).to.be.true();
-    assume(enabled('unknown')).to.be.false();
+    assume(enabled('bigpipe:', variable)).to.be.true();
+    assume(enabled('bigpipes', variable)).to.be.true();
+    assume(enabled('primus:', variable)).to.be.true();
+    assume(enabled('primush', variable)).to.be.true();
+    assume(enabled('unknown', variable)).to.be.false();
   });
 });

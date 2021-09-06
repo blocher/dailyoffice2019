@@ -26,6 +26,7 @@ module.exports = class Http extends TransportStream {
   constructor(options = {}) {
     super(options);
 
+    this.options = options;
     this.name = options.name || 'http';
     this.ssl = !!options.ssl;
     this.host = options.host || 'localhost';
@@ -177,13 +178,18 @@ module.exports = class Http extends TransportStream {
     delete options.path;
 
     // Prepare options for outgoing HTTP request
+    const headers = Object.assign({}, this.headers);
+    if (auth && auth.bearer) {
+      headers.Authorization = `Bearer ${auth.bearer}`;
+    }
     const req = (this.ssl ? https : http).request({
+      ...this.options,
       method: 'POST',
       host: this.host,
       port: this.port,
       path: `/${path.replace(/^\//, '')}`,
-      headers: this.headers,
-      auth: auth ? (`${auth.username}:${auth.password}`) : '',
+      headers: headers,
+      auth: (auth && auth.username && auth.password) ? (`${auth.username}:${auth.password}`) : '',
       agent: this.agent
     });
 

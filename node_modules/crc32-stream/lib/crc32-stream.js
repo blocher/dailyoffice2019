@@ -10,7 +10,7 @@
 
 const {Transform} = require('readable-stream');
 
-const {crc32} = require('crc');
+const crc32 = require('crc-32');
 
 class CRC32Stream extends Transform {
   constructor(options) {
@@ -23,7 +23,7 @@ class CRC32Stream extends Transform {
 
   _transform(chunk, encoding, callback) {
     if (chunk) {
-      this.checksum = crc32(chunk, this.checksum);
+      this.checksum = crc32.buf(chunk, this.checksum) >>> 0;
       this.rawSize += chunk.length;
     }
 

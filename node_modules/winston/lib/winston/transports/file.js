@@ -15,7 +15,7 @@ const zlib = require('zlib');
 const { MESSAGE } = require('triple-beam');
 const { Stream, PassThrough } = require('readable-stream');
 const TransportStream = require('winston-transport');
-const debug = require('diagnostics')('winston:file');
+const debug = require('@dabh/diagnostics')('winston:file');
 const os = require('os');
 const tailFile = require('../tail-file');
 
@@ -344,9 +344,6 @@ module.exports = class File extends TransportStream {
 
       // 'asc' or 'desc'
       options.order = options.order || 'desc';
-
-      // which fields to select
-      options.fields = options.fields;
 
       return options;
     }

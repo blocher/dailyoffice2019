@@ -1,0 +1,21 @@
+{
+  "id": "middleman",
+  "name": "Middleman",
+  "category": "static_site_generator",
+  "detect": {
+    "npmDependencies": [],
+    "excludedNpmDependencies": [],
+    "configFiles": ["config.rb"]
+  },
+  "dev": {
+    "command": "bundle exec middleman server",
+    "port": 4567,
+    "pollingStrategies": [{ "name": "TCP" }, { "name": "HTTP" }]
+  },
+  "build": {
+    "command": "bundle exec middleman build",
+    "directory": "build"
+  },
+  "env": {},
+  "plugins": []
+}

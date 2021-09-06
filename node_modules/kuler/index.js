@@ -1,7 +1,5 @@
 'use strict';
 
-var colornames = require('colornames');
-
 /**
  * Kuler: Color text using CSS colors
  *
@@ -110,15 +108,6 @@ Kuler.prototype.reset = function reset() {
  * @api public
  */
 Kuler.prototype.style = function style(color) {
-  //
-  // We've been supplied a CSS color name instead of a hex color format so we
-  // need to transform it to proper CSS color and continue with our execution
-  // flow.
-  //
-  if (!/^#?(?:[0-9a-fA-F]{3}){1,2}$/.test(color)) {
-    color = colornames(color);
-  }
-
   return this.prefix +'38;5;'+ this.rgb.apply(this, this.hex(color)) + this.suffix + this.text + this.reset();
 };
 

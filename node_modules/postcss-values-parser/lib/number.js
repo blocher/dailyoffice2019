@@ -7,7 +7,7 @@ class NumberNode extends Node {
   constructor (opts) {
     super(opts);
     this.type = 'number';
-    this.unit = opts.unit || '';
+    this.unit = Object(opts).unit || '';
   }
 
   toString () {

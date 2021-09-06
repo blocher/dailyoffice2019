@@ -14,8 +14,10 @@ import * as Transports from './lib/winston/transports/index';
 declare namespace winston {
   // Hoisted namespaces from other modules
   export import format = logform.format;
+  export import Logform = logform;
   export import config = Config;
   export import transports = Transports;
+  export import transport = Transport;
 
   interface ExceptionHandler {
     logger: Logger;
@@ -44,7 +46,7 @@ declare namespace winston {
 
   interface Profiler {
     logger: Logger;
-    start: Date;
+    start: Number;
     done(info?: any): boolean;
   }
 
@@ -56,17 +58,19 @@ declare namespace winston {
     [optionName: string]: any;
   }
 
-  interface LogMethod {
+   interface LogMethod {
     (level: string, message: string, callback: LogCallback): Logger;
     (level: string, message: string, meta: any, callback: LogCallback): Logger;
     (level: string, message: string, ...meta: any[]): Logger;
     (entry: LogEntry): Logger;
+    (level: string, message: any): Logger;
   }
 
   interface LeveledLogMethod {
     (message: string, callback: LogCallback): Logger;
     (message: string, meta: any, callback: LogCallback): Logger;
     (message: string, ...meta: any[]): Logger;
+    (message: any): Logger;
     (infoObject: object): Logger;
   }
 
@@ -78,6 +82,7 @@ declare namespace winston {
     exitOnError?: Function | boolean;
     defaultMeta?: any;
     transports?: Transport[] | Transport;
+    handleExceptions?: boolean;
     exceptionHandlers?: any;
   }
 
@@ -90,6 +95,7 @@ declare namespace winston {
     exceptions: ExceptionHandler;
     profilers: object;
     exitOnError: Function | boolean;
+    defaultMeta?: any;
 
     log: LogMethod;
     add(transport: Transport): Logger;
@@ -124,8 +130,16 @@ declare namespace winston {
     profile(id: string | number, meta?: LogEntry): Logger;
 
     configure(options: LoggerOptions): void;
-    
+
     child(options: Object): Logger;
+
+    isLevelEnabled(level: string): boolean;
+    isErrorEnabled(): boolean;
+    isWarnEnabled(): boolean;
+    isInfoEnabled(): boolean;
+    isVerboseEnabled(): boolean;
+    isDebugEnabled(): boolean;
+    isSillyEnabled(): boolean;
 
     new(options?: LoggerOptions): Logger;
   }
@@ -169,6 +183,7 @@ declare namespace winston {
   let startTimer: () => Profiler;
   let profile: (id: string | number) => Logger;
   let configure: (options: LoggerOptions) => void;
+  let child: (options: Object) => Logger;
   let level: string;
   let exceptions: ExceptionHandler;
   let exitOnError: Function | boolean;

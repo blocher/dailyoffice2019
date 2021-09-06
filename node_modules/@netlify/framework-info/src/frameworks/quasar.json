@@ -1,0 +1,21 @@
+{
+  "id": "quasar",
+  "name": "Quasar",
+  "category": "frontend_framework",
+  "detect": {
+    "npmDependencies": ["@quasar/app"],
+    "excludedNpmDependencies": [],
+    "configFiles": []
+  },
+  "dev": {
+    "command": "quasar dev -p 8081",
+    "port": 8081,
+    "pollingStrategies": [{ "name": "TCP" }, { "name": "HTTP" }]
+  },
+  "build": {
+    "command": "quasar build",
+    "directory": "dist/spa"
+  },
+  "env": {},
+  "plugins": []
+}

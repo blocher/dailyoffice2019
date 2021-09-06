@@ -27,7 +27,7 @@ repos:
 
 
   - repo: https://github.com/psf/black
-    rev: 21.5b1
+    rev: 21.8b0
     hooks:
       - id: black
         files: ^site/
@@ -35,21 +35,21 @@ repos:
         args: [--target-version=py39, --line-length=119]
 
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v7.27.0
+    rev: v7.32.0
     hooks:
       - id: eslint
         files: ^site/
         exclude: ^site/node_modules/|^site/office/src/office/js/fontawesome/|^site/office/src/office/css/fontawesome/
         args: [--fix --ext=.js --config=site/.eslintrc]
         additional_dependencies:
-          - eslint@7.27.0
+          - eslint@7.32.0
           - eslint-config-prettier@8.3.0
-          - "@babel/core@7.14.3"
-          - "@babel/eslint-parser@7.14.4"
-          - "@babel/preset-env@7.14.4"
-          - "@babel/preset-typescript@7.13.0"
-          - eslint-plugin-prettier@3.4.0
-          - prettier@2.3.0
+          - "@babel/core@7.15.5"
+          - "@babel/eslint-parser@7.15.4"
+          - "@babel/preset-env@7.15.4"
+          - "@babel/preset-typescript@7.15.0"
+          - eslint-plugin-prettier@4.0.0
+          - prettier@2.3.2
 
   - repo: https://github.com/awebdeveloper/pre-commit-stylelint
     rev: 0.0.2
@@ -57,4 +57,4 @@ repos:
     -   id: stylelint
         args: [--fix]
         exclude: ^site/node_modules/|^site/office/src/office/js/fontawesome/|^site/office/src/office/css/fontawesome/
-        additional_dependencies: ['stylelint@13.13.1', 'stylelint-config-standard@22.0.0', 'stylelint-scss@3.19.0']
+        additional_dependencies: ['stylelint@13.13.1', 'stylelint-config-standard@22.0.0', 'stylelint-scss@3.20.1']

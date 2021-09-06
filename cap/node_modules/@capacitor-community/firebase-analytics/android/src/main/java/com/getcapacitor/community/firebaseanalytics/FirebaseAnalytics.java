@@ -2,11 +2,14 @@ package com.getcapacitor.community.firebaseanalytics;
 
 import android.Manifest;
 import android.os.Bundle;
+import androidx.annotation.NonNull;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.NativePlugin;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import java.util.Iterator;
 import org.json.JSONObject;
 
@@ -53,6 +56,7 @@ public class FirebaseAnalytics extends Plugin {
 
       String userId = call.getString("userId");
       mFirebaseAnalytics.setUserId(userId);
+      call.success();
     } catch (Exception ex) {
       call.error(ex.getLocalizedMessage());
     }
@@ -96,26 +100,30 @@ public class FirebaseAnalytics extends Plugin {
    * @param call - instanceId: current instance if of the app
    */
   @PluginMethod
-  public void getAppInstanceId(PluginCall call) {
-    try {
-      if (mFirebaseAnalytics == null) {
-        call.error(MISSING_REF_MSSG);
-        return;
-      }
-
-      String instanceId = mFirebaseAnalytics.getAppInstanceId().toString();
-
-      if (instanceId.isEmpty()) {
-        call.error("failed to obtain app instance id");
-        return;
-      }
-
-      JSObject result = new JSObject();
-      result.put("instanceId", instanceId);
-      call.success(result);
-    } catch (Exception ex) {
-      call.error(ex.getLocalizedMessage());
+  public void getAppInstanceId(final PluginCall call) {
+    if (mFirebaseAnalytics == null) {
+      call.error(MISSING_REF_MSSG);
+      return;
     }
+    Task<String> task = mFirebaseAnalytics.getAppInstanceId();
+    task.addOnCompleteListener(new OnCompleteListener<String>() {
+        @Override
+        public void onComplete(@NonNull Task<String> task) {
+            if (task.isSuccessful()) {
+              String instanceId = task.getResult();
+              if (instanceId.isEmpty()) {
+                call.error("failed to obtain app instance id");
+              } else {
+                JSObject result = new JSObject();
+                result.put("instanceId", instanceId);
+                call.success(result);
+              }
+            } else {
+                Exception exception = task.getException();
+                call.error(exception.getLocalizedMessage());
+            }
+        }
+    });
   }
 
   /**
@@ -146,10 +154,18 @@ public class FirebaseAnalytics extends Plugin {
 
             @Override
             public void run() {
-              mFirebaseAnalytics.setCurrentScreen(
-                bridge.getActivity(),
-                screenName,
+              Bundle bundle = new Bundle();
+              bundle.putString(
+                com.google.firebase.analytics.FirebaseAnalytics.Param.SCREEN_NAME,
+                screenName
+              );
+              bundle.putString(
+                com.google.firebase.analytics.FirebaseAnalytics.Param.SCREEN_CLASS,
                 nameOverride
+              );
+              mFirebaseAnalytics.logEvent(
+                com.google.firebase.analytics.FirebaseAnalytics.Event.SCREEN_VIEW,
+                bundle
               );
               call.success();
             }

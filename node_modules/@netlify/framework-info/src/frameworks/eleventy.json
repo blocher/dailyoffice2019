@@ -1,0 +1,21 @@
+{
+  "id": "eleventy",
+  "name": "Eleventy",
+  "category": "static_site_generator",
+  "detect": {
+    "npmDependencies": ["@11ty/eleventy"],
+    "excludedNpmDependencies": [],
+    "configFiles": [".eleventy.js"]
+  },
+  "dev": {
+    "command": "eleventy --serve",
+    "port": 8080,
+    "pollingStrategies": [{ "name": "TCP" }, { "name": "HTTP" }]
+  },
+  "build": {
+    "command": "eleventy",
+    "directory": "_site"
+  },
+  "env": {},
+  "plugins": []
+}

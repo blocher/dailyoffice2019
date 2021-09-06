@@ -1,12 +1,11 @@
 # enabled
 
-[![From bigpipe.io][from]](http://bigpipe.io)[![Version npm][version]](http://browsenpm.org/package/enabled)[![Build Status][build]](https://travis-ci.org/bigpipe/enabled)[![Dependencies][david]](https://david-dm.org/bigpipe/enabled)[![Coverage Status][cover]](https://coveralls.io/r/bigpipe/enabled?branch=master)
+[![Version npm][version]](http://browsenpm.org/package/enabled)[![Build Status][build]](https://travis-ci.org/3rd-Eden/enabled)[![Dependencies][david]](https://david-dm.org/3rd-Eden/enabled)[![Coverage Status][cover]](https://coveralls.io/r/3rd-Eden/enabled?branch=master)
 
-[from]: https://img.shields.io/badge/from-bigpipe.io-9d8dff.svg?style=flat-square
 [version]: http://img.shields.io/npm/v/enabled.svg?style=flat-square
-[build]: http://img.shields.io/travis/bigpipe/enabled/master.svg?style=flat-square
-[david]: https://img.shields.io/david/bigpipe/enabled.svg?style=flat-square
-[cover]: http://img.shields.io/coveralls/bigpipe/enabled/master.svg?style=flat-square
+[build]: http://img.shields.io/travis/3rd-Eden/enabled/master.svg?style=flat-square
+[david]: https://img.shields.io/david/3rd-Eden/enabled.svg?style=flat-square
+[cover]: http://img.shields.io/coveralls/3rd-Eden/enabled/master.svg?style=flat-square
 
 Enabled is a small utility that can check if certain namespace are enabled by
 environment variables which are automatically transformed to regular expressions
@@ -34,30 +33,36 @@ var enabled = require('enabled');
 The returned `enabled` function accepts 2 arguments.
 
 1. `name` **string**, The namespace that should match.
-2. `variables` **array**, **optional**, Names of the `env` variable that it
-   should use for matching. If no argument is supplied it will default to
-   `diagnostics` and `debug`.
+2. `pattern` **string**, The pattern that the name should satisfy
+
+It will return a boolean indication of a match.
 
 #### Examples
 
 ```js
-process.env.DEBUG = 'foo';
-enabled('foo') // true;
-enabled('bar') // false;
+var flag = 'foo';
 
-// can use wildcards
-process.env.DEBUG = 'foob*';
+enabled('foo', flag); // true;
+enabled('bar', flag); // false;
 
-enabled('foobar') // true;
-enabled('barfoo') // false;
+//
+// Use * for wild cards.
+//
+var wildcard = 'foob*';
 
-process.env.DEBUG = 'foobar,-shizzle,nizzle';
+enabled('foobar', wildcard); // true;
+enabled('barfoo', wildcard); // false;
 
-enabled('foobar') // true;
-enabled('shizzle-my-nizzle') // false;
-enabled('nizzle') // true;
+//
+// Use - to ignore.
+//
+var ignore = 'foobar,-shizzle,nizzle';
+
+enabled('foobar', ignore); // true;
+enabled('shizzle-my-nizzle', ignore); // false;
+enabled('nizzle', ignore); // true;
 ```
 
 ## License
 
-MIT
+[MIT](./LICENSE)

@@ -37,6 +37,9 @@ module.exports = function(src, options) {
         }
         break;
       case 'CallExpression':
+        if (options && options.skipAsyncImports) {
+          break;
+        }
         if (node.callee.type === 'Import' && node.arguments.length) {
           dependencies.push(node.arguments[0].value);
         }

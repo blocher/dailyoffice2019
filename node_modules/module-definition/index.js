@@ -27,7 +27,7 @@ function fromSource(source) {
 
   // Walker accepts as AST to avoid reparsing
   walker.walk(source, function(node) {
-    if (types.isDefine(node)) {
+    if (types.isDefineAMD(node)) {
       hasDefine = true;
     }
 

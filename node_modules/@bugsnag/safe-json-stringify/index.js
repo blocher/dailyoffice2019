@@ -40,7 +40,7 @@ function isDescendent (paths, path) {
 
 function shouldRedact (patterns, key) {
   for (var i = 0, len = patterns.length; i < len; i++) {
-    if (typeof patterns[i] === 'string' && patterns[i] === key) return true
+    if (typeof patterns[i] === 'string' && patterns[i].toLowerCase() === key.toLowerCase()) return true
     if (patterns[i] && typeof patterns[i].test === 'function' && patterns[i].test(key)) return true
   }
   return false

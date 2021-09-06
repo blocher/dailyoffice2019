@@ -1,0 +1,21 @@
+{
+  "id": "brunch",
+  "name": "Brunch",
+  "category": "build_tool",
+  "detect": {
+    "npmDependencies": ["brunch"],
+    "excludedNpmDependencies": [],
+    "configFiles": ["brunch-config.js"]
+  },
+  "dev": {
+    "command": "brunch watch --server",
+    "port": 3333,
+    "pollingStrategies": [{ "name": "TCP" }, { "name": "HTTP" }]
+  },
+  "build": {
+    "command": "brunch build",
+    "directory": "public"
+  },
+  "env": {},
+  "plugins": []
+}

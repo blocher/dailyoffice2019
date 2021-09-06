@@ -15,73 +15,62 @@ $ npm install dir-glob
 ```js
 const dirGlob = require('dir-glob');
 
-dirGlob(['index.js', 'test.js', 'fixtures']).then(files => {
-	console.log(files);
+(async () => {
+	console.log(await dirGlob(['index.js', 'test.js', 'fixtures']));
 	//=> ['index.js', 'test.js', 'fixtures/**']
-});
 
-dirGlob(['index.js', 'inner_folder'], {
-	cwd: 'fixtures'
-}).then(files => {
-	console.log(files);
+	console.log(await dirGlob(['index.js', 'inner_folder'], {cwd: 'fixtures'}));
 	//=> ['index.js', 'inner_folder/**']
-});
 
-dirGlob(['lib/**', 'fixtures'], {
-	files: ['test', 'unicorn']
-	extensions: ['js']
-}).then(files => {
-	console.log(files);
+	console.log(await dirGlob(['lib/**', 'fixtures'], {
+		files: ['test', 'unicorn']
+		extensions: ['js']
+	}));
 	//=> ['lib/**', 'fixtures/**/test.js', 'fixtures/**/unicorn.js']
-});
 
-dirGlob(['lib/**', 'fixtures'], {
-	files: ['test', 'unicorn', '*.jsx'],
-	extensions: ['js', 'png']
-}).then(files => {
-	console.log(files);
+	console.log(await dirGlob(['lib/**', 'fixtures'], {
+		files: ['test', 'unicorn', '*.jsx'],
+		extensions: ['js', 'png']
+	}));
 	//=> ['lib/**', 'fixtures/**/test.{js,png}', 'fixtures/**/unicorn.{js,png}', 'fixtures/**/*.jsx']
-});
+})();
 ```
 
 
 ## API
 
-### dirGlob(input, [options])
+### dirGlob(input, options?)
 
-Returns a `Promise` for an array of glob strings.
+Returns a `Promise<string[]>` with globs.
 
-### dirGlob.sync(input, [options])
+### dirGlob.sync(input, options?)
 
-Returns an array of glob strings.
+Returns a `string[]` with globs.
 
 #### input
 
-Type: `Array` `string`
+Type: `string | string[]`
 
-A `string` or an `Array` of paths.
+Paths.
 
 #### options
 
+Type: `object`
+
 ##### extensions
 
-Type: `Array`
+Type: `string[]`
 
 Append extensions to the end of your globs.
 
 ##### files
 
-Type: `Array`
+Type: `string[]`
 
 Only glob for certain files.
 
 ##### cwd
 
-Type: `string`
+Type: `string[]`
 
 Test in specific directory.
-
-
-## License
-
-MIT © [Kevin Mårtensson](https://github.com/kevva)

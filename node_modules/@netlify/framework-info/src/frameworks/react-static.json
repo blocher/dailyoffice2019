@@ -1,0 +1,21 @@
+{
+  "id": "react-static",
+  "name": "React Static",
+  "category": "static_site_generator",
+  "detect": {
+    "npmDependencies": ["react-static"],
+    "excludedNpmDependencies": [],
+    "configFiles": ["static.config.js"]
+  },
+  "dev": {
+    "command": "react-static start",
+    "port": 3000,
+    "pollingStrategies": [{ "name": "TCP" }, { "name": "HTTP" }]
+  },
+  "build": {
+    "command": "react-static build",
+    "directory": "dist"
+  },
+  "env": {},
+  "plugins": []
+}

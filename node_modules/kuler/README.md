@@ -7,39 +7,30 @@ to not take advantage of this.
 
 ## Installation
 
+The package is released in the public npm registry and can be installed by
+running:
+
 ```
 npm install --save kuler
 ```
 
 ## Usage
 
-Kuler provides a really low level API as we all have different opinions on how
-to build and write coloring libraries. To use it you first have to require it:
+To color a string simply pass it the string you want to have colored as first
+argument and the color as hex as second argument:
 
 ```js
 'use strict';
 
-var kuler = require('kuler');
-```
-
-There are two different API's that you can use. A constructor based API which
-uses a `.style` method to color your text:
-
-```js
-var str = kuler('foo').style('#FFF');
-```
-
-Or an alternate short version:
-
-```js
-var str = kuler('foo', 'red');
+const kuler = require('kuler');
+const str = kuler('foo', '#FF6600');
 ```
 
 The color code sequence is automatically terminated at the end of the string so
 the colors do no bleed to other pieces of text. So doing:
 
 ```js
-console.log(kuler('red', 'red'), 'normal');
+console.log(kuler('red', '#F00'), 'normal');
 ```
 
 Will work without any issues.

@@ -1,0 +1,21 @@
+{
+  "id": "gridsome",
+  "name": "Gridsome",
+  "category": "static_site_generator",
+  "detect": {
+    "npmDependencies": ["gridsome"],
+    "excludedNpmDependencies": [],
+    "configFiles": ["gridsome.config.js"]
+  },
+  "dev": {
+    "command": "gridsome develop",
+    "port": 8080,
+    "pollingStrategies": [{ "name": "TCP" }, { "name": "HTTP" }]
+  },
+  "build": {
+    "command": "gridsome build",
+    "directory": "dist"
+  },
+  "env": {},
+  "plugins": []
+}

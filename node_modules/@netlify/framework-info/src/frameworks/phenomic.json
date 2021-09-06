@@ -1,0 +1,21 @@
+{
+  "id": "phenomic",
+  "name": "Phenomic",
+  "category": "static_site_generator",
+  "detect": {
+    "npmDependencies": ["@phenomic/core"],
+    "excludedNpmDependencies": [],
+    "configFiles": []
+  },
+  "dev": {
+    "command": "phenomic start",
+    "port": 3333,
+    "pollingStrategies": [{ "name": "TCP" }, { "name": "HTTP" }]
+  },
+  "build": {
+    "command": "phenomic build",
+    "directory": "public"
+  },
+  "env": {},
+  "plugins": []
+}

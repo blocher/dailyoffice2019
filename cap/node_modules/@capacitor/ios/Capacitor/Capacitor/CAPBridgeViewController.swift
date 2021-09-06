@@ -424,6 +424,10 @@ public class CAPBridgeViewController: UIViewController, CAPBridgeDelegate, WKScr
   }
 
   func matchHost(host: String, pattern: String) -> Bool {
+    if pattern == "*" {
+      return true
+    }
+
     var host = host.split(separator: ".")
     var pattern = pattern.split(separator: ".")
 
@@ -558,10 +562,6 @@ public class CAPBridgeViewController: UIViewController, CAPBridgeDelegate, WKScr
     DispatchQueue.main.async {
       _ = self.getWebView().load(request)
     }
-  }
-
-  override open var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
-    return UIApplication.shared.statusBarOrientation
   }
 
   override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {

@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "netlify-cli": "^2.53.0",
-    "prettier": "^2.0.5"
+    "netlify-cli": "^6.8.5"
   }
 }

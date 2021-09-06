@@ -7,7 +7,7 @@ class Comment extends Node {
   constructor (opts) {
     super(opts);
     this.type = 'comment';
-    this.inline = opts.inline || false;
+    this.inline = Object(opts).inline || false;
   }
 
   toString () {

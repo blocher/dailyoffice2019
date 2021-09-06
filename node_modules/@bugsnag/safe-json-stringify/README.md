@@ -23,7 +23,7 @@ The API is the same as `JSON.stringify`, with an additional `options` object:
 stringify(obj, [optional replacer], [optional spaces], [options])
 ```
 
-- `options.redactedKeys`: a list of keys whose value should be replaced with the string `[REDACTED]`. Keys can be strings for exact matches, or regexes for partial or pattern matches. The array can contain a mixture of both.
+- `options.redactedKeys`: a list of keys whose value should be replaced with the string `[REDACTED]`. Keys can be strings for case insensitive matches, or regexes for partial or pattern matches. The array can contain a mixture of both.
 - `options.redactedPaths`: a list of paths where the `redactedKeys` option will be applied. The format of these strings are key names separated by `.` and if the property is an array, it is represented with `[]`. For example: `events.[].metaData`.
 
 ### Example

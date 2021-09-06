@@ -1,3 +1,10 @@
+## [1.3.3](https://github.com/oclif/errors/compare/v1.3.2...v1.3.3) (2020-06-29)
+
+
+### Bug Fixes
+
+* remove deprecation warning for render in exit error ([#44](https://github.com/oclif/errors/issues/44)) ([3b2e5fa](https://github.com/oclif/errors/commit/3b2e5fae7e9e9e9540044a2d4f7df435d4f2cffb))
+
 ## [1.2.2](https://github.com/oclif/errors/compare/v1.2.1...v1.2.2) (2018-10-13)
 
 

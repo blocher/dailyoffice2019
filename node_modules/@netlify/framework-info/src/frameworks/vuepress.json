@@ -1,0 +1,21 @@
+{
+  "id": "vuepress",
+  "name": "VuePress",
+  "category": "static_site_generator",
+  "detect": {
+    "npmDependencies": ["vuepress"],
+    "excludedNpmDependencies": [],
+    "configFiles": []
+  },
+  "dev": {
+    "command": "vuepress dev",
+    "port": 8080,
+    "pollingStrategies": [{ "name": "TCP" }, { "name": "HTTP" }]
+  },
+  "build": {
+    "command": "vuepress build",
+    "directory": ".vuepress/dist"
+  },
+  "env": {},
+  "plugins": []
+}

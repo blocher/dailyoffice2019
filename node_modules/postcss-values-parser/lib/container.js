@@ -61,10 +61,10 @@ class Container extends Node {
     }
 
     // allow users to pass a constructor, or node type string; eg. Word.
-    type = type.name && type.prototype ? type.name : type;
+    const isTypeCallable = typeof type === 'function';
 
     return this.walk((node, index) => {
-      if (node.type === type) {
+      if (isTypeCallable && node instanceof type || !isTypeCallable && node.type === type) {
         return callback.call(this, node, index);
       }
     });

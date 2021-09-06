@@ -35,7 +35,7 @@ const windowsRelease = release => {
 		let stdout;
 		try {
 			stdout = execa.sync('wmic', ['os', 'get', 'Caption']).stdout || '';
-		} catch (_) {
+		} catch {
 			stdout = execa.sync('powershell', ['(Get-CimInstance -ClassName Win32_OperatingSystem).caption']).stdout || '';
 		}
 

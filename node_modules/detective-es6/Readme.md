@@ -15,8 +15,13 @@ var mySourceCode = fs.readFileSync('myfile.js', 'utf8');
 var dependencies = detective(mySourceCode);
 
 ```
-
 * Supports JSX, Flow, and any other features that [node-source-walk](https://github.com/mrjoelkemp/node-source-walk) supports.
+
+You may also (optionally) configure the detective via a second object argument detective(src, options) that supports the following options:
+
+- skipTypeImports: (Boolean) whether or not to omit type imports (`import type {foo} from "mylib";`) in the list of extracted dependencies.
+- skipAsyncImports: (Boolean) whether or not to omit async imports (`import('foo')`) in the list of extracted dependencies.
+
 
 #### License
 

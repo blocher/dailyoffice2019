@@ -1,18 +1,16 @@
 {
   "name": "enabled",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Check if a certain debug flag is enabled.",
   "main": "index.js",
   "scripts": {
     "100%": "istanbul check-coverage --statements 100 --functions 100 --lines 100 --branches 100",
-    "test": "mocha test.js",
-    "watch": "mocha --watch test.js",
-    "coverage": "istanbul cover ./node_modules/.bin/_mocha -- test.js",
-    "test-travis": "istanbul cover node_modules/.bin/_mocha --report lcovonly -- test.js"
+    "test": "istanbul cover node_modules/.bin/_mocha --report lcovonly -- test.js",
+    "watch": "mocha --watch test.js"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/bigpipe/enabled.git"
+    "url": "git://github.com/3rd-Eden/enabled.git"
   },
   "keywords": [
     "enabled",
@@ -25,13 +23,11 @@
   ],
   "author": "Arnout Kazemier",
   "license": "MIT",
-  "dependencies": {
-    "env-variable": "0.0.x"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "assume": "1.3.x",
-    "istanbul": "0.4.x",
-    "mocha": "2.3.x",
-    "pre-commit": "1.1.x"
+    "assume": "2.1.x",
+    "istanbul": "^0.4.5",
+    "mocha": "5.2.x",
+    "pre-commit": "1.2.x"
   }
 }

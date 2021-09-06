@@ -1,4 +1,4 @@
-# CRC32 Stream [![Build Status](https://travis-ci.org/archiverjs/node-crc32-stream.svg?branch=master)](https://travis-ci.org/archiverjs/node-crc32-stream) [![Build status](https://ci.appveyor.com/api/projects/status/sy60s39cmyvd60i3/branch/master?svg=true)](https://ci.appveyor.com/project/ctalkington/node-crc32-stream/branch/master)
+# CRC32 Stream
 
 crc32-stream is a streaming CRC32 checksumer. It uses the [crc](https://www.npmjs.org/package/crc) module behind the scenes to reliably handle binary data and fancy character sets. Data is passed through untouched.
 

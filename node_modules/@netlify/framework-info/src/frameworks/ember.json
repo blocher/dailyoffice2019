@@ -1,0 +1,21 @@
+{
+  "id": "ember",
+  "name": "Ember.js",
+  "category": "frontend_framework",
+  "detect": {
+    "npmDependencies": ["ember-cli"],
+    "excludedNpmDependencies": [],
+    "configFiles": ["ember-cli-build.js"]
+  },
+  "dev": {
+    "command": "ember serve",
+    "port": 4200,
+    "pollingStrategies": [{ "name": "TCP" }, { "name": "HTTP" }]
+  },
+  "build": {
+    "command": "ember build",
+    "directory": "dist"
+  },
+  "env": {},
+  "plugins": []
+}

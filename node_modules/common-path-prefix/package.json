@@ -1,6 +1,6 @@
 {
   "name": "common-path-prefix",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Computes the longest prefix string that is common to each path, excluding the base component",
   "main": "index.js",
   "files": [

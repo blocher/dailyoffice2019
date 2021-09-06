@@ -5,19 +5,15 @@ const kuler = require('./');
 describe('kuler', function () {
   it('renders colors in the terminal', function () {
     console.log('     VISUAL INSPECTION');
-    console.log('     '+ kuler('red').style('red'));
+    console.log('     '+ kuler('red').style('F00'));
     console.log('     '+ kuler('black').style('#000'));
     console.log('     '+ kuler('white').style('#FFFFFF'));
     console.log('     '+ kuler('lime').style('AAFF5B'));
-    console.log('     '+ kuler('violet').style('violetred 1'));
-    console.log('     '+ kuler('purple').style('purple'));
-    console.log('     '+ kuler('purple').style('purple'), 'correctly reset to normal color');
-    console.log('     '+ kuler('green', 'green'));
+    console.log('     '+ kuler('violet').style('#ee82ee'));
+    console.log('     '+ kuler('purple').style('#800080'));
+    console.log('     '+ kuler('purple').style('#800080'), 'correctly reset to normal color');
+    console.log('     '+ kuler('green', '#008000'));
   });
-
-  it('supports color names and hex values', function () {
-    assume(kuler('black', 'black')).equals(kuler('black', '#000'));
-  })
 
   describe('#style', function () {
     it('has a style method', function () {

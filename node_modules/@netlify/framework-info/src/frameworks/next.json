@@ -1,0 +1,26 @@
+{
+  "id": "next",
+  "name": "Next.js",
+  "category": "static_site_generator",
+  "detect": {
+    "npmDependencies": ["next"],
+    "excludedNpmDependencies": ["@nrwl/next"],
+    "configFiles": []
+  },
+  "dev": {
+    "command": "next",
+    "port": 3000,
+    "pollingStrategies": [{ "name": "TCP" }]
+  },
+  "build": {
+    "command": "next build",
+    "directory": "out"
+  },
+  "env": {},
+  "plugins": [
+    {
+      "packageName": "@netlify/plugin-nextjs",
+      "condition": { "minNodeVersion": "10.13.0" }
+    }
+  ]
+}
