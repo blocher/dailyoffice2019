@@ -324,21 +324,30 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
 
     def get_ohara_title(self):
         date = self.get_tuesday()
-        if date.month == 7 and date.year == 2021:
+        if date.month == 10 and date.year == 2021 and date.day == 5:
             return "Combined Cell Meeting"
         return "O'Hara Cell Meeting"
 
+    def get_ohara_meeting(self):
+        date = self.get_tuesday()
+        if date.month == 10 and date.year == 2021 and date.day == 5:
+            return "both_cells"
+        return "ohara"
+
     def get_ohara_to_addresses(self):
         date = self.get_tuesday()
-        if date.month == 7 and date.year == 2021:
-            return ["community-of-st-andrew-all@googlegroups.com"]
-        return ["community-of-st-andrew-cell-ohara@googlegroups.com"]
+        if date.month == 10 and date.year == 2021 and date.day == 5:
+            return ["community-of-st-andrew-all@googlegroups.com", "community-of-st-andrew-guests@googlegroups.com"]
+        return ["community-of-st-andrew-cell-ohara@googlegroups.com", "community-of-st-andrew-guests@googlegroups.com"]
 
     def get_morningside_to_addresses(self):
         date = self.get_tuesday()
-        if date.month == 7 and date.year == 2021:
+        if date.month == 10 and date.year == 2021 and date.day == 5:
             return ["blocher@gmail.com"]
-        return ["community-of-st-andrew-cell-morningside@googlegroups.com"]
+        return [
+            "community-of-st-andrew-cell-morningside@googlegroups.com",
+            "community-of-st-andrew-guests@googlegroups.com",
+        ]
 
     def get_required(self):
         tuesday_number = self.get_tuesday_number()
@@ -364,7 +373,7 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                     "optional": False,
                     "leader": self.get_leader("ohara"),
                     "notes": self.get_notes(),
-                    "meeting": "ohara",
+                    "meeting": self.get_ohara_meeting(),
                     "to_addresses": self.get_ohara_to_addresses(),
                     "extra_fields": self.cell_meeting_data("ohara", self.get_tuesday()),
                 },
