@@ -512,6 +512,7 @@ urlpatterns = [
     ),
     distill_path("privacy-policy/", office_views.privacy_policy, name="privacy_policy", distill_func=get_none),
     distill_path("dailyoffice.ics", office_views.calendar, name="calendar", distill_func=get_none),
+    path("readings/", office_views.readings, name="readings"),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns = urlpatterns + api_urlpatterns
 

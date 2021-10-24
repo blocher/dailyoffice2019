@@ -116,3 +116,11 @@ def passage_to_citation(passage):
     return "A reading from {}, beginning with the {} chapter, the {} verse".format(
         book[0], num2words(passage[1], ordinal=True), num2words(passage[2], ordinal=True)
     )
+
+
+def testament_to_closing(testament):
+    return "The Word of the Lord." if testament != "DC" else "Here ends the Reading."
+
+
+def testament_to_closing_response(testament):
+    return "Thanks be to God." if testament != "DC" else ""

@@ -1,6 +1,4 @@
-import html
 from datetime import date
-from string import punctuation
 
 from bs4 import BeautifulSoup
 from django.core import serializers
@@ -21,9 +19,10 @@ from office.family_early_evening import FamilyEarlyEvening
 from office.family_midday import FamilyMidday
 from office.family_morning import FamilyMorning
 from office.midday_prayer import MiddayPrayer
-from office.models import AboutItem, UpdateNotice
+from office.models import AboutItem, UpdateNotice, StandardOfficeDay
 from office.morning_prayer import MorningPrayer
 from office.offices import Office
+from office.utils import passage_to_citation, testament_to_closing, testament_to_closing_response
 from psalter.models import PsalmTopic, Psalm, PsalmVerse, PsalmTopicPsalm
 from psalter.utils import get_psalms
 from website.settings import (
@@ -469,3 +468,27 @@ def calendar(request):
     response = HttpResponse(res, content_type="text/calendar")
     response["Content-Disposition"] = "attachment; filename=dailyoffice.ics"
     return HttpResponse(res)
+
+
+def readings(request):
+    def day_decorator(day):
+        import calendar
+
+        day.mp_reading_1_passage = passage_to_citation(day.mp_reading_1)
+        day.mp_reading_2_passage = passage_to_citation(day.mp_reading_2)
+        day.ep_reading_1_passage = passage_to_citation(day.ep_reading_1)
+        day.ep_reading_2_passage = passage_to_citation(day.ep_reading_2)
+        day.date_string = "{} {}".format(calendar.month_name[day.month], day.day)
+        day.mp_reading_1_closing = testament_to_closing(day.mp_reading_1_testament)
+        day.mp_reading_1_closing_response = testament_to_closing_response(day.mp_reading_1_testament)
+        day.mp_reading_2_closing = testament_to_closing(day.mp_reading_2_testament)
+        day.mp_reading_2_closing_response = testament_to_closing_response(day.mp_reading_2_testament)
+        day.ep_reading_1_closing = testament_to_closing(day.ep_reading_1_testament)
+        day.ep_reading_1_closing_response = testament_to_closing_response(day.ep_reading_1_testament)
+        day.ep_reading_2_closing = testament_to_closing(day.ep_reading_2_testament)
+        day.ep_reading_2_closing_response = testament_to_closing_response(day.ep_reading_2_testament)
+        return day
+
+    days = StandardOfficeDay.objects.order_by("month", "day").all()
+    data = {"days": [day_decorator(day) for day in days]}
+    return render(request, "export/export_base.html", data)

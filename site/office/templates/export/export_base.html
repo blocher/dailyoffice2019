@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html id="html">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+        <style>
+            body {
+              max-width: 50rem;
+              padding: 2rem;
+              margin: auto;
+              font-family: "Helvetica", "Arial", sans-serif;
+              line-height: 1.5;
+              color: #555;
+            }
+
+            h1 {
+              margin: .5rem 0;
+              padding-top: .5rem;
+            }
+
+            h2, h3, h4, h5 {
+                margin: .1rem 0;
+            }
+
+            h1, h2, h3, h4, h5, strong {
+              color: #333;
+            }
+
+            .reading-heading {
+                display: none;
+            }
+        </style>
+    </head>
+
+    <body id="body">
+        <main>
+            <h1>Daily Office Readings <small>The Book of Common Prayer, 2019</small></h1>
+            {% for day in days %}
+                <h2>{{ day.date_string }} <small>| Morning Prayer </small></h2>
+                <h3>{{ day.mp_reading_1 }}</h3>
+                <p><em>{{ day.mp_reading_1_passage }}</em></p>
+                <div>
+                    {{ day.mp_reading_1_text|safe}}
+                </div>
+                <p><em>{{ day.mp_reading_1_closing }}</em><br><strong>{{ day.mp_reading_1_closing_response }}</strong></p>
+
+                <h3>{{ day.mp_reading_2 }}</h3>
+                <p><em>{{ day.mp_reading_2_passage }}</em></p>
+                <div>
+                    {{ day.mp_reading_2_text|safe}}
+                </div>
+                <p><em>{{ day.mp_reading_2_closing }}</em><br><strong>{{ day.mp_reading_2_closing_response }}</strong></p>
+
+                <h2>{{ day.date_string }} <small>| Evening Prayer </small></h2>
+                <h3>{{ day.ep_reading_1 }}</h3>
+                <p><em>{{ day.ep_reading_1_passage }}</em></p>
+                <div>
+                    {{ day.ep_reading_1_text|safe}}
+                </div>
+                <p><em>{{ day.mp_reading_2_closing }}</em><br><strong>{{ day.mp_reading_2_closing_response }}</strong></p>
+
+                <h3>{{ day.ep_reading_2 }}</h3>
+                <p><em>{{ day.ep_reading_2_passage }}</em></p>
+                <div>
+                    {{ day.ep_reading_2_text|safe}}
+                </div>
+                <p><em>{{ day.ep_reading_2_closing }}</em></p>
+                <p><em>{{ day.ep_reading_2_closing_response }}</em></p>
+
+                <h2>{{ day.date_string }} <small>| Morning Prayer </small></h2>
+                <h3>{{ day.ep_reading_1 }}</h3>
+                <p><em>{{ day.ep_reading_1_passage }}</em></p>
+                <div>
+                    {{ day.ep_reading_1_text|safe}}
+                </div>
+                <p><em>{{ day.ep_reading_1_closing }}</em> <strong>{{ day.ep_reading_1_closing_response }}</strong></p>
+
+                <h3>{{ day.ep_reading_2 }}</h3>
+                <p><em>{{ day.ep_reading_2_passage }}</em></p>
+                <div>
+                    {{ day.ep_reading_2_text|safe}}
+                </div>
+                <p><em>{{ day.ep_reading_2_closing }}</em><br><strong>{{ day.ep_reading_2_closing_response }}</strong></p>
+
+
+
+            {% endfor %}
+        </main>
+    </body>
+
+
+
+</html>
