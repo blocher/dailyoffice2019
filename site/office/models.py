@@ -46,8 +46,8 @@ class StandardOfficeDay(OfficeDay):
 
 
 class HolyDayOfficeDay(OfficeDay):
-
     commemoration = models.ForeignKey(Commemoration, on_delete=models.CASCADE)
+    order = models.PositiveSmallIntegerField(default=0)
 
 
 class ThirtyDayPsalterDay(BaseModel):

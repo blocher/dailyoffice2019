@@ -5,13 +5,15 @@ from django.core import serializers
 from django.db.models import Prefetch
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.template.loader import render_to_string
 from django.templatetags.static import static
 from django.urls import reverse
+from docx.shared import RGBColor
 from icalendar import Calendar, Event
 from meta.views import Meta
 
 from churchcal.calculations import ChurchYear
-from churchcal.models import Season
+from churchcal.models import Season, Commemoration, SanctoraleCommemoration
 from office.compline import Compline
 from office.evening_prayer import EveningPrayer
 from office.family_close_of_day import FamilyCloseOfDay
@@ -19,7 +21,7 @@ from office.family_early_evening import FamilyEarlyEvening
 from office.family_midday import FamilyMidday
 from office.family_morning import FamilyMorning
 from office.midday_prayer import MiddayPrayer
-from office.models import AboutItem, UpdateNotice, StandardOfficeDay
+from office.models import AboutItem, UpdateNotice, StandardOfficeDay, HolyDayOfficeDay
 from office.morning_prayer import MorningPrayer
 from office.offices import Office
 from office.utils import passage_to_citation, testament_to_closing, testament_to_closing_response
@@ -470,7 +472,22 @@ def calendar(request):
     return HttpResponse(res)
 
 
-def readings(request):
+def readings_data(testament=""):
+    commemorations = SanctoraleCommemoration.objects.filter(calendar__year=2019).select_related("rank").all()
+
+    def show_decorator(day):
+        day.show_mp = (
+            testament == "" or day.mp_reading_1_testament in testaments or day.mp_reading_2_testament in testaments
+        )
+        day.show_mp_1 = testament == "" or day.mp_reading_1_testament in testaments
+        day.show_mp_2 = testament == "" or day.mp_reading_2_testament in testaments
+        day.show_ep = (
+            testament == "" or day.ep_reading_1_testament in testaments or day.ep_reading_2_testament in testaments
+        )
+        day.show_ep_1 = testament == "" or day.ep_reading_1_testament in testaments
+        day.show_ep_2 = testament == "" or day.ep_reading_2_testament in testaments
+        return day
+
     def day_decorator(day):
         import calendar
 
@@ -487,8 +504,58 @@ def readings(request):
         day.ep_reading_1_closing_response = testament_to_closing_response(day.ep_reading_1_testament)
         day.ep_reading_2_closing = testament_to_closing(day.ep_reading_2_testament)
         day.ep_reading_2_closing_response = testament_to_closing_response(day.ep_reading_2_testament)
+        matches = [
+            commemoration
+            for commemoration in commemorations
+            if commemoration.day == day.day and commemoration.month == day.month
+        ]
+        day.commemoration = matches[0] if matches else None
         return day
 
+    testament = testament.upper()
+    if testament == "OT":
+        testament = "OT,DC"
+    testaments = testament.split(",")
+
     days = StandardOfficeDay.objects.order_by("month", "day").all()
-    data = {"days": [day_decorator(day) for day in days]}
-    return render(request, "export/export_base.html", data)
+    others = HolyDayOfficeDay.objects.select_related("commemoration__rank").order_by("order").all()
+    data = {
+        "days": [show_decorator(day_decorator(day)) for day in days],
+        "others": [show_decorator(other) for other in others],
+    }
+    return data
+
+
+def readings(request, testament=""):
+    return render(request, "export/export_base.html", readings_data(testament))
+
+
+def readings_doc(request, testament=""):
+    from docx import Document
+    from htmldocx import HtmlToDocx
+
+    def normalize_document_styles(doc):
+        for style in document.styles:
+            if hasattr(style, "font"):
+                style.font.name = "Helvetica"
+                style.font.color.rgb = RGBColor(0, 0, 0)
+        return doc
+
+    document = Document()
+    document = normalize_document_styles(document)
+    new_parser = HtmlToDocx()
+
+    html = render_to_string("export/export_base.html", readings_data(testament))
+    soup = BeautifulSoup(html, "html.parser")
+    for div in soup.find_all("h3", {"class": "reading-heading"}):
+        div.decompose()
+    html = str(soup)
+    html_parts = html.split('<span class="pagebreak"></span>')
+    for part in html_parts:
+        new_parser.add_html_to_document(part.strip(), document)
+        document.add_page_break()
+    response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    response["Content-Disposition"] = "attachment; filename=bcp_2019_daily_office_readings.docx"
+    document.save(response)
+
+    return response

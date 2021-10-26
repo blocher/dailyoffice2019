@@ -1,7 +1,7 @@
 from adminsortable2.admin import SortableAdminMixin
 from django.contrib import admin
 
-from office.models import AboutItem, UpdateNotice, StandardOfficeDay
+from office.models import AboutItem, UpdateNotice, StandardOfficeDay, HolyDayOfficeDay
 
 
 class AboutItemAdmin(SortableAdminMixin, admin.ModelAdmin):
@@ -21,6 +21,12 @@ class StandardOfficeDayAdmin(admin.ModelAdmin):
     ordering = ("month", "day")
 
 
+class HolyDayOfficeDayAdmin(admin.ModelAdmin):
+    list_display = ("holy_day_name", "mp_psalms", "ep_psalms", "order")
+    ordering = ("order",)
+
+
 admin.site.register(AboutItem, AboutItemAdmin)
 admin.site.register(UpdateNotice, UpdateNoticeAdmin)
 admin.site.register(StandardOfficeDay, StandardOfficeDayAdmin)
+admin.site.register(HolyDayOfficeDay, HolyDayOfficeDayAdmin)

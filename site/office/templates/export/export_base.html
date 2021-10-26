@@ -1,93 +1,155 @@
 {% load static %}
 <!DOCTYPE html>
 <html id="html">
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-        <style>
-            body {
-              max-width: 50rem;
-              padding: 2rem;
-              margin: auto;
-              font-family: "Helvetica", "Arial", sans-serif;
-              line-height: 1.5;
-              color: #555;
-            }
+<head>
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+    <style>
+        body {
+            max-width: 50rem;
+            padding: 2rem;
+            margin: auto;
+            font-family: "Helvetica", "Arial", sans-serif;
+            line-height: 1.5;
+            color: #555;
+        }
 
-            h1 {
-              margin: .5rem 0;
-              padding-top: .5rem;
-            }
+        h1 {
+            margin: .5rem 0;
+            padding-top: .5rem;
+        }
 
-            h2, h3, h4, h5 {
-                margin: .1rem 0;
-            }
+        h2, h3, h4, h5 {
+            margin: .1rem 0;
+        }
 
-            h1, h2, h3, h4, h5, strong {
-              color: #333;
-            }
+        h1, h2, h3, h4, h5, strong {
+            color: #333;
+        }
 
-            .reading-heading {
-                display: none;
-            }
-        </style>
-    </head>
+        .reading-heading {
+            display: none;
+        }
 
-    <body id="body">
-        <main>
-            <h1>Daily Office Readings <small>The Book of Common Prayer, 2019</small></h1>
-            {% for day in days %}
-                <h2>{{ day.date_string }} <small>| Morning Prayer </small></h2>
-                <h3>{{ day.mp_reading_1 }}</h3>
+        @media print {
+            .pagebreak {
+                page-break-after: always;
+            }
+        }
+
+    </style>
+</head>
+<body id="body">
+    <h1>Daily Office Readings <small>The Book of Common Prayer, 2019</small></h1>
+    {% for day in days %}
+        {%  if day.show_mp %}
+            <h2>{{ day.date_string }} <small>| Morning Prayer</small></h2> <!-- Morning Prayer 1 -->
+            {% if day.commemoration %}
+                {% if day.commemoration.rank.precedence_rank <= 4 %}
+                    <p>{{ day.commemoration.name|upper }}</p>
+                {% else %}
+                    <p>{{ day.commemoration.name }}</p>
+                {% endif %}
+            {% endif %}
+            {% if day.show_mp_1 %}
+                <h3>{{ day.mp_reading_1 }}{% if day.mp_reading_1_abbreviated %}
+                    <em>(or, {{ day.mp_reading_1_abbreviated }})</em>{% endif %}</h3>
                 <p><em>{{ day.mp_reading_1_passage }}</em></p>
                 <div>
-                    {{ day.mp_reading_1_text|safe}}
+                    {{ day.mp_reading_1_text|safe }}
                 </div>
                 <p><em>{{ day.mp_reading_1_closing }}</em><br><strong>{{ day.mp_reading_1_closing_response }}</strong></p>
-
-                <h3>{{ day.mp_reading_2 }}</h3>
+                <!-- Morning Prayer 2 -->
+            {% endif %}
+            {% if day.show_mp_2 %}
+                <h3>{{ day.mp_reading_2 }}{% if day.mp_reading_2_abbreviated %}
+                    <em>(or, {{ day.mp_reading_2_abbreviated }})</em>{% endif %}</h3>
                 <p><em>{{ day.mp_reading_2_passage }}</em></p>
                 <div>
-                    {{ day.mp_reading_2_text|safe}}
+                    {{ day.mp_reading_2_text|safe }}
                 </div>
                 <p><em>{{ day.mp_reading_2_closing }}</em><br><strong>{{ day.mp_reading_2_closing_response }}</strong></p>
+            {% endif %}
+            <span class="pagebreak"></span>
+        {%  endif %}
 
-                <h2>{{ day.date_string }} <small>| Evening Prayer </small></h2>
-                <h3>{{ day.ep_reading_1 }}</h3>
+        {%  if day.show_ep %}
+            <h2>{{ day.date_string }} <small>| Evening Prayer</small></h2> <!-- Evening Prayer 1 -->
+            {% if day.show_ep_1 %}
+                {% if day.commemoration %}
+                    {% if day.commemoration.rank.precedence_rank <= 4 %}
+                        <p>{{ day.commemoration.name|upper }}</p>
+                    {% else %}
+                        <p>{{ day.commemoration.name }}</p>
+                    {% endif %}
+                {% endif %}
+                <h3>{{ day.ep_reading_1 }}{% if day.ep_reading_1_abbreviated %}
+                    <em>(or, {{ day.ep_reading_1_abbreviated }})</em>{% endif %}</h3>
                 <p><em>{{ day.ep_reading_1_passage }}</em></p>
                 <div>
-                    {{ day.ep_reading_1_text|safe}}
+                    {{ day.ep_reading_1_text|safe }}
                 </div>
-                <p><em>{{ day.mp_reading_2_closing }}</em><br><strong>{{ day.mp_reading_2_closing_response }}</strong></p>
-
-                <h3>{{ day.ep_reading_2 }}</h3>
+                <p><em>{{ day.ep_reading_1_closing }}</em><br><strong>{{ day.ep_reading_1_closing_response }}</strong></p>
+            {% endif %}
+            {% if day.show_ep_2 %}
+                <h3>{{ day.ep_reading_2 }}{% if day.ep_reading_2_abbreviated %}
+                    <em>(or, {{ day.ep_reading_2_abbreviated }})</em>{% endif %}</h3> <!-- Evening Prayer 2 -->
                 <p><em>{{ day.ep_reading_2_passage }}</em></p>
                 <div>
-                    {{ day.ep_reading_2_text|safe}}
+                    {{ day.ep_reading_2_text|safe }}
                 </div>
                 <p><em>{{ day.ep_reading_2_closing }}</em></p>
                 <p><em>{{ day.ep_reading_2_closing_response }}</em></p>
-
-                <h2>{{ day.date_string }} <small>| Morning Prayer </small></h2>
-                <h3>{{ day.ep_reading_1 }}</h3>
+            {% endif %}
+            <span class="pagebreak"></span>
+        {% endif %}
+    {% endfor %}
+    {% for day in others %}
+        {%  if day.show_mp %}
+            <h2>{{ day.commemoration.name|upper }} <small>| Morning Prayer</small></h2><!-- Morning Prayer 1 -->
+            {% if day.show_mp_1 %}
+                <h3>{{ day.mp_reading_1 }}{% if day.mp_reading_1_abbreviated %}
+                    <em>(or, {{ day.mp_reading_1_abbreviated }})</em>{% endif %}</h3>
+                <p><em>{{ day.mp_reading_1_passage }}</em></p>
+                <div>
+                    {{ day.mp_reading_1_text|safe }}
+                </div>
+                <p><em>{{ day.mp_reading_1_closing }}</em><br><strong>{{ day.mp_reading_1_closing_response }}</strong></p>
+            {% endif %}
+            {% if day.show_mp_2 %}
+                <h3>{{ day.mp_reading_2 }}{% if day.mp_reading_2_abbreviated %}
+                    <em>(or, {{ day.mp_reading_2_abbreviated }})</em>{% endif %}</h3>                 <!-- Morning Prayer 2 -->
+                <p><em>{{ day.mp_reading_2_passage }}</em></p>
+                <div>
+                    {{ day.mp_reading_2_text|safe }}
+                </div>
+                <p><em>{{ day.mp_reading_2_closing }}</em><br><strong>{{ day.mp_reading_2_closing_response }}</strong></p>
+            {% endif %}
+            <span class="pagebreak"></span>
+        {%  endif %}
+        {%  if day.show_ep %}
+            {% if day.show_ep_1 %}
+                <h2>{{ day.commemoration.name|upper }} <small>| Evening Prayer</small></h2></h2>
+                <!-- Evening Prayer 1 -->
+                <h3>{{ day.ep_reading_1 }}{% if day.ep_reading_1_abbreviated %}
+                    <em>(or, {{ day.ep_reading_1_abbreviated }})</em>{% endif %}</h3>
                 <p><em>{{ day.ep_reading_1_passage }}</em></p>
                 <div>
-                    {{ day.ep_reading_1_text|safe}}
+                    {{ day.ep_reading_1_text|safe }}
                 </div>
-                <p><em>{{ day.ep_reading_1_closing }}</em> <strong>{{ day.ep_reading_1_closing_response }}</strong></p>
-
-                <h3>{{ day.ep_reading_2 }}</h3>
+                <p><em>{{ day.ep_reading_1_closing }}</em><br><strong>{{ day.ep_reading_1_closing_response }}</strong></p>
+            {% endif %}
+            {% if day.show_ep_2 %}<!-- Evening Prayer 2 -->
+                <h3>{{ day.ep_reading_2 }}{% if day.ep_reading_2_abbreviated %}
+                    <em>(or, {{ day.ep_reading_2_abbreviated }})</em>{% endif %}</h3>
                 <p><em>{{ day.ep_reading_2_passage }}</em></p>
                 <div>
-                    {{ day.ep_reading_2_text|safe}}
+                    {{ day.ep_reading_2_text|safe }}
                 </div>
-                <p><em>{{ day.ep_reading_2_closing }}</em><br><strong>{{ day.ep_reading_2_closing_response }}</strong></p>
-
-
-
-            {% endfor %}
-        </main>
+                <p><em>{{ day.ep_reading_2_closing }}</em></p>
+                <p><em>{{ day.ep_reading_2_closing_response }}</em></p>
+            {% endif %}
+            <span class="pagebreak"></span>
+        {%  endif %}
+    {% endfor %}
     </body>
-
-
-
 </html>
