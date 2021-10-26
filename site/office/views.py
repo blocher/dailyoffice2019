@@ -525,6 +525,7 @@ def readings_data(testament=""):
     data = {
         "days": [general_decorator(day_decorator(day)) for day in days],
         "others": [general_decorator(other) for other in others],
+        "testament": testament,
     }
     return data
 
@@ -551,6 +552,12 @@ def readings_doc(request, testament=""):
     html = render_to_string("export/export_base.html", readings_data(testament))
     soup = BeautifulSoup(html, "html.parser")
     for div in soup.find_all("h3", {"class": "reading-heading"}):
+        div.decompose()
+    for div in soup.find_all("p", {"class": "hide-in-doc"}):
+        div.decompose()
+    for div in soup.find_all("table", {"class": "hide-in-doc"}):
+        div.decompose()
+    for div in soup.find_all("a", {"class": "hide-in-doc"}):
         div.decompose()
     html = str(soup)
     html_parts = html.split('<span class="pagebreak"></span>')

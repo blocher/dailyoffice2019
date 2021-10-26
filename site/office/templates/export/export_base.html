@@ -47,8 +47,25 @@
     </style>
 </head>
 <body id="body">
-    <h1>Daily Office Readings <small>The Book of Common Prayer, 2019</small></h1>
-    <table>
+    <h1 id="table-of-contents">Daily Office Readings <small>The Book of Common Prayer, 2019</small></h1>
+
+    {%  if testament == "" %}
+        <h2>All Readings</h2>
+        <p class="hide-in-doc">All Readings | <a href="/readings/ot">Old Testament Only</a> | <a href="/readings/nt">New Testament Only</a></p>
+    {%  endif %}
+
+    {%  if testament == "OT" or testament == "OT,DC" %}
+        <h2>Old Testament with Deuterocanon</h2>
+        <p class="hide-in-doc"><a href="/readings">All Readings</a> | Old Testament Only | <a href="/readings/nt">New Testament Only</a></p>
+    {%  endif %}
+
+    {%  if testament == "NT" %}
+        <h2>New Testament</h2>
+        <p class="hide-in-doc"><a href="/readings">All Readings</a> | <a href="/readings/ot">Old Testament Only</a> | New Testament Only</p>
+    {%  endif %}
+    <p class="hide-in-doc"><a href="/readings_doc">All Readings (MS Word)</a> | <a href="/readings_doc/ot">Old Testament Only (MS Word)</a> | <a href="/readings_doc/nt">New Testament Only (MS Word)</a></p>
+    <span class="pagebreak"></span>
+    <table class="hide-in-doc">
     <tr>
         <th>Day</th>
         <th>Morning 1</th>
@@ -127,6 +144,7 @@
     </table>
     {% for day in days %}
         {%  if day.show_mp %}
+            <p><small><a href="#table-of-contents" class="hide-in-doc">Table of Contents</a></small></p>
             <h2>{{ day.date_string }} <small>| Morning Prayer</small></h2> <!-- Morning Prayer 1 -->
             {% if day.commemoration %}
                 {% if day.commemoration.rank.precedence_rank <= 4 %}
@@ -137,7 +155,7 @@
             {% endif %}
             {% if day.show_mp_1 %}
                 <h3 id="mp-{{ day.date_string| slugify }}-1">{{ day.mp_reading_1 }}{% if day.mp_reading_1_abbreviated %}
-                    <em>(or, {{ day.mp_reading_1_abbreviated }})</em>{% endif %}</h3>
+                    <em> (or, {{ day.mp_reading_1_abbreviated }})</em>{% endif %}</h3>
                 <p><em>{{ day.mp_reading_1_passage }}</em></p>
                 <div>
                     {{ day.mp_reading_1_text|safe }}
@@ -147,7 +165,7 @@
             {% endif %}
             {% if day.show_mp_2 %}
                 <h3 id="mp-{{ day.date_string| slugify }}-2">{{ day.mp_reading_2 }}{% if day.mp_reading_2_abbreviated %}
-                    <em>(or, {{ day.mp_reading_2_abbreviated }})</em>{% endif %}</h3>
+                    <em> (or, {{ day.mp_reading_2_abbreviated }})</em>{% endif %}</h3>
                 <p><em>{{ day.mp_reading_2_passage }}</em></p>
                 <div>
                     {{ day.mp_reading_2_text|safe }}
@@ -158,6 +176,7 @@
         {%  endif %}
 
         {%  if day.show_ep %}
+            <p><small><a href="#table-of-contents" class="hide-in-doc">Table of Contents</a></small></p>
             <h2>{{ day.date_string }} <small>| Evening Prayer</small></h2> <!-- Evening Prayer 1 -->
             {% if day.show_ep_1 %}
                 {% if day.commemoration %}
@@ -168,7 +187,7 @@
                     {% endif %}
                 {% endif %}
                 <h3 id="ep-{{ day.date_string| slugify }}-1">{{ day.ep_reading_1 }}{% if day.ep_reading_1_abbreviated %}
-                    <em>(or, {{ day.ep_reading_1_abbreviated }})</em>{% endif %}</h3>
+                    <em> (or, {{ day.ep_reading_1_abbreviated }})</em>{% endif %}</h3>
                 <p><em>{{ day.ep_reading_1_passage }}</em></p>
                 <div>
                     {{ day.ep_reading_1_text|safe }}
@@ -177,23 +196,23 @@
             {% endif %}
             {% if day.show_ep_2 %}
                 <h3 id="ep-{{ day.date_string| slugify }}-2">{{ day.ep_reading_2 }}{% if day.ep_reading_2_abbreviated %}
-                    <em>(or, {{ day.ep_reading_2_abbreviated }})</em>{% endif %}</h3> <!-- Evening Prayer 2 -->
+                    <em> (or, {{ day.ep_reading_2_abbreviated }})</em>{% endif %}</h3> <!-- Evening Prayer 2 -->
                 <p><em>{{ day.ep_reading_2_passage }}</em></p>
                 <div>
                     {{ day.ep_reading_2_text|safe }}
                 </div>
-                <p><em>{{ day.ep_reading_2_closing }}</em></p>
-                <p><em>{{ day.ep_reading_2_closing_response }}</em></p>
+                <p><em>{{ day.ep_reading_2_closing }}</em><br><strong>{{ day.ep_reading_2_closing_response }}</strong></p>
             {% endif %}
             <span class="pagebreak"></span>
         {% endif %}
     {% endfor %}
     {% for day in others %}
         {%  if day.show_mp %}
+            <p><small><a href="#table-of-contents" class="hide-in-doc">Table of Contents</a></small></p>
             <h2>{{ day.commemoration.name|upper }} <small>| Morning Prayer</small></h2><!-- Morning Prayer 1 -->
             {% if day.show_mp_1 %}
                 <h3 id="mp-{{ day.commemoration.name | slugify }}-1">{{ day.mp_reading_1 }}{% if day.mp_reading_1_abbreviated %}
-                    <em>(or, {{ day.mp_reading_1_abbreviated }})</em>{% endif %}</h3>
+                    <em> (or, {{ day.mp_reading_1_abbreviated }})</em>{% endif %}</h3>
                 <p><em>{{ day.mp_reading_1_passage }}</em></p>
                 <div>
                     {{ day.mp_reading_1_text|safe }}
@@ -202,7 +221,7 @@
             {% endif %}
             {% if day.show_mp_2 %}
                 <h3  id="mp-{{ day.commemoration.name | slugify }}-2">{{ day.mp_reading_2 }}{% if day.mp_reading_2_abbreviated %}
-                    <em>(or, {{ day.mp_reading_2_abbreviated }})</em>{% endif %}</h3>                 <!-- Morning Prayer 2 -->
+                    <em> (or, {{ day.mp_reading_2_abbreviated }})</em>{% endif %}</h3>                 <!-- Morning Prayer 2 -->
                 <p><em>{{ day.mp_reading_2_passage }}</em></p>
                 <div>
                     {{ day.mp_reading_2_text|safe }}
@@ -212,11 +231,12 @@
             <span class="pagebreak"></span>
         {%  endif %}
         {%  if day.show_ep %}
+            <p><small><a href="#table-of-contents" class="hide-in-doc">Table of Contents</a></small></p>
             <h2>{{ day.commemoration.name|upper }} <small>| Evening Prayer</small></h2></h2>
             {% if day.show_ep_1 %}
                 <!-- Evening Prayer 1 -->
                 <h3  id="ep-{{ day.commemoration.name | slugify }}-1">{{ day.ep_reading_1 }}{% if day.ep_reading_1_abbreviated %}
-                    <em>(or, {{ day.ep_reading_1_abbreviated }})</em>{% endif %}</h3>
+                    <em> (or, {{ day.ep_reading_1_abbreviated }})</em>{% endif %}</h3>
                 <p><em>{{ day.ep_reading_1_passage }}</em></p>
                 <div>
                     {{ day.ep_reading_1_text|safe }}
@@ -225,7 +245,7 @@
             {% endif %}
             {% if day.show_ep_2 %}<!-- Evening Prayer 2 -->
                 <h3  id="ep-{{ day.commemoration.name | slugify }}-2">{{ day.ep_reading_2 }}{% if day.ep_reading_2_abbreviated %}
-                    <em>(or, {{ day.ep_reading_2_abbreviated }})</em>{% endif %}</h3>
+                    <em> (or, {{ day.ep_reading_2_abbreviated }})</em>{% endif %}</h3>
                 <p><em>{{ day.ep_reading_2_passage }}</em></p>
                 <div>
                     {{ day.ep_reading_2_text|safe }}
