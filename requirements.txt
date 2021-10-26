@@ -139,7 +139,7 @@ pycld2==0.41
 pycountry==20.7.3
 pycparser==2.20
 pycryptodome==3.10.1
-pydantic==1.8.2
+pydantic==1.7.4
 Pygments==2.10.0
 pymemcache==3.5.0
 pynliner==0.8.0
