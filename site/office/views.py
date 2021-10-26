@@ -475,7 +475,7 @@ def calendar(request):
 def readings_data(testament=""):
     commemorations = SanctoraleCommemoration.objects.filter(calendar__year=2019).select_related("rank").all()
 
-    def show_decorator(day):
+    def general_decorator(day):
         day.show_mp = (
             testament == "" or day.mp_reading_1_testament in testaments or day.mp_reading_2_testament in testaments
         )
@@ -486,16 +486,12 @@ def readings_data(testament=""):
         )
         day.show_ep_1 = testament == "" or day.ep_reading_1_testament in testaments
         day.show_ep_2 = testament == "" or day.ep_reading_2_testament in testaments
-        return day
-
-    def day_decorator(day):
-        import calendar
 
         day.mp_reading_1_passage = passage_to_citation(day.mp_reading_1)
         day.mp_reading_2_passage = passage_to_citation(day.mp_reading_2)
         day.ep_reading_1_passage = passage_to_citation(day.ep_reading_1)
         day.ep_reading_2_passage = passage_to_citation(day.ep_reading_2)
-        day.date_string = "{} {}".format(calendar.month_name[day.month], day.day)
+
         day.mp_reading_1_closing = testament_to_closing(day.mp_reading_1_testament)
         day.mp_reading_1_closing_response = testament_to_closing_response(day.mp_reading_1_testament)
         day.mp_reading_2_closing = testament_to_closing(day.mp_reading_2_testament)
@@ -504,6 +500,13 @@ def readings_data(testament=""):
         day.ep_reading_1_closing_response = testament_to_closing_response(day.ep_reading_1_testament)
         day.ep_reading_2_closing = testament_to_closing(day.ep_reading_2_testament)
         day.ep_reading_2_closing_response = testament_to_closing_response(day.ep_reading_2_testament)
+
+        return day
+
+    def day_decorator(day):
+        import calendar
+
+        day.date_string = "{} {}".format(calendar.month_name[day.month], day.day)
         matches = [
             commemoration
             for commemoration in commemorations
@@ -520,8 +523,8 @@ def readings_data(testament=""):
     days = StandardOfficeDay.objects.order_by("month", "day").all()
     others = HolyDayOfficeDay.objects.select_related("commemoration__rank").order_by("order").all()
     data = {
-        "days": [show_decorator(day_decorator(day)) for day in days],
-        "others": [show_decorator(other) for other in others],
+        "days": [general_decorator(day_decorator(day)) for day in days],
+        "others": [general_decorator(other) for other in others],
     }
     return data
 
