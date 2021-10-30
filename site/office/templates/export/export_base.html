@@ -100,7 +100,7 @@
             </td>
             <td>
                 {% if day.show_ep_2 %}
-                    <a href="#mp-{{ day.date_string| slugify }}-2">{{ day.ep_reading_2 }}</a>
+                    <a href="#ep-{{ day.date_string| slugify }}-2">{{ day.ep_reading_2 }}</a>
                 {% else %}
                     <span>{{ day.ep_reading_2 }}</span>
                 {% endif %}
@@ -113,28 +113,28 @@
             <strong>{{ day.commemoration.name|upper }}</strong>
             <td>
                 {% if day.show_mp_1 %}
-                    <a href="#mp-{{ day.date_string| slugify }}-1">{{ day.mp_reading_1 }}</a>
+                    <a href="#mp-{{ day.commemoration.name | slugify }}-1">{{ day.mp_reading_1 }}</a>
                 {% else %}
                     <span>{{ day.mp_reading_1 }}</span>
                 {% endif %}
             </td>
             <td>
                 {% if day.show_mp_2 %}
-                    <a href="#mp-{{ day.date_string| slugify }}-2">{{ day.mp_reading_2 }}</a>
+                    <a href="#mp-{{ day.commemoration.name | slugify }}-2">{{ day.mp_reading_2 }}</a>
                 {% else %}
                     <span>{{ day.mp_reading_2 }}</span>
                 {% endif %}
             </td>
             <td>
                 {% if day.show_ep_1 %}
-                    <a href="#ep-{{ day.date_string| slugify }}-1">{{ day.ep_reading_1 }}</a>
+                    <a href="#ep-{{ day.commemoration.name | slugify }}-1">{{ day.ep_reading_1 }}</a>
                 {% else %}
                     <span>{{ day.ep_reading_1 }}</span>
                 {% endif %}
             </td>
             <td>
                 {% if day.show_ep_2 %}
-                    <a href="#mp-{{ day.date_string| slugify }}-2">{{ day.ep_reading_2 }}</a>
+                    <a href="#ep-{{ day.commemoration.name | slugify }}-2">{{ day.ep_reading_2 }}</a>
                 {% else %}
                     <span>{{ day.ep_reading_2 }}</span>
                 {% endif %}
