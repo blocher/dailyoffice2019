@@ -23,10 +23,11 @@ def parse_single_psalm(psalm):
     return ",".join(citations)
 
 
-def get_psalms(citations):
+def get_psalms(citations, api=False):
     citations = str(citations)
     citations = citations.replace(" ", "").split(",")
     html = ""
+    lines = []
     for citation in citations:
         citation_parts = citation.split(":")
         if len(citation_parts) > 1:
@@ -40,7 +41,33 @@ def get_psalms(citations):
         else:
             verses = PsalmVerse.objects.filter(psalm__number=citation).order_by("number").select_related("psalm").all()
         html = html + psalm_html(citation, verses)
+        lines = lines + psalm_api_lines(citation, verses)
+    if api:
+        return lines
     return html
+
+
+def psalm_api_lines(citation, verses, heading=True):
+    from office.api.views import Line
+
+    lines = []
+    if heading:
+        lines.append(Line(citation, "heading"))
+        lines.append(Line(verses[0].psalm.latin_title, "subheading"))
+    for verse in verses:
+        lines.append(
+            Line(
+                "{} {} *".format(
+                    verse.number,
+                    verse.first_half,
+                    verse.number,
+                    verse.first_half,
+                ),
+                "leader",
+            )
+        )
+        lines.append(Line(verse.second_half, "congregation"))
+    return lines
 
 
 def psalm_html(citation, verses, heading=True):

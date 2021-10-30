@@ -61,12 +61,12 @@ class Settings(dict):
         super().__init__(**settings)
 
     def _get_settings(self, request):
-
-        settings = self.DEFAULT_SETTINGS
+        settings = self.DEFAULT_SETTINGS.copy()
         specified_settings = {k: v for (k, v) in request.query_params.items() if k in settings.keys()}
         for k, v in settings.items():
             if k in specified_settings.keys():
                 settings[k] = specified_settings[k]
+        print(specified_settings, settings)
         return settings
 
 
@@ -533,9 +533,83 @@ class MPInvitatory(Module):
         return file_to_lines(filename)
 
 
+class MPPsalms(Module):
+
+    name = "Psalms"
+
+    @staticmethod
+    def heading(citations):
+        return "The Psalm{} Appointed".format("s" if len(citations) > 1 else "")
+
+    def mass(self):
+        pass
+
+    def thirty_days(self):
+        from psalter.utils import get_psalms
+
+        psalms = self.office.thirty_day_psalter_day.mp_psalms
+        citations = psalms.split(",")
+        heading = self.heading(citations)
+        psalms = get_psalms(psalms, api=True)
+
+        return [Line(heading, "heading"), Line("Thirty Day Cycle", "subheading")] + psalms
+
+    def sixty_days(self):
+        from psalter.utils import get_psalms
+
+        psalms = self.office.office_readings.mp_psalms.split("or")
+        if len(psalms) > 1:
+            if (self.office.date.date.year % 2) == 0:
+                psalms = psalms[0]
+            else:
+                psalms = psalms[1]
+        else:
+            psalms = psalms[0]
+
+        citations = psalms.split(",")
+        heading = self.heading(citations)
+        psalms = get_psalms(psalms, api=True)
+
+        return [Line(heading, "heading"), Line("Sixty Day Cycle", "subheading")] + psalms
+
+    def mass_psalms(self):
+        from psalter.utils import get_psalms
+
+        mass_psalm = None
+        for reading in self.office.date.mass_readings:
+            if reading.reading_type == "psalm":
+                mass_psalm = reading.long_citation.replace("Psalms", "").replace("Psalm", "").strip()
+                break
+        if not mass_psalm:
+            return None
+
+        heading = self.heading(mass_psalm)
+        psalms = get_psalms(mass_psalm, api=True)
+        return [Line(heading, "heading"), Line("Sunday & Holy Day Psalms", "subheading")] + psalms
+
+    def get_lines(self):
+        setting = self.office.settings["psalter"]
+        lectionary = self.office.settings["lectionary"]
+        print(setting, lectionary)
+        if lectionary == "mass-readings":
+            mass_psalms = self.mass_psalms()
+            if mass_psalms:
+                return mass_psalms
+
+        if setting == "60":
+            return self.sixty_days()
+        return self.thirty_days()
+
+
 class MorningPrayer(Office):
     def get_modules(self):
-        return [MPOpeningSentence(self), Confession(self), Preces(self), MPInvitatory(self)]
+        return [
+            MPOpeningSentence(self),
+            Confession(self),
+            Preces(self),
+            MPInvitatory(self),
+            MPPsalms(self),
+        ]
 
 
 class OfficeAPIView(APIView):
