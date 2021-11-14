@@ -313,6 +313,9 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
         if tuesday_number == 4:
             return ["Women's group (Tue)"]
 
+        tuesday = self.get_tuesday()
+        if tuesday.month == 11 and tuesday.day == 30 and tuesday.year == 2021:
+            return ["St. Andrew's Feast Day Year End Celebration"]
         return ["No Tuesday meeting this week"]
 
     def friday_subjects(self):
@@ -409,6 +412,19 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                 },
             ]
         if tuesday_number == 5:
+            tuesday = self.get_tuesday()
+            if tuesday.month == 11 and tuesday.day == 30 and tuesday.year == 2021:
+                return [
+                    {
+                        "title": "St. Andrew's Feast Day Year End Celebration",
+                        "date": self.get_tuesday(),
+                        "time": "6 to 8 pm",
+                        "optional": False,
+                        "notes": self.get_notes(),
+                        "to_addresses": ["community-of-st-andrew-all@googlegroups.com"],
+                        "meeting": "both_cells",
+                    },
+                ]
             return [
                 {
                     "title": "No Tuesday meeting this week (5th Sunday)",
