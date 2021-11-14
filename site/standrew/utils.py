@@ -15,7 +15,7 @@ from website.settings import SITE_ADDRESS, ZOOM_LINK, DEBUG
 def get_today():
     if DEBUG:
         date = datetime.datetime.strptime(
-            "{} {} {} {} {} {}".format(10, 29, 2021, 6, 00, "AM"),
+            "{} {} {} {} {} {}".format(11, 13, 2021, 6, 00, "AM"),
             "%m %d %Y %I %M %p",
         )
         date = make_aware(date)
@@ -99,7 +99,7 @@ def send_movie_email(subject, message, email):
     email.send()
 
 
-@kronos.register("0 6 * * 3")
+# @kronos.register("0 6 * * 3")
 def send_movie_nomination_emails():
     if not next_friday_is_movie_night():
         return
@@ -116,7 +116,7 @@ def send_movie_nomination_emails():
         send_movie_email(subject, message, voter.email)
 
 
-@kronos.register("30 9 * * 4")
+# @kronos.register("30 9 * * 4")
 def send_movie_nomination_reminder_emails():
     if not next_friday_is_movie_night():
         return
@@ -139,7 +139,7 @@ def send_movie_nomination_reminder_emails():
         send_movie_email(subject, message, voter.email)
 
 
-@kronos.register("0 12 * * 4")
+# @kronos.register("0 12 * * 4")
 def send_movie_vote_emails():
     if not next_friday_is_movie_night():
         return
@@ -156,7 +156,7 @@ def send_movie_vote_emails():
         send_movie_email(subject, message, voter.email)
 
 
-@kronos.register("30 9 * * 5")
+# @kronos.register("30 9 * * 5")
 def send_movie_vote_reminder_emails():
     if not next_friday_is_movie_night():
         return
@@ -173,7 +173,7 @@ def send_movie_vote_reminder_emails():
         send_movie_email(subject, message, voter.email)
 
 
-@kronos.register("0 12 * * 5")
+# @kronos.register("0 12 * * 5")
 def send_movie_results_emails():
     if not next_friday_is_movie_night():
         return

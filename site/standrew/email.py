@@ -316,10 +316,10 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
         return ["No Tuesday meeting this week"]
 
     def friday_subjects(self):
-        if self.get_friday_type() == "game":
-            return ["Game night (Fri)"]
-        if self.get_friday_type() == "movie":
-            return ["Movie night (Fri)"]
+        # if self.get_friday_type() == "game":
+        #     return ["Game night (Fri)"]
+        # if self.get_friday_type() == "movie":
+        #     return ["Movie night (Fri)"]
         return []
 
     def get_ohara_title(self):
