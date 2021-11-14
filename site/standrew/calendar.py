@@ -26,5 +26,4 @@ def get_week():
             feast["name"] for feast in content["commemorations"] if int(feast["rank"]["precedence"]) <= 4
         ]
         weekdays.append(content)
-    print(weekdays)
     html = render_to_string("emails/weekly_email.html", {"weekdays": weekdays})

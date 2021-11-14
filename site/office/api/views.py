@@ -1,8 +1,10 @@
 import csv
 import os
 from distutils.util import strtobool
+from urllib.parse import quote
 
 from django.utils.functional import cached_property
+from django.utils.safestring import mark_safe
 from django.views.generic.base import TemplateResponseMixin
 from rest_framework import serializers
 from rest_framework.generics import ListAPIView
@@ -13,6 +15,7 @@ from churchcal.api.permissions import ReadOnly
 from churchcal.api.serializer import DaySerializer
 from office.api.serializers import UpdateNoticeSerializer
 from office.models import UpdateNotice, HolyDayOfficeDay, StandardOfficeDay, ThirtyDayPsalterDay
+from office.utils import passage_to_citation
 
 
 class UpdateNoticeView(TemplateResponseMixin, ListAPIView):
@@ -66,7 +69,6 @@ class Settings(dict):
         for k, v in settings.items():
             if k in specified_settings.keys():
                 settings[k] = specified_settings[k]
-        print(specified_settings, settings)
         return settings
 
 
@@ -99,8 +101,8 @@ def file_to_lines(filename):
 
 
 class Line(dict):
-    def __init__(self, content, line_type="congregation", indented=False):
-        super().__init__(content=content, line_type=line_type, indented=indented)
+    def __init__(self, content, line_type="congregation", indented=False, *args, **kwargs):
+        super().__init__(content=content, line_type=line_type, indented=indented, *args, **kwargs)
 
 
 class Module(object):
@@ -115,9 +117,19 @@ class Module(object):
     def get_lines(self):
         raise NotImplementedError("You must implement this method.")
 
+    @staticmethod
+    def mark_html_safe(line):
+        if not isinstance(line, dict):
+            return line
+        if line.get("line_type") == "html":
+            line["content"] = mark_safe(line["content"])
+        return line
+
     @cached_property
     def json(self):
-        return {"name": self.get_name(), "lines": self.get_lines()}
+        lines = self.get_lines()
+        lines = [self.mark_html_safe(line) for line in lines]
+        return {"name": self.get_name(), "lines": lines}
 
 
 class MPOpeningSentence(Module):
@@ -255,8 +267,6 @@ class MPOpeningSentence(Module):
             Line(sentence["sentence"], "leader"),
             Line(sentence["citation"], "citation"),
         ]
-
-    # test
 
 
 class Office(object):
@@ -529,7 +539,6 @@ class MPInvitatory(Module):
                 + file_to_lines(filename)
                 + [Line(self.antiphon["first_line"], "leader"), Line(self.antiphon["second_line"])]
             )
-        print(filename)
         return file_to_lines(filename)
 
 
@@ -590,7 +599,6 @@ class MPPsalms(Module):
     def get_lines(self):
         setting = self.office.settings["psalter"]
         lectionary = self.office.settings["lectionary"]
-        print(setting, lectionary)
         if lectionary == "mass-readings":
             mass_psalms = self.mass_psalms()
             if mass_psalms:
@@ -601,6 +609,118 @@ class MPPsalms(Module):
         return self.thirty_days()
 
 
+class ReadingModule(Module):
+    def audio(self, passage, testament):
+        if testament == "DC":
+            return None
+        reading_audio = self.office.settings["reading_audio"] == "on"
+        if not reading_audio:
+            return None
+        passage = quote(passage)
+        return '<iframe src="https://www.esv.org/audio-player/{}" style="border: 0; width: 100%; height: 109px;"></iframe>'.format(
+            passage
+        )
+
+    @staticmethod
+    def closing(testament):
+        return "The Word of the Lord." if testament != "DC" else "Here ends the Reading."
+
+    @staticmethod
+    def closing_response(testament):
+        return "Thanks be to God." if testament != "DC" else None
+
+    @cached_property
+    def has_mass_reading(self):
+        return self.office.date.primary.rank.precedence_rank <= 4
+
+    def get_mass_reading_lines(self, reading):
+        lines = [
+            Line(reading.long_citation, "subheading"),
+            Line(self.audio(reading.long_citation, reading.testament), "html"),
+            Line(passage_to_citation(reading.long_citation), "leader"),
+            Line(reading.long_text, "html", "html"),
+            Line(self.closing(reading.testament), "leader"),
+            Line(self.closing_response(reading.testament), "congregation"),
+        ]
+        return [line for line in lines if line and line["content"]]
+
+    def get_reading(self, field, abbreviated=False):
+
+        subheading = getattr(self.office.office_readings, field)
+        passage = getattr(self.office.office_readings, field)
+        citation = passage_to_citation(getattr(self.office.office_readings, field))
+        text = getattr(self.office.office_readings, "{}_text".format(field))
+        closing = self.closing(getattr(self.office.office_readings, "{}_testament".format(field)))
+        closing_response = self.closing_response(getattr(self.office.office_readings, "{}_testament".format(field)))
+        testament = getattr(self.office.office_readings, "{}_testament".format(field))
+
+        if abbreviated:
+            has_abbreviated = (
+                True
+                if hasattr(self.office.office_readings, "{}_abbreviated".format(field))
+                and getattr(self.office.office_readings, "{}_abbreviated".format(field))
+                else False
+            )
+            if has_abbreviated:
+                subheading = getattr(self.office.office_readings, "{}_abbreviated".format(field))
+                passage = getattr(self.office.office_readings, "{}_abbreviated".format(field))
+                citation = passage_to_citation(getattr(self.office.office_readings, "{}_abbreviated".format(field)))
+                text = getattr(self.office.office_readings, "{}_abbreviated_text".format(field))
+
+        lines = [
+            Line(subheading, "subheading"),
+            Line(self.audio(passage, testament), "html"),
+            Line(citation, "leader"),
+            Line(text, "html", "leader"),
+            Line(closing, "leader"),
+            Line(closing_response, "congregation"),
+        ]
+        return [line for line in lines if line and line["content"]]
+
+    def get_mass_reading(self, number):
+        if not self.has_mass_reading:
+            return []
+        for reading in self.office.date.mass_readings:
+            if reading.reading_number == number:
+                return self.get_mass_reading_lines(reading)
+        return []
+
+    def abbreviated_mass_reading(self, number):
+        if not self.has_mass_reading:
+            return []
+
+        for reading in self.office.date.mass_readings:
+            if reading.reading_number == number:
+                if not reading.short_citation:
+                    return self.get_mass_reading(number)
+                return self.get_mass_reading_lines(reading)
+        return []
+
+
+class MPFirstReading(ReadingModule):
+
+    name = "First Reading"
+
+    def get_lines(self):
+        reading_cycle = self.office.settings["reading_cycle"]
+        reading_length = self.office.settings["reading_length"]
+        reading_headings = self.office.settings["reading_headings"]
+        lectionary = self.office.settings["lectionary"]
+
+        if lectionary == "mass-readings" and self.has_mass_reading:
+            return (
+                self.get_abbreviated_mass_reading(1) if reading_length == "abbreviated" else self.get_mass_reading(1)
+            )
+
+        abbreviated = reading_length == "abbreviated"
+        if int(reading_cycle) == 2:
+            has_alternate_reading = self.office.date.date.year % 2 == 0
+            if has_alternate_reading:
+                return self.get_reading("ep_reading_1", abbreviated)
+
+        return self.get_reading("mp_reading_1", abbreviated)
+
+
 class MorningPrayer(Office):
     def get_modules(self):
         return [
@@ -609,6 +729,7 @@ class MorningPrayer(Office):
             Preces(self),
             MPInvitatory(self),
             MPPsalms(self),
+            MPFirstReading(self),
         ]
 
 
