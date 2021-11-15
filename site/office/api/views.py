@@ -734,6 +734,9 @@ class ReadingModule(Module):
                 else self.get_mass_reading(number)
             )
 
+        if number > 2:
+            return None
+
         abbreviated = reading_length == "abbreviated"
         if int(reading_cycle) == 2:
             has_alternate_reading = self.office.date.date.year % 2 == 0
@@ -828,6 +831,16 @@ class MPSecondReading(ReadingModule):
         return self.get_lines_for_reading("mp", 2)
 
 
+class MPThirdReading(ReadingModule):
+
+    name = "Third Reading"
+
+    def get_lines(self):
+        if not self.has_mass_reading:
+            return None
+        return self.get_lines_for_reading("mp", 3)
+
+
 class MorningPrayer(Office):
     def get_modules(self):
         return [
@@ -840,6 +853,7 @@ class MorningPrayer(Office):
             MPFirstCanticle(self),
             MPSecondReading(self),
             MPSecondCanticle(self),
+            MPThirdReading(self),
         ]
 
 
@@ -855,7 +869,9 @@ class OfficeSerializer(serializers.Serializer):
     modules = serializers.SerializerMethodField()
 
     def get_modules(self, obj):
-        return {"data": [module.json for module in obj.get_modules()]}
+        modules = [module.json for module in obj.get_modules()]
+        modules = [module for module in modules if module and module["lines"]]
+        return {"data": modules}
 
 
 class MorningPrayerView(OfficeAPIView):
