@@ -803,6 +803,23 @@ class MPFirstCanticle(CanticleModule):
         return self.get_canticle(data)
 
 
+class MPSecondCanticle(CanticleModule):
+
+    name = "Second Canticle"
+
+    def get_lines(self):
+
+        rotation = self.office.settings["canticle_rotation"]
+
+        if rotation == "1979":
+            data = BCP1979CanticleTable().get_mp_canticle_2(self.office.date)
+        elif rotation == "2011":
+            data = REC2011CanticleTable().get_mp_canticle_2(self.office.date)
+        else:
+            data = DefaultCanticles().get_mp_canticle_2(self.office.date)
+        return self.get_canticle(data)
+
+
 class MPSecondReading(ReadingModule):
 
     name = "Second Reading"
@@ -822,6 +839,7 @@ class MorningPrayer(Office):
             MPFirstReading(self),
             MPFirstCanticle(self),
             MPSecondReading(self),
+            MPSecondCanticle(self),
         ]
 
 
