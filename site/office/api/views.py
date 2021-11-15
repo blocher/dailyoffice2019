@@ -116,8 +116,16 @@ class Module(object):
             return self.name
         return "Daily Office Module"
 
-    def get_lines_with_empty_removed(self):
-        return [line for line in self.get_lines() if line and line.get("content")]
+    def strip_line(self, line):
+        line["content"] = line["content"].strip()
+        line["line_type"] = line["line_type"].strip()
+        return line
+
+    def get_formatted_lines(self):
+        lines = [self.strip_line(line) for line in self.get_lines()]
+        lines = [line for line in lines if line and line.get("content")]
+        lines = [self.mark_html_safe(line) for line in lines]
+        return lines
 
     def get_lines(self):
         raise NotImplementedError("You must implement this method.")
@@ -132,8 +140,7 @@ class Module(object):
 
     @cached_property
     def json(self):
-        lines = self.get_lines_with_empty_removed()
-        lines = [self.mark_html_safe(line) for line in lines]
+        lines = self.get_formatted_lines()
         return {"name": self.get_name(), "lines": lines}
 
 
@@ -617,15 +624,13 @@ class MPPsalms(Module):
 class ReadingModule(Module):
     def remove_headings_if_needed(self, text):
         reading_headings = self.office.settings["reading_headings"] == "on"
-        print(reading_headings)
         if reading_headings:
             return text
 
         soup = BeautifulSoup(text, "html5lib")
         for h3 in soup.find_all("h3", {"class": "reading-heading"}):
             h3.decompose()
-        print(type(soup))
-        return soup.html()
+        return str(soup)
 
     def audio(self, passage, testament):
         if testament == "DC":
@@ -744,6 +749,19 @@ class CanticleModule(Module):
     def rubric(self):
         return Line("The following Canticle is sung or said, all standing", line_type="rubric")
 
+    def gloria_lines(self, data):
+        if not data.gloria:
+            return []
+        return [
+            Line(
+                "Glory be to the Father, and to the Son, and to the Holy Spirit; *",
+                line_type="congregation",
+                indented=False,
+            ),
+            Line("as it was in the beginning, is now, and ever shall be,", line_type="congregation", indented=True),
+            Line("world without end. Amen.", line_type="congregation", indented=True),
+        ]
+
     def get_canticle(self, data):
         return (
             [
@@ -755,6 +773,7 @@ class CanticleModule(Module):
             + [
                 Line(data.citation, "citation"),
             ]
+            + self.gloria_lines(data)
         )
 
 
@@ -772,8 +791,6 @@ class MPFirstCanticle(CanticleModule):
             data = REC2011CanticleTable().get_mp_canticle_1(self.office.date)
         else:
             data = DefaultCanticles().get_mp_canticle_1(self.office.date)
-
-        print(data)
         return self.get_canticle(data)
 
 
