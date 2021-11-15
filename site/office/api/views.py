@@ -122,9 +122,10 @@ class Module(object):
         return line
 
     def get_formatted_lines(self):
-        lines = [self.strip_line(line) for line in self.get_lines()]
-        lines = [line for line in lines if line and line.get("content")]
-        lines = [self.mark_html_safe(line) for line in lines]
+        # lines = [self.strip_line(line) for line in self.get_lines()]
+        # lines = [line for line in lines if line and line.get("content")]
+        # lines = [self.mark_html_safe(line) for line in lines]
+        return self.get_lines()
         return lines
 
     def get_lines(self):
@@ -627,7 +628,7 @@ class ReadingModule(Module):
         if reading_headings:
             return text
 
-        soup = BeautifulSoup(text, "html5lib")
+        soup = BeautifulSoup(text, "html.parser")
         for h3 in soup.find_all("h3", {"class": "reading-heading"}):
             h3.decompose()
         return str(soup)
@@ -721,28 +722,36 @@ class ReadingModule(Module):
                 return self.get_mass_reading_lines(reading)
         return []
 
-
-class MPFirstReading(ReadingModule):
-
-    name = "First Reading"
-
-    def get_lines(self):
+    def get_lines_for_reading(self, office="mp", number=1):
         reading_cycle = self.office.settings["reading_cycle"]
         reading_length = self.office.settings["reading_length"]
         lectionary = self.office.settings["lectionary"]
 
         if lectionary == "mass-readings" and self.has_mass_reading:
             return (
-                self.get_abbreviated_mass_reading(1) if reading_length == "abbreviated" else self.get_mass_reading(1)
+                self.get_abbreviated_mass_reading(number)
+                if reading_length == "abbreviated"
+                else self.get_mass_reading(number)
             )
 
         abbreviated = reading_length == "abbreviated"
         if int(reading_cycle) == 2:
             has_alternate_reading = self.office.date.date.year % 2 == 0
             if has_alternate_reading:
-                return self.get_reading("ep_reading_1", abbreviated)
+                alternate_reading_field = "{}_reading_{}".format("ep" if office == "mp" else office, number)
+                print(alternate_reading_field)
+                return self.get_reading(alternate_reading_field, abbreviated)
 
-        return self.get_reading("mp_reading_1", abbreviated)
+        reading_field = "{}_reading_{}".format(office, number)
+        return self.get_reading(reading_field, abbreviated)
+
+
+class MPFirstReading(ReadingModule):
+
+    name = "First Reading"
+
+    def get_lines(self):
+        return self.get_lines_for_reading("mp", 1)
 
 
 class CanticleModule(Module):
@@ -794,6 +803,14 @@ class MPFirstCanticle(CanticleModule):
         return self.get_canticle(data)
 
 
+class MPSecondReading(ReadingModule):
+
+    name = "Second Reading"
+
+    def get_lines(self):
+        return self.get_lines_for_reading("mp", 2)
+
+
 class MorningPrayer(Office):
     def get_modules(self):
         return [
@@ -804,6 +821,7 @@ class MorningPrayer(Office):
             MPPsalms(self),
             MPFirstReading(self),
             MPFirstCanticle(self),
+            MPSecondReading(self),
         ]
 
 
