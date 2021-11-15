@@ -15,6 +15,7 @@ from rest_framework.views import APIView
 from churchcal.api.permissions import ReadOnly
 from churchcal.api.serializer import DaySerializer
 from office.api.serializers import UpdateNoticeSerializer
+from office.canticles import DefaultCanticles, BCP1979CanticleTable, REC2011CanticleTable
 from office.models import UpdateNotice, HolyDayOfficeDay, StandardOfficeDay, ThirtyDayPsalterDay
 from office.utils import passage_to_citation
 
@@ -115,6 +116,9 @@ class Module(object):
             return self.name
         return "Daily Office Module"
 
+    def get_lines_with_empty_removed(self):
+        return [line for line in self.get_lines() if line and line.get("content")]
+
     def get_lines(self):
         raise NotImplementedError("You must implement this method.")
 
@@ -128,7 +132,7 @@ class Module(object):
 
     @cached_property
     def json(self):
-        lines = self.get_lines()
+        lines = self.get_lines_with_empty_removed()
         lines = [self.mark_html_safe(line) for line in lines]
         return {"name": self.get_name(), "lines": lines}
 
@@ -321,7 +325,7 @@ class Confession(Module):
             + [Line("The Officiant says to the People", "rubric")]
             + self.get_intro_lines()
             + self.get_body_lines()
-            + self.get_absolution_lines(),
+            + self.get_absolution_lines()
         )
 
 
@@ -736,6 +740,43 @@ class MPFirstReading(ReadingModule):
         return self.get_reading("mp_reading_1", abbreviated)
 
 
+class CanticleModule(Module):
+    def rubric(self):
+        return Line("The following Canticle is sung or said, all standing", line_type="rubric")
+
+    def get_canticle(self, data):
+        return (
+            [
+                Line(data.latin_name, "heading"),
+                Line(data.english_name, "subheading"),
+                self.rubric(),
+            ]
+            + file_to_lines(data.template.replace("html", "csv"))
+            + [
+                Line(data.citation, "citation"),
+            ]
+        )
+
+
+class MPFirstCanticle(CanticleModule):
+
+    name = "First Canticle"
+
+    def get_lines(self):
+
+        rotation = self.office.settings["canticle_rotation"]
+
+        if rotation == "1979":
+            data = BCP1979CanticleTable().get_mp_canticle_1(self.office.date)
+        elif rotation == "2011":
+            data = REC2011CanticleTable().get_mp_canticle_1(self.office.date)
+        else:
+            data = DefaultCanticles().get_mp_canticle_1(self.office.date)
+
+        print(data)
+        return self.get_canticle(data)
+
+
 class MorningPrayer(Office):
     def get_modules(self):
         return [
@@ -745,6 +786,7 @@ class MorningPrayer(Office):
             MPInvitatory(self),
             MPPsalms(self),
             MPFirstReading(self),
+            MPFirstCanticle(self),
         ]
 
 
