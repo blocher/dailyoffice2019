@@ -3,6 +3,7 @@ import os
 from distutils.util import strtobool
 from urllib.parse import quote
 
+from bs4 import BeautifulSoup
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.views.generic.base import TemplateResponseMixin
@@ -610,6 +611,18 @@ class MPPsalms(Module):
 
 
 class ReadingModule(Module):
+    def remove_headings_if_needed(self, text):
+        reading_headings = self.office.settings["reading_headings"] == "on"
+        print(reading_headings)
+        if reading_headings:
+            return text
+
+        soup = BeautifulSoup(text, "html5lib")
+        for h3 in soup.find_all("h3", {"class": "reading-heading"}):
+            h3.decompose()
+        print(type(soup))
+        return soup.html()
+
     def audio(self, passage, testament):
         if testament == "DC":
             return None
@@ -634,11 +647,12 @@ class ReadingModule(Module):
         return self.office.date.primary.rank.precedence_rank <= 4
 
     def get_mass_reading_lines(self, reading):
+        text = self.remove_headings_if_needed(reading.long_text)
         lines = [
             Line(reading.long_citation, "subheading"),
             Line(self.audio(reading.long_citation, reading.testament), "html"),
             Line(passage_to_citation(reading.long_citation), "leader"),
-            Line(reading.long_text, "html", "html"),
+            Line(text, "html", "html"),
             Line(self.closing(reading.testament), "leader"),
             Line(self.closing_response(reading.testament), "congregation"),
         ]
@@ -666,6 +680,8 @@ class ReadingModule(Module):
                 passage = getattr(self.office.office_readings, "{}_abbreviated".format(field))
                 citation = passage_to_citation(getattr(self.office.office_readings, "{}_abbreviated".format(field)))
                 text = getattr(self.office.office_readings, "{}_abbreviated_text".format(field))
+
+        text = self.remove_headings_if_needed(text)
 
         lines = [
             Line(subheading, "subheading"),
@@ -704,7 +720,6 @@ class MPFirstReading(ReadingModule):
     def get_lines(self):
         reading_cycle = self.office.settings["reading_cycle"]
         reading_length = self.office.settings["reading_length"]
-        reading_headings = self.office.settings["reading_headings"]
         lectionary = self.office.settings["lectionary"]
 
         if lectionary == "mass-readings" and self.has_mass_reading:
