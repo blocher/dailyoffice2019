@@ -327,25 +327,25 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
 
     def get_ohara_title(self):
         date = self.get_tuesday()
-        if date.month == 10 and date.year == 2021 and date.day == 5:
+        if date.month == 11 and date.year == 2021 and date.day == 16:
             return "Combined Cell Meeting"
         return "O'Hara Cell Meeting"
 
     def get_ohara_meeting(self):
         date = self.get_tuesday()
-        if date.month == 10 and date.year == 2021 and date.day == 5:
+        if date.month == 11 and date.year == 2021 and date.day == 16:
             return "both_cells"
         return "ohara"
 
     def get_ohara_to_addresses(self):
         date = self.get_tuesday()
-        if date.month == 10 and date.year == 2021 and date.day == 5:
+        if date.month == 11 and date.year == 2021 and date.day == 16:
             return ["community-of-st-andrew-all@googlegroups.com", "community-of-st-andrew-guests@googlegroups.com"]
         return ["community-of-st-andrew-cell-ohara@googlegroups.com", "community-of-st-andrew-guests@googlegroups.com"]
 
     def get_morningside_to_addresses(self):
         date = self.get_tuesday()
-        if date.month == 10 and date.year == 2021 and date.day == 5:
+        if date.month == 11 and date.year == 2021 and date.day == 16:
             return ["blocher@gmail.com"]
         return [
             "community-of-st-andrew-cell-morningside@googlegroups.com",
