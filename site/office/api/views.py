@@ -4,6 +4,8 @@ from distutils.util import strtobool
 from urllib.parse import quote
 
 from bs4 import BeautifulSoup
+from django.http import HttpResponse
+from django.template.loader import render_to_string
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.views.generic.base import TemplateResponseMixin
@@ -81,6 +83,8 @@ class Settings(dict):
 # leader
 # congregation
 # rubric
+# leader_dialogue
+# congregation_dialogue
 
 
 def file_to_lines(filename):
@@ -980,6 +984,143 @@ class AdditionalCollects(Module):
         return self.get_weekly_collect()
 
 
+class MissionCollect(Module):
+
+    name = "Collect for Mission"
+
+    def get_lines(self):
+        mission_collects = (
+            "Almighty and everlasting God, who alone works great marvels: Send down upon our clergy and the congregations committed to their charge the life-giving Spirit of your grace, shower them with the continual dew of your blessing, and ignite in them a zealous love of your Gospel; through Jesus Christ our Lord. ",
+            "O God, you have made of one blood all the peoples of the earth, and sent your blessed Son to preach peace to those who are far off and to those who are near: Grant that people everywhere may seek after you and find you; bring the nations into your fold; pour out your Spirit upon all flesh; and hasten the coming of your kingdom; through Jesus Christ our Lord.",
+            "Lord Jesus Christ, you stretched out your arms of love on the hard wood of the Cross that everyone might come within the reach of your saving embrace: So clothe us in your Spirit that we, reaching forth our hands in love, may bring those who do not know you to the knowledge and love of you; for the honor of your Name.",
+        )
+
+        day_of_year = self.office.date.date.timetuple().tm_yday
+        collect_number = day_of_year % 3
+
+        if collect_number == 0:
+            collect = mission_collects[0]
+            number = "I"
+        elif collect_number == 1:
+            collect = mission_collects[1]
+            number = "II"
+        else:
+            collect = mission_collects[2]
+            number = "III"
+
+        return [
+            Line("A Collect for Mission ({})".format(number), "heading"),
+            Line(collect, "leader"),
+            Line("Amen.", "congregation"),
+        ]
+
+
+class Intercessions(Module):
+    name = "Intercessions, Thanksgivings, and Praise"
+
+    def get_lines(self):
+        return [
+            Line("Intercessions, Thanksgivings, and Praise", "heading"),
+            Line("The Officiant may invite the People to offer intercessions and thanksgivings.", "rubric"),
+            Line("A hymn or anthem may be sung.", "rubric"),
+        ]
+
+
+class FinalPrayers(Module):
+    name = "Final Prayers"
+
+    def get_lines(self):
+        general_thanksgiving = self.office.settings["general_thanksgiving"]
+        chrysostom = self.office.settings["chrysostom"]
+
+        lines = []
+
+        if general_thanksgiving == "on":
+            lines = (
+                lines
+                + [
+                    Line("The General Thanksgiving", "heading"),
+                    Line("Officiant and People", "rubric"),
+                ]
+                + file_to_lines("general_thanksgiving")
+            )
+
+        if chrysostom == "on":
+            lines = (
+                lines
+                + [
+                    Line("A Prayer of St. John Chrysostom", "heading"),
+                ]
+                + file_to_lines("chrysostom")
+            )
+
+        return lines
+
+
+class Dismissal(Module):
+    name = "Dismissal"
+
+    def get_fixed_grace(self):
+
+        return {
+            "officiant": "The grace of our Lord Jesus Christ, and the love of God, and the fellowship of the Holy Spirit, be with us all evermore.",
+            "people": "Amen.",
+            "citation": "2 CORINTHIANS 13:14",
+        }
+
+    def get_grace(self):
+
+        if self.office.date.date.weekday() in (6, 2, 5):
+            return {
+                "officiant": "The grace of our Lord Jesus Christ, and the love of God, and the fellowship of the Holy Spirit, be with us all evermore.",
+                "people": "Amen.",
+                "citation": "2 CORINTHIANS 13:14",
+            }
+        if self.office.date.date.weekday() in (0, 3):
+            return {
+                "officiant": "May the God of hope fill us with all joy and peace in believing through the power of the Holy Spirit. ",
+                "people": "Amen.",
+                "citation": "ROMANS 15:13",
+            }
+
+        if self.office.date.date.weekday() in (1, 4):
+            return {
+                "officiant": "Glory to God whose power, working in us, can do infinitely more than we can ask or imagine: Glory to him from generation to generation in the Church, and in Christ Jesus for ever and ever.",
+                "people": "Amen.",
+                "citation": "EPHESIANS 3:20-21",
+            }
+
+    def get_lines(self):
+
+        grace_rotation = self.office.settings["grace"]
+
+        easter = self.office.date.season.name == "Eastertide"
+
+        officiant = "Let us bless the Lord."
+        people = "Thanks be to God."
+
+        if easter:
+            officiant = "{} Alleluia, alleluia.".format(officiant)
+            people = "{} Alleluia, alleluia.".format(people)
+
+        lines = [
+            Line("Dismissal and Grace", "heading"),
+            Line(officiant, "leader_dialogue"),
+            Line(people, "congregation_dialogue"),
+        ]
+
+        if grace_rotation == "fixed":
+            grace = self.get_grace()
+        else:
+            grace = self.get_fixed_grace()
+
+        return lines + [
+            Line(grace["officiant"], "leader"),
+            Line("Amen.", "congregation"),
+            Line(grace["citation"], "citation"),
+        ]
+
+
 class MorningPrayer(Office):
     def get_modules(self):
         return [
@@ -997,6 +1138,10 @@ class MorningPrayer(Office):
             Prayers(self),
             CollectOfTheDay(self),
             AdditionalCollects(self),
+            MissionCollect(self),
+            Intercessions(self),
+            FinalPrayers(self),
+            Dismissal(self),
         ]
 
 
@@ -1014,7 +1159,7 @@ class OfficeSerializer(serializers.Serializer):
     def get_modules(self, obj):
         modules = [module.json for module in obj.get_modules()]
         modules = [module for module in modules if module and module["lines"]]
-        return {"data": modules}
+        return modules
 
 
 class MorningPrayerView(OfficeAPIView):
@@ -1022,3 +1167,91 @@ class MorningPrayerView(OfficeAPIView):
         office = MorningPrayer(request, year, month, day)
         serializer = OfficeSerializer(office)
         return Response(serializer.data)
+
+
+# heading
+# subheading
+# citation
+# html
+# leader
+# congregation
+# rubric
+# leader_dialogue
+# congregation_dialogue
+
+
+def heading(content):
+    return "<h2>{}</h2>".format(content)
+
+
+def subheading(content):
+    return "<h4>{}</h4>".format(content)
+
+
+def citation(content):
+    return "<h5>{}</h5>".format(content)
+
+
+def html_content(content):
+    return content
+
+
+def leader(content, indented=False):
+    if indented:
+        return "<p class='indent'>{}</p>".format(content)
+    return "<p class='handing-indent'>{}</p>".format(content)
+
+
+def congregation(content, indented=False):
+    if indented:
+        return "<p class='indent'><strong>{}</strong></p>".format(content)
+    return "<p class='handing-indent'><strong>{}</strong></p>".format(content)
+
+
+def rubric(content):
+    return "<p><em>{}</em></p>".format(content)
+
+
+def leader_dialogue(content, indented=False):
+    return leader(content, indented)
+
+
+def congregation_dialogue(content, indented=False):
+    return congregation(content, indented)
+
+
+def line_to_html(line):
+    if line["line_type"] == "heading":
+        return heading(line["content"])
+    if line["line_type"] == "subheading":
+        return subheading(line["content"])
+    if line["line_type"] == "citation":
+        return citation(line["content"])
+    if line["line_type"] == "html":
+        return html_content(line["content"])
+    if line["line_type"] == "leader":
+        return leader(line["content"], line["indented"])
+    if line["line_type"] == "congregation":
+        return congregation(line["content"], line["indented"])
+    if line["line_type"] == "rubric":
+        return rubric(line["content"])
+    if line["line_type"] == "leader_dialogue":
+        return leader_dialogue(line["content"], line["indented"])
+    if line["line_type"] == "congregation_dialogue":
+        return congregation_dialogue(line["content"], line["indented"])
+    return line["content"]
+
+
+def json_modules_to_html(modules, request=None):
+    html = ""
+    for module in modules:
+        for line in module["lines"]:
+            html += line_to_html(line)
+    return render_to_string("display_base.html", {"content": mark_safe(html)})
+
+
+class MorningPrayerDisplayView(OfficeAPIView):
+    def get(self, request, year, month, day):
+        office = MorningPrayer(request, year, month, day)
+        serializer = OfficeSerializer(office)
+        return HttpResponse(json_modules_to_html(serializer.data["modules"], request), content_type="text/html")

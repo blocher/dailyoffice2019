@@ -27,6 +27,9 @@
     "@capacitor/cli": "^2.4.7",
     "@capacitor/core": "^2.4.7",
     "@capacitor/ios": "^2.4.7",
+    "@tailwindcss/aspect-ratio": "^0.3.0",
+    "@tailwindcss/forms": "^0.3.4",
+    "@tailwindcss/typography": "^0.4.1",
     "animate.css": "^4.1.1",
     "axios": "^0.21.3",
     "capacitor-firebase-analytics": "^0.3.2",
@@ -34,6 +37,7 @@
     "mjml": "^4.10.2",
     "pretty-checkbox": "^3.0.3",
     "split-html": "^1.1.0",
+    "tailwindcss": "^2.2.19",
     "wowjs": "^1.1.3"
   }
 }

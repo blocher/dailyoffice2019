@@ -375,14 +375,12 @@ class Dismissal(OfficeSection):
         }
 
     def get_grace(self):
-
         if self.date.date.weekday() in (6, 2, 5):
             return {
                 "officiant": "The grace of our Lord Jesus Christ, and the love of God, and the fellowship of the Holy Spirit, be with us all evermore.",
                 "people": "Amen.",
                 "citation": "2 CORINTHIANS 13:14",
             }
-
         if self.date.date.weekday() in (0, 3):
             return {
                 "officiant": "May the God of hope fill us with all joy and peace in believing through the power of the Holy Spirit. ",
