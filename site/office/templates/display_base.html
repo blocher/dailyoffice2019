@@ -1,9 +1,12 @@
 {% load static %}
 {% load render_bundle from webpack_loader %}
 <!DOCTYPE html>
-<html id="html" class="theme-dark">
+<html id="html" class="theme-dark {% if "/family/" in request.get_full_path %} family {% endif %}" data-appversion="{{ app_version }}">
     <head>
-        <meta charset="utf-8">
+        <script>
+            window.mode = "{{ mode }}";
+            window.file_name = "{{ filename }}";
+        </script>
         <!-- Google Tag Manager -->
         <script> if (window.mode=='web') { (function (w, d, s, l, i) {
             w[l] = w[l] || [];
@@ -32,10 +35,64 @@
         {% endblock %}
     </head>
 
-    <body>
-        <h1>Test</h1>
+    <body id="body" class="{{ mode }}{% if "/family/" in request.get_full_path %} family {% endif %}">
+        <div id="paginatedText">
+
+        </div>
+        <div id="{{ mode }}" class="{{ mode }}">
+            <div id="notch" class="notch">
+
+            </div>
+            <!-- Google Tag Manager (noscript) -->
+            <noscript>
+                <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NSB92RP"
+                        height="0" width="0" style="display:none;visibility:hidden"></iframe>
+            </noscript>
+            {% include "office/header.html" %}
+            <div class="main">
+                <!-- <p class="announcement no-print"><i class="fas fa-scroll"></i><strong> New!</strong> Presentation/book mode<br><small>Try the new presentation mode, a streamlined paginated view that avoids jerky scrolling. It is great for presenting to a group on YouTube, Facebook Live, Zoom, or other video services. On mobile devices with a touchscreen, you may swipe left or right to turn the page. To get started, click the <i id="presentiation-mode-link" class="fas fa-presentation"></i> button above.</small></p>-->
+
+                <div class="{{ show_settings_class }}">
+                    {%  include "office/settings_section.html" %}
+                </div>
+                {% block content %}
+                  {{ content }}
+                {% endblock %}
+                {%  include "feedback.html" %}
+
+            </div>
+
+            <div class="no-print">
+                {% if office %}
+                    {% if office.family %}
+                        {% include "office/footer_family.html" %}
+                    {% else %}
+                        {% include "office/footer.html" %}
+                    {% endif %}
+                {% endif %}
+            </div>
+
+        </div>
+
+        <div id="presentation-controls" class="off">
+                <div class="container">
+                    <div class="item">
+                        <a href="#" class="scroll-back"><i class="fas fa-arrow-left"></i></a>
+                    </div>
+                    <div class="item align-center">
+                        Page <span id="pageNumber">1</span> of <span id="allPages">1</span>
+                    </div>
+                    <div class="item align-center">
+                        <a href="#" id="exit-presentation-link"><i class="fas fa-times-circle"></i> Exit Presentation</a>
+                    </div>
+                    <div class="item align-right">
+                        <a href="#" class="scroll-forward"><i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+
+
+
+
     </body>
-
-
-
 </html>
