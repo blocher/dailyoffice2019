@@ -1169,6 +1169,16 @@ class MorningPrayerView(OfficeAPIView):
         return Response(serializer.data)
 
 
+class SettingsSerializer:
+    pass
+
+
+class SettingsViews(APIView):
+    def get(self):
+        serializer = SettingsSerializer()
+        return Response(serializer.data)
+
+
 # heading
 # subheading
 # citation

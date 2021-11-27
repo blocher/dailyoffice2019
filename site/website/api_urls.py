@@ -35,6 +35,11 @@ urlpatterns = [
         name="morning_prayer_view",
     ),
     path(
+        r"api/v1/available_settings",
+        MorningPrayerView.as_view(),
+        name="morning_prayer_display_view",
+    ),
+    path(
         r"new/office/morning_prayer/<int:year>-<int:month>-<int:day>",
         MorningPrayerDisplayView.as_view(),
         name="morning_prayer_display_view",

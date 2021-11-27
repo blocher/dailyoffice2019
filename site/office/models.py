@@ -112,3 +112,37 @@ class UpdateNotice(BaseModel):
 
     class Meta(object):
         ordering = ["-version"]
+
+
+class Setting(BaseModel):
+
+    MAIN_SETTINGS = 1
+    ADDITIONAL_SETTINGS = 2
+    EXPERT_SETTINGS = 3
+    SETTING_TYPES = (
+        (MAIN_SETTINGS, "Settings"),
+        (ADDITIONAL_SETTINGS, "Additional Settings"),
+        (EXPERT_SETTINGS, "Expert Settings"),
+    )
+
+    DAILY_OFFICE_SITE = 1
+    FAMILY_PRAYER_SITE = 2
+    SETTING_SITES = (
+        (DAILY_OFFICE_SITE, "Daily Office"),
+        (FAMILY_PRAYER_SITE, "Family Prayer"),
+    )
+
+    name = models.CharField(max_length=255)
+    title = models.CharField(max_length=512)
+    description = models.TextField(blank=True, null=True)
+    order = models.PositiveSmallIntegerField(blank=True, null=True)
+    setting_type = models.PositiveSmallIntegerField(choices=SETTING_TYPES, null=False, default=MAIN_SETTINGS)
+    site = models.PositiveSmallIntegerField(choices=SETTING_SITES, null=False, default=DAILY_OFFICE_SITE)
+
+
+class SettingOption(BaseModel):
+    setting = models.ForeignKey(Setting, on_delete=models.CASCADE)
+    order = models.PositiveSmallIntegerField(blank=True, null=True)
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    value = models.CharField(max_length=255)

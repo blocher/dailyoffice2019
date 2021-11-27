@@ -1,7 +1,7 @@
 from adminsortable2.admin import SortableAdminMixin
 from django.contrib import admin
 
-from office.models import AboutItem, UpdateNotice, StandardOfficeDay, HolyDayOfficeDay
+from office.models import AboutItem, UpdateNotice, StandardOfficeDay, HolyDayOfficeDay, Setting, SettingOption
 
 
 class AboutItemAdmin(SortableAdminMixin, admin.ModelAdmin):
@@ -26,7 +26,38 @@ class HolyDayOfficeDayAdmin(admin.ModelAdmin):
     ordering = ("order",)
 
 
+class OfficeSettingOptionInlineAdmin(admin.TabularInline):
+    model = SettingOption
+    ordering = ("order",)
+    extra = 0
+
+
+class OfficeSettingAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "description",
+        "get_site_display",
+        "get_setting_type_display",
+        "order",
+    )
+    ordering = ("site", "setting_type", "order")
+    extra = 0
+    inlines = (OfficeSettingOptionInlineAdmin,)
+    list_filter = ("site", "setting_type")
+
+    def get_site_display(self, obj):
+        return obj.get_site_display()
+
+    get_site_display.short_description = "Site"
+
+    def get_setting_type_display(self, obj):
+        return obj.get_setting_type_display()
+
+    get_setting_type_display.short_description = "Setting Type"
+
+
 admin.site.register(AboutItem, AboutItemAdmin)
 admin.site.register(UpdateNotice, UpdateNoticeAdmin)
 admin.site.register(StandardOfficeDay, StandardOfficeDayAdmin)
 admin.site.register(HolyDayOfficeDay, HolyDayOfficeDayAdmin)
+admin.site.register(Setting, OfficeSettingAdmin)
