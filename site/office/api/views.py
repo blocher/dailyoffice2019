@@ -9,7 +9,7 @@ from django.template.loader import render_to_string
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from django.views.generic.base import TemplateResponseMixin
-from rest_framework import serializers
+from rest_framework import serializers, mixins, viewsets
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -18,7 +18,14 @@ from churchcal.api.permissions import ReadOnly
 from churchcal.api.serializer import DaySerializer
 from office.api.serializers import UpdateNoticeSerializer
 from office.canticles import DefaultCanticles, BCP1979CanticleTable, REC2011CanticleTable
-from office.models import UpdateNotice, HolyDayOfficeDay, StandardOfficeDay, ThirtyDayPsalterDay
+from office.models import (
+    UpdateNotice,
+    HolyDayOfficeDay,
+    StandardOfficeDay,
+    ThirtyDayPsalterDay,
+    Setting,
+    SettingOption,
+)
 from office.utils import passage_to_citation
 
 
@@ -1169,14 +1176,51 @@ class MorningPrayerView(OfficeAPIView):
         return Response(serializer.data)
 
 
-class SettingsSerializer:
-    pass
+class SettingOptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SettingOption
+        fields = (
+            "uuid",
+            "name",
+            "description",
+            "value",
+            "order",
+        )
 
 
-class SettingsViews(APIView):
-    def get(self):
-        serializer = SettingsSerializer()
-        return Response(serializer.data)
+class SettingSerializer(serializers.ModelSerializer):
+    options = SettingOptionSerializer(many=True, source="settingoption_set")
+    site_name = serializers.SerializerMethodField()
+    setting_type_name = serializers.SerializerMethodField()
+
+    def get_site_name(self, obj):
+        sites = dict(Setting.SETTING_SITES)
+        return sites[obj.site]
+
+    def get_setting_type_name(self, obj):
+        setting_types = dict(Setting.SETTING_TYPES)
+        return setting_types[obj.setting_type]
+
+    class Meta:
+        model = Setting
+        fields = (
+            "uuid",
+            "name",
+            "title",
+            "description",
+            "site",
+            "site_name",
+            "setting_type",
+            "setting_type_name",
+            "order",
+            "options",
+        )
+
+
+class AvailableSettings(mixins.ListModelMixin, viewsets.GenericViewSet):
+
+    serializer_class = SettingSerializer
+    queryset = Setting.objects.prefetch_related("settingoption_set").order_by("site", "setting_type", "order").all()
 
 
 # heading

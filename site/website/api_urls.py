@@ -6,7 +6,7 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from churchcal.api.views import DayView, MonthView, YearView
-from office.api.views import MorningPrayerView, MorningPrayerDisplayView
+from office.api.views import MorningPrayerView, MorningPrayerDisplayView, AvailableSettings
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -22,6 +22,7 @@ schema_view = get_schema_view(
 )
 
 router_v1 = routers.DefaultRouter()
+router_v1.register(r"available_settings", AvailableSettings)
 
 urlpatterns = [
     re_path(r"^api/v1/", include(router_v1.urls)),
@@ -33,11 +34,6 @@ urlpatterns = [
         r"api/v1/office/morning_prayer/<int:year>-<int:month>-<int:day>",
         MorningPrayerView.as_view(),
         name="morning_prayer_view",
-    ),
-    path(
-        r"api/v1/available_settings",
-        MorningPrayerView.as_view(),
-        name="morning_prayer_display_view",
     ),
     path(
         r"new/office/morning_prayer/<int:year>-<int:month>-<int:day>",
