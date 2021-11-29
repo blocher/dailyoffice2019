@@ -1,6 +1,6 @@
-// noinspection CssInvalidAtRule
+// eslint-disable-next-line
 @tailwind base
-// noinspection CssInvalidAtRule
+// eslint-disable-next-line
 @tailwind components
-// noinspection CssInvalidAtRule
+// eslint-disable-next-line
 @tailwind utilities
