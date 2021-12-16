@@ -51,10 +51,10 @@ repos:
           - eslint-plugin-prettier@4.0.0
           - prettier@2.3.2
 
-  - repo: https://github.com/awebdeveloper/pre-commit-stylelint
-    rev: 0.0.2
-    hooks:
-    -   id: stylelint
-        args: [--fix]
-        exclude: ^site/node_modules/|^site/office/src/office/js/fontawesome/|^site/office/src/office/css/fontawesome/
-        additional_dependencies: ['stylelint@13.13.1', 'stylelint-config-standard@22.0.0', 'stylelint-scss@3.20.1']
+#  - repo: https://github.com/awebdeveloper/pre-commit-stylelint
+#    rev: 0.0.2
+#    hooks:
+#    -   id: stylelint
+#        args: [--fix]
+#        exclude: ^site/node_modules/|^site/office/src/office/js/fontawesome/|^site/office/src/office/css/fontawesome/
+#        additional_dependencies: ['stylelint@13.13.1', 'stylelint-config-standard@22.0.0', 'stylelint-scss@3.20.1']

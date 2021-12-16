@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "npm run lint -- --fix && vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint"
@@ -16,12 +16,11 @@
     "@tailwindcss/aspect-ratio": "^0.3.0",
     "@tailwindcss/forms": "^0.3.4",
     "@tailwindcss/typography": "^0.4.1",
-    "autoprefixer": "^10.4.0",
+    "axios": "^0.24.0",
     "core-js": "^3.6.5",
-    "postcss": "^8.4.4",
     "register-service-worker": "^1.7.1",
-    "tailwindcss": "^2.2.19",
     "vue": "^3.0.0",
+    "vue-axios": "^3.4.0",
     "vue-router": "^4.0.0-0",
     "vuex": "^4.0.0-0",
     "webpack": "^5.64.4"
@@ -38,13 +37,16 @@
     "@vue/compiler-sfc": "^3.0.0",
     "@vue/eslint-config-prettier": "^6.0.0",
     "@vue/test-utils": "^2.0.0-0",
+    "autoprefixer": "^10.4.0",
     "babel-eslint": "^10.1.0",
     "chai": "^4.1.2",
     "eslint": "^8.3.0",
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-vue": "^7.0.0",
+    "postcss": "^8.4.4",
     "prettier": "^2.5.0",
     "sass": "^1.43.5",
-    "sass-loader": "^8.0.2"
+    "sass-loader": "^8.0.2",
+    "tailwindcss": "^2.2.19"
   }
 }
