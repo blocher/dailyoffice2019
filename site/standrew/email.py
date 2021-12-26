@@ -386,10 +386,14 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                 return [results[1]]
             return results
         if tuesday_number == 4:
+            title = "Women's Discipleship Group"
+            tuesday = self.get_tuesday()
+            if tuesday.year == 2021 and tuesday.month == 12 and tuesday.day == 28:
+                title = "CANCELED: Women's Discipleship Group"
             return [
                 {
-                    "title": "Women's Discipleship Group",
-                    "date": self.get_tuesday(),
+                    "title": title,
+                    "date": tuesday,
                     "time": "7 to 9 pm",
                     "zoom_link": ZOOM_LINK,
                     "optional": False,

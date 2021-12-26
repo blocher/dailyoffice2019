@@ -31,6 +31,9 @@ class OfficeDay(BaseModel):
     ep_reading_2_testament = models.CharField(max_length=2, choices=TESTAMENTS)
     ep_reading_2_text = models.TextField(blank=True, null=True)
 
+    def mp_reading_1_gospel(self):
+        return true
+
     def __getattribute__(self, attrname):
         value = super().__getattribute__(attrname)
         try:

@@ -479,7 +479,11 @@ def readings_data(testament=""):
         day.show_mp = (
             testament == "" or day.mp_reading_1_testament in testaments or day.mp_reading_2_testament in testaments
         )
-        day.show_mp_1 = testament == "" or day.mp_reading_1_testament in testaments
+        day.show_mp_1 = (
+            testament == ""
+            or day.mp_reading_1_testament in testaments
+            or (testament == "gospels" and ("Matthew" in day.mp_reading_1))
+        )
         day.show_mp_2 = testament == "" or day.mp_reading_2_testament in testaments
         day.show_ep = (
             testament == "" or day.ep_reading_1_testament in testaments or day.ep_reading_2_testament in testaments
