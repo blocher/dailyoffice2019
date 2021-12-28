@@ -5,7 +5,7 @@
     <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
     <style>
         body {
-            max-width: 50rem;
+            max-width: 70rem;
             padding: 2rem;
             margin: auto;
             font-family: "Helvetica", "Arial", sans-serif;
@@ -51,19 +51,24 @@
 
     {%  if testament == "" %}
         <h2>All Readings</h2>
-        <p class="hide-in-doc">All Readings | <a href="/readings/ot">Old Testament Only</a> | <a href="/readings/nt">New Testament Only</a></p>
+        <p class="hide-in-doc">All Readings | <a href="/readings/ot">Old Testament Only</a> | <a href="/readings/nt">New Testament Only |  <a href="/readings/gospels">Gospels Only</a></a></p>
+    {%  endif %}
+
+    {%  if testament == "GOSPELS" %}
+        <h2>Gospels</h2>
+        <p class="hide-in-doc">All Readings | <a href="/readings/ot">Old Testament Only</a> | <a href="/readings/nt">New Testament Only</a> | <a href="/readings/gospels">Gospels Only</a></p>
     {%  endif %}
 
     {%  if testament == "OT" or testament == "OT,DC" %}
         <h2>Old Testament with Deuterocanon</h2>
-        <p class="hide-in-doc"><a href="/readings">All Readings</a> | Old Testament Only | <a href="/readings/nt">New Testament Only</a></p>
+        <p class="hide-in-doc"><a href="/readings">All Readings</a> | Old Testament Only | <a href="/readings/nt">New Testament Only</a> | <a href="/readings/gospels">Gospels Only</a></p>
     {%  endif %}
 
     {%  if testament == "NT" %}
         <h2>New Testament</h2>
-        <p class="hide-in-doc"><a href="/readings">All Readings</a> | <a href="/readings/ot">Old Testament Only</a> | New Testament Only</p>
+        <p class="hide-in-doc"><a href="/readings">All Readings</a> | <a href="/readings/ot">Old Testament Only</a> | New Testament Only | <a href="/readings/gospels">Gospels Only</a></p>
     {%  endif %}
-    <p class="hide-in-doc"><a href="/readings_doc">All Readings (MS Word)</a> | <a href="/readings_doc/ot">Old Testament Only (MS Word)</a> | <a href="/readings_doc/nt">New Testament Only (MS Word)</a></p>
+    <p class="hide-in-doc"><a href="/readings_doc">All Readings (MS Word)</a> | <a href="/readings_doc/ot">Old Testament Only (MS Word)</a> | <a href="/readings_doc/nt">New Testament Only (MS Word)</a> |  <a href="/readings_doc/gospels">Gospels Only(MS Word)</a></p>
     <span class="pagebreak"></span>
     <table class="hide-in-doc">
     <tr>
