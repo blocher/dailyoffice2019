@@ -1,13 +1,15 @@
 <template>
-  <div class="main">
-  <div id="nav">
-      <router-link to="/">Home</router-link>
-      |
-      <router-link to="/settings">Settings</router-link>
-      |
-      <router-link to="/about">About</router-link>
+  <div class="main" v-if="!loading">
+    <div id="nav">
+      <center>
+        <router-link to="/">Home</router-link>
+        |
+        <router-link to="/settings">Settings</router-link>
+        |
+        <router-link to="/about">About</router-link>
+      </center>
     </div>
-    <router-view />
+    <router-view/>
   </div>
 </template>
 
@@ -109,14 +111,13 @@
     }
 
     &.indent {
-  margin: 0 0 0 1rem;
+      margin: 0 0 0 1rem;
 
-   &.hanging-indent {
-    text-indent: -1rem;
-    margin: 0 0 0 1rem;
-  }
-}
-
+      &.hanging-indent {
+        text-indent: -1rem;
+        margin: 0 0 0 1rem;
+      }
+    }
 
 
   }
@@ -136,3 +137,32 @@
 }
 </style>
 <style src="./assets/tailwind.css"></style>
+
+<script>
+
+export default {
+  data() {
+    return {
+      loading: true,
+    };
+  },
+  async beforeCreate() {
+
+  },
+  async created() {
+    document.title = "The Daily Office"
+    const settings_data = await this.$http.get(
+        'http://127.0.0.1:8000/api/v1/available_settings/',
+    );
+    await this.$store.commit("saveAvailableSettings", settings_data.data);
+    await this.$store.commit("initializeSettings")
+    this.loading = false;
+  },
+  components: {},
+  watch: {
+    '$route'(to) {
+      document.title = to.meta.title || 'The Daily Office'
+    }
+  },
+}
+</script>

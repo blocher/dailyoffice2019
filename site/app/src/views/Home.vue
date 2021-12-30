@@ -1,7 +1,7 @@
 <template>
   <div class="home office">
     <h1>Today</h1>
-
+    <Loading v-if="loading"/>
     <div v-for="module in modules" v-bind:key="module.name">
       <div v-for="line in module.lines"  v-bind:key="line.content">
         <OfficeHeading v-if="line.line_type == 'heading'" v-bind:line="line" />
@@ -19,8 +19,8 @@
 </template>
 
 <script>
-// @ is an alias to /src
 
+// @ is an alias to /src
 import OfficeHeading from "@/components/OfficeHeading";
 import OfficeSubheading from "@/components/OfficeSubheading";
 import OfficeCitation from "@/components/OfficeCitation";
@@ -28,12 +28,14 @@ import OfficeHTML from "@/components/OfficeHTML";
 import OfficeCongregation from "@/components/OfficeCongregation";
 import OfficeLeader from "@/components/OfficeLeader";
 import OfficeRubric from "@/components/OfficeRubric";
+import Loading from "@/components/Loading";
 
 export default {
   data() {
     return {
       counter: 0,
       modules: null,
+      loading: true,
     };
   },
   async created() {
@@ -42,11 +44,13 @@ export default {
     const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
     const yyyy = today.getFullYear();
     const today_str = yyyy + '-' + mm + '-' + dd;
-
+    const settings = this.$store.state.settings
+    const queryString = Object.keys(settings).map(key => key + '=' + settings[key]).join('&');
     const data = await this.$http.get(
-      'http://127.0.0.1:8000/api/v1/office/morning_prayer/' + today_str,
+      'http://127.0.0.1:8000/api/v1/office/morning_prayer/' + today_str + '?' + queryString,
     );
     this.modules = data.data.modules;
+    this.loading = false;
   },
   name: "Home",
   components: {
@@ -57,11 +61,7 @@ export default {
     OfficeCongregation,
     OfficeLeader,
     OfficeRubric,
-  },
-  mounted() {
-    setInterval(() => {
-      this.counter++;
-    }, 1000);
+    Loading,
   },
 };
 </script>
