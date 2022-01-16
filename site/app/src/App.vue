@@ -1,33 +1,45 @@
+<!--<template>-->
+<!--  <div class="main" v-if="!loading">-->
+<!--    <div id="nav">-->
+<!--      <center>-->
+<!--        <router-link to="/">Home</router-link>-->
+<!--        |-->
+<!--        <router-link to="/settings">Settings</router-link>-->
+<!--        |-->
+<!--        <router-link to="/about">About</router-link>-->
+<!--      </center>-->
+<!--    </div>-->
+<!--    <router-view />-->
+<!--  </div>-->
+<!--</template>-->
+
 <template>
-  <div class="main" v-if="!loading">
-    <div id="nav">
-      <center>
-        <router-link to="/">Home</router-link>
-        |
-        <router-link to="/settings">Settings</router-link>
-        |
-        <router-link to="/about">About</router-link>
-      </center>
-    </div>
-    <router-view/>
+  <Menu />
+  <div class="main">
+    <router-view />
   </div>
 </template>
 
+<style src="./assets/tailwind.css"></style>
 <style lang="scss">
-#app {
+* {
   font-family: "Adobe Caslon Pro", serif;
   font-display: swap;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+body {
   color: #2c3e50;
 
-  div.main {
+  .main {
     max-width: 580px;
     display: block;
     text-align: left;
     padding: 1.4rem;
-    margin: 0 auto 1rem;
+    margin: 0 auto;
     clear: both;
+    overflow-y: scroll;
   }
 
   h1,
@@ -94,10 +106,11 @@
     text-align: right;
     font-size: 0.9rem;
     margin: 10px 0;
+    text-transform: uppercase;
   }
 
   p {
-    font-family: 'Adobe Caslon Pro', serif;
+    font-family: "Adobe Caslon Pro", serif;
     font-display: swap;
     font-weight: 300;
     font-style: normal;
@@ -119,7 +132,18 @@
       }
     }
 
+    strong {
+      font-weight: 700;
+    }
+  }
 
+  #container {
+    max-width: 580px;
+    display: block;
+    text-align: left;
+    padding: 1.4rem;
+    margin: 0 auto 1rem;
+    clear: both;
   }
 }
 
@@ -136,33 +160,40 @@
   }
 }
 </style>
-<style src="./assets/tailwind.css"></style>
 
 <script>
+import Menu from "@/components/Menu";
 
 export default {
   data() {
     return {
       loading: true,
+      open: false,
+      isActive: true,
     };
   },
-  async beforeCreate() {
-
-  },
+  async beforeCreate() {},
   async created() {
-    document.title = "The Daily Office"
+    document.title = "The Daily Office";
     const settings_data = await this.$http.get(
-        'http://127.0.0.1:8000/api/v1/available_settings/',
+      "http://127.0.0.1:8000/api/v1/available_settings/"
     );
     await this.$store.commit("saveAvailableSettings", settings_data.data);
-    await this.$store.commit("initializeSettings")
+    await this.$store.commit("initializeSettings");
     this.loading = false;
   },
-  components: {},
   watch: {
-    '$route'(to) {
-      document.title = to.meta.title || 'The Daily Office'
-    }
+    $route(to) {
+      document.title = to.meta.title || "The Daily Office";
+    },
   },
-}
+  methods: {
+    toggleMenu: function () {
+      this.open = !this.open;
+    },
+  },
+  components: {
+    Menu,
+  },
+};
 </script>

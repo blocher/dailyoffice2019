@@ -1,6 +1,8 @@
-import { createRouter, createWebHistory } from "vue-router";
 import Home from "../views/Home.vue";
 import Settings from "../views/Settings.vue";
+import Pray from "../views/Pray.vue";
+import PageNotFound from "../views/PageNotFound.vue";
+import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
   {
@@ -9,6 +11,14 @@ const routes = [
     component: Home,
     meta: {
       title: "Today | The Daily Office",
+    },
+  },
+  {
+    path: "/:office/:year/:month:/:day",
+    name: "Pray",
+    component: Pray,
+    meta: {
+      title: "Pray | The Daily Office",
     },
   },
   {
@@ -31,6 +41,7 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/About.vue"),
   },
+  { path: "/:catchAll(.*)*", component: PageNotFound, name: "not_found" },
 ];
 
 const router = createRouter({

@@ -8,6 +8,6 @@
 export default {
   name: "Office Citation",
   components: {},
-  props: ["line"]
+  props: ["line"],
 };
 </script>

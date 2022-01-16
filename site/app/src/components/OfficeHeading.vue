@@ -8,6 +8,6 @@
 export default {
   name: "Office Heading",
   components: {},
-  props: ["line"]
+  props: ["line"],
 };
 </script>

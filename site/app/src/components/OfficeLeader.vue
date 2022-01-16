@@ -8,6 +8,6 @@
 export default {
   name: "Office Leader",
   components: {},
-  props: ["line"]
+  props: ["line"],
 };
 </script>

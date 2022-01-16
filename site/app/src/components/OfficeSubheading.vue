@@ -8,6 +8,6 @@
 export default {
   name: "Office SubHeading",
   components: {},
-  props: ["line"]
+  props: ["line"],
 };
 </script>

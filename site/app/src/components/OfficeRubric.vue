@@ -1,5 +1,7 @@
 <template>
-  <p class="rubric"><em>{{ line.content }}</em></p>
+  <p class="rubric">
+    <em>{{ line.content }}</em>
+  </p>
 </template>
 
 <script>
@@ -8,6 +10,6 @@
 export default {
   name: "Office Rubric",
   components: {},
-  props: ["line"]
+  props: ["line"],
 };
 </script>
