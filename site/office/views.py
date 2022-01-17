@@ -13,7 +13,7 @@ from icalendar import Calendar, Event
 from meta.views import Meta
 
 from churchcal.calculations import ChurchYear
-from churchcal.models import Season, Commemoration, SanctoraleCommemoration
+from churchcal.models import Season, SanctoraleCommemoration
 from office.compline import Compline
 from office.evening_prayer import EveningPrayer
 from office.family_close_of_day import FamilyCloseOfDay
@@ -479,17 +479,26 @@ def readings_data(testament=""):
         day.show_mp = (
             testament == "" or day.mp_reading_1_testament in testaments or day.mp_reading_2_testament in testaments
         )
-        day.show_mp_1 = (
-            testament == ""
-            or day.mp_reading_1_testament in testaments
-            or (testament == "gospels" and ("Matthew" in day.mp_reading_1))
-        )
+        day.show_mp_1 = testament == "" or day.mp_reading_1_testament in testaments
         day.show_mp_2 = testament == "" or day.mp_reading_2_testament in testaments
         day.show_ep = (
             testament == "" or day.ep_reading_1_testament in testaments or day.ep_reading_2_testament in testaments
         )
         day.show_ep_1 = testament == "" or day.ep_reading_1_testament in testaments
         day.show_ep_2 = testament == "" or day.ep_reading_2_testament in testaments
+
+        if testament == "GOSPELS":
+            gospels = ["Matthew", "Mark", "Luke", "John"]
+            mp_1 = day.mp_reading_1.split(" ")[0]
+            mp_2 = day.mp_reading_2.split(" ")[0]
+            ep_1 = day.ep_reading_1.split(" ")[0]
+            ep_2 = day.ep_reading_2.split(" ")[0]
+            day.show_mp_1 = mp_1 in gospels
+            day.show_mp_2 = mp_2 in gospels
+            day.show_ep_1 = ep_1 in gospels
+            day.show_ep_2 = ep_2 in gospels
+            day.show_mp = day.show_mp_1 or day.show_mp_2
+            day.show_ep = day.show_ep_1 or day.show_ep_2
 
         day.mp_reading_1_passage = passage_to_citation(day.mp_reading_1)
         day.mp_reading_2_passage = passage_to_citation(day.mp_reading_2)
