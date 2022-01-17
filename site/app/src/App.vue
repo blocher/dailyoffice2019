@@ -16,7 +16,7 @@
 <template>
   <Menu />
   <div class="main">
-    <router-view />
+    <router-view :key="$route.name" />
   </div>
 </template>
 
@@ -170,6 +170,7 @@ export default {
       loading: true,
       open: false,
       isActive: true,
+      name: this.$route.name,
     };
   },
   async beforeCreate() {},

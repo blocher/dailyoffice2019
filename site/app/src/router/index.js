@@ -1,16 +1,24 @@
-import Home from "../views/Home.vue";
 import Settings from "../views/Settings.vue";
 import Pray from "../views/Pray.vue";
 import PageNotFound from "../views/PageNotFound.vue";
 import { createRouter, createWebHistory } from "vue-router";
+import Today from "@/views/Today";
 
 const routes = [
   {
     path: "/",
     name: "Home",
-    component: Home,
+    component: Today,
     meta: {
       title: "Today | The Daily Office",
+    },
+  },
+  {
+    path: "/:office/:forward?",
+    name: "Today",
+    component: Today,
+    meta: {
+      title: "Pray | The Daily Office",
     },
   },
   {
@@ -21,6 +29,7 @@ const routes = [
       title: "Pray | The Daily Office",
     },
   },
+
   {
     path: "/settings",
     name: "Settings",

@@ -34,7 +34,7 @@ export default {
 
     this.calendarDate = calendarDate;
   },
-  name: "Pray",
+  name: "Today",
   components: {
     Office,
   },
