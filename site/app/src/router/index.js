@@ -6,6 +6,14 @@ import Today from "@/views/Today";
 
 const routes = [
   {
+    path: "/:office/:year/:month:/:day",
+    name: "Pray",
+    component: Pray,
+    meta: {
+      title: "Pray | The Daily Office",
+    },
+  },
+  {
     path: "/",
     name: "Home",
     component: Today,
@@ -17,14 +25,6 @@ const routes = [
     path: "/:office/:forward?",
     name: "Today",
     component: Today,
-    meta: {
-      title: "Pray | The Daily Office",
-    },
-  },
-  {
-    path: "/:office/:year/:month:/:day",
-    name: "Pray",
-    component: Pray,
     meta: {
       title: "Pray | The Daily Office",
     },

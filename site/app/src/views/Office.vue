@@ -1,12 +1,13 @@
 <template>
-  <h1>{{ office }}</h1>
-  <h2>
-    {{ calendarDate.year }} {{ calendarDate.month }}
-    {{ formattedDate }}
-  </h2>
-
   <div class="home office">
     <Loading v-if="loading" />
+
+    <CalendarCard
+      :office="office"
+      :formattedDate="formattedDate"
+      :card="card"
+      v-if="!loading"
+    />
     <el-alert v-if="error" :title="error" type="error" />
     <div v-for="module in modules" v-bind:key="module.name">
       <div v-for="line in module.lines" v-bind:key="line.content">
@@ -39,6 +40,12 @@
   </div>
 </template>
 
+<style>
+.el-alert {
+  margin-top: 2rem;
+}
+</style>
+
 <script>
 // @ is an alias to /src
 import OfficeHeading from "@/components/OfficeHeading";
@@ -49,6 +56,7 @@ import OfficeCongregation from "@/components/OfficeCongregation";
 import OfficeLeader from "@/components/OfficeLeader";
 import OfficeRubric from "@/components/OfficeRubric";
 import Loading from "@/components/Loading";
+import CalendarCard from "@/components/CalendarCard";
 
 export default {
   data() {
@@ -58,6 +66,7 @@ export default {
       loading: true,
       error: false,
       formattedDate: "",
+      card: "",
     };
   },
   async created() {
@@ -103,6 +112,7 @@ export default {
       return;
     }
     this.modules = data.data.modules;
+    this.card = data.data.calendar_day;
     this.errors = false;
     this.loading = false;
   },
@@ -116,6 +126,7 @@ export default {
     OfficeLeader,
     OfficeRubric,
     Loading,
+    CalendarCard,
   },
   props: ["office", "calendarDate"],
 };

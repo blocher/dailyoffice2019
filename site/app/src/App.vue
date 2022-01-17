@@ -18,6 +18,7 @@
   <div class="main">
     <router-view :key="$route.name" />
   </div>
+  <el-backtop />
 </template>
 
 <style src="./assets/tailwind.css"></style>
@@ -33,7 +34,7 @@ body {
   color: #2c3e50;
 
   .main {
-    max-width: 580px;
+    max-width: 620px;
     display: block;
     text-align: left;
     padding: 1.4rem;

@@ -1,7 +1,5 @@
 from rest_framework import serializers
 
-from office.morning_prayer import MorningPrayer
-
 
 class RankSerializer(serializers.Serializer):
     name = serializers.CharField()
@@ -52,6 +50,8 @@ class DaySerializer(serializers.Serializer):
     fast = serializers.SerializerMethodField()
     commemorations = CommemorationSerializer(many=True, source="all")
     mass_readings = serializers.SerializerMethodField()
+    primary_color = serializers.SerializerMethodField()
+    primary_feast = serializers.SerializerMethodField()
 
     def get_date_description(self, obj):
         return {
@@ -72,3 +72,17 @@ class DaySerializer(serializers.Serializer):
 
     def get_mass_readings(self, obj):
         return [{"citation": reading.long_citation, "text": reading.long_text} for reading in obj.mass_readings]
+
+    def get_primary_color(self, obj):
+        try:
+            if obj.all:
+                return obj.all[0].color.lower()
+        except (KeyError, AttributeError):
+            return None
+
+    def get_primary_feast(self, obj):
+        try:
+            if obj.all:
+                return obj.all[0].name
+        except (KeyError, AttributeError):
+            return None

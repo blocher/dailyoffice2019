@@ -17,7 +17,7 @@ export default {
     };
   },
   async created() {
-    this.office = "morning";
+    this.office = "morning_prayer";
 
     const yyyy = parseInt(this.$route.params.year);
     const mm = parseInt(this.$route.params.month);
