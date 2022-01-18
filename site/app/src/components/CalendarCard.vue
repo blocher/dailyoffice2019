@@ -5,6 +5,7 @@
         <h1>{{ officeName }}</h1>
         <h3>{{ formattedDate }}</h3>
         <h4>{{ card.primary_feast }}</h4>
+        <h5 class="text-center" v-if="card.fast.fast_day">Fast Day</h5>
       </div>
     </template>
     <div
@@ -36,15 +37,24 @@
         </small>
       </p>
     </div>
-    <!--    <div class="card-header">-->
-    <!--      <h1>{{ officeName }}</h1>-->
-    <!--      <h3>{{ formattedDate }}</h3>-->
-    <!--      <h4>{{ card.primary_feast }}</h4>-->
-    <!--    </div>-->
+
+    <div class="card-footer mt-2" :class="card.season.colors[0]">
+      <h4>{{ card.season.name }}</h4>
+    </div>
   </el-card>
 </template>
 
 <style lang="scss">
+.card-footer {
+  border-radius: var(--el-card-border-radius);
+  border: 1px solid var(--el-card-border-color);
+  background-color: var(--el-card-bg-color);
+  overflow: hidden;
+  color: var(--el-text-color-primary);
+  transition: var(--el-transition-duration);
+  padding: 1rem;
+}
+
 a:link.link {
   color: blue;
 }
@@ -111,34 +121,37 @@ a:active.link {
   }
 }
 
-.box.red {
-  background-color: #c21c13;
-  color: white;
-}
+.box,
+.card-footer {
+  &.red {
+    background-color: #c21c13;
+    color: white;
+  }
 
-.box.green {
-  background-color: #077339;
-  color: white;
-}
+  &.green {
+    background-color: #077339;
+    color: white;
+  }
 
-.box.white {
-  background-color: white;
-  color: black;
-}
+  &.white {
+    background-color: white;
+    color: black;
+  }
 
-.box.purple {
-  background-color: #64147d;
-  color: white;
-}
+  &.purple {
+    background-color: #64147d;
+    color: white;
+  }
 
-.box.black {
-  background-color: black;
-  color: white;
-}
+  &.black {
+    background-color: black;
+    color: white;
+  }
 
-.box.rose {
-  background-color: pink;
-  color: black;
+  &.rose {
+    background-color: pink;
+    color: black;
+  }
 }
 </style>
 
