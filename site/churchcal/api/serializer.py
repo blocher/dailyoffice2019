@@ -52,6 +52,7 @@ class DaySerializer(serializers.Serializer):
     mass_readings = serializers.SerializerMethodField()
     primary_color = serializers.SerializerMethodField()
     primary_feast = serializers.SerializerMethodField()
+    major_feast = serializers.SerializerMethodField()
 
     def get_date_description(self, obj):
         return {
@@ -84,5 +85,12 @@ class DaySerializer(serializers.Serializer):
         try:
             if obj.all:
                 return obj.all[0].name
+        except (KeyError, AttributeError):
+            return None
+
+    def get_major_feast(self, obj):
+        try:
+            if obj.required:
+                return obj.required[0].name
         except (KeyError, AttributeError):
             return None

@@ -55,7 +55,6 @@ ALLOWED_HOSTS = [
     "data.dailyoffice2019.com",
 ]
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -137,7 +136,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "website.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
@@ -152,7 +150,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
@@ -162,7 +159,6 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
-
 
 INTERNAL_IPS = ["127.0.0.1"]
 # Internationalization
@@ -181,7 +177,6 @@ USE_TZ = True
 MEDIA_ROOT = BASE_DIR + "/uploads/"
 
 MEDIA_URL = "/uploads/"
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
@@ -242,7 +237,9 @@ WEBPACK_LOADER = {
     }
 }
 
-CACHES = {"default": {"BACKEND": "django.core.cache.backends.memcached.MemcachedCache", "LOCATION": "127.0.0.1:11211"}}
+CACHES = {
+    "default": {"BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache", "LOCATION": "127.0.0.1:11211"}
+}
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
@@ -319,7 +316,6 @@ DEF_TEMPLATES_SOURCE_PATH = "templates_sources"
 DEF_TEMPLATES_TARGET_PATH = "app/standrew/templates/emails_app"
 DEF_STATIC_TARGET_PATH = "app/static/emails_app"
 
-
 MJML_BACKEND_MODE = "httpserver"
 MJML_HTTPSERVERS = [
     {
@@ -327,7 +323,6 @@ MJML_HTTPSERVERS = [
         "HTTP_AUTH": (env("MJML_APPLICATION_ID"), env("MJML_SECRET_KEY")),
     },
 ]
-
 
 ZOOM_LINK = env("ZOOM_LINK")
 
@@ -338,7 +333,6 @@ EMAIL_USE_SSL = env("EMAIL_USE_SSL")  # False
 EMAIL_PORT = env("EMAIL_PORT")  # 587
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")  # 587
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")  # 587
-
 
 OMDB_API_KEY = env("OMDB_API_KEY")
 UTELLY_API_KEY = env("UTELLY_API_KEY")

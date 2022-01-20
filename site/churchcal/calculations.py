@@ -452,20 +452,26 @@ class ChurchYear(object):
 
 
 class CalendarYear(object):
-    def __init__(self, year):
+    def __iter__(self):
+        return ChurchYearIterator(self)
 
+    def __init__(self, year):
+        year = int(year)
         first_year = year - 1
         second_year = year
 
         first_year = ChurchYear(first_year)
         second_year = ChurchYear(second_year)
 
-        dates = IndexedOrderedDict(list(first_year.dates.items()) + list(second_year.dates.items()))
+        dates = IndexedOrderedDict(**first_year.dates, **second_year.dates)
+        dates = {k: v for (k, v) in dates.items() if int(k.split("-")[0]) == year}
+        dates = IndexedOrderedDict(**dates)
+        self.dates = dates
 
-        base = datetime(year, 1, 1)
-        date_list = [base + timedelta(days=x) for x in range(0, 365)]
-
-        self.dates = [dates[date.strftime("%Y-%m-%d")] for date in date_list]
+        del dates
+        del year
+        del first_year
+        del second_year
 
 
 class SetNamesAndCollects(object):
@@ -871,4 +877,5 @@ def get_calendar_date(date_string):
     if not church_year:
         church_year = ChurchYear(year)
         cache.set(str(year), church_year, 60 * 60 * 12)
+
     return church_year.get_date(date_string)

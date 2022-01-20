@@ -34,7 +34,8 @@ body {
   color: #2c3e50;
 
   .main {
-    max-width: 620px;
+    // max-width: 620px;
+    max-width: 1800px;
     display: block;
     text-align: left;
     padding: 1.4rem;

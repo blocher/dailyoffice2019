@@ -3,8 +3,17 @@ import Pray from "../views/Pray.vue";
 import PageNotFound from "../views/PageNotFound.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import Today from "@/views/Today";
+import Calendar from "@/views/Calendar";
 
 const routes = [
+  {
+    path: "/calendar/:year/:month:/",
+    name: "calendar",
+    component: Calendar,
+    meta: {
+      title: "Calendar | The Daily Office",
+    },
+  },
   {
     path: "/:office/:year/:month:/:day",
     name: "Pray",

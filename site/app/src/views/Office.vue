@@ -40,7 +40,17 @@
   </div>
 </template>
 
-<style>
+<style scoped>
+.office {
+  max-width: 550px;
+  display: block;
+  text-align: left;
+  padding: 1.4rem;
+  margin: 0 auto;
+  clear: both;
+  overflow-y: scroll;
+}
+
 .el-alert {
   margin-top: 2rem;
 }

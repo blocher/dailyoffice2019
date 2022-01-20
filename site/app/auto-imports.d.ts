@@ -4,15 +4,13 @@ declare global {
   const ElAffix: typeof import('element-plus/es')['ElAffix']
   const ElAlert: typeof import('element-plus/es')['ElAlert']
   const ElBacktop: typeof import('element-plus/es')['ElBacktop']
-  const ElBadge: typeof import('element-plus/es')['ElBadge']
+  const ElButton: typeof import('element-plus/es')['ElButton']
+  const ElButtonGroup: typeof import('element-plus/es')['ElButtonGroup']
+  const ElCalendar: typeof import('element-plus/es')['ElCalendar']
   const ElCard: typeof import('element-plus/es')['ElCard']
-  const ElLink: typeof import('element-plus/es')['ElLink']
   const ElMenu: typeof import('element-plus/es')['ElMenu']
   const ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
   const ElMenuItemGroup: typeof import('element-plus/es')['ElMenuItemGroup']
-  const ElPopover: typeof import('element-plus/es')['ElPopover']
   const ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
-  const ElTag: typeof import('element-plus/es')['ElTag']
-  const ElTooltip: typeof import('element-plus/es')['ElTooltip']
 }
 export {}
