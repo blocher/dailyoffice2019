@@ -5,6 +5,7 @@
 <script>
 // @ is an alias to /src
 import Office from "@/views/Office";
+import setCalendarDate from "@/helpers/setCalendarDate";
 
 export default {
   data() {
@@ -17,22 +18,16 @@ export default {
     };
   },
   async created() {
-    this.office = "morning_prayer";
+    this.office = this.$route.params.office;
 
-    const yyyy = parseInt(this.$route.params.year);
-    const mm = parseInt(this.$route.params.month);
-    const dd = parseInt(this.$route.params.day);
-    const calendarDate = new Date(yyyy, mm - 1, dd);
-    const valid_date =
-      calendarDate instanceof Date &&
-      !isNaN(calendarDate) &&
-      !isNaN(calendarDate.getTime());
-    if (!valid_date) {
-      await this.$router.push({ name: "not_found" });
+    this.calendarDate = setCalendarDate(this.$route);
+    if (!this.calendarDate) {
+      await this.$router.push({
+        name: "not_found",
+        params: { pathMatch: this.$route.path.split("/").slice(1) },
+      });
       return;
     }
-
-    this.calendarDate = calendarDate;
   },
   name: "Today",
   components: {

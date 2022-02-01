@@ -9,45 +9,34 @@
         <template #title index="1">
           <router-link to="/">Pray</router-link>
         </template>
-        <el-menu-item index="1-1">
-          <router-link to="/">Full Calendar</router-link>
-        </el-menu-item>
+
+        <router-link to="/calendar">
+          <el-menu-item index="1-1"> Full Calendar</el-menu-item>
+        </router-link>
         <el-menu-item-group title="— Daily Office —">
-          <el-menu-item index="1-2">
-            <router-link :key="$route.fullPath" to="/evening_prayer/yesterday"
-              >Evening Prayer (Yesterday)
-            </router-link>
-          </el-menu-item>
-          <el-menu-item index="1-3">
-            <router-link :key="$route.fullPath" to="/compline/yesterday"
-              >Compline (Yesterday)
-            </router-link>
-          </el-menu-item>
-          <el-menu-item index="1-4">
-            <router-link :key="$route.fullPath" to="/morning_prayer"
-              >Morning Prayer
-            </router-link>
-          </el-menu-item>
-          <el-menu-item index="1-5">
-            <router-link :key="$route.fullPath" to="/noonday_prayer"
-              >Noonday Prayer
-            </router-link>
-          </el-menu-item>
-          <el-menu-item index="1-6">
-            <router-link :key="$route.fullPath" to="/evening_prayer"
-              >Evening Prayer
-            </router-link>
-          </el-menu-item>
-          <el-menu-item index="1-7">
-            <router-link :key="$route.fullPath" to="/compline"
-              >Compline
-            </router-link>
-          </el-menu-item>
-          <el-menu-item index="1-8">
-            <router-link :key="$route.fullPath" to="/morning_prayer/tomorrow"
-              >Morning Prayer (Tomorrow)
-            </router-link>
-          </el-menu-item>
+          <router-link :key="$route.fullPath" to="/evening_prayer/yesterday">
+            <el-menu-item index="1-2">
+              Evening Prayer (Yesterday)
+            </el-menu-item>
+          </router-link>
+          <router-link :key="$route.fullPath" to="/compline/yesterday">
+            <el-menu-item index="1-3"> Compline (Yesterday)</el-menu-item>
+          </router-link>
+          <router-link :key="$route.fullPath" to="/morning_prayer">
+            <el-menu-item index="1-4"> Morning Prayer</el-menu-item>
+          </router-link>
+          <router-link :key="$route.fullPath" to="/noonday_prayer">
+            <el-menu-item index="1-5"> Noonday Prayer</el-menu-item>
+          </router-link>
+          <router-link :key="$route.fullPath" to="/evening_prayer">
+            <el-menu-item index="1-6"> Evening Prayer</el-menu-item>
+          </router-link>
+          <router-link :key="$route.fullPath" to="/compline">
+            <el-menu-item index="1-7"> Compline</el-menu-item>
+          </router-link>
+          <router-link :key="$route.fullPath" to="/morning_prayer/tomorrow">
+            <el-menu-item index="1-8"> Morning Prayer (Tomorrow)</el-menu-item>
+          </router-link>
         </el-menu-item-group>
         <el-menu-item-group title="— Family Prayer —">
           <el-menu-item index="1-9"
@@ -70,12 +59,12 @@
           </el-menu-item>
         </el-menu-item-group>
       </el-sub-menu>
-      <el-menu-item index="2">
-        <router-link to="/settings">Settings</router-link>
-      </el-menu-item>
-      <el-menu-item index="3">
-        <router-link to="/about">Resources</router-link>
-      </el-menu-item>
+      <router-link to="/settings">
+        <el-menu-item index="2"> Settings</el-menu-item>
+      </router-link>
+      <router-link to="/about">
+        <el-menu-item index="3"> Resources</el-menu-item>
+      </router-link>
     </el-menu>
   </el-affix>
 </template>

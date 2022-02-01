@@ -1,22 +1,8 @@
-<!--<template>-->
-<!--  <div class="main" v-if="!loading">-->
-<!--    <div id="nav">-->
-<!--      <center>-->
-<!--        <router-link to="/">Home</router-link>-->
-<!--        |-->
-<!--        <router-link to="/settings">Settings</router-link>-->
-<!--        |-->
-<!--        <router-link to="/about">About</router-link>-->
-<!--      </center>-->
-<!--    </div>-->
-<!--    <router-view />-->
-<!--  </div>-->
-<!--</template>-->
-
 <template>
   <Menu />
   <div class="main">
-    <router-view :key="$route.name" />
+    <Loading v-if="loading" />
+    <router-view v-if="!loading" :key="$route.fullPath" />
   </div>
   <el-backtop />
 </template>
@@ -36,6 +22,16 @@ body {
   .main {
     // max-width: 620px;
     max-width: 1800px;
+    display: block;
+    text-align: left;
+    padding: 1.4rem;
+    margin: 0 auto;
+    clear: both;
+    overflow-y: scroll;
+  }
+
+  .small-container {
+    max-width: 550px;
     display: block;
     text-align: left;
     padding: 1.4rem;
@@ -101,6 +97,7 @@ body {
     font-style: italic;
     font-size: 0.9rem;
     line-height: 1rem;
+    margin-bottom: 1rem;
   }
 
   h5 {
@@ -165,6 +162,7 @@ body {
 
 <script>
 import Menu from "@/components/Menu";
+import Loading from "@/components/Loading";
 
 export default {
   data() {
@@ -175,7 +173,6 @@ export default {
       name: this.$route.name,
     };
   },
-  async beforeCreate() {},
   async created() {
     document.title = "The Daily Office";
     const settings_data = await this.$http.get(
@@ -185,11 +182,6 @@ export default {
     await this.$store.commit("initializeSettings");
     this.loading = false;
   },
-  watch: {
-    $route(to) {
-      document.title = to.meta.title || "The Daily Office";
-    },
-  },
   methods: {
     toggleMenu: function () {
       this.open = !this.open;
@@ -197,6 +189,7 @@ export default {
   },
   components: {
     Menu,
+    Loading,
   },
 };
 </script>

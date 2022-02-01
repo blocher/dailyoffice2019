@@ -5,7 +5,6 @@ from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 
 from office.canticles import DefaultCanticles, BCP1979CanticleTable, REC2011CanticleTable
-
 from office.offices import (
     Office,
     Confession,
@@ -27,7 +26,6 @@ from psalter.utils import get_psalms
 
 
 class MorningPrayer(Office):
-
     name = "Morning Prayer"
     office = "morning_prayer"
 
@@ -108,7 +106,6 @@ class MPOpeningSentence(OfficeSection):
             }
 
         if self.date.season.name == "Holy Week":
-
             return {
                 "sentence": "Is it nothing to you, all you who pass by? Look and see if there is any sorrow like my sorrow, which was brought upon me, which the Lord inflicted on the day of his fierce anger.",
                 "citation": "LAMENTATIONS 1:12",
@@ -135,7 +132,6 @@ class MPOpeningSentence(OfficeSection):
             }
 
         if self.date.season.name == "Advent":
-
             return {
                 "sentence": "In the wilderness prepare the way of the Lord; make straight in the desert a highway for our God.",
                 "citation": "ISAIAH 40:3",
@@ -160,7 +156,6 @@ class MPOpeningSentence(OfficeSection):
             }
 
         if self.date.primary.name == "The Day of Pentecost":
-
             return {
                 "sentence": "You will receive power when the Holy Spirit has come upon you, and you will be my witnesses in Jerusalem and in all Judea and Samaria, and to the end of the earth.",
                 "citation": "ACTS 1:8",
@@ -268,7 +263,6 @@ class MPInvitatory(OfficeSection):
             return {"first_line": "The Lord is glorious in his saints:", "second_line": "O come, let us adore him."}
 
         if self.date.season.name == "Lent" or self.date.season.name == "Holy Week":
-
             return {
                 "first_line": "The Lord is full of compassion and mercy:",
                 "second_line": "O come, let us adore him.",
@@ -486,7 +480,6 @@ class MPPsalms(OfficeSection):
 
 
 class MPFirstReading(Reading):
-
     heading = "The First Lesson"
     tag = "first-"
 
@@ -627,7 +620,6 @@ class MPFirstReading(Reading):
 
 
 class MPSecondReading(Reading):
-
     heading = "The Second Lesson"
     tag = "second-"
 
@@ -724,7 +716,6 @@ class MPSecondReading(Reading):
 class MPCanticle1(OfficeSection):
     @cached_property
     def data(self):
-
         return {
             "default": DefaultCanticles().get_mp_canticle_1(self.date),
             "1979": BCP1979CanticleTable().get_mp_canticle_1(self.date),
@@ -735,7 +726,6 @@ class MPCanticle1(OfficeSection):
 class MPCanticle2(OfficeSection):
     @cached_property
     def data(self):
-
         return {
             "default": DefaultCanticles().get_mp_canticle_2(self.date),
             "1979": BCP1979CanticleTable().get_mp_canticle_2(self.date),
@@ -821,6 +811,8 @@ class MPCollects(OfficeSection):
 
 
 class MPMissionCollect(OfficeSection):
+    office_name = "morning_prayer"
+
     def get_weekday_class(self):
         start = "mission-mp-"
         if self.date.date.weekday() in (2, 4, 6):

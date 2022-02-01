@@ -1,0 +1,93 @@
+"The Great Litany", "heading", true,
+"O God the Father, Creator of heaven and earth,", "leader", false, true
+"Have mercy upon us.", "congregation", true,
+"O God the Son, Redeemer of the world,", "leader", false, true
+"Have mercy upon us.", "congregation", true,
+"O God the Holy Spirit, Sanctifier of the faithful,", "leader", false, true
+"Have mercy upon us.", "congregation", true,
+"O holy, blessed, and glorious Trinity, one God,", "leader", false, true
+"Have mercy upon us.", "congregation", true,
+"Remember not, Lord Jesus, our offenses, nor the offenses of our forebears; neither reward us according to our sins. Spare us, good Lord, spare your people, whom you have redeemed with your most precious blood, and by your mercy preserve us for ever.", "leader", false, true
+"Spare us, good Lord.", "congregation", true,
+"From all evil and wickedness; from sin, from the works and assaults of the devil; from your wrath and everlasting condemnation,", "leader", false, true
+"Good Lord, deliver us.", "congregation", true,
+"From all blindness of heart; from pride, vanity, and hypocrisy; from envy, hatred, and malice; and from all lack of charity,", "leader", false, true
+"Good Lord, deliver us.", "congregation", true,
+"From all disordered and sinful affections; and from all the deceits of the world, the flesh, and the devil,", "leader", false, true
+"Good Lord, deliver us.", "congregation", true,
+"From all false doctrine, heresy, and schism; from hardness of heart, and contempt of your Word and commandments,", "leader", false, true
+"Good Lord, deliver us.", "congregation", true,
+"From lightning and tempest; from earthquake, fire, and flood; from plague, pestilence, and famine,", "leader", false, true
+"Good Lord, deliver us.", "congregation", true,
+"From all oppression, conspiracy, and rebellion; from violence, battle, and murder; and from dying suddenly and unprepared,", "leader", false, true
+"Good Lord, deliver us.", "congregation", true,
+"By the mystery of your holy incarnation; by your holy nativity and submission to the Law; by your baptism, fasting, and temptation,", "leader", false, true
+"Good Lord, deliver us.", "congregation", true,
+"By your agony and bloody sweat; by your Cross and passion; by your precious death and burial,", "leader", false, true
+"Good Lord, deliver us.", "congregation", true,
+"By your glorious resurrection and ascension; by the sending of the Holy Spirit; by your heavenly intercession; and by your coming again in power and great glory,", "leader", false, true
+"Good Lord, deliver us.", "congregation", true,
+"In all times of tribulation; in all times of prosperity; in the hour of death, and in the day of judgment,", "leader", false, true
+"Good Lord, deliver us.", "congregation", true,
+"We sinners beseech you to hear us, O Lord God: That it may please you to rule and govern your holy Church universal in the right way,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"To illumine all Bishops, Priests, and Deacons, with true knowledge and understanding of your Word; and that, both by their preaching and living, they may show it accordingly,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"To send forth laborers into your harvest; to prosper their work by your Holy Spirit; to make your saving health known unto all nations; and to hasten the coming of your kingdom,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"To give all your people increase of grace to hear your Word with humility, to receive it with pure affection, and to bring forth the fruit of the Spirit,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"To bring into the way of truth all who have erred and are deceived,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"To give us a heart to love and fear you, and diligently to keep your commandments,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"To bless and keep all your people,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"That it may please you to rule the hearts of {{ leaders }} and all others in authority, that they may do justice, and show mercy, and walk humbly before you,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"To bless and guide all judges, giving them grace to execute justice, and to maintain truth,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"To bless and keep our armed forces by sea, and land, and air, and to shield them in all dangers and adversities,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"To bless and protect all who serve their communities by their labor and learning,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"To give and preserve for us and for others the bountiful fruits of the earth, so that at the harvest we all may enjoy them,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"To make wars to cease in all the world, and to give to all nations unity, peace, and concord,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"That it may please you to show mercy on all prisoners and captives; refugees, the homeless, and the hungry; and all those who are desolate and oppressed,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"To preserve all who are in danger by reason of their work or travel,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"To strengthen the bonds of those in Holy Matrimony; to uphold the widowed and abandoned; and to comfort all whose homes are torn by strife,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"To protect the unborn and their parents, and to preserve all women in childbirth;", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"To care for those who have lost children or face infertility, and to provide for young children and orphans,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"To visit the lonely and those who grieve; to strengthen all who suffer in mind, body, or spirit; and to comfort with your presence those who are failing and infirm,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"To support, help, and deliver all who are in danger, necessity, and tribulation,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"To have mercy upon all people,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"That it may please you to give us true repentance; to forgive us all our sin, negligence, and ignorance; and to endue us with the grace of your Holy Spirit to amend our lives according to your holy Word,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"To forgive our enemies, persecutors, and slanderers, and to turn their hearts,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"To strengthen those who stand; to encourage the faint-hearted; to raise up those who fall; and finally to beat down Satan under our feet,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"To grant to all the faithful departed eternal life and peace,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"To grant that, in the fellowship of {{ names }} and all the saints, we may attain to your heavenly kingdom,", "leader", false, true
+"We beseech you to hear us, good Lord.", "congregation", true,
+"Son of God, we beseech you to hear us.", "leader", false, true
+"Son of God, we beseech you to hear us.", "congregation", true,
+"O Lamb of God, you take away the sin of the world;", "leader", false, true
+"Have mercy upon us.", "congregation", true,
+"O Lamb of God, you take away the sin of the world;", "leader", false, true
+"Have mercy upon us.", "congregation", true,
+"O Lamb of God, you take away the sin of the world;", "leader", false, true
+"Grant us your peace.", "congregation", true,
+"O Christ, hear us.", "leader", false, true
+"O Christ, hear us."

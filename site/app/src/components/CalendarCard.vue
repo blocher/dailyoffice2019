@@ -2,44 +2,59 @@
   <el-card class="box-card" :class="card.primary_color">
     <template #header>
       <div class="card-header">
-        <h1>{{ officeName }}</h1>
+        <h1 v-if="officeName">{{ officeName }}</h1>
         <h3>{{ formattedDate }}</h3>
-        <h4>{{ card.primary_feast }}</h4>
-        <h5 class="text-center" v-if="card.fast.fast_day">Fast Day</h5>
+        <div class="card-info" :v-if="card">
+          <h4 v-if="card && office != 'evening_prayer' && office != 'compline'">
+            {{ card.primary_feast }}
+          </h4>
+          <h4
+            v-if="card && (office == 'evening_prayer' || office == 'compline')"
+          >
+            {{ card.primary_evening_feast }}
+          </h4>
+          <h5
+            class="text-center"
+            v-if="card && card.fast && card.fast.fast_day"
+          >
+            Fast Day
+          </h5>
+        </div>
       </div>
     </template>
     <div
-      v-for="commemoration in card.commemorations"
-      :key="commemoration.name"
-      class="text item"
+      v-if="
+        card &&
+        card.commemorations &&
+        office != 'evening_prayer' &&
+        office != 'compline'
+      "
     >
-      <p>
-        <strong>{{ commemoration.name }}</strong>
-      </p>
-      <p>
-        <small>
-          <span
-            class="box"
-            v-for="color in commemoration.colors"
-            :key="color"
-            :class="color"
-          ></span>
-          <strong>&nbsp;&nbsp;|&nbsp;&nbsp;Rank: </strong
-          >{{ commemoration.rank.formatted_name }}
-          <a
-            v-for="link in commemoration.links"
-            :key="link"
-            :href="link"
-            target="_blank"
-            class="float-right link"
-            >Biography</a
-          >
-        </small>
-      </p>
+      <div
+        v-for="commemoration in card.commemorations"
+        :key="commemoration.name"
+      >
+        <Commemoration :commemoration="commemoration" />
+      </div>
     </div>
-
-    <div class="card-footer mt-2" :class="card.season.colors[0]">
-      <h4>{{ card.season.name }}</h4>
+    <div
+      v-if="
+        card &&
+        card.commemorations &&
+        (office == 'evening_prayer' || office == 'compline')
+      "
+    >
+      <div
+        v-for="commemoration in card.evening_commemorations"
+        :key="commemoration.name"
+      >
+        <Commemoration :commemoration="commemoration" />
+      </div>
+    </div>
+    <div v-if="card && card.season" class="width:10">
+      <div class="card-footer mt-2" :class="card.season.colors[0]">
+        <h4>{{ card.season.name }}</h4>
+      </div>
     </div>
   </el-card>
 </template>
@@ -53,6 +68,7 @@
   color: var(--el-text-color-primary);
   transition: var(--el-transition-duration);
   padding: 1rem;
+  width: 100%;
 }
 
 a:link.link {
@@ -158,13 +174,26 @@ a:active.link {
 <script>
 // @ is an alias to /src
 
+import Commemoration from "@/components/Commemoration";
+
 export default {
   data() {
     return {
-      officeName: "The Daily Office",
+      officeName: null,
+      formattedDate: null,
     };
   },
   async created() {
+    const options = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+    this.formattedDate = this.$props.calendarDate.toLocaleDateString(
+      "en-US",
+      options
+    );
     const offices = {
       morning_prayer: "Daily Morning Prayer",
       midday_prayer: "Daily Midday Prayer",
@@ -176,7 +205,7 @@ export default {
     }
   },
   name: "CalenderCard",
-  components: {},
-  props: ["card", "formattedDate", "office"],
+  components: { Commemoration },
+  props: ["card", "calendarDate", "office"],
 };
 </script>

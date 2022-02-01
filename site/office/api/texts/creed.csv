@@ -1,18 +1,18 @@
-"I believe in God, the Father almighty, ", "congreation"
+"I believe in God, the Father almighty,", "congregation", false
 "creator of heaven and earth", "congregation", true
-"I believe in Jesus Christ, his only Son, our Lord.", "congreation"
-"He was conceived by the Holy Spirit ", "congreation"
-"and born of the Virgin Mary. ", "congreation"
-"He suffered under Pontius Pilate, ", "congreation"
-"was crucified, died, and was buried. ", "congreation"
-"He descended to the dead. ", "congreation"
-"On the third day he rose again.", "congreation"
-"He ascended into heaven,", "congreation"
-"and is seated at the right hand of the Father.", "congreation"
+"I believe in Jesus Christ, his only Son, our Lord.", "congregation", false
+"He was conceived by the Holy Spirit ", "congregation", true
+"and born of the Virgin Mary. ", "congregation", true
+"He suffered under Pontius Pilate, ", "congregation", true
+"was crucified, died, and was buried. ", "congregation", true
+"He descended to the dead. ", "congregation", true
+"On the third day he rose again.", "congregation", true
+"He ascended into heaven,", "congregation", true
+"and is seated at the right hand of the Father.", "congregation", true
 "He will come again to judge the living and the dead.", "congregation", true
-"I believe in the Holy Spirit,", "congreation"
-"the holy catholic Church,", "congreation"
-"the communion of saints,", "congreation"
-"the forgiveness of sins,", "congreation"
-"the resurrection of the body,", "congreation"
-"and the life everlasting. Amen.", "congregation"
+"I believe in the Holy Spirit,", "congregation", false
+"the holy catholic Church,", "congregation", true
+"the communion of saints,", "congregation", true
+"the forgiveness of sins,", "congregation", true
+"the resurrection of the body,", "congregation", true
+"and the life everlasting. Amen.", "congregation", true

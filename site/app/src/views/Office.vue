@@ -1,14 +1,16 @@
 <template>
-  <div class="home office">
+  <div class="small-container home office">
     <Loading v-if="loading" />
 
     <CalendarCard
       :office="office"
-      :formattedDate="formattedDate"
+      :calendarDate="calendarDate"
       :card="card"
       v-if="!loading"
     />
     <el-alert v-if="error" :title="error" type="error" />
+    <OfficeNav :calendarDate="calendarDate" :selectedOffice="office" />
+
     <div v-for="module in modules" v-bind:key="module.name">
       <div v-for="line in module.lines" v-bind:key="line.content">
         <OfficeHeading v-if="line.line_type == 'heading'" v-bind:line="line" />
@@ -27,6 +29,10 @@
           v-bind:line="line"
         />
         <OfficeCongregation
+          v-if="line.line_type == 'people_dialogue'"
+          v-bind:line="line"
+        />
+        <OfficeCongregation
           v-if="line.line_type == 'congregation'"
           v-bind:line="line"
         />
@@ -35,22 +41,13 @@
           v-bind:line="line"
         />
         <OfficeRubric v-if="line.line_type == 'rubric'" v-bind:line="line" />
+        <OfficeSpacer v-if="line.line_type == 'spacer'" />
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.office {
-  max-width: 550px;
-  display: block;
-  text-align: left;
-  padding: 1.4rem;
-  margin: 0 auto;
-  clear: both;
-  overflow-y: scroll;
-}
-
 .el-alert {
   margin-top: 2rem;
 }
@@ -65,8 +62,10 @@ import OfficeHTML from "@/components/OfficeHTML";
 import OfficeCongregation from "@/components/OfficeCongregation";
 import OfficeLeader from "@/components/OfficeLeader";
 import OfficeRubric from "@/components/OfficeRubric";
+import OfficeSpacer from "@/components/OfficeSpacer";
 import Loading from "@/components/Loading";
 import CalendarCard from "@/components/CalendarCard";
+import OfficeNav from "@/components/OfficeNav";
 
 export default {
   data() {
@@ -75,14 +74,13 @@ export default {
       modules: null,
       loading: true,
       error: false,
-      formattedDate: "",
       card: "",
     };
   },
   async created() {
     const valid_offices = [
       "morning_prayer",
-      "nooday_prayer",
+      "noonday_prayer",
       "evening_prayer",
       "compline",
     ];
@@ -96,13 +94,6 @@ export default {
       (this.calendarDate.getMonth() + 1) +
       "-" +
       this.calendarDate.getDate();
-    const options = {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    };
-    this.formattedDate = this.calendarDate.toLocaleDateString("en-US", options);
     const settings = this.$store.state.settings;
     const queryString = Object.keys(settings)
       .map((key) => key + "=" + settings[key])
@@ -123,7 +114,7 @@ export default {
     }
     this.modules = data.data.modules;
     this.card = data.data.calendar_day;
-    this.errors = false;
+    this.error = false;
     this.loading = false;
   },
   name: "Office",
@@ -135,8 +126,10 @@ export default {
     OfficeCongregation,
     OfficeLeader,
     OfficeRubric,
+    OfficeSpacer,
     Loading,
     CalendarCard,
+    OfficeNav,
   },
   props: ["office", "calendarDate"],
 };

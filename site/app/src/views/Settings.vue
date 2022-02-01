@@ -2,7 +2,11 @@
   <div class="home">
     <h1>Settings</h1>
     <Loading v-if="loading" />
-    <main v-if="!loading" class="max-w-lg mx-auto pt-10 pb-12 px-4 lg:pb-16">
+    <main
+      v-if="!loading"
+      v-cloak
+      class="max-w-lg mx-auto pt-10 pb-12 px-4 lg:pb-16"
+    >
       <form>
         <div v-for="setting in availableSettings" v-bind:key="setting.uuid">
           <RadioGroup
@@ -81,6 +85,12 @@
   </div>
 </template>
 
+<style>
+[v-cloak] {
+  display: none;
+}
+</style>
+
 <script>
 // @ is an alias to /src
 
@@ -100,8 +110,10 @@ export default {
       loading: true,
     };
   },
-  async created() {
+  mounted() {
+    this.loading = true;
     this.availableSettings = this.$store.state.availableSettings;
+    console.log(this.availableSettings);
     const settings = this.$store.state.settings;
     this.availableSettings.forEach((setting, i) => {
       const name = setting.name;

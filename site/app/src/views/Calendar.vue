@@ -1,10 +1,9 @@
 <template>
   <h1>Calendar</h1>
-  <Loading v-if="loading"/>
+  <Loading v-if="loading" />
   <el-calendar v-model="date" v-if="!loading">
     <template #header="{ date }">
       <span>{{ date }}</span>
-
 
       <el-button-group>
         <!--        <el-button size="small" @click="selectDate('prev-year')"-->
@@ -13,10 +12,10 @@
 
         <el-button size="small" @click="selectDate('today')">Now</el-button>
         <el-button size="small" @click="selectDate('prev-month')"
-        >Previous Month
+          >Previous Month
         </el-button>
         <el-button size="small" @click="selectDate('next-month')"
-        >Next Month
+          >Next Month
         </el-button>
         <!--        <el-button size="small" @click="selectDate('next-year')"-->
         <!--          >Next Year</el-button-->
@@ -88,43 +87,52 @@ export default {
     selectDate: async function (changeType) {
       if (changeType == "prev-month") {
         if (this.month == 1) {
-          this.year = this.year - 1
-          this.month = 12
+          this.year = this.year - 1;
+          this.month = 12;
         } else {
-          this.month = this.month - 1
+          this.month = this.month - 1;
         }
       }
       if (changeType == "next-month") {
         if (this.month == 12) {
-          this.year = this.year + 1
-          this.month = 1
+          this.year = this.year + 1;
+          this.month = 1;
         } else {
-          this.month = this.month + 1
+          this.month = this.month + 1;
         }
       }
       if (changeType == "today") {
-        const today = new Date()
-        this.year = today.getFullYear()
-        this.month = today.getMonth() + 1
+        const today = new Date();
+        this.year = today.getFullYear();
+        this.month = today.getMonth() + 1;
       }
-      const year = this.year
-      const month = this.month
-      await this.$router.push({name: "calendar", params: {year, month}});
+      const year = this.year;
+      const month = this.month;
+      await this.$router.push({ name: "calendar", params: { year, month } });
       return;
     },
     setCalendar: async function () {
       this.loading = true;
       let data = null;
-      this.year = parseInt(this.$route.params.year);
-      this.month = parseInt(this.$route.params.month);
+      const today = new Date();
+      let year = parseInt(this.$route.params.year);
+      let month = parseInt(this.$route.params.month);
+      if (!year) {
+        year = today.getFullYear();
+        month = today.getMonth() + 1;
+      } else if (!month) {
+        month = 1;
+      }
+      this.year = year;
+      this.month = month;
       this.date = new Date(this.year, this.month - 1, 1);
       try {
         data = await this.$http.get(
-            `http://127.0.0.1:8000/api/v1/calendar/${this.$route.params.year}-${this.$route.params.month}`
+          `http://127.0.0.1:8000/api/v1/calendar/${this.year}-${this.month}`
         );
       } catch (e) {
         this.error =
-            "There was an error retrieving the office. Please try again.";
+          "There was an error retrieving the office. Please try again.";
         this.loading = false;
         return;
       }
@@ -134,11 +142,14 @@ export default {
       });
       this.loading = false;
     },
-    clickDateCell: function (data) {
-      alert("clicked");
-      console.log(data);
+    clickDateCell: async function (data) {
+      const day = data.day.split("-");
+      await this.$router.push({
+        name: "day",
+        params: { year: day[0], month: day[1], day: day[2] },
+      });
+      return;
     },
-
   },
 };
 </script>

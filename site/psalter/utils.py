@@ -4,7 +4,6 @@ from psalter.models import PsalmVerse
 
 
 def parse_single_psalm(psalm):
-
     psalm = psalm.replace(" ", "").split(":")
 
     # e.g., 138
@@ -52,7 +51,7 @@ def psalm_api_lines(citation, verses, heading=True):
 
     lines = []
     if heading:
-        lines.append(Line(citation, "heading"))
+        lines.append(Line("Psalm {}".format(citation), "heading"))
         lines.append(Line(verses[0].psalm.latin_title, "subheading"))
     for verse in verses:
         lines.append(

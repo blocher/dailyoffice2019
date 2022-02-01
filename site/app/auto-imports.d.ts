@@ -8,9 +8,11 @@ declare global {
   const ElButtonGroup: typeof import('element-plus/es')['ElButtonGroup']
   const ElCalendar: typeof import('element-plus/es')['ElCalendar']
   const ElCard: typeof import('element-plus/es')['ElCard']
+  const ElCol: typeof import('element-plus/es')['ElCol']
   const ElMenu: typeof import('element-plus/es')['ElMenu']
   const ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
   const ElMenuItemGroup: typeof import('element-plus/es')['ElMenuItemGroup']
+  const ElRow: typeof import('element-plus/es')['ElRow']
   const ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
 }
 export {}

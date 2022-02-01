@@ -1,13 +1,14 @@
 import Settings from "../views/Settings.vue";
 import Pray from "../views/Pray.vue";
-import PageNotFound from "../views/PageNotFound.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import Today from "@/views/Today";
 import Calendar from "@/views/Calendar";
+import Day from "@/views/Day";
+import PageNotFound from "@/views/PageNotFound";
 
 const routes = [
   {
-    path: "/calendar/:year/:month:/",
+    path: "/calendar/:year?/:month?/",
     name: "calendar",
     component: Calendar,
     meta: {
@@ -15,25 +16,17 @@ const routes = [
     },
   },
   {
-    path: "/:office/:year/:month:/:day",
-    name: "Pray",
-    component: Pray,
+    path: "/:office/:forward?",
+    name: "Today",
+    component: Today,
     meta: {
       title: "Pray | The Daily Office",
     },
   },
   {
-    path: "/",
-    name: "Home",
-    component: Today,
-    meta: {
-      title: "Today | The Daily Office",
-    },
-  },
-  {
-    path: "/:office/:forward?",
-    name: "Today",
-    component: Today,
+    path: "/:office/:year/:month:/:day",
+    name: "Pray",
+    component: Pray,
     meta: {
       title: "Pray | The Daily Office",
     },
@@ -48,6 +41,14 @@ const routes = [
     },
   },
   {
+    path: "/",
+    name: "Home",
+    component: Today,
+    meta: {
+      title: "Today | The Daily Office",
+    },
+  },
+  {
     path: "/about",
     name: "About",
     meta: {
@@ -59,7 +60,15 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/About.vue"),
   },
-  { path: "/:catchAll(.*)*", component: PageNotFound, name: "not_found" },
+  {
+    path: "/day/:year/:month/:day/",
+    name: "day",
+    component: Day,
+    meta: {
+      title: "Day | The Daily Office",
+    },
+  },
+  { path: "/:pathMatch(.*)*", component: PageNotFound, name: "not_found" },
 ];
 
 const router = createRouter({
