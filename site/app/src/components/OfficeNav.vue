@@ -82,11 +82,11 @@ export default {
         icon: ["fad", "sunrise"],
       },
       {
-        to: `/noonday_prayer/${this.calendarDate.getFullYear()}/${
+        to: `/midday_prayer/${this.calendarDate.getFullYear()}/${
           this.calendarDate.getMonth() + 1
         }/${this.calendarDate.getDate()}`,
-        text: "Noonday<br>Prayer",
-        name: "noonday_prayer",
+        text: "Midday<br>Prayer",
+        name: "midday_prayer",
         icon: ["fad", "sun"],
       },
       {

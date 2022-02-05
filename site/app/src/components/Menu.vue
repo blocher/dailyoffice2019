@@ -10,8 +10,8 @@
           <router-link to="/">Pray</router-link>
         </template>
 
-        <router-link to="/calendar">
-          <el-menu-item index="1-1"> Full Calendar</el-menu-item>
+        <router-link :key="$route.fullPath" to="/calendar">
+          <el-menu-item index="1-1">Calendar</el-menu-item>
         </router-link>
         <el-menu-item-group title="— Daily Office —">
           <router-link :key="$route.fullPath" to="/evening_prayer/yesterday">
@@ -25,8 +25,8 @@
           <router-link :key="$route.fullPath" to="/morning_prayer">
             <el-menu-item index="1-4"> Morning Prayer</el-menu-item>
           </router-link>
-          <router-link :key="$route.fullPath" to="/noonday_prayer">
-            <el-menu-item index="1-5"> Noonday Prayer</el-menu-item>
+          <router-link :key="$route.fullPath" to="/midday_prayer">
+            <el-menu-item index="1-5"> Midday Prayer</el-menu-item>
           </router-link>
           <router-link :key="$route.fullPath" to="/evening_prayer">
             <el-menu-item index="1-6"> Evening Prayer</el-menu-item>

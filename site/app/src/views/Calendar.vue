@@ -46,7 +46,7 @@ td {
   margin-bottom: auto;
 
   p {
-    line-height: 1.1rem;
+    line-height: 1.1em;
   }
 }
 
@@ -145,7 +145,7 @@ export default {
     clickDateCell: async function (data) {
       const day = data.day.split("-");
       await this.$router.push({
-        name: "day",
+        name: `day`,
         params: { year: day[0], month: day[1], day: day[2] },
       });
       return;

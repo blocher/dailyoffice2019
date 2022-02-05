@@ -95,7 +95,6 @@ class MiddayScripture(OfficeSection):
 
 
 class MiddayPrayers(OfficeSection):
-
     collects = [
         (
             "Blessed Savior, at this hour you hung upon the Cross, stretching out your loving arms: Grant that all the peoples of the earth may look to you and be saved; for your tender mercies’ sake."

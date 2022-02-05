@@ -7,6 +7,8 @@ import axios from "axios";
 import VueAxios from "vue-axios";
 import App from "./App.vue";
 import router from "./router";
+import ElementPlus from "element-plus";
+import "element-plus/dist/index.css";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
@@ -22,6 +24,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 // import { faCoffee } from "@fortawesome/pro-light-svg-icons";
 // import { faFeather } from "@fortawesome/pro-thin-svg-icons";
 import {
+  faFontCase,
   faLeft,
   faMoonStars,
   faRight,
@@ -30,12 +33,21 @@ import {
   faSunset,
 } from "@fortawesome/pro-duotone-svg-icons";
 
-library.add(faSun, faSunrise, faSunset, faMoonStars, faLeft, faRight);
+library.add(
+  faSun,
+  faSunrise,
+  faSunset,
+  faMoonStars,
+  faLeft,
+  faRight,
+  faFontCase
+);
 
 const app = createApp(App)
   .use(store)
   .use(router)
   .use(VueAxios, axios)
+  .use(ElementPlus)
   .component("font-awesome-icon", FontAwesomeIcon);
 
 router.isReady().then(() => {

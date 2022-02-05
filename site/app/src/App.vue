@@ -24,7 +24,7 @@ body {
     max-width: 1800px;
     display: block;
     text-align: left;
-    padding: 1.4rem;
+    padding: 1.4em;
     margin: 0 auto;
     clear: both;
     overflow-y: scroll;
@@ -34,7 +34,7 @@ body {
     max-width: 550px;
     display: block;
     text-align: left;
-    padding: 1.4rem;
+    padding: 1.4em;
     margin: 0 auto;
     clear: both;
     overflow-y: scroll;
@@ -46,10 +46,10 @@ body {
   h4 {
     font-weight: 600;
     font-style: normal;
-    letter-spacing: 0.1rem;
+    letter-spacing: 0.1em;
     text-align: center;
-    margin: 0.2rem;
-    padding-top: 2rem;
+    margin: 0.2em;
+    padding-top: 2em;
   }
 
   h1,
@@ -59,34 +59,34 @@ body {
   }
 
   h1 {
-    font-size: 1.3rem;
-    line-height: 1.5rem;
+    font-size: 1.3em;
+    line-height: 1.5em;
   }
 
   h2 {
-    font-size: 1rem;
+    font-size: 1em;
 
     &.intro-heading {
-      font-size: 0.5rem;
-      margin: 1rem 0 0 0;
+      font-size: 0.5em;
+      margin: 1em 0 0 0;
       padding: 0;
-      line-height: 0.6rem;
-      letter-spacing: 0.1rem;
+      line-height: 0.6em;
+      letter-spacing: 0.1em;
     }
   }
 
   h3 {
     padding-top: 30px;
     margin-bottom: 5px;
-    font-size: 1rem;
-    line-height: 1.4rem;
+    font-size: 1em;
+    line-height: 1.4em;
 
     &.intro-heading {
-      font-size: 0.4rem;
+      font-size: 0.4em;
       margin: 0;
       padding: 0;
-      line-height: 0.5rem;
-      letter-spacing: 0.1rem;
+      line-height: 0.5em;
+      letter-spacing: 0.1em;
     }
   }
 
@@ -95,15 +95,15 @@ body {
     padding-top: 0;
     font-weight: 600;
     font-style: italic;
-    font-size: 0.9rem;
-    line-height: 1rem;
-    margin-bottom: 1rem;
+    font-size: 0.9em;
+    line-height: 1em;
+    margin-bottom: 1em;
   }
 
   h5 {
     font-weight: 300;
     text-align: right;
-    font-size: 0.9rem;
+    font-size: 0.9em;
     margin: 10px 0;
     text-transform: uppercase;
   }
@@ -113,21 +113,21 @@ body {
     font-display: swap;
     font-weight: 300;
     font-style: normal;
-    font-size: 1rem;
+    font-size: 1em;
 
-    line-height: 1.6rem;
+    line-height: 1.6em;
 
     &.rubric {
-      line-height: 0.9rem;
+      line-height: 0.9em;
       margin: 10px 0;
     }
 
     &.indent {
-      margin: 0 0 0 1rem;
+      margin: 0 0 0 1em;
 
       &.hanging-indent {
-        text-indent: -1rem;
-        margin: 0 0 0 1rem;
+        text-indent: -1em;
+        margin: 0 0 0 1em;
       }
     }
 
@@ -140,8 +140,8 @@ body {
     max-width: 580px;
     display: block;
     text-align: left;
-    padding: 1.4rem;
-    margin: 0 auto 1rem;
+    padding: 1.4em;
+    margin: 0 auto 1em;
     clear: both;
   }
 }

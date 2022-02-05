@@ -51,7 +51,7 @@ export default {
         ![
           "morning_prayer",
           "evening_prayer",
-          "noonday_prayer",
+          "midday_prayer",
           "compline",
         ].includes(this.office)
       ) {

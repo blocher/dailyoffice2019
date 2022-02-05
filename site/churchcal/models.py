@@ -1,26 +1,22 @@
 from builtins import NotImplementedError
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 
 from ckeditor.fields import RichTextField
 from django.db import models
-from django.utils import timezone
 from django.utils.functional import cached_property
 from model_utils.managers import InheritanceManager, InheritanceQuerySetMixin, InheritanceManagerMixin
 
 from churchcal.base_models import BaseModel
-from churchcal.utils import advent, easter, weekday_after
-
 from churchcal.inheritence_query_set import _get_subclasses_recurse_without_managed, get_queryset_as_subclasses
+from churchcal.utils import advent, easter, weekday_after
 
 
 class Denomination(BaseModel):
-
     name = models.CharField(max_length=256)
     abbreviation = models.CharField(max_length=256)
 
 
 class Calendar(BaseModel):
-
     name = models.CharField(max_length=256)
     denomination = models.ForeignKey("Denomination", on_delete=models.SET_NULL, null=True, blank=True)
     year = models.CharField(max_length=256)
@@ -243,7 +239,6 @@ class FerialCommemoration(Commemoration):
 
 
 class Proper(BaseModel):
-
     number = models.IntegerField(choices=zip(range(1, 29), range(1, 29)), blank=False, null=False)
     start_date = models.DateField(null=False, blank=False)
     end_date = models.DateField(null=False, blank=False)
@@ -259,7 +254,6 @@ class Proper(BaseModel):
 
 
 class Season(BaseModel):
-
     order = models.IntegerField(choices=zip(range(1, 29), range(1, 29)), blank=False, null=False)
     name = models.CharField(max_length=1024)
     start_commemoration = models.ForeignKey("Commemoration", on_delete=models.SET_NULL, null=True, blank=True)
@@ -273,7 +267,6 @@ class Season(BaseModel):
 
 
 class MassReading(BaseModel):
-
     long_citation = models.CharField(max_length=256)
     long_text = models.TextField(blank=True, null=True)
     service = models.CharField(max_length=256)
@@ -299,7 +292,6 @@ class MassReading(BaseModel):
 
 
 class Common(BaseModel):
-
     abbreviation = models.CharField(max_length=256)
     name = models.CharField(max_length=256)
     collect = models.TextField(blank=True, null=True)

@@ -29,6 +29,7 @@ from office.models import (
     SettingOption,
 )
 from office.utils import passage_to_citation
+from psalter.utils import get_psalms
 
 
 class UpdateNoticeView(TemplateResponseMixin, ListAPIView):
@@ -555,7 +556,7 @@ class MPPsalms(Module):
     def sixty_days(self):
         from psalter.utils import get_psalms
 
-        psalms = getattr(self.office.office_readings.mp_psalms, self.attribute)
+        psalms = getattr(self.office.office_readings, self.attribute)
         psalms = psalms.split("or")
 
         if len(psalms) > 1:
@@ -922,7 +923,7 @@ class Prayers(Module):
             [
                 Line("The Prayers", "heading"),
                 Line("The Lord be with you.", "leader_dialogue", preface="Officiant"),
-                Line("And with your spirit.", "people_dialogue", preface="People"),
+                Line("And with your spirit.", "congregation_dialogue", preface="People"),
                 Line("Let us pray.", "leader_dialogue", preface="Officiant"),
                 Line("The People kneel or stand.", "rubric"),
             ]
@@ -1364,6 +1365,173 @@ class EveningPrayer(Office):
         ]
 
 
+class MiddayInvitatory(Module):
+    name = "Invitatory"
+
+    @property
+    def alleluia(self):
+        alleluia = (
+            self.office.date.evening_season.name != "Lent" and self.office.date.evening_season.name != "Holy Week"
+        )
+        return "Alleluia." if alleluia else ""
+
+    def add_alleluia(self, line):
+        line["content"] = line["content"].replace("{{ alleluia }}", self.alleluia)
+        return line
+
+    def get_lines(self):
+        lines = file_to_lines("midday_invitatory")
+        return [self.add_alleluia((line)) for line in lines]
+
+
+class MiddayPsalms(Module):
+    name = "Psalms"
+
+    def get_lines(self):
+        psalms = "119:105-112,121,124,126"
+        psalms = get_psalms(psalms, api=True)
+
+        return [Line("The Psalms", "heading")] + psalms
+
+
+class MiddayScripture(Module):
+    name = "Scripture"
+
+    def get_scripture(self):
+
+        if self.office.date.date.weekday() in [0, 3, 6]:
+            return {
+                "sentence": "Jesus said, “Now is the judgment of this world; now will the ruler of this world be cast out. And I, when I am lifted up from the earth, will draw all people to myself.”",
+                "citation": "JOHN 12:31-32",
+            }
+
+        if self.office.date.date.weekday() in [1, 4]:
+            return {
+                "sentence": "If anyone is in Christ, he is a new creation. The old has passed away; behold, the new has come. All this is from God, who through Christ reconciled us to himself and gave us the ministry of reconciliation.",
+                "citation": "2 CORINTHIANS 5:17-18",
+            }
+
+        if self.office.date.date.weekday() in [2, 5]:
+            return {
+                "sentence": "From the rising of the sun to its setting my name will be great among the nations, and in every place incense will be offered to my name, and a pure offering. For my name will be great among the nations, says the Lord of Hosts.",
+                "citation": "MALACHI 1:11",
+            }
+
+    def get_lines(self):
+        scripture = self.get_scripture()
+        return [
+            Line("The Reading", "heading"),
+            Line(scripture["sentence"], "leader"),
+            Line(scripture["citation"], "citation"),
+            Line("The Word of the Lord", "leader_dialogue"),
+            Line("Thanks be to God.", "congregation_dialogue"),
+            Line("A meditation, silent or spoken, may follow.", "rubric"),
+        ]
+
+
+class MiddayPrayers(Module):
+    name = "Prayers"
+
+    collects = [
+        (
+            "Blessed Savior, at this hour you hung upon the Cross, stretching out your loving arms: Grant that all the peoples of the earth may look to you and be saved; for your tender mercies’ sake."
+        ),
+        (
+            "Almighty Savior, who at mid-day called your servant Saint Paul to be an apostle to the Gentiles: We pray you to illumine the world with the radiance of your glory, that all nations may come and worship you; for you live and reign with the Father and the Holy Spirit, one God, for ever and ever."
+        ),
+        (
+            "Father of all mercies, you revealed your boundless compassion to your apostle Saint Peter in a three-fold vision: Forgive our unbelief, we pray, and so strengthen our hearts and enkindle our zeal, that we may fervently desire the salvation of all people, and diligently labor in the extension of your kingdom; through him who gave himself for the life of the world, your Son our Savior Jesus Christ."
+        ),
+        (
+            "Pour your grace into our hearts, O Lord, that we who have known the incarnation of your Son Jesus Christ, announced by an angel to the Virgin Mary, may by his Cross and passion be brought to the glory of his resurrection; who lives and reigns with you, in the unity of the Holy Spirit, one God, now and for ever."
+        ),
+    ]
+
+    def get_collects(self):
+
+        day_of_year = self.office.date.date.timetuple().tm_yday
+        collect_number = day_of_year % 3 + 1
+
+        if self.office.date.primary.name in ["Conversion of Paul the Apostle"]:
+            return self.collects[0], self.collects[1]
+
+        if self.office.date.primary.name in ["Peter and Paul, Apostles"]:
+            return self.collects[0], self.collects[1], self.collects[2]
+
+        if self.office.date.primary.name in ["Confession of Peter the Apostle"]:
+            return self.collects[0], self.collects[2]
+
+        if self.office.date.primary.name in [
+            "The Annunciation of our Lord Jesus Christ to the Virgin Mary",
+            "The Virgin Mary, Mother of our Lord Jesus Christ",
+            "The Visitation of the Virgin Mary to Elizabeth and Zechariah",
+            "The Presentation of Our Lord Jesus Christ in the Temple",
+        ]:
+            return self.collects[0], self.collects[3]
+
+        return self.collects[0], self.collects[collect_number]
+
+    def get_collect_lines(self):
+        collects = self.get_collects()
+        lines = []
+        for collect in collects:
+            lines.append(Line("", "spacer"))
+            lines.append(Line(collect, "leader"))
+            lines.append(Line("Amen.", "congregation"))
+        return lines
+
+    def get_lines(self):
+        style = self.office.settings["language_style"]
+        kyrie = file_to_lines("kyrie_contemporary") if style == "contemporary" else file_to_lines("kyrie_traditional")
+        pater = file_to_lines("pater_contemporary") if style == "contemporary" else file_to_lines("pater_traditional")
+        return (
+            [
+                Line("The Prayers", "heading"),
+                Line("I will bless the Lord at all times.", "leader_dialogue"),
+                Line("His praise shall continually be in my mouth.", "congregation_dialogue"),
+                Line("", "spacer"),
+            ]
+            + kyrie
+            + [Line("Officiant and People", "rubric")]
+            + pater
+            + [
+                Line("", "spacer"),
+                Line("O Lord, hear our prayer", "leader_dialogue"),
+                Line("And let our cry come to you.", "congregation_dialogue"),
+                Line("Let us pray.", "leader_dialogue"),
+            ]
+            + self.get_collect_lines()
+        )
+
+
+class MiddayConclusion(Module):
+    name = "Conclusion"
+
+    @property
+    def alleluia(self):
+        alleluia = self.office.date.season.name == "Eastertide"
+        return "Alleluia. Alleluia." if alleluia else ""
+
+    def add_alleluia(self, line):
+        line["content"] = line["content"].replace("{{ alleluia }}", self.alleluia)
+        return line
+
+    def get_lines(self):
+        lines = file_to_lines("midday_conclusion")
+        return [self.add_alleluia((line)) for line in lines]
+
+
+class MiddayPrayer(Office):
+    def get_modules(self):
+        return [
+            MiddayInvitatory(self),
+            MiddayPsalms(self),
+            MiddayScripture(self),
+            MiddayPrayers(self),
+            MiddayConclusion(self),
+        ]
+
+
 class OfficeAPIView(APIView):
     permission_classes = [ReadOnly]
 
@@ -1391,6 +1559,13 @@ class MorningPrayerView(OfficeAPIView):
 class EveningPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
         office = EveningPrayer(request, year, month, day)
+        serializer = OfficeSerializer(office)
+        return Response(serializer.data)
+
+
+class MiddayPrayerView(OfficeAPIView):
+    def get(self, request, year, month, day):
+        office = MiddayPrayer(request, year, month, day)
         serializer = OfficeSerializer(office)
         return Response(serializer.data)
 
@@ -1523,6 +1698,13 @@ def json_modules_to_html(modules, request=None):
 
 
 class MorningPrayerDisplayView(OfficeAPIView):
+    def get(self, request, year, month, day):
+        office = MorningPrayer(request, year, month, day)
+        serializer = OfficeSerializer(office)
+        return HttpResponse(json_modules_to_html(serializer.data["modules"], request), content_type="text/html")
+
+
+class NoondayPrayerDisplayView(OfficeAPIView):
     def get(self, request, year, month, day):
         office = MorningPrayer(request, year, month, day)
         serializer = OfficeSerializer(office)

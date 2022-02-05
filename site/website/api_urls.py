@@ -6,7 +6,13 @@ from rest_framework import permissions
 from rest_framework import routers
 
 from churchcal.api.views import DayView, MonthView, YearView
-from office.api.views.index import MorningPrayerView, AvailableSettings, MorningPrayerDisplayView, EveningPrayerView
+from office.api.views.index import (
+    MorningPrayerView,
+    AvailableSettings,
+    MorningPrayerDisplayView,
+    EveningPrayerView,
+    MiddayPrayerView,
+)
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -39,6 +45,11 @@ urlpatterns = [
         r"api/v1/office/evening_prayer/<int:year>-<int:month>-<int:day>",
         EveningPrayerView.as_view(),
         name="evening_prayer_view",
+    ),
+    path(
+        r"api/v1/office/midday_prayer/<int:year>-<int:month>-<int:day>",
+        MiddayPrayerView.as_view(),
+        name="midday_view",
     ),
     path(
         r"new/office/morning_prayer/<int:year>-<int:month>-<int:day>",

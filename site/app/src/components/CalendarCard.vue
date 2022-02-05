@@ -67,8 +67,12 @@
   overflow: hidden;
   color: var(--el-text-color-primary);
   transition: var(--el-transition-duration);
-  padding: 1rem;
+  padding: 1em;
   width: 100%;
+
+  h4 {
+    margin-bottom: 0;
+  }
 }
 
 a:link.link {

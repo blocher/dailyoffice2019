@@ -13,6 +13,11 @@ declare global {
   const ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
   const ElMenuItemGroup: typeof import('element-plus/es')['ElMenuItemGroup']
   const ElRow: typeof import('element-plus/es')['ElRow']
+  const ElSlider: typeof import('element-plus/es')['ElSlider']
   const ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
+  const ElSwitch: typeof import('element-plus/es')['ElSwitch']
+  const ElTabPane: typeof import('element-plus/es')['ElTabPane']
+  const ElTabs: typeof import('element-plus/es')['ElTabs']
+  const ElTag: typeof import('element-plus/es')['ElTag']
 }
 export {}
