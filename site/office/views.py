@@ -582,3 +582,6 @@ def readings_doc(request, testament=""):
     document.save(response)
 
     return response
+
+
+# needed for deploy
