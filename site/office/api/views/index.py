@@ -106,6 +106,7 @@ def file_to_lines(filename):
                 result["indented"] = False
             else:
                 result["indented"] = bool(strtobool(row[2].lower()))
+
         if len(row) > 3:
             if not row[3]:
                 result["extra_space_before"] = False

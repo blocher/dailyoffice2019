@@ -1,9 +1,8 @@
-"INVOCATION", , "congregation", true,
+"INVOCATION", "congregation", true,
 "Glorify the Lord, all you works of the Lord, *", "congregation",
 "praise him and highly exalt him for ever.", "congregation", true,
 "In the firmament of his power, glorify the Lord, *", "congregation",
 "praise him and highly exalt him for ever.", "congregation", true
-
 "I. THE COSMIC ORDER", "subheading", true,
 "Glorify the Lord, you angels and all powers of the Lord, *", "congregation",
 "O heavens and all waters above the heavens.", "congregation", true,
@@ -21,7 +20,6 @@
 "O shining light and enfolding dark.", "congregation", true,
 "Storm clouds and thunderbolts, glorify the Lord, *", "congregation",
 "praise him and highly exalt him for ever.", "congregation", true
-
 "II. THE EARTH AND ITS CREATURES", "subheading", true,
 "Let the earth glorify the Lord, *", "congregation",
 "praise him and highly exalt him for ever.", "congregation", true,
@@ -35,7 +33,6 @@
 "and all you flocks and herds.", "congregation", true,
 "O men and women everywhere, glorify the Lord, *", "congregation",
 "praise him and highly exalt him for ever.", "congregation", true
-
 "III. THE PEOPLE OF GOD", "subheading", true,
 "Let the people of God glorify the Lord, *", "congregation",
 "praise him and highly exalt him for ever.", "congregation", true,
@@ -45,8 +42,7 @@
 "praise him and highly exalt him for ever.", "congregation", true,
 "You that are holy and humble of heart, glorify the Lord, *", "congregation",
 "praise him and highly exalt him for ever.", "congregation", true
-
-"DOXOLOGY", "subheading", "congregation", true,
+"DOXOLOGY", "subheading", true,
 "Let us glorify the Lord: the Father, the Son, and the Holy Spirit; *", "congregation",
 "praise him and highly exalt him for ever.", "congregation", true,
 "In the firmament of his power, glorify the Lord, *", "congregation",

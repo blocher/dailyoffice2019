@@ -16,8 +16,35 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+:root {
+  --color-bg: #fff;
+  --font-color: #333;
+  --link-color: blue;
+  --font-on-white-background: #333;
+
+  --el-text-color-primary: #333;
+  --el-menu-bg-color: #fff;
+  --el-color-white: rgb(28, 28, 33);
+  --el-text-color-regular: #333;
+  --el-calendar-selected-bg-color: #fff;
+}
+
+:root.dark-theme {
+  --color-bg: rgb(28, 28, 33);
+  --font-color: rgb(191, 191, 191);
+  --link-color: rgb(88, 166, 255);
+  --font-on-white-background: #333;
+
+  --el-text-color-primary: rgb(191, 191, 191);
+  --el-menu-bg-color: rgb(28, 28, 33);
+  --el-color-white: rgb(28, 28, 33);
+  --el-text-color-regular: rgb(191, 191, 191);
+  --el-calendar-selected-bg-color: rgb(28, 28, 33);
+}
+
 body {
-  color: #2c3e50;
+  color: var(--font-color);
+  background-color: var(--color-bg);
 
   .main {
     // max-width: 620px;
@@ -136,6 +163,13 @@ body {
     }
   }
 
+  a:link,
+  a:visited,
+  a:link.link,
+  a:visited.link {
+    color: var(--link-color);
+  }
+
   #container {
     max-width: 580px;
     display: block;
@@ -173,6 +207,7 @@ export default {
       name: this.$route.name,
     };
   },
+
   async created() {
     document.title = "The Daily Office";
     const settings_data = await this.$http.get(
@@ -181,11 +216,6 @@ export default {
     await this.$store.commit("saveAvailableSettings", settings_data.data);
     await this.$store.commit("initializeSettings");
     this.loading = false;
-  },
-  methods: {
-    toggleMenu: function () {
-      this.open = !this.open;
-    },
   },
   components: {
     Menu,

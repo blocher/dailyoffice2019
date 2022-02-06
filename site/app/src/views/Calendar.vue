@@ -38,6 +38,11 @@ td {
   height: 1px !important;
 }
 
+.el-calendar,
+.el-calendar-table td.is-selected {
+  background-color: var(--background-color) !important;
+}
+
 .el-calendar-day {
   min-height: 75px;
   height: 100% !important;

@@ -20,18 +20,18 @@
         v-on:click="changeSetting"
         v-if="showSetting(setting)"
       >
-        <RadioGroupLabel class="mt-8 text-lg font-medium text-gray-900">
+        <RadioGroupLabel class="mt-8 text-lg font-medium">
           {{ setting.title }}
           <el-tag v-if="setting.setting_type == 2">Advanced Setting</el-tag>
           <br />
         </RadioGroupLabel>
         <RadioGroupLabel
-          class="mt-8 text-xs font-medium text-gray-900"
+          class="mt-8 text-xs font-medium"
           v-html="setting.description"
         >
         </RadioGroupLabel>
 
-        <div class="mt-1 bg-white rounded-md shadow-sm -space-y-px">
+        <div class="mt-1 rounded-md shadow-sm -space-y-px">
           <RadioGroupOption
             as="template"
             v-for="(option, optionIdx) in setting.options"
@@ -65,7 +65,7 @@
                 <RadioGroupLabel
                   as="span"
                   :class="[
-                    checked ? 'text-sky-900' : 'text-gray-900',
+                    checked ? 'selected-text' : '',
                     'block text-sm font-medium',
                   ]"
                 >
@@ -73,10 +73,7 @@
                 </RadioGroupLabel>
                 <RadioGroupDescription
                   as="span"
-                  :class="[
-                    checked ? 'text-sky-700' : 'text-gray-500',
-                    'block text-sm',
-                  ]"
+                  :class="[checked ? 'selected-text' : '', 'block text-sm']"
                   v-html="option.description"
                 >
                 </RadioGroupDescription>
@@ -99,6 +96,12 @@
     </small>
   </p>
 </template>
+
+<style>
+.selected-text {
+  color: var(--font-on-white-background);
+}
+</style>
 
 <script>
 // @ is an alias to /src

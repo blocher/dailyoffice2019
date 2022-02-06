@@ -67,9 +67,15 @@
       </router-link>
     </el-menu>
   </el-affix>
+  <ThemeSwitcher />
 </template>
 
 <style>
+.el-menu {
+  color: var(--font-color);
+  background-color: var(--color-bg);
+}
+
 .el-menu-item-group__title {
   padding-left: 10px !important;
   font-size: 1.2em;
@@ -77,11 +83,16 @@
 </style>
 
 <script>
+import ThemeSwitcher from "@/components/ThemeSwitcher";
+
 export default {
   data() {
     return {
       activeIndex: "1",
     };
+  },
+  components: {
+    ThemeSwitcher,
   },
 };
 </script>

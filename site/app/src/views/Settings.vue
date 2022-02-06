@@ -81,7 +81,7 @@ export default {
     this.loading = false;
   },
   unmounted() {
-    window.emoveEventListener("resize", () => {
+    window.removeEventListener("resize", () => {
       this.windowWidth = window.innerWidth;
     });
   },

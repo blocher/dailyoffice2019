@@ -45,6 +45,7 @@
 .selected {
   background-color: rgb(229, 231, 235);
   border-color: rgb(44, 62, 80);
+  color: var(--font-on-white-background);
 }
 
 .el-card {
