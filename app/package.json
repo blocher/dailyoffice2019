@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@babel/eslint-parser": "^7.16.3",
+    "@capacitor-community/electron": "^4.1.0",
     "@capacitor/android": "^3.4.0",
     "@capacitor/cli": "^3.4.0",
     "@capacitor/core": "^3.4.0",
@@ -67,6 +68,7 @@
     "prettier": "^2.5.0",
     "sass": "^1.43.5",
     "sass-loader": "^10.0.0",
-    "tailwindcss": "^2.2.19"
+    "tailwindcss": "^2.2.19",
+    "vue-cli-plugin-capacitor": "~2.0.1"
   }
 }
