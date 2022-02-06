@@ -7,7 +7,9 @@
     "build": "npm run lint -- --fix && vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "test:e2e": "vue-cli-service test:e2e",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "capacitor:build": "vue-cli-service capacitor:build",
+    "capacitor:serve": "vue-cli-service capacitor:serve"
   },
   "dependencies": {
     "@babel/eslint-parser": "^7.16.3",
