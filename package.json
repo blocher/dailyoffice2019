@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@capacitor/clipboard": "^1.0.7",
     "netlify-cli": "^6.8.5"
   }
 }

@@ -916,6 +916,11 @@
   resolved "https://registry.yarnpkg.com/@bugsnag/safe-json-stringify/-/safe-json-stringify-6.0.0.tgz#22abdcd83e008c369902976730c34c150148a758"
   integrity sha512-htzFO1Zc57S8kgdRK9mLcPVTW1BY2ijfH7Dk2CeZmspTWKdKqSo1iwmqrq2WtRjFlo8aRZYgLX0wFrDXF/9DLA==
 
+"@capacitor/clipboard@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@capacitor/clipboard/-/clipboard-1.0.7.tgz#a88c09be46443660bd07bdb50db3c30fc207ace3"
+  integrity sha512-vYf6wFPdZwhfM2NzT1qo/Yyhjh/czTSZXKvVlPP8DM28QufQzh9llIwqrEao9Jt59zw8fvvmh5nUqxyXqHpLUQ==
+
 "@dabh/diagnostics@^2.0.2":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@dabh/diagnostics/-/diagnostics-2.0.2.tgz#290d08f7b381b8f94607dc8f471a12c675f9db31"

@@ -8,6 +8,14 @@ import PageNotFound from "@/views/PageNotFound";
 
 const routes = [
   {
+    path: "/calendar",
+    name: "calendar",
+    component: Calendar,
+    meta: {
+      title: "Calendar | The Daily Office",
+    },
+  },
+  {
     path: "/calendar/:year?/:month?/",
     name: "calendar",
     component: Calendar,

@@ -68,7 +68,7 @@ export default {
       let data = null;
       try {
         data = await this.$http.get(
-          `http://127.0.0.1:8000/api/v1/calendar/${this.year}-${this.month}-${this.day}`
+          `${process.env.VUE_APP_API_URL}api/v1/calendar/${this.year}-${this.month}-${this.day}`
         );
       } catch (e) {
         this.error =
@@ -82,5 +82,6 @@ export default {
       this.loading = false;
     },
   },
+  props: ["office"],
 };
 </script>

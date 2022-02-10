@@ -998,6 +998,11 @@
   resolved "https://registry.yarnpkg.com/@capacitor/ios/-/ios-3.4.0.tgz#ce51ac6bf98e10b1b8c030d8e48dfe81886b21f5"
   integrity sha512-S500W45rxLrcrrt+Vx4fJDhmt+07P6yaiE+l32ANV3SHcUvQMWOLXQ7JlKqwkec5er1xonmtor7PQhIt/5UKAA==
 
+"@capacitor/share@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@capacitor/share/-/share-1.1.1.tgz#4959e62031d515a2edf7fd49f9a955fdcd617302"
+  integrity sha512-KmHHsTr/55uoT5CNztwX2ON7yClsPxQr8BIqKnkH8UyYSrOCy8w354fFTK8Q5nADrQGUKKXVjojDCA4u5TAjSQ==
+
 "@css-render/plugin-bem@^0.15.8":
   version "0.15.8"
   resolved "https://registry.yarnpkg.com/@css-render/plugin-bem/-/plugin-bem-0.15.8.tgz#02df62ec0a16f5c07687e64f1ee595e8509d04ce"

@@ -23,7 +23,7 @@
       </el-button-group>
     </template>
     <template #dateCell="{ data }">
-      <div class="dateCellWrapper" v-on:click="clickDateCell(data)">
+      <div class="dateCellWrapper" v-on:click="clickDateCell(data, $event)">
         <p>{{ parseInt(data.day.split("-")[2]) }}</p>
         <p>
           <small v-html="days[data.day]"></small>
@@ -133,7 +133,7 @@ export default {
       this.date = new Date(this.year, this.month - 1, 1);
       try {
         data = await this.$http.get(
-          `http://127.0.0.1:8000/api/v1/calendar/${this.year}-${this.month}`
+          `${process.env.VUE_APP_API_URL}api/v1/calendar/${this.year}-${this.month}`
         );
       } catch (e) {
         this.error =
@@ -147,12 +147,16 @@ export default {
       });
       this.loading = false;
     },
-    clickDateCell: async function (data) {
+    clickDateCell: async function (data, event) {
+      event.preventDefault();
+      event.stopPropagation();
       const day = data.day.split("-");
+      console.log(window.history, "1", day);
       await this.$router.push({
         name: `day`,
         params: { year: day[0], month: day[1], day: day[2] },
       });
+      console.log(window.history, "2");
       return;
     },
   },

@@ -150,6 +150,7 @@ export default {
       return ElMessage.success({
         title: "Saved",
         message: "Your setting has been saved.",
+        showClose: true,
       });
     },
     showSetting(setting) {

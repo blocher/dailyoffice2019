@@ -24,14 +24,18 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 // import { faCoffee } from "@fortawesome/pro-light-svg-icons";
 // import { faFeather } from "@fortawesome/pro-thin-svg-icons";
 import {
+  faCopy,
   faFontCase,
   faLeft,
   faMoonStars,
   faRight,
+  faShareNodes,
   faSun,
   faSunrise,
   faSunset,
 } from "@fortawesome/pro-duotone-svg-icons";
+
+import { faFacebook } from "@fortawesome/free-brands-svg-icons";
 
 library.add(
   faSun,
@@ -40,7 +44,10 @@ library.add(
   faMoonStars,
   faLeft,
   faRight,
-  faFontCase
+  faFontCase,
+  faShareNodes,
+  faCopy,
+  faFacebook
 );
 
 const app = createApp(App)

@@ -135,7 +135,7 @@ export default {
     let data = null;
     try {
       data = await this.$http.get(
-        `http://127.0.0.1:8000/api/v1/office/${this.office}/` +
+        `${process.env.VUE_APP_API_URL}api/v1/office/${this.office}/` +
           today_str +
           "?" +
           queryString

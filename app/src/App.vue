@@ -2,6 +2,7 @@
   <Menu />
   <div class="main">
     <Loading v-if="loading" />
+    <el-alert v-if="error" :title="error" type="error" />
     <router-view v-if="!loading" :key="$route.fullPath" />
   </div>
   <el-backtop />
@@ -19,7 +20,7 @@
 :root {
   --color-bg: #fff;
   --font-color: #333;
-  --link-color: blue;
+  --link-color: rgb(88, 166, 255);
   --font-on-white-background: #333;
 
   --el-text-color-primary: #333;
@@ -27,6 +28,7 @@
   --el-color-white: rgb(28, 28, 33);
   --el-text-color-regular: #333;
   --el-calendar-selected-bg-color: #fff;
+  --el-card-bg-color: white;
 }
 
 :root.dark-theme {
@@ -40,6 +42,8 @@
   --el-color-white: rgb(28, 28, 33);
   --el-text-color-regular: rgb(191, 191, 191);
   --el-calendar-selected-bg-color: rgb(28, 28, 33);
+
+  --el-card-bg-color: rgb(28, 28, 33);
 }
 
 body {
@@ -205,16 +209,26 @@ export default {
       open: false,
       isActive: true,
       name: this.$route.name,
+      error: false,
     };
   },
 
   async created() {
     document.title = "The Daily Office";
-    const settings_data = await this.$http.get(
-      "http://127.0.0.1:8000/api/v1/available_settings/"
-    );
-    await this.$store.commit("saveAvailableSettings", settings_data.data);
-    await this.$store.commit("initializeSettings");
+    try {
+      const settings_data = await this.$http.get(
+        `${process.env.VUE_APP_API_URL}api/v1/available_settings/`
+      );
+      await this.$store.commit("saveAvailableSettings", settings_data.data);
+      await this.$store.commit("initializeSettings", this);
+      this.loading = false;
+    } catch (e) {
+      console.log(e);
+      this.error =
+        "There was an error loading the settings. Please try refreshing the page.";
+      this.loading = false;
+      return;
+    }
     this.loading = false;
   },
   components: {
