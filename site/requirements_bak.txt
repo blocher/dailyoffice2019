@@ -172,7 +172,7 @@ sortedcontainers==2.4.0
 soupsieve==2.2.1
 spacy==3.0.6
 spacy-legacy==3.0.8
-sqlparse==0.4.1
+sqlparse==0.4.2
 srsly==2.4.1
 sumy==0.8.1
 tabulate==0.8.9
