@@ -3,303 +3,303 @@
   "assets": {
     "fonts/ACaslonPro-Regular.eot": {
       "name": "fonts/ACaslonPro-Regular.eot",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Regular.eot",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Regular.eot",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.eot"
     },
     "fonts/ACaslonPro-Regular.woff2": {
       "name": "fonts/ACaslonPro-Regular.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Regular.woff2",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Regular.woff2",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.woff2"
     },
     "fonts/ACaslonPro-Regular.woff": {
       "name": "fonts/ACaslonPro-Regular.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Regular.woff",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Regular.woff",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.woff"
     },
     "fonts/ACaslonPro-Regular.ttf": {
       "name": "fonts/ACaslonPro-Regular.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Regular.ttf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Regular.ttf",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.ttf"
     },
     "fonts/ACaslonPro-Regular.otf": {
       "name": "fonts/ACaslonPro-Regular.otf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Regular.otf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Regular.otf",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.otf"
     },
     "fonts/ACaslonPro-Regular.svg": {
       "name": "fonts/ACaslonPro-Regular.svg",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Regular.svg",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Regular.svg",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.svg"
     },
     "fonts/ACaslonPro-Semibold.eot": {
       "name": "fonts/ACaslonPro-Semibold.eot",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Semibold.eot",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Semibold.eot",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.eot"
     },
     "fonts/ACaslonPro-Semibold.woff2": {
       "name": "fonts/ACaslonPro-Semibold.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Semibold.woff2",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Semibold.woff2",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.woff2"
     },
     "fonts/ACaslonPro-Semibold.woff": {
       "name": "fonts/ACaslonPro-Semibold.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Semibold.woff",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Semibold.woff",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.woff"
     },
     "fonts/ACaslonPro-Semibold.ttf": {
       "name": "fonts/ACaslonPro-Semibold.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Semibold.ttf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Semibold.ttf",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.ttf"
     },
     "fonts/ACaslonPro-Semibold.otf": {
       "name": "fonts/ACaslonPro-Semibold.otf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Semibold.otf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Semibold.otf",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.otf"
     },
     "fonts/ACaslonPro-Semibold.svg": {
       "name": "fonts/ACaslonPro-Semibold.svg",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Semibold.svg",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Semibold.svg",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.svg"
     },
     "fonts/ACaslonPro-Bold.eot": {
       "name": "fonts/ACaslonPro-Bold.eot",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Bold.eot",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Bold.eot",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Bold.eot"
     },
     "fonts/ACaslonPro-Bold.woff2": {
       "name": "fonts/ACaslonPro-Bold.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Bold.woff2",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Bold.woff2",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Bold.woff2"
     },
     "fonts/ACaslonPro-Bold.woff": {
       "name": "fonts/ACaslonPro-Bold.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Bold.woff",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Bold.woff",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Bold.woff"
     },
     "fonts/ACaslonPro-Bold.ttf": {
       "name": "fonts/ACaslonPro-Bold.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Bold.ttf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Bold.ttf",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Bold.ttf"
     },
     "fonts/ACaslonPro-Bold.otf": {
       "name": "fonts/ACaslonPro-Bold.otf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Bold.otf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Bold.otf",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Bold.otf"
     },
     "fonts/ACaslonPro-Bold.svg": {
       "name": "fonts/ACaslonPro-Bold.svg",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Bold.svg",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Bold.svg",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Bold.svg"
     },
     "fonts/ACaslonPro-Italic.eot": {
       "name": "fonts/ACaslonPro-Italic.eot",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Italic.eot",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Italic.eot",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.eot"
     },
     "fonts/ACaslonPro-Italic.woff2": {
       "name": "fonts/ACaslonPro-Italic.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Italic.woff2",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Italic.woff2",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.woff2"
     },
     "fonts/ACaslonPro-Italic.woff": {
       "name": "fonts/ACaslonPro-Italic.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Italic.woff",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Italic.woff",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.woff"
     },
     "fonts/ACaslonPro-Italic.ttf": {
       "name": "fonts/ACaslonPro-Italic.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Italic.ttf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Italic.ttf",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.ttf"
     },
     "fonts/ACaslonPro-Italic.otf": {
       "name": "fonts/ACaslonPro-Italic.otf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Italic.otf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Italic.otf",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.otf"
     },
     "fonts/ACaslonPro-Italic.svg": {
       "name": "fonts/ACaslonPro-Italic.svg",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-Italic.svg",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Italic.svg",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.svg"
     },
     "fonts/ACaslonPro-SemiboldItalic.eot": {
       "name": "fonts/ACaslonPro-SemiboldItalic.eot",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.eot",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.eot",
       "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.eot"
     },
     "fonts/ACaslonPro-SemiboldItalic.woff2": {
       "name": "fonts/ACaslonPro-SemiboldItalic.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.woff2",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.woff2",
       "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.woff2"
     },
     "fonts/ACaslonPro-SemiboldItalic.woff": {
       "name": "fonts/ACaslonPro-SemiboldItalic.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.woff",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.woff",
       "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.woff"
     },
     "fonts/ACaslonPro-SemiboldItalic.ttf": {
       "name": "fonts/ACaslonPro-SemiboldItalic.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.ttf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.ttf",
       "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.ttf"
     },
     "fonts/ACaslonPro-SemiboldItalic.otf": {
       "name": "fonts/ACaslonPro-SemiboldItalic.otf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.otf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.otf",
       "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.otf"
     },
     "fonts/ACaslonPro-SemiboldItalic.svg": {
       "name": "fonts/ACaslonPro-SemiboldItalic.svg",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.svg",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.svg",
       "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.svg"
     },
     "fonts/ACaslonPro-BoldItalic.eot": {
       "name": "fonts/ACaslonPro-BoldItalic.eot",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.eot",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.eot",
       "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.eot"
     },
     "fonts/ACaslonPro-BoldItalic.woff2": {
       "name": "fonts/ACaslonPro-BoldItalic.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.woff2",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.woff2",
       "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.woff2"
     },
     "fonts/ACaslonPro-BoldItalic.woff": {
       "name": "fonts/ACaslonPro-BoldItalic.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.woff",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.woff",
       "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.woff"
     },
     "fonts/ACaslonPro-BoldItalic.ttf": {
       "name": "fonts/ACaslonPro-BoldItalic.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.ttf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.ttf",
       "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.ttf"
     },
     "fonts/ACaslonPro-BoldItalic.otf": {
       "name": "fonts/ACaslonPro-BoldItalic.otf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.otf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.otf",
       "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.otf"
     },
     "fonts/ACaslonPro-BoldItalic.svg": {
       "name": "fonts/ACaslonPro-BoldItalic.svg",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.svg",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.svg",
       "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.svg"
     },
     "fonts/fa-brands-400.woff2": {
       "name": "fonts/fa-brands-400.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/fa-brands-400.woff2",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-brands-400.woff2",
       "publicPath": "/static/office/js/fonts/fa-brands-400.woff2"
     },
     "fonts/fa-brands-400.woff": {
       "name": "fonts/fa-brands-400.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/fa-brands-400.woff",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-brands-400.woff",
       "publicPath": "/static/office/js/fonts/fa-brands-400.woff"
     },
     "fonts/fa-brands-400.ttf": {
       "name": "fonts/fa-brands-400.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/fa-brands-400.ttf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-brands-400.ttf",
       "publicPath": "/static/office/js/fonts/fa-brands-400.ttf"
     },
     "fonts/fa-solid-900.woff2": {
       "name": "fonts/fa-solid-900.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/fa-solid-900.woff2",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-solid-900.woff2",
       "publicPath": "/static/office/js/fonts/fa-solid-900.woff2"
     },
     "fonts/fa-solid-900.woff": {
       "name": "fonts/fa-solid-900.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/fa-solid-900.woff",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-solid-900.woff",
       "publicPath": "/static/office/js/fonts/fa-solid-900.woff"
     },
     "fonts/fa-solid-900.ttf": {
       "name": "fonts/fa-solid-900.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/fa-solid-900.ttf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-solid-900.ttf",
       "publicPath": "/static/office/js/fonts/fa-solid-900.ttf"
     },
     "fonts/fa-regular-400.woff2": {
       "name": "fonts/fa-regular-400.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/fa-regular-400.woff2",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-regular-400.woff2",
       "publicPath": "/static/office/js/fonts/fa-regular-400.woff2"
     },
     "fonts/fa-regular-400.woff": {
       "name": "fonts/fa-regular-400.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/fa-regular-400.woff",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-regular-400.woff",
       "publicPath": "/static/office/js/fonts/fa-regular-400.woff"
     },
     "fonts/fa-regular-400.ttf": {
       "name": "fonts/fa-regular-400.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/fa-regular-400.ttf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-regular-400.ttf",
       "publicPath": "/static/office/js/fonts/fa-regular-400.ttf"
     },
     "fonts/fa-duotone-900.woff2": {
       "name": "fonts/fa-duotone-900.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/fa-duotone-900.woff2",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-duotone-900.woff2",
       "publicPath": "/static/office/js/fonts/fa-duotone-900.woff2"
     },
     "fonts/fa-duotone-900.woff": {
       "name": "fonts/fa-duotone-900.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/fa-duotone-900.woff",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-duotone-900.woff",
       "publicPath": "/static/office/js/fonts/fa-duotone-900.woff"
     },
     "fonts/fa-duotone-900.ttf": {
       "name": "fonts/fa-duotone-900.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/fa-duotone-900.ttf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-duotone-900.ttf",
       "publicPath": "/static/office/js/fonts/fa-duotone-900.ttf"
     },
     "fonts/fa-light-300.woff2": {
       "name": "fonts/fa-light-300.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/fa-light-300.woff2",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-light-300.woff2",
       "publicPath": "/static/office/js/fonts/fa-light-300.woff2"
     },
     "fonts/fa-light-300.woff": {
       "name": "fonts/fa-light-300.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/fa-light-300.woff",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-light-300.woff",
       "publicPath": "/static/office/js/fonts/fa-light-300.woff"
     },
     "fonts/fa-light-300.ttf": {
       "name": "fonts/fa-light-300.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/fa-light-300.ttf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-light-300.ttf",
       "publicPath": "/static/office/js/fonts/fa-light-300.ttf"
     },
     "fonts/fa-thin-100.woff2": {
       "name": "fonts/fa-thin-100.woff2",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/fa-thin-100.woff2",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-thin-100.woff2",
       "publicPath": "/static/office/js/fonts/fa-thin-100.woff2"
     },
     "fonts/fa-thin-100.woff": {
       "name": "fonts/fa-thin-100.woff",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/fa-thin-100.woff",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-thin-100.woff",
       "publicPath": "/static/office/js/fonts/fa-thin-100.woff"
     },
     "fonts/fa-thin-100.ttf": {
       "name": "fonts/fa-thin-100.ttf",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/fonts/fa-thin-100.ttf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-thin-100.ttf",
       "publicPath": "/static/office/js/fonts/fa-thin-100.ttf"
     },
-    "bundle.2e8aa90ed9e3cfc32326.js": {
-      "name": "bundle.2e8aa90ed9e3cfc32326.js",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/js/bundle.2e8aa90ed9e3cfc32326.js",
-      "publicPath": "/static/office/js/bundle.2e8aa90ed9e3cfc32326.js"
+    "bundle.fcbea17fecdc040db427.js": {
+      "name": "bundle.fcbea17fecdc040db427.js",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/bundle.fcbea17fecdc040db427.js",
+      "publicPath": "/static/office/js/bundle.fcbea17fecdc040db427.js"
     },
     "../img/app_store.svg": {
       "name": "../img/app_store.svg",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/img/app_store.svg",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/img/app_store.svg",
       "publicPath": "/static/office/js/../img/app_store.svg"
     },
     "../img/bcp.jpg": {
       "name": "../img/bcp.jpg",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/img/bcp.jpg",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/img/bcp.jpg",
       "publicPath": "/static/office/js/../img/bcp.jpg"
     },
     "../img/bcp_evening_prayer.jpg": {
       "name": "../img/bcp_evening_prayer.jpg",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/img/bcp_evening_prayer.jpg",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/img/bcp_evening_prayer.jpg",
       "publicPath": "/static/office/js/../img/bcp_evening_prayer.jpg"
     },
     "../img/google-play-badge.png": {
       "name": "../img/google-play-badge.png",
-      "path": "/Users/benjaminlocher/projects/sermons/site/office/static/office/img/google-play-badge.png",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/img/google-play-badge.png",
       "publicPath": "/static/office/js/../img/google-play-badge.png"
     }
   },
   "chunks": {
     "main": [
-      "bundle.2e8aa90ed9e3cfc32326.js"
+      "bundle.fcbea17fecdc040db427.js"
     ]
   },
   "publicPath": "/static/office/js/"
