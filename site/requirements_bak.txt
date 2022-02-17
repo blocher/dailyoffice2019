@@ -94,7 +94,7 @@ jedi==0.18.0
 Jinja2==3.0.1
 joblib==1.0.1
 kronos==0.2.2
-lxml==4.6.3
+lxml==4.6.5
 mammoth==1.4.17
 Markdown==3.3.4
 MarkupSafe==2.0.1
