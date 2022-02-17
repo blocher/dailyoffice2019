@@ -118,7 +118,7 @@ pathy==0.6.0
 pdfminer3==2018.12.3.0
 pexpect==4.8.0
 pickleshare==0.7.5
-Pillow==8.3.2
+Pillow==9.0.0
 pip==21.2.4
 pipdeptree==2.1.0
 pipenv==2021.5.29
