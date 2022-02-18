@@ -31,7 +31,7 @@ datefinder==0.7.1
 decorator==5.0.9
 Delorean==1.0.0
 distlib==0.3.2
-Django==3.2.7
+Django==3.2.12
 django-address==0.2.5
 django-admin-sortable2==1.0
 django-array-tags==0.2.2
