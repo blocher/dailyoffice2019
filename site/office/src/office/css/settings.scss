@@ -15,7 +15,7 @@ div#settings {
   }
 
   label {
-    font-family: 'Adobe Caslon Pro', serif;
+    font-family: "Adobe Caslon Pro", serif;
     font-display: swap;
     font-weight: 300;
     font-style: normal;
@@ -59,7 +59,7 @@ div#settings {
     border: 1px solid black;
 
     @include themify($themes) {
-      background-color: themed('footer-color-bg');
+      background-color: themed("footer-color-bg");
     }
 
     margin: 0;
@@ -71,7 +71,7 @@ div#settings {
 
   .advanced-toggle {
     text-align: center;
-    margin: -2rem auto 1rem auto;
+    margin: -2rem auto 1rem;
   }
 
   .main-setting {
@@ -85,7 +85,7 @@ div#settings {
 
     h4 {
       font-style: normal;
-      margin: 1rem 0.3rem 0.3rem 0.3rem;
+      margin: 1rem 0.3rem 0.3rem;
       font-family: "Adobe Caslon Pro", serif;
       font-size: 1rem;
       text-transform: uppercase;
@@ -118,18 +118,17 @@ div#settings {
     label {
       display: block;
       background: white;
-      border: 2px solid hsla(0, 0%, 50%, 1);
+      border: 2px solid hsl(0deg 0% 50% / 100%);
       border-radius: 20px;
       padding: 1.8rem;
       margin: 2rem 0.9rem 0.9rem;
       text-align: center;
       position: relative;
       width: 100%;
-      //height: 100%;
 
       @include themify($themes) {
-        box-shadow: themed('settings-shadow');
-        background: themed('alt-bg');
+        box-shadow: themed("settings-shadow");
+        background: themed("alt-bg");
       }
     }
 
@@ -146,8 +145,8 @@ div#settings {
       }
 
       &:disabled ~ label {
-        color: hsla(150, 5%, 75%, 1);
-        border-color: hsla(150, 5%, 75%, 1);
+        color: hsl(150deg 5% 75% / 100%);
+        border-color: hsl(150deg 5% 75% / 100%);
         box-shadow: none;
         cursor: not-allowed;
       }
@@ -158,20 +157,16 @@ div#settings {
     }
 
     input[type="radio"]:checked + label {
-      background: hsla(0, 0%, 50%, 1);
-      color: hsla(215, 0%, 100%, 1);
-      box-shadow: 0 0 20px hsla(0, 0%, 50%, 0.75);
-
-      //color: rgb(255, 255, 255); /*darkmode*/
-      //box-shadow: rgba(128, 128, 128, 0.75) 0px 0px 20px; /*darkmode*/
-      //background: rgb(128, 128, 128); /*darkmode*/
+      background: hsl(0deg 0% 50% / 100%);
+      color: hsl(215deg 0% 100% / 100%);
+      box-shadow: 0 0 20px hsl(0deg 0% 50% / 75%);
 
       &::after {
         @extend %fa-icon;
         @extend .far;
 
-        color: hsla(215, 5%, 25%, 1);
-        border: 2px solid hsla(0, 0%, 45%, 1);
+        color: hsl(215deg 5% 25% / 100%);
+        border: 2px solid hsl(0deg 0% 45% / 100%);
         content: fa-content($fa-var-check);
         font-size: 24px;
         position: absolute;
@@ -184,7 +179,7 @@ div#settings {
         text-align: center;
         border-radius: 50%;
         background: white;
-        box-shadow: 0 2px 5px -2px hsla(0, 0%, 0%, 0.25);
+        box-shadow: 0 2px 5px -2px hsl(0deg 0% 0% / 25%);
       }
     }
 

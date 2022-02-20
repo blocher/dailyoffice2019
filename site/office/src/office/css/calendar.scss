@@ -6,7 +6,6 @@
   }
 
   .menu-button {
-    //width: 5rem;
     text-align: center;
   }
 
@@ -37,7 +36,7 @@
   h5 {
     clear: both;
     float: right;
-    margin: 1rem 0 0 0;
+    margin: 1rem 0 0;
     padding: 0;
     font-size: 0.7rem;
     text-align: center !important;
@@ -54,7 +53,7 @@
     margin: 0 0.1rem;
 
     @include themify($themes) {
-      color: themed('font-color');
+      color: themed("font-color");
     }
   }
 
@@ -182,7 +181,7 @@
 
     &.major {
       @include themify($themes) {
-        background-color: themed('footer-color-bg');
+        background-color: themed("footer-color-bg");
       }
 
       .primary {

@@ -14,6 +14,8 @@
     "axios": "^0.26.0",
     "capacitor-firebase-analytics": "^0.3.2",
     "clipboard-polyfill": "^4.0.0-rc1",
+    "follow-redirects": "^1.14.9",
+    "nanoid": "^3.3.1",
     "mjml": "^4.12.0",
     "naive-ui": "^2.25.2",
     "pretty-checkbox": "^3.0.3",

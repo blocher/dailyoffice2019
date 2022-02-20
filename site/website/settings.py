@@ -94,7 +94,7 @@ INSTALLED_APPS = [
     "webpack_loader",
     "robots",
     "standrew",
-    "sslserver"
+    "sslserver",
 ]
 
 if DEBUG:

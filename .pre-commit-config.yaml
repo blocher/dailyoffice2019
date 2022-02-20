@@ -1,7 +1,7 @@
 exclude: .*\node_modules\|.*\static|.*\.sql
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v4.1.0
     hooks:
       - id: trailing-whitespace
         files: ^site/
@@ -27,29 +27,47 @@ repos:
 
 
   - repo: https://github.com/psf/black
-    rev: 21.8b0
+    rev: 22.1.0
     hooks:
       - id: black
         files: ^site/
         language_version: python3
-        args: [--target-version=py39, --line-length=119]
+        args: [--target-version=py310, --line-length=119]
 
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v7.32.0
+    rev: v8.9.0
     hooks:
       - id: eslint
         files: ^site/
         exclude: ^site/node_modules/|^site/office/src/office/js/fontawesome/|^site/office/src/office/css/fontawesome/
         args: [--fix --ext=.js --config=site/.eslintrc]
         additional_dependencies:
-          - eslint@7.32.0
-          - eslint-config-prettier@8.3.0
-          - "@babel/core@7.15.5"
-          - "@babel/eslint-parser@7.15.4"
-          - "@babel/preset-env@7.15.4"
-          - "@babel/preset-typescript@7.15.0"
+          - eslint@8.9.0
+          - eslint-config-prettier@8.4.0
+          - "@babel/core@7.17.5"
+          - "@babel/eslint-parser@7.17.0"
+          - "@babel/preset-env@7.16.11"
+          - "@babel/preset-typescript@7.16.7"
           - eslint-plugin-prettier@4.0.0
-          - prettier@2.3.2
+          - prettier@2.5.1
+          - eslint-plugin-vue@^8.4.1
+
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.9.0
+    hooks:
+      - id: eslint
+        files: ^app/src
+        args: [ --fix --ext=.js --config=app/.eslintrc ]
+        additional_dependencies:
+          - eslint@8.9.0
+          - eslint-config-prettier@8.4.0
+          - "@babel/core@7.17.5"
+          - "@babel/eslint-parser@7.17.0"
+          - "@babel/preset-env@7.16.11"
+          - "@babel/preset-typescript@7.16.7"
+          - eslint-plugin-prettier@4.0.0
+          - prettier@2.5.1
+          - eslint-plugin-vue@^8.4.1
 
 #  - repo: https://github.com/awebdeveloper/pre-commit-stylelint
 #    rev: 0.0.2
@@ -57,4 +75,4 @@ repos:
 #    -   id: stylelint
 #        args: [--fix]
 #        exclude: ^site/node_modules/|^site/office/src/office/js/fontawesome/|^site/office/src/office/css/fontawesome/
-#        additional_dependencies: ['stylelint@13.13.1', 'stylelint-config-standard@22.0.0', 'stylelint-scss@3.20.1']
+#        additional_dependencies: ['stylelint@14.5.1', 'stylelint-config-standard@25.0.0', 'stylelint-scss@4.1.0']

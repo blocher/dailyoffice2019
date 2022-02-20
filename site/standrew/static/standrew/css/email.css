@@ -11,8 +11,8 @@ body {
 
 body {
   -webkit-font-smoothing: antialiased;
-  font-family: "Montserrat", sans-serif;
-  text-rendering: optimizeLegibility;
+  font-family: Montserrat, sans-serif;
+  text-rendering: optimizelegibility;
   background: #fcfcfc;
 }
 
@@ -34,7 +34,7 @@ a.event_link {
   color: #fff;
   font-size: 10px;
   font-weight: 600;
-  padding: 8px 8px;
+  padding: 8px;
   text-align: center;
 }
 
@@ -51,9 +51,9 @@ a.event_link {
   background: #f0f0f0;
   border-left: 8px solid #49974b;
   border-radius: 2px;
-  -moz-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
-  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 6px 12px rgb(0 0 0 / 5%);
+  box-shadow: 0 6px 12px rgb(0 0 0 / 5%);
+  box-shadow: 0 6px 12px rgb(0 0 0 / 5%);
   padding: 15px 16px;
   display: block;
   justify-content: space-between;
@@ -141,7 +141,7 @@ a.event_link {
 }
 
 .no-items {
-  margin: 0 0 20px 0;
+  margin: 0 0 20px;
 }
 
 .individual a {
@@ -174,17 +174,17 @@ a.event_link {
 
 .individual h1 {
   color: #333;
-  font-family: 'Bitter', serif;
+  font-family: Bitter, serif;
   font-size: 30px;
   font-weight: bold;
   line-height: 35px;
-  margin: 10px 0 10px;
+  margin: 10px 0;
 }
 
 .individual h2 {
   text-transform: uppercase;
   color: #333;
-  font-family: 'Bitter', serif;
+  font-family: Bitter, serif;
   font-size: 24px;
   font-weight: bolder;
   line-height: 27px;
@@ -193,28 +193,28 @@ a.event_link {
 
 .individual h3 {
   color: #333;
-  font-family: 'Bitter', serif;
+  font-family: Bitter, serif;
   font-size: 24px;
   font-weight: normal;
   line-height: 27px;
-  margin: 10px 0 10px;
+  margin: 10px 0;
 }
 
 .individual h4 {
   text-transform: uppercase;
   color: #333;
-  font-family: 'Bitter', serif;
+  font-family: Bitter, serif;
   font-size: 20px;
   font-weight: bold;
   line-height: 22px;
-  margin: 10px 0 10px;
+  margin: 10px 0;
 }
 
 .individual p {
   color: #333;
   font-family: Georgia, serif;
   font-size: 16px;
-  margin: 10px 0 10px;
+  margin: 10px 0;
   line-height: 20px;
 }
 
@@ -224,7 +224,7 @@ a.event_link {
   font-size: 16px;
   font-weight: bold;
   line-height: 20px;
-  margin: 10px 0 10px;
+  margin: 10px 0;
 }
 
 .button {

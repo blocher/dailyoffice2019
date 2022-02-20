@@ -1,6 +1,6 @@
-@import 'reset.scss';
-@import 'themes.scss';
-@import 'fonts.scss';
+@import "reset.scss";
+@import "themes.scss";
+@import "fonts.scss";
 $fa-font-path: "fontawesome/webfonts";
 
 @import "fontawesome/scss/fontawesome.scss";
@@ -24,19 +24,18 @@ $fa-font-path: "fontawesome/webfonts";
 @import "fontawesome/scss/_screen-reader.scss";
 @import "fontawesome/scss/_shims.scss";
 @import "fontawesome/scss/v4-shims.scss";
-@import '~pretty-checkbox/src/pretty-checkbox.scss';
-@import 'toggle.scss';
-@import 'apps.scss';
-@import 'office.scss';
-@import 'settings.scss';
-@import 'calendar.scss';
-@import 'alert.scss';
-@import 'print.scss';
+@import "~pretty-checkbox/src/pretty-checkbox.scss";
+@import "toggle.scss";
+@import "apps.scss";
+@import "office.scss";
+@import "settings.scss";
+@import "calendar.scss";
+@import "alert.scss";
+@import "print.scss";
 
 .row {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-flow: row wrap;
   width: 100%;
 }
 

@@ -9,40 +9,39 @@ body {
 }
 
 html {
-  //overflow: hidden;
   font-size: 16px;
   text-size-adjust: none;
-  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
   font-display: swap;
 
   @include themify($themes) {
-    color: themed('font-color');
-    background-color: themed('color-bg');
+    color: themed("font-color");
+    background-color: themed("color-bg");
   }
 
   &.family {
     @include themify($themes) {
-      background-color: themed('family-color-bg');
+      background-color: themed("family-color-bg");
     }
   }
 }
 
 body {
   @include themify($themes) {
-    color: themed('font-color');
-    background-color: themed('color-bg');
+    color: themed("font-color");
+    background-color: themed("color-bg");
   }
 
   &.family {
     @include themify($themes) {
-      background-color: themed('family-color-bg');
+      background-color: themed("family-color-bg");
     }
   }
 }
 
 a {
   @include themify($themes) {
-    color: themed('link-color');
+    color: themed("link-color");
   }
 }
 
@@ -85,7 +84,7 @@ h2 {
 
   &.intro-heading {
     font-size: 0.5rem;
-    margin: 1rem 0 0 0;
+    margin: 1rem 0 0;
     padding: 0;
     line-height: 0.6rem;
     letter-spacing: 0.1rem;
@@ -162,14 +161,14 @@ h5 {
 
   .flipped {
     transform: scaleX(-1);
-    -moz-transform: scaleX(-1);
-    -webkit-transform: scaleX(-1);
-    -ms-transform: scaleX(-1);
+    transform: scaleX(-1);
+    transform: scaleX(-1);
+    transform: scaleX(-1);
   }
 }
 
 p {
-  font-family: 'Adobe Caslon Pro', serif;
+  font-family: "Adobe Caslon Pro", serif;
   font-display: swap;
   font-weight: 300;
   font-style: normal;
@@ -189,7 +188,7 @@ p {
     text-align: center;
     text-transform: uppercase;
     font-size: 11px;
-    margin: 22px 0 0 0;
+    margin: 22px 0 0;
     padding: 0;
     line-height: 13.2px;
     letter-spacing: 2.2px;
@@ -219,7 +218,7 @@ p {
 }
 
 em {
-  font-family: 'Adobe Caslon Pro', serif;
+  font-family: "Adobe Caslon Pro", serif;
   font-display: swap;
   font-weight: 300;
   font-style: italic;
@@ -228,12 +227,12 @@ em {
 }
 
 strong {
-  font-family: 'Adobe Caslon Pro', serif;
+  font-family: "Adobe Caslon Pro", serif;
   font-display: swap;
   font-weight: 700;
 }
 
-input[type='text'] {
+input[type="text"] {
   font-size: 16px;
 }
 
@@ -242,7 +241,7 @@ div.antiphon {
 }
 
 div.psalms {
-  font-family: 'Adobe Caslon Pro', serif;
+  font-family: "Adobe Caslon Pro", serif;
   font-display: swap;
   font-weight: 300;
   font-style: normal;
@@ -277,7 +276,7 @@ sup.versenum {
 }
 
 .reading h3 {
-  font-family: 'Adobe Caslon Pro', serif;
+  font-family: "Adobe Caslon Pro", serif;
   font-weight: 900;
   font-style: normal;
   font-size: 0.9em;
@@ -287,7 +286,7 @@ sup.versenum {
 }
 
 .reading h4 {
-  font-family: 'Adobe Caslon Pro', serif;
+  font-family: "Adobe Caslon Pro", serif;
   font-weight: 900;
   font-style: normal;
   font-size: 0.7em;
@@ -305,7 +304,7 @@ table.dialogue {
     }
 
     padding: 0.1rem 1rem 0.1rem 0;
-    font-family: 'Adobe Caslon Pro', serif;
+    font-family: "Adobe Caslon Pro", serif;
     font-weight: 300;
     font-style: normal;
     font-size: 1rem;
@@ -361,7 +360,7 @@ span.asterisk {
   }
 
   @include themify($themes) {
-    background-color: themed('footer-color-bg');
+    background-color: themed("footer-color-bg");
   }
 
   font-size: 19.2px;
@@ -385,13 +384,13 @@ span.asterisk {
 }
 
 .footer-flex {
-  display: -webkit-box;  /* OLD - iOS 6-, Safari 3.1-6, BB7 */
-  display: -ms-flexbox;  /* TWEENER - IE 10 */
-  display: -webkit-flex; /* NEW - Safari 6.1+. iOS 7.1+, BB10 */
+  display: box;  /* OLD - iOS 6-, Safari 3.1-6, BB7 */
+  display: flexbox;  /* TWEENER - IE 10 */
+  display: flex; /* NEW - Safari 6.1+. iOS 7.1+, BB10 */
   display: flex;
   align-items: center;
   justify-content: center;
-  -webkit-flex-wrap: nowrap;
+  flex-wrap: nowrap;
   flex-wrap: nowrap;
   align-content: space-around;
   max-width: 700px;
@@ -399,7 +398,7 @@ span.asterisk {
   padding: 10.2px;
 
   p {
-    margin: 0 0 4.8px 0;
+    margin: 0 0 4.8px;
   }
 
   a.day-link {
@@ -410,7 +409,7 @@ span.asterisk {
 }
 
 .footer-flex div {
-  -webkit-flex-grow: 2;
+  flex-grow: 2;
   flex-grow: 2;
   font-weight: 900;
 }
@@ -421,7 +420,7 @@ span.asterisk {
   padding: 0;
 
   @include themify($themes) {
-    color: themed('font-color');
+    color: themed("font-color");
   }
 
   text-decoration: none;
@@ -463,7 +462,7 @@ form {
 
 .menu-button {
   @include themify($themes) {
-    color: themed('font-color');
+    color: themed("font-color");
   }
 
   text-decoration: none;
@@ -479,7 +478,7 @@ form {
 
   &.on {
     @include themify($themes) {
-      background-color: themed('footer-color-bg');
+      background-color: themed("footer-color-bg");
     }
   }
 
@@ -525,14 +524,14 @@ form {
 }
 
 #messages {
-  margin: 0.5rem auto 0 auto;
+  margin: 0.5rem auto 0;
   font-size: 0.6rem;
   text-align: center;
   line-height: 1rem;
 
   a {
     @include themify($themes) {
-      color: themed('font-color');
+      color: themed("font-color");
     }
   }
 }
@@ -571,8 +570,8 @@ form {
   width: 100%;
 
   @include themify($themes) {
-    color: themed('font-color');
-    background-color: themed('color-bg');
+    color: themed("font-color");
+    background-color: themed("color-bg");
   }
 
   border-top: 1px solid black;
@@ -626,22 +625,22 @@ form {
   text-align: right;
 }
 
-input[type=range] {
+input[type="range"] {
   height: 26px;
-  -webkit-appearance: none;
+  appearance: none;
   margin: 10px 0;
   width: 50%;
 
   @include themify($themes) {
-    background-color: themed('color-bg');
+    background-color: themed("color-bg");
   }
 }
 
-input[type=range]:focus {
+input[type="range"]:focus {
   outline: none;
 }
 
-input[type=range]::-webkit-slider-runnable-track {
+input[type="range"]::-webkit-slider-runnable-track {
   width: 100%;
   height: 14px;
   cursor: pointer;
@@ -649,14 +648,14 @@ input[type=range]::-webkit-slider-runnable-track {
   box-shadow: 1px 1px 1px #50555c;
 
   @include themify($themes) {
-    background: themed('font-color');
+    background: themed("font-color");
   }
 
   border-radius: 14px;
   border: 0 solid #000;
 }
 
-input[type=range]::-webkit-slider-thumb {
+input[type="range"]::-webkit-slider-thumb {
   box-shadow: 0 0 0 #000;
   border: 0 solid #000;
   height: 20px;
@@ -664,17 +663,17 @@ input[type=range]::-webkit-slider-thumb {
   border-radius: 12px;
   background: #529de1;
   cursor: pointer;
-  -webkit-appearance: none;
+  appearance: none;
   margin-top: -3px;
 }
 
-input[type=range]:focus::-webkit-slider-runnable-track {
+input[type="range"]:focus::-webkit-slider-runnable-track {
   @include themify($themes) {
-    background: themed('font-color');
+    background: themed("font-color");
   }
 }
 
-input[type=range]::-moz-range-track {
+input[type="range"]::-moz-range-track {
   width: 100%;
   height: 14px;
   cursor: pointer;
@@ -682,14 +681,14 @@ input[type=range]::-moz-range-track {
   box-shadow: 1px 1px 1px #50555c;
 
   @include themify($themes) {
-    background: themed('font-color');
+    background: themed("font-color");
   }
 
   border-radius: 14px;
   border: 0 solid #000;
 }
 
-input[type=range]::-moz-range-thumb {
+input[type="range"]::-moz-range-thumb {
   box-shadow: 0 0 0 #000;
   border: 0 solid #000;
   height: 20px;
@@ -699,7 +698,7 @@ input[type=range]::-moz-range-thumb {
   cursor: pointer;
 }
 
-input[type=range]::-ms-track {
+input[type="range"]::-ms-track {
   width: 100%;
   height: 14px;
   cursor: pointer;
@@ -709,9 +708,9 @@ input[type=range]::-ms-track {
   color: transparent;
 }
 
-input[type=range]::-ms-fill-lower {
+input[type="range"]::-ms-fill-lower {
   @include themify($themes) {
-    background: themed('font-color');
+    background: themed("font-color");
   }
 
   border: 0 solid #000;
@@ -719,9 +718,9 @@ input[type=range]::-ms-fill-lower {
   box-shadow: 1px 1px 1px #50555c;
 }
 
-input[type=range]::-ms-fill-upper {
+input[type="range"]::-ms-fill-upper {
   @include themify($themes) {
-    background: themed('font-color');
+    background: themed("font-color");
   }
 
   border: 0 solid #000;
@@ -729,7 +728,7 @@ input[type=range]::-ms-fill-upper {
   box-shadow: 1px 1px 1px #50555c;
 }
 
-input[type=range]::-ms-thumb {
+input[type="range"]::-ms-thumb {
   margin-top: 1px;
   box-shadow: 0 0 0 #000;
   border: 0 solid #000;
@@ -740,15 +739,15 @@ input[type=range]::-ms-thumb {
   cursor: pointer;
 }
 
-input[type=range]:focus::-ms-fill-lower {
+input[type="range"]:focus::-ms-fill-lower {
   @include themify($themes) {
-    background: themed('font-color');
+    background: themed("font-color");
   }
 }
 
-input[type=range]:focus::-ms-fill-upper {
+input[type="range"]:focus::-ms-fill-upper {
   @include themify($themes) {
-    background: themed('font-color');
+    background: themed("font-color");
   }
 }
 

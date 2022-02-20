@@ -83,4 +83,3 @@ uvloop==0.16.0
 Werkzeug==2.0.3
 wheel==0.37.1
 whitenoise==6.0.0
-
