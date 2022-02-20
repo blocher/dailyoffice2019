@@ -12,3 +12,10 @@ cap/node_modules
 .idea
 site/.env
 site/website/.env
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
