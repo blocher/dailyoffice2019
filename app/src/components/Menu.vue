@@ -7,7 +7,7 @@
       :router="menuRouter"
     >
       <el-sub-menu index="1">
-        <template #title index="1">
+        <template #title>
           <router-link to="/">Pray</router-link>
         </template>
 

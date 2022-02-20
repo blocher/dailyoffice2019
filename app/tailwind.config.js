@@ -1,17 +1,17 @@
 const colors = require("tailwindcss/colors");
 
 module.exports = {
-  purge: [], //["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
-  darkMode: false, // or 'media' or 'class'
+  content: [
+    './public/**/*.html',
+    './src/**/*.{html,js,jsx,ts,tsx,vue}',
+  ],
+  // darkMode: "class", // or 'media' or 'class'
   theme: {
     extend: {
       colors: {
         sky: colors.sky,
       },
     },
-  },
-  variants: {
-    extend: {},
   },
   plugins: [
     // ...
