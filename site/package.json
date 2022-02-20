@@ -7,7 +7,9 @@
     "core-js": "^3.21.0",
     "css-loader": "^5.2.7",
     "file-loader": "^6.2.0",
+    "follow-redirects": "^1.14.9",
     "fs": "^0.0.1-security",
+    "nanoid": "^3.3.1",
     "netlify-cli": "^9.6.2",
     "postcss": "^8.4.6",
     "postcss-loader": "^6.2.1",
@@ -33,6 +35,7 @@
     "clipboard-polyfill": "^3.0.3",
     "mjml": "^4.12.0",
     "pretty-checkbox": "^3.0.3",
+    "rimraf": "^3.0.2",
     "split-html": "^1.1.0",
     "wowjs": "^1.1.3"
   }
