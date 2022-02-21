@@ -1,50 +1,53 @@
 <template>
-    <span class="sub-menu-item">
-      <a href="" v-on:click.prevent="sharePanel = true">
-        <font-awesome-icon :icon="['fad', 'share-nodes']" />&nbsp;
-        <span class="text-xs">Share your settings</span>
-      </a>
-    </span>
-    <el-drawer v-model="sharePanel" direction="rtl">
-      <div class="mt-4">
-        <h3>Share Link</h3>
-        <p class="text-left pb-3 mx-1">
-          This share link allows you to sync your settings with others with whom
-          you are praying.
-        </p>
-        <div v-on:click="copyLink">
-          <el-input
-            v-model="shareLink"
-            placeholder="Copy and paste share link"
-            readonly
-          >
-            <template #append>
-              <div class="copyLinkWrapper">
-                <font-awesome-icon :icon="['fad', 'copy']" />
-              </div>
-            </template>
-          </el-input>
-        </div>
+  <span class="sub-menu-item">
+    <a href="" v-on:click.prevent="sharePanel = true">
+      <font-awesome-icon :icon="['fad', 'share-nodes']" />&nbsp;
+      <span class="text-xs">Share your settings</span>
+    </a>
+  </span>
+  <el-drawer v-model="sharePanel" direction="rtl" :size="panelSize">
+    <div class="mt-4">
+      <h3>Share Link</h3>
+      <p class="text-left pb-3 mx-1">
+        This share link allows you to sync your settings with others with whom
+        you are praying.
+      </p>
+      <div v-on:click="copyLink">
+        <el-input
+          v-model="shareLink"
+          placeholder="Copy and paste share link"
+          readonly
+        >
+          <template #append>
+            <div class="copyLinkWrapper">
+              <font-awesome-icon :icon="['fad', 'copy']" />
+            </div>
+          </template>
+        </el-input>
       </div>
-      <p class="text-left text-sm pt-2 mx-1">
-        Click on the share link above to copy it to your clipboard. You can then
-        then paste it into an email or text message and send it to those with
-        whom you are praying. When they receive the link, they can click on it
-        to open this page with your settings already preselected.
-      </p>
-      <p class="text-left mt-4" v-if="canShare">
-        <a href="" v-on:click="share($event)">
-          <font-awesome-icon :icon="['fad', 'share-nodes']" />&nbsp;
-          <span class="text-xs"
-            >Share using an app installed on your computer or device</span
-          >
-        </a>
-      </p>
-    </el-drawer>
-
+    </div>
+    <p class="text-left text-sm pt-2 mx-1">
+      Click on the share link above to copy it to your clipboard. You can then
+      then paste it into an email or text message and send it to those with whom
+      you are praying. When they receive the link, they can click on it to open
+      this page with your settings already preselected.
+    </p>
+    <p class="text-left mt-4" v-if="canShare">
+      <a href="" v-on:click="share($event)">
+        <font-awesome-icon :icon="['fad', 'share-nodes']" />&nbsp;
+        <span class="text-xs"
+          >Share using an app installed on your computer or device</span
+        >
+      </a>
+    </p>
+  </el-drawer>
 </template>
 
+<script setup>
+import { useFlexibleDrawer } from "@/components/useFlexibleDrawer";
 
+const { panelSize } = useFlexibleDrawer();
+</script>
 
 <script>
 import { Share } from "@capacitor/share";

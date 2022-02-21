@@ -43,6 +43,12 @@
   </el-drawer>
 </template>
 
+<script setup>
+import { useFlexibleDrawer } from "@/components/useFlexibleDrawer";
+
+const { panelSize } = useFlexibleDrawer();
+</script>
+
 <script>
 export default {
   data() {
@@ -55,33 +61,7 @@ export default {
       loading: false,
     };
   },
-  computed: {
-    panelSize() {
-      if (this.windowWidth < 1024) {
-        return "90%";
-      }
-      return "37%";
-    },
-  },
-  mounted() {
-    this.$nextTick(() => {
-      window.addEventListener("resize", this.onResize);
-    });
-  },
-  beforeUnmount() {
-    window.removeEventListener("resize", this.onResize);
-  },
   methods: {
-    validateEmail(email) {
-      return true;
-      //return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email);
-    },
-    onResize() {
-      this.windowWidth = window.innerWidth;
-    },
-    onError() {
-      alert("error");
-    },
     onSubmit() {
       this.loading = true;
       this.success = false;
