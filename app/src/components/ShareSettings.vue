@@ -2,7 +2,7 @@
   <span class="sub-menu-item">
     <a href="" v-on:click.prevent="sharePanel = true">
       <font-awesome-icon :icon="['fad', 'share-nodes']" />&nbsp;
-      <span class="text-xs">Share your settings</span>
+      <span class="text-xs">Share Settings</span>
     </a>
   </span>
   <el-drawer v-model="sharePanel" direction="rtl" :size="panelSize">

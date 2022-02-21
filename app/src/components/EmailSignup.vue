@@ -2,7 +2,7 @@
   <span class="sub-menu-item">
     <a href="" v-on:click.prevent="emailPanel = true">
       <font-awesome-icon :icon="['fad', 'envelopes']" />
-      <span class="ml-1 text-xs">Get Email Updates</span>
+      <span class="ml-1 text-xs">Email Updates</span>
     </a>
   </span>
   <el-drawer v-model="emailPanel" :size="panelSize" direction="rtl">

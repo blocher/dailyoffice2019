@@ -61,7 +61,9 @@
       <el-menu-item index="/about"> Resources</el-menu-item>
     </el-menu>
   </el-affix>
-  <Submenu />
+  <el-header>
+    <Submenu />
+  </el-header>
 </template>
 
 <style>

@@ -1,26 +1,18 @@
 <template>
-    <span class="sub-menu-item">
-      <span class="text-xs">Light Mode</span>&nbsp;
-      <el-switch
-        v-model="userTheme"
-        class="text-right"
-        active-value="dark-theme"
-        inactive-value="light-theme"
-      ></el-switch
-      >&nbsp;
-      <span class="text-xs">Dark Mode</span>
-    </span>
-    <span class="sub-menu-item">
-      <span>
-        <a href="https://www.facebook.com/groups/dailyoffice" target="_blank:">
-          <font-awesome-icon :icon="['fab', 'facebook']" />
-        </a>
-      </span>
-    </span>
+  <span class="sub-menu-item">
+    <span class="text-xs">Light</span>&nbsp;
+    <el-switch
+      v-model="userTheme"
+      class="text-right"
+      active-value="dark-theme"
+      inactive-value="light-theme"
+    ></el-switch
+    >&nbsp;
+    <span class="text-xs">Dark</span>
+  </span>
 </template>
 
 <script>
-
 export default {
   data() {
     return {

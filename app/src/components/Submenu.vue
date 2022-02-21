@@ -1,19 +1,27 @@
 <template>
-  <div class="theme-switcher-wrapper w-full text-right mt-2 pr-6">
-    <ShareSettings />
-    <EmailSignup />
-    <ThemeSwitcher />
-  </div>
+  <el-row class="mt-4">
+    <el-col :span="12">
+      <ThemeSwitcher />
+    </el-col>
+    <el-col :span="12" class="text-right">
+      <ShareSettings />
+      <br />
+      <EmailSignup />
+    </el-col>
+  </el-row>
+  <!--        <span class="sub-menu-item">-->
+  <!--          <span>-->
+  <!--            <a-->
+  <!--              href="https://www.facebook.com/groups/dailyoffice"-->
+  <!--              target="_blank:"-->
+  <!--            >-->
+  <!--              <font-awesome-icon :icon="['fab', 'facebook']" />-->
+  <!--            </a>-->
+  <!--          </span>-->
+  <!--        </span>-->
 </template>
 
-<style>
-.sub-menu-item {
-  margin-left: 35px;
-}
-</style>
-
 <script>
-
 import EmailSignup from "@/components/EmailSignup";
 import ShareSettings from "@/components/ShareSettings";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
