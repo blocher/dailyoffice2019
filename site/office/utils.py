@@ -87,7 +87,6 @@ books = {
 
 
 def passage_to_citation(passage):
-
     if not passage:
         return None
 
@@ -124,3 +123,12 @@ def testament_to_closing(testament):
 
 def testament_to_closing_response(testament):
     return "Thanks be to God." if testament != "DC" else ""
+
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip

@@ -1,16 +1,17 @@
-from churchcal.api.views import DayView, MonthView, YearView
 from django.urls import include, path, re_path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
+from rest_framework import permissions
+from rest_framework import routers
+
+from churchcal.api.views import DayView, MonthView, YearView
 from office.api.views.index import (
     MorningPrayerView,
     AvailableSettings,
     MorningPrayerDisplayView,
     EveningPrayerView,
-    MiddayPrayerView,
+    MiddayPrayerView, EmailSignupView,
 )
-from rest_framework import permissions
-from rest_framework import routers
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -48,6 +49,11 @@ urlpatterns = [
         r"api/v1/office/midday_prayer/<int:year>-<int:month>-<int:day>",
         MiddayPrayerView.as_view(),
         name="midday_view",
+    ),
+    path(
+        r"api/v1/email_signup",
+        EmailSignupView.as_view(),
+        name="email_signup",
     ),
     path(
         r"new/office/morning_prayer/<int:year>-<int:month>-<int:day>",

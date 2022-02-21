@@ -61,7 +61,7 @@
       <el-menu-item index="/about"> Resources</el-menu-item>
     </el-menu>
   </el-affix>
-  <ThemeSwitcher />
+  <Submenu />
 </template>
 
 <style>
@@ -77,7 +77,7 @@
 </style>
 
 <script>
-import ThemeSwitcher from "@/components/ThemeSwitcher";
+import Submenu from "@/components/Submenu";
 
 export default {
   data() {
@@ -87,7 +87,7 @@ export default {
     };
   },
   components: {
-    ThemeSwitcher,
+    Submenu,
   },
 };
 </script>

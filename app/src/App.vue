@@ -62,7 +62,7 @@ body {
   }
 
   .small-container {
-    max-width: 550px;
+    max-width: 700px;
     display: block;
     text-align: left;
     padding: 1.4em;

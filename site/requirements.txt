@@ -2,6 +2,7 @@ git+https://github.com/blocher/python-scriptures
 git+https://github.com/jazzband/django-robots
 git+https://github.com/ivanchenkodmitry/django-meta@patch-1
 git+https://github.com/blocher/django-inlinecss@django4
+git+https://github.com/mailchimp/mailchimp-marketing-python.git
 arrow==1.2.2
 Babel==2.9.1
 backcall==0.2.0
