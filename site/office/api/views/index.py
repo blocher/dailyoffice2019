@@ -147,9 +147,9 @@ class MPOpeningSentence(Module):
             }
 
         if (
-                self.office.date.season.name == "Lent"
-                or self.office.date.primary.rank.name == "EMBER_DAY"
-                or self.office.date.primary.rank.name == "ROGATION_DAY"
+            self.office.date.season.name == "Lent"
+            or self.office.date.primary.rank.name == "EMBER_DAY"
+            or self.office.date.primary.rank.name == "ROGATION_DAY"
         ):
 
             if self.office.date.date.weekday() in [6, 2]:  # Sunday, Wednesday
@@ -185,9 +185,9 @@ class MPOpeningSentence(Module):
             }
 
         if (
-                "Ascension" in self.office.date.primary.name
-                or len(self.office.date.all) > 1
-                and "Ascension" in self.office.date.all[1].name
+            "Ascension" in self.office.date.primary.name
+            or len(self.office.date.all) > 1
+            and "Ascension" in self.office.date.all[1].name
         ):
             return {
                 "sentence": "Since then we have a great high priest who has passed through the heavens, Jesus, the Son of God, let us hold fast our confession. Let us then with confidence draw near to the throne of grace, that we may receive mercy and find grace to help in time of need.",
@@ -309,11 +309,11 @@ class Confession(Module):
 
     def get_lines(self):
         return (
-                [Line("Confession of Sin", "heading")]
-                + [Line("The Officiant says to the People", "rubric")]
-                + self.get_intro_lines()
-                + self.get_body_lines()
-                + self.get_absolution_lines()
+            [Line("Confession of Sin", "heading")]
+            + [Line("The Officiant says to the People", "rubric")]
+            + self.get_intro_lines()
+            + self.get_body_lines()
+            + self.get_absolution_lines()
         )
 
 
@@ -349,9 +349,9 @@ class MPInvitatory(Module):
             return {"first_line": "Alleluia. The Lord is risen indeed:", "second_line": "O come, let us adore him."}
 
         if (
-                "Ascension" in self.office.date.primary.name
-                or len(self.office.date.all) > 1
-                and "Ascension" in self.office.date.all[1].name
+            "Ascension" in self.office.date.primary.name
+            or len(self.office.date.all) > 1
+            and "Ascension" in self.office.date.all[1].name
         ):
             return {
                 "first_line": "Alleluia. Christ the Lord has ascended into heaven:",
@@ -365,10 +365,10 @@ class MPInvitatory(Module):
             return {"first_line": "The Lord is glorious in his saints:", "second_line": "O come, let us adore him."}
 
         if self.office.date.primary.rank.name == "HOLY_DAY" and self.office.date.primary.name not in (
-                "The Circumcision and Holy Name of our Lord Jesus Christ",
-                "The Visitation of the Virgin Mary to Elizabeth and Zechariah",
-                "Holy Cross Day",
-                "The Holy Innocents",
+            "The Circumcision and Holy Name of our Lord Jesus Christ",
+            "The Visitation of the Virgin Mary to Elizabeth and Zechariah",
+            "Holy Cross Day",
+            "The Holy Innocents",
         ):
             return {"first_line": "The Lord is glorious in his saints:", "second_line": "O come, let us adore him."}
 
@@ -459,9 +459,9 @@ class MPInvitatory(Module):
             return ("pascha_nostrum", "pascha_nostrum")
 
         if self.office.date.season.name == "Eastertide" and self.office.date.primary.rank.name in (
-                "PRINCIPAL_FEAST",
-                "SUNDAY",
-                "HOLY_DAY",
+            "PRINCIPAL_FEAST",
+            "SUNDAY",
+            "HOLY_DAY",
         ):
             return ("pascha_nostrum", "pascha_nostrum")
 
@@ -528,10 +528,10 @@ class MPInvitatory(Module):
             canticle_heading = canticle[:2]
             canticle_body = canticle[2:]
             return (
-                    canticle_heading
-                    + [Line(self.antiphon["first_line"], "leader"), Line(self.antiphon["second_line"])]
-                    + canticle_body
-                    + [Line(self.antiphon["first_line"], "leader"), Line(self.antiphon["second_line"])]
+                canticle_heading
+                + [Line(self.antiphon["first_line"], "leader"), Line(self.antiphon["second_line"])]
+                + canticle_body
+                + [Line(self.antiphon["first_line"], "leader"), Line(self.antiphon["second_line"])]
             )
         return file_to_lines(filename)
 
@@ -680,7 +680,7 @@ class ReadingModule(Module):
             has_abbreviated = (
                 True
                 if hasattr(self.office.office_readings, "{}_abbreviated".format(field))
-                   and getattr(self.office.office_readings, "{}_abbreviated".format(field))
+                and getattr(self.office.office_readings, "{}_abbreviated".format(field))
                 else False
             )
             if has_abbreviated:
@@ -785,16 +785,16 @@ class CanticleModule(Module):
 
     def get_canticle(self, data):
         return (
-                [
-                    Line(data.latin_name, "heading"),
-                    Line(data.english_name, "subheading"),
-                    self.rubric(),
-                ]
-                + file_to_lines(data.template.replace("html", "csv"))
-                + [
-                    Line(data.citation, "citation"),
-                ]
-                + self.gloria_lines(data)
+            [
+                Line(data.latin_name, "heading"),
+                Line(data.english_name, "subheading"),
+                self.rubric(),
+            ]
+            + file_to_lines(data.template.replace("html", "csv"))
+            + [
+                Line(data.citation, "citation"),
+            ]
+            + self.gloria_lines(data)
         )
 
 
@@ -911,9 +911,9 @@ class Creed(Module):
 
     def get_lines(self):
         return [
-                   Line("The Apostles' Creed", "heading"),
-                   Line("Officiant and People together, all standing", "rubric"),
-               ] + file_to_lines("creed.csv")
+            Line("The Apostles' Creed", "heading"),
+            Line("Officiant and People together, all standing", "rubric"),
+        ] + file_to_lines("creed.csv")
 
 
 class Prayers(Module):
@@ -929,17 +929,17 @@ class Prayers(Module):
             pater_file = "pater_traditional.csv"
 
         return (
-                [
-                    Line("The Prayers", "heading"),
-                    Line("The Lord be with you.", "leader_dialogue", preface="Officiant"),
-                    Line("And with your spirit.", "congregation_dialogue", preface="People"),
-                    Line("Let us pray.", "leader_dialogue", preface="Officiant"),
-                    Line("The People kneel or stand.", "rubric"),
-                ]
-                + file_to_lines(kryie_file)
-                + [Line("Officiant and People", "rubric")]
-                + file_to_lines(pater_file)
-                + file_to_lines("suffrages_a.csv")
+            [
+                Line("The Prayers", "heading"),
+                Line("The Lord be with you.", "leader_dialogue", preface="Officiant"),
+                Line("And with your spirit.", "congregation_dialogue", preface="People"),
+                Line("Let us pray.", "leader_dialogue", preface="Officiant"),
+                Line("The People kneel or stand.", "rubric"),
+            ]
+            + file_to_lines(kryie_file)
+            + [Line("Officiant and People", "rubric")]
+            + file_to_lines(pater_file)
+            + file_to_lines("suffrages_a.csv")
         )
 
 
@@ -1186,21 +1186,21 @@ class FinalPrayers(Module):
 
         if general_thanksgiving == "on":
             lines = (
-                    lines
-                    + [
-                        Line("The General Thanksgiving", "heading"),
-                        Line("Officiant and People", "rubric"),
-                    ]
-                    + file_to_lines("general_thanksgiving")
+                lines
+                + [
+                    Line("The General Thanksgiving", "heading"),
+                    Line("Officiant and People", "rubric"),
+                ]
+                + file_to_lines("general_thanksgiving")
             )
 
         if chrysostom == "on":
             lines = (
-                    lines
-                    + [
-                        Line("A Prayer of St. John Chrysostom", "heading"),
-                    ]
-                    + file_to_lines("chrysostom")
+                lines
+                + [
+                    Line("A Prayer of St. John Chrysostom", "heading"),
+                ]
+                + file_to_lines("chrysostom")
             )
 
         return lines
@@ -1264,13 +1264,13 @@ class Dismissal(Module):
             grace = self.get_fixed_grace()
 
         return (
-                lines
-                + [Line("", "spacer")]
-                + [
-                    Line(grace["officiant"], "leader"),
-                    Line("Amen.", "congregation"),
-                    Line(grace["citation"], "citation"),
-                ]
+            lines
+            + [Line("", "spacer")]
+            + [
+                Line(grace["officiant"], "leader"),
+                Line("Amen.", "congregation"),
+                Line(grace["citation"], "citation"),
+            ]
         )
 
 
@@ -1301,13 +1301,13 @@ class GreatLitany(ShowGreatLitanyMixin, Module):
                 file_to_lines("pater_contemporary") if style == "contemporary" else file_to_lines("pater_traditional")
             )
             lines = (
-                    file_to_lines("great_litany")
-                    + [Line("", "spacer")]
-                    + kyrie
-                    + [Line("", "spacer")]
-                    + pater
-                    + [Line("", "spacer")]
-                    + file_to_lines("supplication")
+                file_to_lines("great_litany")
+                + [Line("", "spacer")]
+                + kyrie
+                + [Line("", "spacer")]
+                + pater
+                + [Line("", "spacer")]
+                + file_to_lines("supplication")
             )
             for line in lines:
                 line["content"] = line["content"].replace("{{ names }}", self.get_names())
@@ -1380,7 +1380,7 @@ class MiddayInvitatory(Module):
     @property
     def alleluia(self):
         alleluia = (
-                self.office.date.evening_season.name != "Lent" and self.office.date.evening_season.name != "Holy Week"
+            self.office.date.evening_season.name != "Lent" and self.office.date.evening_season.name != "Holy Week"
         )
         return "Alleluia." if alleluia else ""
 
@@ -1494,22 +1494,22 @@ class MiddayPrayers(Module):
         kyrie = file_to_lines("kyrie_contemporary") if style == "contemporary" else file_to_lines("kyrie_traditional")
         pater = file_to_lines("pater_contemporary") if style == "contemporary" else file_to_lines("pater_traditional")
         return (
-                [
-                    Line("The Prayers", "heading"),
-                    Line("I will bless the Lord at all times.", "leader_dialogue"),
-                    Line("His praise shall continually be in my mouth.", "congregation_dialogue"),
-                    Line("", "spacer"),
-                ]
-                + kyrie
-                + [Line("Officiant and People", "rubric")]
-                + pater
-                + [
-                    Line("", "spacer"),
-                    Line("O Lord, hear our prayer", "leader_dialogue"),
-                    Line("And let our cry come to you.", "congregation_dialogue"),
-                    Line("Let us pray.", "leader_dialogue"),
-                ]
-                + self.get_collect_lines()
+            [
+                Line("The Prayers", "heading"),
+                Line("I will bless the Lord at all times.", "leader_dialogue"),
+                Line("His praise shall continually be in my mouth.", "congregation_dialogue"),
+                Line("", "spacer"),
+            ]
+            + kyrie
+            + [Line("Officiant and People", "rubric")]
+            + pater
+            + [
+                Line("", "spacer"),
+                Line("O Lord, hear our prayer", "leader_dialogue"),
+                Line("And let our cry come to you.", "congregation_dialogue"),
+                Line("Let us pray.", "leader_dialogue"),
+            ]
+            + self.get_collect_lines()
         )
 
 
@@ -1730,24 +1730,34 @@ class EmailSignupView(OfficeAPIView):
             raise ValidationError("Please provide a valid email address.", 400)
         try:
             client = MailchimpMarketing.Client()
-            client.set_config({
-                "api_key": settings.MAILCHIMP_API_KEY,
-                "server": settings.MAILCHIMP_PREFIX,
-            })
+            client.set_config(
+                {
+                    "api_key": settings.MAILCHIMP_API_KEY,
+                    "server": settings.MAILCHIMP_PREFIX,
+                }
+            )
             ip = get_client_ip(request)
             time_submitted = datetime.datetime.utcnow().isoformat().split(".")[0] + "Z"
-            client.lists.set_list_member(settings.MAILCHIMP_LIST_ID, email,
-                                         {"email_address": email, "skip_merge_validation": True,
-                                          "status": "subscribed", "ip_signup": ip, "ip_opt": ip,
-                                          "timestamp_signup": time_submitted,
-                                          "timestamp_opt": time_submitted})
+            client.lists.set_list_member(
+                settings.MAILCHIMP_LIST_ID,
+                email,
+                {
+                    "email_address": email,
+                    "skip_merge_validation": True,
+                    "status": "subscribed",
+                    "ip_signup": ip,
+                    "ip_opt": ip,
+                    "timestamp_signup": time_submitted,
+                    "timestamp_opt": time_submitted,
+                },
+            )
         except ApiClientError as e:
             try:
                 data = json.loads(e.text)
                 if "errors" in data.keys():
                     error = "; ".join(["{}: {}".format(error["field"], error["message"]) for error in data["errors"]])
                 else:
-                    error = data['detail']
+                    error = data["detail"]
             except Exception as c:
                 raise ValidationError("Unknown error. Please reach out to feedback@dailyofice2019.com", 400)
             raise ValidationError(error, 400)

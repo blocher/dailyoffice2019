@@ -34,7 +34,7 @@ import {
   faSun,
   faSunrise,
   faSunset,
-    faEnvelopes
+  faEnvelopes,
 } from "@fortawesome/pro-duotone-svg-icons";
 
 import { faFacebook } from "@fortawesome/free-brands-svg-icons";
@@ -50,7 +50,7 @@ library.add(
   faShareNodes,
   faCopy,
   faFacebook,
-    faEnvelopes,
+  faEnvelopes
 );
 
 const app = createApp(App)

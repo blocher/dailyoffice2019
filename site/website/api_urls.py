@@ -10,7 +10,8 @@ from office.api.views.index import (
     AvailableSettings,
     MorningPrayerDisplayView,
     EveningPrayerView,
-    MiddayPrayerView, EmailSignupView,
+    MiddayPrayerView,
+    EmailSignupView,
 )
 
 schema_view = get_schema_view(
