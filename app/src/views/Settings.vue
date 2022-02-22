@@ -10,14 +10,14 @@
       <el-tabs :tab-position="tabPosition" class="h-full">
         <el-tab-pane label="Daily Office">
           <SettingsPanel
-            :availableSettings="availableSettings"
+            :available-settings="availableSettings"
             site="Daily Office"
             name="Daily Office Settings"
           />
         </el-tab-pane>
         <el-tab-pane label="Family Prayer">
           <SettingsPanel
-            :availableSettings="availableSettings"
+            :available-settings="availableSettings"
             site="Family Prayer"
             name="Family Prayer Settings"
           />
@@ -40,6 +40,11 @@ import Loading from "@/components/Loading";
 import SettingsPanel from "@/components/SettingsPanel";
 
 export default {
+  name: "Settings",
+  components: {
+    Loading,
+    SettingsPanel,
+  },
   data() {
     return {
       counter: 0,
@@ -49,6 +54,12 @@ export default {
       loading: true,
       windowWidth: 0,
     };
+  },
+  computed: {
+    // a computed getter
+    tabPosition: function () {
+      return this.windowWidth > 780 ? "left" : "top";
+    },
   },
   mounted() {
     this.loading = true;
@@ -74,17 +85,6 @@ export default {
     window.removeEventListener("resize", () => {
       this.windowWidth = window.innerWidth;
     });
-  },
-  computed: {
-    // a computed getter
-    tabPosition: function () {
-      return this.windowWidth > 780 ? "left" : "top";
-    },
-  },
-  name: "Settings",
-  components: {
-    Loading,
-    SettingsPanel,
   },
 };
 </script>

@@ -203,6 +203,10 @@ import Menu from "@/components/Menu";
 import Loading from "@/components/Loading";
 
 export default {
+  components: {
+    Menu,
+    Loading,
+  },
   data() {
     return {
       loading: true,
@@ -230,10 +234,6 @@ export default {
       return;
     }
     this.loading = false;
-  },
-  components: {
-    Menu,
-    Loading,
   },
 };
 </script>

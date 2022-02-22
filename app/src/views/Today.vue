@@ -1,5 +1,5 @@
 <template>
-  <Office :office="office" :calendarDate="calendarDate" :key="key" />
+  <Office :key="key" :office="office" :calendar-date="calendarDate" />
 </template>
 
 <script>
@@ -7,6 +7,10 @@
 import Office from "@/views/Office";
 
 export default {
+  name: "Today",
+  components: {
+    Office,
+  },
   data() {
     return {
       counter: 0,
@@ -31,10 +35,6 @@ export default {
   },
   async created() {
     this.setDate();
-  },
-  name: "Today",
-  components: {
-    Office,
   },
   properties: {
     office: null,

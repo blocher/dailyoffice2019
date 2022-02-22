@@ -1,15 +1,15 @@
 <template>
   <div class="small-container">
     <Loading v-if="loading" />
-    <div class="alert-danger" v-if="error">{{ error }}</div>
-    <div class="day" v-if="!loading">
+    <div v-if="error" class="alert-danger">{{ error }}</div>
+    <div v-if="!loading" class="day">
       <CalendarCard
-        :office="office"
-        :calendarDate="calendarDate"
-        :card="card"
         v-if="!loading"
+        :office="office"
+        :calendar-date="calendarDate"
+        :card="card"
       />
-      <OfficeNav :calendarDate="calendarDate" />
+      <OfficeNav :calendar-date="calendarDate" />
     </div>
   </div>
 </template>
@@ -21,6 +21,9 @@ import setCalendarDate from "@/helpers/setCalendarDate";
 import OfficeNav from "@/components/OfficeNav";
 
 export default {
+  name: "Calendar",
+  components: { OfficeNav },
+  props: ["office"],
   data() {
     return {
       year: null,
@@ -49,8 +52,6 @@ export default {
   async created() {
     this.setDay();
   },
-  name: "Calendar",
-  components: { OfficeNav },
   methods: {
     scrollToTop() {
       window.scrollTo(0, 0);
@@ -82,6 +83,5 @@ export default {
       this.loading = false;
     },
   },
-  props: ["office"],
 };
 </script>

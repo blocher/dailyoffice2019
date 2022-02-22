@@ -1,6 +1,6 @@
 <template>
   <span class="sub-menu-item">
-    <a href="" v-on:click.prevent="sharePanel = true">
+    <a href="" @click.prevent="sharePanel = true">
       <font-awesome-icon :icon="['fad', 'share-nodes']" />&nbsp;
       <span class="text-xs">Share Settings</span>
     </a>
@@ -12,7 +12,7 @@
         This share link allows you to sync your settings with others with whom
         you are praying.
       </p>
-      <div v-on:click="copyLink">
+      <div @click="copyLink">
         <el-input
           v-model="shareLink"
           placeholder="Copy and paste share link"
@@ -32,8 +32,8 @@
       you are praying. When they receive the link, they can click on it to open
       this page with your settings already preselected.
     </p>
-    <p class="text-left mt-4" v-if="canShare">
-      <a href="" v-on:click="share($event)">
+    <p v-if="canShare" class="text-left mt-4">
+      <a href="" @click="share($event)">
         <font-awesome-icon :icon="['fad', 'share-nodes']" />&nbsp;
         <span class="text-xs"
           >Share using an app installed on your computer or device</span
@@ -61,14 +61,14 @@ export default {
       sharePanel: false,
     };
   },
-  created: async function () {
-    const canShare = await Share.canShare();
-    this.canShare = canShare.value;
-  },
   computed: {
     shareLink() {
       return this.getShareLink();
     },
+  },
+  created: async function () {
+    const canShare = await Share.canShare();
+    this.canShare = canShare.value;
   },
   methods: {
     getShareLink() {

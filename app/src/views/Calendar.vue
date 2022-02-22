@@ -1,7 +1,7 @@
 <template>
   <h1>Calendar</h1>
   <Loading v-if="loading" />
-  <el-calendar v-model="date" v-if="!loading">
+  <el-calendar v-if="!loading" v-model="date">
     <template #header="{ date }">
       <span>{{ date }}</span>
 
@@ -23,7 +23,7 @@
       </el-button-group>
     </template>
     <template #dateCell="{ data }">
-      <div class="dateCellWrapper" v-on:click="clickDateCell(data, $event)">
+      <div class="dateCellWrapper" @click="clickDateCell(data, $event)">
         <p>{{ parseInt(data.day.split("-")[2]) }}</p>
         <p>
           <small v-html="days[data.day]"></small>
@@ -66,6 +66,8 @@ td {
 // @ is an alias to /src
 
 export default {
+  name: "Calendar",
+  components: {},
   data() {
     return {
       year: null,
@@ -86,8 +88,6 @@ export default {
   async created() {
     this.setCalendar();
   },
-  name: "Calendar",
-  components: {},
   methods: {
     selectDate: async function (changeType) {
       if (changeType == "prev-month") {

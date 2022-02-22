@@ -82,14 +82,14 @@
 import Submenu from "@/components/Submenu";
 
 export default {
+  components: {
+    Submenu,
+  },
   data() {
     return {
       activeIndex: "1",
       menuRouter: true,
     };
-  },
-  components: {
-    Submenu,
   },
 };
 </script>

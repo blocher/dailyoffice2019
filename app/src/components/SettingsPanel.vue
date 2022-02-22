@@ -8,17 +8,17 @@
           class="ml-2"
           active-color="#0284c7"
           inactive-color="#e5e7eb"
-          v-on:change="toggleAdvanced"
+          @change="toggleAdvanced"
         />
       </small>
     </p>
 
-    <div v-for="setting in availableSettings" v-bind:key="setting.uuid">
+    <div v-for="setting in availableSettings" :key="setting.uuid">
       <RadioGroup
-        class="mt-8"
-        v-model="setting.active"
-        v-on:click="changeSetting"
         v-if="showSetting(setting)"
+        v-model="setting.active"
+        class="mt-8"
+        @click="changeSetting"
       >
         <RadioGroupLabel class="mt-8 text-lg font-medium">
           {{ setting.title }}
@@ -33,11 +33,11 @@
 
         <div class="mt-1 rounded-md shadow-sm -space-y-px">
           <RadioGroupOption
-            as="template"
             v-for="(option, optionIdx) in setting.options"
             :key="option.uuid"
-            :value="option.value"
             v-slot="{ checked, active }"
+            as="template"
+            :value="option.value"
           >
             <div
               :class="[
@@ -116,11 +116,6 @@ import { ElMessage } from "element-plus";
 
 export default {
   name: "SettingsPanel",
-  data() {
-    return {
-      advanced: false,
-    };
-  },
   components: {
     RadioGroup,
     RadioGroupDescription,
@@ -128,6 +123,11 @@ export default {
     RadioGroupOption,
   },
   props: ["availableSettings", "site", "name"],
+  data() {
+    return {
+      advanced: false,
+    };
+  },
   mounted() {
     if (localStorage.advancedSettings) {
       const stored = localStorage.advancedSettings;

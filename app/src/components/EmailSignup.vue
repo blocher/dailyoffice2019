@@ -1,6 +1,6 @@
 <template>
   <span class="sub-menu-item">
-    <a href="" v-on:click.prevent="emailPanel = true">
+    <a href="" @click.prevent="emailPanel = true">
       <font-awesome-icon :icon="['fad', 'envelopes']" />
       <span class="ml-1 text-xs">Email Updates</span>
     </a>
@@ -17,26 +17,26 @@
       <el-form>
         <p class="mt-2">
           <el-input
-            type="email"
             v-model="emailField"
+            type="email"
             placeholder="Email address..."
             required
           />
         </p>
         <p class="mt-2">
           <el-form-item>
-            <el-button type="primary" @click="onSubmit" :disabled="loading"
+            <el-button type="primary" :disabled="loading" @click="onSubmit"
               >Sign Up
             </el-button>
           </el-form-item>
         </p>
         <el-alert
-          class="text-left"
           v-if="success"
+          class="text-left"
           :title="success"
           type="success"
         />
-        <el-alert class="text-left" v-if="error" :title="error" type="error" />
+        <el-alert v-if="error" class="text-left" :title="error" type="error" />
         <Loading v-if="loading" />
       </el-form>
     </div>

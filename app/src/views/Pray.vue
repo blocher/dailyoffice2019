@@ -1,5 +1,5 @@
 <template>
-  <Office :office="office" :calendarDate="calendarDate" />
+  <Office :office="office" :calendar-date="calendarDate" />
 </template>
 
 <script>
@@ -8,6 +8,10 @@ import Office from "@/views/Office";
 import setCalendarDate from "@/helpers/setCalendarDate";
 
 export default {
+  name: "Today",
+  components: {
+    Office,
+  },
   data() {
     return {
       counter: 0,
@@ -28,10 +32,6 @@ export default {
       });
       return;
     }
-  },
-  name: "Today",
-  components: {
-    Office,
   },
 };
 </script>

@@ -14,8 +14,8 @@
             {{ card.primary_evening_feast }}
           </h4>
           <h5
-            class="text-center"
             v-if="card && card.fast && card.fast.fast_day"
+            class="text-center"
           >
             Fast Day
           </h5>
@@ -181,6 +181,9 @@ a:active.link {
 import Commemoration from "@/components/Commemoration";
 
 export default {
+  name: "CalenderCard",
+  components: { Commemoration },
+  props: ["card", "calendarDate", "office"],
   data() {
     return {
       officeName: null,
@@ -208,8 +211,5 @@ export default {
       this.officeName = offices[this.$props.office];
     }
   },
-  name: "CalenderCard",
-  components: { Commemoration },
-  props: ["card", "calendarDate", "office"],
 };
 </script>

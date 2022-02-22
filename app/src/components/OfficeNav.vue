@@ -1,27 +1,27 @@
 <template>
   <el-row :gutter="5" class="mt-2 text-center text-xs sm:text-sm mx-auto">
-    <el-col v-for="link in links" v-bind:key="link.name" :span="6">
+    <el-col v-for="link in links" :key="link.name" :span="6">
       <div class="grid-content bg-purple">
         <router-link :to="link.to">
           <el-card
-            v-bind:class="selectedClass(link.name)"
+            :class="selectedClass(link.name)"
             :shadow="hoverClass(link.name)"
           >
             <p class="text-xs sm:text-sm">
               <font-awesome-icon :icon="link.icon" />
             </p>
-            <p v-html="link.text" class="text-xs sm:text-sm"></p>
+            <p class="text-xs sm:text-sm" v-html="link.text"></p>
           </el-card>
         </router-link>
       </div>
     </el-col>
   </el-row>
   <el-row :gutter="5" class="mt-2 text-center">
-    <el-col v-for="link in dayLinks" v-bind:key="link.text" :span="8">
+    <el-col v-for="link in dayLinks" :key="link.text" :span="8">
       <div class="grid-content bg-purple">
         <router-link :to="link.to" :v-on:click="scrollToTop">
           <el-card
-            v-bind:class="link.selected ? 'selected' : ''"
+            :class="link.selected ? 'selected' : ''"
             shadow="hover"
             class="text-xs sm:text-sm"
           >
@@ -62,6 +62,9 @@
 // @ is an alias to /src
 
 export default {
+  name: "OfficeNav",
+  components: {},
+  props: ["calendarDate", "selectedOffice"],
   data() {
     return {
       links: null,
@@ -133,9 +136,6 @@ export default {
       },
     ];
   },
-  name: "OfficeNav",
-  components: {},
-  props: ["calendarDate", "selectedOffice"],
   methods: {
     scrollToTop() {
       window.scrollTo(0, 0);

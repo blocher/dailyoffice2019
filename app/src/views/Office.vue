@@ -3,13 +3,13 @@
     <Loading v-if="loading" />
 
     <CalendarCard
-      :office="office"
-      :calendarDate="calendarDate"
-      :card="card"
       v-if="!loading"
+      :office="office"
+      :calendar-date="calendarDate"
+      :card="card"
     />
     <el-alert v-if="error" :title="error" type="error" />
-    <OfficeNav :calendarDate="calendarDate" :selectedOffice="office" />
+    <OfficeNav :calendar-date="calendarDate" :selected-office="office" />
 
     <div class="font-size-block my-2">
       <div class="w-1/6 inline-block">
@@ -17,12 +17,12 @@
       </div>
       <div class="w-2/3 inline-block">
         <el-slider
+          v-model="fontSize"
           class="w-3/4"
           :min="sliderMin"
           :max="sliderMax"
-          v-model="fontSize"
-          v-on:input="setFontSize"
           :format-tooltip="displayFontSize"
+          @input="setFontSize"
         ></el-slider>
       </div>
       <div class="w-1/6 inline-block text-right">
@@ -31,36 +31,30 @@
     </div>
 
     <div id="office">
-      <div v-for="module in modules" v-bind:key="module.name">
-        <div v-for="line in module.lines" v-bind:key="line.content">
-          <OfficeHeading
-            v-if="line.line_type == 'heading'"
-            v-bind:line="line"
-          />
+      <div v-for="module in modules" :key="module.name">
+        <div v-for="line in module.lines" :key="line.content">
+          <OfficeHeading v-if="line.line_type == 'heading'" :line="line" />
           <OfficeSubheading
             v-if="line.line_type == 'subheading'"
-            v-bind:line="line"
+            :line="line"
           />
-          <OfficeCitation
-            v-if="line.line_type == 'citation'"
-            v-bind:line="line"
-          />
-          <OfficeHTML v-if="line.line_type == 'html'" v-bind:line="line" />
-          <OfficeLeader v-if="line.line_type == 'leader'" v-bind:line="line" />
+          <OfficeCitation v-if="line.line_type == 'citation'" :line="line" />
+          <OfficeHTML v-if="line.line_type == 'html'" :line="line" />
+          <OfficeLeader v-if="line.line_type == 'leader'" :line="line" />
           <OfficeLeaderDialogue
             v-if="line.line_type == 'leader_dialogue'"
-            v-bind:line="line"
+            :line="line"
           />
           <OfficeCongregation
             v-if="line.line_type == 'congregation'"
-            v-bind:line="line"
+            :line="line"
           />
           <OfficeCongregationDialogue
             v-if="line.line_type == 'congregation_dialogue'"
-            v-bind:line="line"
+            :line="line"
           />
 
-          <OfficeRubric v-if="line.line_type == 'rubric'" v-bind:line="line" />
+          <OfficeRubric v-if="line.line_type == 'rubric'" :line="line" />
           <OfficeSpacer v-if="line.line_type == 'spacer'" />
         </div>
       </div>
@@ -91,6 +85,23 @@ import CalendarCard from "@/components/CalendarCard";
 import OfficeNav from "@/components/OfficeNav";
 
 export default {
+  name: "Office",
+  components: {
+    OfficeHeading,
+    OfficeSubheading,
+    OfficeCitation,
+    OfficeHTML,
+    OfficeCongregation,
+    OfficeLeader,
+    OfficeCongregationDialogue,
+    OfficeLeaderDialogue,
+    OfficeRubric,
+    OfficeSpacer,
+    Loading,
+    CalendarCard,
+    OfficeNav,
+  },
+  props: ["office", "calendarDate"],
   data() {
     return {
       counter: 0,
@@ -160,22 +171,5 @@ export default {
       return `${value}px`;
     },
   },
-  name: "Office",
-  components: {
-    OfficeHeading,
-    OfficeSubheading,
-    OfficeCitation,
-    OfficeHTML,
-    OfficeCongregation,
-    OfficeLeader,
-    OfficeCongregationDialogue,
-    OfficeLeaderDialogue,
-    OfficeRubric,
-    OfficeSpacer,
-    Loading,
-    CalendarCard,
-    OfficeNav,
-  },
-  props: ["office", "calendarDate"],
 };
 </script>
