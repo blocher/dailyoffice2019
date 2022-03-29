@@ -12,7 +12,9 @@ from office.api.views.index import (
     EveningPrayerView,
     MiddayPrayerView,
     EmailSignupView,
+    ComplineView,
 )
+from office.api.views.resources import CollectsViewSet, PsalmsViewSet
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -29,7 +31,7 @@ schema_view = get_schema_view(
 
 router_v1 = routers.DefaultRouter()
 router_v1.register(r"available_settings", AvailableSettings)
-
+router_v1.register(r"psalms", PsalmsViewSet, basename="psalms")
 urlpatterns = [
     re_path(r"^api/v1/", include(router_v1.urls)),
     path("api/v1/api-auth/", include("rest_framework.urls")),
@@ -50,6 +52,16 @@ urlpatterns = [
         r"api/v1/office/midday_prayer/<int:year>-<int:month>-<int:day>",
         MiddayPrayerView.as_view(),
         name="midday_view",
+    ),
+    path(
+        r"api/v1/office/compline/<int:year>-<int:month>-<int:day>",
+        ComplineView.as_view(),
+        name="compline_view",
+    ),
+    path(
+        r"api/v1/collects",
+        CollectsViewSet.as_view({"get": "list"}),
+        name="collects_view",
     ),
     path(
         r"api/v1/email_signup",

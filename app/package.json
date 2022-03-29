@@ -34,7 +34,7 @@
     "@vue/shared": "^3.2.31",
     "and": "^0.0.3",
     "axios": "^0.26.0",
-    "element-plus": "^2.0.2",
+    "element-plus": "^2.1.4",
     "follow-redirects": "^1.14.9",
     "naive-ui": "^2.25.2",
     "nanoid": "^3.3.1",

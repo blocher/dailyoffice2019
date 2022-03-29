@@ -1,4 +1,24 @@
 <template>
+  <el-row
+    v-if="currentServiceType == 'office'"
+    :gutter="5"
+    class="mt-6 text-xs mx-auto"
+  >
+    <el-col :span="12" class="text-left">Full Daily Office</el-col>
+    <el-col :span="12" class="text-right"
+      ><a href="" @click.stop.prevent="toggleServiceType"
+        >Switch to Family Prayer</a
+      ></el-col
+    >
+  </el-row>
+  <el-row v-else :gutter="5" class="mt-6 text-xs mx-auto">
+    <el-col :span="12" class="text-left">
+      <a href="" @click.stop.prevent="toggleServiceType"
+        >Switch to Full Daily Office</a
+      >
+    </el-col>
+    <el-col :span="12" class="text-right">Family Prayer</el-col>
+  </el-row>
   <el-row :gutter="5" class="mt-2 text-center text-xs sm:text-sm mx-auto">
     <el-col v-for="link in links" :key="link.name" :span="6">
       <div class="grid-content bg-purple">
@@ -64,11 +84,23 @@
 export default {
   name: "OfficeNav",
   components: {},
-  props: ["calendarDate", "selectedOffice"],
+  props: {
+    calendarDate: {
+      type: Date,
+    },
+    selectedOffice: {
+      type: String,
+    },
+    serviceType: {
+      default: "office",
+      type: String,
+    },
+  },
   data() {
     return {
       links: null,
       dayLink: null,
+      currentServiceType: this.serviceType,
     };
   },
   async created() {
@@ -76,7 +108,7 @@ export default {
     tomorrow.setDate(this.calendarDate.getDate() + 1);
     const yesterday = new Date(this.calendarDate);
     yesterday.setDate(this.calendarDate.getDate() - 1);
-    this.links = [
+    this.dailyLinks = [
       {
         to: `/morning_prayer/${this.calendarDate.getFullYear()}/${
           this.calendarDate.getMonth() + 1
@@ -110,6 +142,45 @@ export default {
         icon: ["fad", "moon-stars"],
       },
     ];
+    this.familyLinks = [
+      {
+        to: `/family/morning_prayer/${this.calendarDate.getFullYear()}/${
+          this.calendarDate.getMonth() + 1
+        }/${this.calendarDate.getDate()}`,
+        text: "Morning",
+        name: "morning_prayer",
+        icon: ["fad", "sunrise"],
+      },
+      {
+        to: `/family/midday_prayer/${this.calendarDate.getFullYear()}/${
+          this.calendarDate.getMonth() + 1
+        }/${this.calendarDate.getDate()}`,
+        text: "Midday",
+        name: "midday_prayer",
+        icon: ["fad", "sun"],
+      },
+      {
+        to: `/family/early_evening_prayer/${this.calendarDate.getFullYear()}/${
+          this.calendarDate.getMonth() + 1
+        }/${this.calendarDate.getDate()}`,
+        text: "Early Evening",
+        name: "early_evening_prayer",
+        icon: ["fad", "sunset"],
+      },
+      {
+        to: `/family/close_of_day_prayer/${this.calendarDate.getFullYear()}/${
+          this.calendarDate.getMonth() + 1
+        }/${this.calendarDate.getDate()}`,
+        text: "Close of Day",
+        name: "close_of_day_prayer",
+        icon: ["fad", "moon-stars"],
+      },
+    ];
+    if (this.currentServiceType == "family") {
+      this.links = this.familyLinks;
+    } else {
+      this.links = this.dailyLinks;
+    }
     this.dayLinks = [
       {
         to: `/day/${yesterday.getFullYear()}/${
@@ -145,6 +216,49 @@ export default {
     },
     selectedClass(name) {
       return name == this.selectedOffice ? "selected" : "";
+    },
+    redirectToDaily() {
+      if (this.selectedOffice) {
+        const lookup = {
+          morning_prayer: "morning_prayer",
+          midday_prayer: "midday_prayer",
+          early_evening_prayer: "evening_prayer",
+          close_of_day_prayer: "compline",
+        };
+        const new_office = lookup[this.selectedOffice];
+        this.$router.push(
+          `/office/${new_office}/${this.calendarDate.getFullYear()}/${
+            this.calendarDate.getMonth() + 1
+          }/${this.calendarDate.getDate()}`
+        );
+      }
+    },
+    redirectToFamily() {
+      if (this.selectedOffice) {
+        const lookup = {
+          morning_prayer: "morning_prayer",
+          midday_prayer: "midday_prayer",
+          evening_prayer: "early_evening_prayer",
+          compline: "close_of_day_prayer",
+        };
+        const new_office = lookup[this.selectedOffice];
+        this.$router.push(
+          `/family/${new_office}/${this.calendarDate.getFullYear()}/${
+            this.calendarDate.getMonth() + 1
+          }/${this.calendarDate.getDate()}`
+        );
+      }
+    },
+    toggleServiceType() {
+      if (this.currentServiceType == "family") {
+        this.currentServiceType = "daily";
+        this.links = this.dailyLinks;
+        this.redirectToDaily();
+      } else {
+        this.currentServiceType = "family";
+        this.links = this.familyLinks;
+        this.redirectToFamily();
+      }
     },
   },
 };

@@ -1541,6 +1541,301 @@ class MiddayPrayer(Office):
         ]
 
 
+class ComplineOpeningSentence(Module):
+    name = "Opening Sentence"
+
+    # heading
+    # subheading
+    # citation
+    # html
+    # leader
+    # congregation
+    # rubric
+    # leader_dialogue
+    # congregation_dialogue
+
+    def get_lines(self):
+        return [
+            Line("Opening Sentence", "heading"),
+            Line("The Officiant begins:", "rubric"),
+            Line("The Lord Almighty grant us a peaceful night and a perfect end.", "leader_dialogue"),
+            Line("Amen.", "congregation_dialogue"),
+            Line("Our help is in the Name of the Lord;", "leader_dialogue"),
+            Line("The maker of heaven and earth.", "congregation_dialogue"),
+        ]
+
+
+class ComplineConfession(Module):
+    name = "Confession"
+
+    # heading
+    # subheading
+    # citation
+    # html
+    # leader
+    # congregation
+    # rubric
+    # leader_dialogue
+    # congregation_dialogue
+
+    def get_lines(self):
+        return (
+            [
+                Line("Confession of Sin", "heading"),
+                Line("The Officiant continues", "rubric"),
+            ]
+            + file_to_lines("confession_compline")
+            + [
+                Line("The Officiant alone says", "rubric"),
+                Line(
+                    "Almighty God grant us forgiveness of all our sins, and the grace and comfort of the Holy Spirit. ",
+                    "leader",
+                ),
+                Line("Amen.", "congregation"),
+            ]
+        )
+
+
+class ComplineInvitatory(Module):
+    name = "Invitatory"
+
+    # heading
+    # subheading
+    # citation
+    # html
+    # leader
+    # congregation
+    # rubric
+    # leader_dialogue
+    # congregation_dialogue
+
+    @property
+    def alleluia(self):
+        alleluia = self.office.date.evening_season.name not in ["Lent", "Holy Week"]
+        return " Alleluia." if alleluia else ""
+
+    def get_lines(self):
+        return [
+            Line("Invitatory", "heading"),
+            Line("O God, make speed to save us;", "leader_dialogue"),
+            Line("O Lord, make haste to help us.", "congregation_dialogue"),
+            Line("Glory be to the Father, and to the Son, and to the Holy Spirit;", "leader_dialogue"),
+            Line(
+                "As it was in the beginning, is now, and ever shall be, world without end. Amen.{}".format(
+                    self.alleluia
+                ),
+                "congregation_dialogue",
+            ),
+        ]
+
+
+class ComplinePsalms(Module):
+    name = "Psalms"
+
+    def get_lines(self):
+        psalms = "4,31:1-6,91,134"
+        psalms = get_psalms(psalms, api=True)
+
+        return [Line("The Psalms", "heading")] + psalms
+
+
+class ComplineScripture(Module):
+    name = "Scripture"
+
+    def get_scripture(self):
+
+        if self.office.date.date.weekday() in [0, 4]:
+            return {
+                "sentence": "You, O Lord, are in the midst of us, and we are called by your name; do not leave us.",
+                "citation": "JEREMIAH 14:9",
+            }
+
+        if self.office.date.date.weekday() in [1, 5]:
+            return {
+                "sentence": "Come to me, all who labor and are heavy laden, and I will give you rest. Take my yoke upon you, and learn from me, for I am gentle and lowly in heart, and you will find rest for your souls. For my yoke is easy, and my burden is light.",
+                "citation": "MATTHEW 11:28-30",
+            }
+
+        if self.office.date.date.weekday() in [2, 6]:
+            return {
+                "sentence": "Now may the God of peace who brought again from the dead our Lord Jesus, the great shepherd of the sheep, by the blood of the eternal covenant, equip you with everything good that you may do his will, working in us that which is pleasing in his sight, through Jesus Christ, to whom be glory forever and ever. Amen.",
+                "citation": "HEBREWS 13:20-21",
+            }
+
+        if self.office.date.date.weekday() in [3]:
+            return {
+                "sentence": "Be sober-minded; be watchful. Your adversary the devil prowls around like a roaring lion, seeking someone to devour. Resist him, firm in your faith.",
+                "citation": "1 PETER 5:8-9",
+            }
+
+    def get_lines(self):
+        scripture = self.get_scripture()
+        return [
+            Line("The Reading", "heading"),
+            Line(scripture["sentence"], "leader"),
+            Line(scripture["citation"], "citation"),
+            Line("The Word of the Lord", "leader_dialogue"),
+            Line("Thanks be to God.", "congregation_dialogue"),
+        ]
+
+
+class ComplinePrayers(Module):
+    name = "Prayers"
+
+    collects = [
+        (
+            "A Collect for Evening",
+            "Visit this place, O Lord, and drive far from it all snares of the enemy; let your holy angels dwell with us to preserve us in peace; and let your blessing be upon us always; through Jesus Christ our Lord.",
+        ),
+        (
+            "A Collect for Aid Against Peril",
+            "Lighten our darkness, we beseech you, O Lord; and by your great mercy defend us from all perils and dangers of this night; for the love of your only Son, our Savior Jesus Christ.",
+        ),
+        (
+            "A Collect for Evening",
+            "Be present, O merciful God, and protect us through the hours of this night, so that we who are wearied by the changes and chances of this life may rest in your eternal changelessness; through Jesus Christ our Lord.",
+        ),
+        (
+            "A Collect for Evening",
+            "Look down, O Lord, from your heavenly throne, illumine this night with your celestial brightness, and from the children of light banish the deeds of darkness; through Jesus Christ our Lord.",
+        ),
+        (
+            "A Collect for Saturdays",
+            "We give you thanks, O God, for revealing your Son Jesus Christ to us by the light of his resurrection: Grant that as we sing your glory at the close of this day, our joy may abound in the morning as we celebrate the Paschal mystery; through Jesus Christ our Lord.",
+        ),
+        (
+            "A Collect for Mission",
+            "Keep watch, dear Lord, with those who work, or watch, or weep this night, and give your angels charge over those who sleep. Tend the sick, Lord Christ; give rest to the weary, bless the dying, soothe the suffering, pity the afflicted, shield the joyous; and all for your love’s sake.",
+        ),
+        (
+            "A Collect for Evening",
+            "O God, your unfailing providence sustains the world we live in and the life we live: Watch over those, both night and day, who work while others sleep, and grant that we may never forget that our common life depends upon each other’s toil; through Jesus Christ our Lord.",
+        ),
+    ]
+
+    def get_collects(self):
+
+        if self.office.date.date.weekday() in [6]:  # Sunday
+            return self.collects[0], self.collects[1], self.collects[5]
+
+        if self.office.date.date.weekday() in [0]:  # Monday
+            return self.collects[2], self.collects[3], self.collects[5]
+
+        if self.office.date.date.weekday() in [1]:  # Tuesday
+            return self.collects[0], self.collects[2], self.collects[5]
+
+        if self.office.date.date.weekday() in [2]:  # Wednesday
+            return self.collects[1], self.collects[3], self.collects[6]
+
+        if self.office.date.date.weekday() in [3]:  # Thursday
+            return self.collects[0], self.collects[3], self.collects[5]
+
+        if self.office.date.date.weekday() in [4]:  # Friday
+            return self.collects[1], self.collects[2], self.collects[6]
+
+        if self.office.date.date.weekday() in [5]:  # Saturday
+            return self.collects[2], self.collects[4], self.collects[5]
+
+    def get_collect_lines(self):
+        collects = self.get_collects()
+        lines = []
+        for collect in collects:
+            lines.append(Line("", "spacer"))
+            lines.append(Line(collect[0], "subheading"))
+            lines.append(Line(collect[1], "leader"))
+            lines.append(Line("Amen.", "congregation"))
+        return lines
+
+    def get_lines(self):
+        style = self.office.settings["language_style"]
+        kyrie = file_to_lines("kyrie_contemporary") if style == "contemporary" else file_to_lines("kyrie_traditional")
+        pater = file_to_lines("pater_contemporary") if style == "contemporary" else file_to_lines("pater_traditional")
+        return (
+            [
+                Line("The Prayers", "heading"),
+                Line("Into your hands, O Lord, I commend my spirit;", "leader_dialogue"),
+                Line("For you have redeemed me, O Lord, O God of truth.", "congregation_dialogue"),
+                Line("Keep me, O Lord, as the apple of your eye;", "leader_dialogue"),
+                Line("Hide me under the shadow of your wings.", "congregation_dialogue"),
+                Line("", "spacer"),
+            ]
+            + kyrie
+            + [Line("Officiant and People", "rubric")]
+            + pater
+            + [
+                Line("", "spacer"),
+                Line("O Lord, hear our prayer", "leader_dialogue"),
+                Line("And let our cry come to you.", "congregation_dialogue"),
+                Line("Let us pray.", "leader_dialogue"),
+            ]
+            + self.get_collect_lines()
+        )
+
+
+class ComplineCanticle(Module):
+    @property
+    def antiphon(self):
+        return "Guide us waking, O Lord, and guard us sleeping; that awake we may watch with Christ, and asleep we may rest in peace.{}".format(
+            self.alleluia
+        )
+
+    @property
+    def alleluia(self):
+        alleluia = self.office.date.evening_season.name == "Eastertide"
+        return " Alleluia, alleluia, alleluia." if alleluia else ""
+
+    def get_lines(self):
+        filename = "ep2"
+        canticle = file_to_lines(filename)
+        return (
+            [
+                Line("NUNC DIMITTIS", "heading"),
+                Line("The Song of Simeon", "subheading"),
+                Line(
+                    "The Officiant and People say or sing the Song of Simeon with this Antiphon, all standing",
+                    "rubric",
+                ),
+                Line(self.antiphon, "congregation"),
+                Line("", "spacer"),
+            ]
+            + canticle
+            + file_to_lines("gloria_patri")
+            + [Line("", "spacer"), Line(self.antiphon, "congregation")]
+        )
+        return file_to_lines(filename)
+
+
+class ComplineConclusion(Module):
+    name = "Conclusion"
+
+    def get_lines(self):
+        return [
+            Line("THE DISMISSAL", "heading"),
+            Line("Let us bless the Lord.", "leader_dialogue"),
+            Line("Thanks be to God.", "congregation_dialogue"),
+            Line("The Officiant concludes with the following", "rubric"),
+            Line(
+                "The almighty and merciful Lord, Father, Son, and Holy Spirit, bless us and keep us, this night and evermore.",
+                "leader_dialogue",
+            ),
+            Line("Amen.", "congregation_dialogue"),
+        ]
+
+
+class Compline(Office):
+    def get_modules(self):
+        return [
+            ComplineOpeningSentence(self),
+            ComplineConfession(self),
+            ComplineInvitatory(self),
+            ComplinePsalms(self),
+            ComplineScripture(self),
+            ComplinePrayers(self),
+            ComplineCanticle(self),
+            ComplineConclusion(self),
+        ]
+
+
 class OfficeAPIView(APIView):
     permission_classes = [ReadOnly]
 
@@ -1575,6 +1870,13 @@ class EveningPrayerView(OfficeAPIView):
 class MiddayPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
         office = MiddayPrayer(request, year, month, day)
+        serializer = OfficeSerializer(office)
+        return Response(serializer.data)
+
+
+class ComplineView(OfficeAPIView):
+    def get(self, request, year, month, day):
+        office = Compline(request, year, month, day)
         serializer = OfficeSerializer(office)
         return Response(serializer.data)
 

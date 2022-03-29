@@ -24,13 +24,21 @@ const routes = [
     },
   },
   {
-    path: "/:office/:forward?",
+    path: "/:serviceType/:office/:forward?/",
     name: "Today",
     component: Today,
     meta: {
       title: "Pray | The Daily Office",
     },
   },
+  // {
+  //   path: "/:office/:forward?",
+  //   name: "Today",
+  //   component: Today,
+  //   meta: {
+  //     title: "Pray | The Daily Office",
+  //   },
+  // },
   {
     path: "/:office/:year/:month:/:day",
     name: "Pray",
@@ -39,7 +47,14 @@ const routes = [
       title: "Pray | The Daily Office",
     },
   },
-
+  {
+    path: "/:serviceType/:office/:year/:month:/:day",
+    name: "Family Prayer",
+    component: Pray,
+    meta: {
+      title: "Pray | Family Prayer",
+    },
+  },
   {
     path: "/settings",
     name: "Settings",
@@ -66,7 +81,43 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue"),
+      import(/* webpackChunkName: "about" */ "../views/Collects.vue"),
+  },
+  {
+    path: "/collects",
+    name: "Collects",
+    meta: {
+      title: "Collects | The Daily Office",
+    },
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/Collects.vue"),
+  },
+  {
+    path: "/psalms",
+    name: "Psalms",
+    meta: {
+      title: "Psalms | The Daily Office",
+    },
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/Psalms.vue"),
+  },
+  {
+    path: "/psalm/:number/",
+    name: "Psalm",
+    meta: {
+      title: "Psalms | The Daily Office",
+    },
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () =>
+      import(/* webpackChunkName: "about" */ "../views/Psalm.vue"),
   },
   {
     path: "/day/:year/:month/:day/",

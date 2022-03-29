@@ -9,7 +9,7 @@
         :calendar-date="calendarDate"
         :card="card"
       />
-      <OfficeNav :calendar-date="calendarDate" />
+      <OfficeNav :calendar-date="calendarDate" :service-type="serviceType" />
     </div>
   </div>
 </template>
@@ -36,6 +36,7 @@ export default {
       error: null,
       links: [],
       dayLinks: [],
+      serviceType: "office",
     };
   },
   watch: {
@@ -51,6 +52,7 @@ export default {
   },
   async created() {
     this.setDay();
+    this.serviceType = localStorage.getItem("serviceType") || "office";
   },
   methods: {
     scrollToTop() {

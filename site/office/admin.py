@@ -1,7 +1,16 @@
 from adminsortable2.admin import SortableAdminMixin
 from django.contrib import admin
 
-from office.models import AboutItem, UpdateNotice, StandardOfficeDay, HolyDayOfficeDay, Setting, SettingOption
+from office.models import (
+    AboutItem,
+    UpdateNotice,
+    StandardOfficeDay,
+    HolyDayOfficeDay,
+    Setting,
+    SettingOption,
+    CollectCategory,
+    Collect,
+)
 
 
 class AboutItemAdmin(SortableAdminMixin, admin.ModelAdmin):
@@ -56,8 +65,26 @@ class OfficeSettingAdmin(admin.ModelAdmin):
     get_setting_type_display.short_description = "Setting Type"
 
 
+class CollectCategoryAdmin(admin.ModelAdmin):
+    model = CollectCategory
+    ordering = ("order",)
+    extra = 0
+
+    list_display = ("name", "order")
+
+
+class CollectAdmin(admin.ModelAdmin):
+    model = Collect
+    ordering = ("order",)
+    extra = 0
+
+    list_display = ("title", "order", "collect_type", "collect_category", "attribution")
+
+
 admin.site.register(AboutItem, AboutItemAdmin)
 admin.site.register(UpdateNotice, UpdateNoticeAdmin)
 admin.site.register(StandardOfficeDay, StandardOfficeDayAdmin)
 admin.site.register(HolyDayOfficeDay, HolyDayOfficeDayAdmin)
 admin.site.register(Setting, OfficeSettingAdmin)
+admin.site.register(CollectCategory, CollectCategoryAdmin)
+admin.site.register(Collect, CollectAdmin)

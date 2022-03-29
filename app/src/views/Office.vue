@@ -7,9 +7,14 @@
       :office="office"
       :calendar-date="calendarDate"
       :card="card"
+      :service-type="serviceType"
     />
     <el-alert v-if="error" :title="error" type="error" />
-    <OfficeNav :calendar-date="calendarDate" :selected-office="office" />
+    <OfficeNav
+      :calendar-date="calendarDate"
+      :selected-office="office"
+      :service-type="serviceType"
+    />
 
     <div class="font-size-block my-2">
       <div class="w-1/6 inline-block">
@@ -101,7 +106,18 @@ export default {
     CalendarCard,
     OfficeNav,
   },
-  props: ["office", "calendarDate"],
+  props: {
+    office: {
+      type: String,
+    },
+    calendarDate: {
+      type: Date,
+    },
+    serviceType: {
+      default: "office",
+      type: String,
+    },
+  },
   data() {
     return {
       counter: 0,
@@ -121,14 +137,24 @@ export default {
       localStorage.fontSize = this.fontSize;
     }
     this.setFontSize(this.fontSize);
+    localStorage.setItem("serviceType", this.serviceType);
   },
+
   async created() {
-    const valid_offices = [
+    const valid_daily_offices = [
       "morning_prayer",
       "midday_prayer",
       "evening_prayer",
       "compline",
     ];
+    const valid_family_offices = [
+      "morning_prayer",
+      "midday_prayer",
+      "early_evening_prayer",
+      "close_of_day_prayer",
+    ];
+    const valid_offices =
+      this.serviceType == "office" ? valid_daily_offices : valid_family_offices;
     if (!valid_offices.includes(this.$props.office)) {
       await this.$router.replace({ name: "not_found" });
       return;
@@ -146,7 +172,7 @@ export default {
     let data = null;
     try {
       data = await this.$http.get(
-        `${process.env.VUE_APP_API_URL}api/v1/office/${this.office}/` +
+        `${process.env.VUE_APP_API_URL}api/v1/${this.serviceType}/${this.office}/` +
           today_str +
           "?" +
           queryString

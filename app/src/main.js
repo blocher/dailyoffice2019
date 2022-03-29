@@ -26,6 +26,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 // import { faFeather } from "@fortawesome/pro-thin-svg-icons";
 import {
   faCopy,
+  faEnvelopes,
   faFontCase,
   faLeft,
   faMoonStars,
@@ -34,11 +35,9 @@ import {
   faSun,
   faSunrise,
   faSunset,
-  faEnvelopes,
 } from "@fortawesome/pro-duotone-svg-icons";
 
 import { faFacebook } from "@fortawesome/free-brands-svg-icons";
-import "./registerServiceWorker";
 
 library.add(
   faSun,

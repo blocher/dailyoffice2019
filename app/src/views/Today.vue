@@ -1,5 +1,10 @@
 <template>
-  <Office :key="key" :office="office" :calendar-date="calendarDate" />
+  <Office
+    :key="key"
+    :office="office"
+    :calendar-date="calendarDate"
+    :service-type="currentServiceType"
+  />
 </template>
 
 <script>
@@ -22,6 +27,7 @@ export default {
       day: 0,
       key: null,
       calendarDate: null,
+      currentServiceType: "office",
     };
   },
 
@@ -34,11 +40,20 @@ export default {
     },
   },
   async created() {
+    if (this.$route.params.serviceType) {
+      this.currentServiceType = this.$route.params.serviceType;
+    } else if (!this.$route.params.office) {
+      this.currentServiceType = localStorage.getItem("serviceType") || "office";
+    }
     this.setDate();
   },
   properties: {
     office: null,
     forward: null,
+    serviceType: {
+      type: String,
+      default: "office",
+    },
   },
   methods: {
     async setDate() {
@@ -53,6 +68,8 @@ export default {
           "evening_prayer",
           "midday_prayer",
           "compline",
+          "early_evening_prayer",
+          "close_of_day_prayer",
         ].includes(this.office)
       ) {
         await this.$router.push({

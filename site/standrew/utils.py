@@ -1,13 +1,12 @@
 import datetime
 
-import kronos
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils import timezone
-from django.utils.safestring import mark_safe
 from django.utils.timezone import make_aware
 from html2text import html2text
 from pyrankvote.helpers import CandidateStatus
+
 from standrew.models import MovieVoter, MovieCandidate, MovieNight
 from website.settings import SITE_ADDRESS, ZOOM_LINK, DEBUG
 
@@ -15,7 +14,7 @@ from website.settings import SITE_ADDRESS, ZOOM_LINK, DEBUG
 def get_today():
     if DEBUG:
         date = datetime.datetime.strptime(
-            "{} {} {} {} {} {}".format(12, 28, 2021, 6, 00, "AM"),
+            "{} {} {} {} {} {}".format(2, 26, 2022, 6, 00, "AM"),
             "%m %d %Y %I %M %p",
         )
         date = make_aware(date)

@@ -1,18 +1,17 @@
 from datetime import datetime, timedelta
-
 from math import ceil
 
 import requests
-from churchcal.api.serializer import DaySerializer
-from churchcal.calculations import get_calendar_date
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.functional import cached_property
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from standrew.utils import get_today
 
-from website.settings import GOOGLE_API_KEY, ZOOM_LINK, DEBUG
+from churchcal.api.serializer import DaySerializer
+from churchcal.calculations import get_calendar_date
+from standrew.utils import get_today
+from website.settings import GOOGLE_API_KEY, ZOOM_LINK
 
 get_ordinal = lambda n: "%d%s" % (int(n), "tsnrhtdd"[(int(n) // 10 % 10 != 1) * (int(n) % 10 < 4) * int(n) % 10 :: 4])
 
@@ -479,11 +478,15 @@ class BirthdayDailyEmailModule(BirthdayDecoratorMixin):
         except HttpError as e:
             print(e)
             return
-        return [
-            self.decorate_birthday(row)
-            for row in result["values"]
-            if row[2] and row[3] and int(row[2]) == date.month and int(row[3]) == date.day
-        ]
+        try:
+            return [
+                self.decorate_birthday(row)
+                for row in result["values"]
+                if row[2] and row[3] and int(row[2]) == date.month and int(row[3]) == date.day
+            ]
+        except Exception as e:
+            print(result["values"])
+            raise (e)
 
     def render(self):
         if self.should_send:

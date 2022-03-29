@@ -1,5 +1,9 @@
 <template>
-  <Office :office="office" :calendar-date="calendarDate" />
+  <Office
+    :service-type="serviceType"
+    :office="office"
+    :calendar-date="calendarDate"
+  />
 </template>
 
 <script>
@@ -19,9 +23,11 @@ export default {
       loading: true,
       office: null,
       calendarDate: null,
+      serviceType: "office",
     };
   },
   async created() {
+    this.serviceType = this.$route.params.serviceType || "office";
     this.office = this.$route.params.office;
 
     this.calendarDate = setCalendarDate(this.$route);

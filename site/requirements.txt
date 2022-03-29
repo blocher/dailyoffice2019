@@ -35,6 +35,7 @@ django-richtextfield==1.6.1
 django-robots
 django-sslserver==0.22
 django-taggit==2.1.0
+django_tinymce==3.4.0
 django-webpack-loader==1.4.1
 django-widget-tweaks==1.4.12
 djangorestframework==3.13.1

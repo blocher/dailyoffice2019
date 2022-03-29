@@ -8,7 +8,6 @@ from churchcal.models import Commemoration
 
 
 class OfficeDay(BaseModel):
-
     TESTAMENTS = (("OT", "Old Testament"), ("DC", "Deuterocanon"), ("AP", "Apocrypha"), ("NT", "New Testament"))
 
     holy_day_name = models.CharField(max_length=255, null=True, blank=True)
@@ -43,7 +42,6 @@ class OfficeDay(BaseModel):
 
 
 class StandardOfficeDay(OfficeDay):
-
     month = models.IntegerField()
     day = models.IntegerField()
 
@@ -118,7 +116,6 @@ class UpdateNotice(BaseModel):
 
 
 class Setting(BaseModel):
-
     MAIN_SETTINGS = 1
     ADDITIONAL_SETTINGS = 2
     EXPERT_SETTINGS = 3
@@ -149,3 +146,31 @@ class SettingOption(BaseModel):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     value = models.CharField(max_length=255)
+
+
+class CollectCategory(BaseModel):
+    name = models.CharField(max_length=255)
+    order = models.PositiveSmallIntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+
+
+class Collect(BaseModel):
+    COLLECT_TYPES = (
+        ("collect", "Collects of the Christian Year"),
+        ("occasional", "Occasional Prayers"),
+        ("office_prayers", "Collects from the Daily Office"),
+        ("burial_rite", "Collects from the Burial Rite"),
+        ("other", "Other Collects"),
+    )
+
+    title = models.CharField(max_length=255)
+    text = RichTextField()
+    collect_type = models.CharField(max_length=255, choices=COLLECT_TYPES)
+    order = models.PositiveSmallIntegerField(default=0)
+    collect_category = models.ForeignKey(CollectCategory, on_delete=models.SET_NULL, null=True, blank=True)
+    attribution = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return self.title
