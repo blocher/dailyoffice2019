@@ -30,6 +30,7 @@ export default createStore({
       });
       localStorage.setItem("settings", JSON.stringify(settings));
       state.settings = settings;
+      console.log(settings);
       app.$router.replace({ query: null });
       if (applied) {
         ElMessage.success({

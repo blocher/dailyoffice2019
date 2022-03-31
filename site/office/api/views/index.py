@@ -8,6 +8,7 @@ from urllib.parse import quote
 import mailchimp_marketing as MailchimpMarketing
 from bs4 import BeautifulSoup
 from django.conf import settings
+from django.db.models import Prefetch
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.utils.functional import cached_property
@@ -55,37 +56,23 @@ class UpdateNoticeView(TemplateResponseMixin, ListAPIView):
 
 
 class Settings(dict):
-    DEFAULT_SETTINGS = {
-        "psalter": "60",
-        "reading_cycle": "1",
-        "reading_length": "full",
-        "reading_audio": "off",
-        "canticle_rotation": "default",
-        "theme": "theme-auto",
-        "lectionary": "daily-office-readings",
-        "confession": "long-on-fast",
-        "absolution": "lay",
-        "morning_prayer_invitatory": "invitatory_traditional",
-        "reading_headings": "off",
-        "language_style": "traditional",
-        "national_holidays": "all",
-        "suffrages": "rotating",
-        "collects": "rotating",
-        "pandemic_prayers": "pandemic_yes",
-        "mp_great_litany": "mp_litany_off",
-        "ep_great_litany": "ep_litany_off",
-        "general_thanksgiving": "on",
-        "chrysostom": "on",
-        "grace": "rotating",
-        "o_antiphons": "literal",
-    }
-
     def __init__(self, request):
         settings = self._get_settings(request)
         super().__init__(**settings)
 
+    def _default_settings(self):
+        settings = (
+            Setting.objects.order_by("site", "setting_type", "order")
+            .prefetch_related(
+                Prefetch("settingoption_set", queryset=SettingOption.objects.order_by("order"), to_attr="options")
+            )
+            .all()
+        )
+        defaults = {setting.name: setting.options[0].value for setting in settings}
+        return defaults
+
     def _get_settings(self, request):
-        settings = self.DEFAULT_SETTINGS.copy()
+        settings = self._default_settings().copy()
         specified_settings = {k: v for (k, v) in request.query_params.items() if k in settings.keys()}
         for k, v in settings.items():
             if k in specified_settings.keys():
@@ -623,12 +610,14 @@ class EPPsalms(MPPsalms):
 class ReadingModule(Module):
     def remove_headings_if_needed(self, text):
         reading_headings = self.office.settings["reading_headings"] == "on"
+        print(reading_headings)
         if reading_headings:
             return text
 
         soup = BeautifulSoup(text, "html.parser")
         for h3 in soup.find_all("h3", {"class": "reading-heading"}):
             h3.decompose()
+        print(str(soup))
         return str(soup)
 
     def audio(self, passage, testament):
@@ -1349,6 +1338,153 @@ class MorningPrayer(Office):
         ]
 
 
+class FamilyRubricSection(Module):
+    name = "Rubrics"
+
+    def get_lines(self):
+        return [
+            Line(
+                "These devotions follow the basic structure of the Daily Office of the Church and are particularly appropriate for families with young children.",
+                "rubric",
+            ),
+            Line(
+                "The Reading and the Collect may be read by one person, and the other parts said in unison, or in some other convenient manner.",
+                "rubric",
+            ),
+        ]
+
+
+class FamilyMorningOpeningSentence(Module):
+    def get_lines(self):
+        setting = self.office.settings["family-opening-sentence"]
+        if setting == "family-opening-sentence-fixed":
+            return [
+                Line("Opening Sentence", "heading"),
+                Line("O Lord, open my lips, and my mouth shall show forth your praise.", "leader"),
+                Line("Psalm 51:15", "citation"),
+            ]
+        else:
+            return MPOpeningSentence(self.office).get_lines()
+
+
+class FamilyMorningPsalm(Module):
+    def get_lines(self):
+        return get_psalms("51:10-12", api=True) + [Line("", "spacer")] + file_to_lines("gloria_patri")
+
+
+class FamilyMorningScripture(ReadingModule):
+    def get_long(self):
+        return {
+            "passage": self.office.office_readings.mp_reading_1_abbreviated
+            if self.office.office_readings.mp_reading_1_abbreviated
+            else self.office.office_readings.mp_reading_1,
+            "text": self.office.office_readings.mp_reading_1_abbreviated_text
+            if self.office.office_readings.mp_reading_1_abbreviated_text
+            else self.office.office_readings.mp_reading_1_text,
+            "testament": self.office.office_readings.mp_reading_1_testament,
+        }
+
+    def get_scripture(self):
+        day_of_year = self.office.date.date.timetuple().tm_yday
+        number = day_of_year % 3
+
+        scriptures = [
+            {
+                "sentence": "Blessed be the God and Father of our Lord Jesus Christ! According to his great mercy, he has caused us to be born again to a living hope through the resurrection of Jesus Christ from the dead.",
+                "citation": "1 PETER 1:3",
+            },
+            {
+                "sentence": "Give thanks to the Father, who has qualified you to share in the inheritance of the saints in light. He has delivered us from the domain of darkness and transferred us to the kingdom of his beloved Son, in whom we have redemption, the forgiveness of sins.",
+                "citation": "COLOSSIANS 1:12-14",
+            },
+            {
+                "sentence": "If then you have been raised with Christ, seek the things that are above, where Christ is, seated at the right hand of God. Set your minds on things that are above, not on things that are on earth. For you have died, and your life is hidden with Christ in God. When Christ who is your life appears, then you also will appear with him in glory.",
+                "citation": "COLOSSIANS 3:1-4",
+            },
+        ]
+
+        return scriptures[number]
+
+    def get_lines(self):
+        setting = self.office.settings["family_readings"]
+        audio = self.office.settings["family_reading_audio"]
+        if setting == "long":
+            scripture = self.get_long()
+            return [
+                Line("A READING FROM HOLY SCRIPTURE", "heading"),
+                Line(scripture["passage"], "subheading"),
+                Line(self.audio(scripture["passage"], scripture["testament"]), "html")
+                if audio == "on"
+                else Line("", "html"),
+                Line(self.remove_headings_if_needed(scripture["text"]), "html"),
+                Line("A period of silence may follow.", "rubric"),
+            ]
+        scripture = self.get_scripture()
+        return [
+            Line("A READING FROM HOLY SCRIPTURE", "heading"),
+            Line(scripture["citation"], "subheading"),
+            Line(self.audio(scripture["citation"], "NT"), "html") if audio == "on" else Line("", "html"),
+            Line(scripture["sentence"], "leader"),
+            Line("A period of silence may follow.", "rubric"),
+        ]
+
+
+class FamilyIntercessions(Module):
+    def get_lines(self):
+        return [
+            Line("Intercessions", "heading"),
+            Line("A hymn or canticle may be used.", "rubric"),
+            Line("Prayers may be offered for ourselves and others.", "rubric"),
+        ]
+
+
+class FamilyPater(Module):
+    def get_lines(self):
+        style = self.office.settings["language_style"]
+        return (
+            [
+                Line("The Lord's Prayer", "heading"),
+            ]
+            + file_to_lines("pater_contemporary")
+            if style == "contemporary"
+            else file_to_lines("pater_traditional")
+        )
+
+
+class FamilyMorningCollect(Module):
+    def get_lines(self):
+        collect_type = self.office.settings["family_collect"]
+        if collect_type == "day_of_week":
+            lines = MPAdditionalCollects(self.office).get_weekly_collect()
+        elif collect_type == "day_of_year":
+            lines = MPCollectOfTheDay(self.office).get_lines()
+            lines = [Line("The Collect", "heading")] + lines[1:4]
+        else:
+            lines = [
+                Line("The Collect", "heading"),
+                Line("In the Morning", "subheading"),
+                Line(
+                    "O Lord, our heavenly Father, almighty and everlasting God, you have brought us safely to the beginning of this day: Defend us by your mighty power, that we may not fall into sin nor run into any danger; and that, guided by your Spirit, we may do what is righteous in your sight; through Jesus Christ our Lord.",
+                    "leader",
+                ),
+                Line("Amen.", "congregation"),
+            ]
+        return lines
+
+
+class FamilyMorningPrayer(Office):
+    def get_modules(self):
+        return [
+            FamilyRubricSection(self),
+            FamilyMorningOpeningSentence(self),
+            FamilyMorningPsalm(self),
+            FamilyMorningScripture(self),
+            FamilyIntercessions(self),
+            FamilyPater(self),
+            FamilyMorningCollect(self),
+        ]
+
+
 class EveningPrayer(Office):
     def get_modules(self):
         return [
@@ -1856,6 +1992,13 @@ class OfficeSerializer(serializers.Serializer):
 class MorningPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
         office = MorningPrayer(request, year, month, day)
+        serializer = OfficeSerializer(office)
+        return Response(serializer.data)
+
+
+class FamilyMorningPrayerView(OfficeAPIView):
+    def get(self, request, year, month, day):
+        office = FamilyMorningPrayer(request, year, month, day)
         serializer = OfficeSerializer(office)
         return Response(serializer.data)
 
