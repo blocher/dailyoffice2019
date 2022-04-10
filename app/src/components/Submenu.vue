@@ -3,9 +3,11 @@
     <el-col :span="12">
       <ThemeSwitcher />
     </el-col>
-    <el-col :span="12" class="text-right">
+    <el-col
+:span="12" class="text-right"
+>
       <ShareSettings />
-      <br />
+      <br>
       <EmailSignup />
     </el-col>
   </el-row>

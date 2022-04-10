@@ -2,8 +2,13 @@
   <Menu />
   <div class="main">
     <Loading v-if="loading" />
-    <el-alert v-if="error" :title="error" type="error" />
-    <router-view v-if="!loading" :key="$route.fullPath" />
+    <el-alert
+v-if="error" :title="error"
+type="error"
+/>
+    <router-view
+v-if="!loading" :key="$route.fullPath"
+/>
   </div>
   <el-backtop />
 </template>

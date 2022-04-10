@@ -1,7 +1,9 @@
 <template>
   <h1>Calendar</h1>
   <Loading v-if="loading" />
-  <el-calendar v-if="!loading" v-model="date">
+  <el-calendar
+v-if="!loading" v-model="date"
+>
     <template #header="{ date }">
       <span>{{ date }}</span>
 
@@ -10,12 +12,17 @@
         <!--          >Previous Year</el-button-->
         <!--        >-->
 
-        <el-button size="small" @click="selectDate('today')">Now</el-button>
-        <el-button size="small" @click="selectDate('prev-month')"
-          >Previous Month
+        <el-button
+size="small" @click="selectDate('today')"> Now </el-button>
+        <el-button
+size="small" @click="selectDate('prev-month')"
+>
+          Previous Month
         </el-button>
-        <el-button size="small" @click="selectDate('next-month')"
-          >Next Month
+        <el-button
+size="small" @click="selectDate('next-month')"
+>
+          Next Month
         </el-button>
         <!--        <el-button size="small" @click="selectDate('next-year')"-->
         <!--          >Next Year</el-button-->
@@ -23,10 +30,12 @@
       </el-button-group>
     </template>
     <template #dateCell="{ data }">
-      <div class="dateCellWrapper" @click="clickDateCell(data, $event)">
+      <div
+class="dateCellWrapper" @click="clickDateCell(data, $event)"
+>
         <p>{{ parseInt(data.day.split("-")[2]) }}</p>
         <p>
-          <small v-html="days[data.day]"></small>
+          <small v-html="days[data.day]" />
         </p>
       </div>
     </template>

@@ -1,6 +1,10 @@
 <template>
-  <p v-if="!line.extra_space_before">{{ line.content }}</p>
-  <p v-if="line.extra_space_before" class="extra-space-before">
+  <p v-if="!line.extra_space_before">
+    {{ line.content }}
+  </p>
+  <p
+v-if="line.extra_space_before" class="extra-space-before"
+>
     {{ line.content }}
   </p>
 </template>

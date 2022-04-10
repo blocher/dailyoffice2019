@@ -53,7 +53,9 @@
         class="max-w-7xl mx-auto flex justify-between items-center px-4 py-5 sm:px-6 sm:py-4 lg:px-8 md:justify-start md:space-x-10"
       >
         <div>
-          <a href="#" class="flex">
+          <a
+href="#" class="flex"
+>
             <span class="sr-only">The Daily Office</span>
             <img
               class="h-4 md:h-8 w-auto ml-3 sm:h-10"
@@ -65,7 +67,9 @@
           <p class="text-gray-200 hidden md:block uppercase small-caps">
             The Daily Office
           </p>
-          <PopoverGroup as="nav" class="flex space-x-10">
+          <PopoverGroup
+as="nav" class="flex space-x-10"
+>
             <Popover v-slot="{ open }">
               <PopoverButton
                 :class="[
@@ -211,7 +215,9 @@
                         >
                           Company
                         </h3>
-                        <ul role="list" class="mt-5 space-y-6">
+                        <ul
+role="list" class="mt-5 space-y-6"
+>
                           <li
                             v-for="item in company"
                             :key="item.name"
@@ -237,7 +243,9 @@
                         >
                           Resources
                         </h3>
-                        <ul role="list" class="mt-5 space-y-6">
+                        <ul
+role="list" class="mt-5 space-y-6"
+>
                           <li
                             v-for="item in resources"
                             :key="item.name"
@@ -267,7 +275,9 @@
                         >
                           From the blog
                         </h3>
-                        <ul role="list" class="mt-6 space-y-6">
+                        <ul
+role="list" class="mt-6 space-y-6"
+>
                           <li
                             v-for="post in blogPosts"
                             :key="post.id"
@@ -346,7 +356,9 @@
                   class="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
                 >
                   <span class="sr-only">Close menu</span>
-                  <XIcon class="h-6 w-6" aria-hidden="true" />
+                  <XIcon
+class="h-6 w-6" aria-hidden="true"
+/>
                 </PopoverButton>
               </div>
             </div>
@@ -438,7 +450,9 @@
               <p class="mt-6 text-center text-base font-medium text-gray-500">
                 Existing customer?
                 {{ " " }}
-                <a href="#" class="text-indigo-600 hover:text-indigo-500">
+                <a
+href="#" class="text-indigo-600 hover:text-indigo-500"
+>
                   Sign in
                 </a>
               </p>

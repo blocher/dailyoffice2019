@@ -7,7 +7,9 @@
       v-cloak
       class="max-w-6xl mx-auto pt-10 pb-12 px-4 lg:pb-16"
     >
-      <el-tabs :tab-position="tabPosition" class="h-full">
+      <el-tabs
+:tab-position="tabPosition" class="h-full"
+>
         <el-tab-pane label="Daily Office">
           <SettingsPanel
             :available-settings="availableSettings"

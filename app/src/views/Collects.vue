@@ -4,7 +4,10 @@
       <h1>Occasional Collects</h1>
     </div>
     <Loading v-if="loading" />
-    <el-alert v-if="error" :title="error" type="error" />
+    <el-alert
+v-if="error" :title="error"
+type="error"
+/>
     <div v-if="!loading && !error">
       <div class="text-center">
         <el-select
@@ -15,7 +18,10 @@
           filterable
           @change="updateDisplayedCollects"
         >
-          <el-option key="all" label="All Categories" value="all" />
+          <el-option
+key="all" label="All Categories"
+value="all"
+/>
           <el-option
             v-for="category in categories"
             :key="category"
@@ -24,9 +30,11 @@
           />
         </el-select>
       </div>
-      <div v-for="collect in displayedCollects" :key="collect.order">
+      <div
+v-for="collect in displayedCollects" :key="collect.order"
+>
         <h3>{{ collect.order }}. {{ collect.title }}</h3>
-        <span v-html="collect.text"></span>
+        <span v-html="collect.text" />
         <h5>{{ collect.attribution }}</h5>
       </div>
     </div>

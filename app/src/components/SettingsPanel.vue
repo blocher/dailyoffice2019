@@ -13,7 +13,9 @@
       </small>
     </p>
 
-    <div v-for="setting in availableSettings" :key="setting.uuid">
+    <div
+v-for="setting in availableSettings" :key="setting.uuid"
+>
       <RadioGroup
         v-if="showSetting(setting)"
         v-model="setting.active"
@@ -22,14 +24,13 @@
       >
         <RadioGroupLabel class="mt-8 text-lg font-medium">
           {{ setting.title }}
-          <el-tag v-if="setting.setting_type == 2">Advanced Setting</el-tag>
-          <br />
+          <el-tag v-if="setting.setting_type == 2"> Advanced Setting </el-tag>
+          <br>
         </RadioGroupLabel>
         <RadioGroupLabel
           class="mt-8 text-xs font-medium"
           v-html="setting.description"
-        >
-        </RadioGroupLabel>
+        />
 
         <div class="mt-1 rounded-md shadow-sm -space-y-px">
           <RadioGroupOption
@@ -75,8 +76,7 @@
                   as="span"
                   :class="[checked ? 'selected-text' : '', 'block text-sm']"
                   v-html="option.description"
-                >
-                </RadioGroupDescription>
+                />
               </div>
             </div>
           </RadioGroupOption>

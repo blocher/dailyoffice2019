@@ -39,8 +39,10 @@ repos:
     hooks:
       - id: eslint
         files: ^site/
+        types: [ file ]
+        types_or: [ javascript, jsx, ts, tsx, vue ]
         exclude: ^site/node_modules/|^site/office/src/office/js/fontawesome/|^site/office/src/office/css/fontawesome/
-        args: [ --fix --ext=.js --config=site/.eslintrc ]
+        args: [ --fix --config=site/.eslintrc ]
         additional_dependencies:
           - eslint@8.9.0
           - eslint-config-prettier@8.4.0
@@ -57,7 +59,9 @@ repos:
     hooks:
       - id: eslint
         files: ^app/src/
-        args: [ --fix --ext=.vue --ext=.js --config=app/.eslintrc ]
+        types: [ file ]
+        types_or: [ javascript, jsx, ts, tsx, vue ]
+        args: [ --config=app/.eslintrc.js ]
         additional_dependencies:
           - eslint@8.9.0
           - eslint-config-prettier@8.4.0
@@ -68,6 +72,7 @@ repos:
           - eslint-plugin-prettier@4.0.0
           - prettier@2.5.1
           - eslint-plugin-vue@^8.4.1
+          - vue-eslint-parser@^8.3.0
 
 #  - repo: https://github.com/awebdeveloper/pre-commit-stylelint
 #    rev: 0.0.2

@@ -1,10 +1,16 @@
 <template>
-  <el-card class="box-card" :class="card.primary_color">
+  <el-card
+class="box-card" :class="card.primary_color"
+>
     <template #header>
       <div class="card-header">
-        <h1 v-if="officeName">{{ officeName }}</h1>
+        <h1 v-if="officeName">
+          {{ officeName }}
+        </h1>
         <h3>{{ formattedDate }}</h3>
-        <div class="card-info" :v-if="card">
+        <div
+class="card-info" :v-if="card"
+>
           <h4 v-if="card && office != 'evening_prayer' && office != 'compline'">
             {{ card.primary_feast }}
           </h4>
@@ -51,8 +57,12 @@
         <Commemoration :commemoration="commemoration" />
       </div>
     </div>
-    <div v-if="card && card.season" class="width:10">
-      <div class="card-footer mt-2" :class="card.season.colors[0]">
+    <div
+v-if="card && card.season" class="width:10"
+>
+      <div
+class="card-footer mt-2" :class="card.season.colors[0]"
+>
         <h4>{{ card.season.name }}</h4>
       </div>
     </div>

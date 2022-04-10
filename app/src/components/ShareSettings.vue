@@ -1,11 +1,16 @@
 <template>
   <span class="sub-menu-item">
-    <a href="" @click.prevent="sharePanel = true">
+    <a
+href="" @click.prevent="sharePanel = true"
+>
       <font-awesome-icon :icon="['fad', 'share-nodes']" />&nbsp;
       <span class="text-xs">Share Settings</span>
     </a>
   </span>
-  <el-drawer v-model="sharePanel" direction="rtl" :size="panelSize">
+  <el-drawer
+v-model="sharePanel" direction="rtl"
+:size="panelSize"
+>
     <div class="mt-4">
       <h3>Share Link</h3>
       <p class="text-left pb-3 mx-1">
@@ -32,8 +37,12 @@
       you are praying. When they receive the link, they can click on it to open
       this page with your settings already preselected.
     </p>
-    <p v-if="canShare" class="text-left mt-4">
-      <a href="" @click="share($event)">
+    <p
+v-if="canShare" class="text-left mt-4"
+>
+      <a
+href="" @click="share($event)"
+>
         <font-awesome-icon :icon="['fad', 'share-nodes']" />&nbsp;
         <span class="text-xs"
           >Share using an app installed on your computer or device</span

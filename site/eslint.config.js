@@ -1,5 +1,6 @@
 module.exports = {
   root: true,
+  extends: ["eslint:recommended"],
   parser: "babel-eslint",
   globals: {
     window: true,

@@ -1,15 +1,23 @@
 <template>
   <div class="small-container">
     <Loading v-if="loading" />
-    <div v-if="error" class="alert-danger">{{ error }}</div>
-    <div v-if="!loading" class="day">
+    <div
+v-if="error" class="alert-danger"
+>
+      {{ error }}
+    </div>
+    <div
+v-if="!loading" class="day"
+>
       <CalendarCard
         v-if="!loading"
         :office="office"
         :calendar-date="calendarDate"
         :card="card"
       />
-      <OfficeNav :calendar-date="calendarDate" :service-type="serviceType" />
+      <OfficeNav
+:calendar-date="calendarDate" :service-type="serviceType"
+/>
     </div>
   </div>
 </template>

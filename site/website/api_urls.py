@@ -14,6 +14,9 @@ from office.api.views.index import (
     EmailSignupView,
     ComplineView,
     FamilyMorningPrayerView,
+    FamilyMiddayPrayerView,
+    FamilyEarlyEveningPrayerView,
+    FamilyCloseOfDayPrayerView,
 )
 from office.api.views.resources import CollectsViewSet, PsalmsViewSet
 
@@ -66,17 +69,17 @@ urlpatterns = [
     ),
     path(
         r"api/v1/family/early_evening_prayer/<int:year>-<int:month>-<int:day>",
-        EveningPrayerView.as_view(),
+        FamilyEarlyEveningPrayerView.as_view(),
         name="family_early_evening_prayer_view",
     ),
     path(
         r"api/v1/family/midday_prayer/<int:year>-<int:month>-<int:day>",
-        MiddayPrayerView.as_view(),
-        name="family)_midday_view",
+        FamilyMiddayPrayerView.as_view(),
+        name="family_midday_view",
     ),
     path(
         r"api/v1/family/close_of_day_prayer/<int:year>-<int:month>-<int:day>",
-        ComplineView.as_view(),
+        FamilyCloseOfDayPrayerView.as_view(),
         name="family_close_of_day_view",
     ),
     path(

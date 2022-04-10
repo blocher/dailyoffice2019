@@ -9,7 +9,10 @@
       :card="card"
       :service-type="serviceType"
     />
-    <el-alert v-if="error" :title="error" type="error" />
+    <el-alert
+v-if="error" :title="error"
+type="error"
+/>
     <OfficeNav
       :calendar-date="calendarDate"
       :selected-office="office"
@@ -18,7 +21,9 @@
 
     <div class="font-size-block my-2">
       <div class="w-1/6 inline-block">
-        <font-awesome-icon :icon="['fad', 'font-case']" size="sm" />
+        <font-awesome-icon
+:icon="['fad', 'font-case']" size="sm"
+/>
       </div>
       <div class="w-2/3 inline-block">
         <el-slider
@@ -28,24 +33,38 @@
           :max="sliderMax"
           :format-tooltip="displayFontSize"
           @input="setFontSize"
-        ></el-slider>
+        />
       </div>
       <div class="w-1/6 inline-block text-right">
-        <font-awesome-icon :icon="['fad', 'font-case']" size="lg" />
+        <font-awesome-icon
+:icon="['fad', 'font-case']" size="lg"
+/>
       </div>
     </div>
 
     <div id="office">
-      <div v-for="module in modules" :key="module.name">
-        <div v-for="line in module.lines" :key="line.content">
-          <OfficeHeading v-if="line.line_type == 'heading'" :line="line" />
+      <div
+v-for="module in modules" :key="module.name"
+>
+        <div
+v-for="line in module.lines" :key="line.content"
+>
+          <OfficeHeading
+v-if="line.line_type == 'heading'" :line="line"
+/>
           <OfficeSubheading
             v-if="line.line_type == 'subheading'"
             :line="line"
           />
-          <OfficeCitation v-if="line.line_type == 'citation'" :line="line" />
-          <OfficeHTML v-if="line.line_type == 'html'" :line="line" />
-          <OfficeLeader v-if="line.line_type == 'leader'" :line="line" />
+          <OfficeCitation
+v-if="line.line_type == 'citation'" :line="line"
+/>
+          <OfficeHTML
+v-if="line.line_type == 'html'" :line="line"
+/>
+          <OfficeLeader
+v-if="line.line_type == 'leader'" :line="line"
+/>
           <OfficeLeaderDialogue
             v-if="line.line_type == 'leader_dialogue'"
             :line="line"
@@ -59,7 +78,9 @@
             :line="line"
           />
 
-          <OfficeRubric v-if="line.line_type == 'rubric'" :line="line" />
+          <OfficeRubric
+v-if="line.line_type == 'rubric'" :line="line"
+/>
           <OfficeSpacer v-if="line.line_type == 'spacer'" />
         </div>
       </div>

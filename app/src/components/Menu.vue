@@ -8,10 +8,10 @@
     >
       <el-sub-menu index="1">
         <template #title>
-          <router-link to="/">Pray</router-link>
+          <router-link to="/"> Pray </router-link>
         </template>
 
-        <el-menu-item index="/calendar">Calendar</el-menu-item>
+        <el-menu-item index="/calendar"> Calendar </el-menu-item>
 
         <el-menu-item-group title="— Daily Office —">
           <el-menu-item index="/office/evening_prayer/yesterday">
@@ -23,18 +23,18 @@
           </el-menu-item>
 
           <el-menu-item index="/office/morning_prayer">
-            Morning Prayer</el-menu-item
-          >
+            Morning Prayer
+          </el-menu-item>
 
           <el-menu-item index="/office/midday_prayer">
-            Midday Prayer</el-menu-item
-          >
+            Midday Prayer
+          </el-menu-item>
 
           <el-menu-item index="/office/evening_prayer">
-            Evening Prayer</el-menu-item
-          >
+            Evening Prayer
+          </el-menu-item>
 
-          <el-menu-item index="/office/compline"> Compline</el-menu-item>
+          <el-menu-item index="/office/compline"> Compline </el-menu-item>
 
           <el-menu-item index="/office/morning_prayer/tomorrow">
             Morning Prayer (Tomorrow)
@@ -49,9 +49,9 @@
             Close of Day (Yesterday)
           </el-menu-item>
 
-          <el-menu-item index="/family/morning_prayer"> Morning</el-menu-item>
+          <el-menu-item index="/family/morning_prayer"> Morning </el-menu-item>
 
-          <el-menu-item index="/family/midday_prayer"> Midday</el-menu-item>
+          <el-menu-item index="/family/midday_prayer"> Midday </el-menu-item>
 
           <el-menu-item index="/family/early_evening_prayer">
             Early Evening
@@ -67,13 +67,13 @@
         </el-menu-item-group>
       </el-sub-menu>
 
-      <el-menu-item index="/settings"> Settings</el-menu-item>
+      <el-menu-item index="/settings"> Settings </el-menu-item>
 
       <el-sub-menu index="3">
-        <template #title> Resources</template>
-        <el-menu-item index="/about"> About</el-menu-item>
-        <el-menu-item index="/collects"> Collects</el-menu-item>
-        <el-menu-item index="/psalms"> Psalms</el-menu-item>
+        <template #title> Resources </template>
+        <el-menu-item index="/about"> About </el-menu-item>
+        <el-menu-item index="/collects"> Collects </el-menu-item>
+        <el-menu-item index="/psalms"> Psalms </el-menu-item>
       </el-sub-menu>
     </el-menu>
   </el-affix>

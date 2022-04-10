@@ -83,6 +83,7 @@
     "sass": "^1.49.8",
     "sass-loader": "^12.6.0",
     "tailwindcss": "^3.0.23",
-    "vue-cli-plugin-capacitor": "~2.0.1"
+    "vue-cli-plugin-capacitor": "~2.0.1",
+    "vue-eslint-parser": "^8.3.0"
   }
 }

@@ -1,11 +1,16 @@
 <template>
   <span class="sub-menu-item">
-    <a href="" @click.prevent="emailPanel = true">
+    <a
+href="" @click.prevent="emailPanel = true"
+>
       <font-awesome-icon :icon="['fad', 'envelopes']" />
       <span class="ml-1 text-xs">Email Updates</span>
     </a>
   </span>
-  <el-drawer v-model="emailPanel" :size="panelSize" direction="rtl">
+  <el-drawer
+v-model="emailPanel" :size="panelSize"
+direction="rtl"
+>
     <div class="mt-4">
       <h3>Get Occasional Email Updates</h3>
       <p class="text-left">
@@ -25,8 +30,11 @@
         </p>
         <p class="mt-2">
           <el-form-item>
-            <el-button type="primary" :disabled="loading" @click="onSubmit"
-              >Sign Up
+            <el-button
+type="primary" :disabled="loading"
+@click="onSubmit"
+>
+              Sign Up
             </el-button>
           </el-form-item>
         </p>
@@ -36,7 +44,10 @@
           :title="success"
           type="success"
         />
-        <el-alert v-if="error" class="text-left" :title="error" type="error" />
+        <el-alert
+v-if="error" class="text-left"
+:title="error" type="error"
+/>
         <Loading v-if="loading" />
       </el-form>
     </div>

@@ -5,7 +5,10 @@
       <h4>{{ selectedTopicName }}</h4>
     </div>
     <Loading v-if="loading" />
-    <el-alert v-if="error" :title="error" type="error" />
+    <el-alert
+v-if="error" :title="error"
+type="error"
+/>
     <div v-if="!loading && !error">
       <div class="text-center">
         <el-select
@@ -16,7 +19,10 @@
           filterable
           @change="updateDisplayedTopic"
         >
-          <el-option key="all" label="All Categories" value="all" />
+          <el-option
+key="all" label="All Categories"
+value="all"
+/>
           <el-option
             v-for="topic in topics"
             :key="topic.id"
@@ -25,18 +31,20 @@
           />
         </el-select>
       </div>
-      <div v-for="psalm in displayedPsalms" :key="psalm.number" class="mb-2">
+      <div
+v-for="psalm in displayedPsalms" :key="psalm.number"
+class="mb-2"
+>
         <p>
-          <router-link :to="`/psalm/${psalm.number}`"
-            ><strong>{{ psalm.number }}</strong
-            >&nbsp;
+          <router-link :to="`/psalm/${psalm.number}`">
+            <strong>{{ psalm.number }}</strong>&nbsp;
             <small>{{ psalm.latin_title }}</small>
           </router-link>
-          <br />
+          <br>
           <small>{{
             psalm.verses[0].first_half.replaceAll(/[^a-zA-Z]+$/gi, "")
           }}</small>
-          <br />
+          <br>
           <el-tag
             v-for="topic in psalm.topics"
             :key="topic.id"
@@ -44,7 +52,8 @@
             type="info"
             size="small"
             @click="handleTagClick(topic.id)"
-            >{{ topic.topic_name }}
+          >
+            {{ topic.topic_name }}
           </el-tag>
         </p>
       </div>

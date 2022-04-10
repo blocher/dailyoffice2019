@@ -6,8 +6,7 @@
       class="text-right"
       active-value="dark-theme"
       inactive-value="light-theme"
-    ></el-switch
-    >&nbsp;
+    />&nbsp;
     <span class="text-xs">Dark</span>
   </span>
 </template>

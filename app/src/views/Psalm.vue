@@ -10,9 +10,14 @@
       <h1>Psalm</h1>
     </div>
     <Loading v-if="loading" />
-    <el-alert v-if="error" :title="error" type="error" />
+    <el-alert
+v-if="error" :title="error"
+type="error"
+/>
     <div v-if="!loading && !error">
-      <span v-for="verse in psalm.verses" :key="verse.number">
+      <span
+v-for="verse in psalm.verses" :key="verse.number"
+>
         <p class="-indent-3 pl-2">
           <sup class="position-relative -left-4">{{
             verse.number.toString().padStart(3, "&nbsp;")
@@ -42,7 +47,7 @@
         Psalm {{ psalm.number + 1 }}
         <font-awesome-icon :icon="['fad', 'right']" />
       </router-link>
-      <br />
+      <br>
       <router-link
         v-if="psalm.number < 150"
         class="float-none content-center w-full"

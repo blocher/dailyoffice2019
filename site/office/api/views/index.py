@@ -28,7 +28,7 @@ from churchcal.api.serializer import DaySerializer
 from office.api.serializers import UpdateNoticeSerializer
 from office.api.views import Module, Line
 from office.api.views.ep import EPOpeningSentence
-from office.canticles import DefaultCanticles, BCP1979CanticleTable, REC2011CanticleTable
+from office.canticles import DefaultCanticles, BCP1979CanticleTable, REC2011CanticleTable, EP2
 from office.models import (
     UpdateNotice,
     HolyDayOfficeDay,
@@ -1367,12 +1367,119 @@ class FamilyMorningOpeningSentence(Module):
             return MPOpeningSentence(self.office).get_lines()
 
 
+class FamilyMiddayOpeningSentence(Module):
+    def get_lines(self):
+        setting = self.office.settings["family-opening-sentence"]
+        if setting == "family-opening-sentence-fixed":
+            return [
+                Line("Opening Sentence", "heading"),
+                Line(
+                    "Blessed be the God and Father of our Lord Jesus Christ, who has blessed us in Christ with every spiritual blessing in the heavenly places.",
+                    "leader",
+                ),
+                Line("Ephesians 1:3", "citation"),
+            ]
+        else:
+            return MPOpeningSentence(self.office).get_lines()
+
+
+class FamilyEarlyEveningHymn(Module):
+    def get_lines(self):
+        return file_to_lines("phos_hilaron.csv")
+
+
+class FamilyCloseOfDayHymn(Module):
+    def get_lines(self):
+        canticle = CanticleModule(self.office).get_canticle(EP2)
+        canticle = [line for line in canticle if line["line_type"] != "rubric"]
+        return canticle
+
+
+class FamilyCloseOfDayClosingSentence(Module):
+    def get_lines(self):
+        return [
+            Line("Closing Sentence", "heading"),
+            Line(
+                "The almighty and merciful Lord, Father, Son, and Holy Spirit, bless us and keep us, this night and evermore.",
+                "leader",
+            ),
+            Line("Amen.", "congregation"),
+        ]
+
+
+class FamilyEarlyEveningOpeningSentence(Module):
+    def get_lines(self):
+        setting = self.office.settings["family-opening-sentence"]
+        if setting == "family-opening-sentence-fixed":
+            return [
+                Line("Opening Sentence", "heading"),
+                Line(
+                    "How excellent is your mercy, O God! The children of men shall take refuge under the shadow of your wings. For with you is the well of life, and in your light shall we see light.",
+                    "leader",
+                ),
+                Line("Psalm 36:7, 9", "citation"),
+            ]
+        else:
+            return EPOpeningSentence(self.office).get_lines()
+
+
+class FamilyCloseOfDayOpeningSentence(Module):
+    def get_lines(self):
+        setting = self.office.settings["family-opening-sentence"]
+        if setting == "family-opening-sentence-fixed":
+            return [
+                Line("Opening Sentence", "heading"),
+                Line(
+                    "I will lay me down in peace, and take my rest; for you, LORD, only, make me dwell in safety.",
+                    "leader",
+                ),
+                Line("Psalm 4:8", "citation"),
+            ]
+        else:
+            return EPOpeningSentence(self.office).get_lines()
+
+
 class FamilyMorningPsalm(Module):
     def get_lines(self):
         return get_psalms("51:10-12", api=True) + [Line("", "spacer")] + file_to_lines("gloria_patri")
 
 
-class FamilyMorningScripture(ReadingModule):
+class FamilyMiddayPsalm(Module):
+    def get_lines(self):
+        return get_psalms("113:1-4", api=True) + [Line("", "spacer")] + file_to_lines("gloria_patri")
+
+
+class FamilyCloseOfDayPsalm(Module):
+    def get_lines(self):
+        return get_psalms("134", api=True) + [Line("", "spacer")] + file_to_lines("gloria_patri")
+
+
+class FamilyReadingModule(ReadingModule):
+    def get_lines(self):
+        setting = self.office.settings["family_readings"]
+        audio = self.office.settings["family_reading_audio"]
+        if setting == "long":
+            scripture = self.get_long()
+            return [
+                Line("A READING FROM HOLY SCRIPTURE", "heading"),
+                Line(scripture["passage"], "subheading"),
+                Line(self.audio(scripture["passage"], scripture["testament"]), "html")
+                if audio == "on"
+                else Line("", "html"),
+                Line(self.remove_headings_if_needed(scripture["text"]), "html"),
+                Line("A period of silence may follow.", "rubric"),
+            ]
+        scripture = self.get_scripture()
+        return [
+            Line("A READING FROM HOLY SCRIPTURE", "heading"),
+            Line(scripture["citation"], "subheading"),
+            Line(self.audio(scripture["citation"], "NT"), "html") if audio == "on" else Line("", "html"),
+            Line(scripture["sentence"], "leader"),
+            Line("A period of silence may follow.", "rubric"),
+        ]
+
+
+class FamilyMorningScripture(FamilyReadingModule):
     def get_long(self):
         return {
             "passage": self.office.office_readings.mp_reading_1_abbreviated
@@ -1405,37 +1512,128 @@ class FamilyMorningScripture(ReadingModule):
 
         return scriptures[number]
 
-    def get_lines(self):
-        setting = self.office.settings["family_readings"]
-        audio = self.office.settings["family_reading_audio"]
-        if setting == "long":
-            scripture = self.get_long()
-            return [
-                Line("A READING FROM HOLY SCRIPTURE", "heading"),
-                Line(scripture["passage"], "subheading"),
-                Line(self.audio(scripture["passage"], scripture["testament"]), "html")
-                if audio == "on"
-                else Line("", "html"),
-                Line(self.remove_headings_if_needed(scripture["text"]), "html"),
-                Line("A period of silence may follow.", "rubric"),
-            ]
-        scripture = self.get_scripture()
-        return [
-            Line("A READING FROM HOLY SCRIPTURE", "heading"),
-            Line(scripture["citation"], "subheading"),
-            Line(self.audio(scripture["citation"], "NT"), "html") if audio == "on" else Line("", "html"),
-            Line(scripture["sentence"], "leader"),
-            Line("A period of silence may follow.", "rubric"),
+
+class FamilyMiddayScripture(FamilyReadingModule):
+    def get_long(self):
+        return {
+            "passage": self.office.office_readings.mp_reading_2,
+            "text": self.office.office_readings.mp_reading_2_text,
+            "testament": self.office.office_readings.mp_reading_2_testament,
+        }
+
+    def get_scripture(self):
+        day_of_year = self.office.date.date.timetuple().tm_yday
+        number = day_of_year % 2
+
+        scriptures = [
+            {
+                "sentence": "Abide in me, and I in you. As the branch cannot bear fruit by itself, unless it abides in the vine, neither can you, unless you abide in me. I am the vine; you are the branches. Whoever abides in me and I in him, he it is that bears much fruit, for apart from me you can do nothing.",
+                "citation": "JOHN 15:4-5",
+            },
+            {
+                "sentence": "Do not be anxious about anything, but in everything by prayer and supplication with thanksgiving let your requests be made known to God. And the peace of God, which surpasses all understanding, will guard your hearts and your minds in Christ Jesus.",
+                "citation": "PHILIPPIANS 4:6-7",
+            },
         ]
+
+        return scriptures[number]
+
+
+class FamilyEarlyEveningScripture(FamilyReadingModule):
+    def get_long(self):
+        return {
+            "passage": self.office.office_readings.ep_reading_1_abbreviated
+            if self.office.office_readings.ep_reading_1_abbreviated
+            else self.office.office_readings.ep_reading_1,
+            "text": self.office.office_readings.ep_reading_1_abbreviated_text
+            if self.office.office_readings.ep_reading_1_abbreviated_text
+            else self.office.office_readings.ep_reading_1_text,
+            "testament": self.office.office_readings.ep_reading_1_testament,
+        }
+
+    def get_scripture(self):
+        day_of_year = self.date.date.timetuple().tm_yday
+        number = day_of_year % 3
+
+        scriptures = [
+            {
+                "sentence": "For what we proclaim is not ourselves, but Jesus Christ as Lord, with ourselves as your servants for Jesus’ sake. For God, who said, “Let light shine out of darkness,” has shone in our hearts, to give the light of the knowledge of the glory of God in the face of Jesus Christ.",
+                "citation": "2 CORINTHIANS 4:5-6",
+            },
+            {
+                "sentence": "Jesus spoke to them, saying, “I am the light of the world. Whoever follows me will not walk in darkness, but will have the light of life.”",
+                "citation": "JOHN 8:12",
+            },
+            {
+                "sentence": "Jesus said, “Behold, I stand at the door and knock. If anyone hears my voice and opens the door, I will come in to him and eat with him, and he with me.”",
+                "citation": "REVELATION 3:20",
+            },
+        ]
+
+        return scriptures[number]
+
+
+class FamilyCloseOfDayScripture(FamilyReadingModule):
+    def get_long(self):
+        return {
+            "passage": self.office.office_readings.ep_reading_2,
+            "text": self.office.office_readings.ep_reading_2_text,
+            "testament": self.office.office_readings.ep_reading_2_testament,
+        }
+
+    def get_scripture(self):
+        day_of_year = self.date.date.timetuple().tm_yday
+        number = day_of_year % 2
+
+        scriptures = [
+            {
+                "sentence": "You keep them in perfect peace whose minds are stayed on you, because they trust in you. Trust in the LORD for ever, for the LORD God is an everlasting rock.",
+                "citation": "ISAIAH 26:3-4",
+            },
+            {
+                "sentence": "Now may the God of peace himself sanctify you completely, and may your whole spirit and soul and body be kept blameless at the coming of our Lord Jesus Christ.",
+                "citation": "1 THESSALONIANS 5:23",
+            },
+        ]
+
+        return scriptures[number]
 
 
 class FamilyIntercessions(Module):
     def get_lines(self):
         return [
             Line("Intercessions", "heading"),
-            Line("A hymn or canticle may be used.", "rubric"),
             Line("Prayers may be offered for ourselves and others.", "rubric"),
         ]
+
+
+class FamilyCloseOfDayIntercessions(Module):
+    def get_lines(self):
+        return [
+            Line("Intercessions", "heading"),
+            Line(
+                "Prayers may be offered for ourselves and others. It is appropriate that prayers of thanksgiving for the blessings of the day, and penitence for our sins, be included.",
+                "rubric",
+            ),
+        ]
+
+
+class FamilyPraise(Module):
+    def get_lines(self):
+        return [
+            Line("Praise", "heading"),
+            Line("A hymn or canticle may be used.", "rubric"),
+        ]
+
+
+class FamilyCredo(Module):
+    def get_lines(self):
+        creed = self.office.settings["family-creed"]
+        if creed == "family-creed-yes":
+            return [
+                Line("The Apostles' Creed", "heading"),
+            ] + file_to_lines("creed.csv")
+        return []
 
 
 class FamilyPater(Module):
@@ -1472,6 +1670,72 @@ class FamilyMorningCollect(Module):
         return lines
 
 
+class FamilyMiddayCollect(Module):
+    def get_lines(self):
+        collect_type = self.office.settings["family_collect"]
+        if collect_type == "day_of_week":
+            lines = [
+                Line("The Collects", "heading"),
+                Line("At Midday", "subheading"),
+            ] + MiddayPrayers(self.office).get_collect_lines()
+        elif collect_type == "day_of_year":
+            lines = MPCollectOfTheDay(self.office).get_lines()
+            lines = [Line("The Collect", "heading")] + lines[1:4]
+        else:
+            lines = [
+                Line("The Collect", "heading"),
+                Line("At Midday", "subheading"),
+                Line(
+                    "Blessed Savior, at this hour you hung upon the Cross, stretching out your loving arms: Grant that all the peoples of the earth may look to you and be saved; for your tender mercies’ sake.",
+                    "leader",
+                ),
+                Line("Amen.", "congregation"),
+            ]
+        return lines
+
+
+class FamilyEarlyEveningCollect(Module):
+    def get_lines(self):
+        collect_type = self.office.settings["family_collect"]
+        if collect_type == "day_of_week":
+            lines = EPAdditionalCollects(self.office).get_weekly_collect()
+        elif collect_type == "day_of_year":
+            lines = EPCollectOfTheDay(self.office).get_lines()
+            lines = [Line("The Collect", "heading")] + lines[1:4]
+        else:
+            lines = [
+                Line("The Collect", "heading"),
+                Line("At Early Evening", "subheading"),
+                Line(
+                    "Lord Jesus, stay with us, for evening is at hand and the day is past; be our companion in the way, kindle our hearts, and awaken hope, that we may know you as you are revealed in Scripture and the breaking of bread. Grant this for the sake of your love.",
+                    "leader",
+                ),
+                Line("Amen.", "congregation"),
+            ]
+        return lines
+
+
+class FamilyCloseOfDayCollect(Module):
+    def get_lines(self):
+        collect_type = self.office.settings["family_collect"]
+        if collect_type == "day_of_week":
+            lines = EPAdditionalCollects(self.office).get_weekly_collect()
+        elif collect_type == "day_of_year":
+            lines = EPCollectOfTheDay(self.office).get_lines()
+            lines = [Line("The Collect", "heading")] + lines[1:4]
+        else:
+            lines = [
+                Line("The Collect", "heading"),
+                Line("At the Close of Day", "subheading"),
+                Line(
+                    "Visit this place, O Lord, and drive far from it all snares of the enemy; let your holy angels dwell with us to preserve us in peace; and let your blessing be upon us always; through Jesus Christ our Lord.",
+                    "leader",
+                ),
+                Line("Amen.", "congregation"),
+            ]
+        return lines
+
+
 class FamilyMorningPrayer(Office):
     def get_modules(self):
         return [
@@ -1479,9 +1743,56 @@ class FamilyMorningPrayer(Office):
             FamilyMorningOpeningSentence(self),
             FamilyMorningPsalm(self),
             FamilyMorningScripture(self),
+            FamilyPraise(self),
+            FamilyCredo(self),
             FamilyIntercessions(self),
             FamilyPater(self),
             FamilyMorningCollect(self),
+        ]
+
+
+class FamilyMiddayPrayer(Office):
+    def get_modules(self):
+        return [
+            FamilyRubricSection(self),
+            FamilyMiddayOpeningSentence(self),
+            FamilyMiddayPsalm(self),
+            FamilyMiddayScripture(self),
+            FamilyIntercessions(self),
+            FamilyPater(self),
+            FamilyMiddayCollect(self),
+        ]
+
+
+class FamilyEarlyEveningPrayer(Office):
+    def get_modules(self):
+        return [
+            FamilyRubricSection(self),
+            FamilyEarlyEveningOpeningSentence(self),
+            FamilyEarlyEveningHymn(self),
+            FamilyEarlyEveningScripture(self),
+            FamilyPraise(self),
+            FamilyCredo(self),
+            FamilyIntercessions(self),
+            FamilyPater(self),
+            FamilyEarlyEveningCollect(self),
+        ]
+
+
+class FamilyCloseOfDayPrayer(Office):
+    def get_modules(self):
+        return [
+            FamilyRubricSection(self),
+            FamilyCloseOfDayOpeningSentence(self),
+            FamilyCloseOfDayPsalm(self),
+            FamilyCloseOfDayScripture(self),
+            FamilyPraise(self),
+            FamilyCredo(self),
+            FamilyCloseOfDayIntercessions(self),
+            FamilyPater(self),
+            FamilyCloseOfDayCollect(self),
+            FamilyCloseOfDayHymn(self),
+            FamilyCloseOfDayClosingSentence(self),
         ]
 
 
@@ -1999,6 +2310,27 @@ class MorningPrayerView(OfficeAPIView):
 class FamilyMorningPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
         office = FamilyMorningPrayer(request, year, month, day)
+        serializer = OfficeSerializer(office)
+        return Response(serializer.data)
+
+
+class FamilyMiddayPrayerView(OfficeAPIView):
+    def get(self, request, year, month, day):
+        office = FamilyMiddayPrayer(request, year, month, day)
+        serializer = OfficeSerializer(office)
+        return Response(serializer.data)
+
+
+class FamilyEarlyEveningPrayerView(OfficeAPIView):
+    def get(self, request, year, month, day):
+        office = FamilyEarlyEveningPrayer(request, year, month, day)
+        serializer = OfficeSerializer(office)
+        return Response(serializer.data)
+
+
+class FamilyCloseOfDayPrayerView(OfficeAPIView):
+    def get(self, request, year, month, day):
+        office = FamilyCloseOfDayPrayer(request, year, month, day)
         serializer = OfficeSerializer(office)
         return Response(serializer.data)
 

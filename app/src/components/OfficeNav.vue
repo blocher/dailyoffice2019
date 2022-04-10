@@ -4,23 +4,39 @@
     :gutter="5"
     class="mt-6 text-xs mx-auto"
   >
-    <el-col :span="12" class="text-left">Full Daily Office</el-col>
-    <el-col :span="12" class="text-right"
-      ><a href="" @click.stop.prevent="toggleServiceType"
-        >Switch to Family Prayer</a
-      ></el-col
-    >
+    <el-col
+:span="12" class="text-left"> Full Daily Office </el-col>
+    <el-col
+:span="12" class="text-right"
+>
+      <a
+href=""
+@click.stop.prevent="toggleServiceType"
+      >Switch to Family Prayer</a>
+    </el-col>
   </el-row>
-  <el-row v-else :gutter="5" class="mt-6 text-xs mx-auto">
-    <el-col :span="12" class="text-left">
-      <a href="" @click.stop.prevent="toggleServiceType"
+  <el-row
+v-else :gutter="5"
+class="mt-6 text-xs mx-auto"
+>
+    <el-col
+:span="12" class="text-left"
+>
+      <a
+href="" @click.stop.prevent="toggleServiceType"
         >Switch to Full Daily Office</a
       >
     </el-col>
-    <el-col :span="12" class="text-right">Family Prayer</el-col>
+    <el-col
+:span="12" class="text-right"> Family Prayer </el-col>
   </el-row>
-  <el-row :gutter="5" class="mt-2 text-center text-xs sm:text-sm mx-auto">
-    <el-col v-for="link in links" :key="link.name" :span="6">
+  <el-row
+:gutter="5" class="mt-2 text-center text-xs sm:text-sm mx-auto"
+>
+    <el-col
+v-for="link in links" :key="link.name"
+:span="6"
+>
       <div class="grid-content bg-purple">
         <router-link :to="link.to">
           <el-card
@@ -30,16 +46,24 @@
             <p class="text-xs sm:text-sm">
               <font-awesome-icon :icon="link.icon" />
             </p>
-            <p class="text-xs sm:text-sm" v-html="link.text"></p>
+            <p
+class="text-xs sm:text-sm" v-html="link.text" />
           </el-card>
         </router-link>
       </div>
     </el-col>
   </el-row>
-  <el-row :gutter="5" class="mt-2 text-center">
-    <el-col v-for="link in dayLinks" :key="link.text" :span="8">
+  <el-row
+:gutter="5" class="mt-2 text-center"
+>
+    <el-col
+v-for="link in dayLinks" :key="link.text"
+:span="8"
+>
       <div class="grid-content bg-purple">
-        <router-link :to="link.to" :v-on:click="scrollToTop">
+        <router-link
+:to="link.to" :v-on:click="scrollToTop"
+>
           <el-card
             :class="link.selected ? 'selected' : ''"
             shadow="hover"

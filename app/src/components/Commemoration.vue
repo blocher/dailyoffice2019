@@ -2,7 +2,8 @@
   <div class="text text-sm sm:text-md">
     <div class="w-full mt-2">
       <strong
-        ><span class="box" :class="commemoration.colors[0]"></span>
+        ><span class="box" :class="commemoration.colors[0]"
+/>
         {{ commemoration.name }}</strong
       >
       <a
