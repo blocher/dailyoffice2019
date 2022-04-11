@@ -77,6 +77,30 @@ class AboutItem(BaseModel):
 
         return super().save(*args, **kwargs)
 
+    @property
+    def question_for_web(self):
+        if self.mode == "app":
+            return None
+        return self.question.replace("{medium}", "site")
+
+    @property
+    def answer_for_web(self):
+        if self.mode == "app":
+            return None
+        return self.answer.replace("{medium}", "site")
+
+    @property
+    def question_for_app(self):
+        if self.mode == "web":
+            return None
+        return self.question.replace("{medium}", "app")
+
+    @property
+    def answer_for_app(self):
+        if self.mode == "web":
+            return None
+        return self.answer.replace("{medium}", "app")
+
     def mode(self):
         if self.web_mode and self.app_mode:
             return "both"

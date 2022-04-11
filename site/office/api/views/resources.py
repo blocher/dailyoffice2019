@@ -5,9 +5,19 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
-from office.api.serializers import CollectSerializer, PsalmSerializer, PsalmTopicSerializer
-from office.models import Collect
+from office.api.serializers import CollectSerializer, PsalmSerializer, PsalmTopicSerializer, AboutItemSerializer
+from office.models import Collect, AboutItem
 from psalter.models import Psalm, PsalmTopicPsalm, PsalmVerse, PsalmTopic
+
+
+class AboutViewSet(ViewSet):
+    queryset = AboutItem.objects.order_by("order").all()
+    serializer_class = AboutItemSerializer
+
+    def list(self, request):
+        about_items = self.queryset
+        serializer = AboutItemSerializer(about_items, many=True)
+        return Response(serializer.data)
 
 
 class CollectsViewSet(ViewSet):
