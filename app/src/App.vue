@@ -154,9 +154,8 @@ body {
     font-display: swap;
     font-weight: 300;
     font-style: normal;
-    font-size: 1em;
-
-    line-height: 1.6em;
+    font-size: 1rem;
+    line-height: 1.6rem;
 
     &.rubric {
       line-height: 0.9em;

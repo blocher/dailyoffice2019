@@ -5,7 +5,7 @@
       class="mt-6 text-xs mx-auto"
   >
     <el-col
-        :span="12" class="text-left"> Full Daily Office
+        :span="12" class="text-left"> Full Daily Office mode
     </el-col>
     <el-col
         :span="12" class="text-right"
@@ -21,16 +21,17 @@
       class="mt-6 text-xs mx-auto"
   >
     <el-col
-        :span="12" class="text-left"
+        :span="12" class="text-left"> Shorter Family Prayer mode
+    </el-col>
+    <el-col
+        :span="12" class="text-right"
     >
       <a
           href="" @click.stop.prevent="toggleServiceType"
-      >Switch to Full Daily Office</a
+      >Switch to full Daily Office</a
       >
     </el-col>
-    <el-col
-        :span="12" class="text-right"> Family Prayer
-    </el-col>
+
   </el-row>
   <el-row
       :gutter="5" class="mt-2 text-center text-xs sm:text-sm mx-auto"
