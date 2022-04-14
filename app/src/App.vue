@@ -1,16 +1,16 @@
 <template>
-  <Menu />
+  <Menu/>
   <div class="main">
-    <Loading v-if="loading" />
+    <Loading v-if="loading"/>
     <el-alert
-v-if="error" :title="error"
-type="error"
-/>
+        v-if="error" :title="error"
+        type="error"
+    />
     <router-view
-v-if="!loading" :key="$route.fullPath"
-/>
+        v-if="!loading" :key="$route.fullPath"
+    />
   </div>
-  <el-backtop />
+  <el-backtop/>
 </template>
 
 <style src="./assets/tailwind.css"></style>
@@ -43,12 +43,17 @@ v-if="!loading" :key="$route.fullPath"
   --font-on-white-background: #333;
 
   --el-text-color-primary: rgb(191, 191, 191);
-  --el-menu-bg-color: rgb(28, 28, 33);
+  --el-text-color-hover: green;
+  --el-fill-color-blank: rgb(28, 28, 33);
   --el-color-white: rgb(28, 28, 33);
   --el-text-color-regular: rgb(191, 191, 191);
   --el-calendar-selected-bg-color: rgb(28, 28, 33);
 
   --el-card-bg-color: rgb(28, 28, 33);
+
+  .el-menu {
+    --el-menu-hover-text-color: #333;
+  }
 }
 
 body {
@@ -226,7 +231,7 @@ export default {
     document.title = "The Daily Office";
     try {
       const settings_data = await this.$http.get(
-        `${process.env.VUE_APP_API_URL}api/v1/available_settings/`
+          `${process.env.VUE_APP_API_URL}api/v1/available_settings/`
       );
       await this.$store.commit("saveAvailableSettings", settings_data.data);
       await this.$store.commit("initializeSettings", this);
@@ -234,7 +239,7 @@ export default {
     } catch (e) {
       console.log(e);
       this.error =
-        "There was an error loading the settings. Please try refreshing the page.";
+          "There was an error loading the settings. Please try refreshing the page.";
       this.loading = false;
       return;
     }

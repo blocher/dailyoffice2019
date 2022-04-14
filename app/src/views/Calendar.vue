@@ -1,9 +1,9 @@
 <template>
   <h1>Calendar</h1>
-  <Loading v-if="loading" />
+  <Loading v-if="loading"/>
   <el-calendar
-v-if="!loading" v-model="date"
->
+      v-if="!loading" v-model="date"
+  >
     <template #header="{ date }">
       <span>{{ date }}</span>
 
@@ -13,15 +13,16 @@ v-if="!loading" v-model="date"
         <!--        >-->
 
         <el-button
-size="small" @click="selectDate('today')"> Now </el-button>
+            size="small" @click="selectDate('today')"> Now
+        </el-button>
         <el-button
-size="small" @click="selectDate('prev-month')"
->
+            size="small" @click="selectDate('prev-month')"
+        >
           Previous Month
         </el-button>
         <el-button
-size="small" @click="selectDate('next-month')"
->
+            size="small" @click="selectDate('next-month')"
+        >
           Next Month
         </el-button>
         <!--        <el-button size="small" @click="selectDate('next-year')"-->
@@ -31,18 +32,25 @@ size="small" @click="selectDate('next-month')"
     </template>
     <template #dateCell="{ data }">
       <div
-class="dateCellWrapper" @click="clickDateCell(data, $event)"
->
+          class="dateCellWrapper" @click="clickDateCell(data, $event)"
+      >
         <p>{{ parseInt(data.day.split("-")[2]) }}</p>
-        <p>
-          <small v-html="days[data.day]" />
-        </p>
+        <p class="calendarText" v-html="days[data.day]"></p>
       </div>
     </template>
   </el-calendar>
 </template>
 
 <style lang="scss">
+
+.dateCellWrapper {
+  @media only screen and (max-width: 733px) {
+    .calendarText {
+      font-size: .5rem;
+    }
+  }
+}
+
 td {
   height: 1px !important;
 }
@@ -58,6 +66,11 @@ td {
   padding: 0 !important;
   display: flex;
   margin-bottom: auto;
+  color: var(--el-text-color-primary);
+
+  &:hover {
+    color: var(--font-on-white-background);
+  }
 
   p {
     line-height: 1.1em;
@@ -122,7 +135,7 @@ export default {
       }
       const year = this.year;
       const month = this.month;
-      await this.$router.push({ name: "calendar", params: { year, month } });
+      await this.$router.push({name: "calendar", params: {year, month}});
       return;
     },
     setCalendar: async function () {
@@ -142,11 +155,11 @@ export default {
       this.date = new Date(this.year, this.month - 1, 1);
       try {
         data = await this.$http.get(
-          `${process.env.VUE_APP_API_URL}api/v1/calendar/${this.year}-${this.month}`
+            `${process.env.VUE_APP_API_URL}api/v1/calendar/${this.year}-${this.month}`
         );
       } catch (e) {
         this.error =
-          "There was an error retrieving the office. Please try again.";
+            "There was an error retrieving the office. Please try again.";
         this.loading = false;
         return;
       }
@@ -163,7 +176,7 @@ export default {
       console.log(window.history, "1", day);
       await this.$router.push({
         name: `day`,
-        params: { year: day[0], month: day[1], day: day[2] },
+        params: {year: day[0], month: day[1], day: day[2]},
       });
       console.log(window.history, "2");
       return;

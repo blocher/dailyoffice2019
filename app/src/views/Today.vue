@@ -1,9 +1,9 @@
 <template>
   <Office
-    :key="key"
-    :office="office"
-    :calendar-date="calendarDate"
-    :service-type="currentServiceType"
+      :key="key"
+      :office="office"
+      :calendar-date="calendarDate"
+      :service-type="currentServiceType"
   />
 </template>
 
@@ -56,32 +56,59 @@ export default {
     },
   },
   methods: {
+    setCurrentOffice() {
+      const now = new Date();
+      // const hour = now.getHours();
+      const hour = 9;
+      if (hour < 4) {
+        this.office = this.currentServiceType == "family" ? "close_of_day_prayer" : "compline";
+        this.forward = "yesterday";
+        return;
+      }
+      if (hour >= 4 && hour < 11) {
+        this.office = "morning_prayer";
+        return;
+      }
+      if (hour >= 11 && hour < 15) {
+        this.office = "midday_prayer";
+        return;
+      }
+      if (hour >= 15 && hour < 20) {
+        this.office = this.currentServiceType == "family" ? "early_evening_prayer" : "evening_prayer";
+        return;
+      }
+      if (hour >= 20) {
+        this.office = this.currentServiceType == "family" ? "close_of_day_prayer" : "compline";
+        return;
+      }
+    },
     async setDate() {
+      this.forward = this.$route.params.forward;
       const today = new Date();
       this.office = this.$route.params.office;
       if (!this.office) {
-        this.office = "morning_prayer";
+        this.setCurrentOffice();
       }
       if (
-        ![
-          "morning_prayer",
-          "evening_prayer",
-          "midday_prayer",
-          "compline",
-          "early_evening_prayer",
-          "close_of_day_prayer",
-        ].includes(this.office)
+          ![
+            "morning_prayer",
+            "evening_prayer",
+            "midday_prayer",
+            "compline",
+            "early_evening_prayer",
+            "close_of_day_prayer",
+          ].includes(this.office)
       ) {
         await this.$router.push({
           name: "not_found",
-          params: { pathMatch: this.$route.path.split("/").slice(1) },
+          params: {pathMatch: this.$route.path.split("/").slice(1)},
         });
         return;
       }
-      if (this.$route.params.forward === "tomorrow") {
+      if (this.forward === "tomorrow") {
         today.setDate(today.getDate() + 1);
       }
-      if (this.$route.params.forward === "yesterday") {
+      if (this.forward === "yesterday") {
         today.setDate(today.getDate() - 1);
       }
       this.calendarDate = today;

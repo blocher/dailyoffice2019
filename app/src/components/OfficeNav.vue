@@ -1,82 +1,84 @@
 <template>
   <el-row
-    v-if="currentServiceType == 'office'"
-    :gutter="5"
-    class="mt-6 text-xs mx-auto"
+      v-if="currentServiceType == 'office'"
+      :gutter="5"
+      class="mt-6 text-xs mx-auto"
   >
     <el-col
-:span="12" class="text-left"> Full Daily Office </el-col>
+        :span="12" class="text-left"> Full Daily Office
+    </el-col>
     <el-col
-:span="12" class="text-right"
->
+        :span="12" class="text-right"
+    >
       <a
-href=""
-@click.stop.prevent="toggleServiceType"
+          href=""
+          @click.stop.prevent="toggleServiceType"
       >Switch to Family Prayer</a>
     </el-col>
   </el-row>
   <el-row
-v-else :gutter="5"
-class="mt-6 text-xs mx-auto"
->
+      v-else :gutter="5"
+      class="mt-6 text-xs mx-auto"
+  >
     <el-col
-:span="12" class="text-left"
->
+        :span="12" class="text-left"
+    >
       <a
-href="" @click.stop.prevent="toggleServiceType"
-        >Switch to Full Daily Office</a
+          href="" @click.stop.prevent="toggleServiceType"
+      >Switch to Full Daily Office</a
       >
     </el-col>
     <el-col
-:span="12" class="text-right"> Family Prayer </el-col>
+        :span="12" class="text-right"> Family Prayer
+    </el-col>
   </el-row>
   <el-row
-:gutter="5" class="mt-2 text-center text-xs sm:text-sm mx-auto"
->
+      :gutter="5" class="mt-2 text-center text-xs sm:text-sm mx-auto"
+  >
     <el-col
-v-for="link in links" :key="link.name"
-:span="6"
->
+        v-for="link in links" :key="link.name"
+        :span="6"
+    >
       <div class="grid-content bg-purple">
         <router-link :to="link.to">
           <el-card
-            :class="selectedClass(link.name)"
-            :shadow="hoverClass(link.name)"
+              :class="selectedClass(link.name)"
+              :shadow="hoverClass(link.name)"
           >
             <p class="text-xs sm:text-sm">
-              <font-awesome-icon :icon="link.icon" />
+              <font-awesome-icon :icon="link.icon"/>
             </p>
             <p
-class="text-xs sm:text-sm" v-html="link.text" />
+                class="text-xs sm:text-sm" v-html="link.text"/>
           </el-card>
         </router-link>
       </div>
     </el-col>
   </el-row>
   <el-row
-:gutter="5" class="mt-2 text-center"
->
+      :gutter="5" class="mt-2 text-center"
+  >
     <el-col
-v-for="link in dayLinks" :key="link.text"
-:span="8"
->
+        v-for="link in dayLinks" :key="link.text"
+        :span="8"
+    >
       <div class="grid-content bg-purple">
         <router-link
-:to="link.to" :v-on:click="scrollToTop"
->
+            :to="link.to" :v-on:click="scrollToTop"
+        >
           <el-card
-            :class="link.selected ? 'selected' : ''"
-            shadow="hover"
-            class="text-xs sm:text-sm"
+              :class="link.selected ? 'selected' : ''"
+              shadow="hover"
+              class="text-xs sm:text-sm"
           >
             <font-awesome-icon
-              v-if="link.icon == 'left'"
-              :icon="['fad', 'left']"
+                v-if="link.icon == 'left'"
+                :icon="['fad', 'left']"
             />
             {{ link.text }}
             <font-awesome-icon
-              v-if="link.icon == 'right'"
-              :icon="['fad', 'right']"
+                v-if="link.icon == 'right'"
+                :icon="['fad', 'right']"
             />
           </el-card>
         </router-link>
@@ -135,7 +137,7 @@ export default {
     this.dailyLinks = [
       {
         to: `/morning_prayer/${this.calendarDate.getFullYear()}/${
-          this.calendarDate.getMonth() + 1
+            this.calendarDate.getMonth() + 1
         }/${this.calendarDate.getDate()}`,
         text: "Morning<br>Prayer",
         name: "morning_prayer",
@@ -143,7 +145,7 @@ export default {
       },
       {
         to: `/midday_prayer/${this.calendarDate.getFullYear()}/${
-          this.calendarDate.getMonth() + 1
+            this.calendarDate.getMonth() + 1
         }/${this.calendarDate.getDate()}`,
         text: "Midday<br>Prayer",
         name: "midday_prayer",
@@ -151,7 +153,7 @@ export default {
       },
       {
         to: `/evening_prayer/${this.calendarDate.getFullYear()}/${
-          this.calendarDate.getMonth() + 1
+            this.calendarDate.getMonth() + 1
         }/${this.calendarDate.getDate()}`,
         text: "Evening<br>Prayer",
         name: "evening_prayer",
@@ -159,7 +161,7 @@ export default {
       },
       {
         to: `/compline/${this.calendarDate.getFullYear()}/${
-          this.calendarDate.getMonth() + 1
+            this.calendarDate.getMonth() + 1
         }/${this.calendarDate.getDate()}`,
         text: "Compline<br>(Bedtime)",
         name: "compline",
@@ -169,7 +171,7 @@ export default {
     this.familyLinks = [
       {
         to: `/family/morning_prayer/${this.calendarDate.getFullYear()}/${
-          this.calendarDate.getMonth() + 1
+            this.calendarDate.getMonth() + 1
         }/${this.calendarDate.getDate()}`,
         text: "Morning",
         name: "morning_prayer",
@@ -177,7 +179,7 @@ export default {
       },
       {
         to: `/family/midday_prayer/${this.calendarDate.getFullYear()}/${
-          this.calendarDate.getMonth() + 1
+            this.calendarDate.getMonth() + 1
         }/${this.calendarDate.getDate()}`,
         text: "Midday",
         name: "midday_prayer",
@@ -185,7 +187,7 @@ export default {
       },
       {
         to: `/family/early_evening_prayer/${this.calendarDate.getFullYear()}/${
-          this.calendarDate.getMonth() + 1
+            this.calendarDate.getMonth() + 1
         }/${this.calendarDate.getDate()}`,
         text: "Early Evening",
         name: "early_evening_prayer",
@@ -193,7 +195,7 @@ export default {
       },
       {
         to: `/family/close_of_day_prayer/${this.calendarDate.getFullYear()}/${
-          this.calendarDate.getMonth() + 1
+            this.calendarDate.getMonth() + 1
         }/${this.calendarDate.getDate()}`,
         text: "Close of Day",
         name: "close_of_day_prayer",
@@ -208,14 +210,14 @@ export default {
     this.dayLinks = [
       {
         to: `/day/${yesterday.getFullYear()}/${
-          yesterday.getMonth() + 1
+            yesterday.getMonth() + 1
         }/${yesterday.getDate()}`,
         icon: "left",
-        text: yesterday.toLocaleDateString("en-us", { weekday: "long" }),
+        text: yesterday.toLocaleDateString("en-us", {weekday: "long"}),
       },
       {
         to: `/day/${this.calendarDate.getFullYear()}/${
-          this.calendarDate.getMonth() + 1
+            this.calendarDate.getMonth() + 1
         }/${this.calendarDate.getDate()}`,
         text: this.calendarDate.toLocaleDateString("en-us", {
           weekday: "long",
@@ -224,10 +226,10 @@ export default {
       },
       {
         to: `/day/${tomorrow.getFullYear()}/${
-          tomorrow.getMonth() + 1
+            tomorrow.getMonth() + 1
         }/${tomorrow.getDate()}`,
         icon: "right",
-        text: tomorrow.toLocaleDateString("en-us", { weekday: "long" }),
+        text: tomorrow.toLocaleDateString("en-us", {weekday: "long"}),
       },
     ];
   },
@@ -251,9 +253,9 @@ export default {
         };
         const new_office = lookup[this.selectedOffice];
         this.$router.push(
-          `/office/${new_office}/${this.calendarDate.getFullYear()}/${
-            this.calendarDate.getMonth() + 1
-          }/${this.calendarDate.getDate()}`
+            `/office/${new_office}/${this.calendarDate.getFullYear()}/${
+                this.calendarDate.getMonth() + 1
+            }/${this.calendarDate.getDate()}`
         );
       }
     },
@@ -267,19 +269,21 @@ export default {
         };
         const new_office = lookup[this.selectedOffice];
         this.$router.push(
-          `/family/${new_office}/${this.calendarDate.getFullYear()}/${
-            this.calendarDate.getMonth() + 1
-          }/${this.calendarDate.getDate()}`
+            `/family/${new_office}/${this.calendarDate.getFullYear()}/${
+                this.calendarDate.getMonth() + 1
+            }/${this.calendarDate.getDate()}`
         );
       }
     },
     toggleServiceType() {
       if (this.currentServiceType == "family") {
-        this.currentServiceType = "daily";
+        this.currentServiceType = "office";
         this.links = this.dailyLinks;
+        localStorage.setItem("serviceType", "office");
         this.redirectToDaily();
       } else {
         this.currentServiceType = "family";
+        localStorage.setItem("serviceType", "family");
         this.links = this.familyLinks;
         this.redirectToFamily();
       }

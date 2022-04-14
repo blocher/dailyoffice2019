@@ -1,23 +1,23 @@
 <template>
   <div class="small-container">
-    <Loading v-if="loading" />
+    <Loading v-if="loading"/>
     <div
-v-if="error" class="alert-danger"
->
+        v-if="error" class="alert-danger"
+    >
       {{ error }}
     </div>
     <div
-v-if="!loading" class="day"
->
+        v-if="!loading" class="day"
+    >
       <CalendarCard
-        v-if="!loading"
-        :office="office"
-        :calendar-date="calendarDate"
-        :card="card"
+          v-if="!loading"
+          :office="office"
+          :calendar-date="calendarDate"
+          :card="card"
       />
       <OfficeNav
-:calendar-date="calendarDate" :service-type="serviceType"
-/>
+          :calendar-date="calendarDate" :service-type="currentServiceType"
+      />
     </div>
   </div>
 </template>
@@ -30,8 +30,14 @@ import OfficeNav from "@/components/OfficeNav";
 
 export default {
   name: "Calendar",
-  components: { OfficeNav },
-  props: ["office"],
+  components: {OfficeNav},
+  properties: {
+    office: null,
+    serviceType: {
+      type: String,
+      default: "office",
+    },
+  },
   data() {
     return {
       year: null,
@@ -44,7 +50,7 @@ export default {
       error: null,
       links: [],
       dayLinks: [],
-      serviceType: "office",
+      currentServiceType: "office",
     };
   },
   watch: {
@@ -59,8 +65,13 @@ export default {
     },
   },
   async created() {
-    this.setDay();
-    this.serviceType = localStorage.getItem("serviceType") || "office";
+    if (this.$route.params.serviceType) {
+      this.currentServiceType = this.$route.params.serviceType;
+    } else if (!this.$route.params.office) {
+      this.currentServiceType = localStorage.getItem("serviceType") || "office";
+    }
+    await this.setDay();
+
   },
   methods: {
     scrollToTop() {
@@ -70,20 +81,21 @@ export default {
       this.loading = true;
       this.calendarDate = setCalendarDate(this.$route);
       if (!this.calendarDate) {
-        await this.$router.push({ name: "not_found" });
+        await this.$router.push({name: "not_found"});
         return;
       }
       this.day = this.$route.params.day;
       this.month = this.$route.params.month;
       this.year = this.$route.params.year;
       let data = null;
+      console.log(this.day, this.month, this.year)
       try {
         data = await this.$http.get(
-          `${process.env.VUE_APP_API_URL}api/v1/calendar/${this.year}-${this.month}-${this.day}`
+            `${process.env.VUE_APP_API_URL}api/v1/calendar/${this.year}-${this.month}-${this.day}`
         );
       } catch (e) {
         this.error =
-          "There was an error retrieving this calendar. Please try again.";
+            "There was an error retrieving this calendar. Please try again.";
         this.loading = false;
         return;
       }

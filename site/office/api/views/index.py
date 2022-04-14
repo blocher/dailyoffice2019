@@ -610,14 +610,12 @@ class EPPsalms(MPPsalms):
 class ReadingModule(Module):
     def remove_headings_if_needed(self, text):
         reading_headings = self.office.settings["reading_headings"] == "on"
-        print(reading_headings)
         if reading_headings:
             return text
 
         soup = BeautifulSoup(text, "html.parser")
         for h3 in soup.find_all("h3", {"class": "reading-heading"}):
             h3.decompose()
-        print(str(soup))
         return str(soup)
 
     def audio(self, passage, testament):
@@ -732,7 +730,6 @@ class ReadingModule(Module):
             has_alternate_reading = self.office.date.date.year % 2 == 0
             if has_alternate_reading:
                 alternate_reading_field = "{}_reading_{}".format("ep" if office == "mp" else office, number)
-                print(alternate_reading_field)
                 return self.get_reading(alternate_reading_field, abbreviated)
 
         reading_field = "{}_reading_{}".format(office, number)

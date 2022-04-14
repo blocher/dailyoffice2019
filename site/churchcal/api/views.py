@@ -8,6 +8,21 @@ from churchcal.api.serializer import DaySerializer
 from churchcal.calculations import get_calendar_date, ChurchYear, CalendarYear
 
 
+def get_calendar_year(year):
+    year = int(year)
+    first_year = year - 1
+    second_year = year
+    first_church_year = cache.get(str(first_year))
+    if not first_church_year:
+        first_church_year = ChurchYear(first_year)
+        cache.set(str(first_year), first_church_year, 60 * 60 * 12)
+    second_church_year = cache.get(str(second_year))
+    if not second_church_year:
+        second_church_year = ChurchYear(second_year)
+        cache.set(str(second_year), second_church_year, 60 * 60 * 12)
+    return CalendarYear(year, first_church_year, second_church_year)
+
+
 class DayView(APIView):
     permission_classes = [ReadOnly]
 
@@ -22,12 +37,7 @@ class MonthView(APIView):
     permission_classes = [ReadOnly]
 
     def get(self, request, year, month):
-        year = int(year)
-        year_string = "calendar_{}".format(year)
-        calendar_year = cache.get(year_string)
-        if not calendar_year:
-            calendar_year = CalendarYear(year)
-            cache.set(year_string, calendar_year, 60 * 60 * 12)
+        calendar_year = get_calendar_year(year)
         serializer = DaySerializer(
             [date for date in calendar_year if date.date.month == month and date.date.year == year], many=True
         )

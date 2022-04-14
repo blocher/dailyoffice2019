@@ -455,21 +455,14 @@ class CalendarYear(object):
     def __iter__(self):
         return ChurchYearIterator(self)
 
-    def __init__(self, year):
+    def __init__(self, year, first_year, second_year):
         year = int(year)
-        first_year = year - 1
-        second_year = year
-
-        first_year = ChurchYear(first_year)
-        second_year = ChurchYear(second_year)
-
         dates = IndexedOrderedDict(**first_year.dates, **second_year.dates)
         dates = {k: v for (k, v) in dates.items() if int(k.split("-")[0]) == year}
         dates = IndexedOrderedDict(**dates)
         self.dates = dates
 
         del dates
-        del year
         del first_year
         del second_year
 
