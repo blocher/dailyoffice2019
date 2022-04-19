@@ -2,7 +2,9 @@
   <h3>404</h3>
   <h1>Not Found</h1>
   <p class="text-center">
-    We're sorry the page you are looking for is not available.
+    We can't find this page.</p>
+  <p class="text-center">
+    Try choosing one of the links in the menu above.
   </p>
 </template>
 
