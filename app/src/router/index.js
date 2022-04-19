@@ -31,14 +31,6 @@ const routes = [
             title: "Pray | The Daily Office",
         },
     },
-    // {
-    //   path: "/:office/:forward?",
-    //   name: "Today",
-    //   component: Today,
-    //   meta: {
-    //     title: "Pray | The Daily Office",
-    //   },
-    // },
     {
         path: "/:office/:year/:month:/:day",
         name: "Pray",

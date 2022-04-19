@@ -58,8 +58,7 @@ export default {
   methods: {
     setCurrentOffice() {
       const now = new Date();
-      // const hour = now.getHours();
-      const hour = 9;
+      const hour = now.getHours();
       if (hour < 4) {
         this.office = this.currentServiceType == "family" ? "close_of_day_prayer" : "compline";
         this.forward = "yesterday";
