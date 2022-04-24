@@ -1,87 +1,91 @@
 <template>
   <div class="small-container home office">
-    <Loading v-if="loading" />
+    <PageNotFound v-if="notFound"/>
+    <div v-if="!notFound">
+      <Loading v-if="loading"/>
 
-    <CalendarCard
-      v-if="!loading"
-      :office="office"
-      :calendar-date="calendarDate"
-      :card="card"
-      :service-type="serviceType"
-    />
-    <el-alert
-v-if="error" :title="error"
-type="error"
-/>
-    <OfficeNav
-      :calendar-date="calendarDate"
-      :selected-office="office"
-      :service-type="serviceType"
-    />
 
-    <div class="font-size-block my-2">
-      <div class="w-1/6 inline-block">
-        <font-awesome-icon
-:icon="['fad', 'font-case']" size="sm"
-/>
-      </div>
-      <div class="w-2/3 inline-block">
-        <el-slider
-          v-model="fontSize"
-          class="w-3/4"
-          :min="sliderMin"
-          :max="sliderMax"
-          :format-tooltip="displayFontSize"
-          @input="setFontSize"
-        />
-      </div>
-      <div class="w-1/6 inline-block text-right">
-        <font-awesome-icon
-:icon="['fad', 'font-case']" size="lg"
-/>
-      </div>
-    </div>
+      <CalendarCard
+          v-if="!loading"
+          :office="office"
+          :calendar-date="calendarDate"
+          :card="card"
+          :service-type="serviceType"
+      />
+      <el-alert
+          v-if="error" :title="error"
+          type="error"
+      />
+      <OfficeNav
+          :calendar-date="calendarDate"
+          :selected-office="office"
+          :service-type="serviceType"
+      />
 
-    <div id="office">
-      <div
-v-for="module in modules" :key="module.name"
->
+      <div class="font-size-block my-2">
+        <div class="w-1/6 inline-block">
+          <font-awesome-icon
+              :icon="['fad', 'font-case']" size="sm"
+          />
+        </div>
+        <div class="w-2/3 inline-block">
+          <el-slider
+              v-model="fontSize"
+              class="w-3/4"
+              :min="sliderMin"
+              :max="sliderMax"
+              :format-tooltip="displayFontSize"
+              @input="setFontSize"
+          />
+        </div>
+        <div class="w-1/6 inline-block text-right">
+          <font-awesome-icon
+              :icon="['fad', 'font-case']" size="lg"
+          />
+        </div>
+      </div>
+
+      <div id="office">
         <div
-v-for="line in module.lines" :key="line.content"
->
-          <OfficeHeading
-v-if="line.line_type == 'heading'" :line="line"
-/>
-          <OfficeSubheading
-            v-if="line.line_type == 'subheading'"
-            :line="line"
-          />
-          <OfficeCitation
-v-if="line.line_type == 'citation'" :line="line"
-/>
-          <OfficeHTML
-v-if="line.line_type == 'html'" :line="line"
-/>
-          <OfficeLeader
-v-if="line.line_type == 'leader'" :line="line"
-/>
-          <OfficeLeaderDialogue
-            v-if="line.line_type == 'leader_dialogue'"
-            :line="line"
-          />
-          <OfficeCongregation
-            v-if="line.line_type == 'congregation'"
-            :line="line"
-          />
-          <OfficeCongregationDialogue
-            v-if="line.line_type == 'congregation_dialogue'"
-            :line="line"
-          />
+            v-for="module in modules" :key="module.name"
+        >
+          <div
+              v-for="line in module.lines" :key="line.content"
+          >
+            <OfficeHeading
+                v-if="line.line_type == 'heading'" :line="line"
+            />
+            <OfficeSubheading
+                v-if="line.line_type == 'subheading'"
+                :line="line"
+            />
+            <OfficeCitation
+                v-if="line.line_type == 'citation'" :line="line"
+            />
+            <OfficeHTML
+                v-if="line.line_type == 'html'" :line="line"
+            />
+            <OfficeLeader
+                v-if="line.line_type == 'leader'" :line="line"
+            />
+            <OfficeLeaderDialogue
+                v-if="line.line_type == 'leader_dialogue'"
+                :line="line"
+            />
+            <OfficeCongregation
+                v-if="line.line_type == 'congregation'"
+                :line="line"
+            />
+            <OfficeCongregationDialogue
+                v-if="line.line_type == 'congregation_dialogue'"
+                :line="line"
+            />
 
-          <OfficeRubric
-v-if="line.line_type == 'rubric'" :line="line"
-/>
-          <OfficeSpacer v-if="line.line_type == 'spacer'" />
+            <OfficeRubric
+                v-if="line.line_type == 'rubric'" :line="line"
+            />
+            <OfficeSpacer v-if="line.line_type == 'spacer'"/>
+          </div>
         </div>
       </div>
     </div>
@@ -109,6 +113,7 @@ import OfficeSpacer from "@/components/OfficeSpacer";
 import Loading from "@/components/Loading";
 import CalendarCard from "@/components/CalendarCard";
 import OfficeNav from "@/components/OfficeNav";
+import PageNotFound from "@/views/PageNotFound";
 
 export default {
   name: "Office",
@@ -126,6 +131,7 @@ export default {
     Loading,
     CalendarCard,
     OfficeNav,
+    PageNotFound,
   },
   props: {
     office: {
@@ -149,6 +155,7 @@ export default {
       fontSize: 20,
       sliderMin: 10,
       sliderMax: 40,
+      notFound: false,
     };
   },
   mounted() {
@@ -175,32 +182,32 @@ export default {
       "close_of_day_prayer",
     ];
     const valid_offices =
-      this.serviceType == "office" ? valid_daily_offices : valid_family_offices;
+        this.serviceType == "office" ? valid_daily_offices : valid_family_offices;
     if (!valid_offices.includes(this.$props.office)) {
-      await this.$router.replace({ name: "not_found" });
+      this.notFound = true;
       return;
     }
     const today_str =
-      this.calendarDate.getFullYear() +
-      "-" +
-      (this.calendarDate.getMonth() + 1) +
-      "-" +
-      this.calendarDate.getDate();
+        this.calendarDate.getFullYear() +
+        "-" +
+        (this.calendarDate.getMonth() + 1) +
+        "-" +
+        this.calendarDate.getDate();
     const settings = this.$store.state.settings;
     const queryString = Object.keys(settings)
-      .map((key) => key + "=" + settings[key])
-      .join("&");
+        .map((key) => key + "=" + settings[key])
+        .join("&");
     let data = null;
     try {
       data = await this.$http.get(
-        `${process.env.VUE_APP_API_URL}api/v1/${this.serviceType}/${this.office}/` +
+          `${process.env.VUE_APP_API_URL}api/v1/${this.serviceType}/${this.office}/` +
           today_str +
           "?" +
           queryString
       );
     } catch (e) {
       this.error =
-        "There was an error retrieving the office. Please try again.";
+          "There was an error retrieving the office. Please try again.";
       this.loading = false;
       return;
     }
@@ -211,7 +218,14 @@ export default {
   },
   methods: {
     setFontSize(value) {
-      document.getElementById("office").style["font-size"] = `${value}px`;
+      const office = document.getElementById("office")
+      if (office) {
+        office.style["font-size"] = `${value}px`;
+        document.querySelectorAll("office p").forEach((p) => {
+          p.style["font-size"] = `${value}px`;
+          p.style["line-height"] = `${value * 1.6}px`;
+        });
+      }
       localStorage.fontSize = this.fontSize;
     },
     displayFontSize(value) {

@@ -27,7 +27,10 @@ class DayView(APIView):
     permission_classes = [ReadOnly]
 
     def get(self, request, year, month, day):
-        date = timezone.now().replace(year=year, month=month, day=day)
+        try:
+            date = timezone.now().replace(year=year, month=month, day=day)
+        except ValueError:
+            return Response(status=404)
         calendar_date = get_calendar_date(date)
         serializer = DaySerializer(calendar_date)
         return Response(serializer.data)

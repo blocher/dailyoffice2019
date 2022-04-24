@@ -1,23 +1,26 @@
 <template>
   <div class="small-container">
-    <Loading v-if="loading"/>
-    <div
-        v-if="error" class="alert-danger"
-    >
-      {{ error }}
-    </div>
-    <div
-        v-if="!loading" class="day"
-    >
-      <CalendarCard
-          v-if="!loading"
-          :office="office"
-          :calendar-date="calendarDate"
-          :card="card"
-      />
-      <OfficeNav
-          :calendar-date="calendarDate" :service-type="currentServiceType"
-      />
+    <PageNotFound v-if="notFound"/>
+    <div v-if="!notFound">
+      <Loading v-if="loading"/>
+      <div
+          v-if="error" class="alert-danger"
+      >
+        {{ error }}
+      </div>
+      <div
+          v-if="!loading" class="day"
+      >
+        <CalendarCard
+            v-if="!loading"
+            :office="office"
+            :calendar-date="calendarDate"
+            :card="card"
+        />
+        <OfficeNav
+            :calendar-date="calendarDate" :service-type="currentServiceType"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -27,10 +30,11 @@
 // @ is an alias to /src
 import setCalendarDate from "@/helpers/setCalendarDate";
 import OfficeNav from "@/components/OfficeNav";
+import PageNotFound from "@/views/PageNotFound";
 
 export default {
   name: "Calendar",
-  components: {OfficeNav},
+  components: {OfficeNav, PageNotFound},
   properties: {
     office: null,
     serviceType: {
@@ -51,6 +55,7 @@ export default {
       links: [],
       dayLinks: [],
       currentServiceType: "office",
+      notFound: false,
     };
   },
   watch: {
@@ -81,19 +86,24 @@ export default {
       this.loading = true;
       this.calendarDate = setCalendarDate(this.$route);
       if (!this.calendarDate) {
-        await this.$router.push({name: "not_found"});
+        this.notFound = true;
         return;
       }
       this.day = this.$route.params.day;
       this.month = this.$route.params.month;
       this.year = this.$route.params.year;
       let data = null;
-      console.log(this.day, this.month, this.year)
       try {
         data = await this.$http.get(
             `${process.env.VUE_APP_API_URL}api/v1/calendar/${this.year}-${this.month}-${this.day}`
         );
+        console.log(data.status);
       } catch (e) {
+        console.log(e.response);
+        if (e.response.status == "404") {
+          this.notFound = true;
+          return;
+        }
         this.error =
             "There was an error retrieving this calendar. Please try again.";
         this.loading = false;

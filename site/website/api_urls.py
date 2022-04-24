@@ -17,6 +17,7 @@ from office.api.views.index import (
     FamilyMiddayPrayerView,
     FamilyEarlyEveningPrayerView,
     FamilyCloseOfDayPrayerView,
+    ReadingsView,
 )
 from office.api.views.resources import CollectsViewSet, PsalmsViewSet, AboutViewSet
 
@@ -40,6 +41,7 @@ urlpatterns = [
     re_path(r"^api/v1/", include(router_v1.urls)),
     path("api/v1/api-auth/", include("rest_framework.urls")),
     path(r"api/v1/calendar/<int:year>-<int:month>-<int:day>", DayView.as_view(), name="day_view"),
+    path(r"api/v1/readings/<int:year>-<int:month>-<int:day>", ReadingsView.as_view(), name="readings"),
     path(r"api/v1/calendar/<int:year>-<int:month>", MonthView.as_view(), name="month_view"),
     path(r"api/v1/calendar/<int:year>", YearView.as_view(), name="month_view"),
     path(

@@ -65,6 +65,16 @@ class CalendarDate(object):
         return self.primary.get_mass_readings_for_year(self.year.mass_year)
 
     @cached_property
+    def get_all_mass_readings(self):
+        readings = []
+        for commemoration in self.all:
+            if self.proper and commemoration.rank.name == "SUNDAY":
+                readings.append(self.proper.get_mass_readings_for_year(self.year.mass_year))
+            else:
+                readings.append(commemoration.get_mass_readings_for_year(self.year.mass_year))
+        return readings
+
+    @cached_property
     def evening_mass_readings(self):
         if self.proper:
             return self.proper.get_mass_readings_for_year(self.year.mass_year)
@@ -609,6 +619,7 @@ class SetNamesAndCollects(object):
                         commemoration.name = "{} after {}".format(
                             week_days[calendar_date.date.weekday()], previous.primary.name.replace("The ", "the ")
                         )
+                    commemoration.original_commemoration = previous.primary
                     self.append_seuptuagesima_if_needed(commemoration, calendar_date)
                     self.append_o_antiphon_if_needed(commemoration, calendar_date)
                     if "gesima" in commemoration.name:
@@ -861,7 +872,7 @@ def to_date(date_string):
     return None
 
 
-def get_calendar_date(date_string):
+def get_church_year(date_string):
     date = to_date(date_string)
     advent_start = advent(date.year)
     year = date.year if date >= advent_start else date.year - 1
@@ -870,6 +881,9 @@ def get_calendar_date(date_string):
     if not church_year:
         church_year = ChurchYear(year)
         cache.set(str(year), church_year, 60 * 60 * 12)
+    return church_year
 
-    print(type(church_year.get_date(date_string)))
+
+def get_calendar_date(date_string):
+    church_year = get_church_year(date_string)
     return church_year.get_date(date_string)

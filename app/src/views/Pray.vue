@@ -1,20 +1,24 @@
 <template>
   <Office
-    :service-type="serviceType"
-    :office="office"
-    :calendar-date="calendarDate"
+      v-if="!notFound"
+      :service-type="serviceType"
+      :office="office"
+      :calendar-date="calendarDate"
   />
+  <PageNotFound v-if="notFound"/>
 </template>
 
 <script>
 // @ is an alias to /src
 import Office from "@/views/Office";
 import setCalendarDate from "@/helpers/setCalendarDate";
+import PageNotFound from "@/views/PageNotFound";
 
 export default {
   name: "Today",
   components: {
     Office,
+    PageNotFound,
   },
   data() {
     return {
@@ -24,6 +28,7 @@ export default {
       office: null,
       calendarDate: null,
       serviceType: "office",
+      notFound: false,
     };
   },
   async created() {
@@ -32,10 +37,7 @@ export default {
 
     this.calendarDate = setCalendarDate(this.$route);
     if (!this.calendarDate) {
-      await this.$router.push({
-        name: "not_found",
-        params: { pathMatch: this.$route.path.split("/").slice(1) },
-      });
+      this.notFound = true;
       return;
     }
   },

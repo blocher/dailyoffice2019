@@ -107,7 +107,14 @@ class Commemoration(BaseModel):
         return True
 
     def get_mass_readings_for_year(self, year, time="morning"):
-        query = MassReading.objects.filter(years__contains=year, commemoration=self).order_by("reading_number")
+        commemoration = (
+            self.original_commemoration
+            if hasattr(self, "original_commemoration") and self.original_commemoration
+            else self
+        )
+        query = MassReading.objects.filter(years__contains=year, commemoration=commemoration).order_by(
+            "reading_number"
+        )
 
         if year in ["A", "C"] and time == "morning":
             query = query.order_by("reading_number", "-order")
@@ -173,6 +180,9 @@ class SanctoraleCommemoration(Commemoration):
 
         return date(year, self.month, self.day)
 
+    def get_mass_readings_for_year(year="A", time="morning"):
+        return []
+
 
 class SanctoraleBasedCommemoration(Commemoration):
     weekday = models.CharField(max_length=256)
@@ -230,6 +240,7 @@ class FerialCommemoration(Commemoration):
         super(FerialCommemoration, self).__init__(*args, **kwargs)
         self.date = date
         self.name = season.rank.formatted_name
+
         self.rank = season.rank
         self.color = season.color
         self.alternate_color = season.alternate_color

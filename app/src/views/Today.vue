@@ -1,20 +1,24 @@
 <template>
   <Office
+      v-if="!notFound"
       :key="key"
       :office="office"
       :calendar-date="calendarDate"
       :service-type="currentServiceType"
   />
+  <PageNotFound v-if="notFound"/>
 </template>
 
 <script>
 // @ is an alias to /src
 import Office from "@/views/Office";
+import PageNotFound from "@/views/PageNotFound";
 
 export default {
   name: "Today",
   components: {
     Office,
+    PageNotFound,
   },
   data() {
     return {
@@ -28,6 +32,7 @@ export default {
       key: null,
       calendarDate: null,
       currentServiceType: "office",
+      notFound: false,
     };
   },
 
@@ -98,10 +103,7 @@ export default {
             "close_of_day_prayer",
           ].includes(this.office)
       ) {
-        await this.$router.push({
-          name: "not_found",
-          params: {pathMatch: this.$route.path.split("/").slice(1)},
-        });
+        this.notFound = true;
         return;
       }
       if (this.forward === "tomorrow") {

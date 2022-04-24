@@ -25,6 +25,7 @@ from rest_framework.views import APIView
 
 from churchcal.api.permissions import ReadOnly
 from churchcal.api.serializer import DaySerializer
+from churchcal.calculations import get_church_year
 from office.api.serializers import UpdateNoticeSerializer
 from office.api.views import Module, Line
 from office.api.views.ep import EPOpeningSentence
@@ -2280,6 +2281,25 @@ class Compline(Office):
         ]
 
 
+class Readings(Module):
+    def __init__(self, request, year, month, day):
+        from churchcal.calculations import get_calendar_date
+
+        self.settings = Settings(request)
+
+        self.date = get_calendar_date("{}-{}-{}".format(year, month, day))
+        self.mass_year = get_church_year("{}-{}-{}".format(year, month, day)).mass_year
+
+        try:
+            self.holy_day_readings = HolyDayOfficeDay.objects.get(commemoration=self.date.primary)
+        except HolyDayOfficeDay.DoesNotExist:
+            self.holy_day_readings = None
+
+        self.standard_readings = StandardOfficeDay.objects.get(month=self.date.date.month, day=self.date.date.day)
+
+        self.thirty_day_psalter_day = ThirtyDayPsalterDay.objects.get(day=self.date.date.day)
+
+
 class OfficeAPIView(APIView):
     permission_classes = [ReadOnly]
 
@@ -2295,6 +2315,346 @@ class OfficeSerializer(serializers.Serializer):
         modules = [module.json for module in obj.get_modules()]
         modules = [module for module in modules if module and module["lines"]]
         return modules
+
+
+def reading_format(name, citation, text, testament, cycle=None):
+    return {
+        "name": name,
+        "citation": citation,
+        "text": text,
+        "testament": testament,
+        "cycle": cycle,
+    }
+
+
+def morning_prayer_30_day_psalms(obj):
+    count = len(obj.thirty_day_psalter_day.mp_psalms.split(","))
+    plural = "s" if count > 1 else ""
+    name = f"The Psalm{plural}"
+    citation = obj.thirty_day_psalter_day.mp_psalms.replace(",", ", ")
+    citation = f"Psalm{plural} {citation}"
+    full = reading_format(
+        name=name, citation=citation, text=get_psalms(obj.thirty_day_psalter_day.mp_psalms), testament="OT", cycle="30"
+    )
+    abbreviated = full
+    return {
+        "full": full,
+        "abbreviated": abbreviated,
+    }
+
+
+def evening_prayer_30_day_psalms(obj):
+    count = len(obj.thirty_day_psalter_day.ep_psalms.split(","))
+    plural = "s" if count > 1 else ""
+    name = f"The Psalm{plural}"
+    citation = obj.thirty_day_psalter_day.ep_psalms.replace(",", ", ")
+    citation = f"Psalm{plural} {citation}"
+    full = reading_format(
+        name=name, citation=citation, text=get_psalms(obj.thirty_day_psalter_day.ep_psalms), testament="OT", cycle="30"
+    )
+    abbreviated = full
+    return {
+        "full": full,
+        "abbreviated": abbreviated,
+    }
+
+
+def standard_morning_prayer_60_day_psalms(obj):
+    count = len(obj.standard_readings.mp_psalms.split(","))
+    plural = "s" if count > 1 else ""
+    name = f"The Psalm{plural}"
+    citation = obj.standard_readings.mp_psalms.replace(",", ", ")
+    citation = f"Psalm{plural} {citation}"
+    full = reading_format(
+        name=name, citation=citation, text=get_psalms(obj.standard_readings.mp_psalms), testament="OT", cycle="60"
+    )
+    abbreviated = full
+    return {
+        "full": full,
+        "abbreviated": abbreviated,
+    }
+
+
+def standard_evening_prayer_60_day_psalms(obj):
+    count = len(obj.standard_readings.ep_psalms.split(","))
+    plural = "s" if count > 1 else ""
+    name = f"The Psalm{plural}"
+    citation = obj.standard_readings.ep_psalms.replace(",", ", ")
+    citation = f"Psalm{plural} {citation}"
+    full = reading_format(
+        name=name, citation=citation, text=get_psalms(obj.standard_readings.ep_psalms), testament="OT", cycle="60"
+    )
+    abbreviated = full
+    return {
+        "full": full,
+        "abbreviated": abbreviated,
+    }
+
+
+def holy_day_morning_prayer_60_day_psalms(obj):
+    count = len(obj.holy_day_readings.mp_psalms.split(","))
+    plural = "s" if count > 1 else ""
+    name = f"The Psalm{plural}"
+    citation = obj.holy_day_readings.mp_psalms.replace(",", ", ")
+    citation = f"Psalm{plural} {citation}"
+    full = reading_format(
+        name=name, citation=citation, text=get_psalms(obj.holy_day_readings.mp_psalms), testament="OT", cycle="60"
+    )
+    abbreviated = full
+    return {
+        "full": full,
+        "abbreviated": abbreviated,
+    }
+
+
+def holy_day_evening_prayer_60_day_psalms(obj):
+    count = len(obj.holy_day_readings.ep_psalms.split(","))
+    plural = "s" if count > 1 else ""
+    name = f"The Psalm{plural}"
+    citation = obj.holy_day_readings.ep_psalms.replace(",", ", ")
+    citation = f"Psalm{plural} {citation}"
+    full = reading_format(
+        name=name, citation=citation, text=get_psalms(obj.holy_day_readings.ep_psalms), testament="OT", cycle="60"
+    )
+    abbreviated = full
+    return {
+        "full": full,
+        "abbreviated": abbreviated,
+    }
+
+
+def holy_day_morning_prayer_reading_1(obj):
+    full = reading_format(
+        name="The First Lesson",
+        citation=obj.holy_day_readings.mp_reading_1,
+        text=obj.holy_day_readings.mp_reading_1_text,
+        testament=obj.holy_day_readings.mp_reading_1_testament,
+    )
+    abbreviated = full
+    if obj.holy_day_readings.mp_reading_1_abbreviated:
+        abbreviated = reading_format(
+            name="The First Lesson",
+            citation=obj.holy_day_readings.mp_reading_1_abbreviated,
+            text=obj.holy_day_readings.mp_reading_1_abbreviated_text,
+            testament=obj.holy_day_readings.mp_reading_1_testament,
+        )
+    return {
+        "full": full,
+        "abbreviated": abbreviated,
+    }
+
+
+def holy_day_morning_prayer_reading_2(obj):
+    full = reading_format(
+        name="The Second Lesson",
+        citation=obj.holy_day_readings.mp_reading_2,
+        text=obj.holy_day_readings.mp_reading_2_text,
+        testament=obj.holy_day_readings.mp_reading_2_testament,
+    )
+    abbreviated = full
+    return {
+        "full": full,
+        "abbreviated": abbreviated,
+    }
+
+
+def holy_day_evening_prayer_reading_1(obj):
+    full = reading_format(
+        name="The First Lesson",
+        citation=obj.holy_day_readings.ep_reading_1,
+        text=obj.holy_day_readings.ep_reading_1_text,
+        testament=obj.holy_day_readings.ep_reading_1_testament,
+    )
+    abbreviated = full
+    if obj.holy_day_readings.ep_reading_1_abbreviated:
+        abbreviated = reading_format(
+            name="The First Lesson",
+            citation=obj.holy_day_readings.ep_reading_1_abbreviated,
+            text=obj.holy_day_readings.ep_reading_1_abbreviated_text,
+            testament=obj.holy_day_readings.ep_reading_1_testament,
+        )
+    return {
+        "full": full,
+        "abbreviated": abbreviated,
+    }
+
+
+def holy_day_evening_prayer_reading_2(obj):
+    full = reading_format(
+        name="The Second Lesson",
+        citation=obj.holy_day_readings.ep_reading_2,
+        text=obj.holy_day_readings.ep_reading_2_text,
+        testament=obj.holy_day_readings.ep_reading_2_testament,
+    )
+    abbreviated = full
+    return {
+        "full": full,
+        "abbreviated": abbreviated,
+    }
+
+
+def standard_morning_prayer_reading_1(obj):
+    full = reading_format(
+        name="The First Lesson",
+        citation=obj.standard_readings.mp_reading_1,
+        text=obj.standard_readings.mp_reading_1_text,
+        testament=obj.standard_readings.mp_reading_1_testament,
+    )
+    abbreviated = full
+    if obj.standard_readings.mp_reading_1_abbreviated:
+        abbreviated = reading_format(
+            name="The First Lesson",
+            citation=obj.standard_readings.mp_reading_1_abbreviated,
+            text=obj.standard_readings.mp_reading_1_abbreviated_text,
+            testament=obj.standard_readings.mp_reading_1_testament,
+        )
+    return {
+        "full": full,
+        "abbreviated": abbreviated,
+    }
+
+
+def standard_morning_prayer_reading_2(obj):
+    full = reading_format(
+        name="The Second Lesson",
+        citation=obj.standard_readings.mp_reading_2,
+        text=obj.standard_readings.mp_reading_2_text,
+        testament=obj.standard_readings.mp_reading_2_testament,
+    )
+    abbreviated = full
+    return {
+        "full": full,
+        "abbreviated": abbreviated,
+    }
+
+
+def standard_evening_prayer_reading_1(obj):
+    full = reading_format(
+        name="The First Lesson",
+        citation=obj.standard_readings.ep_reading_1,
+        text=obj.standard_readings.ep_reading_1_text,
+        testament=obj.standard_readings.ep_reading_1_testament,
+    )
+    abbreviated = full
+    if obj.standard_readings.ep_reading_1_abbreviated:
+        abbreviated = reading_format(
+            name="The First Lesson",
+            citation=obj.standard_readings.ep_reading_1_abbreviated,
+            text=obj.standard_readings.ep_reading_1_abbreviated_text,
+            testament=obj.standard_readings.ep_reading_1_testament,
+        )
+    return {
+        "full": full,
+        "abbreviated": abbreviated,
+    }
+
+
+def standard_evening_prayer_reading_2(obj):
+    full = reading_format(
+        name="The Second Lesson",
+        citation=obj.standard_readings.ep_reading_2,
+        text=obj.standard_readings.ep_reading_2_text,
+        testament=obj.standard_readings.ep_reading_2_testament,
+    )
+    abbreviated = full
+    return {
+        "full": full,
+        "abbreviated": abbreviated,
+    }
+
+
+def mass_readings(commemoration, mass_year):
+    readings = commemoration.get_mass_readings_for_year(mass_year)
+    print(readings)
+    final_readings = []
+    for reading in readings:
+        names = {
+            "epistle": "The Epistle",
+            "gospel": "The Gospel",
+            "psalm": "The Psalm",
+            "prophecy": "The Old Testament" if reading.testament == "OT" else "The First Lesson",
+        }
+        name = names[reading.reading_type]
+        full = reading_format(
+            name=name, citation=reading.long_citation, text=reading.long_text, testament=reading.testament
+        )
+        abbreviated = full
+        if reading.short_citation:
+            abbreviated = reading_format(
+                name=name, citation=reading.short_citation, text=reading.short_text, testament=reading.testament
+            )
+        final_readings.append(
+            {
+                "full": full,
+                "abbreviated": abbreviated,
+            }
+        )
+    return final_readings
+
+
+class ReadingsSerializer(serializers.Serializer):
+    readings = serializers.SerializerMethodField()
+
+    # TODO: Not for when I pick up:
+    # Let's just calculate which feasts we have and have serializers (or some other class with a common interface)
+    # build each one
+    # Should implement a get_reading and get_abbreviated_reading_model
+    # UI should have select list or other mecahnims to choose service, and a toggle for abbreviated
+
+    def get_services(self, obj):
+        services = {}
+        if obj.holy_day_readings:
+            name = obj.holy_day_readings.commemoration.name
+            services[f"Morning Prayer ({name})"] = [
+                morning_prayer_30_day_psalms(obj),
+                holy_day_morning_prayer_60_day_psalms(obj),
+                holy_day_morning_prayer_reading_1(obj),
+                holy_day_morning_prayer_reading_2(obj),
+            ]
+            services[f"Evening Prayer ({name})"] = [
+                evening_prayer_30_day_psalms(obj),
+                holy_day_evening_prayer_60_day_psalms(obj),
+                holy_day_evening_prayer_reading_1(obj),
+                holy_day_evening_prayer_reading_2(obj),
+            ]
+            services["Morning Prayer (Sequential)"] = [
+                morning_prayer_30_day_psalms(obj),
+                standard_morning_prayer_60_day_psalms(obj),
+                standard_morning_prayer_reading_1(obj),
+                standard_morning_prayer_reading_2(obj),
+            ]
+            services["Evening Prayer (Sequential)"] = [
+                evening_prayer_30_day_psalms(obj),
+                standard_evening_prayer_60_day_psalms(obj),
+                standard_evening_prayer_reading_1(obj),
+                standard_evening_prayer_reading_2(obj),
+            ]
+        else:
+            name = f" ({obj.date.primary.name})" if obj.standard_readings.holy_day_name else ""
+            services[f"Morning Prayer{name}"] = [
+                morning_prayer_30_day_psalms(obj),
+                standard_morning_prayer_60_day_psalms(obj),
+                standard_morning_prayer_reading_1(obj),
+                standard_morning_prayer_reading_2(obj),
+            ]
+            services[f"Evening Prayer{name}"] = [
+                evening_prayer_30_day_psalms(obj),
+                standard_evening_prayer_60_day_psalms(obj),
+                standard_evening_prayer_reading_1(obj),
+                standard_evening_prayer_reading_2(obj),
+            ]
+        for commemoration in obj.date.all:
+            name = (
+                f"Primary Service ({commemoration.name})"
+                if commemoration.rank.precedence_rank <= 4
+                else f"Holy Eucharist ({commemoration.name})"
+            )
+            services[name] = mass_readings(commemoration, obj.mass_year)
+            print()
+        return services
+
+    def get_readings(self, obj):
+        return self.get_services(obj)
 
 
 class MorningPrayerView(OfficeAPIView):
@@ -2350,6 +2710,13 @@ class ComplineView(OfficeAPIView):
     def get(self, request, year, month, day):
         office = Compline(request, year, month, day)
         serializer = OfficeSerializer(office)
+        return Response(serializer.data)
+
+
+class ReadingsView(OfficeAPIView):
+    def get(self, request, year, month, day):
+        office = Readings(request, year, month, day)
+        serializer = ReadingsSerializer(office)
         return Response(serializer.data)
 
 
