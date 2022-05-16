@@ -40,6 +40,14 @@ class CalendarDate(object):
         return required + optional
 
     @property
+    def morning_and_evening(self):
+        start = self.all
+        for commemoration in self.all_evening:
+            if commemoration not in start:
+                start.append(commemoration)
+        return start
+
+    @property
     def primary_evening(self):
         return self.all_evening[0]
 
@@ -583,6 +591,7 @@ class SetNamesAndCollects(object):
         if not commemoration.rank.required:
             return
         if calendar_date.proper and calendar_date.proper.collect:
+            commemoration.proper = calendar_date.proper
             commemoration.morning_prayer_collect = commemoration.evening_prayer_collect = calendar_date.proper.collect
             if commemoration.rank.name == "SUNDAY":
                 proper_string = " (Proper {})".format(calendar_date.proper.number)
@@ -609,6 +618,7 @@ class SetNamesAndCollects(object):
                             commemoration.name = "{} after {}".format(week_days[calendar_date.date.weekday()], name)
                         else:
                             commemoration.name = "{} after {}".format(week_days[calendar_date.date.weekday()], name)
+                        commemoration.original_proper = previous.proper
                     else:
                         commemoration.morning_prayer_collect = previous.primary.morning_prayer_collect.replace(
                             "to be born this day of a pure virgin", "to be born of a pure virgin"
@@ -619,7 +629,7 @@ class SetNamesAndCollects(object):
                         commemoration.name = "{} after {}".format(
                             week_days[calendar_date.date.weekday()], previous.primary.name.replace("The ", "the ")
                         )
-                    commemoration.original_commemoration = previous.primary
+                        commemoration.original_commemoration = previous.primary
                     self.append_seuptuagesima_if_needed(commemoration, calendar_date)
                     self.append_o_antiphon_if_needed(commemoration, calendar_date)
                     if "gesima" in commemoration.name:

@@ -112,9 +112,19 @@ class Commemoration(BaseModel):
             if hasattr(self, "original_commemoration") and self.original_commemoration
             else self
         )
-        query = MassReading.objects.filter(years__contains=year, commemoration=commemoration).order_by(
-            "reading_number"
+        proper = (
+            self.original_proper
+            if hasattr(self, "original_proper") and self.original_proper
+            else self.proper
+            if hasattr(self, "proper") and self.proper
+            else None
         )
+        if proper:
+            query = MassReading.objects.filter(years__contains=year, proper=proper).order_by("reading_number")
+        else:
+            query = MassReading.objects.filter(years__contains=year, commemoration=commemoration).order_by(
+                "reading_number"
+            )
 
         if year in ["A", "C"] and time == "morning":
             query = query.order_by("reading_number", "-order")
@@ -141,6 +151,55 @@ class Commemoration(BaseModel):
 
         if self.name in ["Eve of Palm Sunday", "Palm Sunday"]:
             query = query.filter(service="Word")
+
+        return query.all()
+
+    def get_all_mass_readings_for_year(self, year):
+        commemoration = (
+            self.original_commemoration
+            if hasattr(self, "original_commemoration") and self.original_commemoration
+            else self
+        )
+        proper = (
+            self.original_proper
+            if hasattr(self, "original_proper") and self.original_proper
+            else self.proper
+            if hasattr(self, "proper") and self.proper
+            else None
+        )
+        if proper:
+            query = MassReading.objects.filter(years__contains=year, proper=proper).order_by("reading_number")
+        else:
+            query = MassReading.objects.filter(years__contains=year, commemoration=commemoration).order_by(
+                "reading_number"
+            )
+            if "Eve of" in commemoration.name:
+                query = query.exclude(
+                    service__in=["II", "III", "Early Service", "Principal Service", "Evening Service"]
+                )
+
+        query = query.order_by("abbreviation", "service", "reading_number", "order")
+
+        # if self.name == "Eve of Easter Day":
+        #     query = query.filter(abbreviation="EasterEve")
+        #
+        # if self.name == "Easter Day":
+        #     if time == "morning":
+        #         query = query.filter(service="PrincipalService")
+        #     else:
+        #         query = query.filter(service="EveningService")
+        #
+        # if self.name == "Eve of The Nativity of our Lord Jesus Christ: Christmas Day":
+        #     query = query.filter(service="I")
+        #
+        # if self.name == "The Nativity of Our Lord Jesus Christ: Christmas Day":
+        #     if time == "morning":
+        #         query = query.filter(service="II")
+        #     else:
+        #         query = query.fitler(service="III")
+        #
+        # if self.name in ["Eve of Palm Sunday", "Palm Sunday"]:
+        #     query = query.filter(service="Word")
 
         return query.all()
 
@@ -180,8 +239,16 @@ class SanctoraleCommemoration(Commemoration):
 
         return date(year, self.month, self.day)
 
-    def get_mass_readings_for_year(year="A", time="morning"):
-        return []
+    def get_mass_readings_for_year(self, year, time="morning"):
+        readings = super().get_mass_readings_for_year(year, time)
+        commemoration = (
+            self.original_commemoration
+            if hasattr(self, "original_commemoration") and self.original_commemoration
+            else self
+        )
+        if not readings and commemoration.saint_type:
+            readings = MassReading.objects.filter(common__abbreviation=commemoration.saint_type).all()
+        return readings
 
 
 class SanctoraleBasedCommemoration(Commemoration):

@@ -1,4 +1,4 @@
-import { createApp } from "vue";
+import {createApp} from "vue";
 
 import "./registerServiceWorker";
 
@@ -11,8 +11,8 @@ import ElementPlus from "element-plus";
 import "./assets/tailwind.css";
 import "element-plus/dist/index.css";
 
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import {library} from "@fortawesome/fontawesome-svg-core";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 // import { faTwitter } from "@fortawesome/free-brands-svg-icons";
 // import { faUserSecret } from "@fortawesome/free-solid-svg-icons";
@@ -25,6 +25,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 // import { faCoffee } from "@fortawesome/pro-light-svg-icons";
 // import { faFeather } from "@fortawesome/pro-thin-svg-icons";
 import {
+  faBookBible,
   faCopy,
   faEnvelopes,
   faFontCase,
@@ -34,32 +35,33 @@ import {
   faShareNodes,
   faSun,
   faSunrise,
-  faSunset,
+  faSunset
 } from "@fortawesome/pro-duotone-svg-icons";
 
-import { faFacebook } from "@fortawesome/free-brands-svg-icons";
+import {faFacebook} from "@fortawesome/free-brands-svg-icons";
 
 library.add(
-  faSun,
-  faSunrise,
-  faSunset,
-  faMoonStars,
-  faLeft,
-  faRight,
-  faFontCase,
-  faShareNodes,
-  faCopy,
-  faFacebook,
-  faEnvelopes
+    faSun,
+    faSunrise,
+    faSunset,
+    faMoonStars,
+    faLeft,
+    faRight,
+    faFontCase,
+    faShareNodes,
+    faCopy,
+    faFacebook,
+    faEnvelopes,
+    faBookBible,
 );
 
 const app = createApp(App)
-  .use(store)
-  .use(router)
-  .use(VueAxios, axios)
-  .use(ElementPlus)
-  .component("font-awesome-icon", FontAwesomeIcon);
+    .use(store)
+    .use(router)
+    .use(VueAxios, axios)
+    .use(ElementPlus)
+    .component("font-awesome-icon", FontAwesomeIcon);
 
 router.isReady().then(() => {
-  app.mount("#app");
+    app.mount("#app");
 });

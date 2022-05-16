@@ -1,37 +1,77 @@
 <template>
   <div class="small-container home office">
     <Loading v-if="loading"/>
-    <div id="readings" :v-if="!loading && !error">
+    <div v-if="!loading && !error" id="readings">
+
       <CalendarCard
           :calendar-date="calendarDate"
+          :card="card"
       />
       <OfficeNav
           :calendar-date="calendarDate"
+          selected-office="readings"
       />
     </div>
     <h1>Readings</h1>
+    <h3>{{ service }}</h3>
+    <el-select
+        v-model="service"
+        class="w-full"
+        placeholder="Service"
+        size="large"
+        filterable
+    >
+      <el-option
+          v-for="label in serviceLabels"
+          :key="label"
+          :label="label"
+          :value="label"
+      />
+    </el-select>
+
+    <a
+        v-for="(reading, index) in readingsToShow" :key="index" href="#" class="block"
+        @click.prevent="goto(readingName(index))">{{
+        reading.citation
+      }}</a>
+    <Reading
+        v-for="(reading, index) in readingsToShow" :id="readingName(index)" :key="index" :reading="reading"
+        :psalm-cycle="psalmCycle" @cycle-60="setCycle60" @cycle-30="setCycle30"/>
+
+
   </div>
+
 </template>
 
-<style scoped>
-.el-alert {
-  margin-top: 2em;
+<style scoped lang="scss">
+h1 {
+  margin: 2rem 0 0 !important;
+}
+
+h3 {
+  margin: 0 !important;
+  padding: 0 0 1rem !important;
+}
+
+.el-select {
+  margin-bottom: 2rem;
 }
 </style>
-
 <script>
 // @ is an alias to /src
 import Loading from "@/components/Loading";
 import setCalendarDate from "@/helpers/setCalendarDate";
 import CalendarCard from "@/components/CalendarCard";
 import OfficeNav from "@/components/OfficeNav";
+import Reading from "@/components/Reading";
 
 export default {
   name: "Readings",
   components: {
     Loading,
     CalendarCard,
-    OfficeNav
+    OfficeNav,
+    Reading,
   },
   props: {},
   data() {
@@ -39,11 +79,27 @@ export default {
       loading: true,
       error: false,
       calendarDate: null,
+      card: null,
+      services: null,
+      serviceLabels: null,
+      service: null,
+      readings: null,
+      full: true,
+      psalmCycle: "30",
     };
   },
-  mounted() {
+  computed: {
+    readingsToShow: function () {
+      let serviceReadings = this.services[this.service];
+      return serviceReadings
+      // serviceReadings = serviceReadings.map(reading => {
+      //   return this.full ? reading.full : reading.abbreviated;
+      // });
+      // return serviceReadings.filter(reading => {
+      //   return reading.cycle == null || reading.cycle == this.psalmCycle;
+      // });
+    }
   },
-
   async created() {
     let data = null;
     this.calendarDate = setCalendarDate(this.$route);
@@ -55,7 +111,7 @@ export default {
           "-" +
           this.calendarDate.getDate();
       data = await this.$http.get(
-          `${process.env.VUE_APP_API_URL}api/v1/readings/${this.office}/` +
+          `${process.env.VUE_APP_API_URL}api/v1/readings/` +
           today_str
       );
     } catch (e) {
@@ -64,9 +120,37 @@ export default {
       this.loading = false;
       return;
     }
+    this.card = data.data.calendarDate
+    this.services = data.data.readings
+    this.serviceLabels = Object.keys(this.services)
+    this.service = this.serviceLabels[0]
     this.error = false;
     this.loading = false;
   },
-  methods: {},
+  methods: {
+    readingName: function (index) {
+      return `reading_${index}`;
+    },
+    goto(id) {
+      const menu = document.getElementById('topMenu')
+      const menuHeight = menu ? menu.offsetHeight : 0
+      const element = document.getElementById(id);
+      const top = element.offsetTop;
+      window.scrollTo({
+        top: top - menuHeight - 5,
+        left: 0,
+        behavior: 'smooth'
+      });
+    },
+    setCycle30: function () {
+      console.log('setting 30');
+      this.psalmCycle = "30";
+    },
+    setCycle60: function () {
+      console.log('setting 60');
+      this.psalmCycle = "60";
+    },
+  },
+
 };
 </script>

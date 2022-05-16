@@ -12,6 +12,23 @@ from churchcal.models import MassReading, Proper, Commemoration, Common
 from psalter.utils import get_psalms, parse_single_psalm
 
 
+def format_service(service):
+    if not service:
+        return ""
+    services = {
+        "EarlyService": "Early Service",
+        "EasterVigil": "Easter Vigil",
+        "EveningService": "Evening Service",
+        "I": "I",
+        "II": "II",
+        "III": "III",
+        "Palms": "Liturgy of the Palms",
+        "PrincipalService": "Principal Service",
+        "Word": "Liturgy of the Word",
+    }
+    return services.get(service, service)
+
+
 class Command(ImportCommemorationsBaseCommand):
     help = "Imports Mass Readings"
 
@@ -31,7 +48,6 @@ class Command(ImportCommemorationsBaseCommand):
             return passage
         result = []
         for i, reference in enumerate(references):
-            print(reference)
             string = scriptures.reference_to_string(*reference)
             print(string)
             if i == 0:
@@ -261,7 +277,6 @@ class Command(ImportCommemorationsBaseCommand):
         return getattr(mod, label)
 
     def import_dates(self):
-
         MassReading.objects.filter(calendar=self.calendar).delete()
         self.values.pop(0)
         for i, row in enumerate(self.values):
@@ -272,7 +287,7 @@ class Command(ImportCommemorationsBaseCommand):
             reading.long_citation = self.format_reading(row[4], row[5])
             if len(row) > 6:
                 reading.short_citation = self.format_reading(row[4], row[6])
-            reading.service = row[1]
+            reading.service = format_service(row[1])
             reading.years = row[3].replace(",", "")
             reading.reading_type = self.get_reading_type(row[4], row[5])
             reading.common = self.get_common(row[0])
@@ -286,6 +301,6 @@ class Command(ImportCommemorationsBaseCommand):
 
             reading.long_text = self.get_passage(row[4], row[5], reading.reading_type)
             if reading.short_citation:
-                reading.short_text = self.get_passage(row[4], row[5], reading.reading_type)
+                reading.short_text = self.get_passage(row[4], row[6], reading.reading_type)
 
             reading.save()

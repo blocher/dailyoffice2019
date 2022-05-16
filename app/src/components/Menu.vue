@@ -1,5 +1,5 @@
 <template>
-  <el-affix>
+  <el-affix id="topMenu">
     <el-menu
         :default-active="activeIndex"
         mode="horizontal"

@@ -60,6 +60,27 @@
       :gutter="5" class="mt-2 text-center"
   >
     <el-col
+        :span=24
+    >
+      <div class="grid-content bg-purple">
+        <router-link :to="readingsLink.to">
+          <el-card
+              :class="selectedClass(readingsLink.name)"
+              :shadow="hoverClass(readingsLink.name)"
+          >
+            <p class="text-xs sm:text-sm">
+              <font-awesome-icon :icon="readingsLink.icon"/>&nbsp;
+              <span v-html="readingsLink.text"/>
+            </p>
+          </el-card>
+        </router-link>
+      </div>
+    </el-col>
+  </el-row>
+  <el-row
+      :gutter="5" class="mt-2 text-center"
+  >
+    <el-col
         v-for="link in dayLinks" :key="link.text"
         :span="8"
     >
@@ -169,40 +190,49 @@ export default {
         icon: ["fad", "moon-stars"],
       },
     ];
-    this.familyLinks = [
-      {
-        to: `/family/morning_prayer/${this.calendarDate.getFullYear()}/${
-            this.calendarDate.getMonth() + 1
-        }/${this.calendarDate.getDate()}`,
-        text: "Morning",
-        name: "morning_prayer",
-        icon: ["fad", "sunrise"],
-      },
-      {
-        to: `/family/midday_prayer/${this.calendarDate.getFullYear()}/${
-            this.calendarDate.getMonth() + 1
-        }/${this.calendarDate.getDate()}`,
-        text: "Midday",
-        name: "midday_prayer",
-        icon: ["fad", "sun"],
-      },
-      {
-        to: `/family/early_evening_prayer/${this.calendarDate.getFullYear()}/${
-            this.calendarDate.getMonth() + 1
-        }/${this.calendarDate.getDate()}`,
-        text: "Early Evening",
-        name: "early_evening_prayer",
-        icon: ["fad", "sunset"],
-      },
-      {
-        to: `/family/close_of_day_prayer/${this.calendarDate.getFullYear()}/${
-            this.calendarDate.getMonth() + 1
-        }/${this.calendarDate.getDate()}`,
-        text: "Close of Day",
-        name: "close_of_day_prayer",
-        icon: ["fad", "moon-stars"],
-      },
-    ];
+    this.readingsLink = {
+      to: `/readings/${this.calendarDate.getFullYear()}/${
+          this.calendarDate.getMonth() + 1
+      }/${this.calendarDate.getDate()}`,
+      text: "Readings Only",
+      name: "readings",
+      icon: ["fad", "book-bible"],
+    },
+
+        this.familyLinks = [
+          {
+            to: `/family/morning_prayer/${this.calendarDate.getFullYear()}/${
+                this.calendarDate.getMonth() + 1
+            }/${this.calendarDate.getDate()}`,
+            text: "Morning",
+            name: "morning_prayer",
+            icon: ["fad", "sunrise"],
+          },
+          {
+            to: `/family/midday_prayer/${this.calendarDate.getFullYear()}/${
+                this.calendarDate.getMonth() + 1
+            }/${this.calendarDate.getDate()}`,
+            text: "Midday",
+            name: "midday_prayer",
+            icon: ["fad", "sun"],
+          },
+          {
+            to: `/family/early_evening_prayer/${this.calendarDate.getFullYear()}/${
+                this.calendarDate.getMonth() + 1
+            }/${this.calendarDate.getDate()}`,
+            text: "Early Evening",
+            name: "early_evening_prayer",
+            icon: ["fad", "sunset"],
+          },
+          {
+            to: `/family/close_of_day_prayer/${this.calendarDate.getFullYear()}/${
+                this.calendarDate.getMonth() + 1
+            }/${this.calendarDate.getDate()}`,
+            text: "Close of Day",
+            name: "close_of_day_prayer",
+            icon: ["fad", "moon-stars"],
+          },
+        ];
     if (this.currentServiceType == "family") {
       this.links = this.familyLinks;
     } else {

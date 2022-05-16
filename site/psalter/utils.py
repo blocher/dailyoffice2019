@@ -22,9 +22,9 @@ def parse_single_psalm(psalm):
     return ",".join(citations)
 
 
-def get_psalms(citations, api=False):
+def get_psalms(citations, api=False, simplified_citations=False):
     citations = str(citations)
-    citations = citations.replace(" ", "").split(",")
+    citations = citations.replace(" ", "").replace("or", ",").split(",")
     html = ""
     lines = []
     for citation in citations:
@@ -39,7 +39,7 @@ def get_psalms(citations, api=False):
             )
         else:
             verses = PsalmVerse.objects.filter(psalm__number=citation).order_by("number").select_related("psalm").all()
-        html = html + psalm_html(citation, verses)
+        html = html + psalm_html(citation, verses, simplified_citations=simplified_citations)
         lines = lines + psalm_api_lines(citation, verses)
     if api:
         return lines
@@ -69,10 +69,12 @@ def psalm_api_lines(citation, verses, heading=True):
     return lines
 
 
-def psalm_html(citation, verses, heading=True):
-    html = ""
-    if heading:
-        html = format_html("<h3>Psalm {}</h3>", citation)
+def psalm_html(citation, verses, heading=True, simplified_citations=False):
+    html = "<div class='psalm'>"
+    if heading and simplified_citations:
+        html = html + format_html("<h3>{}</h3>", citation)
+    elif heading:
+        html = html + format_html("<h3>Psalm {}</h3>", citation)
         html = html + format_html("<h4>{}</h4>", verses[0].psalm.latin_title)
     for verse in verses:
         html = html + format_html(
@@ -81,6 +83,7 @@ def psalm_html(citation, verses, heading=True):
             verse.first_half,
         )
         html = html + format_html("<p class='indent'><strong>{}</strong></p>", verse.second_half)
+    html = html + "</div>"
     # html = html + format_html("<p  class='hanging-indent'>&nbsp;</p>")
     # html = html + format_html(
     #     "<p class='hanging-indent'><strong>Glory be to the Father, and to the Son, and to the Holy Spirit; *</strong></p>"

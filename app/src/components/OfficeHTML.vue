@@ -6,6 +6,11 @@
 body .officeHTML p, body .officeHTML iframe {
   margin-bottom: 0.8em;
 }
+
+body .officeHTML h3 {
+  font-size: .75em !important;
+}
+
 </style>
 
 <script>

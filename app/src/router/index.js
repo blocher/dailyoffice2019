@@ -5,8 +5,17 @@ import Today from "@/views/Today";
 import Calendar from "@/views/Calendar";
 import Day from "@/views/Day";
 import PageNotFound from "@/views/PageNotFound";
+import Readings from "@/views/Readings";
 
 const routes = [
+    {
+        path: "/readings/:year/:month/:day",
+        name: "readings",
+        component: Readings,
+        meta: {
+            title: "Readings | The Daily Office",
+        },
+    },
     {
         path: "/calendar",
         name: "calendar",
