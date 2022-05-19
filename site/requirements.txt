@@ -1,5 +1,6 @@
 git+https://github.com/blocher/python-scriptures
 git+https://github.com/jazzband/django-robots
+git+https://github.com/peterth3/django-meta@bugfix/issue-130-ugettext_lazy
 git+https://github.com/blocher/django-inlinecss@django4
 git+https://github.com/mailchimp/mailchimp-marketing-python.git
 arrow==1.2.2
