@@ -608,10 +608,14 @@ class SetNamesAndCollects(object):
                     break
                 if self.has_collect_for_feria(previous):
                     target_commemoration = self.has_collect_for_feria(previous)
+                    commemoration.collect = target_commemoration.collect
+                    commemoration.alternate_collect = target_commemoration.alternate_collect
+                    commemoration.eve_collect = target_commemoration.eve_collect
                     if previous.proper and previous.proper.collect:
                         commemoration.morning_prayer_collect = previous.proper.collect
                         commemoration.evening_prayer_collect = previous.proper.collect
                         name = target_commemoration.name
+
                         if name[:3] == "The":
                             name = name.replace("The ", "the ")
                         if previous.primary.rank.name == "PRINCIPAL_FEAST":

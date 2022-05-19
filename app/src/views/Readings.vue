@@ -32,8 +32,9 @@
     <a
         v-for="(reading, index) in readingsToShow" :key="index" href="#" class="block"
         @click.prevent="goto(readingName(index))">{{
-        reading.citation
+        reading.full.citation
       }}</a>
+    <Collects v-if="showCollects" :collects="collectsToShow"/>
     <Reading
         v-for="(reading, index) in readingsToShow" :id="readingName(index)" :key="index" :reading="reading"
         :psalm-cycle="psalmCycle" @cycle-60="setCycle60" @cycle-30="setCycle30"/>
@@ -64,6 +65,7 @@ import setCalendarDate from "@/helpers/setCalendarDate";
 import CalendarCard from "@/components/CalendarCard";
 import OfficeNav from "@/components/OfficeNav";
 import Reading from "@/components/Reading";
+import Collects from "@/components/Collects";
 
 export default {
   name: "Readings",
@@ -72,6 +74,7 @@ export default {
     CalendarCard,
     OfficeNav,
     Reading,
+    Collects,
   },
   props: {},
   data() {
@@ -90,15 +93,26 @@ export default {
   },
   computed: {
     readingsToShow: function () {
-      let serviceReadings = this.services[this.service];
-      return serviceReadings
-      // serviceReadings = serviceReadings.map(reading => {
-      //   return this.full ? reading.full : reading.abbreviated;
-      // });
-      // return serviceReadings.filter(reading => {
-      //   return reading.cycle == null || reading.cycle == this.psalmCycle;
-      // });
-    }
+      if (this.service) {
+        let serviceItems = this.services[this.service];
+        return serviceItems['readings']
+      }
+      return [];
+    },
+    collectsToShow: function () {
+      if (this.service) {
+        let serviceItems = this.services[this.service];
+        let collects = serviceItems['collects']
+        collects = collects.map(collect => {
+          return collect.replace(" Amen.", "")
+        });
+        return collects
+      }
+      return [];
+    },
+    showCollects: function () {
+      return this.collectsToShow.length > 0
+    },
   },
   async created() {
     let data = null;
@@ -121,7 +135,7 @@ export default {
       return;
     }
     this.card = data.data.calendarDate
-    this.services = data.data.readings
+    this.services = data.data.services
     this.serviceLabels = Object.keys(this.services)
     this.service = this.serviceLabels[0]
     this.error = false;
@@ -130,6 +144,9 @@ export default {
   methods: {
     readingName: function (index) {
       return `reading_${index}`;
+    },
+    collectName: function (index) {
+      return `collect_${index}`;
     },
     goto(id) {
       const menu = document.getElementById('topMenu')
@@ -143,11 +160,9 @@ export default {
       });
     },
     setCycle30: function () {
-      console.log('setting 30');
       this.psalmCycle = "30";
     },
     setCycle60: function () {
-      console.log('setting 60');
       this.psalmCycle = "60";
     },
   },

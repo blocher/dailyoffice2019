@@ -2614,19 +2614,23 @@ def get_reading_name_from_reading_number(reading):
     return names[reading_number]
 
 
-def mass_readings(commemoration, mass_year):
+def get_collects_for_readings(service, commemoration, calendar_date):
+    if calendar_date.proper:
+        return [calendar_date.proper.collect]
+    if commemoration.eve_collect:
+        if "Vigil" in commemoration.name or "Eve of" in commemoration.name or "Easter Vigil" in service:
+            return [commemoration.eve_collect]
+    collects = [commemoration.collect]
+    if commemoration.alternate_collect:
+        collects.append(commemoration.alternate_collect)
+    return collects
+
+
+def mass_readings(commemoration, mass_year, calendar_date):
     readings = commemoration.get_all_mass_readings_for_year(mass_year)
     final_readings = {}
     for reading in readings:
         service_name = reading.service or "-"
-        names = {
-            1: "The First Lesson",
-            2: "The Psalm",
-            3: "The Second Lesson",
-            4: "The Gospel",
-            5: "?",
-            6: "?",
-        }
         name = get_reading_name_from_reading_number(reading)
         full = reading_format(
             name=name, citation=reading.long_citation, text=reading.long_text, testament=reading.testament
@@ -2644,11 +2648,17 @@ def mass_readings(commemoration, mass_year):
                 "abbreviated": abbreviated,
             }
         )
-    return final_readings
+    result = {}
+    for service, readings in final_readings.items():
+        result[service] = {
+            "collects": get_collects_for_readings(service, commemoration, calendar_date),
+            "readings": final_readings[service],
+        }
+    return result
 
 
 class ReadingsSerializer(serializers.Serializer):
-    readings = serializers.SerializerMethodField()
+    services = serializers.SerializerMethodField()
     calendarDate = DaySerializer(source="date")
 
     def get_services(self, obj):
@@ -2693,11 +2703,16 @@ class ReadingsSerializer(serializers.Serializer):
                 standard_evening_prayer_reading_1(obj),
                 standard_evening_prayer_reading_2(obj),
             ]
+        for key, value in services.items():
+            services[key] = {
+                "collects": [],
+                "readings": value,
+            }
         for commemoration in obj.date.morning_and_evening:
             base_name = f"Primary Service" if commemoration.rank.precedence_rank <= 4 else f"Holy Eucharist"
             if base_name == "Primary Service" and "Eve of " in commemoration.name:
                 base_name = "Vigil Service"
-            masses = mass_readings(commemoration, obj.mass_year)
+            masses = mass_readings(commemoration, obj.mass_year, obj.date)
             for mass, readings in masses.items():
                 name = (
                     f"{base_name} ({mass}) ({commemoration.name})"
@@ -2706,9 +2721,6 @@ class ReadingsSerializer(serializers.Serializer):
                 )
                 services[name] = readings
         return services
-
-    def get_readings(self, obj):
-        return self.get_services(obj)
 
 
 class MorningPrayerView(OfficeAPIView):

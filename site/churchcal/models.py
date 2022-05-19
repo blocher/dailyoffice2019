@@ -72,6 +72,15 @@ class Commemoration(BaseModel):
     biography = RichTextField(blank=True, null=True)
     image_link = models.URLField(null=True, blank=True)
 
+    def get_collects(self, calendar_date=None):
+        if self.collect:
+            return self.collect
+
+        if calendar_date and calendar_date.proper:
+            return self.proper.collect
+
+        return None
+
     def _year_from_advent_year(self, year, month, day):
 
         advent_date = advent(year)
@@ -178,28 +187,7 @@ class Commemoration(BaseModel):
                     service__in=["II", "III", "Early Service", "Principal Service", "Evening Service"]
                 )
 
-        query = query.order_by("abbreviation", "service", "reading_number", "order")
-
-        # if self.name == "Eve of Easter Day":
-        #     query = query.filter(abbreviation="EasterEve")
-        #
-        # if self.name == "Easter Day":
-        #     if time == "morning":
-        #         query = query.filter(service="PrincipalService")
-        #     else:
-        #         query = query.filter(service="EveningService")
-        #
-        # if self.name == "Eve of The Nativity of our Lord Jesus Christ: Christmas Day":
-        #     query = query.filter(service="I")
-        #
-        # if self.name == "The Nativity of Our Lord Jesus Christ: Christmas Day":
-        #     if time == "morning":
-        #         query = query.filter(service="II")
-        #     else:
-        #         query = query.fitler(service="III")
-        #
-        # if self.name in ["Eve of Palm Sunday", "Palm Sunday"]:
-        #     query = query.filter(service="Word")
+        query = query.order_by("abbreviation", "reading_number", "order", "service")
 
         return query.all()
 
