@@ -2661,7 +2661,6 @@ class ReadingsSerializer(serializers.Serializer):
     services = serializers.SerializerMethodField()
     calendarDate = DaySerializer(source="date")
 
-    #
     def get_services(self, obj):
         services = {}
         if obj.holy_day_readings:
