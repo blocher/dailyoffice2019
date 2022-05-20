@@ -1,8 +1,6 @@
-from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
+from django.core.management.base import BaseCommand
 from googleapiclient.discovery import build
-from httplib2 import Http
-from oauth2client import file, client, tools
 
 from churchcal.models import CommemorationRank, Calendar
 

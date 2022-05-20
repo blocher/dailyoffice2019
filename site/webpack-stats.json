@@ -6,30 +6,30 @@
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Regular.eot",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.eot"
     },
-    "fonts/ACaslonPro-Regular.woff2": {
-      "name": "fonts/ACaslonPro-Regular.woff2",
-      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Regular.woff2",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.woff2"
-    },
     "fonts/ACaslonPro-Regular.woff": {
       "name": "fonts/ACaslonPro-Regular.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Regular.woff",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.woff"
     },
-    "fonts/ACaslonPro-Regular.ttf": {
-      "name": "fonts/ACaslonPro-Regular.ttf",
-      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Regular.ttf",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.ttf"
+    "fonts/ACaslonPro-Regular.woff2": {
+      "name": "fonts/ACaslonPro-Regular.woff2",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Regular.woff2",
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.woff2"
     },
     "fonts/ACaslonPro-Regular.otf": {
       "name": "fonts/ACaslonPro-Regular.otf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Regular.otf",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.otf"
     },
-    "fonts/ACaslonPro-Regular.svg": {
-      "name": "fonts/ACaslonPro-Regular.svg",
-      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Regular.svg",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.svg"
+    "fonts/ACaslonPro-Regular.ttf": {
+      "name": "fonts/ACaslonPro-Regular.ttf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Regular.ttf",
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.ttf"
+    },
+    "fonts/ACaslonPro-Semibold.woff": {
+      "name": "fonts/ACaslonPro-Semibold.woff",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Semibold.woff",
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.woff"
     },
     "fonts/ACaslonPro-Semibold.eot": {
       "name": "fonts/ACaslonPro-Semibold.eot",
@@ -41,20 +41,20 @@
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Semibold.woff2",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.woff2"
     },
-    "fonts/ACaslonPro-Semibold.woff": {
-      "name": "fonts/ACaslonPro-Semibold.woff",
-      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Semibold.woff",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.woff"
+    "fonts/ACaslonPro-Semibold.otf": {
+      "name": "fonts/ACaslonPro-Semibold.otf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Semibold.otf",
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.otf"
+    },
+    "fonts/ACaslonPro-Regular.svg": {
+      "name": "fonts/ACaslonPro-Regular.svg",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Regular.svg",
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.svg"
     },
     "fonts/ACaslonPro-Semibold.ttf": {
       "name": "fonts/ACaslonPro-Semibold.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Semibold.ttf",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.ttf"
-    },
-    "fonts/ACaslonPro-Semibold.otf": {
-      "name": "fonts/ACaslonPro-Semibold.otf",
-      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Semibold.otf",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.otf"
     },
     "fonts/ACaslonPro-Semibold.svg": {
       "name": "fonts/ACaslonPro-Semibold.svg",
@@ -81,15 +81,20 @@
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Bold.ttf",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Bold.ttf"
     },
-    "fonts/ACaslonPro-Bold.svg": {
-      "name": "fonts/ACaslonPro-Bold.svg",
-      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Bold.svg",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Bold.svg"
-    },
     "fonts/ACaslonPro-Bold.otf": {
       "name": "fonts/ACaslonPro-Bold.otf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Bold.otf",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Bold.otf"
+    },
+    "fonts/ACaslonPro-Italic.woff": {
+      "name": "fonts/ACaslonPro-Italic.woff",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Italic.woff",
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.woff"
+    },
+    "fonts/ACaslonPro-Italic.otf": {
+      "name": "fonts/ACaslonPro-Italic.otf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Italic.otf",
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.otf"
     },
     "fonts/ACaslonPro-Italic.woff2": {
       "name": "fonts/ACaslonPro-Italic.woff2",
@@ -101,20 +106,30 @@
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Italic.eot",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.eot"
     },
-    "fonts/ACaslonPro-Italic.woff": {
-      "name": "fonts/ACaslonPro-Italic.woff",
-      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Italic.woff",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.woff"
+    "fonts/ACaslonPro-Bold.svg": {
+      "name": "fonts/ACaslonPro-Bold.svg",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Bold.svg",
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Bold.svg"
     },
     "fonts/ACaslonPro-Italic.ttf": {
       "name": "fonts/ACaslonPro-Italic.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Italic.ttf",
       "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.ttf"
     },
-    "fonts/ACaslonPro-Italic.otf": {
-      "name": "fonts/ACaslonPro-Italic.otf",
-      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Italic.otf",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.otf"
+    "fonts/ACaslonPro-SemiboldItalic.woff": {
+      "name": "fonts/ACaslonPro-SemiboldItalic.woff",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.woff",
+      "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.woff"
+    },
+    "fonts/ACaslonPro-Italic.svg": {
+      "name": "fonts/ACaslonPro-Italic.svg",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Italic.svg",
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.svg"
+    },
+    "fonts/ACaslonPro-SemiboldItalic.otf": {
+      "name": "fonts/ACaslonPro-SemiboldItalic.otf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.otf",
+      "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.otf"
     },
     "fonts/ACaslonPro-SemiboldItalic.eot": {
       "name": "fonts/ACaslonPro-SemiboldItalic.eot",
@@ -126,21 +141,6 @@
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.woff2",
       "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.woff2"
     },
-    "fonts/ACaslonPro-Italic.svg": {
-      "name": "fonts/ACaslonPro-Italic.svg",
-      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Italic.svg",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.svg"
-    },
-    "fonts/ACaslonPro-SemiboldItalic.woff": {
-      "name": "fonts/ACaslonPro-SemiboldItalic.woff",
-      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.woff",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.woff"
-    },
-    "fonts/ACaslonPro-SemiboldItalic.otf": {
-      "name": "fonts/ACaslonPro-SemiboldItalic.otf",
-      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.otf",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.otf"
-    },
     "fonts/ACaslonPro-SemiboldItalic.svg": {
       "name": "fonts/ACaslonPro-SemiboldItalic.svg",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.svg",
@@ -150,11 +150,6 @@
       "name": "fonts/ACaslonPro-SemiboldItalic.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.ttf",
       "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.ttf"
-    },
-    "fonts/ACaslonPro-BoldItalic.eot": {
-      "name": "fonts/ACaslonPro-BoldItalic.eot",
-      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.eot",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.eot"
     },
     "fonts/ACaslonPro-BoldItalic.woff": {
       "name": "fonts/ACaslonPro-BoldItalic.woff",
@@ -166,15 +161,20 @@
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.woff2",
       "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.woff2"
     },
-    "fonts/ACaslonPro-BoldItalic.ttf": {
-      "name": "fonts/ACaslonPro-BoldItalic.ttf",
-      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.ttf",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.ttf"
+    "fonts/ACaslonPro-BoldItalic.eot": {
+      "name": "fonts/ACaslonPro-BoldItalic.eot",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.eot",
+      "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.eot"
     },
     "fonts/ACaslonPro-BoldItalic.otf": {
       "name": "fonts/ACaslonPro-BoldItalic.otf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.otf",
       "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.otf"
+    },
+    "fonts/ACaslonPro-BoldItalic.ttf": {
+      "name": "fonts/ACaslonPro-BoldItalic.ttf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.ttf",
+      "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.ttf"
     },
     "fonts/ACaslonPro-BoldItalic.svg": {
       "name": "fonts/ACaslonPro-BoldItalic.svg",
@@ -221,25 +221,20 @@
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-regular-400.woff",
       "publicPath": "/static/office/js/fonts/fa-regular-400.woff"
     },
-    "fonts/fa-duotone-900.woff2": {
-      "name": "fonts/fa-duotone-900.woff2",
-      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-duotone-900.woff2",
-      "publicPath": "/static/office/js/fonts/fa-duotone-900.woff2"
-    },
     "fonts/fa-regular-400.ttf": {
       "name": "fonts/fa-regular-400.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-regular-400.ttf",
       "publicPath": "/static/office/js/fonts/fa-regular-400.ttf"
     },
+    "fonts/fa-duotone-900.woff2": {
+      "name": "fonts/fa-duotone-900.woff2",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-duotone-900.woff2",
+      "publicPath": "/static/office/js/fonts/fa-duotone-900.woff2"
+    },
     "fonts/fa-duotone-900.woff": {
       "name": "fonts/fa-duotone-900.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-duotone-900.woff",
       "publicPath": "/static/office/js/fonts/fa-duotone-900.woff"
-    },
-    "fonts/fa-duotone-900.ttf": {
-      "name": "fonts/fa-duotone-900.ttf",
-      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-duotone-900.ttf",
-      "publicPath": "/static/office/js/fonts/fa-duotone-900.ttf"
     },
     "fonts/fa-light-300.woff2": {
       "name": "fonts/fa-light-300.woff2",
@@ -256,6 +251,11 @@
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-light-300.woff",
       "publicPath": "/static/office/js/fonts/fa-light-300.woff"
     },
+    "fonts/fa-duotone-900.ttf": {
+      "name": "fonts/fa-duotone-900.ttf",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-duotone-900.ttf",
+      "publicPath": "/static/office/js/fonts/fa-duotone-900.ttf"
+    },
     "fonts/fa-thin-100.woff2": {
       "name": "fonts/fa-thin-100.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-thin-100.woff2",
@@ -271,10 +271,10 @@
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-thin-100.ttf",
       "publicPath": "/static/office/js/fonts/fa-thin-100.ttf"
     },
-    "bundle.e7118921dfb6051f4379.js": {
-      "name": "bundle.e7118921dfb6051f4379.js",
-      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/bundle.e7118921dfb6051f4379.js",
-      "publicPath": "/static/office/js/bundle.e7118921dfb6051f4379.js"
+    "bundle.daa2116a6935c068bab5.js": {
+      "name": "bundle.daa2116a6935c068bab5.js",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/bundle.daa2116a6935c068bab5.js",
+      "publicPath": "/static/office/js/bundle.daa2116a6935c068bab5.js"
     },
     "5b2688feed672622c768.ttf": {
       "name": "5b2688feed672622c768.ttf",
@@ -569,7 +569,7 @@
   },
   "chunks": {
     "main": [
-      "bundle.e7118921dfb6051f4379.js"
+      "bundle.daa2116a6935c068bab5.js"
     ]
   },
   "publicPath": "/static/office/js/"
