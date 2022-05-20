@@ -35,7 +35,7 @@ repos:
         args: [ --target-version=py310, --line-length=119 ]
 
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.9.0
+    rev: v8.15.0
     hooks:
       - id: eslint
         files: ^site/
@@ -44,18 +44,17 @@ repos:
         exclude: ^site/node_modules/|^site/office/src/office/js/fontawesome/|^site/office/src/office/css/fontawesome/
         args: [ --fix --config=site/.eslintrc ]
         additional_dependencies:
-          - eslint@8.9.0
-          - eslint-config-prettier@8.4.0
-          - "@babel/core@7.17.5"
+          - eslint@8.15.0
+          - eslint-config-prettier@8.5.0
+          - "@babel/core@7.18.0"
           - "@babel/eslint-parser@7.17.0"
-          - "@babel/preset-env@7.16.11"
-          - "@babel/preset-typescript@7.16.7"
+          - "@babel/preset-env@7.18.0"
+          - "@babel/preset-typescript@7.17.12"
           - eslint-plugin-prettier@4.0.0
-          - prettier@2.5.1
-          - eslint-plugin-vue@^8.4.1
+          - prettier@2.6.2
 
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.9.0
+    rev: v8.15.0
     hooks:
       - id: eslint
         files: ^app/src/
@@ -63,16 +62,22 @@ repos:
         types_or: [ javascript, jsx, ts, tsx, vue ]
         args: [ --config=app/.eslintrc.js ]
         additional_dependencies:
-          - eslint@8.9.0
-          - eslint-config-prettier@8.4.0
-          - "@babel/core@7.17.5"
+          - eslint@8.15.0
+          - eslint-config-prettier@8.5.0
+          - "@babel/core@7.18.0"
           - "@babel/eslint-parser@7.17.0"
-          - "@babel/preset-env@7.16.11"
-          - "@babel/preset-typescript@7.16.7"
+          - "@babel/preset-env@7.18.0"
+          - "@babel/preset-typescript@7.17.12"
           - eslint-plugin-prettier@4.0.0
-          - prettier@2.5.1
-          - eslint-plugin-vue@^8.4.1
-          - vue-eslint-parser@^8.3.0
+          - prettier@2.6.2
+          - eslint-plugin-vue@^9.0.1
+          - vue-eslint-parser@^9.0.2
+          - "@typescript-eslint/eslint-plugin@^5.25.0"
+          - "@typescript-eslint/parser@^5.25.0"
+          - "@typescript-eslint/eslint-plugin-tslint@^5.25.0"
+          - "@typescript-eslint/utils@^5.25.0"
+          - "@typescript-eslint/typescript-estree@^5.25.0"
+          - "@typescript-eslint/scope-manager@^5.25.0"
 
 #  - repo: https://github.com/awebdeveloper/pre-commit-stylelint
 #    rev: 0.0.2
