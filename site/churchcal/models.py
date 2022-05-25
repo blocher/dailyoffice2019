@@ -176,7 +176,11 @@ class Commemoration(BaseModel):
             if hasattr(self, "proper") and self.proper
             else None
         )
-        if proper:
+        if hasattr(commemoration, "saint_type") and commemoration.saint_type:
+            query = MassReading.objects.filter(common__abbreviation=commemoration.saint_type).order_by(
+                "reading_number"
+            )
+        elif proper:
             query = MassReading.objects.filter(years__contains=year, proper=proper).order_by("reading_number")
         else:
             query = MassReading.objects.filter(years__contains=year, commemoration=commemoration).order_by(

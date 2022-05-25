@@ -64,11 +64,6 @@
           </el-menu-item>
         </el-menu-item-group>
 
-        <el-menu-item-group title="— All Dates —">
-          <el-menu-item index="/calendar">
-            Calendar
-          </el-menu-item>
-        </el-menu-item-group>
 
       </el-sub-menu>
 

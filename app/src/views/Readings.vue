@@ -28,7 +28,12 @@
           :value="label"
       />
     </el-select>
+    <h3>From Citations</h3>
+    <CitationGroup
+        v-for="(citationGroup, number) in citationGroupsToShow" :key="number"
+        :citation-group="citationGroup"/>
 
+    <h3>From readings</h3>
     <a
         v-for="(reading, index) in readingsToShow" :key="index" href="#" class="block"
         @click.prevent="goto(readingName(index))">{{
@@ -66,6 +71,7 @@ import CalendarCard from "@/components/CalendarCard";
 import OfficeNav from "@/components/OfficeNav";
 import Reading from "@/components/Reading";
 import Collects from "@/components/Collects";
+import CitationGroup from "@/components/CitationGroup";
 
 export default {
   name: "Readings",
@@ -75,6 +81,7 @@ export default {
     OfficeNav,
     Reading,
     Collects,
+    CitationGroup,
   },
   props: {},
   data() {
@@ -96,6 +103,18 @@ export default {
       if (this.service) {
         let serviceItems = this.services[this.service];
         return serviceItems['readings']
+      }
+      return [];
+    },
+    citationGroupsToShow: function () {
+      if (this.service) {
+        let serviceItems = this.services[this.service];
+        console.log(serviceItems);
+        if (serviceItems && serviceItems.citations) {
+          console.log("CITATION", serviceItems.citations[1][0]);
+          return serviceItems.citations;
+        }
+
       }
       return [];
     },

@@ -2,6 +2,7 @@ import csv
 import datetime
 import json
 import os
+from collections import defaultdict
 from distutils.util import strtobool
 from urllib.parse import quote
 
@@ -2317,13 +2318,14 @@ class OfficeSerializer(serializers.Serializer):
         return modules
 
 
-def reading_format(name, citation, text, testament, cycle=None):
+def reading_format(name, citation, text, testament, cycle=None, reading_number=None):
     return {
         "name": name,
         "citation": citation,
         "text": text,
         "testament": testament,
         "cycle": cycle,
+        "reading_number": reading_number,
     }
 
 
@@ -2626,6 +2628,19 @@ def get_collects_for_readings(service, commemoration, calendar_date):
     return collects
 
 
+def service_readings_to_citations(readings):
+    groups = defaultdict(list)
+
+    for reading in readings:
+        citations = {
+            "full": reading["full"]["citation"],
+            "abbreviated": reading["abbreviated"]["citation"],
+        }
+        groups[reading["full"]["reading_number"]].append(citations)
+
+    return groups
+
+
 def mass_readings(commemoration, mass_year, calendar_date):
     readings = commemoration.get_all_mass_readings_for_year(mass_year)
     final_readings = {}
@@ -2633,7 +2648,11 @@ def mass_readings(commemoration, mass_year, calendar_date):
         service_name = reading.service or "-"
         name = get_reading_name_from_reading_number(reading)
         full = reading_format(
-            name=name, citation=reading.long_citation, text=reading.long_text, testament=reading.testament
+            name=name,
+            citation=reading.long_citation,
+            text=reading.long_text,
+            testament=reading.testament,
+            reading_number=reading.reading_number,
         )
         abbreviated = full
         if reading.short_citation:
@@ -2653,6 +2672,7 @@ def mass_readings(commemoration, mass_year, calendar_date):
         result[service] = {
             "collects": get_collects_for_readings(service, commemoration, calendar_date),
             "readings": final_readings[service],
+            "citations": service_readings_to_citations(final_readings[service]),
         }
     return result
 

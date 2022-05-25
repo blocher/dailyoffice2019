@@ -123,7 +123,6 @@ export default {
     }
   },
   created() {
-    console.log(this.psalmCycle, "mounted")
     this.psalmCycle60 = this.psalmCycle == "60"
   },
   methods: {

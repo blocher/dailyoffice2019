@@ -30,15 +30,8 @@ p {
 <script>
 
 export default {
-
   props: [
     "collects",
   ],
-  data() {
-
-  },
-  computed: {},
-
-  methods: {},
 };
 </script>

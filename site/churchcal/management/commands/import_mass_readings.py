@@ -32,7 +32,7 @@ def format_service(service):
 class Command(ImportCommemorationsBaseCommand):
     help = "Imports Mass Readings"
 
-    RANGE_NAME = "Mass Readings!A1:G1051"
+    RANGE_NAME = "Mass Readings!A1:G1151"
 
     def format_reading(self, book, passage):
         if book == "Canticle":
@@ -135,6 +135,21 @@ class Command(ImportCommemorationsBaseCommand):
             "Thomas": "Thomas the Apostle",
             "Transfiguration": "The Transfiguration of Our Lord Jesus Christ",
             "TrinitySunday": "Trinity Sunday",
+            "EMBER_DAY_SPRING_WED": "Ember Day (Spring Wednesday)",
+            "EMBER_DAY_SPRING_FRI": "Ember Day (Spring Friday)",
+            "EMBER_DAY_SPRING_SAT": "Ember Day (Spring Saturday)",
+            "EMBER_DAY_SUMMER_WED": "Ember Day (Summer Wednesday)",
+            "EMBER_DAY_SUMMER_FRI": "Ember Day (Summer Friday)",
+            "EMBER_DAY_SUMMER_SAT": "Ember Day (Summer Saturday)",
+            "EMBER_DAY_AUTUMN_WED": "Ember Day (Autumn Wednesday)",
+            "EMBER_DAY_AUTUMN_FRI": "Ember Day (Autumn Friday)",
+            "EMBER_DAY_AUTUMN_SAT": "Ember Day (Autumn Saturday)",
+            "EMBER_DAY_WINTER_WED": "Ember Day (Winter Wednesday)",
+            "EMBER_DAY_WINTER_FRI": "Ember Day (Winter Friday)",
+            "EMBER_DAY_WINTER_SAT": "Ember Day (Winter Saturday)",
+            "ROGATION_DAY_MON": "Rogation Day (Monday)",
+            "ROGATION_DAY_TUES": "Rogation Day (Tuesday)",
+            "ROGATION_DAY_WED": "Rogation Day (Wednesday)",
         }
 
         try:
