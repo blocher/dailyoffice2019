@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <div class="column left">
-      <p>
+      <p class="rubric">
         <em><small>People</small></em>
       </p>
     </div>
@@ -14,6 +14,12 @@
 </template>
 
 <style>
+
+.rubric {
+  font-size: .8em;
+  line-height: 1.2em;
+}
+
 .row {
   display: flex;
 }

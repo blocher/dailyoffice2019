@@ -56,16 +56,15 @@ def psalm_api_lines(citation, verses, heading=True):
     for verse in verses:
         lines.append(
             Line(
-                "{} {} *".format(
-                    verse.number,
-                    verse.first_half,
-                    verse.number,
+                "{} *".format(
                     verse.first_half,
                 ),
                 "leader",
+                preface=verse.number,
+                indented="hangingIndent",
             )
         )
-        lines.append(Line(verse.second_half, "congregation"))
+        lines.append(Line(verse.second_half, "congregation", indented="indent"))
     return lines
 
 

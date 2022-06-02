@@ -4,9 +4,15 @@
   </p>
 </template>
 
+<style lang="scss" scoped>
+.rubric {
+  font-size: .8em;
+  line-height: 1.2em;
+}
+</style>
+
 <script>
 // @ is an alias to /src
-
 export default {
   name: "Office Rubric",
   components: {},

@@ -163,10 +163,12 @@ body {
     &.indent {
       margin: 0 0 0 1em;
 
-      &.hanging-indent {
-        text-indent: -1em;
-        margin: 0 0 0 1em;
-      }
+
+    }
+
+    &.hangingIndent {
+      text-indent: -1em;
+      margin: 0 0 0 1em;
     }
 
     strong {

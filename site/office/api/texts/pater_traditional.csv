@@ -1,14 +1,14 @@
-"Our Father, who art in heaven,", "congregation"
-"hallowed be thy Name,", "congregation"
-"thy kingdom come,", "congregation"
-"thy will be done,", "congregation"
-"on earth as it is in heaven.", "congregation", true,
-"Give us this day our daily bread.", "congregation", true,
-"And forgive us our trespasses,", "congregation"
-"as we forgive those", "congregation"
-"who trespass against us.", "congregation", true,
-"And lead us not into temptation,", "congregation"
-"but deliver us from evil.", "congregation", true,
-"For thine is the kingdom,", "congregation"
-"and the power, and the glory,", "congregation"
-"for ever and ever. Amen.", "congregation",
+"Our Father, who art in heaven,"   ,"congregation"
+"hallowed be thy Name,"            ,"congregation",true
+"thy kingdom come,"                ,"congregation",true
+"thy will be done,"                ,"congregation",true
+"on earth as it is in heaven."     ,"congregation",true,
+"Give us this day our daily bread.","congregation",
+"And forgive us our trespasses,"   ,"congregation"
+"as we forgive those"              ,"congregation",true
+"who trespass against us."         ,"congregation",true,
+"And lead us not into temptation," ,"congregation"
+"but deliver us from evil."        ,"congregation",true,
+"For thine is the kingdom,"        ,"congregation"
+"and the power, and the glory,"    ,"congregation",true
+"for ever and ever. Amen."         ,"congregation",true

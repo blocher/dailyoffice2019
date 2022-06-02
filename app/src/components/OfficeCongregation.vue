@@ -1,5 +1,5 @@
 <template>
-  <p :class="{ indent: line.indented, hangingIndent: !line.indented }">
+  <p :class="indentClass">
     <strong>{{ line.content }}</strong>
   </p>
 </template>
@@ -11,5 +11,14 @@ export default {
   name: "Office Congregation",
   components: {},
   props: ["line"],
+  computed: {
+    indentClass() {
+
+      if (!this.line.indented) {
+        return "";
+      }
+      return this.line.indented;
+    }
+  }
 };
 </script>

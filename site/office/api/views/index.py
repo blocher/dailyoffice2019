@@ -100,9 +100,9 @@ def file_to_lines(filename):
             result["line_type"] = row[1]
         if len(row) > 2:
             if not row[2]:
-                result["indented"] = False
+                result["indented"] = "hangingIndent"
             else:
-                result["indented"] = bool(strtobool(row[2].lower()))
+                result["indented"] = "indent" if bool(strtobool(row[2].lower())) else False
 
         if len(row) > 3:
             if not row[3]:
@@ -279,8 +279,8 @@ class Confession(Module):
         fast = self.office.date.fast_day
         long = (setting == "long") or (setting == "long-on-fast" and fast)
         if long:
-            return file_to_lines("confession_intro_long")
-        return file_to_lines("confession_intro_short")
+            return file_to_lines("confession_intro_long") + [Line("", "spacer")]
+        return file_to_lines("confession_intro_short") + [Line("", "spacer")]
 
     def get_body_lines(self):
         return file_to_lines("confession_body")
