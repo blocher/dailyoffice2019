@@ -34,6 +34,7 @@
   --el-text-color-regular: #333;
   --el-calendar-selected-bg-color: #fff;
   --el-card-bg-color: white;
+
 }
 
 :root.dark-theme {
@@ -204,6 +205,10 @@ body {
       color: #42b983;
     }
   }
+}
+
+.el-input__inner {
+  background-color: var(--el-input-bg-color, var(--el-fill-color-blank)) !important;
 }
 </style>
 
