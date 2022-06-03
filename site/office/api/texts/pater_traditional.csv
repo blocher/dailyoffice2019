@@ -1,14 +1,14 @@
-"Our Father, who art in heaven,"   ,"congregation"
-"hallowed be thy Name,"            ,"congregation",true
-"thy kingdom come,"                ,"congregation",true
-"thy will be done,"                ,"congregation",true
-"on earth as it is in heaven."     ,"congregation",true,
-"Give us this day our daily bread.","congregation",
-"And forgive us our trespasses,"   ,"congregation"
-"as we forgive those"              ,"congregation",true
-"who trespass against us."         ,"congregation",true,
-"And lead us not into temptation," ,"congregation"
-"but deliver us from evil."        ,"congregation",true,
-"For thine is the kingdom,"        ,"congregation"
-"and the power, and the glory,"    ,"congregation",true
-"for ever and ever. Amen."         ,"congregation",true
+"Our Father, who art in heaven,"   ,"congregation","hangingIndent",
+"hallowed be thy Name,"            ,"congregation","indent"
+"thy kingdom come,"                ,"congregation","indent"
+"thy will be done,"                ,"congregation","indent"
+"on earth as it is in heaven."     ,"congregation","indent"       ,
+"Give us this day our daily bread.","congregation","hangingIndent",,
+"And forgive us our trespasses,"   ,"congregation","hangingIndent",
+"as we forgive those"              ,"congregation","indent"
+"who trespass against us."         ,"congregation","indent"       ,
+"And lead us not into temptation," ,"congregation","hangingIndent",
+"but deliver us from evil."        ,"congregation","indent"       ,
+"For thine is the kingdom,"        ,"congregation","hangingIndent",
+"and the power, and the glory,"    ,"congregation","indent"
+"for ever and ever. Amen."         ,"congregation","indent"

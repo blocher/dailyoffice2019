@@ -168,7 +168,7 @@ body {
 
     &.hangingIndent {
       text-indent: -1em;
-      margin: 0 0 0 1em;
+      margin-left: 1em;
     }
 
     strong {

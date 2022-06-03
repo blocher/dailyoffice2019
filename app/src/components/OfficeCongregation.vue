@@ -1,6 +1,6 @@
 <template>
   <p :class="indentClass">
-    <strong>{{ line.content }}</strong>
+    <strong>{{ line.content.replace(" *", "*").replace("*", "&nbsp;*") }}</strong>
   </p>
 </template>
 

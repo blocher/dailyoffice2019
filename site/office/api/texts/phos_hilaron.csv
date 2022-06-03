@@ -1,11 +1,11 @@
-"PHOS HILARON", "heading"
-"O Gladsome Light", "subheading"
-"O gladsome light,", "congregation", false
-"pure brightness of the everliving Father in heaven, *", "congregation", false
-"O Jesus Christ, holy and blessed!", "congregation", true
-"Now as we come to the setting of the sun,", "congregation", false
-"and our eyes behold the vesper light, *", "congregation", false
-"we sing your praises, O God: Father, Son, and Holy Spirit.", "congregation", true
-"You are worthy at all times to be praised by happy voices, *", "congregation", false
-"O Son of God, O Giver of Life,", "congregation", true
-"and to be glorified through all the worlds.", "congregation", true
+"PHOS HILARON"                                                ,"heading"
+"O Gladsome Light"                                            ,"subheading"
+"O gladsome light,"                                           ,"congregation","hangingIdent"
+"pure brightness of the everliving Father in heaven, *"       ,"congregation","hangingIdent"
+"O Jesus Christ, holy and blessed!"                           ,"congregation","indent"
+"Now as we come to the setting of the sun,"                   ,"congregation","hangingIdent"
+"and our eyes behold the vesper light, *"                     ,"congregation","hangingIdent"
+"we sing your praises, O God: Father, Son, and Holy Spirit."  ,"congregation","indent"
+"You are worthy at all times to be praised by happy voices, *","congregation","hangingIdent"
+"O Son of God, O Giver of Life,"                              ,"congregation","indent"
+"and to be glorified through all the worlds."                 ,"congregation","indent"

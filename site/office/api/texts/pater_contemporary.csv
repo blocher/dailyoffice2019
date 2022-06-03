@@ -1,14 +1,14 @@
-"Our Father in heaven"          ,"congregation"
-"hallowed be your Name"         ,"congregation",true
-"your kingdom come"             ,"congregation",true
-"your will be done"             ,"congregation",true
-"on earth as it is in heaven."  ,"congregation",true
-"Give us today our daily bread.","congregation"
-"And forgive us our sins"       ,"congregation",
-"as we forgive those"           ,"congregation",true
-"who sin against us."           ,"congregation",true
-"Save us from the time of trial","congregation"
-"and deliver us from evil."     ,"congregation",true
-"For the kingdom, the power"    ,"congregation"
-"and the glory are yours"       ,"congregation",true
-"now and for ever. Amen."       ,"congregation",true
+"Our Father in heaven"          ,"congregation","hangingIndent"
+"hallowed be your Name"         ,"congregation","indent"
+"your kingdom come"             ,"congregation","indent"
+"your will be done"             ,"congregation","indent"
+"on earth as it is in heaven."  ,"congregation","indent"
+"Give us today our daily bread.","congregation","hangingIndent"
+"And forgive us our sins"       ,"congregation","hangingIndent"
+"as we forgive those"           ,"congregation","indent"
+"who sin against us."           ,"congregation","indent"
+"Save us from the time of trial","congregation","hangingIndent"
+"and deliver us from evil."     ,"congregation","indent"
+"For the kingdom, the power"    ,"congregation","hangingIndent"
+"and the glory are yours"       ,"congregation","indent"
+"now and for ever. Amen."       ,"congregation","indent"

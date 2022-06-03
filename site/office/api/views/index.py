@@ -98,11 +98,12 @@ def file_to_lines(filename):
         result = {"content": row[0]}
         if len(row) > 1 and row[1]:
             result["line_type"] = row[1]
+        result["indented"] = False
         if len(row) > 2:
-            if not row[2]:
-                result["indented"] = "hangingIndent"
+            if row[2].lower() == "true":
+                result["indented"] = "indent"
             else:
-                result["indented"] = "indent" if bool(strtobool(row[2].lower())) else False
+                result["indented"] = row[2]
 
         if len(row) > 3:
             if not row[3]:

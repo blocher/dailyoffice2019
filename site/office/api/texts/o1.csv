@@ -1,18 +1,18 @@
-"Glory to God in the highest,", "congregation",
-"and peace to his people on earth.", "congregation", true,
-"Lord God, heavenly King,", "congregation", true,
-"almighty God and Father,", "congregation",
-"we worship you, we give you thanks,", "congregation",
-"we praise you for your glory.", "congregation", true,
-"Lord Jesus Christ, only Son of the Father,", "congregation", true,
-"Lord God, Lamb of God,", "congregation", true,
-"you take away the sin of the world:", "congregation",
-"have mercy on us;", "congregation", true,
-"you are seated at the right hand of the Father:", "congregation",
-"receive our prayer.", "congregation", true,
-"For you alone are the Holy One,", "congregation", true,
-"you alone are the Lord,", "congregation", true,
-"you alone are the Most High,", "congregation",
-"Jesus Christ,", "congregation",
-"with the Holy Spirit,", "congregation",
-"in the glory of God the Father. Amen.", "congregation", true,
+"Glory to God in the highest,"                   ,"congregation","hangingIndent"
+"and peace to his people on earth."              ,"congregation","indent"
+"Lord God, heavenly King,"                       ,"congregation","indent"
+"almighty God and Father,"                       ,"congregation","hangingIndent"
+"we worship you, we give you thanks,"            ,"congregation","hangingIndent"
+"we praise you for your glory."                  ,"congregation","indent"
+"Lord Jesus Christ, only Son of the Father,"     ,"congregation","indent"
+"Lord God, Lamb of God,"                         ,"congregation","indent"
+"you take away the sin of the world:"            ,"congregation","hangingIndent"
+"have mercy on us;"                              ,"congregation","indent"
+"you are seated at the right hand of the Father:","congregation","hangingIndent"
+"receive our prayer."                            ,"congregation","indent"
+"For you alone are the Holy One,"                ,"congregation","indent"
+"you alone are the Lord,"                        ,"congregation","indent"
+"you alone are the Most High,"                   ,"congregation","hangingIndent"
+"Jesus Christ,"                                  ,"congregation","hangingIndent"
+"with the Holy Spirit,"                          ,"congregation","hangingIndent"
+"in the glory of God the Father. Amen."          ,"congregation","indent"
