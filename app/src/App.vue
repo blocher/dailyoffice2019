@@ -34,6 +34,7 @@
   --el-text-color-regular: #333;
   --el-calendar-selected-bg-color: #fff;
   --el-card-bg-color: white;
+  --el-drawer-bg-color: white;
 
 }
 
@@ -51,6 +52,7 @@
   --el-calendar-selected-bg-color: rgb(28, 28, 33);
 
   --el-card-bg-color: rgb(28, 28, 33);
+  --el-drawer-bg-color: rgb(28, 28, 33);
 
   .el-menu {
     --el-menu-hover-text-color: #333;
