@@ -3,8 +3,10 @@
     <h3>
       {{ reading.full.name }}
     </h3>
-    <h4 v-if="!abbreviated">{{ reading.full.citation }} <span v-html="scriptureLink()"/></h4>
-    <h4 v-if="abbreviated">{{ reading.abbreviated.citation }} <span v-html="scriptureLink(abbreviated=true)"/></h4>
+    <h4 v-if="!abbreviated" :id="readingID(reading.full)">{{ reading.full.citation }} <span v-html="scriptureLink()"/>
+    </h4>
+    <h4 v-if="abbreviated" :id="readingID(reading.abbreviated)">{{ reading.abbreviated.citation }} <span
+        v-html="scriptureLink(abbreviated=true)"/></h4>
     <div class="full-width text-center">
       <el-switch
           v-if="showAbbreviatedToggle"
@@ -39,6 +41,7 @@ export default {
     "reading",
     "id",
     "psalmCycle",
+    "length",
   ],
   data() {
     return {
@@ -62,14 +65,22 @@ export default {
   },
   watch: {
     psalmCycle: function () {
-      console.log(this.psalmCycle, "watched")
       this.psalmCycle60 = this.psalmCycle == "60"
+    },
+    length: function () {
+      this.abbreviated = this.length == "abbreviated"
     }
   },
   created() {
     this.psalmCycle60 = this.psalmCycle == "60"
+    this.abbreviated = this.length == "abbreviated"
   },
+
   methods: {
+    readingID: function (reading) {
+      const readingId = reading.citation.replace(/[\W_]+/g, "_")
+      return `reading_${readingId}`.toLowerCase();
+    },
     setCycle(status) {
       if (status) {
         this.$emit('cycle-60');

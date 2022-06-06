@@ -64,19 +64,17 @@ export default {
 }
 
 :root {
-  //--color-bg: #fff;
-  //--font-color: #333;
-  //--link-color: rgb(88, 166, 255);
-  //--font-on-white-background: #333;
-  //
-  //--el-text-color-primary: #333;
-  //--el-menu-bg-color: #fff;
-  //--el-color-white: rgb(28, 28, 33);
-  //--el-text-color-regular: #333;
-  //--el-calendar-selected-bg-color: #fff;
-  //--el-card-bg-color: white;
-  //--el-drawer-bg-color: white !important;
-
+  --color-bg: #fff;
+  --font-color: #333;
+  --link-color: rgb(88, 166, 255);
+  --font-on-white-background: #333;
+  --el-text-color-primary: #333;
+  --el-menu-bg-color: #fff;
+  --el-color-white: rgb(28, 28, 33);
+  --el-text-color-regular: #333;
+  --el-calendar-selected-bg-color: #fff;
+  --el-card-bg-color: white;
+  --el-drawer-bg-color: white !important;
 }
 
 :root.dark {

@@ -20,6 +20,7 @@
         placeholder="Service"
         size="large"
         filterable
+        @change="setReadingsToShow"
     >
       <el-option
           v-for="label in serviceLabels"
@@ -28,21 +29,16 @@
           :value="label"
       />
     </el-select>
-    <h3>From Citations</h3>
     <CitationGroup
-        v-for="(citationGroup, number) in citationGroupsToShow" :key="number"
-        :citation-group="citationGroup"/>
+        v-for="(readings, number) in groupedReadings"
+        :key="number" :readings="readings"
+        @readingLinkClick="handleReadingLinkClick"/>
 
-    <h3>From readings</h3>
-    <a
-        v-for="(reading, index) in readingsToShow" :key="index" href="#" class="block"
-        @click.prevent="goto(readingName(index))">{{
-        reading.full.citation
-      }}</a>
+
     <Collects v-if="showCollects" :collects="collectsToShow"/>
     <Reading
         v-for="(reading, index) in readingsToShow" :id="readingName(index)" :key="index" :reading="reading"
-        :psalm-cycle="psalmCycle" @cycle-60="setCycle60" @cycle-30="setCycle30"/>
+        :psalm-cycle="psalmCycle" :length="reading.length" @cycle-60="setCycle60" @cycle-30="setCycle30"/>
 
 
   </div>
@@ -51,6 +47,7 @@
 
 <script>
 // @ is an alias to /src
+import {nextTick} from 'vue'
 import Loading from "@/components/Loading";
 import setCalendarDate from "@/helpers/setCalendarDate";
 import CalendarCard from "@/components/CalendarCard";
@@ -82,27 +79,20 @@ export default {
       readings: null,
       full: true,
       psalmCycle: "30",
+      readingsToShow: [],
     };
   },
   computed: {
-    readingsToShow: function () {
-      if (this.service) {
-        let serviceItems = this.services[this.service];
-        return serviceItems['readings']
-      }
-      return [];
-    },
-    citationGroupsToShow: function () {
-      if (this.service) {
-        let serviceItems = this.services[this.service];
-        console.log(serviceItems);
-        if (serviceItems && serviceItems.citations) {
-          console.log("CITATION", serviceItems.citations[1][0]);
-          return serviceItems.citations;
+    groupedReadings: function () {
+      const groups = {}
+      this.readingsToShow.forEach(reading => {
+        if (reading.full.reading_number in groups) {
+          groups[reading.full.reading_number].push(reading)
+        } else {
+          groups[reading.full.reading_number] = [reading]
         }
-
-      }
-      return [];
+      });
+      return groups;
     },
     collectsToShow: function () {
       if (this.service) {
@@ -143,10 +133,38 @@ export default {
     this.services = data.data.services
     this.serviceLabels = Object.keys(this.services)
     this.service = this.serviceLabels[0]
+    this.setReadingsToShow()
     this.error = false;
     this.loading = false;
   },
   methods: {
+    readingID: function (reading) {
+      const readingId = reading.citation.replace(/[\W_]+/g, "_")
+      return `reading_${readingId}`.toLowerCase();
+    },
+    setReadingsToShow: function () {
+      if (this.service) {
+        let serviceItems = this.services[this.service];
+        this.readingsToShow = serviceItems['readings'].map((reading) => {
+          return reading;
+        })
+        return;
+      }
+      this.readingsToShow = [];
+    },
+    handleReadingLinkClick: async function (data) {
+      this.readingsToShow = this.readingsToShow.map((reading) => {
+        if (reading.full.citation == data.reading.citation && data.length == "full") {
+          reading.length = data.length
+        }
+        if (reading.abbreviated.citation == data.reading.citation && data.length == "abbreviated") {
+          reading.length = data.length
+        }
+        return reading;
+      })
+      await nextTick();
+      this.goto(this.readingID(data.reading))
+    },
     readingName: function (index) {
       return `reading_${index}`;
     },

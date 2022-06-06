@@ -762,15 +762,7 @@ class CanticleModule(Module):
     def gloria_lines(self, data):
         if not data.gloria:
             return []
-        return [
-            Line(
-                "Glory be to the Father, and to the Son, and to the Holy Spirit; *",
-                line_type="congregation",
-                indented=False,
-            ),
-            Line("as it was in the beginning, is now, and ever shall be,", line_type="congregation", indented=True),
-            Line("world without end. Amen.", line_type="congregation", indented=True),
-        ]
+        return file_to_lines("gloria_patri")
 
     def get_canticle(self, data):
         return (

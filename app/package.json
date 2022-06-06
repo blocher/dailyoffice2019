@@ -36,6 +36,7 @@
     "axios": "^0.27.2",
     "element-plus": "^2.2.4",
     "follow-redirects": "^1.15.1",
+    "mitt": "^3.0.0",
     "naive-ui": "^2.29.1",
     "nanoid": "^3.3.4",
     "npm": "^8.12.1",
