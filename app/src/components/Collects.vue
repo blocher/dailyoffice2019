@@ -8,6 +8,15 @@
 
 </template>
 
+<script>
+
+export default {
+  props: [
+    "collects",
+  ],
+};
+</script>
+
 <style scoped lang="scss">
 p {
   margin-bottom: .5rem;
@@ -26,12 +35,3 @@ p {
 
 
 </style>
-
-<script>
-
-export default {
-  props: [
-    "collects",
-  ],
-};
-</script>

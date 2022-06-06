@@ -9,6 +9,15 @@
   </div>
 </template>
 
+<script>
+// @ is an alias to /src
+
+export default {
+  name: "Loading",
+  components: {},
+};
+</script>
+
 <style lang="scss">
 .lds-ellipsis-wrapper {
   width: 100%;
@@ -71,12 +80,3 @@
   }
 }
 </style>
-
-<script>
-// @ is an alias to /src
-
-export default {
-  name: "Loading",
-  components: {},
-};
-</script>

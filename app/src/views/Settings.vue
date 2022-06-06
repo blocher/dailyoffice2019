@@ -29,12 +29,6 @@
   </div>
 </template>
 
-<style>
-[v-cloak] {
-  display: none;
-}
-</style>
-
 <script>
 // @ is an alias to /src
 
@@ -90,3 +84,9 @@ export default {
   },
 };
 </script>
+
+<style>
+[v-cloak] {
+  display: none;
+}
+</style>

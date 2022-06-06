@@ -92,12 +92,6 @@
   </div>
 </template>
 
-<style scoped>
-.el-alert {
-  margin-top: 2em;
-}
-</style>
-
 <script>
 // @ is an alias to /src
 import OfficeHeading from "@/components/OfficeHeading";
@@ -234,3 +228,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.el-alert {
+  margin-top: 2em;
+}
+</style>

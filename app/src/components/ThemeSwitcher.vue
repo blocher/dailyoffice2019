@@ -2,10 +2,10 @@
   <span class="sub-menu-item">
     <span class="text-xs">Light</span>&nbsp;
     <el-switch
-      v-model="userTheme"
-      class="text-right"
-      active-value="dark-theme"
-      inactive-value="light-theme"
+        v-model="userTheme"
+        class="text-right"
+        active-value="dark"
+        inactive-value="light"
     />&nbsp;
     <span class="text-xs">Dark</span>
   </span>
@@ -15,7 +15,7 @@
 export default {
   data() {
     return {
-      userTheme: "light-theme",
+      userTheme: "light",
     };
   },
   mounted() {
@@ -32,16 +32,19 @@ export default {
         localStorage.setItem("user-theme", theme);
       }
       this.userTheme = theme;
-      document.documentElement.className = theme;
+      document.documentElement.className = this.getUserThemeClass();
+    },
+    getUserThemeClass() {
+      return this.userTheme;
     },
     getMediaPreference() {
       const hasDarkPreference = window.matchMedia(
-        "(prefers-color-scheme: dark)"
+          "(prefers-color-scheme: dark)"
       ).matches;
       if (hasDarkPreference) {
-        return "dark-theme";
+        return "dark";
       } else {
-        return "light-theme";
+        return "light";
       }
     },
   },

@@ -85,18 +85,6 @@
   </el-header>
 </template>
 
-<style>
-.el-menu {
-  color: var(--font-color);
-  background-color: var(--color-bg);
-}
-
-.el-menu-item-group__title {
-  padding-left: 10px !important;
-  font-size: 1.2em;
-}
-</style>
-
 <script>
 import Submenu from "@/components/Submenu";
 
@@ -112,3 +100,15 @@ export default {
   },
 };
 </script>
+
+<style>
+.el-menu {
+  color: var(--font-color);
+  background-color: var(--color-bg);
+}
+
+.el-menu-item-group__title {
+  padding-left: 10px !important;
+  font-size: 1.2em;
+}
+</style>

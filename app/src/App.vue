@@ -1,5 +1,5 @@
 <template>
-  <Menu/>
+  <TopMenu/>
   <div class="main">
     <Loading v-if="loading"/>
     <el-alert
@@ -13,8 +13,49 @@
   <el-backtop/>
 </template>
 
+<script>
+import TopMenu from "@/components/TopMenu";
+import Loading from "@/components/Loading";
+
+export default {
+  components: {
+    TopMenu,
+    Loading,
+  },
+  data() {
+    return {
+      loading: true,
+      open: false,
+      isActive: true,
+      name: this.$route.name,
+      error: false,
+    };
+  },
+
+  async created() {
+    document.title = "The Daily Office";
+    try {
+      const settings_data = await this.$http.get(
+          `${process.env.VUE_APP_API_URL}api/v1/available_settings/`
+      );
+      await this.$store.commit("saveAvailableSettings", settings_data.data);
+      await this.$store.commit("initializeSettings", this);
+      this.loading = false;
+    } catch (e) {
+      console.log(e);
+      this.error =
+          "There was an error loading the settings. Please try refreshing the page.";
+      this.loading = false;
+      return;
+    }
+    this.loading = false;
+  },
+};
+</script>
 <style src="./assets/tailwind.css"></style>
+
 <style lang="scss">
+
 * {
   font-family: "Adobe Caslon Pro", serif;
   font-display: swap;
@@ -23,40 +64,34 @@
 }
 
 :root {
-  --color-bg: #fff;
-  --font-color: #333;
-  --link-color: rgb(88, 166, 255);
-  --font-on-white-background: #333;
-
-  --el-text-color-primary: #333;
-  --el-menu-bg-color: #fff;
-  --el-color-white: rgb(28, 28, 33);
-  --el-text-color-regular: #333;
-  --el-calendar-selected-bg-color: #fff;
-  --el-card-bg-color: white;
-  --el-drawer-bg-color: white;
+  //--color-bg: #fff;
+  //--font-color: #333;
+  //--link-color: rgb(88, 166, 255);
+  //--font-on-white-background: #333;
+  //
+  //--el-text-color-primary: #333;
+  //--el-menu-bg-color: #fff;
+  //--el-color-white: rgb(28, 28, 33);
+  //--el-text-color-regular: #333;
+  //--el-calendar-selected-bg-color: #fff;
+  //--el-card-bg-color: white;
+  //--el-drawer-bg-color: white !important;
 
 }
 
-:root.dark-theme {
+:root.dark {
   --color-bg: rgb(28, 28, 33);
   --font-color: rgb(191, 191, 191);
   --link-color: rgb(88, 166, 255);
   --font-on-white-background: #333;
 
   --el-text-color-primary: rgb(191, 191, 191);
-  --el-text-color-hover: green;
   --el-fill-color-blank: rgb(28, 28, 33);
   --el-color-white: rgb(28, 28, 33);
   --el-text-color-regular: rgb(191, 191, 191);
   --el-calendar-selected-bg-color: rgb(28, 28, 33);
 
   --el-card-bg-color: rgb(28, 28, 33);
-  --el-drawer-bg-color: rgb(28, 28, 33);
-
-  .el-menu {
-    --el-menu-hover-text-color: #333;
-  }
 }
 
 body {
@@ -213,43 +248,3 @@ body {
   background-color: var(--el-input-bg-color, var(--el-fill-color-blank)) !important;
 }
 </style>
-
-<script>
-import Menu from "@/components/Menu";
-import Loading from "@/components/Loading";
-
-export default {
-  components: {
-    Menu,
-    Loading,
-  },
-  data() {
-    return {
-      loading: true,
-      open: false,
-      isActive: true,
-      name: this.$route.name,
-      error: false,
-    };
-  },
-
-  async created() {
-    document.title = "The Daily Office";
-    try {
-      const settings_data = await this.$http.get(
-          `${process.env.VUE_APP_API_URL}api/v1/available_settings/`
-      );
-      await this.$store.commit("saveAvailableSettings", settings_data.data);
-      await this.$store.commit("initializeSettings", this);
-      this.loading = false;
-    } catch (e) {
-      console.log(e);
-      this.error =
-          "There was an error loading the settings. Please try refreshing the page.";
-      this.loading = false;
-      return;
-    }
-    this.loading = false;
-  },
-};
-</script>

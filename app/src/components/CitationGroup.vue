@@ -11,6 +11,15 @@
 
 </template>
 
+<script>
+
+export default {
+  props: [
+    "citationGroup",
+  ],
+};
+</script>
+
 <style scoped lang="scss">
 a {
   display: inline;
@@ -21,12 +30,3 @@ a {
 
 
 </style>
-
-<script>
-
-export default {
-  props: [
-    "citationGroup",
-  ],
-};
-</script>

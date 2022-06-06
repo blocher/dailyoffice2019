@@ -69,6 +69,57 @@ class="card-footer mt-2" :class="card.season.colors[0]"
   </el-card>
 </template>
 
+<script>
+// @ is an alias to /src
+
+import Commemoration from "@/components/Commemoration";
+
+export default {
+  name: "CalenderCard",
+  components: { Commemoration },
+  props: ["card", "calendarDate", "office", "serviceType"],
+  data() {
+    return {
+      officeName: null,
+      formattedDate: null,
+      currentServiceType: this.serviceType,
+    };
+  },
+  async created() {
+    if (!this.currentServiceType) {
+      this.currentServiceType = "office";
+    }
+    const options = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+    this.formattedDate = this.$props.calendarDate.toLocaleDateString(
+      "en-US",
+      options
+    );
+    const daily_offices = {
+      morning_prayer: "Daily Morning Prayer",
+      midday_prayer: "Daily Midday Prayer",
+      evening_prayer: "Daily Evening Prayer",
+      compline: "Compline",
+    };
+    const family_offices = {
+      morning_prayer: "Family Prayer in the Morning",
+      midday_prayer: "Family Prayer at Midday",
+      early_evening_prayer: "Family Prayer in the Early Evening",
+      close_of_day_prayer: "Family Prayer at the Close of Day",
+    };
+    const offices =
+      this.currentServiceType == "office" ? daily_offices : family_offices;
+    if (offices[this.$props.office] !== undefined) {
+      this.officeName = offices[this.$props.office];
+    }
+  },
+};
+</script>
+
 <style lang="scss">
 .card-footer {
   border-radius: var(--el-card-border-radius);
@@ -184,54 +235,3 @@ a:active.link {
   }
 }
 </style>
-
-<script>
-// @ is an alias to /src
-
-import Commemoration from "@/components/Commemoration";
-
-export default {
-  name: "CalenderCard",
-  components: { Commemoration },
-  props: ["card", "calendarDate", "office", "serviceType"],
-  data() {
-    return {
-      officeName: null,
-      formattedDate: null,
-      currentServiceType: this.serviceType,
-    };
-  },
-  async created() {
-    if (!this.currentServiceType) {
-      this.currentServiceType = "office";
-    }
-    const options = {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    };
-    this.formattedDate = this.$props.calendarDate.toLocaleDateString(
-      "en-US",
-      options
-    );
-    const daily_offices = {
-      morning_prayer: "Daily Morning Prayer",
-      midday_prayer: "Daily Midday Prayer",
-      evening_prayer: "Daily Evening Prayer",
-      compline: "Compline",
-    };
-    const family_offices = {
-      morning_prayer: "Family Prayer in the Morning",
-      midday_prayer: "Family Prayer at Midday",
-      early_evening_prayer: "Family Prayer in the Early Evening",
-      close_of_day_prayer: "Family Prayer at the Close of Day",
-    };
-    const offices =
-      this.currentServiceType == "office" ? daily_offices : family_offices;
-    if (offices[this.$props.office] !== undefined) {
-      this.officeName = offices[this.$props.office];
-    }
-  },
-};
-</script>

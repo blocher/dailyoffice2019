@@ -25,7 +25,6 @@
   </div>
 </template>
 .el-row
-<style lang="scss" scoped></style>
 <script>
 // @ is an alias to /src
 import setCalendarDate from "@/helpers/setCalendarDate";
@@ -117,3 +116,4 @@ export default {
   },
 };
 </script>
+<style lang="scss" scoped></style>

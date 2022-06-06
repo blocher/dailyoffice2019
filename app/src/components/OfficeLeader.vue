@@ -12,12 +12,6 @@
   </p>
 </template>
 
-<style>
-.extra-space-before {
-  margin-top: 0.7em;
-}
-</style>
-
 <script>
 // @ is an alias to /src
 
@@ -35,3 +29,9 @@ export default {
   }
 };
 </script>
+
+<style>
+.extra-space-before {
+  margin-top: 0.7em;
+}
+</style>

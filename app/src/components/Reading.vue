@@ -31,62 +31,6 @@
 
 </template>
 
-<style scoped lang="scss">
-
-h1, h2, h3, h4 {
-  margin: 0 0 0 !important;
-  padding: 0 !important;
-}
-
-h3 {
-  margin-top: 4rem !important;
-}
-
-h4 {
-  margin-bottom: 1rem !important;
-}
-
-
-</style>
-
-<style lang="scss">
-
-//body h3.reading-heading {
-//  margin-top: 1rem !important;
-//  font-size: .75em !important;
-//  padding-top: 0 !important;
-//}
-
-
-.readingText {
-  p {
-    margin-bottom: 1rem !important;
-  }
-
-
-  h3, h4 {
-    display: none !important;
-  }
-
-  .psalm {
-    h3 {
-      text-align: left !important;
-      display: block !important;
-      margin: 0 !important;
-      padding-top: 1rem !important;
-    }
-  }
-}
-
-.psalm, .the_psalm, .the_psalms {
-  p {
-    margin-bottom: .25rem !important;
-  }
-}
-
-
-</style>
-
 <script>
 
 export default {
@@ -152,3 +96,59 @@ export default {
   },
 };
 </script>
+
+<style scoped lang="scss">
+
+h1, h2, h3, h4 {
+  margin: 0 0 0 !important;
+  padding: 0 !important;
+}
+
+h3 {
+  margin-top: 4rem !important;
+}
+
+h4 {
+  margin-bottom: 1rem !important;
+}
+
+
+</style>
+
+<style lang="scss">
+
+//body h3.reading-heading {
+//  margin-top: 1rem !important;
+//  font-size: .75em !important;
+//  padding-top: 0 !important;
+//}
+
+
+.readingText {
+  p {
+    margin-bottom: 1rem !important;
+  }
+
+
+  h3, h4 {
+    display: none !important;
+  }
+
+  .psalm {
+    h3 {
+      text-align: left !important;
+      display: block !important;
+      margin: 0 !important;
+      padding-top: 1rem !important;
+    }
+  }
+}
+
+.psalm, .the_psalm, .the_psalms {
+  p {
+    margin-bottom: .25rem !important;
+  }
+}
+
+
+</style>

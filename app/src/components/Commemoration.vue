@@ -21,11 +21,6 @@
   </div>
 </template>
 
-<style>
-.bio_link {
-  margin-right: 0.5em;
-}
-</style>
 <script>
 // @ is an alias to /src
 
@@ -33,3 +28,8 @@ export default {
   props: ["commemoration"],
 };
 </script>
+<style>
+.bio_link {
+  margin-right: 0.5em;
+}
+</style>

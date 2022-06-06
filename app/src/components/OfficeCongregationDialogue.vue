@@ -13,6 +13,16 @@
   </div>
 </template>
 
+<script>
+// @ is an alias to /src
+
+export default {
+  name: "Office Leader Dialogue",
+  components: {},
+  props: ["line"],
+};
+</script>
+
 <style>
 
 .rubric {
@@ -32,13 +42,3 @@
   flex: 75%;
 }
 </style>
-
-<script>
-// @ is an alias to /src
-
-export default {
-  name: "Office Leader Dialogue",
-  components: {},
-  props: ["line"],
-};
-</script>

@@ -109,23 +109,6 @@
   </el-row>
 </template>
 
-<style scoped>
-.selected {
-  background-color: rgb(229, 231, 235);
-  border-color: rgb(44, 62, 80);
-  color: var(--font-on-white-background);
-}
-
-.el-card {
-  --el-card-padding: 10px;
-  height: 100%;
-}
-
-.el-card__body {
-  padding: 5px !important;
-}
-</style>
-
 <script>
 // @ is an alias to /src
 
@@ -322,3 +305,20 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.selected {
+  background-color: rgb(229, 231, 235);
+  border-color: rgb(44, 62, 80);
+  color: var(--font-on-white-background);
+}
+
+.el-card {
+  --el-card-padding: 10px;
+  height: 100%;
+}
+
+.el-card__body {
+  padding: 5px !important;
+}
+</style>

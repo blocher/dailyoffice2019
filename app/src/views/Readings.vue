@@ -49,20 +49,6 @@
 
 </template>
 
-<style scoped lang="scss">
-h1 {
-  margin: 2rem 0 0 !important;
-}
-
-h3 {
-  margin: 0 !important;
-  padding: 0 0 1rem !important;
-}
-
-.el-select {
-  margin-bottom: 2rem;
-}
-</style>
 <script>
 // @ is an alias to /src
 import Loading from "@/components/Loading";
@@ -188,3 +174,17 @@ export default {
 
 };
 </script>
+<style scoped lang="scss">
+h1 {
+  margin: 2rem 0 0 !important;
+}
+
+h3 {
+  margin: 0 !important;
+  padding: 0 0 1rem !important;
+}
+
+.el-select {
+  margin-bottom: 2rem;
+}
+</style>

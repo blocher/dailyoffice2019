@@ -1,16 +1,16 @@
 <template>
   <span class="sub-menu-item">
     <a
-href="" @click.prevent="emailPanel = true"
->
-      <font-awesome-icon :icon="['fad', 'envelopes']" />
+        href="" @click.prevent="emailPanel = true"
+    >
+      <font-awesome-icon :icon="['fad', 'envelopes']"/>
       <span class="ml-1 text-xs">Email Updates</span>
     </a>
   </span>
   <el-drawer
-v-model="emailPanel" :size="panelSize"
-direction="rtl"
->
+      v-model="emailPanel" :size="panelSize"
+      direction="rtl"
+  >
     <div class="mt-4">
       <h3>Get Occasional Email Updates</h3>
       <p class="text-left">
@@ -22,45 +22,41 @@ direction="rtl"
       <el-form>
         <p class="mt-2">
           <el-input
-            v-model="emailField"
-            type="email"
-            placeholder="Email address..."
-            required
+              v-model="emailField"
+              type="email"
+              placeholder="Email address..."
+              required
           />
         </p>
         <p class="mt-2">
           <el-form-item>
             <el-button
-type="primary" :disabled="loading"
-@click="onSubmit"
->
+                type="primary" :disabled="loading"
+                @click="onSubmit"
+            >
               Sign Up
             </el-button>
           </el-form-item>
         </p>
         <el-alert
-          v-if="success"
-          class="text-left"
-          :title="success"
-          type="success"
+            v-if="success"
+            class="text-left"
+            :title="success"
+            type="success"
         />
         <el-alert
-v-if="error" class="text-left"
-:title="error" type="error"
-/>
-        <Loading v-if="loading" />
+            v-if="error" class="text-left"
+            :title="error" type="error"
+        />
+        <Loading v-if="loading"/>
       </el-form>
     </div>
   </el-drawer>
 </template>
 
-<script setup>
-import { useFlexibleDrawer } from "@/components/useFlexibleDrawer";
-
-const { panelSize } = useFlexibleDrawer();
-</script>
 
 <script>
+
 export default {
   data() {
     return {
@@ -70,9 +66,24 @@ export default {
       success: false,
       error: null,
       loading: false,
+      panelSize: "37%",
     };
   },
+  created: function () {
+    window.addEventListener("resize", this.setPanelSize);
+    this.setPanelSize()
+  },
+  unmounted() {
+    window.removeEventListener("resize", this.setPanelSize);
+  },
   methods: {
+    setPanelSize() {
+      if (window.innerWidth < 1024) {
+        this.panelSize = "90%";
+      } else {
+        this.panelSize = "37%";
+      }
+    },
     onSubmit() {
       this.loading = true;
       this.success = false;
@@ -82,24 +93,24 @@ export default {
         email: this.emailField,
       };
       this.$http
-        .post(url, params)
-        .then((response) => {
-          this.success = `Thanks for signing up! We'll send an occasional email to ${this.emailField} when a new feature is launched.`;
-          this.emailField = null;
-          this.loading = false;
-        })
-        .catch((error) => {
-          console.error("There was an error!", error);
-          console.log(error.response);
-          try {
-            this.error = error.response.data[0];
+          .post(url, params)
+          .then((response) => {
+            this.success = `Thanks for signing up! We'll send an occasional email to ${this.emailField} when a new feature is launched.`;
+            this.emailField = null;
             this.loading = false;
-          } catch {
-            this.error =
-              "There was an unknown error. Please contact feedback@dailyoffice2019.com";
-          }
-          this.loading = false;
-        });
+          })
+          .catch((error) => {
+            console.error("There was an error!", error);
+            console.log(error.response);
+            try {
+              this.error = error.response.data[0];
+              this.loading = false;
+            } catch {
+              this.error =
+                  "There was an unknown error. Please contact feedback@dailyoffice2019.com";
+            }
+            this.loading = false;
+          });
     },
   },
 };

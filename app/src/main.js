@@ -10,6 +10,7 @@ import router from "./router";
 import ElementPlus from "element-plus";
 import "./assets/tailwind.css";
 import "element-plus/dist/index.css";
+import 'element-plus/theme-chalk/dark/css-vars.css'
 
 import {library} from "@fortawesome/fontawesome-svg-core";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";

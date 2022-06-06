@@ -1,16 +1,16 @@
 <template>
   <span class="sub-menu-item">
     <a
-href="" @click.prevent="sharePanel = true"
->
-      <font-awesome-icon :icon="['fad', 'share-nodes']" />&nbsp;
+        href="" @click.prevent="toggleSharePanel"
+    >
+      <font-awesome-icon :icon="['fad', 'share-nodes']"/>&nbsp;
       <span class="text-xs">Share Settings</span>
     </a>
   </span>
   <el-drawer
-v-model="sharePanel" direction="rtl"
-:size="panelSize"
->
+      v-model="showSharePanel" direction="rtl"
+      :size="panelSize"
+  >
     <div class="mt-4">
       <h3>Share Link</h3>
       <p class="text-left pb-3 mx-1">
@@ -19,13 +19,13 @@ v-model="sharePanel" direction="rtl"
       </p>
       <div @click="copyLink">
         <el-input
-          v-model="shareLink"
-          placeholder="Copy and paste share link"
-          readonly
+            v-model="shareLink"
+            placeholder="Copy and paste share link"
+            readonly
         >
           <template #append>
             <div class="copyLinkWrapper">
-              <font-awesome-icon :icon="['fad', 'copy']" />
+              <font-awesome-icon :icon="['fad', 'copy']"/>
             </div>
           </template>
         </el-input>
@@ -38,36 +38,32 @@ v-model="sharePanel" direction="rtl"
       this page with your settings already preselected.
     </p>
     <p
-v-if="canShare" class="text-left mt-4"
->
+        v-if="canShare" class="text-left mt-4"
+    >
       <a
-href="" @click="share($event)"
->
-        <font-awesome-icon :icon="['fad', 'share-nodes']" />&nbsp;
+          href="" @click="share($event)"
+      >
+        <font-awesome-icon :icon="['fad', 'share-nodes']"/>&nbsp;
         <span class="text-xs"
-          >Share using an app installed on your computer or device</span
+        >Share using an app installed on your computer or device</span
         >
       </a>
     </p>
   </el-drawer>
 </template>
 
-<script setup>
-import { useFlexibleDrawer } from "@/components/useFlexibleDrawer";
-
-const { panelSize } = useFlexibleDrawer();
-</script>
-
 <script>
-import { Share } from "@capacitor/share";
-import { Clipboard } from "@capacitor/clipboard";
-import { ElMessage } from "element-plus";
+import {Share} from "@capacitor/share";
+import {Clipboard} from "@capacitor/clipboard";
+import {ElMessage} from "element-plus";
 
 export default {
   data() {
     return {
       canShare: false,
       sharePanel: false,
+      showSharePanel: false,
+      panelSize: "37%",
     };
   },
   computed: {
@@ -76,15 +72,27 @@ export default {
     },
   },
   created: async function () {
+    window.addEventListener("resize", this.setPanelSize);
+    this.setPanelSize()
     const canShare = await Share.canShare();
     this.canShare = canShare.value;
   },
+  unmounted() {
+    window.removeEventListener("resize", this.setPanelSize);
+  },
   methods: {
+    setPanelSize() {
+      if (window.innerWidth < 1024) {
+        this.panelSize = "90%";
+      } else {
+        this.panelSize = "37%";
+      }
+    },
     getShareLink() {
       const settings = this.$store.state.settings;
       const queryString = Object.keys(settings)
-        .map((key) => key + "=" + settings[key])
-        .join("&");
+          .map((key) => key + "=" + settings[key])
+          .join("&");
       const path = this.$route.path;
       const url = `${window.location.protocol}//${window.location.hostname}${path}?${queryString}`;
       return url;
@@ -99,6 +107,10 @@ export default {
         showClose: true,
         dangerouslyUseHTMLString: true,
       });
+
+    },
+    toggleSharePanel() {
+      this.showSharePanel = !this.showSharePanel;
     },
 
     async share(event) {

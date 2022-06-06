@@ -4,13 +4,6 @@
   </p>
 </template>
 
-<style lang="scss" scoped>
-.rubric {
-  font-size: .8em;
-  line-height: 1.2em;
-}
-</style>
-
 <script>
 // @ is an alias to /src
 export default {
@@ -19,3 +12,10 @@ export default {
   props: ["line"],
 };
 </script>
+
+<style lang="scss" scoped>
+.rubric {
+  font-size: .8em;
+  line-height: 1.2em;
+}
+</style>

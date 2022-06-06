@@ -41,49 +41,6 @@
   </el-calendar>
 </template>
 
-<style lang="scss">
-
-.dateCellWrapper {
-  @media only screen and (max-width: 733px) {
-    .calendarText {
-      font-size: .5rem;
-    }
-  }
-}
-
-td {
-  height: 1px !important;
-}
-
-.el-calendar,
-.el-calendar-table td.is-selected {
-  background-color: var(--background-color) !important;
-}
-
-.el-calendar-day {
-  min-height: 75px;
-  height: 100% !important;
-  padding: 0 !important;
-  display: flex;
-  margin-bottom: auto;
-  color: var(--el-text-color-primary);
-
-  &:hover {
-    color: var(--font-on-white-background);
-  }
-
-  p {
-    line-height: 1.1em;
-  }
-}
-
-.dateCellWrapper {
-  padding: 8px;
-  height: 100%;
-  width: 100%;
-  margin-bottom: auto;
-}
-</style>
 <script>
 // @ is an alias to /src
 
@@ -184,3 +141,46 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+
+.dateCellWrapper {
+  @media only screen and (max-width: 733px) {
+    .calendarText {
+      font-size: .5rem;
+    }
+  }
+}
+
+td {
+  height: 1px !important;
+}
+
+.el-calendar,
+.el-calendar-table td.is-selected {
+  background-color: var(--background-color) !important;
+}
+
+.el-calendar-day {
+  min-height: 75px;
+  height: 100% !important;
+  padding: 0 !important;
+  display: flex;
+  margin-bottom: auto;
+  color: var(--el-text-color-primary);
+
+  &:hover {
+    color: var(--font-on-white-background);
+  }
+
+  p {
+    line-height: 1.1em;
+  }
+}
+
+.dateCellWrapper {
+  padding: 8px;
+  height: 100%;
+  width: 100%;
+  margin-bottom: auto;
+}
+</style>
