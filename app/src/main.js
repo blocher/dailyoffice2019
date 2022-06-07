@@ -1,6 +1,5 @@
 import {createApp} from "vue";
 
-import "./registerServiceWorker.js.tmp";
 
 import store from "./store";
 import axios from "axios";

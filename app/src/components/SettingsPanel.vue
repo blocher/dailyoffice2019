@@ -97,12 +97,6 @@ v-for="setting in availableSettings" :key="setting.uuid"
   </p>
 </template>
 
-<style>
-.selected-text {
-  color: var(--font-on-white-background);
-}
-</style>
-
 <script>
 // @ is an alias to /src
 
@@ -164,3 +158,9 @@ export default {
   },
 };
 </script>
+
+<style>
+.selected-text {
+  color: var(--font-on-white-background);
+}
+</style>
