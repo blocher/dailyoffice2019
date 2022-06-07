@@ -145,37 +145,6 @@ settings_dict = [
 
 minor_settings_dict = [
     {
-        "title": "Visual Theme",
-        "name": "theme",
-        "help_text": "Use light mode or dark mode, or default to your computer's setting for light or dark mode",
-        "options": [
-            {
-                "value": "theme-auto",
-                "hide": [],
-                "show": [],
-                "heading": "Use Computer Setting",
-                "text": "The long form of the intro and absolution are used every day",
-                "tags": {"class": "theme-selector", "data-theme": "theme-auto"},
-            },
-            {
-                "value": "theme-light",
-                "hide": [],
-                "show": [],
-                "heading": "Light Mode",
-                "text": "The long form of the intro and absolution are used only on fast days",
-                "tags": {"class": "theme-selector", "data-theme": "theme-light"},
-            },
-            {
-                "value": "theme-dark",
-                "hide": [],
-                "show": [],
-                "heading": "Dark Mode",
-                "text": "The short form of the intro and absolution are used every day",
-                "tags": {"class": "theme-selector", "data-theme": "theme-dark"},
-            },
-        ],
-    },
-    {
         "title": "Substitute Sunday/Holy Day (Eucharistic) Lectionary",
         "name": "lectionary",
         "help_text": "On Sundays and major holy days, do you want to use the standard Daily Office readings or substitute the 3-year Sunday/Holy Day cycle? When the Daily Office is used for the principal service of a church, the prayer book instructs you to replace the Daily Office readings with the three year cycle of Sunday and Holy Day readings.  This is generally done only in churches and not when using the Daily Office as a personal devotion at home.",
@@ -665,37 +634,6 @@ family_settings_dict = [
     },
 ]
 family_minor_settings_dict = [
-    {
-        "title": "Visual Theme",
-        "name": "theme",
-        "help_text": "Use light mode or dark mode, or default to your computer's setting for light or dark mode",
-        "options": [
-            {
-                "value": "theme-auto",
-                "hide": [],
-                "show": [],
-                "heading": "Use Computer Setting",
-                "text": "The long form of the intro and absolution are used every day",
-                "tags": {"class": "theme-selector", "data-theme": "theme-auto"},
-            },
-            {
-                "value": "theme-light",
-                "hide": [],
-                "show": [],
-                "heading": "Light Mode",
-                "text": "The long form of the intro and absolution are used only on fast days",
-                "tags": {"class": "theme-selector", "data-theme": "theme-light"},
-            },
-            {
-                "value": "theme-dark",
-                "hide": [],
-                "show": [],
-                "heading": "Dark Mode",
-                "text": "The short form of the intro and absolution are used every day",
-                "tags": {"class": "theme-selector", "data-theme": "theme-dark"},
-            },
-        ],
-    },
     {
         "title": "Opening Sentence",
         "name": "family-opening-setence",
