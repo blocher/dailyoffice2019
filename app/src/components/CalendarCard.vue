@@ -1,7 +1,7 @@
 <template>
   <el-card
-class="box-card" :class="card.primary_color"
->
+      class="box-card" :class="cardColor"
+  >
     <template #header>
       <div class="card-header">
         <h1 v-if="officeName">
@@ -9,19 +9,19 @@ class="box-card" :class="card.primary_color"
         </h1>
         <h3>{{ formattedDate }}</h3>
         <div
-class="card-info" :v-if="card"
->
+            class="card-info" :v-if="card"
+        >
           <h4 v-if="card && office != 'evening_prayer' && office != 'compline'">
             {{ card.primary_feast }}
           </h4>
           <h4
-            v-if="card && (office == 'evening_prayer' || office == 'compline')"
+              v-if="card && (office == 'evening_prayer' || office == 'compline')"
           >
             {{ card.primary_evening_feast }}
           </h4>
           <h5
-            v-if="card && card.fast && card.fast.fast_day"
-            class="text-center"
+              v-if="card && card.fast && card.fast.fast_day"
+              class="text-center"
           >
             Fast Day
           </h5>
@@ -29,7 +29,7 @@ class="card-info" :v-if="card"
       </div>
     </template>
     <div
-      v-if="
+        v-if="
         card &&
         card.commemorations &&
         office != 'evening_prayer' &&
@@ -37,32 +37,32 @@ class="card-info" :v-if="card"
       "
     >
       <div
-        v-for="commemoration in card.commemorations"
-        :key="commemoration.name"
+          v-for="commemoration in card.commemorations"
+          :key="commemoration.name"
       >
-        <Commemoration :commemoration="commemoration" />
+        <Commemoration :commemoration="commemoration"/>
       </div>
     </div>
     <div
-      v-if="
+        v-if="
         card &&
         card.commemorations &&
         (office == 'evening_prayer' || office == 'compline')
       "
     >
       <div
-        v-for="commemoration in card.evening_commemorations"
-        :key="commemoration.name"
+          v-for="commemoration in card.evening_commemorations"
+          :key="commemoration.name"
       >
-        <Commemoration :commemoration="commemoration" />
+        <Commemoration :commemoration="commemoration"/>
       </div>
     </div>
     <div
-v-if="card && card.season" class="width:10"
->
+        v-if="card && card.season" class="width:10"
+    >
       <div
-class="card-footer mt-2" :class="card.season.colors[0]"
->
+          class="card-footer mt-2" :class="card.season.colors[0]"
+      >
         <h4>{{ card.season.name }}</h4>
       </div>
     </div>
@@ -76,7 +76,7 @@ import Commemoration from "@/components/Commemoration";
 
 export default {
   name: "CalenderCard",
-  components: { Commemoration },
+  components: {Commemoration},
   props: ["card", "calendarDate", "office", "serviceType"],
   data() {
     return {
@@ -84,6 +84,15 @@ export default {
       formattedDate: null,
       currentServiceType: this.serviceType,
     };
+  },
+  computed: {
+    cardColor: function () {
+      if (this.office != 'evening_prayer' && this.office != 'compline') {
+        return this.card.primary_color
+      } else {
+        return this.card.primary_evening_color
+      }
+    }
   },
   async created() {
     if (!this.currentServiceType) {
@@ -96,8 +105,8 @@ export default {
       day: "numeric",
     };
     this.formattedDate = this.$props.calendarDate.toLocaleDateString(
-      "en-US",
-      options
+        "en-US",
+        options
     );
     const daily_offices = {
       morning_prayer: "Daily Morning Prayer",
@@ -112,7 +121,7 @@ export default {
       close_of_day_prayer: "Family Prayer at the Close of Day",
     };
     const offices =
-      this.currentServiceType == "office" ? daily_offices : family_offices;
+        this.currentServiceType == "office" ? daily_offices : family_offices;
     if (offices[this.$props.office] !== undefined) {
       this.officeName = offices[this.$props.office];
     }

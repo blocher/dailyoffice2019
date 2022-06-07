@@ -96,6 +96,10 @@ body {
   color: var(--font-color);
   background-color: var(--color-bg);
 
+  .el-input__inner:active {
+    border: none !important;
+  }
+
   .main {
     // max-width: 620px;
     max-width: 1800px;

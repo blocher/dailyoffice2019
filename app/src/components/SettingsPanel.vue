@@ -1,47 +1,34 @@
 <template>
   <form>
-    <p class="mt-0 pt-0 text-right">
-      <small>
-        Include Advanced Settings
-        <el-switch
-          v-model="advanced"
-          class="ml-2"
-          active-color="#0284c7"
-          inactive-color="#e5e7eb"
-          @change="toggleAdvanced"
-        />
-      </small>
-    </p>
-
     <div
-v-for="setting in availableSettings" :key="setting.uuid"
->
+        v-for="setting in availableSettings" :key="setting.uuid"
+    >
       <RadioGroup
-        v-if="showSetting(setting)"
-        v-model="setting.active"
-        class="mt-8"
-        @click="changeSetting"
+          v-if="showSetting(setting)"
+          v-model="setting.active"
+          class="mt-8"
+          @click="changeSetting"
       >
         <RadioGroupLabel class="mt-8 text-lg font-medium">
           {{ setting.title }}
-          <el-tag v-if="setting.setting_type == 2"> Advanced Setting </el-tag>
+          <el-tag v-if="setting.setting_type == 2"> Advanced Setting</el-tag>
           <br>
         </RadioGroupLabel>
         <RadioGroupLabel
-          class="mt-8 text-xs font-medium"
-          v-html="setting.description"
+            class="mt-8 text-xs font-medium"
+            v-html="setting.description"
         />
 
         <div class="mt-1 rounded-md shadow-sm -space-y-px">
           <RadioGroupOption
-            v-for="(option, optionIdx) in setting.options"
-            :key="option.uuid"
-            v-slot="{ checked, active }"
-            as="template"
-            :value="option.value"
+              v-for="(option, optionIdx) in setting.options"
+              :key="option.uuid"
+              v-slot="{ checked, active }"
+              as="template"
+              :value="option.value"
           >
             <div
-              :class="[
+                :class="[
                 optionIdx === 0 ? 'rounded-tl-md rounded-tr-md' : '',
                 optionIdx === availableSettings.length - 1
                   ? 'rounded-bl-md rounded-br-md'
@@ -51,21 +38,21 @@ v-for="setting in availableSettings" :key="setting.uuid"
               ]"
             >
               <span
-                :class="[
+                  :class="[
                   checked
                     ? 'bg-sky-600 border-transparent'
                     : 'bg-white border-gray-300',
                   active ? 'ring-2 ring-offset-2 ring-sky-500' : '',
                   'h-4 w-4 mt-0.5 cursor-pointer rounded-full border flex items-center justify-center',
                 ]"
-                aria-hidden="true"
+                  aria-hidden="true"
               >
-                <span class="rounded-full bg-white w-1.5 h-1.5" />
+                <span class="rounded-full bg-white w-1.5 h-1.5"/>
               </span>
               <div class="ml-3 flex flex-col">
                 <RadioGroupLabel
-                  as="span"
-                  :class="[
+                    as="span"
+                    :class="[
                     checked ? 'selected-text' : '',
                     'block text-sm font-medium',
                   ]"
@@ -73,9 +60,9 @@ v-for="setting in availableSettings" :key="setting.uuid"
                   {{ option.name }}
                 </RadioGroupLabel>
                 <RadioGroupDescription
-                  as="span"
-                  :class="[checked ? 'selected-text' : '', 'block text-sm']"
-                  v-html="option.description"
+                    as="span"
+                    :class="[checked ? 'selected-text' : '', 'block text-sm']"
+                    v-html="option.description"
                 />
               </div>
             </div>
@@ -88,10 +75,10 @@ v-for="setting in availableSettings" :key="setting.uuid"
     <small>
       Include Advanced Settings
       <el-switch
-        v-model="advanced"
-        class="ml-2"
-        active-color="#0284c7"
-        inactive-color="#e5e7eb"
+          v-model="advanced"
+          class="ml-2"
+          active-color="#0284c7"
+          inactive-color="#e5e7eb"
       />
     </small>
   </p>
@@ -100,13 +87,8 @@ v-for="setting in availableSettings" :key="setting.uuid"
 <script>
 // @ is an alias to /src
 
-import {
-  RadioGroup,
-  RadioGroupDescription,
-  RadioGroupLabel,
-  RadioGroupOption,
-} from "@headlessui/vue";
-import { ElMessage } from "element-plus";
+import {RadioGroup, RadioGroupDescription, RadioGroupLabel, RadioGroupOption,} from "@headlessui/vue";
+import {ElMessage} from "element-plus";
 
 export default {
   name: "SettingsPanel",

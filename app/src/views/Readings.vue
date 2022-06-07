@@ -163,14 +163,17 @@ export default {
         }
         return reading;
       })
+      if (data.reading.cycle.toString() == "60") {
+        this.setCycle60()
+      }
+      if (data.reading.cycle.toString() == "30") {
+        this.setCycle30()
+      }
       await nextTick();
       this.goto(this.readingID(data.reading))
     },
     readingName: function (index) {
       return `reading_${index}`;
-    },
-    collectName: function (index) {
-      return `collect_${index}`;
     },
     goto(id) {
       const menu = document.getElementById('topMenu')

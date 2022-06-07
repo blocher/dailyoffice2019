@@ -1,27 +1,27 @@
 <template>
   <div class="home">
     <h1>Settings</h1>
-    <Loading v-if="loading" />
+    <Loading v-if="loading"/>
     <main
-      v-if="!loading"
-      v-cloak
-      class="max-w-6xl mx-auto pt-10 pb-12 px-4 lg:pb-16"
+        v-if="!loading"
+        v-cloak
+        class="max-w-6xl mx-auto pt-10 pb-12 px-4 lg:pb-16"
     >
       <el-tabs
-:tab-position="tabPosition" class="h-full"
->
+          :tab-position="tabPosition" class="h-full"
+      >
         <el-tab-pane label="Daily Office">
           <SettingsPanel
-            :available-settings="availableSettings"
-            site="Daily Office"
-            name="Daily Office Settings"
+              :available-settings="availableSettings"
+              site="Daily Office"
+              name="Daily Office Settings"
           />
         </el-tab-pane>
         <el-tab-pane label="Family Prayer">
           <SettingsPanel
-            :available-settings="availableSettings"
-            site="Family Prayer"
-            name="Family Prayer Settings"
+              :available-settings="availableSettings"
+              site="Family Prayer"
+              name="Family Prayer Settings"
           />
         </el-tab-pane>
       </el-tabs>
@@ -54,7 +54,8 @@ export default {
   computed: {
     // a computed getter
     tabPosition: function () {
-      return this.windowWidth > 780 ? "left" : "top";
+      return "top"
+      // return this.windowWidth > 780 ? "left" : "top";
     },
   },
   mounted() {
@@ -70,10 +71,10 @@ export default {
       this.availableSettings[i].active = settings[name];
     });
     this.dailyOfficeSettings = this.availableSettings.filter(
-      (setting) => setting.site_name == "Daily Office"
+        (setting) => setting.site_name == "Daily Office"
     );
     this.familyPrayerSettings = this.availableSettings.filter(
-      (setting) => setting.site_name == "Family Prayer"
+        (setting) => setting.site_name == "Family Prayer"
     );
     this.loading = false;
   },

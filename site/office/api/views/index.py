@@ -2334,6 +2334,7 @@ def morning_prayer_30_day_psalms(obj):
         text=get_psalms(obj.thirty_day_psalter_day.mp_psalms, simplified_citations=True),
         testament="OT",
         cycle="30",
+        reading_number=0,
     )
     abbreviated = full
     return {
@@ -2354,6 +2355,7 @@ def evening_prayer_30_day_psalms(obj):
         text=get_psalms(obj.thirty_day_psalter_day.ep_psalms, simplified_citations=True),
         testament="OT",
         cycle="30",
+        reading_number=0,
     )
     abbreviated = full
     return {
@@ -2374,6 +2376,7 @@ def standard_morning_prayer_60_day_psalms(obj):
         text=get_psalms(obj.standard_readings.mp_psalms, simplified_citations=True),
         testament="OT",
         cycle="60",
+        reading_number=0,
     )
     abbreviated = full
     return {
@@ -2394,6 +2397,7 @@ def standard_evening_prayer_60_day_psalms(obj):
         text=get_psalms(obj.standard_readings.ep_psalms, simplified_citations=True),
         testament="OT",
         cycle="60",
+        reading_number=0,
     )
     abbreviated = full
     return {
@@ -2414,6 +2418,7 @@ def holy_day_morning_prayer_60_day_psalms(obj):
         text=get_psalms(obj.holy_day_readings.mp_psalms, simplified_citations=True),
         testament="OT",
         cycle="60",
+        reading_number=0,
     )
     abbreviated = full
     return {
@@ -2434,6 +2439,7 @@ def holy_day_evening_prayer_60_day_psalms(obj):
         text=get_psalms(obj.holy_day_readings.ep_psalms, simplified_citations=True),
         testament="OT",
         cycle="60",
+        reading_number=0,
     )
     abbreviated = full
     return {
@@ -2448,6 +2454,7 @@ def holy_day_morning_prayer_reading_1(obj):
         citation=obj.holy_day_readings.mp_reading_1,
         text=obj.holy_day_readings.mp_reading_1_text,
         testament=obj.holy_day_readings.mp_reading_1_testament,
+        reading_number=1,
     )
     abbreviated = full
     if obj.holy_day_readings.mp_reading_1_abbreviated:
@@ -2456,6 +2463,7 @@ def holy_day_morning_prayer_reading_1(obj):
             citation=obj.holy_day_readings.mp_reading_1_abbreviated,
             text=obj.holy_day_readings.mp_reading_1_abbreviated_text,
             testament=obj.holy_day_readings.mp_reading_1_testament,
+            reading_number=1,
         )
     return {
         "full": full,
@@ -2469,6 +2477,7 @@ def holy_day_morning_prayer_reading_2(obj):
         citation=obj.holy_day_readings.mp_reading_2,
         text=obj.holy_day_readings.mp_reading_2_text,
         testament=obj.holy_day_readings.mp_reading_2_testament,
+        reading_number=2,
     )
     abbreviated = full
     return {
@@ -2483,6 +2492,7 @@ def holy_day_evening_prayer_reading_1(obj):
         citation=obj.holy_day_readings.ep_reading_1,
         text=obj.holy_day_readings.ep_reading_1_text,
         testament=obj.holy_day_readings.ep_reading_1_testament,
+        reading_number=1,
     )
     abbreviated = full
     if obj.holy_day_readings.ep_reading_1_abbreviated:
@@ -2504,6 +2514,7 @@ def holy_day_evening_prayer_reading_2(obj):
         citation=obj.holy_day_readings.ep_reading_2,
         text=obj.holy_day_readings.ep_reading_2_text,
         testament=obj.holy_day_readings.ep_reading_2_testament,
+        reading_number=2,
     )
     abbreviated = full
     return {
@@ -2518,6 +2529,7 @@ def standard_morning_prayer_reading_1(obj):
         citation=obj.standard_readings.mp_reading_1,
         text=obj.standard_readings.mp_reading_1_text,
         testament=obj.standard_readings.mp_reading_1_testament,
+        reading_number=1,
     )
     abbreviated = full
     if obj.standard_readings.mp_reading_1_abbreviated:
@@ -2526,6 +2538,7 @@ def standard_morning_prayer_reading_1(obj):
             citation=obj.standard_readings.mp_reading_1_abbreviated,
             text=obj.standard_readings.mp_reading_1_abbreviated_text,
             testament=obj.standard_readings.mp_reading_1_testament,
+            reading_number=1,
         )
     return {
         "full": full,
@@ -2539,6 +2552,7 @@ def standard_morning_prayer_reading_2(obj):
         citation=obj.standard_readings.mp_reading_2,
         text=obj.standard_readings.mp_reading_2_text,
         testament=obj.standard_readings.mp_reading_2_testament,
+        reading_number=2,
     )
     abbreviated = full
     return {
@@ -2553,6 +2567,7 @@ def standard_evening_prayer_reading_1(obj):
         citation=obj.standard_readings.ep_reading_1,
         text=obj.standard_readings.ep_reading_1_text,
         testament=obj.standard_readings.ep_reading_1_testament,
+        reading_number=1,
     )
     abbreviated = full
     if obj.standard_readings.ep_reading_1_abbreviated:
@@ -2561,6 +2576,7 @@ def standard_evening_prayer_reading_1(obj):
             citation=obj.standard_readings.ep_reading_1_abbreviated,
             text=obj.standard_readings.ep_reading_1_abbreviated_text,
             testament=obj.standard_readings.ep_reading_1_testament,
+            reading_number=1,
         )
     return {
         "full": full,
@@ -2574,6 +2590,7 @@ def standard_evening_prayer_reading_2(obj):
         citation=obj.standard_readings.ep_reading_2,
         text=obj.standard_readings.ep_reading_2_text,
         testament=obj.standard_readings.ep_reading_2_testament,
+        reading_number=2,
     )
     abbreviated = full
     return {

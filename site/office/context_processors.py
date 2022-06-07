@@ -1,8 +1,7 @@
-from django.template.context_processors import static
 from django.utils.safestring import mark_safe
 
-from website.settings import MODE
 from website.settings import APP_VERSION
+from website.settings import MODE
 
 
 def get_on(path):
@@ -418,21 +417,24 @@ minor_settings_dict = [
         ],
     },
     {
-        "title": "Prayers in the Time of An Election",
-        "name": "election_prayers",
-        "help_text": "Include election related collects until the U.S. General election. (Automatically disabled if only Canadian feasts are selected).",
-        "options": [
-            {"value": "election_yes", "hide": [], "show": ["election_prayers"], "heading": "On"},
-            {"value": "election_no", "hide": ["election_prayers"], "show": [], "heading": "Off"},
-        ],
-    },
-    {
         "title": "Prayers in the Time of Pandemic",
         "name": "pandemic_prayers",
         "help_text": "Include a rotating set of collects for the duration of this pandemic",
         "options": [
-            {"value": "pandemic_yes", "hide": [], "show": ["pandemic_prayers"], "heading": "On"},
-            {"value": "pandemic_no", "hide": ["pandemic_prayers"], "show": [], "heading": "Off"},
+            {
+                "value": "pandemic_yes",
+                "hide": [],
+                "show": ["pandemic_prayers"],
+                "heading": "On",
+                "text": "Include extra collects during the pandemic",
+            },
+            {
+                "value": "pandemic_no",
+                "hide": ["pandemic_prayers"],
+                "show": [],
+                "heading": "Off",
+                "text": "Do not include extra collects during the pandemic",
+            },
         ],
     },
     {

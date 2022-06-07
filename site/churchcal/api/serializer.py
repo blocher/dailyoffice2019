@@ -52,6 +52,7 @@ class DaySerializer(serializers.Serializer):
     evening_commemorations = CommemorationSerializer(many=True, source="all_evening")
     mass_readings = serializers.SerializerMethodField()
     primary_color = serializers.SerializerMethodField()
+    primary_evening_color = serializers.SerializerMethodField()
     primary_feast = serializers.SerializerMethodField()
     primary_evening_feast = serializers.SerializerMethodField()
     major_feast = serializers.SerializerMethodField()
@@ -82,6 +83,13 @@ class DaySerializer(serializers.Serializer):
                 return obj.all[0].color.lower()
         except (KeyError, AttributeError):
             return None
+
+    def get_primary_evening_color(self, obj):
+        try:
+            if obj.all_evening:
+                return obj.all_evening[0].color.lower()
+        except (KeyError, AttributeError):
+            return self.get_primary_color(obj)
 
     def get_primary_feast(self, obj):
         try:

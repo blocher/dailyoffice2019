@@ -3,11 +3,12 @@
   <span v-for="(reading, index) in readings" :key="index">
     <a :href="readingID(reading.full)" @click.prevent="goToReading(reading.full,'full')">{{
         reading.full.citation
-      }}</a>
+      }}</a> <span v-if="reading.full.cycle=='30'">(30 Day Cycle)</span><span
+      v-if="reading.full.cycle=='60'">(60 Day Cycle)</span>
     <span v-if="reading.abbreviated && reading.abbreviated.citation != reading.full.citation">
       &nbsp;<em>[or <a
-:href="readingID(reading.abbreviated)"
-                       @click.prevent="goToReading(reading.abbreviated,'abbreviated')">{{
+        :href="readingID(reading.abbreviated)"
+        @click.prevent="goToReading(reading.abbreviated,'abbreviated')">{{
         reading.abbreviated.citation
       }}</a>]</em>
     </span>
