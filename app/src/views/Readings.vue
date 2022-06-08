@@ -163,10 +163,10 @@ export default {
         }
         return reading;
       })
-      if (data.reading.cycle.toString() == "60") {
+      if (data.reading.cycle == "60") {
         this.setCycle60()
       }
-      if (data.reading.cycle.toString() == "30") {
+      if (data.reading.cycle == "30") {
         this.setCycle30()
       }
       await nextTick();

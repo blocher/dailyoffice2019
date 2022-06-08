@@ -2627,7 +2627,8 @@ def get_reading_name_from_reading_number(reading):
 
 
 def get_collects_for_readings(service, commemoration, calendar_date):
-    if calendar_date.proper:
+    print("HERE", calendar_date.proper, commemoration.name)
+    if calendar_date.proper and (commemoration.name not in ["The Day of Pentecost", "Trinity Sunday"]):
         return [calendar_date.proper.collect]
     if commemoration.eve_collect:
         if "Vigil" in commemoration.name or "Eve of" in commemoration.name or "Easter Vigil" in service:

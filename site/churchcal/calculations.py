@@ -26,7 +26,11 @@ class CalendarDate(object):
         self.year = year
 
     def _find_proper(self):
-        date = datetime.strptime("2019-{}-{}".format(self.date.month, self.date.day), "%Y-%m-%d").date()
+        sunday_date = self.date
+        if sunday_date.weekday() != 6:
+            sun_offset = (sunday_date.weekday() - 6) % 7
+            sunday_date = sunday_date - timedelta(days=sun_offset)
+        date = datetime.strptime("2019-{}-{}".format(sunday_date.month, sunday_date.day), "%Y-%m-%d").date()
         return Proper.objects.filter(calendar=self.calendar, start_date__lte=date, end_date__gte=date).first()
 
     @property
@@ -53,22 +57,21 @@ class CalendarDate(object):
 
     @cached_property
     def proper(self):
-        if self.season.name != "Season After Pentecost" and self.primary.name != "The Day of Pentecost":
+        if self.season.name != "Season After Pentecost" and self.primary.name not in [
+            "The Day of Pentecost",
+            "Trinity Sunday",
+        ]:
             return None
 
-        if self.date.weekday() == 6:
-            return self._find_proper()
-
-        return None
+        return self._find_proper()
 
     @cached_property
     def office_year(self):
-
         return 1 if self.year.start_year % 2 == 0 else 2
 
     @cached_property
     def mass_readings(self):
-        if self.proper and self.primary.rank.name == "SUNDAY":
+        if self.proper and self.primary.rank.name in ["SUNDAY"]:
             return self.proper.get_mass_readings_for_year(self.year.mass_year)
         return self.primary.get_mass_readings_for_year(self.year.mass_year)
 
@@ -593,7 +596,8 @@ class SetNamesAndCollects(object):
         if calendar_date.proper and calendar_date.proper.collect:
             commemoration.proper = calendar_date.proper
             commemoration.morning_prayer_collect = commemoration.evening_prayer_collect = calendar_date.proper.collect
-            if commemoration.rank.name == "SUNDAY":
+            if commemoration.rank.name == "SUNDAY" or commemoration.name in ["The Day of Pentecost", "Trinity Sunday"]:
+                print("hi", commemoration.name)
                 proper_string = " (Proper {})".format(calendar_date.proper.number)
                 commemoration.name = "{}{}".format(commemoration.name, proper_string)
 
@@ -612,6 +616,7 @@ class SetNamesAndCollects(object):
                     commemoration.alternate_collect = target_commemoration.alternate_collect
                     commemoration.eve_collect = target_commemoration.eve_collect
                     if previous.proper and previous.proper.collect:
+                        calendar_date.proper = previous.proper
                         commemoration.morning_prayer_collect = previous.proper.collect
                         commemoration.evening_prayer_collect = previous.proper.collect
                         name = target_commemoration.name
@@ -807,6 +812,9 @@ class SetNamesAndCollects(object):
         ascension = SetNamesAndCollects.is_ascension(calendar_date)
         if ascension:
             return ascension
+        pentecost = SetNamesAndCollects.is_pentecost_or_trinity(calendar_date)
+        if pentecost:
+            return pentecost
         sunday = SetNamesAndCollects.is_sunday(calendar_date)
         if sunday:
             return sunday
@@ -865,6 +873,20 @@ class SetNamesAndCollects(object):
                     return commemoration
             for commemoration in calendar_date.all:
                 if commemoration.rank.name == "SUNDAY":
+                    return commemoration
+            return None
+        return None
+
+    @staticmethod
+    def is_pentecost_or_trinity(calendar_date):
+        if calendar_date.date.weekday() == 6:
+            for commemoration in calendar_date.all:
+                if commemoration.rank.name == "PRINCIPAL_FEAST" and commemoration.name in [
+                    "The Day of Pentecost",
+                    "Trinity Sunday",
+                ]:
+                    commemoration = commemoration.copy()
+                    commemoration.name = f"{commemoration.name} (Proper {calendar_date.proper.number})"
                     return commemoration
             return None
         return None
