@@ -63,6 +63,13 @@ export default {
   -moz-osx-font-smoothing: grayscale;
 }
 
+[type='text']:focus, [type='email']:focus, [type='url']:focus, [type='password']:focus, [type='number']:focus, [type='date']:focus, [type='datetime-local']:focus, [type='month']:focus, [type='search']:focus, [type='tel']:focus, [type='time']:focus, [type='week']:focus, [multiple]:focus, textarea:focus, select:focus {
+  border-color: transparent;
+  outline: 0px !important;
+  box-shadow: 0 0 0 0 transparent !important;
+}
+
+
 :root {
   --color-bg: #fff;
   --font-color: #333;
@@ -75,6 +82,7 @@ export default {
   --el-calendar-selected-bg-color: #fff;
   --el-card-bg-color: white;
   --el-drawer-bg-color: white !important;
+  --el-font-size-base: 16px;
 }
 
 :root.dark {
@@ -95,6 +103,10 @@ export default {
 body {
   color: var(--font-color);
   background-color: var(--color-bg);
+
+  .el-input__inner, el-select-dropdown__item {
+    font-size: 16px;
+  }
 
   .el-input__inner:active {
     border: none !important;
