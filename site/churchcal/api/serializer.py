@@ -56,6 +56,7 @@ class DaySerializer(serializers.Serializer):
     primary_feast = serializers.SerializerMethodField()
     primary_evening_feast = serializers.SerializerMethodField()
     major_feast = serializers.SerializerMethodField()
+    major_or_minor_feast = serializers.SerializerMethodField()
 
     def get_date_description(self, obj):
         return {
@@ -111,3 +112,13 @@ class DaySerializer(serializers.Serializer):
                 return obj.required[0].name
         except (KeyError, AttributeError):
             return None
+        return None
+
+    def get_major_or_minor_feast(self, obj):
+        try:
+            for feast in obj.all:
+                if "FERIA" not in feast.rank.name:
+                    return feast.name
+        except (KeyError, AttributeError):
+            return None
+        return None

@@ -1,6 +1,15 @@
 <template>
   <h1>Calendar</h1>
   <Loading v-if="loading"/>
+  <div class="full-width text-center">
+    <el-switch
+        v-model="includeMinorFeasts"
+        size="large"
+        active-text="Show All Feasts"
+        inactive-text="Show Major Feasts Only"
+        @change="updateIncludeMinorFeasts"
+    />
+  </div>
   <el-calendar
       v-if="!loading" v-model="date"
   >
@@ -35,7 +44,7 @@
           class="dateCellWrapper" @click="clickDateCell(data, $event)"
       >
         <p>{{ parseInt(data.day.split("-")[2]) }}</p>
-        <p class="calendarText" v-html="days[data.day]"></p>
+        <p class="calendarText" v-html="getFeastNameForDate(data.day)"></p>
       </div>
     </template>
   </el-calendar>
@@ -54,6 +63,7 @@ export default {
       days: {},
       date: null,
       loading: true,
+      includeMinorFeasts: false,
     };
   },
   watch: {
@@ -68,6 +78,33 @@ export default {
     this.setCalendar();
   },
   methods: {
+    updateIncludeMinorFeasts: function () {
+      const includeMinorFeasts = this.includeMinorFeasts ? "true" : "false"
+      localStorage.setItem("includeMinorFeasts", includeMinorFeasts);
+    },
+    getFeastNameForDate: function (day) {
+      let feast = ""
+      let bold = false;
+      try {
+        feast = this.days[day].major_feast
+        if (feast) {
+          bold = true;
+        }
+      } catch {
+        feast = ""
+      }
+      if (this.includeMinorFeasts && !feast) {
+        try {
+          feast = this.days[day].major_or_minor_feast
+        } catch {
+          feast = ""
+        }
+      }
+      if (bold) {
+        return `<strong>${feast}</strong>`
+      }
+      return feast
+    },
     selectDate: async function (changeType) {
       if (changeType == "prev-month") {
         if (this.month == 1) {
@@ -97,6 +134,9 @@ export default {
     },
     setCalendar: async function () {
       this.loading = true;
+      const includeMinorFeasts = localStorage.getItem("includeMinorFeasts") || "false"
+      this.includeMinorFeasts = includeMinorFeasts == "true"
+      this.updateIncludeMinorFeasts()
       let data = null;
       const today = new Date();
       let year = parseInt(this.$route.params.year);
@@ -122,7 +162,7 @@ export default {
       }
       data.data.forEach((day) => {
         const dateString = day["date"];
-        this.days[dateString] = day["major_feast"];
+        this.days[dateString] = day;
       });
       this.loading = false;
     },
@@ -130,12 +170,10 @@ export default {
       event.preventDefault();
       event.stopPropagation();
       const day = data.day.split("-");
-      console.log(window.history, "1", day);
       await this.$router.push({
         name: `day`,
         params: {year: day[0], month: day[1], day: day[2]},
       });
-      console.log(window.history, "2");
       return;
     },
   },
@@ -146,7 +184,7 @@ export default {
 .dateCellWrapper {
   @media only screen and (max-width: 733px) {
     .calendarText {
-      font-size: .5rem;
+      font-size: .4rem;
     }
   }
 }
@@ -179,6 +217,9 @@ td {
 
 .dateCellWrapper {
   padding: 8px;
+  @media only screen and (max-width: 733px) {
+    padding: 3px;
+  }
   height: 100%;
   width: 100%;
   margin-bottom: auto;
