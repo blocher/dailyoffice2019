@@ -329,14 +329,17 @@ class MPInvitatory(Module):
         if self.office.date.primary.name == "The Day of Pentecost":
             return {
                 "first_line": "Alleluia. The Spirit of the Lord renews the face of the earth:",
-                "second_line": "O come, let us adore him.",
+                "second_line": "O come, let us adore him. Alleluia.",
             }
 
         if self.office.date.primary.name == "Trinity Sunday":
             return {"first_line": "Father, Son, and Holy Spirit, one God:", "second_line": "O come, let us adore him."}
 
         if self.office.date.primary.name == "Easter Day":
-            return {"first_line": "Alleluia. The Lord is risen indeed:", "second_line": "O come, let us adore him."}
+            return {
+                "first_line": "Alleluia. The Lord is risen indeed:",
+                "second_line": "O come, let us adore him. Alleluia.",
+            }
 
         if (
             "Ascension" in self.office.date.primary.name
@@ -345,7 +348,7 @@ class MPInvitatory(Module):
         ):
             return {
                 "first_line": "Alleluia. Christ the Lord has ascended into heaven:",
-                "second_line": "O come, let us adore him.",
+                "second_line": "O come, let us adore him. Alleluia.",
             }
 
         if self.office.date.primary.name == "The Transfiguration of Our Lord Jesus Christ":
@@ -2027,7 +2030,7 @@ class ComplineConfession(Module):
             + [
                 Line("The Officiant alone says", "rubric"),
                 Line(
-                    "Almighty God grant us forgiveness of all our sins, and the grace and comfort of the Holy Spirit. ",
+                    "May almighty God grant us forgiveness of all our sins, and the grace and comfort of the Holy Spirit. ",
                     "leader",
                 ),
                 Line("Amen.", "congregation"),
