@@ -625,7 +625,7 @@ family_settings_dict = [
             },
             {
                 "value": "day_of_year",
-                "hide": ["ccollect-day-of-week", "collect-time-of-day"],
+                "hide": ["collect-day-of-week", "collect-time-of-day"],
                 "show": ["collect-day-of-year"],
                 "heading": "By Day of the Year",
                 "text": "The prayer appointed for the specific day of the year (or the previous Sunday if there is no feast)",
@@ -636,7 +636,7 @@ family_settings_dict = [
 family_minor_settings_dict = [
     {
         "title": "Opening Sentence",
-        "name": "family-opening-setence",
+        "name": "family-opening-sentence",
         "help_text": "Use the same opening sentences each day based on the time of the day, or use the seasonal options from the Daily Office",
         "options": [
             {
@@ -647,7 +647,7 @@ family_minor_settings_dict = [
                 "text": "No creed",
             },
             {
-                "value": "family-opening-sentence-seasonaal",
+                "value": "family-opening-sentence-seasonal",
                 "hide": ["opening-fixed"],
                 "show": ["opening-seasonal"],
                 "heading": "Seasonal",

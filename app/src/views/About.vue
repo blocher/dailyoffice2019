@@ -8,13 +8,17 @@
           type="error"
       />
       <div v-if="!loading && !error">
-        <div v-for="item in aboutItems" :key="item.uuid" :v-if="mode=='web'">
-          <h3 v-html="item.question_for_web"></h3>
-          <p v-html="item.answer_for_web"></p>
+        <div v-if="mode=='web'">
+          <div v-for="item in aboutItems" :key="item.uuid">
+            <h3 v-html="item.question_for_web"></h3>
+            <p v-html="item.answer_for_web"></p>
+          </div>
         </div>
-        <div v-for="item in aboutItems" :key="item.uuid" :v-if="mode=='app'">
-          <h3 v-html="item.question_for_app"></h3>
-          <p v-html="item.answer_for_app"></p>
+        <div v-if="mode=='app'">
+          <div v-for="item in aboutItems" :key="item.uuid">
+            <h3 v-html="item.question_for_app"></h3>
+            <p v-html="item.answer_for_app"></p>
+          </div>
         </div>
       </div>
     </div>

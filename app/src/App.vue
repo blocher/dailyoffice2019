@@ -9,16 +9,20 @@
     <router-view
         v-if="!loading" :key="$route.fullPath"
     />
+    <AHPLogo/>
   </div>
+
   <el-backtop/>
 </template>
 
 <script>
 import TopMenu from "@/components/TopMenu";
 import Loading from "@/components/Loading";
+import AHPLogo from "@/components/AHPLogo";
 
 export default {
   components: {
+    AHPLogo,
     TopMenu,
     Loading,
   },
