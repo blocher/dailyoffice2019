@@ -48,6 +48,7 @@
     "update": "^0.7.4",
     "vue": "^3.2.36",
     "vue-axios": "^3.4.1",
+    "vue-gtag": "^2.0.1",
     "vue-mailchimp-subscribe": "^1.1.0",
     "vue-router": "^4.0.15",
     "vuex": "^4.0.2",

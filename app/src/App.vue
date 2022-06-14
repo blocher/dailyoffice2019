@@ -19,6 +19,7 @@
 import TopMenu from "@/components/TopMenu";
 import Loading from "@/components/Loading";
 import AHPLogo from "@/components/AHPLogo";
+import {event} from 'vue-gtag'
 
 export default {
   components: {
@@ -39,6 +40,7 @@ export default {
   async created() {
     document.title = "The Daily Office";
     try {
+      event('betaPageView')
       const settings_data = await this.$http.get(
           `${process.env.VUE_APP_API_URL}api/v1/available_settings/`
       );
