@@ -2,6 +2,14 @@
   <TopMenu/>
   <div class="main">
     <Loading v-if="loading"/>
+    <div class="full-width flex justify-center items-center ">
+      <el-alert
+          class="max-w-lg "
+          title="Beta version: You are viewing the beta version of the Daily Office site, which lets you preview features before they are launched. Please report any issues or bugs to feedback@dailyoffice2019.com. You can also visit the stable version at https://dailyoffice2019.com."
+          type="warning"
+          effect="dark"
+      />
+    </div>
     <el-alert
         v-if="error" :title="error"
         type="error"
