@@ -3,8 +3,9 @@
     <a
         href="" @click.prevent="toggleSharePanel"
     >
+
+      <span class="text-xs">Share Your Settings&nbsp;</span>
       <font-awesome-icon :icon="['fad', 'share-nodes']"/>&nbsp;
-      <span class="text-xs">Share Settings</span>
     </a>
   </span>
   <el-drawer
@@ -12,10 +13,22 @@
       :size="panelSize"
   >
     <div class="mt-4">
-      <h3>Share Link</h3>
+      <h3 class="text-left">Share Link</h3>
       <p class="text-left pb-3 mx-1">
         This share link allows you to sync your settings with others with whom
         you are praying.
+      </p>
+
+      <p class="text-left pt-2 mx-1 my-4">
+        <font-awesome-icon :icon="['fad', 'circle-1']"/>&nbsp;Pick the settings you want to use on the <a
+          href="/settings">Settings</a> pages.
+      </p>
+      <p class="text-left pt-2 mx-1 my-4">
+        <font-awesome-icon :icon="['fad', 'circle-2']"/>&nbsp;Return here and click the
+        <font-awesome-icon :icon="['fad', 'copy']"/>
+        button below (or manually
+        copy
+        the link).
       </p>
       <div @click="copyLink">
         <el-input
@@ -31,24 +44,25 @@
         </el-input>
       </div>
     </div>
-    <p class="text-left text-sm pt-2 mx-1">
-      Click on the share link above to copy it to your clipboard. You can then
-      then paste it into an email or text message and send it to those with whom
-      you are praying. When they receive the link, they can click on it to open
-      this page with your settings already preselected.
+    <p class="text-left pt-2 mx-1 my-4">
+      <font-awesome-icon :icon="['fad', 'circle-3']"/>&nbsp;Paste the link in an email, text message, or chat and
+      send to whoever you want to pray with.
     </p>
-    <p
-        v-if="canShare" class="text-left mt-4"
-    >
-      <a
-          href="" @click="share($event)"
-      >
-        <font-awesome-icon :icon="['fad', 'share-nodes']"/>&nbsp;
-        <span class="text-xs"
-        >Share using an app installed on your computer or device</span
-        >
-      </a>
+    <p class="text-left pt-2 mx-1 my-4">
+      <font-awesome-icon :icon="['fad', 'circle-4']"/>&nbsp;When the recipients click on the link, the site will
+      automatically be
+      set up so you are all using the same settings.
     </p>
+
+    <a href="" @click="share($event)">
+      <div v-if="canShare" class="full-width border-2 my-4 p-4 text-left">
+        <h3 class="text-left pt-0">
+          <font-awesome-icon :icon="['fad', 'share-nodes']"/>&nbsp; Share using an app
+        </h3>
+        <p>Click here to use an app on your phone or computer such as your e-mail client, iMessages, or contact
+          book</p>
+      </div>
+    </a>
   </el-drawer>
 </template>
 

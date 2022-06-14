@@ -1,14 +1,16 @@
 <template>
   <el-row class="mt-4">
     <el-col :span="12">
-      <ThemeSwitcher />
+      <ThemeSwitcher/>
     </el-col>
     <el-col
-:span="12" class="text-right"
->
-      <ShareSettings />
+        :span="12" class="text-right"
+    >
+      <ShareSettings/>
       <br>
-      <EmailSignup />
+      <EmailSignup/>
+      <br>
+      <SubmitFeedback/>
     </el-col>
   </el-row>
   <!--        <span class="sub-menu-item">-->
@@ -27,12 +29,14 @@
 import EmailSignup from "@/components/EmailSignup";
 import ShareSettings from "@/components/ShareSettings";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
+import SubmitFeedback from "@/components/SubmitFeedback";
 
 export default {
   components: {
     EmailSignup,
     ShareSettings,
     ThemeSwitcher,
+    SubmitFeedback,
   },
 };
 </script>

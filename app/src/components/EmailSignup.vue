@@ -3,8 +3,9 @@
     <a
         href="" @click.prevent="emailPanel = true"
     >
+
+      <span class="ml-1 text-xs">Get Email Updates&nbsp;</span>
       <font-awesome-icon :icon="['fad', 'envelopes']"/>
-      <span class="ml-1 text-xs">Email Updates</span>
     </a>
   </span>
   <el-drawer

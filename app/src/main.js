@@ -26,16 +26,21 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 // import { faFeather } from "@fortawesome/pro-thin-svg-icons";
 import {
   faBookBible,
+  faCircle1,
+  faCircle2,
+  faCircle3,
+  faCircle4,
   faCopy,
   faEnvelopes,
   faFontCase,
   faLeft,
+  faMessagePen,
   faMoonStars,
   faRight,
   faShareNodes,
   faSun,
   faSunrise,
-  faSunset
+  faSunset,
 } from "@fortawesome/pro-duotone-svg-icons";
 
 import {faFacebook} from "@fortawesome/free-brands-svg-icons";
@@ -53,6 +58,11 @@ library.add(
     faFacebook,
     faEnvelopes,
     faBookBible,
+    faMessagePen,
+    faCircle1,
+    faCircle2,
+    faCircle3,
+    faCircle4,
 );
 
 const app = createApp(App)

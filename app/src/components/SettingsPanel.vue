@@ -11,7 +11,7 @@
       >
         <RadioGroupLabel class="mt-8 text-lg font-medium">
           {{ setting.title }}
-          <el-tag v-if="setting.setting_type == 2"> Advanced Setting</el-tag>
+          <el-tag v-if="setting.setting_type == 2"> Minor Setting</el-tag>
           <br>
         </RadioGroupLabel>
         <RadioGroupLabel
@@ -71,15 +71,16 @@
       </RadioGroup>
     </div>
   </form>
-  <p class="text-right">
+  <p class="full-width text-right border-2 my-2 p-2">
     <small>
-      Include Advanced Settings
+      Hide Minor Settings
       <el-switch
           v-model="advanced"
           class="ml-2"
           active-color="#0284c7"
           inactive-color="#e5e7eb"
       />
+      &nbsp;Show Minor Settings
     </small>
   </p>
 </template>
