@@ -144,7 +144,7 @@ body {
     padding: 1.4em;
     margin: 0 auto;
     clear: both;
-    overflow-y: scroll;
+    overflow-y: hidden;
   }
 
   h1,
