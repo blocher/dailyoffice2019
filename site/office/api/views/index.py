@@ -1547,7 +1547,7 @@ class FamilyEarlyEveningScripture(FamilyReadingModule):
         }
 
     def get_scripture(self):
-        day_of_year = self.date.date.timetuple().tm_yday
+        day_of_year = self.office.date.date.timetuple().tm_yday
         number = day_of_year % 3
 
         scriptures = [
@@ -1577,7 +1577,7 @@ class FamilyCloseOfDayScripture(FamilyReadingModule):
         }
 
     def get_scripture(self):
-        day_of_year = self.date.date.timetuple().tm_yday
+        day_of_year = self.office.date.date.timetuple().tm_yday
         number = day_of_year % 2
 
         scriptures = [
