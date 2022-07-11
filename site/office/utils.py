@@ -132,3 +132,74 @@ def get_client_ip(request):
     else:
         ip = request.META.get("REMOTE_ADDR")
     return ip
+
+
+# https://www.geeksforgeeks.org/convert-string-to-title-case-in-python/
+def title_case(input_string):
+    input_string = input_string.lower()
+    # list of articles
+    articles = ["a", "an", "the"]
+
+    # list of coordinating conjunctins
+    conjunctions = ["and", "but", "for", "nor", "or", "so", "yet"]
+
+    # list of some short articles
+    prepositions = [
+        "in",
+        "to",
+        "for",
+        "with",
+        "on",
+        "at",
+        "from",
+        "by",
+        "about",
+        "as",
+        "into",
+        "like",
+        "through",
+        "after",
+        "over",
+        "between",
+        "out",
+        "against",
+        "during",
+        "without",
+        "before",
+        "under",
+        "around",
+        "among",
+        "of",
+    ]
+
+    additions = []
+
+    all_caps = ["i", "ii", "iii", "(i)", "(ii)", "(iii)"]
+
+    # merging the 3 lists
+    lower_case = articles + conjunctions + prepositions + additions
+
+    # variable declaration for the output text
+    output_string = ""
+
+    # separating each word in the string
+    input_list = input_string.split(" ")
+
+    # checking each word
+    for i, word in enumerate(input_list):
+
+        if word in all_caps:
+            output_string += word.upper() + " "
+
+        # if the word exists in the list
+        # then no need to capitalize it
+        elif i != 0 and word in lower_case:
+            output_string += word + " "
+
+        # if the word does not exists in
+        # the list, then capitalize it
+        else:
+            temp = word.title()
+            output_string += temp + " "
+
+    return output_string

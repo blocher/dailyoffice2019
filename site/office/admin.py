@@ -8,8 +8,9 @@ from office.models import (
     HolyDayOfficeDay,
     Setting,
     SettingOption,
-    CollectCategory,
     Collect,
+    CollectTag,
+    CollectTagCategory,
 )
 
 
@@ -65,12 +66,20 @@ class OfficeSettingAdmin(admin.ModelAdmin):
     get_setting_type_display.short_description = "Setting Type"
 
 
-class CollectCategoryAdmin(admin.ModelAdmin):
-    model = CollectCategory
+class CollectTagCategoryAdmin(admin.ModelAdmin):
+    model = CollectTagCategory
     ordering = ("order",)
     extra = 0
 
     list_display = ("name", "order")
+
+
+class CollectTagAdmin(admin.ModelAdmin):
+    model = CollectTag
+    ordering = ("name",)
+    extra = 0
+
+    list_display = ("name", "collect_tag_category")
 
 
 class CollectAdmin(admin.ModelAdmin):
@@ -78,7 +87,7 @@ class CollectAdmin(admin.ModelAdmin):
     ordering = ("order",)
     extra = 0
 
-    list_display = ("title", "order", "collect_type", "collect_category", "attribution")
+    list_display = ("title", "order", "collect_type", "attribution")
 
 
 admin.site.register(AboutItem, AboutItemAdmin)
@@ -86,5 +95,6 @@ admin.site.register(UpdateNotice, UpdateNoticeAdmin)
 admin.site.register(StandardOfficeDay, StandardOfficeDayAdmin)
 admin.site.register(HolyDayOfficeDay, HolyDayOfficeDayAdmin)
 admin.site.register(Setting, OfficeSettingAdmin)
-admin.site.register(CollectCategory, CollectCategoryAdmin)
+admin.site.register(CollectTag, CollectTagAdmin)
+admin.site.register(CollectTagCategory, CollectTagCategoryAdmin)
 admin.site.register(Collect, CollectAdmin)

@@ -597,7 +597,6 @@ class SetNamesAndCollects(object):
             commemoration.proper = calendar_date.proper
             commemoration.morning_prayer_collect = commemoration.evening_prayer_collect = calendar_date.proper.collect
             if commemoration.rank.name == "SUNDAY" or commemoration.name in ["The Day of Pentecost", "Trinity Sunday"]:
-                print("hi", commemoration.name)
                 proper_string = " (Proper {})".format(calendar_date.proper.number)
                 commemoration.name = "{}{}".format(commemoration.name, proper_string)
 

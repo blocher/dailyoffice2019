@@ -10,7 +10,7 @@ repos:
       - id: end-of-file-fixer
         files: ^site/
       - id: check-added-large-files
-        args: [ '--maxkb=500' ]
+        args: [ '--maxkb=5000' ]
         files: ^site/
       - id: check-case-conflict
         files: ^site/

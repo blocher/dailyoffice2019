@@ -1,7 +1,7 @@
 # Serializers define the API representation.
 from rest_framework import serializers
 
-from office.models import UpdateNotice, Collect, AboutItem
+from office.models import UpdateNotice, Collect, AboutItem, CollectTag, CollectTagCategory
 from psalter.models import Psalm, PsalmVerse, PsalmTopic
 
 
@@ -29,19 +29,37 @@ class AboutItemSerializer(serializers.HyperlinkedModelSerializer):
         ]
 
 
+class CollectTagSerializer(serializers.HyperlinkedModelSerializer):
+    category_order = serializers.IntegerField(source="collect_tag_category.order")
+    category_name = serializers.CharField(source="collect_tag_category.name")
+    category_key = serializers.CharField(source="collect_tag_category.key")
+    category_uuid = serializers.UUIDField(source="collect_tag_category.uuid")
+
+    class Meta:
+        model = CollectTag
+        fields = ["uuid", "name", "category_order", "order", "key", "category_name", "category_key", "category_uuid"]
+
+
+class CollectTagCategorySerializer(serializers.HyperlinkedModelSerializer):
+    tags = CollectTagSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = CollectTagCategory
+        fields = ["uuid", "name", "key", "order", "tags"]
+
+
 class CollectSerializer(serializers.HyperlinkedModelSerializer):
-    category = serializers.CharField(source="collect_category.order")
-    category_name = serializers.CharField(source="collect_category.name")
+    tags = CollectTagSerializer(many=True, read_only=True)
 
     class Meta:
         model = Collect
-        fields = ["uuid", "title", "text", "order", "category", "category_name", "collect_type", "attribution"]
+        fields = ["uuid", "title", "text", "traditional_text", "order", "number", "attribution", "tags"]
 
 
 class PsalmVerseSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = PsalmVerse
-        fields = ["id", "number", "first_half", "second_half"]
+        fields = ["id", "number", "first_half", "second_half", "first_half_tle", "second_half_tle"]
 
 
 class PsalmTopicSerializer(serializers.HyperlinkedModelSerializer):

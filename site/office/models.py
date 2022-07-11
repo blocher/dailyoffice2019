@@ -169,17 +169,34 @@ class SettingOption(BaseModel):
     value = models.CharField(max_length=255)
 
 
-class CollectCategory(BaseModel):
+class CollectType(BaseModel):
     name = models.CharField(max_length=255)
+    key = models.CharField(max_length=255)
     order = models.PositiveSmallIntegerField(default=0)
 
     def __str__(self):
         return self.name
 
 
+class CollectTagCategory(BaseModel):
+    name = models.CharField(max_length=255)
+    key = models.CharField(max_length=255)
+    order = models.PositiveSmallIntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+
+
+class CollectTag(BaseModel):
+    name = models.CharField(max_length=255)
+    key = models.CharField(max_length=255)
+    collect_tag_category = models.ForeignKey(CollectTagCategory, on_delete=models.SET_NULL, null=True, blank=True)
+    order = models.PositiveSmallIntegerField(default=0)
+
+
 class Collect(BaseModel):
     COLLECT_TYPES = (
-        ("collect", "Collects of the Christian Year"),
+        ("year", "Collects of the Christian Year"),
         ("occasional", "Occasional Prayers"),
         ("office_prayers", "Collects from the Daily Office"),
         ("burial_rite", "Collects from the Burial Rite"),
@@ -188,9 +205,11 @@ class Collect(BaseModel):
 
     title = models.CharField(max_length=255)
     text = RichTextField()
-    collect_type = models.CharField(max_length=255, choices=COLLECT_TYPES)
+    traditional_text = RichTextField(blank=True, null=True)
+    collect_type = models.ForeignKey(CollectType, on_delete=models.SET_NULL, null=True, blank=True)
     order = models.PositiveSmallIntegerField(default=0)
-    collect_category = models.ForeignKey(CollectCategory, on_delete=models.SET_NULL, null=True, blank=True)
+    number = models.PositiveSmallIntegerField(null=True, blank=True)
+    tags = models.ManyToManyField(CollectTag)
     attribution = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
