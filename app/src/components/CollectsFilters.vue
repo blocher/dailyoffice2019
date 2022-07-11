@@ -15,7 +15,7 @@
   ```
 -->
 <template>
-  <div class="bg-white">
+  <div class="themed-background">
     <!-- Mobile filter dialog -->
     <Dialog as="div" class="relative z-40 sm:hidden" :open="open" @close="open = false">
 
@@ -23,12 +23,12 @@
       <div class="fixed inset-0 flex z-40">
 
         <DialogPanel
-            class="ml-auto relative max-w-xs w-full h-full bg-white shadow-xl py-4 pb-12 flex flex-col overflow-y-auto">
+            class="ml-auto relative max-w-xs w-full h-full themed-background shadow-xl py-4 pb-12 flex flex-col overflow-y-auto">
           <div class="px-4 flex items-center justify-between">
-            <h2 class="text-lg font-medium text-gray-900">Filters</h2>
+            <h2 class="text-lg font-medium text-themed-500">Filters</h2>
             <button
                 type="button"
-                class="-mr-2 w-10 h-10 bg-white p-2 rounded-md flex items-center justify-center text-gray-400"
+                class="-mr-2 w-10 h-10 themed-background p-2 rounded-md flex items-center justify-center text-themed-400"
                 @click="open = false">
               <span class="sr-only">Close menu</span>
               <XIcon class="h-6 w-6" aria-hidden="true"/>
@@ -42,8 +42,8 @@
                 as="div" class="border-t border-gray-200 px-4 py-6">
               <h3 class="-mx-2 -my-3 flow-root">
                 <DisclosureButton
-                    class="px-2 py-3 bg-white w-full flex items-center justify-between text-sm text-gray-400">
-                      <span class="font-medium text-gray-900">
+                    class="px-2 py-3 themed-background w-full flex items-center justify-between text-sm text-themed-400">
+                      <span class="font-medium text-themed-500">
                         {{ section.name }}
                       </span>
                   <span class="ml-6 flex items-center">
@@ -62,7 +62,7 @@
                         :id="`filter-mobile-${section.id}-${optionIdx}`" :name="`${section.id}[]`"
                         :value="option.value" type="checkbox" :checked="option.checked"
                         class="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500"/>
-                    <label :for="`filter-mobile-${section.id}-${optionIdx}`" class="ml-3 text-sm text-gray-500">
+                    <label :for="`filter-mobile-${section.id}-${optionIdx}`" class="ml-3 text-sm text-themed-500">
                       {{ option.label }}
                     </label>
                   </div>
@@ -79,11 +79,11 @@
     <section aria-labelledby="filter-heading">
       <h2 id="filter-heading" class="sr-only">Filters</h2>
 
-      <div class="bg-white border-b border-gray-200 pb-4 full-width">
+      <div class="themed-background border-b border-gray-200 pb-4 full-width">
         <div class="mx-auto px-4 flex basis-full items-center justify-center sm:px-6 lg:px-8 ful-width">
 
           <button
-              type="button" class="inline-block text-sm font-medium text-gray-700 hover:text-gray-900 sm:hidden"
+              type="button" class="inline-block text-sm font-medium text-themed-500 hover:text-themed-500 sm:hidden"
               @click="open = true">Filters
           </button>
 
@@ -94,20 +94,20 @@
                     v-for="(section) in filters" :key="section.id"
                     class="px-4 relative inline-block text-center overflow-visible">
                   <PopoverButton
-                      class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+                      class="group inline-flex justify-center text-sm font-medium text-themed-500 hover:text-themed-500">
                     <span>{{ section.name }}</span>
                     <span
                         v-if="sectionCount(section.id) > 0"
-                        class="ml-1.5 rounded py-0.5 px-1.5 bg-gray-200 text-xs font-semibold text-gray-700 tabular-nums">{{
+                        class="ml-1.5 rounded py-0.5 px-1.5 bg-themed-200 text-xs font-semibold text-themed-500 tabular-nums">{{
                         sectionCount(section.id)
                       }}</span>
                     <ChevronDownIcon
-                        class="flex-shrink-0 -mr-1 ml-1 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                        class="flex-shrink-0 -mr-1 ml-1 h-5 w-5 text-themed-400 group-hover:text-themed-500"
                         aria-hidden="true"/>
                   </PopoverButton>
 
                   <PopoverPanel
-                      class="origin-top-right absolute right-0 mt-2 bg-white rounded-md shadow-2xl p-4 ring-1 ring-black ring-opacity-5 focus:outline-none overflow-visible">
+                      class="origin-top-right absolute right-0 mt-2 themed-background rounded-md shadow-2xl p-4 ring-1 ring-black ring-opacity-5 focus:outline-none overflow-visible">
                     <form class="space-y-4">
                       <div
                           v-for="(option, optionIdx) in section.options" :key="option.value"
@@ -119,7 +119,7 @@
                             @change="setSelectedCategory($event)"/>
                         <label
                             :for="`filter-${section.id}-${optionIdx}`"
-                            class="ml-3 pr-6 text-sm font-medium text-gray-900 whitespace-nowrap">
+                            class="ml-3 pr-6 text-sm font-medium text-themed-500 whitespace-nowrap">
                           {{ option.label }}
                         </label>
                       </div>
@@ -135,7 +135,7 @@
       <!-- Active filters -->
       <!--      <div class="bg-gray-100">-->
       <!--        <div class="max-w-7xl mx-auto py-3 px-4 sm:flex sm:items-center sm:px-6 lg:px-8">-->
-      <!--          <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-500">-->
+      <!--          <h3 class="text-xs font-semibold uppercase tracking-wide text-themed-500">-->
       <!--            Filters-->
       <!--            <span class="sr-only">, active</span>-->
       <!--          </h3>-->
@@ -146,11 +146,11 @@
       <!--            <div class="-m-1 flex flex-wrap items-center">-->
       <!--              <span-->
       <!--                  v-for="activeFilter in activeFilters" :key="activeFilter.value"-->
-      <!--                  class="m-1 inline-flex rounded-full border border-gray-200 items-center py-1.5 pl-3 pr-2 text-sm font-medium bg-white text-gray-900">-->
+      <!--                  class="m-1 inline-flex rounded-full border border-gray-200 items-center py-1.5 pl-3 pr-2 text-sm font-medium themed-background text-themed-500">-->
       <!--                <span>{{ activeFilter.label }}</span>-->
       <!--                <button-->
       <!--                    type="button"-->
-      <!--                    class="flex-shrink-0 ml-1 h-4 w-4 p-1 rounded-full inline-flex text-gray-400 hover:bg-gray-200 hover:text-gray-500">-->
+      <!--                    class="flex-shrink-0 ml-1 h-4 w-4 p-1 rounded-full inline-flex text-themed-400 hover:bg-themed-200 hover:text-themed-500">-->
       <!--                  <span class="sr-only">Remove filter for {{ activeFilter.label }}</span>-->
       <!--                  <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">-->
       <!--                    <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7"/>-->
@@ -174,6 +174,7 @@ const open = ref(false)
 </script>
 
 <script>
+
 
 import {ref} from 'vue'
 import {
@@ -259,3 +260,31 @@ export default {
   },
 };
 </script>
+
+
+<style lang="scss">
+
+.themed-background {
+  background-color: var(--color-bg);
+}
+
+
+.text-themed-400 {
+  font-weight: 400;
+  color: var(--font-color)
+}
+
+.text-themed-500 {
+  font-weight: 500;
+  color: var(--font-color)
+}
+
+.bg-themed-200 {
+  font-weight: 900;
+  color: var(--el-color-info);
+  background-color: var(--el-color-info-light-9);
+  border-color: var(--el-color-info-light-8);
+  border-width: 3px;
+}
+
+</style>

@@ -4,7 +4,7 @@
     <div class="about">
       <Loading v-if="loading"/>
       <div>
-        <h1>Occasional Collects</h1>
+        <h1>Collects</h1>
         <CollectsFilters
             v-if="!loading && !error" :filters="collectCategories"
             @update:activeFilters="filterCollects"/>
