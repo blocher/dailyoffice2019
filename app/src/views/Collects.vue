@@ -10,7 +10,7 @@
             @update:activeFilters="filterCollects"/>
         <div class="flex justify-center full-width">
           <el-input
-              v-model="search" class="full-width m-2" placeholder="Filter by word or phrase in the title and labels">
+              v-model="search" class="full-width m-2" placeholder="Filter by word or phrase">
             <template #prefix>
               <el-icon class="el-input__icon">
                 <font-awesome-icon :icon="['fad', 'search']"/>
@@ -163,7 +163,7 @@ export default {
       }
       if (this.search.length > 0) {
         this.displayedCollects = this.displayedCollects.filter(collect => {
-          return collect.title_and_tags.toLowerCase().includes(this.search.toLowerCase());
+          return collect.title_and_tags.toLowerCase().includes(this.search.toLowerCase()) || collect.text.toLowerCase().includes(this.search.toLowerCase()) || collect.traditional_text.toLowerCase().includes(this.search.toLowerCase())
         });
       }
     },
