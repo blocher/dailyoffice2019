@@ -548,7 +548,7 @@ class Command(BaseCommand):
     help = "Import all the collects"
 
     def handle(self, *args, **options):
-        clean_liturgical_collects()
+        # clean_liturgical_collects()
         clear()
         import_collect_types()
         import_collect_tag_categories()
