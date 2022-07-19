@@ -17,7 +17,7 @@
 <template>
   <div class="themed-background">
     <!-- Mobile filter dialog -->
-    <Dialog as="div" class="relative z-40 sm:hidden" :open="open" @close="open = false">
+    <Dialog as="div" class="relative z-40 md:hidden" :open="open" @close="open = false">
 
 
       <div class="fixed inset-0 flex z-40">
@@ -85,6 +85,9 @@
           <button
               type="button" class="inline-block text-sm font-medium text-themed-500 hover:text-themed-500 sm:hidden"
               @click="open = true">Filters
+            <ChevronDownIcon
+                class="inline flex-shrink-0 -mr-1 ml-1 h-5 w-5 text-themed-400 group-hover:text-themed-500"
+                aria-hidden="true"/>
           </button>
 
           <div class="hidden sm:block">
@@ -107,7 +110,7 @@
                   </PopoverButton>
 
                   <PopoverPanel
-                      class="origin-top-right absolute right-0 mt-2 themed-background rounded-md shadow-2xl p-4 ring-1 ring-black ring-opacity-5 focus:outline-none overflow-visible">
+                      class="origin-top-right absolute right-0 mt-2 themed-background rounded-md shadow-2xl p-4 ring-1 ring-black ring-opacity-5 focus:outline-none z-50 overflow-visible">
                     <form class="space-y-4">
                       <div
                           v-for="(option, optionIdx) in section.options" :key="option.value"
@@ -253,7 +256,6 @@ export default {
       return this.selectedCategories.includes(uuid)
     },
     sectionCount: function (uuid) {
-      console.log(uuid);
       const optionsInCategory = this.filters.filter(filter => filter.id === uuid)[0].options;
       return optionsInCategory.filter(option => this.selectedCategories.includes(option.value)).length;
     },

@@ -50,10 +50,24 @@ class CollectTagCategorySerializer(serializers.HyperlinkedModelSerializer):
 
 class CollectSerializer(serializers.HyperlinkedModelSerializer):
     tags = CollectTagSerializer(many=True, read_only=True)
+    title_and_tags = serializers.SerializerMethodField()
+
+    def get_title_and_tags(self, obj):
+        return obj.title + " " + " ".join([tag.name for tag in obj.tags.all()])
 
     class Meta:
         model = Collect
-        fields = ["uuid", "title", "text", "traditional_text", "order", "number", "attribution", "tags"]
+        fields = [
+            "uuid",
+            "title",
+            "text",
+            "traditional_text",
+            "order",
+            "number",
+            "attribution",
+            "tags",
+            "title_and_tags",
+        ]
 
 
 class PsalmVerseSerializer(serializers.HyperlinkedModelSerializer):

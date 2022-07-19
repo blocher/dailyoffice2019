@@ -33,7 +33,7 @@
               active-text="Traditional"
               inactive-text="Contemporary"
               class="align-center"
-              @change="setTradtional"
+              @change="setTraditional"
           />
         </div>
       </div>
@@ -94,7 +94,7 @@ export default {
     } else {
       this.traditional = false;
     }
-    this.setTradtional();
+    this.setTraditional();
     let data = null;
     try {
       data = await this.$http.get(
@@ -143,7 +143,7 @@ export default {
         ).topic_name;
       }
     },
-    setTradtional() {
+    setTraditional() {
       localStorage.setItem("traditionalPsalms", this.traditional);
     }
 

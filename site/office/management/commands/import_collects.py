@@ -1,3 +1,4 @@
+import os.path
 import re
 from operator import itemgetter
 
@@ -5,14 +6,40 @@ import pdfplumber
 import requests
 from bs4 import BeautifulSoup
 from django.core.management.base import BaseCommand
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from pdfplumber.utils import cluster_objects
+from tqdm import tqdm
 
 from churchcal.models import Commemoration, Proper, Common
 from office.models import CollectType, CollectTagCategory, CollectTag, Collect
 from office.utils import title_case
 from website import settings
+
+SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
+
+
+def get_google_credentials():
+    creds = None
+    # The file token.json stores the user's access and refresh tokens, and is
+    # created automatically when the authorization flow completes for the first
+    # time.
+    if os.path.exists("token.json"):
+        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
+            creds = flow.run_local_server(port=0)
+        # Save the credentials for the next run
+        with open("token.json", "w") as token:
+            token.write(creds.to_json())
+    return creds
 
 
 def collate_line(line_chars, tolerance=3):
@@ -40,13 +67,18 @@ def clean(input):
     return input
 
 
-def clean_collect(input):
+def clean_collect(input, strip_tags=False, remove_line_breaks=False):
+    if strip_tags:
+        input = BeautifulSoup(input, "lxml").text
     input = remove_smart_quotes(input)
+    if remove_line_breaks:
+        input = input.replace("\n", " ").replace("\r", "")
     input = input.replace("<strong>Amen.", "").replace("<strong> Amen.", "")
     input = input.replace("Amen.", "").replace("Amen", "")
     input = re.sub(" +", " ", input)
     input = input.strip()
-    input = f"<p>{input} <strong>Amen.</strong></p>"
+    if input:
+        input = f"<p>{input} <strong>Amen.</strong></p>"
 
     return input
 
@@ -113,6 +145,13 @@ def get_contemporary_collect(name, commemoration, proper, common):
     return "???"
 
 
+def clear():
+    CollectType.objects.all().delete()
+    CollectTagCategory.objects.all().delete()
+    CollectTag.objects.all().delete()
+    Collect.objects.all().delete()
+
+
 def import_collect_types():
     CollectType.objects.all().delete()
     collect_types = {
@@ -162,6 +201,8 @@ def import_collect_tags():
             ("prayer_and_worship", "At Times of Prayer and Worship"),
             ("death", "Death, the Departed, and the Communion of Saints"),
             ("thanksgivings", "Thanksgivings"),
+            ("mission", "Mission"),
+            ("confession", "Confession of Sin"),
         ],
         "commemoration_type": [
             ("major_feast", "Major Feast"),
@@ -185,22 +226,18 @@ def import_collect_tags():
             ("midday_prayer", "Midday Prayer"),
             ("evening_prayer", "Evening Prayer"),
             ("compline", "Compline"),
-            ("family_prayer_in_the_morning", "Family Prayer in the Morning"),
-            ("family_prayer_at_midday", "Family Prayer at Midday"),
-            ("family_prayer_in_early_evening", "Family Prayer in the Early Evening"),
-            ("family_prayer_at_the_close_of_day", "Family Prayer at the Close of Day"),
+            ("family_prayer", "Family Prayer"),
             ("holy_eucharist", "Holy Eucharist"),
             ("holy_baptism", "Holy Baptism"),
             ("confirmation", "Confirmation, Reception, and Reaffirmation"),
             ("holy_matrimony", "Holy Matrimony"),
             ("birth", "Thanksgiving for the Birth or Adoption of a Child"),
-            ("reconciliation", "Reconciliation of Penitents (Auricular Confession)"),
+            ("reconciliation", "Reconciliation of a Penitent"),
             ("sick", "Ministry to the Sick"),
-            ("vigil", "Prayers for a Vigil"),
             ("burial", "Burial of the Dead"),
-            ("ordination_deacon", "Ordination of a Deacon"),
-            ("ordination_priest", "Ordination of Priest"),
-            ("ordination_bishop", "Ordination and Consecration of a Bishop"),
+            ("ordination", "Ordination"),
+            ("institution", "Institution of a New Rector"),
+            ("consecration", "Consecration of a Place of Worship"),
             ("ash_wednesday", "Ash Wednesday"),
             ("palm_sunday", "Palm Sunday"),
             ("maundy_thursday", "Maundy Thursday"),
@@ -415,13 +452,104 @@ def import_collects_of_the_christian_year():
 
 
 def import_liturgical_collects():
-    pass
+    SHEET_ID = "1s7GqYoy3HC5JD64opdRldAAi3mwsSQxtC6ZzzF2yUAg"
+    RANGE_NAME = "LiturgyCollects!A2:J195"
+
+    service = build("sheets", "v4", credentials=get_google_credentials())
+
+    sheet = service.spreadsheets()
+
+    try:
+        result = sheet.values().get(spreadsheetId=SHEET_ID, range=RANGE_NAME).execute()
+    except HttpError as e:
+        print("Data not found for this denomination")
+        return
+
+    values = result.get("values", [])
+    collect_type = CollectType.objects.get(key="liturgical")
+    Collect.objects.filter(collect_type=collect_type).delete()
+    primary_tag = CollectTag.objects.get(key="liturgical", collect_tag_category__key="source")
+
+    for i, row in tqdm(enumerate(values)):
+        title = row[0]
+        text = row[1]
+        traditional = row[2]
+        tag_1 = row[3]
+        tag_2 = row[4]
+        tag_3 = row[5]
+        tag_4 = row[6]
+        tag_5 = row[7]
+        tag_6 = row[8]
+
+        collect = Collect()
+        collect.title = title
+        collect.text = text
+        collect.traditional_text = traditional
+        collect.collect_type = collect_type
+        collect.order = i
+        collect.save()
+        collect.tags.add(primary_tag)
+        if tag_1:
+            print(tag_1)
+            collect.tags.add(CollectTag.objects.filter(name=tag_1.strip()).first())
+        if tag_2:
+            print(tag_2)
+            collect.tags.add(CollectTag.objects.filter(name=tag_2.strip()).first())
+        if tag_3:
+            collect.tags.add(CollectTag.objects.filter(name=tag_3.strip()).first())
+        if tag_4:
+            collect.tags.add(CollectTag.objects.filter(name=tag_4.strip()).first())
+        if tag_5:
+            collect.tags.add(CollectTag.objects.filter(name=tag_5.strip()).first())
+        if tag_6:
+            collect.tags.add(CollectTag.objects.filter(name=tag_6.strip()).first())
+
+
+def clean_liturgical_collects():
+    SHEET_ID = "1s7GqYoy3HC5JD64opdRldAAi3mwsSQxtC6ZzzF2yUAg"
+    RANGE_NAME = "LiturgyCollects!A2:J195"
+
+    service = build("sheets", "v4", credentials=get_google_credentials())
+
+    sheet = service.spreadsheets()
+
+    try:
+        result = sheet.values().get(spreadsheetId=SHEET_ID, range=RANGE_NAME).execute()
+    except HttpError as e:
+        print("Data not found for this denomination")
+        return
+
+    values = result.get("values", [])
+
+    results = []
+
+    for i, row in tqdm(enumerate(values)):
+        title = clean(row[0])
+        collect = clean_collect(row[1], strip_tags=True, remove_line_breaks=True)
+        traditional = clean_collect(row[2], strip_tags=True, remove_line_breaks=True)
+        tag_1 = clean(row[3])
+        tag_2 = clean(row[4])
+        tag_3 = clean(row[5])
+        tag_4 = clean(row[6])
+        tag_5 = clean(row[7])
+        tag_6 = clean(row[8])
+        final_marker = "X"
+        row_result = [title, collect, traditional, tag_1, tag_2, tag_3, tag_4, tag_5, tag_6, final_marker]
+        results.append(row_result)
+
+    final_row = len(values) + 2
+    range = f"LiturgyCollects!A2:J{final_row}"
+    sheet.values().update(
+        spreadsheetId=SHEET_ID, range=range, valueInputOption="USER_ENTERED", body={"values": results}
+    ).execute()
 
 
 class Command(BaseCommand):
     help = "Import all the collects"
 
     def handle(self, *args, **options):
+        clean_liturgical_collects()
+        clear()
         import_collect_types()
         import_collect_tag_categories()
         import_collect_tags()

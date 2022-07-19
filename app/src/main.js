@@ -37,6 +37,7 @@ import {
     faMessagePen,
     faMoonStars,
     faRight,
+    faSearch,
     faShareNodes,
     faSun,
     faSunrise,
@@ -63,6 +64,7 @@ library.add(
     faCircle2,
     faCircle3,
     faCircle4,
+    faSearch,
 );
 
 router.beforeEach((to, from, next) => {
