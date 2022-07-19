@@ -63,6 +63,7 @@ Markdown==3.3.7
 MarkupSafe==2.1.1
 mjml==0.7.0
 num2words==0.5.10
+pdfplumber==0.7.3
 Pillow==9.1.1
 pip==22.1
 pipdeptree==2.2.1
