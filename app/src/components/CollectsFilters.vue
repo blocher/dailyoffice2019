@@ -59,10 +59,13 @@
                       v-for="(option, optionIdx) in section.options" :key="option.value"
                       class="flex items-center">
                     <input
-                        :id="`filter-mobile-${section.id}-${optionIdx}`" :name="`${section.id}[]`"
-                        :value="option.value" type="checkbox" :checked="option.checked"
-                        class="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500"/>
-                    <label :for="`filter-mobile-${section.id}-${optionIdx}`" class="ml-3 text-sm text-themed-500">
+                        :id="`filter-${section.id}-${optionIdx}`" :name="`${section.id}[]`"
+                        :value="option.value" type="checkbox" :checked="isChecked(option.value)"
+                        class="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500"
+                        @change="setSelectedCategory($event)"/>
+                    <label
+                        :for="`filter-${section.id}-${optionIdx}`"
+                        class="ml-3 pr-6 text-sm font-medium text-themed-500 whitespace-nowrap">
                       {{ option.label }}
                     </label>
                   </div>
