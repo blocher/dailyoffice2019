@@ -194,6 +194,15 @@ class CollectTag(BaseModel):
     order = models.PositiveSmallIntegerField(default=0)
 
 
+class AbstractCollect(object):
+    text = ""
+    traditional_text = ""
+
+    def __init__(self, text, traditional_text):
+        self.text = text
+        self.traditional_text = traditional_text
+
+
 class Collect(BaseModel):
     COLLECT_TYPES = (
         ("year", "Collects of the Christian Year"),

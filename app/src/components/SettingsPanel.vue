@@ -123,6 +123,7 @@ export default {
           settings[name] = value;
         }
       });
+      console.log('about to save settings', settings, settings['language_style']);
       this.$store.commit("saveSettings", settings);
       return ElMessage.success({
         title: "Saved",

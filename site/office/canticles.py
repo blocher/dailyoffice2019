@@ -2,7 +2,6 @@ from django.template.loader import render_to_string
 
 
 class Canticle(object):
-
     latin_name = "Canticle"
     english_name = "Canticle"
     template = "canticle.html"

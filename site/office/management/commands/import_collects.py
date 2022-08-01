@@ -14,7 +14,7 @@ from googleapiclient.errors import HttpError
 from pdfplumber.utils import cluster_objects
 from tqdm import tqdm
 
-from churchcal.models import Commemoration, Proper, Common
+from churchcal.models import Commemoration, Proper, Common, Calendar, SanctoraleCommemoration
 from office.models import CollectType, CollectTagCategory, CollectTag, Collect
 from office.utils import title_case
 from website import settings
@@ -54,7 +54,14 @@ def collate_line(line_chars, tolerance=3):
 
 
 def remove_smart_quotes(text):
+    if not text:
+        return text
     return text.replace("\u2018", "'").replace("\u2019", "'").replace("\u201c", '"').replace("\u201d", '"')
+
+
+def do_strip_tags(input):
+    input = BeautifulSoup(input, "lxml").text
+    return input
 
 
 # covert to title case
@@ -67,9 +74,9 @@ def clean(input):
     return input
 
 
-def clean_collect(input, strip_tags=False, remove_line_breaks=False):
+def clean_collect(input, strip_tags=False, remove_line_breaks=False, add_tags=True):
     if strip_tags:
-        input = BeautifulSoup(input, "lxml").text
+        input = do_strip_tags(input)
     input = remove_smart_quotes(input)
     if remove_line_breaks:
         input = input.replace("\n", " ").replace("\r", "")
@@ -77,7 +84,7 @@ def clean_collect(input, strip_tags=False, remove_line_breaks=False):
     input = input.replace("Amen.", "").replace("Amen", "")
     input = re.sub(" +", " ", input)
     input = input.strip()
-    if input:
+    if input and add_tags:
         input = f"<p>{input} <strong>Amen.</strong></p>"
 
     return input
@@ -544,11 +551,153 @@ def clean_liturgical_collects():
     ).execute()
 
 
+def normalize_old_collect(collect):
+    if not collect:
+        return collect
+    collect = remove_smart_quotes(collect)
+    collect = collect.replace(
+        "to all who are called to any office and ministry for your people;",
+        "to all who are [now] called to any office and ministry for your people;",
+    )
+    collect = collect.replace(
+        "to all who are  called to any office and ministry for your people;",
+        "to all who are [now] called to any office and ministry for your people;",
+    )
+    return collect
+
+
+def get_collect_for_commemoration_collect(collect, name=""):
+    if not collect or collect == "":
+        return None
+    collect = BeautifulSoup(collect, "lxml").text
+    collect = collect.replace("Amen.", "").strip()
+    collect = " ".join(collect.split())
+    new_collect = Collect.objects.filter(text__icontains=collect).first()
+    return new_collect
+
+
+def prepare_format_string(input):
+    if not input:
+        return ""
+    input = do_strip_tags(input)
+    input = input.replace(" t{} ", " {}")
+    input = input.replace(" your faithful servant {}", " your faithful servant{} {}")
+    input = input.replace("servant N.", "servant{} {}")
+    input = input.replace("N.", "{}")
+    input = input.replace("his", "{}")
+    input = input.replace(" t{} ", "this")
+    input = input.replace("to the people of _________ [or to the __________ people]", "{}")
+    input = input.replace("[Bishop and]", "{}")
+    input = input.replace("became a burning and shining light ", "became {} burning and shining light{} ")
+    input = input.replace("that we who give thanks for his righteous", "that we who give thanks for {} righteous")
+    input = input.replace("may profit by his example;", "may profit by {} example")
+    input = input.replace("we, with him,", "we, with {},")
+    input = input.replace("{} and every land", "this and every land")
+    input = input.replace("t{} and every land", "{} and every land")
+    input = clean_collect(input, strip_tags=True, remove_line_breaks=True, add_tags=False)
+    return input
+
+
+def format_string_to_collect(input):
+    if not input:
+        return ""
+    input = do_strip_tags(input)
+    input = input.replace("for the ministry of {}", "for the ministry of <em>N.</em>")
+    input = input.replace("instructed by {} teaching", "instructed by <em>his</em> teaching")
+    input = input.replace("your servant{} {}", "your servant<em>(s)</em> <em>N.</em>")
+    input = input.replace("thy servant{} {}", "thy servant<em>(s)</em> <em>N.</em>")
+    input = input.replace(
+        "to preach the Gospel {}",
+        "to preach the Gospel <em>to the people of _________ [or to the __________ people]</em>",
+    )
+    input = input.replace("your faithful servant {} ", "your faithful servant<em>s</em> <em>N.</em> ")
+    input = input.replace("your faithful servant{} {} ", "your faithful servant<em>s</em> <em>N.</em> ")
+    input = input.replace("thy faithful servant {} ", "thy faithful servant<em>s</em> <em>N.</em> ")
+    input = input.replace("thy faithful servant{} {} ", "thy faithful servant<em>s</em> <em>N.</em> ")
+    input = input.replace("be a {} pastor", "be a <em>[Bishop and]</em> pastor")
+
+    input = input.replace(
+        "became {} burning and shining light{}", "became <em>a</em> burning and shining light<em>s</em>"
+    )
+
+    input = input.replace("for {} righteous", "for <em>his</em> righteous")
+    input = input.replace("may profit by {} example", "may profit by <em>his</em> example")
+    input = input.replace(", with {},", ", with <em>him</em>,")
+    input = clean_collect(input, strip_tags=False, remove_line_breaks=True, add_tags=True)
+    return input
+
+
+def match_collects():
+    commemorations = Commemoration.objects.filter(collect__isnull=False).exclude(collect="").all()
+    for commemoration in commemorations:
+        commemoration.collect = normalize_old_collect(commemoration.collect)
+        commemoration.alternate_collect = normalize_old_collect(commemoration.alternate_collect)
+        commemoration.eve_collect = normalize_old_collect(commemoration.eve_collect)
+        commemoration.save()
+
+    proper = Proper.objects.all()
+    for proper in proper:
+        proper.collect = normalize_old_collect(proper.collect)
+        proper.save()
+
+    collects = Collect.objects.all()
+    for collect in collects:
+        collect.text = normalize_old_collect(collect.text)
+        collect.traditional_text = normalize_old_collect(collect.traditional_text)
+        collect.save()
+
+    commons = Common.objects.all()
+    for common in commons:
+        common.collect = normalize_old_collect(common.collect)
+        common.save()
+
+    calendar = Calendar.objects.filter(year=2019).first()
+    commemorations = Commemoration.objects.filter(calendar=calendar).all()
+    for commemoration in commemorations:
+        commemoration.collect_1 = get_collect_for_commemoration_collect(commemoration.collect, commemoration.name)
+        commemoration.collect_2 = get_collect_for_commemoration_collect(
+            commemoration.alternate_collect, commemoration.name
+        )
+        commemoration.collect_eve = get_collect_for_commemoration_collect(
+            commemoration.eve_collect, commemoration.name
+        )
+        commemoration.save()
+
+    proper = Proper.objects.all()
+    for proper in proper:
+        proper.collect_1 = get_collect_for_commemoration_collect(proper.collect, f"Proper {proper.number}")
+        proper.save()
+
+    common = Common.objects.all()
+    for common in common:
+        common.collect_1 = get_collect_for_commemoration_collect(common.collect, common.name)
+        common.collect_2 = get_collect_for_commemoration_collect(common.alternate_collect, common.name)
+        common.collect_format_string = prepare_format_string(common.collect_1.text)
+        common.collect_tle_format_string = prepare_format_string(common.collect_1.traditional_text)
+        common.save()
+
+    sanctorale_commemorations = (
+        SanctoraleCommemoration.objects.filter(saint_type__isnull=False).exclude(saint_type="").all()
+    )
+    for commemoration in sanctorale_commemorations:
+        commemoration.common = Common.objects.get(abbreviation=commemoration.saint_type)
+        commemoration.save()
+
+
+def update_common_collects_to_remove_braces():
+    common = Common.objects.all()
+    for common in common:
+        common.collect_1.text = format_string_to_collect(common.collect_format_string)
+        common.collect_1.traditional_text = format_string_to_collect(common.collect_tle_format_string)
+        common.collect_1.save()
+
+
 class Command(BaseCommand):
     help = "Import all the collects"
 
     def handle(self, *args, **options):
-        # clean_liturgical_collects()
+        print("importing collects")
+        clean_liturgical_collects()
         clear()
         import_collect_types()
         import_collect_tag_categories()
@@ -557,3 +706,5 @@ class Command(BaseCommand):
         import_traditional_language_occasional_collects()
         import_collects_of_the_christian_year()
         import_liturgical_collects()
+        match_collects()
+        update_common_collects_to_remove_braces()

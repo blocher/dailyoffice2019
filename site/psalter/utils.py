@@ -22,7 +22,7 @@ def parse_single_psalm(psalm):
     return ",".join(citations)
 
 
-def get_psalms(citations, api=False, simplified_citations=False):
+def get_psalms(citations, api=False, simplified_citations=False, language_style="contemporary"):
     citations = str(citations)
     citations = citations.replace(" ", "").replace("or", ",").split(",")
     html = ""
@@ -39,36 +39,48 @@ def get_psalms(citations, api=False, simplified_citations=False):
             )
         else:
             verses = PsalmVerse.objects.filter(psalm__number=citation).order_by("number").select_related("psalm").all()
-        html = html + psalm_html(citation, verses, simplified_citations=simplified_citations)
-        lines = lines + psalm_api_lines(citation, verses)
+        html = html + psalm_html(
+            citation, verses, simplified_citations=simplified_citations, language_style=language_style
+        )
+        lines = lines + psalm_api_lines(citation, verses, language_style=language_style)
     if api:
         return lines
     return html
 
 
-def psalm_api_lines(citation, verses, heading=True):
+def psalm_api_lines(citation, verses, heading=True, language_style="contemporary"):
     from office.api.views import Line
 
     lines = []
     if heading:
         lines.append(Line("Psalm {}".format(citation), "heading"))
         lines.append(Line(verses[0].psalm.latin_title, "subheading"))
+    if language_style == "traditional":
+        verses = [verse for verse in verses if verse.first_half_tle]
+    else:
+        verses = [verse for verse in verses if verse.first_half]
     for verse in verses:
         lines.append(
             Line(
                 "{} *".format(
-                    verse.first_half,
+                    verse.first_half_tle if language_style == "traditional" else verse.first_half,
                 ),
                 "leader",
                 preface=verse.number,
                 indented="hangingIndent",
             )
         )
-        lines.append(Line(verse.second_half, "congregation", indented="indent"))
+        lines.append(
+            Line(
+                verse.second_half_tle if language_style == "traditional" else verse.second_half,
+                "congregation",
+                indented="indent",
+            )
+        )
     return lines
 
 
-def psalm_html(citation, verses, heading=True, simplified_citations=False):
+def psalm_html(citation, verses, heading=True, simplified_citations=False, language_style="contemporary"):
     html = "<div class='psalm'>"
     if heading and simplified_citations:
         html = html + format_html("<h3>{}</h3>", citation)
@@ -79,9 +91,12 @@ def psalm_html(citation, verses, heading=True, simplified_citations=False):
         html = html + format_html(
             "<p class='hanging-indent'><sup class='versenum'>{}</sup> {}<span class='asterisk'>*</span> </p>",
             verse.number,
-            verse.first_half,
+            verse.first_half_tle if language_style == "traditional" else verse.first_half,
         )
-        html = html + format_html("<p class='indent'><strong>{}</strong></p>", verse.second_half)
+        html = html + format_html(
+            "<p class='indent'><strong>{}</strong></p>",
+            verse.second_half_tle if language_style == "traditional" else verse.second_half,
+        )
     html = html + "</div>"
     # html = html + format_html("<p  class='hanging-indent'>&nbsp;</p>")
     # html = html + format_html(

@@ -7,6 +7,7 @@ from django.utils.safestring import mark_safe
 from indexed import IndexedOrderedDict
 
 from churchcal.models import Commemoration, FerialCommemoration, Proper, Season, Calendar, CommemorationRank
+from office.models import AbstractCollect
 from .utils import advent, week_days, easter
 
 
@@ -236,7 +237,6 @@ class CalendarDate(object):
 
         self.append_feria_if_needed()
         self.optional = sorted(self.optional, key=lambda commemoration: (commemoration.rank.precedence_rank))
-
         if len(self.required) > 0:
             self.primary = self.required[0]
         else:
@@ -321,32 +321,33 @@ class ChurchYear(object):
     def __iter__(self):
         return ChurchYearIterator(self)
 
-    def __init__(self, year_of_advent, calendar="ACNA_BCP2019"):
+    #
+    # # in case we want to cache by day instead of year
+    # def build_from_cache(self):
+    #     for name, date in self.dates.items():
+    #         self.dates[name] = cache.get(name)
+    #         if not self.dates[name]:
+    #             return self.build_from_scratch()
 
-        self.calendar = Calendar.objects.filter(abbreviation=calendar).first()
-
-        self.start_year = year_of_advent
-        self.end_year = year_of_advent + 1
-
-        self.dates = IndexedOrderedDict()
-
-        start_date = advent(year_of_advent)
-        end_date = advent(year_of_advent + 1) - timedelta(days=1)
-
-        self.start_date = start_date
-        self.end_date = end_date
-
+    def build_from_scratch(self):
         self.seasons = self._get_seasons()
         self.season_tracker = None
         # create each date
-        for single_date in self.daterange(start_date, end_date):
-            name = single_date.strftime("%Y-%m-%d")
+        for name, date in self.dates.items():
+            single_date = datetime.strptime(name, "%Y-%m-%d").date()
             self.dates[name] = CalendarDate(single_date, calendar=self.calendar, year=self)
 
         # add commemorations to date
         commemorations = (
-            Commemoration.objects.select_related("rank", "cannot_occur_after__rank")
-            .filter(calendar__abbreviation=calendar)
+            Commemoration.objects.select_related(
+                "rank",
+                "cannot_occur_after__rank",
+                "sanctoralecommemoration__common__collect_1",
+                "collect_1",
+                "collect_2",
+                "collect_eve",
+            )
+            .filter(calendar=self.calendar)
             .all()
         )
         already_added = []
@@ -374,6 +375,29 @@ class ChurchYear(object):
                 self.dates[new_date].required = transfers + self.dates[new_date].required
 
         SetNamesAndCollects(self)
+
+    def __init__(self, year_of_advent, calendar="ACNA_BCP2019"):
+
+        self.calendar = Calendar.objects.filter(abbreviation=calendar).first()
+
+        self.start_year = year_of_advent
+        self.end_year = year_of_advent + 1
+
+        self.dates = IndexedOrderedDict()
+
+        start_date = advent(year_of_advent)
+        end_date = advent(year_of_advent + 1) - timedelta(days=1)
+
+        self.start_date = start_date
+        self.end_date = end_date
+
+        self.seasons = self._get_seasons()
+        self.season_tracker = None
+        # create each date
+        for single_date in self.daterange(start_date, end_date):
+            name = single_date.strftime("%Y-%m-%d")
+            self.dates[name] = None
+        return self.build_from_scratch()
 
         # print(
         #     "{} = {} - {} {}".format(
@@ -493,7 +517,14 @@ class SetNamesAndCollects(object):
 
         self.church_calendar = church_calendar
 
-        checks = [self.own_collect, self.proper_collect, self.feria_collect, self.saint_collect, self.fallback_collect]
+        checks = [
+            self.default,
+            self.own_collect,
+            self.proper_collect,
+            self.feria_collect,
+            self.saint_collect,
+            self.fallback_collect,
+        ]
 
         self.i = iter(self.church_calendar)
         while True:
@@ -557,8 +588,8 @@ class SetNamesAndCollects(object):
         feast_copy = calendar_date.primary.copy()
         feast_copy.name = "Eve of {}".format(feast_copy.name)
 
-        if feast_copy.eve_collect:
-            feast_copy.evening_prayer_collect = feast_copy.eve_collect
+        if feast_copy.collect_eve:
+            feast_copy.evening_prayer_collect = feast_copy.collect_eve
 
         previous.evening_required.append(feast_copy)
         previous.proper = calendar_date.proper
@@ -574,28 +605,34 @@ class SetNamesAndCollects(object):
 
         previous.evening_season = calendar_date.season
 
-        # @TODO: resort
+    def default(self, commemoration, calendar_date):
+        temp = AbstractCollect(text="a", traditional_text="b")
+        commemoration.morning_prayer_collect = commemoration.evening_prayer_collect = temp
 
     def own_collect(self, commemoration, calendar_date):
 
         if "FERIA" in commemoration.rank.name:
             return False
 
-        if commemoration.collect:
-
-            commemoration.morning_prayer_collect = (
-                commemoration.evening_prayer_collect
-            ) = commemoration.collect.replace(" [this day]", " this day")
-            if commemoration.alternate_collect:
-                commemoration.evening_prayer_collect = commemoration.alternate_collect
+        if commemoration.collect_1:
+            commemoration.morning_prayer_collect = commemoration.evening_prayer_collect = commemoration.collect_1
+            if commemoration.collect_2:
+                commemoration.evening_prayer_collect = commemoration.collect_2
+            # commemoration.morning_prayer_collect = (
+            #     commemoration.evening_prayer_collect
+            # ) = commemoration.collect.replace(" [this day]", " this day")
+            # if commemoration.alternate_collect:
+            #     commemoration.evening_prayer_collect = commemoration.alternate_collect
 
     def proper_collect(self, commemoration, calendar_date):
 
         if not commemoration.rank.required:
             return
-        if calendar_date.proper and calendar_date.proper.collect:
+        if calendar_date.proper and calendar_date.proper.collect_1:
             commemoration.proper = calendar_date.proper
-            commemoration.morning_prayer_collect = commemoration.evening_prayer_collect = calendar_date.proper.collect
+            commemoration.morning_prayer_collect = (
+                commemoration.evening_prayer_collect
+            ) = calendar_date.proper.collect_1
             if commemoration.rank.name == "SUNDAY" or commemoration.name in ["The Day of Pentecost", "Trinity Sunday"]:
                 proper_string = " (Proper {})".format(calendar_date.proper.number)
                 commemoration.name = "{}{}".format(commemoration.name, proper_string)
@@ -611,13 +648,13 @@ class SetNamesAndCollects(object):
                     break
                 if self.has_collect_for_feria(previous):
                     target_commemoration = self.has_collect_for_feria(previous)
-                    commemoration.collect = target_commemoration.collect
-                    commemoration.alternate_collect = target_commemoration.alternate_collect
-                    commemoration.eve_collect = target_commemoration.eve_collect
+                    commemoration.collect_1 = target_commemoration.collect_1
+                    commemoration.collect_2 = target_commemoration.collect_2
+                    commemoration.collect_eve = target_commemoration.collect_eve
                     if previous.proper and previous.proper.collect:
                         calendar_date.proper = previous.proper
-                        commemoration.morning_prayer_collect = previous.proper.collect
-                        commemoration.evening_prayer_collect = previous.proper.collect
+                        commemoration.morning_prayer_collect = previous.proper.collect_1
+                        commemoration.evening_prayer_collect = previous.proper.collect_1
                         name = target_commemoration.name
 
                         if name[:3] == "The":
@@ -628,12 +665,12 @@ class SetNamesAndCollects(object):
                             commemoration.name = "{} after {}".format(week_days[calendar_date.date.weekday()], name)
                         commemoration.original_proper = previous.proper
                     else:
-                        commemoration.morning_prayer_collect = previous.primary.morning_prayer_collect.replace(
-                            "to be born this day of a pure virgin", "to be born of a pure virgin"
-                        )
-                        commemoration.evening_prayer_collect = previous.primary.evening_prayer_collect.replace(
-                            "to be born this day of a pure virgin", "to be born of a pure virgin"
-                        )
+                        # commemoration.morning_prayer_collect = previous.primary.morning_prayer_collect.replace(
+                        #     "to be born this day of a pure virgin", "to be born of a pure virgin"
+                        # )
+                        # commemoration.evening_prayer_collect = previous.primary.evening_prayer_collect.replace(
+                        #     "to be born this day of a pure virgin", "to be born of a pure virgin"
+                        # )
                         commemoration.name = "{} after {}".format(
                             week_days[calendar_date.date.weekday()], previous.primary.name.replace("The ", "the ")
                         )
@@ -704,94 +741,7 @@ class SetNamesAndCollects(object):
         if not hasattr(commemoration, "saint_type") or not commemoration.saint_type:
             return False
 
-        if commemoration.saint_type == "PASTOR":
-            if commemoration.saint_gender in ["M", "F"]:
-                text = "O God, our heavenly Father, you raised up your faithful servant {} to be a {} pastor in your Church and to feed your flock: Give abundantly to all pastors the gifts of your Holy Spirit, that they may minister in your household as true servants of Christ and stewards of your divine mysteries; through Jesus Christ our Lord, who lives and reigns with you and the Holy Spirit, one God, for ever and ever.".format(
-                    commemoration.saint_name, commemoration.saint_fill_in_the_blank
-                ).replace(
-                    " ", " "
-                )
-            else:
-                text = "O God, our heavenly Father, you raised up your faithful servants {} to be {} pastors in your Church and to feed your flock: Give abundantly to all pastors the gifts of your Holy Spirit, that they may minister in your household as true servants of Christ and stewards of your divine mysteries; through Jesus Christ our Lord, who lives and reigns with you and the Holy Spirit, one God, for ever and ever.".format(
-                    commemoration.saint_name, commemoration.saint_fill_in_the_blank
-                ).replace(
-                    " ", " "
-                )
-
-        if commemoration.saint_type == "MONASTIC":
-            text = "O God, your blessed Son became poor for our sake, and chose the Cross over the kingdoms of this world: Deliver us from an inordinate love of worldly things, that we, inspired by the devotion of your servant{} {}, may seek you with singleness of heart, behold your glory by faith, and attain to the riches of your everlasting kingdom, where we shall be united with our Savior Jesus Christ; who lives and reigns with you and the Holy Spirit, one God, now and for ever. ".format(
-                "s" if commemoration.saint_gender == "P" else "", commemoration.saint_name
-            )
-
-        if commemoration.saint_type == "MARTYR":
-            text = "Almighty God, you gave your servant{} {} boldness to confess the Name of our Savior Jesus Christ before the rulers of this world, and courage to die for this faith: Grant that we may always be ready to give a reason for the hope that is in us, and to suffer gladly for the sake of our Lord Jesus Christ; who lives and reigns with you and the Holy Spirit, one God, for ever and ever. ".format(
-                "s" if commemoration.saint_gender == "P" else "", commemoration.saint_name
-            )
-
-        if commemoration.saint_type == "MISSIONARY":
-            text = (
-                "Almighty and everlasting God, you called your servant{} {} to preach the Gospel {}: Raise up in this and every land evangelists and heralds of your kingdom, that your Church may proclaim the unsearchable riches of our Savior Jesus Christ; who lives and reigns with you and the Holy Spirit, one God, now and for ever.".format(
-                    "s" if commemoration.saint_gender == "P" else "",
-                    commemoration.saint_name,
-                    commemoration.saint_fill_in_the_blank,
-                )
-                .replace(" ", " ")
-                .replace(" :", ":")
-            )
-
-        if commemoration.saint_type == "TEACHER":
-            text = "Almighty God, you gave your servant{} {} special gifts of grace to understand and teach the truth revealed in Christ Jesus: Grant that by this teaching we may know you, the one true God, and Jesus Christ whom you have sent; who lives and reigns with you and the Holy Spirit, one God, for ever and ever.".format(
-                "s" if commemoration.saint_gender == "P" else "", commemoration.saint_name
-            )
-
-        if commemoration.saint_type == "RENEWER":
-            text = "Almighty and everlasting God, you kindled the flame of your love in the heart of your servant{} {} to manifest your compassion and mercy to the poor and the persecuted: Grant to us, your humble servants, a like faith and power of love, that we who give thanks for {} righteous zeal may profit by {} example; through Jesus Christ our Lord, who lives and reigns with you and the Holy Spirit, one God, for ever and ever.".format(
-                "s" if commemoration.saint_gender == "P" else "",
-                commemoration.saint_name,
-                "his"
-                if commemoration.saint_gender == "M"
-                else "her"
-                if commemoration.saint_gender == "F"
-                else "their",
-                "his"
-                if commemoration.saint_gender == "M"
-                else "her"
-                if commemoration.saint_gender == "F"
-                else "their",
-            )
-
-        if commemoration.saint_type == "REFORMER":
-            text = "O God, by your grace your servant{} {}, kindled by the flame of your love, became {} burning and shining light{} in your Church, turning pride into humility and error into truth: Grant that we may be set aflame with the same spirit of love and discipline, and walk before you as children of light; through Jesus Christ our Lord, who lives and reigns with you, in the unity of the Holy Spirit, one God, now and for ever.".format(
-                "s" if commemoration.saint_gender == "P" else "",
-                commemoration.saint_name,
-                "a" if commemoration.saint_gender != "P" else "",
-                "s" if commemoration.saint_gender == "P" else "",
-            ).replace(
-                " ", " "
-            )
-
-        if commemoration.saint_type == "ECUMENIST":
-            text = "Almighty God, we give you thanks for the ministry of {}, who labored that the Church of Jesus Christ might be one: Grant that we, instructed by {} teaching and example, and knit together in unity by your Spirit, may ever stand firm upon the one foundation, which is Jesus Christ our Lord; who lives and reigns with you, in the unity of the Holy Spirit, one God, now and for ever.".format(
-                commemoration.saint_name,
-                "his"
-                if commemoration.saint_gender == "M"
-                else "her"
-                if commemoration.saint_gender == "F"
-                else "their",
-            )
-
-        if commemoration.saint_type == "SAINT_1":
-            text = "Almighty God, you have surrounded us with a great cloud of witnesses: Grant that we, encouraged by the good example of your servant{} {}, may persevere in running the race that is set before us, until at last, with {}, we attain to your eternal joy; through Jesus Christ, the pioneer and perfecter of our faith, who lives and reigns with you and the Holy Spirit, one God, for ever and ever.".format(
-                "s" if commemoration.saint_gender == "P" else "",
-                commemoration.saint_name,
-                "him" if commemoration.saint_gender == "M" else "her" if commemoration.saint_gender == "F" else "them",
-            )
-
-        if commemoration.saint_type == "SAINT_2":
-            text = "Almighty God, by your Holy Spirit you have made us one with your saints in heaven and on earth: Grant that in our earthly pilgrimage we may always be supported by this fellowship of love and prayer, and know ourselves to be surrounded by their witness to your power and mercy; for the sake of Jesus Christ, in whom all our intercessions are acceptable through the Spirit, and who lives and reigns with you and the same Spirit, one God, for ever and ever."
-
-        if text:
-            commemoration.morning_prayer_collect = commemoration.evening_prayer_collect = text
+        commemoration.morning_prayer_collect = commemoration.evening_prayer_collect = commemoration.common_collect()
 
     def fallback_collect(self, commemoration, calendar_date):
         commemoration.morning_prayer_collect = commemoration.evening_prayer_collect = None
@@ -911,7 +861,6 @@ def get_church_year(date_string):
     date = to_date(date_string)
     advent_start = advent(date.year)
     year = date.year if date >= advent_start else date.year - 1
-    # church_year = ChurchYear(year)
     church_year = cache.get(str(year))
     if not church_year:
         church_year = ChurchYear(year)

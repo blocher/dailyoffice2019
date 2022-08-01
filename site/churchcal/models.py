@@ -36,15 +36,6 @@ class CommemorationRank(BaseModel):
     required = models.BooleanField(default=True)
     calendar = models.ForeignKey(Calendar, on_delete=models.CASCADE, null=False, blank=False)
 
-    def get_collect(self, calendar_date=None):
-        if self.collect:
-            return self.collect
-
-        if calendar_date and calendar_date.proper:
-            return self.proper.collect
-
-        return None
-
     def __str__(self):
         return self.formatted_name
 
@@ -61,9 +52,15 @@ class Commemoration(BaseModel):
     additional_color = models.CharField(max_length=256, null=True, blank=True)
     alternate_color = models.CharField(max_length=256, null=True, blank=True)
     alternate_color_2 = models.CharField(max_length=256, null=True, blank=True)
-    collect = models.TextField(blank=True, null=True)
-    alternate_collect = models.TextField(blank=True, null=True)
-    eve_collect = models.TextField(blank=True, null=True)
+    collect_1 = models.ForeignKey(
+        "office.Collect", on_delete=models.SET_NULL, null=True, blank=True, related_name="commemoration_collect_1"
+    )
+    collect_2 = models.ForeignKey(
+        "office.Collect", on_delete=models.SET_NULL, null=True, blank=True, related_name="commemoration_collect_2"
+    )
+    collect_eve = models.ForeignKey(
+        "office.Collect", on_delete=models.SET_NULL, null=True, blank=True, related_name="commemoration_collect_eve"
+    )
     color_notes = models.CharField(max_length=256, null=True, blank=True)
     calendar = models.ForeignKey(Calendar, on_delete=models.CASCADE, null=False, blank=False)
     link_1 = models.URLField(null=True, blank=True)
@@ -225,6 +222,7 @@ class SanctoraleCommemoration(Commemoration):
         max_length=1, null=True, blank=True, choices=(("M", "Male"), ("F", "Female"), ("P", "Plural"))
     )
     saint_fill_in_the_blank = models.CharField(max_length=256, null=True, blank=True)
+    common = models.ForeignKey("churchcal.Common", blank=True, null=True, on_delete=models.SET_NULL)
 
     def initial_date(self, advent_year):
         year = self._year_from_advent_year(advent_year, self.month, self.day)
@@ -241,6 +239,41 @@ class SanctoraleCommemoration(Commemoration):
         if not readings and commemoration.saint_type:
             readings = MassReading.objects.filter(common__abbreviation=commemoration.saint_type).all()
         return readings
+
+    def build_collect(self, text):
+        if not self.common:
+            return None
+
+        plural = "s" if self.saint_gender not in ["M", "F"] else ""
+        if self.saint_type in ["MONASTIC", "MARTYR"]:
+            return text.format(plural, self.saint_name)
+
+        if self.saint_type in ["MISSIONARY", "PASTOR"]:
+            return text.format(plural, self.saint_name, self.saint_fill_in_the_blank).replace(" :", ":")
+
+        if self.saint_type == "RENEWER":
+            pronoun = "his" if self.saint_gender == "M" else "her" if self.saint_gender == "F" else "their"
+            return text.format(plural, self.saint_name, pronoun, pronoun)
+
+        if self.saint_type == "REFORMER":
+            return text.format(plural, self.saint_name, "a" if not plural else "", "s" if plural else "")
+
+        if self.saint_type == "ECUMENIST":
+            pronoun = "his" if self.saint_gender == "M" else "her" if self.saint_gender == "F" else "their"
+            return text.format(self.saint_name, pronoun)
+
+        if self.saint_type in ["SAINT_1", "TEACHER"]:
+            pronoun = "him" if self.saint_gender == "M" else "her" if self.saint_gender == "F" else "them"
+            return text.format(plural, self.saint_name, pronoun)
+
+        return text
+
+    def common_collect(self):
+        from office.models import AbstractCollect
+
+        text = self.common.collect_format_string
+        text_tle = self.common.collect_tle_format_string
+        return AbstractCollect(text=self.build_collect(text), traditional_text=self.build_collect(text_tle))
 
 
 class SanctoraleBasedCommemoration(Commemoration):
@@ -312,9 +345,10 @@ class Proper(BaseModel):
     number = models.IntegerField(choices=zip(range(1, 29), range(1, 29)), blank=False, null=False)
     start_date = models.DateField(null=False, blank=False)
     end_date = models.DateField(null=False, blank=False)
-    collect = models.TextField(blank=True, null=True)
+    collect_1 = models.ForeignKey(
+        "office.Collect", on_delete=models.SET_NULL, null=True, blank=True, related_name="proper_collect_1"
+    )
     calendar = models.ForeignKey(Calendar, on_delete=models.CASCADE, null=False, blank=False)
-    collect = models.TextField(blank=True, null=True)
 
     def get_mass_readings_for_year(self, year):
         return MassReading.objects.filter(years__contains=year, proper=self).order_by("reading_number", "order").all()
@@ -364,6 +398,12 @@ class MassReading(BaseModel):
 class Common(BaseModel):
     abbreviation = models.CharField(max_length=256)
     name = models.CharField(max_length=256)
-    collect = models.TextField(blank=True, null=True)
-    alternate_collect = models.TextField(blank=True, null=True)
+    collect_1 = models.ForeignKey(
+        "office.Collect", on_delete=models.SET_NULL, null=True, blank=True, related_name="common_collect_1"
+    )
+    collect_2 = models.ForeignKey(
+        "office.Collect", on_delete=models.SET_NULL, null=True, blank=True, related_name="common_collect_2"
+    )
+    collect_format_string = models.CharField(max_length=1024, blank=True, null=True)
+    collect_tle_format_string = models.CharField(max_length=1024, blank=True, null=True)
     calendar = models.ForeignKey(Calendar, on_delete=models.CASCADE, null=False, blank=False)

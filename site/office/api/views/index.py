@@ -516,10 +516,13 @@ class MPInvitatory(Module):
     def get_lines(self):
 
         filename = self.get_canticle_filename()
+        language_style = self.office.settings["language_style"]
+        if language_style == "traditional":
+            filename += "_traditional"
         if filename != "pascha_nostrum":
             canticle = file_to_lines(filename)
-            canticle_heading = canticle[:2]
-            canticle_body = canticle[2:]
+            canticle_heading = canticle[:3]
+            canticle_body = canticle[3:]
             return (
                 canticle_heading
                 + [Line(self.antiphon["first_line"], "leader"), Line(self.antiphon["second_line"])]
@@ -551,7 +554,8 @@ class MPPsalms(Module):
         psalms = getattr(self.office.thirty_day_psalter_day, self.attribute)
         citations = psalms.split(",")
         heading = self.heading(citations)
-        psalms = get_psalms(psalms, api=True)
+        language_style = self.office.settings["language_style"]
+        psalms = get_psalms(psalms, api=True, language_style=language_style)
 
         return [Line(heading, "heading"), Line("Thirty Day Cycle", "subheading")] + psalms
 
@@ -571,7 +575,8 @@ class MPPsalms(Module):
 
         citations = psalms.split(",")
         heading = self.heading(citations)
-        psalms = get_psalms(psalms, api=True)
+        language_style = self.office.settings["language_style"]
+        psalms = get_psalms(psalms, api=True, language_style=language_style)
 
         return [Line(heading, "heading"), Line("Sixty Day Cycle", "subheading")] + psalms
 
@@ -587,7 +592,8 @@ class MPPsalms(Module):
             return None
 
         heading = self.heading(mass_psalm)
-        psalms = get_psalms(mass_psalm, api=True)
+        language_style = self.office.settings["language_style"]
+        psalms = get_psalms(mass_psalm, api=True, language_style=language_style)
         return [Line(heading, "heading"), Line("Sunday & Holy Day Psalms", "subheading")] + psalms
 
     def get_psalm_lines(self):
@@ -723,7 +729,7 @@ class ReadingModule(Module):
 
         if lectionary == "mass-readings" and self.has_mass_reading:
             return (
-                self.get_abbreviated_mass_reading(number)
+                self.abbreviated_mass_reading(number)
                 if reading_length == "abbreviated"
                 else self.get_mass_reading(number)
             )
@@ -768,13 +774,18 @@ class CanticleModule(Module):
         return file_to_lines("gloria_patri")
 
     def get_canticle(self, data):
+        language_style = self.office.settings["language_style"]
+        template = data.template.replace("html", "csv")
+        if language_style == "traditional":
+            template = template.replace(".csv", "_traditional.csv")
+
         return (
             [
                 Line(data.latin_name, "heading"),
                 Line(data.english_name, "subheading"),
                 self.rubric(),
             ]
-            + file_to_lines(data.template.replace("html", "csv"))
+            + file_to_lines(template)
             + [
                 Line(data.citation, "citation"),
             ]
@@ -932,12 +943,19 @@ class MPCollectOfTheDay(Module):
     attribute = "morning_prayer_collect"
     commemoration_attribute = "all"
 
+    def get_collect(self, commemoration):
+        style = self.office.settings["language_style"]
+        collect = getattr(commemoration, self.attribute)
+        text = collect.traditional_text if style == "traditional" else collect.text
+        text = text.strip().replace("<strong>Amen.</strong>", "").replace("Amen.", "").strip()
+        return text
+
     def get_lines(self):
         collects = [
             [
                 Line("Collect of the Day", "heading"),
                 Line(commemoration.name, "subheading"),
-                Line(getattr(commemoration, self.attribute).replace(" Amen.", ""), "leader"),
+                Line(self.get_collect(commemoration), "html"),
                 Line("Amen.", "congregation"),
             ]
             for commemoration in getattr(self.office.date, self.commemoration_attribute)
@@ -1436,17 +1454,32 @@ class FamilyCloseOfDayOpeningSentence(Module):
 
 class FamilyMorningPsalm(Module):
     def get_lines(self):
-        return get_psalms("51:10-12", api=True) + [Line("", "spacer")] + file_to_lines("gloria_patri")
+        language_style = self.office.settings["language_style"]
+        return (
+            get_psalms("51:10-12", api=True, language_style=language_style)
+            + [Line("", "spacer")]
+            + file_to_lines("gloria_patri")
+        )
 
 
 class FamilyMiddayPsalm(Module):
     def get_lines(self):
-        return get_psalms("113:1-4", api=True) + [Line("", "spacer")] + file_to_lines("gloria_patri")
+        language_style = self.office.settings["language_style"]
+        return (
+            get_psalms("113:1-4", api=True, language_style=language_style)
+            + [Line("", "spacer")]
+            + file_to_lines("gloria_patri")
+        )
 
 
 class FamilyCloseOfDayPsalm(Module):
     def get_lines(self):
-        return get_psalms("134", api=True) + [Line("", "spacer")] + file_to_lines("gloria_patri")
+        language_style = self.office.settings["language_style"]
+        return (
+            get_psalms("134", api=True, language_style=language_style)
+            + [Line("", "spacer")]
+            + file_to_lines("gloria_patri")
+        )
 
 
 class FamilyReadingModule(ReadingModule):
@@ -1840,7 +1873,8 @@ class MiddayPsalms(Module):
 
     def get_lines(self):
         psalms = "119:105-112,121,124,126"
-        psalms = get_psalms(psalms, api=True)
+        language_style = self.office.settings["language_style"]
+        psalms = get_psalms(psalms, api=True, language_style=language_style)
 
         return [Line("The Psalms", "heading")] + psalms
 
@@ -2076,7 +2110,8 @@ class ComplinePsalms(Module):
 
     def get_lines(self):
         psalms = "4,31:1-6,91,134"
-        psalms = get_psalms(psalms, api=True)
+        language_style = self.office.settings["language_style"]
+        psalms = get_psalms(psalms, api=True, language_style=language_style)
 
         return [Line("The Psalms", "heading")] + psalms
 

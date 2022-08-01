@@ -1,4 +1,4 @@
-"INVOCATION"                                                                   ,"congregation","indent"
+"INVOCATION"                                                                   ,"subheading", true
 "Glorify the Lord, all you works of the Lord, *"                               ,"congregation","hangingIndent",
 "praise him and highly exalt him for ever."                                    ,"congregation","indent"
 "In the firmament of his power, glorify the Lord, *"                           ,"congregation","hangingIndent",
@@ -46,4 +46,4 @@
 "Let us glorify the Lord: the Father, the Son, and the Holy Spirit; *"         ,"congregation","hangingIndent",
 "praise him and highly exalt him for ever."                                    ,"congregation","indent"
 "In the firmament of his power, glorify the Lord, *"                           ,"congregation","hangingIndent",
-"praise him and highly exalt him for ever."                                    ,"congregation","hangingIndent",true
+"praise him and highly exalt him for ever."                                    ,"congregation","hangingIndent"
