@@ -372,6 +372,8 @@ def get_commemoration_type_tag(commemoration, proper, common):
         return CollectTag.objects.get(key="common", collect_tag_category__key="commemoration_type")
     if proper:
         return CollectTag.objects.get(key="sunday", collect_tag_category__key="commemoration_type")
+    if not commemoration.rank:
+        return None
     rank = commemoration.rank.name
     if rank in ["PRINCIPAL_FEAST", "PRIVILEGED_OBSERVANCE"]:
         return CollectTag.objects.get(key="major_feast", collect_tag_category__key="commemoration_type")
@@ -417,15 +419,18 @@ def import_collects_of_the_christian_year():
         common = None
         commemoration = (
             Commemoration.objects.filter(
-                calendar__abbreviation="ACNA_BCP2019", name__icontains=name_without_saint(name), collect__isnull=False
+                calendar__abbreviation="ACNA_BCP2019",
+                name__icontains=name_without_saint(name),
+                collect_1__isnull=False,
             )
-            .exclude(collect="")
+            .exclude(collect_1__text="")
             .first()
         )
 
         if name == "All Saints' Day":
             commemoration = Commemoration.objects.filter(
-                calendar__abbreviation="ACNA_BCP2019", collect__contains="Almighty God, you have knit together "
+                calendar__abbreviation="ACNA_BCP2019",
+                collect_1__text__contains="Almighty God, you have knit together ",
             ).first()
         number_of_proper = proper_number(name)
         if number_of_proper and not commemoration:
@@ -433,7 +438,7 @@ def import_collects_of_the_christian_year():
         if not proper and not commemoration:
             common = Common.objects.filter(calendar__abbreviation="ACNA_BCP2019", name__icontains=name).first()
 
-        if not proper and not commemoration and not common:
+        if not proper or not commemoration or not common:
             print(name)
 
         season_tag = None
@@ -697,14 +702,14 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         print("importing collects")
-        clean_liturgical_collects()
-        clear()
-        import_collect_types()
-        import_collect_tag_categories()
-        import_collect_tags()
-        import_occasional_collects()
-        import_traditional_language_occasional_collects()
-        import_collects_of_the_christian_year()
+        # clean_liturgical_collects()
+        # clear()
+        # import_collect_types()
+        # import_collect_tag_categories()
+        # import_collect_tags()
+        # import_occasional_collects()
+        # import_traditional_language_occasional_collects()
+        # import_collects_of_the_christian_year()
         import_liturgical_collects()
         match_collects()
         update_common_collects_to_remove_braces()
