@@ -7,7 +7,6 @@ from django.utils.safestring import mark_safe
 from indexed import IndexedOrderedDict
 
 from churchcal.models import Commemoration, FerialCommemoration, Proper, Season, Calendar, CommemorationRank
-from office.models import AbstractCollect
 from .utils import advent, week_days, easter
 
 
@@ -342,10 +341,6 @@ class ChurchYear(object):
             Commemoration.objects.select_related(
                 "rank",
                 "cannot_occur_after__rank",
-                "sanctoralecommemoration__common__collect_1",
-                "collect_1",
-                "collect_2",
-                "collect_eve",
             )
             .filter(calendar=self.calendar)
             .all()
@@ -518,7 +513,6 @@ class SetNamesAndCollects(object):
         self.church_calendar = church_calendar
 
         checks = [
-            self.default,
             self.own_collect,
             self.proper_collect,
             self.feria_collect,
@@ -605,10 +599,6 @@ class SetNamesAndCollects(object):
 
         previous.evening_season = calendar_date.season
 
-    def default(self, commemoration, calendar_date):
-        temp = AbstractCollect(text="a", traditional_text="b")
-        commemoration.morning_prayer_collect = commemoration.evening_prayer_collect = temp
-
     def own_collect(self, commemoration, calendar_date):
 
         if "FERIA" in commemoration.rank.name:
@@ -651,7 +641,7 @@ class SetNamesAndCollects(object):
                     commemoration.collect_1 = target_commemoration.collect_1
                     commemoration.collect_2 = target_commemoration.collect_2
                     commemoration.collect_eve = target_commemoration.collect_eve
-                    if previous.proper and previous.proper.collect:
+                    if previous.proper and previous.proper.collect_1:
                         calendar_date.proper = previous.proper
                         commemoration.morning_prayer_collect = previous.proper.collect_1
                         commemoration.evening_prayer_collect = previous.proper.collect_1

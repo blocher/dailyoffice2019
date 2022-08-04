@@ -38,6 +38,7 @@ from office.models import (
     ThirtyDayPsalterDay,
     Setting,
     SettingOption,
+    Collect,
 )
 from office.utils import passage_to_citation, get_client_ip
 from psalter.utils import get_psalms
@@ -254,6 +255,8 @@ class MPOpeningSentence(Module):
 
 
 class Office(object):
+    tag = "office"
+
     def __init__(self, request, year, month, day):
         from churchcal.calculations import get_calendar_date
 
@@ -276,26 +279,49 @@ class Confession(Module):
     name = "Confession of Sin"
 
     def get_intro_lines(self):
+        language_style = self.office.settings["language_style"]
         setting = self.office.settings["confession"]
         fast = self.office.date.fast_day
         long = (setting == "long") or (setting == "long-on-fast" and fast)
         if long:
-            return file_to_lines("confession_intro_long") + [Line("", "spacer")]
+            return (
+                file_to_lines("confession_intro_long_traditional")
+                if language_style == "traditional"
+                else file_to_lines("confession_intro_long") + [Line("", "spacer")]
+            )
         return file_to_lines("confession_intro_short") + [Line("", "spacer")]
 
     def get_body_lines(self):
-        return file_to_lines("confession_body")
+        language_style = self.office.settings["language_style"]
+        return (
+            file_to_lines("confession_body_traditional")
+            if language_style == "traditional"
+            else file_to_lines("confession_body")
+        )
 
     def get_absolution_lines(self):
+        language_style = self.office.settings["language_style"]
         lay = self.office.settings["absolution"] == "lay"
         if lay:
-            return file_to_lines("confession_absolution_lay")
+            return (
+                file_to_lines("confession_absolution_lay_traditional")
+                if language_style == "traditional"
+                else file_to_lines("confession_absolution_lay")
+            )
         setting = self.office.settings["confession"]
         fast = self.office.date.fast_day
         long = (setting == "long") or (setting == "long-on-fast" and fast)
         if long:
-            return file_to_lines("confession_absolution_long")
-        return file_to_lines("confession_absolution_short")
+            return (
+                file_to_lines("confession_absolution_long_traditional")
+                if language_style == "traditional"
+                else file_to_lines("confession_absolution_long")
+            )
+        return (
+            file_to_lines("confession_absolution_short_traditional")
+            if language_style == "traditional"
+            else file_to_lines("confession_absolution_short")
+        )
 
     def get_lines(self):
         return (
@@ -311,7 +337,9 @@ class Preces(Module):
     name = "Preces"
 
     def get_lines(self):
-        return file_to_lines("preces")
+        language_style = self.office.settings["language_style"]
+        file = "preces_traditional" if language_style == "traditional" else "preces"
+        return file_to_lines(file)
 
 
 class MPInvitatory(Module):
@@ -534,7 +562,9 @@ class MPInvitatory(Module):
 
 class EPInvitatory(Module):
     def get_lines(self):
-        return file_to_lines("phos_hilaron.csv")
+        language_style = self.office.settings["language_style"]
+        file = "phos_hilaron_traditional" if language_style == "traditional" else "phos_hilaron"
+        return file_to_lines(file)
 
 
 class MPPsalms(Module):
@@ -609,7 +639,9 @@ class MPPsalms(Module):
         return self.thirty_days()
 
     def gloria_patri(self):
-        return [Line("", "spacer")] + file_to_lines("gloria_patri")
+        language_style = self.office.settings["language_style"]
+        file = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
+        return [Line("", "spacer")] + file_to_lines(file)
 
     def get_lines(self):
         return self.get_psalm_lines() + self.gloria_patri()
@@ -771,7 +803,9 @@ class CanticleModule(Module):
     def gloria_lines(self, data):
         if not data.gloria:
             return []
-        return file_to_lines("gloria_patri")
+        language_style = self.office.settings["language_style"]
+        file = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
+        return file_to_lines(file)
 
     def get_canticle(self, data):
         language_style = self.office.settings["language_style"]
@@ -905,36 +939,56 @@ class Creed(Module):
     name = "The Apostle's Creed"
 
     def get_lines(self):
+        language_style = self.office.settings["language_style"]
+        file = "creed_traditional" if language_style == "traditional" else "creed"
         return [
             Line("The Apostles' Creed", "heading"),
             Line("Officiant and People together, all standing", "rubric"),
-        ] + file_to_lines("creed.csv")
+        ] + file_to_lines(file)
 
 
 class Prayers(Module):
     name = "The Prayers"
 
+    def get_suffrages_file_name(self):
+        language_style = self.office.settings["language_style"]
+        if type(self.office) == MorningPrayer:
+            return "suffrages_a_traditional" if language_style == "traditional" else "suffrages_a"
+        suffrages_style = self.office.settings["suffrages"]
+        if suffrages_style == "traditional":
+            suffrages_file = "suffrages_a.csv"
+        elif suffrages_style == "new":
+            suffrages_file = "suffrages_b.csv"
+        else:
+            if self.office.date.date.timetuple().tm_yday % 2:
+                suffrages_file = "suffrages_b.csv"
+            else:
+                suffrages_file = "suffrages_a.csv"
+
+        return f"{suffrages_file}_traditional" if language_style == "traditional" else suffrages_style
+
     def get_lines(self):
-        style = self.office.settings["language_style"]
-        if style == "contemporary":
+        language_style = self.office.settings["language_style"]
+        if language_style == "contemporary":
             kryie_file = "kyrie_contemporary.csv"
             pater_file = "pater_contemporary.csv"
         else:
             kryie_file = "kyrie_traditional.csv"
             pater_file = "pater_traditional.csv"
 
+        pronoun = "thy" if language_style == "traditional" else "your"
         return (
             [
                 Line("The Prayers", "heading"),
                 Line("The Lord be with you.", "leader_dialogue", preface="Officiant"),
-                Line("And with your spirit.", "congregation_dialogue", preface="People"),
+                Line(f"And with {pronoun} spirit.", "congregation_dialogue", preface="People"),
                 Line("Let us pray.", "leader_dialogue", preface="Officiant"),
                 Line("The People kneel or stand.", "rubric"),
             ]
             + file_to_lines(kryie_file)
             + [Line("Officiant and People", "rubric")]
             + file_to_lines(pater_file)
-            + file_to_lines("suffrages_a.csv")
+            + file_to_lines(self.get_suffrages_file_name())
         )
 
 
@@ -973,22 +1027,32 @@ class EPCollectOfTheDay(MPCollectOfTheDay):
 class AdditionalCollects(Module):
     name = "Additional Collects"
 
+    def get_collects(self):
+        return {}
+
     def get_weekly_collect(self):
 
-        collect = self.weekly_collects[self.office.date.date.weekday()]
-        return [
-            Line(collect[0], "heading"),
-            Line(collect[1], "subheading"),
-            Line(collect[2], "leader"),
-            Line("Amen.", "congregation"),
-        ]
+        lines = []
+        collects = [self.pick_weekly_collect()] + [self.pick_mission_collect()]
+        language_style = self.office.settings["language_style"]
+        for collect in collects:
+            text = collect["traditional"] if language_style == "traditional" else collect["contempoary"]
+            lines.append(Line(collect["title"], "heading"))
+            if collect["title"] != "A Prayer for Mission":
+                lines.append(Line(self.office.date.date.strftime("%A"), "subheading"))
+            lines.append(Line(text, "leader"))
+            lines.append(Line("Amen.", "congregation"))
+        return lines
 
     def get_fixed_collect(self):
 
         lines = []
-        for collect in self.fixed_collects:
-            lines.append(Line(collect[0], "heading"))
-            lines.append(Line(collect[1], "leader"))
+        language_style = self.office.settings["language_style"]
+
+        for collect in self.pick_fixed_collects() + (self.pick_mission_collect(),):
+            text = collect["traditional"] if language_style == "traditional" else collect["contempoary"]
+            lines.append(Line(collect["title"], "heading"))
+            lines.append(Line(text, "leader"))
             lines.append(Line("Amen.", "congregation"))
 
         return lines
@@ -999,107 +1063,102 @@ class AdditionalCollects(Module):
             return self.get_fixed_collect()
         return self.get_weekly_collect()
 
+    @cached_property
+    def all_possible_collects(self):
+        collects = Collect.objects.filter(tags__name=self.tag_name).distinct().all()
+        results = {}
+        mission_collects = []
+        for collect in collects:
+            collect = {
+                "title": collect.title,
+                "contemporary": collect.text_no_tags,
+                "traditional": collect.traditional_text_no_tags,
+                "created": collect.created,
+            }
+            if collect["title"] == "A Prayer for Mission":
+                mission_collects.append(collect)
+            results[collect["title"].lower()] = collect
+        return results, mission_collects
+
+    @cached_property
+    def possible_collects(self):
+        results, mission_collects = self.all_possible_collects
+        return results
+
+    @cached_property
+    def possible_mission_collects(self):
+        results, mission_collects = self.all_possible_collects
+        return mission_collects
+
+    def pick_mission_collect(self):
+        day_of_year = self.office.date.date.timetuple().tm_yday
+        collect_number = day_of_year % 3
+        return self.possible_mission_collects[collect_number - 1]
+
 
 class MPAdditionalCollects(AdditionalCollects):
-    fixed_collects = (
-        (
-            "A COLLECT FOR PEACE",
-            "O God, the author of peace and lover of concord, to know you is eternal life and to serve you is perfect freedom: Defend us, your humble servants, in all assaults of our enemies; that we, surely trusting in your defense, may not fear the power of any adversaries, through the might of Jesus Christ our Lord.",
-        ),
-        (
-            "A COLLECT FOR GRACE",
-            "O Lord, our heavenly Father, almighty and everlasting God, you have brought us safely to the beginning of this day: Defend us by your mighty power, that we may not fall into sin nor run into any danger; and that, guided by your Spirit, we may do what is righteous in your sight; through Jesus Christ our Lord.",
-        ),
-    )
+    tag_name = "Morning Prayer"
 
-    weekly_collects = (
-        (
-            "A COLLECT FOR THE RENEWAL OF LIFE",
-            "Monday",
-            "O God, the King eternal, whose light divides the day from the night and turns the shadow of death into the morning: Drive far from us all wrong desires, incline our hearts to keep your law, and guide our feet into the way of peace; that, having done your will with cheerfulness during the day, we may, when night comes, rejoice to give you thanks; through Jesus Christ our Lord.",
-        ),
-        (
-            "A COLLECT FOR PEACE",
-            "Tuesday",
-            "O God, the author of peace and lover of concord, to know you is eternal life and to serve you is perfect freedom: Defend us, your humble servants, in all assaults of our enemies; that we, surely trusting in your defense, may not fear the power of any adversaries, through the might of Jesus Christ our Lord.",
-        ),
-        (
-            "A COLLECT FOR GRACE",
-            "Wednesday",
-            "O Lord, our heavenly Father, almighty and everlasting God, you have brought us safely to the beginning of this day: Defend us by your mighty power, that we may not fall into sin nor run into any danger; and that, guided by your Spirit, we may do what is righteous in your sight; through Jesus Christ our Lord.",
-        ),
-        (
-            "A COLLECT FOR GUIDANCE",
-            "Thursday",
-            "Heavenly Father, in you we live and move and have our being: We humbly pray you so to guide and govern us by your Holy Spirit, that in all the cares and occupations of our life we may not forget you, but may remember that we are ever walking in your sight; through Jesus Christ our Lord.",
-        ),
-        (
-            "A COLLECT FOR ENDURANCE ",
-            "Friday",
-            "Almighty God, whose most dear Son went not up to joy but first he suffered pain, and entered not into glory before he was crucified: Mercifully grant that we, walking in the way of the Cross, may find it none other than the way of life and peace; through Jesus Christ your Son our Lord.",
-        ),
-        (
-            "A COLLECT FOR SABBATH REST",
-            "Saturday",
-            "Almighty God, who after the creation of the world rested from all your works and sanctified a day of rest for all your creatures: Grant that we, putting away all earthly anxieties, may be duly prepared for the service of your sanctuary, and that our rest here upon earth may be a preparation for the eternal rest promised to your people in heaven; through Jesus Christ our Lord.",
-        ),
-        (
-            "A COLLECT FOR STRENGTH TO AWAIT CHRIST’S RETURN",
-            "Sunday",
-            "O God our King, by the resurrection of your Son Jesus Christ on the first day of the week, you conquered sin, put death to flight, and gave us the hope of everlasting life: Redeem all our days by this victory; forgive our sins, banish our fears, make us bold to praise you and to do your will; and steel us to wait for the consummation of your kingdom on the last great Day; through Jesus Christ our Lord.",
-        ),
-    )
+    def pick_fixed_collects(self):
+        return (self.possible_collects["a collect for peace"], self.possible_collects["a collect for grace"])
+
+    def pick_weekly_collect(self):
+        day = self.office.date.date.weekday()
+        if day == 0:
+            return self.possible_collects["a collect for the renewal of life"]
+        if day == 1:
+            return self.possible_collects["a collect for peace"]
+        if day == 2:
+            return self.possible_collects["a collect for grace"]
+        if day == 3:
+            return self.possible_collects["a collect for guidance"]
+        if day == 4:
+            return self.possible_collects["a collect for endurance"]
+        if day == 5:
+            return self.possible_collects["a collect for sabbath rest"]
+        if day == 6:
+            return self.possible_collects["a collect for the strength to await christ's return"]
 
 
 class EPAdditionalCollects(AdditionalCollects):
-    weekly_collects = (
-        (
-            "A COLLECT FOR PEACE",
-            "Monday",
-            "O God, the source of all holy desires, all good counsels, and all just works: Give to your servants that peace which the world cannot give, that our hearts may be set to obey your commandments, and that we, being defended from the fear of our enemies, may pass our time in rest and quietness; through the merits of Jesus Christ our Savior.",
-        ),
-        (
-            "A COLLECT FOR AID AGAINST PERILS",
-            "Tuesday",
-            "Lighten our darkness, we beseech you, O Lord; and by your great mercy defend us from all perils and dangers of this night; for the love of your only Son, our Savior Jesus Christ.",
-        ),
-        (
-            "A COLLECT FOR PROTECTION",
-            "Wednesday",
-            "O God, the life of all who live, the light of the faithful, the strength of those who labor, and the repose of the dead: We thank you for the blessings of the day that is past, and humbly ask for your protection through the coming night. Bring us in safety to the morning hours; through him who died and rose again for us, your Son our Savior Jesus Christ.",
-        ),
-        (
-            "A COLLECT FOR THE PRESENCE OF CHRIST",
-            "Thursday",
-            "Lord Jesus, stay with us, for evening is at hand and the day is past; be our companion in the way, kindle our hearts, and awaken hope, that we may know you as you are revealed in Scripture and the breaking of bread. Grant this for the sake of your love.",
-        ),
-        (
-            "A COLLECT FOR FAITH",
-            "Friday",
-            "Lord Jesus Christ, by your death you took away the sting of death: Grant to us your servants so to follow in faith where you have led the way, that we may at length fall asleep peacefully in you and wake up in your likeness; for your tender mercies’ sake.",
-        ),
-        (
-            "A COLLECT FOR THE EVE OF WORSHIP",
-            "Saturday",
-            "O God, the source of eternal light: Shed forth your unending day upon us who watch for you, that our lips may praise you, our lives may bless you, and our worship on the morrow give you glory; through Jesus Christ our Lord.",
-        ),
-        (
-            "A COLLECT FOR RESURRECTION HOPE",
-            "Sunday",
-            "Lord God, whose Son our Savior Jesus Christ triumphed over the powers of death and prepared for us our place in the new Jerusalem: Grant that we, who have this day given thanks for his resurrection, may praise you in that City of which he is the light, and where he lives and reigns for ever and ever.",
-        ),
-    )
+    tag_name = "Evening Prayer"
 
-    fixed_collects = (
-        (
-            "A COLLECT FOR PEACE",
-            "O God, the source of all holy desires, all good counsels, and all just works: Give to your servants that peace which the world cannot give, that our hearts may be set to obey your commandments, and that we, being defended from the fear of our enemies, may pass our time in rest and quietness; through the merits of Jesus Christ our Savior.",
-        ),
-        (
-            "A COLLECT FOR AID AGAINST PERILS",
-            "Lighten our darkness, we beseech you, O Lord; and by your great mercy defend us from all perils and dangers of this night; for the love of your only Son, our Savior Jesus Christ.",
-        ),
-    )
+    @cached_property
+    def possible_collects(self):
+        collects = Collect.objects.filter(tags__name="Evening Prayer").distinct().all()
+
+        results = {}
+        for collect in collects:
+            results[collect.title.lower()] = {
+                "title": collect.title,
+                "contemporary": collect.text_no_tags,
+                "traditional": collect.traditional_text_no_tags,
+                "created": collect.created,
+            }
+        return results
+
+    def pick_fixed_collects(self):
+        return (
+            self.possible_collects["a collect for peace"],
+            self.possible_collects["a collect for aid against perils"],
+        )
+
+    def pick_weekly_collect(self):
+        day = self.office.date.date.weekday()
+        if day == 0:
+            return self.possible_collects["a collect for peace"]
+        if day == 1:
+            return self.possible_collects["a collect for aid against perils"]
+        if day == 2:
+            return self.possible_collects["a collect for protection"]
+        if day == 3:
+            return self.possible_collects["a collect for the presence of christ"]
+        if day == 4:
+            return self.possible_collects["a collect for faith"]
+        if day == 5:
+            return self.possible_collects["a collect for the eve of worship"]
+        if day == 6:
+            return self.possible_collects["a collect for resurrection hope"]
 
 
 class ShowGreatLitanyMixin(object):
@@ -1116,54 +1175,6 @@ class ShowGreatLitanyMixin(object):
         if setting in ["mp_litany_w_f_s", "ep_litany_w_f_s"]:
             return self.office.date.date.weekday() in [2, 4, 6]
         return False
-
-
-class MissionCollect(ShowGreatLitanyMixin, Module):
-    name = "Collect for Mission"
-
-    def get_lines(self):
-
-        if self.show_great_litany:
-            return None
-
-        day_of_year = self.office.date.date.timetuple().tm_yday
-        collect_number = day_of_year % 3
-
-        if collect_number == 0:
-            collect = self.mission_collects[0]
-            number = "I"
-        elif collect_number == 1:
-            collect = self.mission_collects[1]
-            number = "II"
-        else:
-            collect = self.mission_collects[2]
-            number = "III"
-
-        return [
-            Line("A Collect for Mission ({})".format(number), "heading"),
-            Line(collect, "leader"),
-            Line("Amen.", "congregation"),
-        ]
-
-
-class MPMissionCollect(MissionCollect):
-    office_name = "morning_prayer"
-
-    mission_collects = (
-        "Almighty and everlasting God, who alone works great marvels: Send down upon our clergy and the congregations committed to their charge the life-giving Spirit of your grace, shower them with the continual dew of your blessing, and ignite in them a zealous love of your Gospel; through Jesus Christ our Lord. ",
-        "O God, you have made of one blood all the peoples of the earth, and sent your blessed Son to preach peace to those who are far off and to those who are near: Grant that people everywhere may seek after you and find you; bring the nations into your fold; pour out your Spirit upon all flesh; and hasten the coming of your kingdom; through Jesus Christ our Lord.",
-        "Lord Jesus Christ, you stretched out your arms of love on the hard wood of the Cross that everyone might come within the reach of your saving embrace: So clothe us in your Spirit that we, reaching forth our hands in love, may bring those who do not know you to the knowledge and love of you; for the honor of your Name.",
-    )
-
-
-class EPMissionCollect(MissionCollect):
-    office_name = "evening_prayer"
-
-    mission_collects = (
-        "O God and Father of all, whom the whole heavens adore: Let the whole earth also worship you, all nations obey you, all tongues confess and bless you, and men, women, and children everywhere love you and serve you in peace; through Jesus Christ our Lord.",
-        "Keep watch, dear Lord, with those who work, or watch, or weep this night, and give your angels charge over those who sleep. Tend the sick, Lord Christ; give rest to the weary, bless the dying, soothe the suffering, pity the afflicted, shield the joyous; and all for your love’s sake.",
-        "O God, you manifest in your servants the signs of your presence: Send forth upon us the Spirit of love, that in companionship with one another your abounding grace may increase among us; through Jesus Christ our Lord.",
-    )
 
 
 class Intercessions(Module):
@@ -1186,6 +1197,9 @@ class FinalPrayers(Module):
 
         lines = []
 
+        language_style = self.office.settings["language_style"]
+        file = "general_thanksgiving_traditional" if language_style == "traditional" else "general_thanksgiving"
+
         if general_thanksgiving == "on":
             lines = (
                 lines
@@ -1193,8 +1207,11 @@ class FinalPrayers(Module):
                     Line("The General Thanksgiving", "heading"),
                     Line("Officiant and People", "rubric"),
                 ]
-                + file_to_lines("general_thanksgiving")
+                + file_to_lines(file)
             )
+
+        language_style = self.office.settings["language_style"]
+        file = "chrysostom_traditional" if language_style == "traditional" else "chrysostom"
 
         if chrysostom == "on":
             lines = (
@@ -1202,7 +1219,7 @@ class FinalPrayers(Module):
                 + [
                     Line("A Prayer of St. John Chrysostom", "heading"),
                 ]
-                + file_to_lines("chrysostom")
+                + file_to_lines(file)
             )
 
         return lines
@@ -1215,6 +1232,7 @@ class Dismissal(Module):
 
         return {
             "officiant": "The grace of our Lord Jesus Christ, and the love of God, and the fellowship of the Holy Spirit, be with us all evermore.",
+            "traditional": "The grace of our Lord Jesus Christ, and the love of God, and the fellowship of the Holy Ghost, be with us all evermore.",
             "people": "Amen.",
             "citation": "2 CORINTHIANS 13:14",
         }
@@ -1224,12 +1242,14 @@ class Dismissal(Module):
         if self.office.date.date.weekday() in (6, 2, 5):
             return {
                 "officiant": "The grace of our Lord Jesus Christ, and the love of God, and the fellowship of the Holy Spirit, be with us all evermore.",
+                "traditional": "The grace of our Lord Jesus Christ, and the love of God, and the fellowship of the Holy Ghost, be with us all evermore.",
                 "people": "Amen.",
                 "citation": "2 CORINTHIANS 13:14",
             }
         if self.office.date.date.weekday() in (0, 3):
             return {
                 "officiant": "May the God of hope fill us with all joy and peace in believing through the power of the Holy Spirit. ",
+                "traditional": "May the God of hope fill us with all joy and peace in believing through the power of the Holy Ghost.",
                 "people": "Amen.",
                 "citation": "ROMANS 15:13",
             }
@@ -1237,6 +1257,7 @@ class Dismissal(Module):
         if self.office.date.date.weekday() in (1, 4):
             return {
                 "officiant": "Glory to God whose power, working in us, can do infinitely more than we can ask or imagine: Glory to him from generation to generation in the Church, and in Christ Jesus for ever and ever.",
+                "traditional": "Glory to God whose power, working in us, can do infinitely more than we can ask or imagine: Glory to him from generation to generation in the Church, and in Christ Jesus for ever and ever.",
                 "people": "Amen.",
                 "citation": "EPHESIANS 3:20-21",
             }
@@ -1265,11 +1286,14 @@ class Dismissal(Module):
         else:
             grace = self.get_fixed_grace()
 
+        language_style = self.office.settings["language_style"]
+        part = "traditional" if language_style == "traditional" else "officiant"
+
         return (
             lines
             + [Line("", "spacer")]
             + [
-                Line(grace["officiant"], "leader"),
+                Line(grace[part], "leader"),
                 Line("Amen.", "congregation"),
                 Line(grace["citation"], "citation"),
             ]
@@ -1343,7 +1367,6 @@ class MorningPrayer(Office):
             Prayers(self),
             MPCollectOfTheDay(self),
             MPAdditionalCollects(self),
-            MPMissionCollect(self),
             MPGreatLitany(self),
             Intercessions(self),
             FinalPrayers(self),
@@ -1841,7 +1864,6 @@ class EveningPrayer(Office):
             Prayers(self),
             EPCollectOfTheDay(self),
             EPAdditionalCollects(self),
-            EPMissionCollect(self),
             EPGreatLitany(self),
             Intercessions(self),
             FinalPrayers(self),

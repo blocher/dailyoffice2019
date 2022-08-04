@@ -193,6 +193,9 @@ class CollectTag(BaseModel):
     collect_tag_category = models.ForeignKey(CollectTagCategory, on_delete=models.SET_NULL, null=True, blank=True)
     order = models.PositiveSmallIntegerField(default=0)
 
+    def __str__(self):
+        return self.name
+
 
 class AbstractCollect(object):
     text = ""
@@ -220,6 +223,18 @@ class Collect(BaseModel):
     number = models.PositiveSmallIntegerField(null=True, blank=True)
     tags = models.ManyToManyField(CollectTag)
     attribution = models.CharField(max_length=255, blank=True, null=True)
+
+    @property
+    def traditional_text_no_tags(self):
+        from office.management.commands.import_collects import do_strip_tags
+
+        return do_strip_tags(self.traditional_text).replace(" Amen.", "")
+
+    @property
+    def text_no_tags(self):
+        from office.management.commands.import_collects import do_strip_tags
+
+        return do_strip_tags(self.text).replace(" Amen.", "")
 
     def __str__(self):
         return self.title
