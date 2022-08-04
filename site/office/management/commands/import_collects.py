@@ -710,6 +710,6 @@ class Command(BaseCommand):
         # import_occasional_collects()
         # import_traditional_language_occasional_collects()
         # import_collects_of_the_christian_year()
-        import_liturgical_collects()
+        # import_liturgical_collects()
         match_collects()
         update_common_collects_to_remove_braces()
