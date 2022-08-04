@@ -128,12 +128,14 @@ class MPOpeningSentence(Module):
         if "Thanksgiving Day" in self.office.date.primary.name:
             return {
                 "sentence": "Honor the Lord with your wealth and with the firstfruits of all your produce; then your barns will be filled with plenty, and your vats will be bursting with wine.",
+                "traditional": "Honor the Lord with thy substance, and with the firstfruits of all thine increase: So shall thy barns be filled with plenty, and thy presses shall burst out with new wine.",
                 "citation": "PROVERBS 3:9-10",
             }
 
         if self.office.date.season.name == "Holy Week":
             return {
                 "sentence": "Is it nothing to you, all you who pass by? Look and see if there is any sorrow like my sorrow, which was brought upon me, which the Lord inflicted on the day of his fierce anger.",
+                "traditional": "Is it nothing to you, all ye that pass by? Behold, and see if there be any sorrow like unto my sorrow, which is done unto me, wherewith the Lord hath afflicted me in the day of his fierce anger.",
                 "citation": "LAMENTATIONS 1:12",
             }
 
@@ -200,56 +202,65 @@ class MPOpeningSentence(Module):
         if self.office.date.season.name == "Eastertide":
             return {
                 "sentence": "If then you have been raised with Christ, seek the things that are above, where Christ is, seated at the right hand of God.",
+                "traditional": "If ye then be risen with Christ, seek those things which are above, where Christ sitteth on the right hand of God.",
                 "citation": "COLOSSIANS 3:1",
             }
 
         if self.office.date.date.weekday() == 6:
             return {
                 "sentence": "Grace to you and peace from God our Father and the Lord Jesus Christ.",
+                "traditional": "Grace be unto you and peace, from God our Father, and from the Lord Jesus Christ.",
                 "citation": "PHILIPPIANS 1:2",
             }
 
         if self.office.date.date.weekday() == 0:
             return {
-                "sentence": "I was glad when they said unto me, “We will go into the house of the Lord.”",
+                "sentence": "I was glad when they said unto me, “We will go into the house of the Lord.",
+                "traditional": "I was glad when they said unto me, We will go into the house ofthe Lord.",
                 "citation": "PSALM 122:1",
             }
 
         if self.office.date.date.weekday() == 1:
             return {
                 "sentence": "Let the words of my mouth and the meditation of my heart be always acceptable in your sight, O Lord, my rock and my redeemer.",
+                "traditional": "Let the words of my mouth, and the meditation of my heart, be alway acceptable in your sight, O Lord, my strength and my redeemer.",
                 "citation": "PSALM 19:14",
             }
 
         if self.office.date.date.weekday() == 2:
             return {
                 "sentence": "The Lord is in his holy temple; let all the earth keep silence before him.",
+                "traditional": "The Lord is in his holy temple: let all the earth keep silence before him.",
                 "citation": "HABAKKUK 2:20",
             }
 
         if self.office.date.date.weekday() == 3:
             return {
                 "sentence": "O send out your light and your truth, that they may lead me, and bring me to your holy hill, and to your dwelling.",
+                "traditional": "O send out thy light and thy truth, that they may lead me, and bring me unto thy holy hill, and to thy dwelling",
                 "citation": "PSALM 43:3",
             }
 
         if self.office.date.date.weekday() == 4:
             return {
                 "sentence": "Thus says the One who is high and lifted up, who inhabits eternity, whose name is Holy: “I dwell in the high and holy place, and also with him who is of a contrite and lowly spirit, to revive the spirit of the lowly, and to revive the heart of the contrite.”",
+                "traditional": "Thus saith the high and lofty One that inhabiteth eternity, whose name is Holy; I dwell in the high and holy place, with him also that is of a contrite and humble spirit, to revive the spirit of the humble, and to revive the heart of the contrite ones.",
                 "citation": "ISAIAH 57:15",
             }
 
         if self.office.date.date.weekday() == 5:
             return {
                 "sentence": "The hour is coming, and is now here, when the true worshipers will worship the Father in spirit and truth, for the Father is seeking such people to worship him.",
+                "traditional": "The hour cometh, and now is, when the true worshipers shall worship the Father in spirit and in truth: for the Father seeketh such to worship him.",
                 "citation": "JOHN 4:23",
             }
 
     def get_lines(self):
         sentence = self.get_sentence()
+        style = self.office.settings["language_style"]
         return [
             Line("Opening Sentence", "heading"),
-            Line(sentence["sentence"], "leader"),
+            Line(sentence["traditional"] if style == "traditional" else sentence["sentence"], "leader"),
             Line(sentence["citation"], "citation"),
         ]
 
@@ -352,21 +363,32 @@ class MPInvitatory(Module):
             return {
                 "first_line": "The Word was made flesh and dwelt among us:",
                 "second_line": "O come, let us adore him.",
+                "first_line_traditional": "The Word was made flesh and dwelt among us: *",
+                "second_line_traditional": "O come, let us adore him.",
             }
 
         if self.office.date.primary.name == "The Day of Pentecost":
             return {
                 "first_line": "Alleluia. The Spirit of the Lord renews the face of the earth:",
                 "second_line": "O come, let us adore him. Alleluia.",
+                "first_line_traditional": "Alleluia. The Spirit of the Lord filleth the world: *",
+                "second_line_traditional": "O come, let us adore him. Alleluia.",
             }
 
         if self.office.date.primary.name == "Trinity Sunday":
-            return {"first_line": "Father, Son, and Holy Spirit, one God:", "second_line": "O come, let us adore him."}
+            return {
+                "first_line": "Father, Son, and Holy Spirit, one God:",
+                "second_line": "O come, let us adore him.",
+                "first_line_traditional": "Father, Son, and Holy Ghost, one God: * ",
+                "second_line_traditional": "O come, let us adore him.",
+            }
 
         if self.office.date.primary.name == "Easter Day":
             return {
                 "first_line": "Alleluia. The Lord is risen indeed:",
                 "second_line": "O come, let us adore him. Alleluia.",
+                "first_line_traditional": "Alleluia. The Lord is risen indeed: *",
+                "second_line_traditional": "O come, let us adore him. Alleluia.",
             }
 
         if (
@@ -377,13 +399,25 @@ class MPInvitatory(Module):
             return {
                 "first_line": "Alleluia. Christ the Lord has ascended into heaven:",
                 "second_line": "O come, let us adore him. Alleluia.",
+                "first_line_traditional": "Alleluia. Christ the Lord ascendeth into heaven: *",
+                "second_line_traditional": "O come, let us adore him. Alleluia.",
             }
 
         if self.office.date.primary.name == "The Transfiguration of Our Lord Jesus Christ":
-            return {"first_line": "The Lord has shown forth his glory:", "second_line": "O come, let us adore him."}
+            return {
+                "first_line": "The Lord has shown forth his glory:",
+                "second_line": "O come, let us adore him.",
+                "first_line_traditional": "The Lord hath manifested forth his glory:",
+                "second_line_traditional": "O come, let us adore him.",
+            }
 
         if self.office.date.primary.name == "All Saints’ Day":
-            return {"first_line": "The Lord is glorious in his saints:", "second_line": "O come, let us adore him."}
+            return {
+                "first_line": "The Lord is glorious in his saints:",
+                "second_line": "O come, let us adore him.",
+                "first_line_traditional": "The Lord hath manifested forth his glory: * ",
+                "second_line_traditional": "O come, let us adore him.",
+            }
 
         if self.office.date.primary.rank.name == "HOLY_DAY" and self.office.date.primary.name not in (
             "The Circumcision and Holy Name of our Lord Jesus Christ",
@@ -391,22 +425,44 @@ class MPInvitatory(Module):
             "Holy Cross Day",
             "The Holy Innocents",
         ):
-            return {"first_line": "The Lord is glorious in his saints:", "second_line": "O come, let us adore him."}
+            return {
+                "first_line": "The Lord is glorious in his saints:",
+                "second_line": "O come, let us adore him.",
+                "first_line_traditional": "The Lord is glorious in his saints: *",
+                "second_line_traditional": "O come, let us adore him.",
+            }
 
         if self.office.date.season.name == "Lent" or self.office.date.season.name == "Holy Week":
             return {
                 "first_line": "The Lord is full of compassion and mercy:",
                 "second_line": "O come, let us adore him.",
+                "first_line_traditional": "The Lord is full of compassion and mercy: *",
+                "second_line_traditional": "O come, let us adore him.",
             }
 
         if self.office.date.season.name == "Advent":
-            return {"first_line": "Our King and Savior now draws near:", "second_line": "O come, let us adore him."}
+            return {
+                "first_line": "Our King and Savior now draws near:",
+                "second_line": "O come, let us adore him.",
+                "first_line_traditional": "Our King and Savior draweth nigh: *",
+                "second_line_traditional": "O come, let us adore him.",
+            }
 
         if self.office.date.season.name == "Christmastide":
-            return {"first_line": "Alleluia, to us a child is born:", "second_line": "O come, let us adore him."}
+            return {
+                "first_line": "Alleluia, to us a child is born:",
+                "second_line": "O come, let us adore him.",
+                "first_line_traditional": "Alleluia, unto us a child is born: *",
+                "second_line_traditional": "O come, let us adore him. Alleluia.",
+            }
 
         if self.office.date.season.name == "Epiphanytide":
-            return {"first_line": "The Lord has shown forth his glory:", "second_line": "O come, let us adore him."}
+            return {
+                "first_line": "The Lord has shown forth his glory:",
+                "second_line": "O come, let us adore him.",
+                "first_line_traditional": "The Lord hath manifested forth his glory: *",
+                "second_line_traditional": "O come, let us adore him.",
+            }
 
         if self.office.date.season.name == "Eastertide":
             for commemoration in self.office.date.all:
@@ -414,24 +470,40 @@ class MPInvitatory(Module):
                     return {
                         "first_line": "Alleluia. Christ the Lord has ascended into heaven:",
                         "second_line": "O come, let us adore him.",
+                        "first_line_traditional": "Alleluia. Christ the Lord ascendeth into heaven: *",
+                        "second_line_traditional": "O come, let us adore him. Alleluia.",
                     }
 
-            return {"first_line": "Alleluia. The Lord is risen indeed:", "second_line": "O come, let us adore him."}
+            return {
+                "first_line": "Alleluia. The Lord is risen indeed:",
+                "second_line": "O come, let us adore him.",
+                "first_line_traditional": "Alleluia. The Lord is risen indeed: *",
+                "second_line_traditional": "O come, let us adore him. Alleluia.",
+            }
 
         if self.office.date.date.weekday() in [0, 3, 6]:
             return {
                 "first_line": "The earth is the Lord’s for he made it: ",
                 "second_line": "O come, let us adore him.",
+                "first_line_traditional": "The earth is the Lord’s for he made it: *",
+                "second_line_traditional": "O come, let us adore him.",
             }
 
         if self.office.date.date.weekday() in [1, 4]:
             return {
                 "first_line": "Worship the Lord in the beauty of holiness:",
                 "second_line": "O come, let us adore him.",
+                "first_line_traditional": "Worship the Lord in the beauty of holiness: *",
+                "second_line_traditional": "O come, let us adore him.",
             }
 
         if self.office.date.date.weekday() in [2, 5]:
-            return {"first_line": "The mercy of the Lord is everlasting: ", "second_line": "O come, let us adore him."}
+            return {
+                "first_line": "The mercy of the Lord is everlasting: ",
+                "second_line": "O come, let us adore him.",
+                "first_line_traditional": "The mercy of the Lord is everlasting: *",
+                "second_line_traditional": "O come, let us adore him.",
+            }
 
     def rotating(self):
         if "Easter Day" in self.office.date.primary.name or "Easter Week" in self.office.date.primary.name:
@@ -542,20 +614,24 @@ class MPInvitatory(Module):
         return canticle
 
     def get_lines(self):
-
+        print("HERE")
         filename = self.get_canticle_filename()
         language_style = self.office.settings["language_style"]
         if language_style == "traditional":
             filename += "_traditional"
         if filename != "pascha_nostrum":
+            first_line_field = "first_line_traditional" if language_style == "traditional" else "first_line"
+            second_line_field = "second_line_traditional" if language_style == "traditional" else "second_line"
+            print(self.antiphon)
             canticle = file_to_lines(filename)
             canticle_heading = canticle[:3]
             canticle_body = canticle[3:]
+            print(self.antiphon[first_line_field])
             return (
                 canticle_heading
-                + [Line(self.antiphon["first_line"], "leader"), Line(self.antiphon["second_line"])]
+                + [Line(self.antiphon[first_line_field], "leader"), Line(self.antiphon[second_line_field])]
                 + canticle_body
-                + [Line(self.antiphon["first_line"], "leader"), Line(self.antiphon["second_line"])]
+                + [Line(self.antiphon[first_line_field], "leader"), Line(self.antiphon[second_line_field])]
             )
         return file_to_lines(filename)
 
