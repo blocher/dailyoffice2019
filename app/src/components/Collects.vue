@@ -1,7 +1,7 @@
 <template>
   <div class="collectsWrapper">
     <div v-for="(collect, index) in collects" :key="index">
-      <p>{{ collect }} <strong>Amen.</strong></p>
+      <p v-html="collect"></p>
       <p v-if="index != collects.length - 1"><em>or</em></p>
     </div>
   </div>

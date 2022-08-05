@@ -91,17 +91,17 @@ export default {
     }
     this.setTraditional();
     let data = null;
-    try {
-      data = await this.$http.get(
-          `${process.env.VUE_APP_API_URL}api/v1/collect_categories`
-      );
-    } catch (e) {
-      this.error =
-          "There was an error retrieving the collect categories. Please try again.";
-      this.loading = false;
-      return;
-    }
-    this.collectCategories = this.formatCollectCategories(data.data);
+    // try {
+    //   data = await this.$http.get(
+    //       `${process.env.VUE_APP_API_URL}api/v1/collect_categories`
+    //   );
+    // } catch (e) {
+    //   this.error =
+    //       "There was an error retrieving the collect categories. Please try again.";
+    //   this.loading = false;
+    //   return;
+    // }
+    // this.collectCategories = this.formatCollectCategories(data.data);
     try {
       data = await this.$http.get(
           `${process.env.VUE_APP_API_URL}api/v1/collects`
@@ -124,41 +124,41 @@ export default {
     setTraditional() {
       localStorage.setItem("tradtionalCollects", this.traditional);
     },
-    formatCollectCategories(categories) {
-      return categories.map((category) => {
-        return {
-          id: category.uuid,
-          name: category.name,
-          options: category.tags.map((tag) => {
-            return {
-              value: tag.uuid,
-              label: tag.name,
-            };
-          }),
-        };
-      });
-    },
+    // formatCollectCategories(categories) {
+    //   return categories.map((category) => {
+    //     return {
+    //       id: category.uuid,
+    //       name: category.name,
+    //       options: category.tags.map((tag) => {
+    //         return {
+    //           value: tag.uuid,
+    //           label: tag.name,
+    //         };
+    //       }),
+    //     };
+    //   });
+    // },
     filterCollects(categories) {
       this.categories = categories;
       if (!categories || Object.values(categories).length === 0) {
         this.displayedCollects = this.collects;
       } else {
         let collects = this.collects;
-        for (let i in Object.values(this.collectCategories)) {
-          const collectCategoryType = this.collectCategories[i];
-          const options = collectCategoryType.options.map((option) => {
-            return option.value;
-          });
-          // all values in both categories and options
-          const intersection = options.filter((value) => categories.includes(value));
-          if (intersection.length > 0) {
-            collects = collects.filter(
-                (collect) => {
-                  const tags = collect.tags.map((tag) => tag.uuid);
-                  return intersection.some((category) => tags.includes(category));
-                });
-          }
-        }
+        // for (let i in Object.values(this.collectCategories)) {
+        //   const collectCategoryType = this.collectCategories[i];
+        //   const options = collectCategoryType.options.map((option) => {
+        //     return option.value;
+        //   });
+        //   // all values in both categories and options
+        //   const intersection = options.filter((value) => categories.includes(value));
+        //   if (intersection.length > 0) {
+        //     collects = collects.filter(
+        //         (collect) => {
+        //           const tags = collect.tags.map((tag) => tag.uuid);
+        //           return intersection.some((category) => tags.includes(category));
+        //         });
+        //   }
+        // }
         this.displayedCollects = collects;
       }
       if (this.search.length > 0) {
