@@ -1145,6 +1145,7 @@ class AdditionalCollects(Module):
         results = {}
         mission_collects = []
         for collect in collects:
+            key = collect.title.lower().replace("'", "")
             collect = {
                 "title": collect.title,
                 "contemporary": collect.text_no_tags,
@@ -1153,7 +1154,7 @@ class AdditionalCollects(Module):
             }
             if collect["title"] == "A Prayer for Mission":
                 mission_collects.append(collect)
-            results[collect["title"].lower()] = collect
+            results[key] = collect
         return results, mission_collects
 
     @cached_property
@@ -1193,25 +1194,13 @@ class MPAdditionalCollects(AdditionalCollects):
         if day == 5:
             return self.possible_collects["a collect for sabbath rest"]
         if day == 6:
-            return self.possible_collects["a collect for the strength to await christ's return"]
+            for key, value in self.possible_collects.items():
+                print(key)
+            return self.possible_collects["a collect for strength to await christs return"]
 
 
 class EPAdditionalCollects(AdditionalCollects):
     tag_name = "Evening Prayer"
-
-    @cached_property
-    def possible_collects(self):
-        collects = Collect.objects.filter(tags__name="Evening Prayer").distinct().all()
-
-        results = {}
-        for collect in collects:
-            results[collect.title.lower()] = {
-                "title": collect.title,
-                "contemporary": collect.text_no_tags,
-                "traditional": collect.traditional_text_no_tags,
-                "created": collect.created,
-            }
-        return results
 
     def pick_fixed_collects(self):
         return (
