@@ -2129,13 +2129,17 @@ class ComplineOpeningSentence(Module):
     # congregation_dialogue
 
     def get_lines(self):
+        language_style = self.office.settings["language_style"]
+        final_line = (
+            "Who hath made heaven and earth." if language_style == "traditional" else "The maker of heaven and earth."
+        )
         return [
             Line("Opening Sentence", "heading"),
             Line("The Officiant begins:", "rubric"),
             Line("The Lord Almighty grant us a peaceful night and a perfect end.", "leader_dialogue"),
             Line("Amen.", "congregation_dialogue"),
             Line("Our help is in the Name of the Lord;", "leader_dialogue"),
-            Line("The maker of heaven and earth.", "congregation_dialogue"),
+            Line(final_line, "congregation_dialogue"),
         ]
 
 
@@ -2153,12 +2157,16 @@ class ComplineConfession(Module):
     # congregation_dialogue
 
     def get_lines(self):
+        language_style = self.office.settings["language_style"]
+        file_name = "confession_compline_traditional" if language_style == "traditional" else "confession_compline"
         return (
             [
                 Line("Confession of Sin", "heading"),
                 Line("The Officiant continues", "rubric"),
+                Line("Let us humbly confess our sins unto Almighty God.", "leader_dialogue"),
+                Line("Silence may be kept. The Officiant and People then say", "rubric"),
             ]
-            + file_to_lines("confession_compline")
+            + file_to_lines(file_name)
             + [
                 Line("The Officiant alone says", "rubric"),
                 Line(
@@ -2189,11 +2197,13 @@ class ComplineInvitatory(Module):
         return " Alleluia." if alleluia else ""
 
     def get_lines(self):
+        language_style = self.office.settings["language_style"]
+        ghost = "Ghost" if language_style == "traditional" else "Spirit"
         return [
             Line("Invitatory", "heading"),
             Line("O God, make speed to save us;", "leader_dialogue"),
             Line("O Lord, make haste to help us.", "congregation_dialogue"),
-            Line("Glory be to the Father, and to the Son, and to the Holy Spirit;", "leader_dialogue"),
+            Line(f"Glory be to the Father, and to the Son, and to the Holy {ghost};", "leader_dialogue"),
             Line(
                 "As it was in the beginning, is now, and ever shall be, world without end. Amen.{}".format(
                     self.alleluia
@@ -2222,24 +2232,28 @@ class ComplineScripture(Module):
         if self.office.date.date.weekday() in [0, 4]:
             return {
                 "sentence": "You, O Lord, are in the midst of us, and we are called by your name; do not leave us.",
+                "traditional": "Thou, O Lord, art in the midst of us, and we are called by thy Name. Leave us not, O Lord our God.",
                 "citation": "JEREMIAH 14:9",
             }
 
         if self.office.date.date.weekday() in [1, 5]:
             return {
                 "sentence": "Come to me, all who labor and are heavy laden, and I will give you rest. Take my yoke upon you, and learn from me, for I am gentle and lowly in heart, and you will find rest for your souls. For my yoke is easy, and my burden is light.",
+                "traditional": "Come unto me, all ye that labor and are heavy laden, and I will give you rest. Take my yoke upon you, and learn of me; for I am meek and lowly in heart; and ye shall find rest unto your souls. For my yoke is easy, and my burden is light. ",
                 "citation": "MATTHEW 11:28-30",
             }
 
         if self.office.date.date.weekday() in [2, 6]:
             return {
                 "sentence": "Now may the God of peace who brought again from the dead our Lord Jesus, the great shepherd of the sheep, by the blood of the eternal covenant, equip you with everything good that you may do his will, working in us that which is pleasing in his sight, through Jesus Christ, to whom be glory forever and ever. Amen.",
+                "traditional": "Now the God of peace, that brought again from the dead our Lord Jesus, that great Shepherd of the sheep, through the blood of the everlasting covenant, make you perfect in every good work to do his will, working in you that which is well pleasing in his sight; through Jesus Christ, to whom be glory for ever and ever. Amen.",
                 "citation": "HEBREWS 13:20-21",
             }
 
         if self.office.date.date.weekday() in [3]:
             return {
                 "sentence": "Be sober-minded; be watchful. Your adversary the devil prowls around like a roaring lion, seeking someone to devour. Resist him, firm in your faith.",
+                "traditional": "Be sober, be vigilant, because your adversary the devil, as a roaring lion, walketh about, seeking whom he may devour: whom resist, steadfast in the faith.",
                 "citation": "1 PETER 5:8-9",
             }
 
@@ -2261,34 +2275,42 @@ class ComplinePrayers(Module):
         (
             "A Collect for Evening",
             "Visit this place, O Lord, and drive far from it all snares of the enemy; let your holy angels dwell with us to preserve us in peace; and let your blessing be upon us always; through Jesus Christ our Lord.",
+            "Visit this place, we beseech thee, O Lord, and drive from it all the snares of the enemy; let thy holy angels dwell herein to preserve us in peace; and may thy blessing be upon us evermore; through Jesus Christ our Lord.",
         ),
         (
             "A Collect for Aid Against Peril",
             "Lighten our darkness, we beseech you, O Lord; and by your great mercy defend us from all perils and dangers of this night; for the love of your only Son, our Savior Jesus Christ.",
+            "Lighten our darkness, we beseech thee, O Lord; and by thy great mercy defend us from all perils and dangers of this night; for the love of thine only Son, our Savior Jesus Christ.",
         ),
         (
             "A Collect for Evening",
             "Be present, O merciful God, and protect us through the hours of this night, so that we who are wearied by the changes and chances of this life may rest in your eternal changelessness; through Jesus Christ our Lord.",
+            "Be present, O merciful God, and protect us through the hours of this night, so that we who are wearied by the changes and chances of this life may rest in thine eternal changelessness; through Jesus Christ our Lord.",
         ),
         (
             "A Collect for Evening",
             "Look down, O Lord, from your heavenly throne, illumine this night with your celestial brightness, and from the children of light banish the deeds of darkness; through Jesus Christ our Lord.",
+            "Look down, O Lord, from thy heavenly throne, illumine the darkness of this night with thy celestial brightness, and from the children of light banish the deeds of darkness; through Jesus Christ our Lord.",
         ),
         (
             "A Collect for Saturdays",
             "We give you thanks, O God, for revealing your Son Jesus Christ to us by the light of his resurrection: Grant that as we sing your glory at the close of this day, our joy may abound in the morning as we celebrate the Paschal mystery; through Jesus Christ our Lord.",
+            "We give thee thanks, O God, for revealing thy Son Jesus Christ to us by the light of his resurrection: Grant that as we sing thy glory at the close of this day, our joy may abound in the morning as we celebrate the Paschal mystery; through Jesus Christ our Lord.",
         ),
         (
             "A Collect for Mission",
             "Keep watch, dear Lord, with those who work, or watch, or weep this night, and give your angels charge over those who sleep. Tend the sick, Lord Christ; give rest to the weary, bless the dying, soothe the suffering, pity the afflicted, shield the joyous; and all for your love’s sake.",
+            "Keep watch, dear Lord, with those who work, or watch, or weep this night, and give thine angels charge over those who sleep. Tend the sick, Lord Christ; give rest to the weary, bless the dying, soothe the suffering, pity the afflicted, shield the joyous; and all for thy love’s sake.",
         ),
         (
             "A Collect for Evening",
             "O God, your unfailing providence sustains the world we live in and the life we live: Watch over those, both night and day, who work while others sleep, and grant that we may never forget that our common life depends upon each other’s toil; through Jesus Christ our Lord.",
+            "O God, whose unfailing providence sustaineth the world we live in and the life we live: Watch over those, both night and day, who work while others sleep, and grant that we may never forget that our common life depends upon each other’s toil; through Jesus Christ our Lord.",
         ),
     ]
 
     def get_collects(self):
+        print(self.office.date.date, self.office.date.date.weekday())
 
         if self.office.date.date.weekday() in [6]:  # Sunday
             return self.collects[0], self.collects[1], self.collects[5]
@@ -2314,35 +2336,61 @@ class ComplinePrayers(Module):
     def get_collect_lines(self):
         collects = self.get_collects()
         lines = []
+        style = self.office.settings["language_style"]
         for collect in collects:
+            leader_part = collect[2] if style == "traditional" else collect[1]
             lines.append(Line("", "spacer"))
             lines.append(Line(collect[0], "subheading"))
-            lines.append(Line(collect[1], "leader"))
+            lines.append(Line(leader_part, "leader"))
             lines.append(Line("Amen.", "congregation"))
         return lines
 
     def get_lines(self):
         style = self.office.settings["language_style"]
-        kyrie = file_to_lines("kyrie_contemporary") if style == "contemporary" else file_to_lines("kyrie_traditional")
-        pater = file_to_lines("pater_contemporary") if style == "contemporary" else file_to_lines("pater_traditional")
+        our_father_style = self.office.settings["language_style_for_our_father"]
+        if style == "traditional" or our_father_style == "traditional":
+            kyrie_file = "kyrie_traditional"
+            pater_file = "pater_traditional"
+        else:
+            kyrie_file = "kyrie_contemporary"
+            pater_file = "pater_contemporary"
+        kyrie = file_to_lines(kyrie_file)
+        pater = file_to_lines(pater_file)
+        dialogue = [
+            Line("The Prayers", "heading"),
+            Line("Into your hands, O Lord, I commend my spirit;", "leader_dialogue"),
+            Line("For you have redeemed me, O Lord, O God of truth.", "congregation_dialogue"),
+            Line("Keep me, O Lord, as the apple of your eye;", "leader_dialogue"),
+            Line("Hide me under the shadow of your wings.", "congregation_dialogue"),
+            Line("", "spacer"),
+        ]
+        traditional_dialogue = [
+            Line("The Prayers", "heading"),
+            Line("Into thy hands, O Lord, I commend my spirit;", "leader_dialogue"),
+            Line("For thou hast redeemed me, O Lord, thou God of truth.", "congregation_dialogue"),
+            Line("Keep me, O Lord, as the apple of thine eye;", "leader_dialogue"),
+            Line("Hide me under the shadow of thy wings.", "congregation_dialogue"),
+            Line("", "spacer"),
+        ]
+
+        dialogue_2 = [
+            Line("", "spacer"),
+            Line("O Lord, hear our prayer", "leader_dialogue"),
+            Line("And let our cry come to you.", "congregation_dialogue"),
+            Line("Let us pray.", "leader_dialogue"),
+        ]
+        traditional_dialogue_2 = [
+            Line("", "spacer"),
+            Line("O Lord, hear our prayer;", "leader_dialogue"),
+            Line("And let our cry come unto thee.", "congregation_dialogue"),
+            Line("Let us pray.", "leader_dialogue"),
+        ]
         return (
-            [
-                Line("The Prayers", "heading"),
-                Line("Into your hands, O Lord, I commend my spirit;", "leader_dialogue"),
-                Line("For you have redeemed me, O Lord, O God of truth.", "congregation_dialogue"),
-                Line("Keep me, O Lord, as the apple of your eye;", "leader_dialogue"),
-                Line("Hide me under the shadow of your wings.", "congregation_dialogue"),
-                Line("", "spacer"),
-            ]
+            (traditional_dialogue if style == "traditional" else dialogue)
             + kyrie
             + [Line("Officiant and People", "rubric")]
             + pater
-            + [
-                Line("", "spacer"),
-                Line("O Lord, hear our prayer", "leader_dialogue"),
-                Line("And let our cry come to you.", "congregation_dialogue"),
-                Line("Let us pray.", "leader_dialogue"),
-            ]
+            + (traditional_dialogue_2 if style == "traditional" else dialogue_2)
             + self.get_collect_lines()
         )
 
@@ -2360,8 +2408,10 @@ class ComplineCanticle(Module):
         return " Alleluia, alleluia, alleluia." if alleluia else ""
 
     def get_lines(self):
-        filename = "ep2"
+        language_style = self.office.settings["language_style"]
+        filename = "ep2_traditional" if language_style == "traditional" else "ep2"
         canticle = file_to_lines(filename)
+        gloria_patri_filename = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
         return (
             [
                 Line("NUNC DIMITTIS", "heading"),
@@ -2374,7 +2424,7 @@ class ComplineCanticle(Module):
                 Line("", "spacer"),
             ]
             + canticle
-            + file_to_lines("gloria_patri")
+            + file_to_lines(gloria_patri_filename)
             + [Line("", "spacer"), Line(self.antiphon, "congregation")]
         )
         return file_to_lines(filename)
