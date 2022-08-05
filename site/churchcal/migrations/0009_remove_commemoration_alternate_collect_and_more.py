@@ -4,9 +4,9 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("churchcal", "0008_common_collect_format_string_and_more"),
+        ("office", "0010_move_collects_to_foreign_keys"),
     ]
 
     operations = [
