@@ -1040,17 +1040,17 @@ class Prayers(Module):
                 suffrages_file = "suffrages_b.csv"
             else:
                 suffrages_file = "suffrages_a.csv"
-
-        return f"{suffrages_file}_traditional" if language_style == "traditional" else suffrages_style
+        return f"{suffrages_file}_traditional" if language_style == "traditional" else suffrages_file
 
     def get_lines(self):
         language_style = self.office.settings["language_style"]
-        if language_style == "contemporary":
-            kryie_file = "kyrie_contemporary.csv"
-            pater_file = "pater_contemporary.csv"
-        else:
+        our_father_style = self.office.settings["language_style_for_our_father"]
+        if language_style == "traditional" or our_father_style == "traditional":
             kryie_file = "kyrie_traditional.csv"
             pater_file = "pater_traditional.csv"
+        else:
+            kryie_file = "kyrie_contemporary.csv"
+            pater_file = "pater_contemporary.csv"
 
         pronoun = "thy" if language_style == "traditional" else "your"
         return (
@@ -1112,7 +1112,7 @@ class AdditionalCollects(Module):
         collects = [self.pick_weekly_collect()] + [self.pick_mission_collect()]
         language_style = self.office.settings["language_style"]
         for collect in collects:
-            text = collect["traditional"] if language_style == "traditional" else collect["contempoary"]
+            text = collect["traditional"] if language_style == "traditional" else collect["contemporary"]
             lines.append(Line(collect["title"], "heading"))
             if collect["title"] != "A Prayer for Mission":
                 lines.append(Line(self.office.date.date.strftime("%A"), "subheading"))
@@ -1126,7 +1126,7 @@ class AdditionalCollects(Module):
         language_style = self.office.settings["language_style"]
 
         for collect in self.pick_fixed_collects() + (self.pick_mission_collect(),):
-            text = collect["traditional"] if language_style == "traditional" else collect["contempoary"]
+            text = collect["traditional"] if language_style == "traditional" else collect["contemporary"]
             lines.append(Line(collect["title"], "heading"))
             lines.append(Line(text, "leader"))
             lines.append(Line("Amen.", "congregation"))

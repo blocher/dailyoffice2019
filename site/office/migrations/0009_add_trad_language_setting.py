@@ -37,6 +37,13 @@ def forward(apps, schema_editor):
         setting=new_setting,
     )
 
+    our_father = Setting.objects.filter(title="Language Style for Prayers").first()
+    if our_father:
+        our_father.name = "language_style_for_our_father"
+        our_father.title = "Language Style for Kyrie and Our Father"
+        our_father.description = "When the overall language style is 'contemporary', both traditional and contemporary language options are available for the Kyrie (Lord have mercy) and the Lord's Prayer. The setting has no effect when the overal language style is set to 'tradtional'."
+        our_father.save()
+
 
 def backward(apps, schema_editor):
     Setting = apps.get_model("office", "Setting")
