@@ -19,7 +19,7 @@ from office.api.views.index import (
     FamilyCloseOfDayPrayerView,
     ReadingsView,
 )
-from office.api.views.resources import CollectsViewSet, PsalmsViewSet, AboutViewSet, CollectCategoryViewSet
+from office.api.views.resources import CollectsViewSet, PsalmsViewSet, AboutViewSet
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -88,11 +88,6 @@ urlpatterns = [
         r"api/v1/collects",
         CollectsViewSet.as_view({"get": "list"}),
         name="collects_view",
-    ),
-    path(
-        r"api/v1/collect_categories",
-        CollectCategoryViewSet.as_view({"get": "list"}),
-        name="collect_category_view",
     ),
     path(
         r"api/v1/about",
