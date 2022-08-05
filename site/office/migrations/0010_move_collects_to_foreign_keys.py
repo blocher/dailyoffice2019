@@ -46,6 +46,7 @@ def clean_collect(input, strip_tags=False, remove_line_breaks=False, add_tags=Tr
     input = input.strip()
     if input and add_tags:
         input = f"<p>{input} <strong>Amen.</strong></p>"
+    return input
 
 
 def do_strip_tags(input):
@@ -54,8 +55,10 @@ def do_strip_tags(input):
 
 
 def prepare_format_string(input):
+    print("2")
     if not input:
         return ""
+    print("3", input)
     input = do_strip_tags(input)
     input = input.replace(" t{} ", " {}")
     input = input.replace(" your faithful servant {}", " your faithful servant{} {}")
@@ -72,6 +75,7 @@ def prepare_format_string(input):
     input = input.replace("{} and every land", "this and every land")
     input = input.replace("t{} and every land", "{} and every land")
     input = clean_collect(input, strip_tags=True, remove_line_breaks=True, add_tags=False)
+    print(input, 4)
     return input
 
 
@@ -162,7 +166,12 @@ def match_collects(apps):
     for common in common:
         common.collect_1 = get_collect_for_commemoration_collect(common.collect, Collect, common.name)
         common.collect_2 = get_collect_for_commemoration_collect(common.alternate_collect, Collect, common.name)
+        common.save()
+        common.refresh_from_db()
+        common.collect_1.refresh_from_db()
+        print(common.collect_1.text)
         common.collect_format_string = prepare_format_string(common.collect_1.text)
+        print(common.collect_format_string)
         common.collect_tle_format_string = prepare_format_string(common.collect_1.traditional_text)
         common.save()
 
