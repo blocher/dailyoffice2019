@@ -10,8 +10,9 @@ from office.api.serializers import (
     PsalmSerializer,
     PsalmTopicSerializer,
     AboutItemSerializer,
+    CollectTagCategorySerializer,
 )
-from office.models import Collect, AboutItem
+from office.models import Collect, AboutItem, CollectTagCategory, CollectTag
 from psalter.models import Psalm, PsalmTopicPsalm, PsalmVerse, PsalmTopic
 
 
@@ -37,6 +38,22 @@ class CollectsViewSet(ViewSet):
     def list(self, request):
         collects = self.queryset
         serializer = CollectSerializer(collects, many=True)
+        return Response(serializer.data)
+
+
+class CollectCategoryViewSet(ViewSet):
+    queryset = (
+        CollectTagCategory.objects.order_by("order", "name")
+        .prefetch_related(
+            Prefetch("collecttag_set", queryset=CollectTag.objects.order_by("order", "name"), to_attr="tags")
+        )
+        .all()
+    )
+    serializer_class = CollectTagCategorySerializer
+
+    def list(self, request):
+        categories = self.queryset
+        serializer = CollectTagCategorySerializer(categories, many=True)
         return Response(serializer.data)
 
 
