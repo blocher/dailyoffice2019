@@ -238,3 +238,10 @@ class Collect(BaseModel):
 
     def __str__(self):
         return self.title
+
+
+class Scripture(BaseModel):
+    passage = models.CharField(max_length=255)
+    esv = models.TextField(blank=True, null=True)
+    kjv = models.TextField(blank=True, null=True)
+    rsv = models.TextField(blank=True, null=True)

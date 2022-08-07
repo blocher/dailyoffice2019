@@ -1046,10 +1046,10 @@ class Prayers(Module):
         language_style = self.office.settings["language_style"]
         our_father_style = self.office.settings["language_style_for_our_father"]
         if language_style == "traditional" or our_father_style == "traditional":
-            kryie_file = "kyrie_traditional.csv"
+            kyrie_file = "kyrie_traditional.csv"
             pater_file = "pater_traditional.csv"
         else:
-            kryie_file = "kyrie_contemporary.csv"
+            kyrie_file = "kyrie_contemporary.csv"
             pater_file = "pater_contemporary.csv"
 
         pronoun = "thy" if language_style == "traditional" else "your"
@@ -1061,7 +1061,7 @@ class Prayers(Module):
                 Line("Let us pray.", "leader_dialogue", preface="Officiant"),
                 Line("The People kneel or stand.", "rubric"),
             ]
-            + file_to_lines(kryie_file)
+            + file_to_lines(kyrie_file)
             + [Line("Officiant and People", "rubric")]
             + file_to_lines(pater_file)
             + file_to_lines(self.get_suffrages_file_name())
@@ -1951,7 +1951,9 @@ class MiddayInvitatory(Module):
         return line
 
     def get_lines(self):
-        lines = file_to_lines("midday_invitatory")
+        language_style = self.office.settings["language_style"]
+        file_name = "midday_invitatory_traditional" if language_style == "traditional" else "midday_invitatory"
+        lines = file_to_lines(file_name)
         return [self.add_alleluia((line)) for line in lines]
 
 
@@ -1961,9 +1963,11 @@ class MiddayPsalms(Module):
     def get_lines(self):
         psalms = "119:105-112,121,124,126"
         language_style = self.office.settings["language_style"]
+        file_name = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
+        lines = file_to_lines(file_name)
         psalms = get_psalms(psalms, api=True, language_style=language_style)
 
-        return [Line("The Psalms", "heading")] + psalms
+        return [Line("The Psalms", "heading")] + psalms + lines
 
 
 class MiddayScripture(Module):
@@ -1974,26 +1978,31 @@ class MiddayScripture(Module):
         if self.office.date.date.weekday() in [0, 3, 6]:
             return {
                 "sentence": "Jesus said, “Now is the judgment of this world; now will the ruler of this world be cast out. And I, when I am lifted up from the earth, will draw all people to myself.”",
+                "traditional": "Jesus said, “Now is the judgment of this world: now shall the prince of this world be cast out. And I, if I be lifted up from the earth, will draw all men unto me.”",
                 "citation": "JOHN 12:31-32",
             }
 
         if self.office.date.date.weekday() in [1, 4]:
             return {
                 "sentence": "If anyone is in Christ, he is a new creation. The old has passed away; behold, the new has come. All this is from God, who through Christ reconciled us to himself and gave us the ministry of reconciliation.",
+                "traditional": "If any man be in Christ, he is a new creature: old things are passed away; behold, all things are become new. And all things are of God, who hath reconciled us to himself by Jesus Christ, and hath given to us the ministry of reconciliation.",
                 "citation": "2 CORINTHIANS 5:17-18",
             }
 
         if self.office.date.date.weekday() in [2, 5]:
             return {
                 "sentence": "From the rising of the sun to its setting my name will be great among the nations, and in every place incense will be offered to my name, and a pure offering. For my name will be great among the nations, says the Lord of Hosts.",
+                "traditional": "From the rising of the sun even unto the going down of the same my name shall be great among the Gentiles; and in every place incense shall be offered unto my name, and a pure offering: for my name shall be great among the heathen, saith the Lord of hosts.",
                 "citation": "MALACHI 1:11",
             }
 
     def get_lines(self):
         scripture = self.get_scripture()
+        language_style = self.office.settings["language_style"]
+        field = "traditional" if language_style == "traditional" else "sentence"
         return [
             Line("The Reading", "heading"),
-            Line(scripture["sentence"], "leader"),
+            Line(scripture[field], "leader"),
             Line(scripture["citation"], "citation"),
             Line("The Word of the Lord", "leader_dialogue"),
             Line("Thanks be to God.", "congregation_dialogue"),
@@ -2006,16 +2015,28 @@ class MiddayPrayers(Module):
 
     collects = [
         (
-            "Blessed Savior, at this hour you hung upon the Cross, stretching out your loving arms: Grant that all the peoples of the earth may look to you and be saved; for your tender mercies’ sake."
+            (
+                "Blessed Savior, at this hour you hung upon the Cross, stretching out your loving arms: Grant that all the peoples of the earth may look to you and be saved; for your tender mercies’ sake.",
+                "Blessed Savior, who at this hour didst hang upon the cross stretching out thy loving arms: Grant that all the peoples of the earth may look unto thee and be saved; for thy tender mercies’ sake.",
+            )
         ),
         (
-            "Almighty Savior, who at mid-day called your servant Saint Paul to be an apostle to the Gentiles: We pray you to illumine the world with the radiance of your glory, that all nations may come and worship you; for you live and reign with the Father and the Holy Spirit, one God, for ever and ever."
+            (
+                "Almighty Savior, who at mid-day called your servant Saint Paul to be an apostle to the Gentiles: We pray you to illumine the world with the radiance of your glory, that all nations may come and worship you; for you live and reign with the Father and the Holy Spirit, one God, for ever and ever.",
+                "Almighty Savior, who at mid-day didst call thy servant Saint Paul to be an apostle to the Gentiles: We pray thee to illumine the world with the radiance of thy glory, that all nations may come and worship thee; for thou livest and reignest with the Father and the Holy Spirit, one God, world without end. ",
+            )
         ),
         (
-            "Father of all mercies, you revealed your boundless compassion to your apostle Saint Peter in a three-fold vision: Forgive our unbelief, we pray, and so strengthen our hearts and enkindle our zeal, that we may fervently desire the salvation of all people, and diligently labor in the extension of your kingdom; through him who gave himself for the life of the world, your Son our Savior Jesus Christ."
+            (
+                "Father of all mercies, you revealed your boundless compassion to your apostle Saint Peter in a three-fold vision: Forgive our unbelief, we pray, and so strengthen our hearts and enkindle our zeal, that we may fervently desire the salvation of all people, and diligently labor in the extension of your kingdom; through him who gave himself for the life of the world, your Son our Savior Jesus Christ.",
+                "Father of all mercies, thou hast revealed thy boundless compassion to thine apostle Saint Peter in a three-fold vision: Forgive our unbelief, we pray, and so strengthen our hearts and enkindle our zeal, that we may fervently desire the salvation of all people, and diligently labor in the extension of thy kingdom; through him who gave himself for the life of the world, thy Son our Savior Jesus Christ. ",
+            )
         ),
         (
-            "Pour your grace into our hearts, O Lord, that we who have known the incarnation of your Son Jesus Christ, announced by an angel to the Virgin Mary, may by his Cross and passion be brought to the glory of his resurrection; who lives and reigns with you, in the unity of the Holy Spirit, one God, now and for ever."
+            (
+                "Pour your grace into our hearts, O Lord, that we who have known the incarnation of your Son Jesus Christ, announced by an angel to the Virgin Mary, may by his Cross and passion be brought to the glory of his resurrection; who lives and reigns with you, in the unity of the Holy Spirit, one God, now and for ever.",
+                "We beseech thee, O Lord, pour thy grace into our hearts; that as we have known the incarnation of thy Son Jesus Christ announced by the message of an angel to the Virgin Mary, so by his cross and passion we may be brought unto the glory of his resurrection; through the same Christ our Lord.",
+            )
         ),
     ]
 
@@ -2044,23 +2065,45 @@ class MiddayPrayers(Module):
         return self.collects[0], self.collects[collect_number]
 
     def get_collect_lines(self):
+        language_style = self.office.settings["language_style"]
         collects = self.get_collects()
         lines = []
         for collect in collects:
+            text = collect[1] if language_style == "traditional" else collect[0]
             lines.append(Line("", "spacer"))
-            lines.append(Line(collect, "leader"))
+            lines.append(Line(text, "leader"))
             lines.append(Line("Amen.", "congregation"))
         return lines
 
     def get_lines(self):
-        style = self.office.settings["language_style"]
-        kyrie = file_to_lines("kyrie_contemporary") if style == "contemporary" else file_to_lines("kyrie_traditional")
-        pater = file_to_lines("pater_contemporary") if style == "contemporary" else file_to_lines("pater_traditional")
+        language_style = self.office.settings["language_style"]
+        pater_style = self.office.settings["language_style_for_our_father"]
+        kyrie_file = (
+            "kyrie_traditional"
+            if language_style == "traditional" or pater_style == "traditional"
+            else "kyrie_contemporary"
+        )
+        pater_file = (
+            "pater_traditional"
+            if language_style == "traditional" or pater_style == "traditional"
+            else "pater_contemporary"
+        )
+        kyrie = file_to_lines(kyrie_file)
+        pater = file_to_lines(pater_file)
+        suffrages_1_file_name = (
+            "midday_suffrages_1_traditional" if language_style == "traditional" else "midday_suffrages_1"
+        )
+        suffrages_2_file_name = (
+            "midday_suffrages_2_traditional" if language_style == "traditional" else "midday_suffrages_2"
+        )
+        suffrages_1 = file_to_lines(suffrages_1_file_name)
+        suffrages_2 = file_to_lines(suffrages_2_file_name)
         return (
             [
                 Line("The Prayers", "heading"),
-                Line("I will bless the Lord at all times.", "leader_dialogue"),
-                Line("His praise shall continually be in my mouth.", "congregation_dialogue"),
+            ]
+            + suffrages_1
+            + [
                 Line("", "spacer"),
             ]
             + kyrie
@@ -2068,10 +2111,8 @@ class MiddayPrayers(Module):
             + pater
             + [
                 Line("", "spacer"),
-                Line("O Lord, hear our prayer", "leader_dialogue"),
-                Line("And let our cry come to you.", "congregation_dialogue"),
-                Line("Let us pray.", "leader_dialogue"),
             ]
+            + suffrages_2
             + self.get_collect_lines()
         )
 
@@ -2089,7 +2130,9 @@ class MiddayConclusion(Module):
         return line
 
     def get_lines(self):
-        lines = file_to_lines("midday_conclusion")
+        language_style = self.office.settings["language_style"]
+        file_name = "midday_conclusion_traditional" if language_style == "traditional" else "midday_conclusion"
+        lines = file_to_lines(file_name)
         return [self.add_alleluia((line)) for line in lines]
 
 
