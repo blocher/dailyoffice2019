@@ -9,7 +9,6 @@ from office.utils import passage_to_citation
 
 
 class Office(object):
-
     name = "Daily Office"
     modules = []
 
@@ -127,7 +126,6 @@ class Reading(OfficeSection):
 
 
 class ThirdReading(Reading):
-
     heading = "The Third Lesson"
     tag = "third-"
 
@@ -324,7 +322,6 @@ class PandemicPrayers(OfficeSection):
 
     def get_collect_4(self):
         if self.date.date >= self.election_start_date and self.date.date <= self.election_end_date:
-
             return {
                 "title": "For Our Nation",
                 "collect": "Almighty God, who hast given us this good land for our heritage: We humbly beseech thee that we may always prove ourselves a people mindful of thy favor and glad to do thy will. Bless our land with honorable industry, sound learning, and pure conduct. Save us from violence, discord, and confusion; from pride and arrogance, and from every evil way. Defend our liberties, and fashion into one united people the multitudes brought hither out of many kindreds and tongues. Endue with the spirit of wisdom those to whom, in thy Name, we entrust the authority of government, that there may be justice and peace at home, and that, through obedience to thy law, we may show forth thy praise among the nations of the earth. In the time of prosperity, fill our hearts with thankfulness, and in the day of trouble, suffer not our trust in thee to fail; all of which we ask through Jesus Christ our Lord.",
@@ -405,7 +402,6 @@ class Dismissal(OfficeSection):
         people = "Thanks be to God."
 
         if morning_easter or evening_easter:
-
             officiant = "{} Alleluia, alleluia.".format(officiant)
             people = "{} Alleluia, alleluia.".format(people)
 

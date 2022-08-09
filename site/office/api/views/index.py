@@ -39,6 +39,7 @@ from office.models import (
     Setting,
     SettingOption,
     Collect,
+    Scripture,
 )
 from office.utils import passage_to_citation, get_client_ip
 from psalter.utils import get_psalms
@@ -281,6 +282,18 @@ class Office(object):
             self.office_readings = StandardOfficeDay.objects.get(month=self.date.date.month, day=self.date.date.day)
 
         self.thirty_day_psalter_day = ThirtyDayPsalterDay.objects.get(day=self.date.date.day)
+
+    @cached_property
+    def readings(self):
+        passages = Scripture.objects.filter(
+            passage__in=[
+                self.office_readings.mp_reading_1,
+                self.office_readings.mp_reading_2,
+                self.office_readings.ep_reading_1,
+                self.office_readings.ep_reading_2,
+            ]
+        ).all()
+        return {passage.passage: passage for passage in passages}
 
     def get_modules(self):
         raise NotImplementedError("You must implement this method.")
@@ -762,23 +775,38 @@ class ReadingModule(Module):
         return self.office.date.primary.rank.precedence_rank <= 4
 
     def get_mass_reading_lines(self, reading):
-        text = self.remove_headings_if_needed(reading.long_text)
+        translation = self.office.settings["bible_translation"]
+        abbreviated = self.office.settings["reading_length"] == "abbreviated"
+        if abbreviated or not reading.short_text:
+            text = Scripture.objects.get(passage=reading.long_citation)
+            citation = reading.long_citation
+        else:
+            text = Scripture.objects.get(passage=reading.short_citation)
+            citation = reading.short_citation
+        text = getattr(text, translation)
+        text = self.remove_headings_if_needed(text)
+
         lines = [
-            Line(reading.long_citation, "subheading"),
-            Line(self.audio(reading.long_citation, reading.testament), "html"),
-            Line(passage_to_citation(reading.long_citation), "leader"),
-            Line(text, "html", "html"),
+            Line(citation, "subheading"),
+            Line(self.audio(citation, reading.testament), "html"),
+            Line(passage_to_citation(citation), "leader"),
+            Line("", "spacer"),
+            Line(text, "html", "leader"),
+            Line("", "spacer"),
             Line(self.closing(reading.testament), "leader"),
             Line(self.closing_response(reading.testament), "congregation"),
         ]
-        return [line for line in lines if line and line["content"]]
+        return [line for line in lines if line and (line["content"] or line["line_type"] == "spacer")]
 
-    def get_reading(self, field, abbreviated=False):
+    def get_reading(self, field, abbreviated=False, translation="esv"):
 
         subheading = getattr(self.office.office_readings, field)
         passage = getattr(self.office.office_readings, field)
         citation = passage_to_citation(getattr(self.office.office_readings, field))
-        text = getattr(self.office.office_readings, "{}_text".format(field))
+        text = self.office.readings[passage]
+        text = getattr(text, translation)
+        if text == "-":
+            text = getattr(text, "rsv")
         closing = self.closing(getattr(self.office.office_readings, "{}_testament".format(field)))
         closing_response = self.closing_response(getattr(self.office.office_readings, "{}_testament".format(field)))
         testament = getattr(self.office.office_readings, "{}_testament".format(field))
@@ -794,7 +822,10 @@ class ReadingModule(Module):
                 subheading = getattr(self.office.office_readings, "{}_abbreviated".format(field))
                 passage = getattr(self.office.office_readings, "{}_abbreviated".format(field))
                 citation = passage_to_citation(getattr(self.office.office_readings, "{}_abbreviated".format(field)))
-                text = getattr(self.office.office_readings, "{}_abbreviated_text".format(field))
+                text = self.office.readings[passage]
+                text = getattr(text, translation)
+                if text == "-":
+                    text = getattr(text, "rsv")
 
         text = self.remove_headings_if_needed(text)
 
@@ -834,7 +865,7 @@ class ReadingModule(Module):
         reading_cycle = self.office.settings["reading_cycle"]
         reading_length = self.office.settings["reading_length"]
         lectionary = self.office.settings["lectionary"]
-
+        translation = self.office.settings["bible_translation"]
         if lectionary == "mass-readings" and self.has_mass_reading:
             return (
                 self.abbreviated_mass_reading(number)
@@ -850,10 +881,10 @@ class ReadingModule(Module):
             has_alternate_reading = self.office.date.date.year % 2 == 0
             if has_alternate_reading:
                 alternate_reading_field = "{}_reading_{}".format("ep" if office == "mp" else office, number)
-                return self.get_reading(alternate_reading_field, abbreviated)
+                return self.get_reading(alternate_reading_field, abbreviated, translation)
 
         reading_field = "{}_reading_{}".format(office, number)
-        return self.get_reading(reading_field, abbreviated)
+        return self.get_reading(reading_field, abbreviated, translation)
 
 
 class MPFirstReading(ReadingModule):

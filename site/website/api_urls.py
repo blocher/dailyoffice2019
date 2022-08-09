@@ -19,7 +19,13 @@ from office.api.views.index import (
     FamilyCloseOfDayPrayerView,
     ReadingsView,
 )
-from office.api.views.resources import CollectsViewSet, PsalmsViewSet, AboutViewSet, CollectCategoryViewSet
+from office.api.views.resources import (
+    CollectsViewSet,
+    PsalmsViewSet,
+    AboutViewSet,
+    CollectCategoryViewSet,
+    ScriptureViewSet,
+)
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -37,7 +43,10 @@ schema_view = get_schema_view(
 router_v1 = routers.DefaultRouter()
 router_v1.register(r"available_settings", AvailableSettings)
 router_v1.register(r"psalms", PsalmsViewSet, basename="psalms")
+router_v1.register(r"scripture", ScriptureViewSet, basename="scripture2")
+
 router_v1.register(r"collect_categories", CollectCategoryViewSet, basename="collect_category")
+
 urlpatterns = [
     re_path(r"^api/v1/", include(router_v1.urls)),
     path("api/v1/api-auth/", include("rest_framework.urls")),

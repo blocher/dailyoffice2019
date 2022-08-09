@@ -1,8 +1,7 @@
-from .sources import BibleGateway
+from .sources import BibleGateway, OremusBibleBrowser
 
 
 class BibleVersions(object):
-
     VERSIONS = {
         "nrsv": {"name": "New Revised Standard Version", "adapter": BibleGateway},
         "esv": {"name": "English Standard Version", "adapter": BibleGateway},
@@ -10,6 +9,7 @@ class BibleVersions(object):
         "kjv": {"name": "King James Version", "adapter": BibleGateway},
         "nabre": {"name": "New American Bible - Revised Edition", "adapter": BibleGateway},
         "niv": {"name": "New International Version", "adapter": BibleGateway},
+        "av": {"name": "King James Version", "adapter": OremusBibleBrowser},
     }
 
 

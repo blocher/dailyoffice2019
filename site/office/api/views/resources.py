@@ -11,8 +11,9 @@ from office.api.serializers import (
     PsalmTopicSerializer,
     AboutItemSerializer,
     CollectTagCategorySerializer,
+    ScriptureSerializer,
 )
-from office.models import Collect, AboutItem, CollectTagCategory, CollectTag
+from office.models import Collect, AboutItem, CollectTagCategory, CollectTag, Scripture
 from psalter.models import Psalm, PsalmTopicPsalm, PsalmVerse, PsalmTopic
 
 
@@ -86,4 +87,18 @@ class PsalmsViewSet(ViewSet):
     def topics(self, request):
         topics = PsalmTopic.objects.order_by("order").all()
         serializer = PsalmTopicSerializer(topics, many=True)
+        return Response(serializer.data)
+
+
+class ScriptureViewSet(ViewSet):
+    queryset = Scripture.objects.all()
+    serializer_class = ScriptureSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            uuid_obj = UUID(kwargs["pk"], version=4)
+            scripture = self.queryset.filter(Q(pk=kwargs["pk"])).first()
+        except ValueError:
+            scripture = self.queryset.filter(Q(passage=kwargs["pk"])).first()
+        serializer = ScriptureSerializer(scripture, many=False)
         return Response(serializer.data)

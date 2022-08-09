@@ -6,6 +6,7 @@ import Calendar from "@/views/Calendar";
 import Day from "@/views/Day";
 import PageNotFound from "@/views/PageNotFound";
 import Readings from "@/views/Readings";
+import Scripture from "@/views/Scripture";
 
 const routes = [
     {
@@ -126,6 +127,14 @@ const routes = [
         component: Day,
         meta: {
             title: "Day | The Daily Office",
+        },
+    },
+    {
+        path: "/scripture/:passage",
+        name: "scripture",
+        component: Scripture,
+        meta: {
+            title: "Scripture | The Daily Office",
         },
     },
     {path: "/:pathMatch(.*)", component: PageNotFound, name: "not_found"},
