@@ -9,7 +9,7 @@ beautifulsoup4==4.10.0
 black==22.1.0
 bugsnag==4.1.1
 Delorean==1.0.0
-Django==4.0.2
+Django==4.0.7
 django-address==0.2.5
 django-admin-sortable2==1.0.4
 django-array-tags==0.2.2
