@@ -288,12 +288,14 @@ class Office(object):
         passages = Scripture.objects.filter(
             passage__in=[
                 self.office_readings.mp_reading_1,
+                self.office_readings.mp_reading_1_abbreviated,
                 self.office_readings.mp_reading_2,
                 self.office_readings.ep_reading_1,
+                self.office_readings.ep_reading_1_abbreviated,
                 self.office_readings.ep_reading_2,
             ]
         ).all()
-        return {passage.passage: passage for passage in passages}
+        return {passage.passage: passage for passage in passages if passage}
 
     def get_modules(self):
         raise NotImplementedError("You must implement this method.")
