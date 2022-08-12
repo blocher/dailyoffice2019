@@ -629,7 +629,6 @@ class MPInvitatory(Module):
         return canticle
 
     def get_lines(self):
-        print("HERE")
         filename = self.get_canticle_filename()
         language_style = self.office.settings["language_style"]
         if language_style == "traditional":
@@ -637,11 +636,9 @@ class MPInvitatory(Module):
         if filename != "pascha_nostrum":
             first_line_field = "first_line_traditional" if language_style == "traditional" else "first_line"
             second_line_field = "second_line_traditional" if language_style == "traditional" else "second_line"
-            print(self.antiphon)
             canticle = file_to_lines(filename)
             canticle_heading = canticle[:3]
             canticle_body = canticle[3:]
-            print(self.antiphon[first_line_field])
             return (
                 canticle_heading
                 + [Line(self.antiphon[first_line_field], "leader"), Line(self.antiphon[second_line_field])]
@@ -1059,6 +1056,25 @@ class Creed(Module):
 class Prayers(Module):
     name = "The Prayers"
 
+    def add_names(self, suffrages):
+        names = self.get_names()
+        for line in suffrages:
+            line["content"] = line["content"].replace("[ ___________ ]", names)
+        return suffrages
+
+    def get_names(self):
+        names = [
+            feast.saint_name
+            for feast in self.office.date.all_evening
+            if hasattr(feast, "saint_name") and feast.saint_name
+        ]
+        names = ["the Blessed Virgin Mary"] + names
+        num_names = len(names)
+        names = ", ".join(names)
+        if num_names > 1:
+            names = names + ","
+        return names
+
     def get_suffrages_file_name(self):
         language_style = self.office.settings["language_style"]
         if type(self.office) == MorningPrayer:
@@ -1086,6 +1102,8 @@ class Prayers(Module):
             pater_file = "pater_contemporary.csv"
 
         pronoun = "thy" if language_style == "traditional" else "your"
+        suffrages = file_to_lines(self.get_suffrages_file_name())
+        suffrages = self.add_names(suffrages)
         return (
             [
                 Line("The Prayers", "heading"),
@@ -1097,7 +1115,7 @@ class Prayers(Module):
             + file_to_lines(kyrie_file)
             + [Line("Officiant and People", "rubric")]
             + file_to_lines(pater_file)
-            + file_to_lines(self.get_suffrages_file_name())
+            + suffrages
         )
 
 
@@ -1227,8 +1245,6 @@ class MPAdditionalCollects(AdditionalCollects):
         if day == 5:
             return self.possible_collects["a collect for sabbath rest"]
         if day == 6:
-            for key, value in self.possible_collects.items():
-                print(key)
             return self.possible_collects["a collect for strength to await christs return"]
 
 
@@ -2375,8 +2391,6 @@ class ComplinePrayers(Module):
     ]
 
     def get_collects(self):
-        print(self.office.date.date, self.office.date.date.weekday())
-
         if self.office.date.date.weekday() in [6]:  # Sunday
             return self.collects[0], self.collects[1], self.collects[5]
 
