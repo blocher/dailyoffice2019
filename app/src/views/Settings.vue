@@ -66,7 +66,6 @@ export default {
     });
     this.availableSettings = this.$store.state.availableSettings;
     const settings = this.$store.state.settings;
-    console.log('new', settings["language_style"]);
     this.availableSettings.forEach((setting, i) => {
       const name = setting.name;
       this.availableSettings[i].active = settings[name];

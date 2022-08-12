@@ -3127,7 +3127,13 @@ class SettingSerializer(serializers.ModelSerializer):
 
 class AvailableSettings(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = SettingSerializer
-    queryset = Setting.objects.prefetch_related("settingoption_set").order_by("site", "setting_type", "order").all()
+    queryset = (
+        Setting.objects.prefetch_related(
+            Prefetch("settingoption_set", queryset=SettingOption.objects.order_by("order"))
+        )
+        .order_by("site", "setting_type", "order")
+        .all()
+    )
 
 
 # heading

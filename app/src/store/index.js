@@ -5,7 +5,6 @@ export default createStore({
     state: {settings: false, availableSettings: false},
     mutations: {
         saveAvailableSettings: (state, availableSettings) => {
-            console.log("saving available");
             state.availableSettings = availableSettings;
         },
         saveSettings: (state, settings) => {
@@ -22,7 +21,6 @@ export default createStore({
             availableSettings.forEach((availableSetting) => {
                 const key = availableSetting["name"];
                 const value = availableSetting["options"][0]["value"];
-                console.log(key, value)
                 if (app.$route.query[key]) {
                     applied = true;
                     settings[key] = app.$route.query[key];
@@ -30,7 +28,6 @@ export default createStore({
                     settings[key] = value;
                 }
             });
-            console.log(settings)
             localStorage.setItem("settings", JSON.stringify(settings));
             state.settings = settings;
             app.$router.replace({query: null});
