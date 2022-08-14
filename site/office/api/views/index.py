@@ -1506,11 +1506,17 @@ class FamilyRubricSection(Module):
 
 class FamilyMorningOpeningSentence(Module):
     def get_lines(self):
+
         setting = self.office.settings["family-opening-sentence"]
+        language_style = self.office.settings["language_style"]
+        if language_style == "traditional":
+            line = "O Lord, open thou my lips, and my mouth shall show forth thy praise."
+        else:
+            line = "O Lord, open my lips, and my mouth shall show forth your praise."
         if setting == "family-opening-sentence-fixed":
             return [
                 Line("Opening Sentence", "heading"),
-                Line("O Lord, open my lips, and my mouth shall show forth your praise.", "leader"),
+                Line(line, "leader"),
                 Line("Psalm 51:15", "citation"),
             ]
         else:
@@ -1521,10 +1527,16 @@ class FamilyMiddayOpeningSentence(Module):
     def get_lines(self):
         setting = self.office.settings["family-opening-sentence"]
         if setting == "family-opening-sentence-fixed":
+            text = (
+                "Blessed be the God and Father of our Lord Jesus Christ, who has blessed us in Christ with every spiritual blessing in the heavenly places.",
+            )
+            language_style = self.office.settings["language_style"]
+            if language_style == "traditional":
+                text = "Blessed be the God and Father of our Lord Jesus Christ, who hath blessed us with all spiritual blessings in heavenly places in Christ."
             return [
                 Line("Opening Sentence", "heading"),
                 Line(
-                    "Blessed be the God and Father of our Lord Jesus Christ, who has blessed us in Christ with every spiritual blessing in the heavenly places.",
+                    text,
                     "leader",
                 ),
                 Line("Ephesians 1:3", "citation"),
@@ -1535,7 +1547,9 @@ class FamilyMiddayOpeningSentence(Module):
 
 class FamilyEarlyEveningHymn(Module):
     def get_lines(self):
-        return file_to_lines("phos_hilaron.csv")
+        language_style = self.office.settings["language_style"]
+        filename = "phos_hilaron_traditional" if language_style == "traditional" else "phos_hilaron"
+        return file_to_lines(filename)
 
 
 class FamilyCloseOfDayHymn(Module):
@@ -1560,11 +1574,15 @@ class FamilyCloseOfDayClosingSentence(Module):
 class FamilyEarlyEveningOpeningSentence(Module):
     def get_lines(self):
         setting = self.office.settings["family-opening-sentence"]
+        language_style = self.office.settings["language_style"]
+        text = "How excellent is your mercy, O God! The children of men shall take refuge under the shadow of your wings. For with you is the well of life, and in your light shall we see light."
+        if language_style == "traditional":
+            text = "How excellent is thy mercy, O God! The children of men shall put their trust under the shadow of thy wings. For with thee is the well of life, and in thy light shall we see light."
         if setting == "family-opening-sentence-fixed":
             return [
                 Line("Opening Sentence", "heading"),
                 Line(
-                    "How excellent is your mercy, O God! The children of men shall take refuge under the shadow of your wings. For with you is the well of life, and in your light shall we see light.",
+                    text,
                     "leader",
                 ),
                 Line("Psalm 36:7, 9", "citation"),
@@ -1576,11 +1594,15 @@ class FamilyEarlyEveningOpeningSentence(Module):
 class FamilyCloseOfDayOpeningSentence(Module):
     def get_lines(self):
         setting = self.office.settings["family-opening-sentence"]
+        language_style = self.office.settings["language_style"]
+        text = "I will lay me down in peace, and take my rest; for you, LORD, only, make me dwell in safety."
+        if language_style == "traditional":
+            text = "I will lay me down in peace, and take my rest; for it is thou, Lord, only, that makest me dwell in safety"
         if setting == "family-opening-sentence-fixed":
             return [
                 Line("Opening Sentence", "heading"),
                 Line(
-                    "I will lay me down in peace, and take my rest; for you, LORD, only, make me dwell in safety.",
+                    text,
                     "leader",
                 ),
                 Line("Psalm 4:8", "citation"),
@@ -1592,30 +1614,33 @@ class FamilyCloseOfDayOpeningSentence(Module):
 class FamilyMorningPsalm(Module):
     def get_lines(self):
         language_style = self.office.settings["language_style"]
+        gloria_patri = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
         return (
             get_psalms("51:10-12", api=True, language_style=language_style)
             + [Line("", "spacer")]
-            + file_to_lines("gloria_patri")
+            + file_to_lines(gloria_patri)
         )
 
 
 class FamilyMiddayPsalm(Module):
     def get_lines(self):
         language_style = self.office.settings["language_style"]
+        gloria_patri = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
         return (
             get_psalms("113:1-4", api=True, language_style=language_style)
             + [Line("", "spacer")]
-            + file_to_lines("gloria_patri")
+            + file_to_lines(gloria_patri)
         )
 
 
 class FamilyCloseOfDayPsalm(Module):
     def get_lines(self):
         language_style = self.office.settings["language_style"]
+        gloria_patri = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
         return (
             get_psalms("134", api=True, language_style=language_style)
             + [Line("", "spacer")]
-            + file_to_lines("gloria_patri")
+            + file_to_lines(gloria_patri)
         )
 
 
@@ -1635,24 +1660,27 @@ class FamilyReadingModule(ReadingModule):
                 Line("A period of silence may follow.", "rubric"),
             ]
         scripture = self.get_scripture()
+        language_style = self.office.settings["language_style"]
+        passage = scripture["traditional"] if language_style == "traditional" else scripture["sentence"]
         return [
             Line("A READING FROM HOLY SCRIPTURE", "heading"),
             Line(scripture["citation"], "subheading"),
             Line(self.audio(scripture["citation"], "NT"), "html") if audio == "on" else Line("", "html"),
-            Line(scripture["sentence"], "leader"),
+            Line(passage, "leader"),
             Line("A period of silence may follow.", "rubric"),
         ]
 
 
 class FamilyMorningScripture(FamilyReadingModule):
     def get_long(self):
+        translation = self.office.settings["bible_translation"]
         return {
             "passage": self.office.office_readings.mp_reading_1_abbreviated
             if self.office.office_readings.mp_reading_1_abbreviated
             else self.office.office_readings.mp_reading_1,
-            "text": self.office.office_readings.mp_reading_1_abbreviated_text
+            "text": getattr(self.office.readings[self.office.office_readings.mp_reading_1_abbreviated], translation)
             if self.office.office_readings.mp_reading_1_abbreviated_text
-            else self.office.office_readings.mp_reading_1_text,
+            else getattr(self.office.readings[self.office.office_readings.mp_reading_1], translation),
             "testament": self.office.office_readings.mp_reading_1_testament,
         }
 
@@ -1663,14 +1691,17 @@ class FamilyMorningScripture(FamilyReadingModule):
         scriptures = [
             {
                 "sentence": "Blessed be the God and Father of our Lord Jesus Christ! According to his great mercy, he has caused us to be born again to a living hope through the resurrection of Jesus Christ from the dead.",
+                "traditional": "Blessed be the God and Father of our Lord Jesus Christ, which according to his abundant mercy hath begotten us again unto a lively hope by the resurrection of Jesus Christ from the dead.",
                 "citation": "1 PETER 1:3",
             },
             {
                 "sentence": "Give thanks to the Father, who has qualified you to share in the inheritance of the saints in light. He has delivered us from the domain of darkness and transferred us to the kingdom of his beloved Son, in whom we have redemption, the forgiveness of sins.",
+                "traditional": "Give thanks unto the Father, who hath made us meet to be partakers of the inheritance of the saints in light: Who hath delivered us from the power of darkness, and hath translated us into the kingdom of his dear Son: In whom we have redemption through his blood, even the forgiveness of sins.",
                 "citation": "COLOSSIANS 1:12-14",
             },
             {
                 "sentence": "If then you have been raised with Christ, seek the things that are above, where Christ is, seated at the right hand of God. Set your minds on things that are above, not on things that are on earth. For you have died, and your life is hidden with Christ in God. When Christ who is your life appears, then you also will appear with him in glory.",
+                "traditional": "If ye then be risen with Christ, seek those things which are above, where Christ sitteth on the right hand of God. Set your affection on things above, not on things on the earth. For ye are dead, and your life is hid with Christ in God. When Christ, who is our life, shall appear, then shall ye also appear with him in glory.",
                 "citation": "COLOSSIANS 3:1-4",
             },
         ]
@@ -1680,9 +1711,10 @@ class FamilyMorningScripture(FamilyReadingModule):
 
 class FamilyMiddayScripture(FamilyReadingModule):
     def get_long(self):
+        translation = self.office.settings["bible_translation"]
         return {
             "passage": self.office.office_readings.mp_reading_2,
-            "text": self.office.office_readings.mp_reading_2_text,
+            "text": getattr(self.office.readings[self.office.office_readings.mp_reading_2], translation),
             "testament": self.office.office_readings.mp_reading_2_testament,
         }
 
@@ -1693,10 +1725,12 @@ class FamilyMiddayScripture(FamilyReadingModule):
         scriptures = [
             {
                 "sentence": "Abide in me, and I in you. As the branch cannot bear fruit by itself, unless it abides in the vine, neither can you, unless you abide in me. I am the vine; you are the branches. Whoever abides in me and I in him, he it is that bears much fruit, for apart from me you can do nothing.",
+                "traditional": "Abide in me, and I in you. As the branch cannot bear fruit of itself, except it abide in the vine; no more can ye, except ye abide in me. I am the vine, ye are the branches: He that abideth in me, and I in him, the same bringeth forth much fruit: for without me ye can do nothing.",
                 "citation": "JOHN 15:4-5",
             },
             {
                 "sentence": "Do not be anxious about anything, but in everything by prayer and supplication with thanksgiving let your requests be made known to God. And the peace of God, which surpasses all understanding, will guard your hearts and your minds in Christ Jesus.",
+                "traditional": "Be careful for nothing; but in every thing by prayer and supplication with thanksgiving let your requests be made known unto God. And the peace of God, which passeth all understanding, shall keep your hearts and minds through Christ Jesus.",
                 "citation": "PHILIPPIANS 4:6-7",
             },
         ]
@@ -1706,13 +1740,14 @@ class FamilyMiddayScripture(FamilyReadingModule):
 
 class FamilyEarlyEveningScripture(FamilyReadingModule):
     def get_long(self):
+        translation = self.office.settings["bible_translation"]
         return {
             "passage": self.office.office_readings.ep_reading_1_abbreviated
             if self.office.office_readings.ep_reading_1_abbreviated
             else self.office.office_readings.ep_reading_1,
-            "text": self.office.office_readings.ep_reading_1_abbreviated_text
+            "text": getattr(self.office.readings[self.office.office_readings.ep_reading_1_abbreviated], translation)
             if self.office.office_readings.ep_reading_1_abbreviated_text
-            else self.office.office_readings.ep_reading_1_text,
+            else getattr(self.office.readings[self.office.office_readings.ep_reading_1], translation),
             "testament": self.office.office_readings.ep_reading_1_testament,
         }
 
@@ -1723,14 +1758,17 @@ class FamilyEarlyEveningScripture(FamilyReadingModule):
         scriptures = [
             {
                 "sentence": "For what we proclaim is not ourselves, but Jesus Christ as Lord, with ourselves as your servants for Jesus’ sake. For God, who said, “Let light shine out of darkness,” has shone in our hearts, to give the light of the knowledge of the glory of God in the face of Jesus Christ.",
+                "traditional": "For we preach not ourselves, but Christ Jesus the Lord; and ourselves your servants for Jesus’ sake. For God, who commanded the light to shine out of darkness, hath shined in our hearts, to give the light of the knowledge of the glory of God in the face of Jesus Christ.",
                 "citation": "2 CORINTHIANS 4:5-6",
             },
             {
                 "sentence": "Jesus spoke to them, saying, “I am the light of the world. Whoever follows me will not walk in darkness, but will have the light of life.”",
+                "traditional": "Then spake Jesus again unto them, saying, I am the light of the world: he that followeth me shall not walk in darkness, but shall have the light of life.",
                 "citation": "JOHN 8:12",
             },
             {
                 "sentence": "Jesus said, “Behold, I stand at the door and knock. If anyone hears my voice and opens the door, I will come in to him and eat with him, and he with me.”",
+                "traditional": "Jesus said, Behold, I stand at the door, and knock: if any man hear my voice, and open the door, I will come in to him, and will sup with him, and he with me. ",
                 "citation": "REVELATION 3:20",
             },
         ]
@@ -1740,9 +1778,10 @@ class FamilyEarlyEveningScripture(FamilyReadingModule):
 
 class FamilyCloseOfDayScripture(FamilyReadingModule):
     def get_long(self):
+        translation = self.office.settings["bible_translation"]
         return {
             "passage": self.office.office_readings.ep_reading_2,
-            "text": self.office.office_readings.ep_reading_2_text,
+            "text": getattr(self.office.readings[self.office.office_readings.ep_reading_2], translation),
             "testament": self.office.office_readings.ep_reading_2_testament,
         }
 
@@ -1753,10 +1792,12 @@ class FamilyCloseOfDayScripture(FamilyReadingModule):
         scriptures = [
             {
                 "sentence": "You keep them in perfect peace whose minds are stayed on you, because they trust in you. Trust in the LORD for ever, for the LORD God is an everlasting rock.",
+                "traditional": "Thou wilt keep him in perfect peace, whose mind is stayed on thee: because he trusteth in thee. Trust ye in the Lord for ever: for the Lord God is everlasting strength. ",
                 "citation": "ISAIAH 26:3-4",
             },
             {
                 "sentence": "Now may the God of peace himself sanctify you completely, and may your whole spirit and soul and body be kept blameless at the coming of our Lord Jesus Christ.",
+                "traditional": "May the very God of peace sanctify you wholly; and I pray God your whole spirit and soul and body be preserved blameless unto the coming of our Lord Jesus Christ.",
                 "citation": "1 THESSALONIANS 5:23",
             },
         ]
@@ -1794,24 +1835,26 @@ class FamilyPraise(Module):
 class FamilyCredo(Module):
     def get_lines(self):
         creed = self.office.settings["family-creed"]
+
         if creed == "family-creed-yes":
+            language_style = self.office.settings["language_style"]
+            file = "creed_traditional" if language_style == "traditional" else "creed"
             return [
                 Line("The Apostles' Creed", "heading"),
-            ] + file_to_lines("creed.csv")
+            ] + file_to_lines(file)
         return []
 
 
 class FamilyPater(Module):
     def get_lines(self):
         style = self.office.settings["language_style"]
-        return (
-            [
-                Line("The Lord's Prayer", "heading"),
-            ]
-            + file_to_lines("pater_contemporary")
-            if style == "contemporary"
-            else file_to_lines("pater_traditional")
-        )
+        pater_style = self.office.settings["language_style_for_our_father"]
+        filename = "pater_contemporary"
+        if style == "traditional" or pater_style == "traditional":
+            filename = "pater_traditional"
+        return [
+            Line("The Lord's Prayer", "heading"),
+        ] + file_to_lines(filename)
 
 
 class FamilyMorningCollect(Module):
@@ -1823,11 +1866,16 @@ class FamilyMorningCollect(Module):
             lines = MPCollectOfTheDay(self.office).get_lines()
             lines = [Line("The Collect", "heading")] + lines[1:4]
         else:
+
+            text = "O Lord, our heavenly Father, almighty and everlasting God, you have brought us safely to the beginning of this day: Defend us by your mighty power, that we may not fall into sin nor run into any danger; and that, guided by your Spirit, we may do what is righteous in your sight; through Jesus Christ our Lord."
+            language_style = self.office.settings["language_style"]
+            if language_style == "traditional":
+                text = "O Lord, our heavenly Father, Almighty and everlasting God, who hast safely brought us to the beginning of this day; Defend us in the same with thy mighty power; and grant that this day we fall into no sin, neither run into any kind of danger; but that all our doings, being ordered by thy governance, may be righteous in thy sight; through Jesus Christ our Lord."
             lines = [
                 Line("The Collect", "heading"),
                 Line("In the Morning", "subheading"),
                 Line(
-                    "O Lord, our heavenly Father, almighty and everlasting God, you have brought us safely to the beginning of this day: Defend us by your mighty power, that we may not fall into sin nor run into any danger; and that, guided by your Spirit, we may do what is righteous in your sight; through Jesus Christ our Lord.",
+                    text,
                     "leader",
                 ),
                 Line("Amen.", "congregation"),
