@@ -1647,26 +1647,26 @@ class FamilyCloseOfDayPsalm(Module):
 class FamilyReadingModule(ReadingModule):
     def get_lines(self):
         setting = self.office.settings["family_readings"]
-        audio = self.office.settings["family_reading_audio"]
+        audio_setting = self.office.settings["family_reading_audio"]
         if setting == "long":
             scripture = self.get_long()
+            audio = self.audio(scripture["passage"], "NT")
             return [
                 Line("A READING FROM HOLY SCRIPTURE", "heading"),
                 Line(scripture["passage"], "subheading"),
-                Line(self.audio(scripture["passage"], scripture["testament"]), "html")
-                if audio == "on"
-                else Line("", "html"),
+                Line(audio, "html") if audio and audio_setting == "on" else Line("", "html"),
                 Line(self.remove_headings_if_needed(scripture["text"]), "html"),
                 Line("A period of silence may follow.", "rubric"),
             ]
         scripture = self.get_scripture()
         language_style = self.office.settings["language_style"]
         passage = scripture["traditional"] if language_style == "traditional" else scripture["sentence"]
+        audio = self.audio(scripture["citation"], "NT")
         return [
             Line("A READING FROM HOLY SCRIPTURE", "heading"),
             Line(scripture["citation"], "subheading"),
-            Line(self.audio(scripture["citation"], "NT"), "html") if audio == "on" else Line("", "html"),
-            Line(passage, "leader"),
+            Line(audio, "html") if audio and audio_setting == "on" else Line("", "html"),
+            Line(passage, "html"),
             Line("A period of silence may follow.", "rubric"),
         ]
 
