@@ -27,7 +27,6 @@ from psalter.utils import get_psalms
 
 
 class EveningPrayer(Office):
-
     name = "Evening Prayer"
     office = "evening_prayer"
 
@@ -113,7 +112,6 @@ class EPOpeningSentence(OfficeSection):
             }
 
         if self.date.evening_season.name == "Holy Week":
-
             return {
                 "sentence": "All we like sheep have gone astray; we have turned every one to his own way; and the Lord has laid on him the iniquity of us all.",
                 "citation": "ISAIAH 53:6",
@@ -143,7 +141,6 @@ class EPOpeningSentence(OfficeSection):
             }
 
         if self.date.evening_season.name == "Advent":
-
             return {
                 "sentence": "Therefore stay awake—for you do not know when the master of the house will come, in the evening, or at midnight, or when the rooster crows, or in the morning—lest he come suddenly and find you asleep.",
                 "citation": "MARK 13:35-36",
@@ -283,7 +280,6 @@ class EPPsalms(OfficeSection):
 
 
 class EPFirstReading(Reading):
-
     heading = "The First Lesson"
     tag = "first-"
 
@@ -396,7 +392,6 @@ class EPFirstReading(Reading):
 
 
 class EPSecondReading(Reading):
-
     heading = "The Second Lesson"
     tag = "second-"
 
@@ -564,7 +559,6 @@ class EPCanticle1(OfficeSection):
 class EPCanticle2(OfficeSection):
     @cached_property
     def data(self):
-
         return {
             "default": DefaultCanticles().get_ep_canticle_2(self.date),
             "1979": BCP1979CanticleTable().get_ep_canticle_2(self.date),
@@ -581,7 +575,6 @@ class EPSuffrages(OfficeSection):
         return ", ".join(names)
 
     def get_default_set(self):
-
         if self.date.date.timetuple().tm_yday % 2:
             return "b"
 
@@ -596,11 +589,12 @@ class EPSuffrages(OfficeSection):
 class EPCollectsOfTheDay(OfficeSection):
     @cached_property
     def data(self):
+        print(self.date.all_evening[0].evening_prayer_collect)
         return {
             "collects": (
                 (
                     commemoration.name,
-                    commemoration.evening_prayer_collect.replace(" Amen.", ""),
+                    commemoration.evening_prayer_collect.text.replace(" Amen.", ""),
                     commemoration.rank.name,
                 )
                 for commemoration in self.date.all_evening

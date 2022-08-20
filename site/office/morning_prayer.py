@@ -746,7 +746,7 @@ class MPCollectsOfTheDay(OfficeSection):
             "collects": (
                 (
                     commemoration.name,
-                    commemoration.morning_prayer_collect.replace(" Amen.", ""),
+                    commemoration.morning_prayer_collect.text.replace(" Amen.", ""),
                     commemoration.rank.name,
                 )
                 for commemoration in self.date.all
