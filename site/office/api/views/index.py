@@ -2945,12 +2945,12 @@ def get_collects_for_readings(service, commemoration, calendar_date):
     if commemoration.collect_eve:
         if "Vigil" in commemoration.name or "Eve of" in commemoration.name or "Easter Vigil" in service:
             return [commemoration.collect_eve.text]
-    if commemoration.collect:
+    if commemoration.collect_1:
         collects = [commemoration.collect_1.text]
         if commemoration.collect_2:
             collects.append(commemoration.collect_2.text)
     else:
-        collects = [commemoration.morning_prayer_collect]
+        collects = [commemoration.morning_prayer_collect.text]
     return collects
 
 
@@ -2999,6 +2999,7 @@ def mass_readings(commemoration, mass_year, calendar_date):
             "collects": get_collects_for_readings(service, commemoration, calendar_date),
             "readings": final_readings[service],
             "citations": service_readings_to_citations(final_readings[service]),
+            "type": "mass",
         }
     return result
 
@@ -3053,6 +3054,7 @@ class ReadingsSerializer(serializers.Serializer):
             services[key] = {
                 "collects": [],
                 "readings": value,
+                "type": "daily_office",
             }
         for commemoration in obj.date.morning_and_evening:
             base_name = f"Primary Service" if commemoration.rank.precedence_rank <= 4 else f"Holy Eucharist"

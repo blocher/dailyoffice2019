@@ -15,6 +15,21 @@
     <h1>Readings</h1>
 
     <h3>{{ service }}</h3>
+    <el-menu
+        :default-active="activeIndex"
+        mode="horizontal"
+        menu-trigger="click"
+    >
+      <el-sub-menu index="1">
+        <template #title>Daily Office</template>
+        <el-menu-item class="full-width" index="/">Morning Prayer</el-menu-item>
+        <el-menu-item class="full-width" index="/">Evening Prayer</el-menu-item>
+      </el-sub-menu>
+      <el-sub-menu index="2">
+        <template #title>Holy Eucharist</template>
+        <el-menu-item class="full-width" index="/">Primary Service</el-menu-item>
+      </el-sub-menu>
+    </el-menu>
     <el-select
         v-model="service"
         class="w-full"
