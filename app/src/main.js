@@ -39,6 +39,7 @@ import {
     faRight,
     faSearch,
     faShareNodes,
+    faSquareUpRight,
     faSun,
     faSunrise,
     faSunset,
@@ -65,6 +66,7 @@ library.add(
     faCircle3,
     faCircle4,
     faSearch,
+    faSquareUpRight,
 );
 
 router.beforeEach((to, from, next) => {

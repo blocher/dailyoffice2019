@@ -1,4 +1,5 @@
 <template>
+  <div class="block">
   <span class="sub-menu-item">
     <span class="text-xs">Light</span>&nbsp;
     <el-switch
@@ -9,6 +10,18 @@
     />&nbsp;
     <span class="text-xs">Dark</span>
   </span>
+  </div>
+  <div class="leading-tight border p-2 mt-2 inline-block">
+  <span class="sub-menu-item ">
+    <span class="text-xs">Looking for the old version?<br></span>
+    <a
+        href="https://dailyoffice2019.com"
+    >
+      <span class="text-xs">Visit the classic site&nbsp;</span>
+      <font-awesome-icon :icon="['fad', 'fa-square-up-right']"/>&nbsp;
+    </a>
+  </span>
+  </div>
 </template>
 
 <script>

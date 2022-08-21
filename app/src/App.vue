@@ -2,14 +2,7 @@
   <TopMenu/>
   <div class="main">
     <Loading v-if="loading"/>
-    <div class="full-width flex justify-center items-center ">
-      <el-alert
-          class="max-w-lg "
-          title="Beta Version: You are viewing the beta version of the Daily Office site, which lets you preview features before they are launched. Please report any issues or bugs to feedback@dailyoffice2019.com. You can also visit the stable version at https://dailyoffice2019.com."
-          type="warning"
-          effect="dark"
-      />
-    </div>
+    <BetaNote/>
     <el-alert
         v-if="error" :title="error"
         type="error"
@@ -28,12 +21,14 @@ import TopMenu from "@/components/TopMenu";
 import Loading from "@/components/Loading";
 import AHPLogo from "@/components/AHPLogo";
 import {event} from 'vue-gtag'
+import BetaNote from "@/components/BetaNote";
 
 export default {
   components: {
     AHPLogo,
     TopMenu,
     Loading,
+    BetaNote,
   },
   data() {
     return {
@@ -283,4 +278,5 @@ body {
 .el-input__inner {
   background-color: var(--el-input-bg-color, var(--el-fill-color-blank)) !important;
 }
+
 </style>
