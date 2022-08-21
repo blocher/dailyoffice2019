@@ -195,6 +195,9 @@ class Commemoration(BaseModel):
     def __repr__(self):
         return "{} ({}) ({})".format(self.name, self.rank.formatted_name, self.color)
 
+    def __str__(self):
+        return "{} ({}) ({})".format(self.name, self.rank.formatted_name, self.color)
+
 
 class SanctoraleCommemoration(Commemoration):
     month = models.PositiveSmallIntegerField()

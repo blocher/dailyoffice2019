@@ -12,7 +12,7 @@ class CommemorationSerializer(serializers.Serializer):
     rank = RankSerializer()
     colors = serializers.SerializerMethodField()
     links = serializers.SerializerMethodField()
-    collects = serializers.SerializerMethodField()
+    # collects = serializers.SerializerMethodField()
     biography = serializers.CharField()
     image_link = serializers.URLField()
 

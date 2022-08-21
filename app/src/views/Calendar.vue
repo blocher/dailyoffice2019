@@ -41,7 +41,7 @@
     </template>
     <template #dateCell="{ data }">
       <div
-          class="dateCellWrapper" @click="clickDateCell(data, $event)"
+          class="dateCellWrapper" :class="getColorForDate(data.day)" @click="clickDateCell(data, $event)"
       >
         <p>{{ parseInt(data.day.split("-")[2]) }}</p>
         <p class="calendarText" v-html="getFeastNameForDate(data.day)"></p>
@@ -82,7 +82,31 @@ export default {
       const includeMinorFeasts = this.includeMinorFeasts ? "true" : "false"
       localStorage.setItem("includeMinorFeasts", includeMinorFeasts);
     },
+    getColorForDate: function (day) {
+      try {
+        let commemorations = this.days[day].commemorations
+        if (this.includeMinorFeasts) {
+          commemorations = commemorations.filter((commemorations) => {
+            return commemorations.rank.name.includes("FERIA") == false
+          });
+          if (!commemorations.length) {
+            return this.days[day].season.colors[0]
+          }
+          return commemorations[0]['colors'][0]
+        } else {
+          if (this.days[day].major_feast) {
+            return commemorations[0]['colors'][0]
+          }
+          return this.days[day].season.colors[0]
+        }
+
+      } catch {
+        return ""
+      }
+
+    },
     getFeastNameForDate: function (day) {
+
       let feast = ""
       let bold = false;
       try {
@@ -224,4 +248,52 @@ td {
   width: 100%;
   margin-bottom: auto;
 }
+
+.el-calendar-table__row td {
+  border: black 1px solid;
+}
+
+
+.red {
+
+  background-color: #c21c13;
+  color: white;
+
+}
+
+.green {
+
+  background-color: #077339;
+  color: white;
+
+}
+
+.white {
+
+  background-color: white;
+  color: black;
+
+}
+
+.purple {
+
+  background-color: #64147d;
+  color: white;
+
+}
+
+.black {
+
+  background-color: black;
+  color: white;
+
+}
+
+.rose {
+
+  background-color: pink;
+  color: black;
+
+}
+
 </style>

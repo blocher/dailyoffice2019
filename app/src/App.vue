@@ -97,6 +97,10 @@ export default {
   --el-card-bg-color: white;
   --el-drawer-bg-color: white !important;
   --el-font-size-base: 16px;
+
+  .el-calendar {
+    --el-calendar-border: 1px solid black !important;
+  }
 }
 
 :root.dark {
@@ -112,6 +116,10 @@ export default {
   --el-calendar-selected-bg-color: rgb(28, 28, 33);
 
   --el-card-bg-color: rgb(28, 28, 33);
+
+  .el-calendar {
+    --el-calendar-border: 1px solid grey !important;
+  }
 }
 
 body {
