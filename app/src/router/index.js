@@ -10,8 +10,9 @@ import Scripture from "@/views/Scripture";
 
 const routes = [
     {
-        path: "/readings/:year/:month/:day",
+        path: "/readings/",
         name: "readings",
+        alias: ["/readings/:service/", "/readings/:service/:year/:month/:day", "/readings/:service/:position/:year/:month/:day", "/readings/:year/:month/:day"],
         component: Readings,
         meta: {
             title: "Readings | The Daily Office",

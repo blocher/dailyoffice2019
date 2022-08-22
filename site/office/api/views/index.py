@@ -3055,19 +3055,14 @@ class ReadingsSerializer(serializers.Serializer):
                 "collects": [],
                 "readings": value,
                 "type": "daily_office",
+                "name": key,
             }
         for commemoration in obj.date.morning_and_evening:
-            base_name = f"Primary Service" if commemoration.rank.precedence_rank <= 4 else f"Holy Eucharist"
-            if base_name == "Primary Service" and "Eve of " in commemoration.name:
-                base_name = "Vigil Service"
             masses = mass_readings(commemoration, obj.mass_year, obj.date)
             for mass, readings in masses.items():
-                name = (
-                    f"{base_name} ({mass}) ({commemoration.name})"
-                    if mass != "-"
-                    else f"{base_name} ({commemoration.name})"
-                )
+                name = f"{commemoration.name} ({mass}) " if mass != "-" else f"{commemoration.name}"
                 services[name] = readings
+                services[name]["name"] = name
         return services
 
 

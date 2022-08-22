@@ -4,6 +4,7 @@
         :default-active="activeIndex"
         mode="horizontal"
         menu-trigger="click"
+        unique-opened=true,
         :router="menuRouter"
     >
       <el-sub-menu index="1">

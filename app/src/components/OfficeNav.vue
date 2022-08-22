@@ -177,7 +177,7 @@ export default {
       to: `/readings/${this.calendarDate.getFullYear()}/${
           this.calendarDate.getMonth() + 1
       }/${this.calendarDate.getDate()}`,
-      text: "Readings Only",
+      text: "Day's Readings",
       name: "readings",
       icon: ["fad", "book-bible"],
     },
