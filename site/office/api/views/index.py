@@ -2589,7 +2589,7 @@ class Compline(Office):
 
 
 class Readings(Module):
-    def __init__(self, request, year, month, day, translation="esv"):
+    def __init__(self, request, year, month, day, translation="esv", psalms="contemporary"):
         from churchcal.calculations import get_calendar_date
 
         self.settings = Settings(request)
@@ -2597,6 +2597,7 @@ class Readings(Module):
         self.date = get_calendar_date("{}-{}-{}".format(year, month, day))
         self.mass_year = get_church_year("{}-{}-{}".format(year, month, day)).mass_year
         self.translation = translation
+        self.psalms = psalms
 
         try:
             self.holy_day_readings = HolyDayOfficeDay.objects.get(commemoration=self.date.primary)
@@ -2646,7 +2647,7 @@ def morning_prayer_30_day_psalms(obj):
     full = reading_format(
         name=name,
         citation=citation,
-        text=get_psalms(obj.thirty_day_psalter_day.mp_psalms, simplified_citations=True),
+        text=get_psalms(obj.thirty_day_psalter_day.mp_psalms, simplified_citations=True, language_style=obj.psalms),
         testament="OT",
         cycle="30",
         reading_number=0,
@@ -2667,7 +2668,7 @@ def evening_prayer_30_day_psalms(obj):
     full = reading_format(
         name=name,
         citation=citation,
-        text=get_psalms(obj.thirty_day_psalter_day.ep_psalms, simplified_citations=True),
+        text=get_psalms(obj.thirty_day_psalter_day.ep_psalms, simplified_citations=True, language_style=obj.psalms),
         testament="OT",
         cycle="30",
         reading_number=0,
@@ -2688,7 +2689,7 @@ def standard_morning_prayer_60_day_psalms(obj):
     full = reading_format(
         name=name,
         citation=citation,
-        text=get_psalms(obj.standard_readings.mp_psalms, simplified_citations=True),
+        text=get_psalms(obj.standard_readings.mp_psalms, simplified_citations=True, language_style=obj.psalms),
         testament="OT",
         cycle="60",
         reading_number=0,
@@ -2709,7 +2710,7 @@ def standard_evening_prayer_60_day_psalms(obj):
     full = reading_format(
         name=name,
         citation=citation,
-        text=get_psalms(obj.standard_readings.ep_psalms, simplified_citations=True),
+        text=get_psalms(obj.standard_readings.ep_psalms, simplified_citations=True, language_style=obj.psalms),
         testament="OT",
         cycle="60",
         reading_number=0,
@@ -2730,7 +2731,7 @@ def holy_day_morning_prayer_60_day_psalms(obj):
     full = reading_format(
         name=name,
         citation=citation,
-        text=get_psalms(obj.holy_day_readings.mp_psalms, simplified_citations=True),
+        text=get_psalms(obj.holy_day_readings.mp_psalms, simplified_citations=True, language_style=obj.psalms),
         testament="OT",
         cycle="60",
         reading_number=0,
@@ -2751,7 +2752,7 @@ def holy_day_evening_prayer_60_day_psalms(obj):
     full = reading_format(
         name=name,
         citation=citation,
-        text=get_psalms(obj.holy_day_readings.ep_psalms, simplified_citations=True),
+        text=get_psalms(obj.holy_day_readings.ep_psalms, simplified_citations=True, language_style=obj.psalms),
         testament="OT",
         cycle="60",
         reading_number=0,
@@ -3067,12 +3068,22 @@ class ReadingsSerializer(serializers.Serializer):
                 "type": "daily_office",
                 "name": key,
             }
+        ferias = {}
+        non_ferias = {}
         for commemoration in obj.date.morning_and_evening:
             masses = mass_readings(commemoration, obj.mass_year, obj.date, obj.translation)
             for mass, readings in masses.items():
-                name = f"{commemoration.name} ({mass}) " if mass != "-" else f"{commemoration.name}"
-                services[name] = readings
-                services[name]["name"] = name
+                name = f"{commemoration.name} ({mass}) " if mass not in ["", "-"] else f"{commemoration.name}"
+                if "FERIA" in commemoration.rank.name:
+                    ferias[name] = readings
+                    ferias[name]["name"] = name
+                    ferias[name]["rank"] = commemoration.rank.name
+                else:
+                    non_ferias[name] = readings
+                    non_ferias[name]["name"] = name
+                    non_ferias[name]["rank"] = commemoration.rank.name
+        services.update(non_ferias)
+        services.update(ferias)
         return services
 
 
@@ -3135,7 +3146,8 @@ class ComplineView(OfficeAPIView):
 class ReadingsView(OfficeAPIView):
     def get(self, request, year, month, day):
         translation = request.GET.get("translation", "esv")
-        office = Readings(request, year, month, day, translation)
+        psalms = request.GET.get("psalms", "contemporary")
+        office = Readings(request, year, month, day, translation, psalms)
         serializer = ReadingsSerializer(office)
         return Response(serializer.data)
 

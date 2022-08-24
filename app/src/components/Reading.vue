@@ -43,6 +43,7 @@ export default {
     "psalmCycle",
     "length",
     "translation",
+    "psalmsTranslation",
   ],
   data() {
     return {
@@ -92,7 +93,11 @@ export default {
     scriptureLink(abbreviated = false) {
       const reading = abbreviated ? this.reading.abbreviated : this.reading.full;
       if (reading.name.includes("The Psalm")) {
-        return "(Renewed Coverdale / 2019)"
+        const psalmsTranslation = this.psalmsTranslation;
+        if (psalmsTranslation == "traditional") {
+          return "(1532 Coverdale Psalter - 1928 BCP / 2019 Traditional Language BCP)"
+        }
+        return "(Renewed Coverdale Psalter - 2019 BCP)"
       }
       let url = ""
       let abbreviation = this.translation.toLowerCase()

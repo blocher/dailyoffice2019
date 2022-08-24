@@ -20,9 +20,10 @@
           menu-trigger="click"
           unique-opened=true,
           :default-active="activeIndex"
+          ellipsis=false,
       >
-        <el-sub-menu index="1">
-          <template #title>Daily Office</template>
+        <el-sub-menu index="1" ellipsis=false>
+          <template #title>Office</template>
           <el-menu-item
               v-for="value in daily_office" :key="value.name" class="full-width" :index="serviceLink(value.name)"
               @click="changeService(value.name)">{{
@@ -31,8 +32,8 @@
           </el-menu-item>
           <div class="flex-grow"/>
         </el-sub-menu>
-        <el-sub-menu index="2">
-          <template #title>Holy Eucharist</template>
+        <el-sub-menu index="2" ellipsis=false>
+          <template #title>Eucharist</template>
           <el-menu-item
               v-for="value in holy_eucharist" :key="value.name" class="full-width" :index="serviceLink(value.name)"
               @click="changeService(value.name)">{{
@@ -42,12 +43,25 @@
         </el-sub-menu>
 
       </el-menu>
-      <div class="flex justify-end">
-        <el-radio-group v-model="translation" class="ml-4 items-right" @change="changeTranslation()">
-          <el-radio name="translation" label="esv" size="large">ESV</el-radio>
-          <el-radio name="translation" label="rsv" size="large">RSV</el-radio>
-          <el-radio name="translation" label="kjv" size="large">KJV</el-radio>
-        </el-radio-group>
+      <div class="flow-root">
+        <div class="mt-1 sm:float-left">
+          <el-radio-group
+              v-model="psalmsTranslation" size="small"
+              @change="changeTranslation()">
+            <el-radio-button size="small" name="psalmsTranslation" label="contemporary">Contemporary Psalms
+            </el-radio-button>
+            <el-radio-button size="small" name="psalmsTranslation" label="traditional">Traditional Psalms
+            </el-radio-button>
+          </el-radio-group>
+        </div>
+        <div class="mt-1 sm:float-right">
+          <el-radio-group v-model="translation" size="small" @change="changeTranslation()">
+            <el-radio-button size="small" name="translation" label="esv">ESV</el-radio-button>
+            <el-radio-button size="small" name="translation" label="rsv">RSV</el-radio-button>
+            <el-radio-button size="small" name="translation" label="kjv">KJV</el-radio-button>
+          </el-radio-group>
+        </div>
+
       </div>
 
       <Loading v-if="readingsLoading"/>
@@ -63,7 +77,8 @@
         <Collects v-if="showCollects" :collects="collectsToShow"/>
         <Reading
             v-for="(reading, index) in readingsToShow" :id="readingName(index)" :key="index" :reading="reading"
-            :psalm-cycle="psalmCycle" :length="reading.length" :translation="translation" @cycle-60="setCycle60"
+            :psalm-cycle="psalmCycle" :length="reading.length" :translation="translation"
+            :psalms-translation="psalmsTranslation" @cycle-60="setCycle60"
             @cycle-30="setCycle30"/>
       </div>
 
@@ -115,6 +130,7 @@ export default {
       psalmCycle: "30",
       readingsToShow: [],
       translation: "esv",
+      psalmsTranslation: "contemporary",
       notFound: false,
       activeIndex: "1",
     };
@@ -155,6 +171,16 @@ export default {
     }
     localStorage.setItem('readings_translation', translation);
     this.translation = translation;
+
+    let psalmsTranslation = localStorage.getItem('psalms_translation');
+    if (!psalmsTranslation) {
+      const settings = this.$store.state.settings;
+      psalmsTranslation = settings["language_style"];
+    }
+    localStorage.setItem('psalms_translation', psalmsTranslation);
+    this.psalmsTranslation = psalmsTranslation;
+    console.log('psalmsTranslation', this.psalmsTranslation);
+
     await this.initialize();
 
   },
@@ -170,7 +196,7 @@ export default {
             "-" +
             this.calendarDate.getDate();
         data = await this.$http.get(
-            `${process.env.VUE_APP_API_URL}api/v1/readings/${today_str}?translation=${this.translation}`
+            `${process.env.VUE_APP_API_URL}api/v1/readings/${today_str}?translation=${this.translation}&psalms=${this.psalmsTranslation}`
         );
 
       } catch (e) {
@@ -232,6 +258,7 @@ export default {
       return `reading_${readingId}`.toLowerCase();
     },
     changeTranslation: function () {
+      localStorage.setItem('psalms_translation', this.psalmsTranslation);
       localStorage.setItem('readings_translation', this.translation);
       this.initialize();
     },
