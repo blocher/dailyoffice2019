@@ -2589,16 +2589,18 @@ class Compline(Office):
 
 
 class Readings(Module):
-    def __init__(self, request, year, month, day):
+    def __init__(self, request, year, month, day, translation="esv"):
         from churchcal.calculations import get_calendar_date
 
         self.settings = Settings(request)
 
         self.date = get_calendar_date("{}-{}-{}".format(year, month, day))
         self.mass_year = get_church_year("{}-{}-{}".format(year, month, day)).mass_year
+        self.translation = translation
 
         try:
             self.holy_day_readings = HolyDayOfficeDay.objects.get(commemoration=self.date.primary)
+            self.holy_day_scriptures = Scripture.objects.get
         except HolyDayOfficeDay.DoesNotExist:
             self.holy_day_readings = None
 
@@ -2765,7 +2767,7 @@ def holy_day_morning_prayer_reading_1(obj):
     full = reading_format(
         name="The First Lesson",
         citation=obj.holy_day_readings.mp_reading_1,
-        text=obj.holy_day_readings.mp_reading_1_text,
+        text=obj.holy_day_readings.passage_to_text("mp_reading_1", obj.translation),
         testament=obj.holy_day_readings.mp_reading_1_testament,
         reading_number=1,
     )
@@ -2774,7 +2776,7 @@ def holy_day_morning_prayer_reading_1(obj):
         abbreviated = reading_format(
             name="The First Lesson",
             citation=obj.holy_day_readings.mp_reading_1_abbreviated,
-            text=obj.holy_day_readings.mp_reading_1_abbreviated_text,
+            text=obj.holy_day_readings.passage_to_text("mp_reading_1_abrreviated", obj.translation),
             testament=obj.holy_day_readings.mp_reading_1_testament,
             reading_number=1,
         )
@@ -2788,7 +2790,7 @@ def holy_day_morning_prayer_reading_2(obj):
     full = reading_format(
         name="The Second Lesson",
         citation=obj.holy_day_readings.mp_reading_2,
-        text=obj.holy_day_readings.mp_reading_2_text,
+        text=obj.holy_day_readings.passage_to_text("mp_reading_2", obj.translation),
         testament=obj.holy_day_readings.mp_reading_2_testament,
         reading_number=2,
     )
@@ -2803,7 +2805,7 @@ def holy_day_evening_prayer_reading_1(obj):
     full = reading_format(
         name="The First Lesson",
         citation=obj.holy_day_readings.ep_reading_1,
-        text=obj.holy_day_readings.ep_reading_1_text,
+        text=obj.holy_day_readings.passage_to_text("ep_reading_1", obj.translation),
         testament=obj.holy_day_readings.ep_reading_1_testament,
         reading_number=1,
     )
@@ -2812,7 +2814,7 @@ def holy_day_evening_prayer_reading_1(obj):
         abbreviated = reading_format(
             name="The First Lesson",
             citation=obj.holy_day_readings.ep_reading_1_abbreviated,
-            text=obj.holy_day_readings.ep_reading_1_abbreviated_text,
+            text=obj.holy_day_readings.passage_to_text("ep_reading_1_abbreviated", obj.translation),
             testament=obj.holy_day_readings.ep_reading_1_testament,
         )
     return {
@@ -2825,7 +2827,7 @@ def holy_day_evening_prayer_reading_2(obj):
     full = reading_format(
         name="The Second Lesson",
         citation=obj.holy_day_readings.ep_reading_2,
-        text=obj.holy_day_readings.ep_reading_2_text,
+        text=obj.holy_day_readings.passage_to_text("ep_reading_2", obj.translation),
         testament=obj.holy_day_readings.ep_reading_2_testament,
         reading_number=2,
     )
@@ -2840,7 +2842,7 @@ def standard_morning_prayer_reading_1(obj):
     full = reading_format(
         name="The First Lesson",
         citation=obj.standard_readings.mp_reading_1,
-        text=obj.standard_readings.mp_reading_1_text,
+        text=obj.standard_readings.passage_to_text("mp_reading_1", obj.translation),
         testament=obj.standard_readings.mp_reading_1_testament,
         reading_number=1,
     )
@@ -2849,7 +2851,7 @@ def standard_morning_prayer_reading_1(obj):
         abbreviated = reading_format(
             name="The First Lesson",
             citation=obj.standard_readings.mp_reading_1_abbreviated,
-            text=obj.standard_readings.mp_reading_1_abbreviated_text,
+            text=obj.standard_readings.passage_to_text("mp_reading_1_abbreviated", obj.translation),
             testament=obj.standard_readings.mp_reading_1_testament,
             reading_number=1,
         )
@@ -2863,7 +2865,7 @@ def standard_morning_prayer_reading_2(obj):
     full = reading_format(
         name="The Second Lesson",
         citation=obj.standard_readings.mp_reading_2,
-        text=obj.standard_readings.mp_reading_2_text,
+        text=obj.standard_readings.passage_to_text("mp_reading_2", obj.translation),
         testament=obj.standard_readings.mp_reading_2_testament,
         reading_number=2,
     )
@@ -2878,7 +2880,7 @@ def standard_evening_prayer_reading_1(obj):
     full = reading_format(
         name="The First Lesson",
         citation=obj.standard_readings.ep_reading_1,
-        text=obj.standard_readings.ep_reading_1_text,
+        text=obj.standard_readings.passage_to_text("ep_reading_1", obj.translation),
         testament=obj.standard_readings.ep_reading_1_testament,
         reading_number=1,
     )
@@ -2887,7 +2889,7 @@ def standard_evening_prayer_reading_1(obj):
         abbreviated = reading_format(
             name="The First Lesson",
             citation=obj.standard_readings.ep_reading_1_abbreviated,
-            text=obj.standard_readings.ep_reading_1_abbreviated_text,
+            text=obj.standard_readings.passage_to_text("ep_reading_1_abbreviated", obj.translation),
             testament=obj.standard_readings.ep_reading_1_testament,
             reading_number=1,
         )
@@ -2901,7 +2903,7 @@ def standard_evening_prayer_reading_2(obj):
     full = reading_format(
         name="The Second Lesson",
         citation=obj.standard_readings.ep_reading_2,
-        text=obj.standard_readings.ep_reading_2_text,
+        text=obj.standard_readings.passage_to_text("ep_reading_2", obj.translation),
         testament=obj.standard_readings.ep_reading_2_testament,
         reading_number=2,
     )
@@ -2967,8 +2969,13 @@ def service_readings_to_citations(readings):
     return groups
 
 
-def mass_readings(commemoration, mass_year, calendar_date):
+def mass_readings(commemoration, mass_year, calendar_date, translation="esv"):
     readings = commemoration.get_all_mass_readings_for_year(mass_year)
+    passages = []
+    for reading in readings:
+        passages.append(reading.long_citation)
+        if reading.short_citation:
+            passages.append(reading.short_citation)
     final_readings = {}
     for reading in readings:
         service_name = reading.service or "-"
@@ -2976,14 +2983,17 @@ def mass_readings(commemoration, mass_year, calendar_date):
         full = reading_format(
             name=name,
             citation=reading.long_citation,
-            text=reading.long_text,
+            text=getattr(reading.long_scripture, translation),
             testament=reading.testament,
             reading_number=reading.reading_number,
         )
         abbreviated = full
         if reading.short_citation:
             abbreviated = reading_format(
-                name=name, citation=reading.short_citation, text=reading.short_text, testament=reading.testament
+                name=name,
+                citation=reading.short_citation,
+                text=getattr(reading.short_scripture, translation),
+                testament=reading.testament,
             )
         if service_name not in final_readings.keys():
             final_readings[service_name] = []
@@ -3058,7 +3068,7 @@ class ReadingsSerializer(serializers.Serializer):
                 "name": key,
             }
         for commemoration in obj.date.morning_and_evening:
-            masses = mass_readings(commemoration, obj.mass_year, obj.date)
+            masses = mass_readings(commemoration, obj.mass_year, obj.date, obj.translation)
             for mass, readings in masses.items():
                 name = f"{commemoration.name} ({mass}) " if mass != "-" else f"{commemoration.name}"
                 services[name] = readings
@@ -3124,7 +3134,8 @@ class ComplineView(OfficeAPIView):
 
 class ReadingsView(OfficeAPIView):
     def get(self, request, year, month, day):
-        office = Readings(request, year, month, day)
+        translation = request.GET.get("translation", "esv")
+        office = Readings(request, year, month, day, translation)
         serializer = ReadingsSerializer(office)
         return Response(serializer.data)
 

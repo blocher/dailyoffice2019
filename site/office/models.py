@@ -1,4 +1,5 @@
 import re
+from functools import cached_property
 
 from ckeditor.fields import RichTextField
 from django.db import models
@@ -29,6 +30,33 @@ class OfficeDay(BaseModel):
     ep_reading_2 = models.CharField(max_length=255)
     ep_reading_2_testament = models.CharField(max_length=2, choices=TESTAMENTS)
     ep_reading_2_text = models.TextField(blank=True, null=True)
+
+    @cached_property
+    def readings(self):
+        passages = Scripture.objects.filter(
+            passage__in=[
+                self.mp_reading_1,
+                self.mp_reading_1_abbreviated,
+                self.mp_reading_2,
+                self.ep_reading_1,
+                self.ep_reading_1_abbreviated,
+                self.ep_reading_2,
+            ]
+        ).all()
+        return {passage.passage: passage for passage in passages if passage}
+
+    def passage_to_text(self, attribute, translation="esv"):
+        passage = getattr(self, attribute)
+        if not passage and "_abbreviated" in attribute:
+            attribute = attribute.replace("_abbreviated", "")
+            passage = getattr(self, attribute)
+        try:
+            result = getattr(self.readings[passage], translation)
+            if not result or result.strip() in ["", "-"]:
+                result = self.readings[passage].rsv
+            return result
+        except KeyError:
+            return None
 
     def __getattribute__(self, attrname):
         value = super().__getattribute__(attrname)

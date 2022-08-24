@@ -189,7 +189,7 @@ class Commemoration(BaseModel):
                 )
 
         query = query.order_by("abbreviation", "reading_number", "order", "service")
-
+        query = query.select_related("long_scripture", "short_scripture")
         return query.all()
 
     def __repr__(self):
@@ -393,6 +393,12 @@ class MassReading(BaseModel):
     abbreviation = models.CharField(max_length=256, blank=True, null=True)
     reading_number = models.PositiveSmallIntegerField()
     order = models.PositiveSmallIntegerField()
+    long_scripture = models.ForeignKey(
+        "office.Scripture", on_delete=models.SET_NULL, null=True, blank=True, related_name="long_scripture"
+    )
+    short_scripture = models.ForeignKey(
+        "office.Scripture", on_delete=models.SET_NULL, null=True, blank=True, related_name="short_scripture"
+    )
 
     def __repr__(self):
         return self.long_citation

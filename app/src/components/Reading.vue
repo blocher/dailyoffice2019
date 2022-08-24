@@ -42,6 +42,7 @@ export default {
     "id",
     "psalmCycle",
     "length",
+    "translation",
   ],
   data() {
     return {
@@ -94,14 +95,18 @@ export default {
         return "(Renewed Coverdale / 2019)"
       }
       let url = ""
-      let abbreviation = "ESV"
-      if (this.reading.full.testmament == "DC") {
-        url = `https://www.biblegateway.com/passage/?search=${reading.citation}&version=RSV`
-        abbreviation = "RSV"
-      } else {
-        url = `https://www.esv.org/${reading.citation}`
+      let abbreviation = this.translation.toLowerCase()
+      if (abbreviation == 'esv' && this.reading.full.testament == "DC") {
+        abbreviation = 'rsv'
       }
-      return `<a target="_blank" href="${url}">(${abbreviation})</a>`
+      if (abbreviation == 'kjv' && this.reading.full.testament == "DC") {
+        url = `https://bible.oremus.org/?version=AV&passage=${reading.citation}`
+      } else if (abbreviation == "esv") {
+        url = `https://www.esv.org/${reading.citation}`
+      } else {
+        url = `https://www.biblegateway.com/passage/?search=${reading.citation}&version=${this.translation.toUpperCase()}`
+      }
+      return `<a target="_blank" href="${url}">(${abbreviation.toUpperCase()})</a>`
 
     }
   },

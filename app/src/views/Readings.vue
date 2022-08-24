@@ -42,24 +42,30 @@
         </el-sub-menu>
 
       </el-menu>
-
-      <!--      <el-radio-group v-model="translation" class="ml-4 items-center">-->
-      <!--        <el-radio label="esv" size="large">ESV</el-radio>-->
-      <!--        <el-radio label="rsv" size="large">RSV</el-radio>-->
-      <!--        <el-radio label="kjv" size="large">KJV</el-radio>-->
-      <!--      </el-radio-group>-->
-      <div class="mt-6">
-        <h2 mt-2 pt-0>{{ service }}</h2>
-        <CitationGroup
-            v-for="(readings, number) in groupedReadings"
-            :key="number" :readings="readings"
-            @readingLinkClick="handleReadingLinkClick"/>
+      <div class="flex justify-end">
+        <el-radio-group v-model="translation" class="ml-4 items-right" @change="changeTranslation()">
+          <el-radio name="translation" label="esv" size="large">ESV</el-radio>
+          <el-radio name="translation" label="rsv" size="large">RSV</el-radio>
+          <el-radio name="translation" label="kjv" size="large">KJV</el-radio>
+        </el-radio-group>
       </div>
 
-      <Collects v-if="showCollects" :collects="collectsToShow"/>
-      <Reading
-          v-for="(reading, index) in readingsToShow" :id="readingName(index)" :key="index" :reading="reading"
-          :psalm-cycle="psalmCycle" :length="reading.length" @cycle-60="setCycle60" @cycle-30="setCycle30"/>
+      <Loading v-if="readingsLoading"/>
+      <div class="readingsPanel" :v-if="!readingsLoading">
+        <div class="mt-6">
+          <h2 mt-2 pt-0>{{ service }}</h2>
+          <CitationGroup
+              v-for="(readings, number) in groupedReadings"
+              :key="number" :readings="readings"
+              @readingLinkClick="handleReadingLinkClick"/>
+        </div>
+
+        <Collects v-if="showCollects" :collects="collectsToShow"/>
+        <Reading
+            v-for="(reading, index) in readingsToShow" :id="readingName(index)" :key="index" :reading="reading"
+            :psalm-cycle="psalmCycle" :length="reading.length" :translation="translation" @cycle-60="setCycle60"
+            @cycle-30="setCycle30"/>
+      </div>
 
 
     </div>
@@ -94,6 +100,7 @@ export default {
   data() {
     return {
       loading: true,
+      readingsLoading: false,
       error: false,
       calendarDate: null,
       card: null,
@@ -102,7 +109,6 @@ export default {
       morning_prayer: [],
       evening_prayer: [],
       holy_eucharist: [],
-      serviceLabels: null,
       service: null,
       readings: null,
       full: true,
@@ -141,73 +147,93 @@ export default {
     },
   },
   async created() {
-    let data = null;
     this.calendarDate = setCalendarDate(this.$route);
-    try {
-      const today_str =
-          this.calendarDate.getFullYear() +
-          "-" +
-          (this.calendarDate.getMonth() + 1) +
-          "-" +
-          this.calendarDate.getDate();
-      data = await this.$http.get(
-          `${process.env.VUE_APP_API_URL}api/v1/readings/` +
-          today_str
-      );
+    let translation = localStorage.getItem('readings_translation');
+    if (!translation) {
+      const settings = this.$store.state.settings;
+      translation = settings["bible_translation"];
+    }
+    localStorage.setItem('readings_translation', translation);
+    this.translation = translation;
+    await this.initialize();
 
-    } catch (e) {
-      this.error =
-          "There was an error retrieving the office. Please try again.";
-      this.loading = false;
-      return;
-    }
-    this.card = data.data.calendarDate
-    this.services = data.data.services
-    // iterate through keys and values of this.services
-    for (const [key, value] of Object.entries(this.services)) {
-      if (value.type == "daily_office") {
-        this.daily_office.push(value)
-      } else if (value.type == "mass") {
-        this.holy_eucharist.push(value)
-      }
-      if (key.includes("Morning Prayer")) {
-        this.morning_prayer.push(value)
-      } else if (key.includes("Evening Prayer")) {
-        this.evening_prayer.push(value)
-      }
-    }
-    this.serviceLabels = Object.keys(this.services)
-    if (this.$route.params.service) {
-      try {
-        const service = this.$route.params.service.toLowerCase().replace("-", "_");
-        const position = parseInt(this.$route.params.position || 0);
-        if (service == "morning_prayer") {
-          this.service = this.morning_prayer[position].name;
-        } else if (service == "evening_prayer") {
-          this.service = this.evening_prayer[position].name;
-        } else if (service == "daily_office") {
-          this.service = this.daily_office[position].name;
-        } else if (service == "holy_eucharist") {
-          this.service = this.holy_eucharist[position].name;
-          this.activeIndex = "2"
-        } else {
-          this.service = this.morning_prayer[position].name
-        }
-      } catch (e) {
-        this.notFound = true;
-      }
-    } else {
-      this.service = this.morning_prayer[0].name
-    }
-    this.activeIndex = this.serviceLink(this.service)
-    this.setReadingsToShow()
-    this.error = false;
-    this.loading = false;
   },
   methods: {
+    initialize: async function () {
+      this.readingsLoading = true;
+      let data = null;
+      try {
+        const today_str =
+            this.calendarDate.getFullYear() +
+            "-" +
+            (this.calendarDate.getMonth() + 1) +
+            "-" +
+            this.calendarDate.getDate();
+        data = await this.$http.get(
+            `${process.env.VUE_APP_API_URL}api/v1/readings/${today_str}?translation=${this.translation}`
+        );
+
+      } catch (e) {
+        this.error =
+            "There was an error retrieving the office. Please try again.";
+        this.loading = false;
+        this.readingsLoading = false;
+        return;
+      }
+      this.card = data.data.calendarDate
+      this.services = data.data.services
+      // iterate through keys and values of this.services
+      this.morning_prayer = [];
+      this.evening_prayer = [];
+      this.daily_office = [];
+      this.holy_eucharist = [];
+      for (const [key, value] of Object.entries(this.services)) {
+        if (value.type == "daily_office") {
+          this.daily_office.push(value)
+        } else if (value.type == "mass") {
+          this.holy_eucharist.push(value)
+        }
+        if (key.includes("Morning Prayer")) {
+          this.morning_prayer.push(value)
+        } else if (key.includes("Evening Prayer")) {
+          this.evening_prayer.push(value)
+        }
+      }
+      if (this.$route.params.service) {
+        try {
+          const service = this.$route.params.service.toLowerCase().replace("-", "_");
+          const position = parseInt(this.$route.params.position || 0);
+          if (service == "morning_prayer") {
+            this.service = this.morning_prayer[position].name;
+          } else if (service == "evening_prayer") {
+            this.service = this.evening_prayer[position].name;
+          } else if (service == "daily_office") {
+            this.service = this.daily_office[position].name;
+          } else if (service == "holy_eucharist") {
+            this.service = this.holy_eucharist[position].name;
+            this.activeIndex = "2"
+          } else {
+            this.service = this.morning_prayer[position].name
+          }
+        } catch (e) {
+          this.notFound = true;
+        }
+      } else {
+        this.service = this.morning_prayer[0].name
+      }
+      this.activeIndex = this.serviceLink(this.service)
+      this.setReadingsToShow()
+      this.error = false;
+      this.loading = false;
+      this.readingsLoading = false;
+    },
     readingID: function (reading) {
       const readingId = reading.citation.replace(/[\W_]+/g, "_")
       return `reading_${readingId}`.toLowerCase();
+    },
+    changeTranslation: function () {
+      localStorage.setItem('readings_translation', this.translation);
+      this.initialize();
     },
     serviceLink: function (service) {
       let position = 0

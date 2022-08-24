@@ -11,6 +11,7 @@
         <template #title>Pray</template>
 
         <el-menu-item index="/"> Current Day and Time</el-menu-item>
+        <el-menu-item index="/readings"> Today's Readings</el-menu-item>
 
         <el-menu-item-group title="— Daily Office —">
           <el-menu-item index="/office/evening_prayer/yesterday">
