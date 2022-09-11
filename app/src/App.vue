@@ -1,4 +1,5 @@
 <template>
+  <OfflineMode/>
   <TopMenu/>
   <div class="main">
     <Loading v-if="loading"/>
@@ -22,6 +23,8 @@ import Loading from "@/components/Loading";
 import AHPLogo from "@/components/AHPLogo";
 import {event} from 'vue-gtag'
 import BetaNote from "@/components/BetaNote";
+import {Workbox} from 'workbox-window';
+import OfflineMode from "@/components/OfflineMode";
 
 export default {
   components: {
@@ -29,6 +32,7 @@ export default {
     TopMenu,
     Loading,
     BetaNote,
+    OfflineMode,
   },
   data() {
     return {
@@ -58,6 +62,99 @@ export default {
       return;
     }
     this.loading = false;
+    this.manageOfflineWorker()
+  },
+  methods: {
+    getPreLoadAPIEndpoints() {
+      const settings = this.$store.state.settings;
+      const queryString = Object.keys(settings)
+          .map((key) => key + "=" + settings[key])
+          .join("&");
+
+      const base_routes = [
+        "api/v1/office/morning_prayer/",
+        "api/v1/office/midday_prayer/",
+        "api/v1/office/evening_prayer/",
+        "api/v1/office/compline/",
+        "api/v1/family/morning_prayer",
+        "api/v1/family/midday_prayer/",
+        "api/v1/family/early_evening_prayer/",
+        "api/v1/family/close_of_day_prayer/",
+      ]
+
+      const dates_to_cache = function () {
+        const dates = [];
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth();
+        const date = today.getDate();
+        for (let i = -2; i < 31; i++) {
+          const day = new Date(year, month, date + i);
+          dates.push(day.toISOString().split("T")[0]);
+        }
+        return dates;
+      };
+
+      const office_routes = [];
+      for (let day of dates_to_cache()) {
+        for (let route of base_routes) {
+          office_routes.push(`${route}${day}?${queryString}`);
+        }
+      }
+
+      const calendar_routes = function () {
+        const dates = [];
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth();
+        const date = today.getDate();
+        for (let i = -13; i < 13; i++) {
+          const day = new Date(year, month + i, date)
+          const parts = day.toISOString().split("-")
+          const date_str = parts[0] + "-" + parts[1]
+          dates.push(`/api/v1/calendar/${date_str}`);
+        }
+        return dates;
+      }
+
+      const psalm_routes = function () {
+        const routes = ['/api/v1/psalms/', '/api/v1/psalms/topics/']
+        for (let i = 1; i < 151; i++) {
+          routes.push(`/api/v1/psalms/${i}`);
+        }
+        return routes;
+      }
+
+      const urls = [
+        'api/v1/available_settings/',
+        '/api/v1/about',
+        '/api/v1/collect_categories/',
+        '/collects',
+        '/api/v1/collects',
+      ].concat(office_routes).concat(calendar_routes()).concat(psalm_routes());
+      return urls;
+    },
+    manageOfflineWorker() {
+      let wb = null;
+      try {
+        wb = new Workbox('/service-worker.js');
+      } catch (e) {
+        console.log(e);
+        return
+      }
+      wb.addEventListener('install', e => {
+        // wb.skipWaiting();
+      });
+
+      const urls = this.getPreLoadAPIEndpoints();
+
+
+      wb.addEventListener('activate', event => {
+
+      });
+      // Register the service worker after event listeners have been added.
+      wb.register();
+    },
   },
 };
 </script>

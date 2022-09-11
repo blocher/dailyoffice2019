@@ -16,4 +16,29 @@ module.exports = {
             }),
         ],
     },
+    pwa: {
+        name: 'Daily Office',
+        themeColor: '#4DBA87',
+        msTileColor: '#000000',
+        appleMobileWebAppCapable: 'yes',
+        appleMobileWebAppStatusBarStyle: 'black',
+        // workboxPluginMode: "InjectManifest",
+        // workboxOptions: {
+        //     // swSrc is required in InjectManifest mode.
+        //     swSrc: "service-worker.js", //path to your own service-worker file
+        //     // ...other Workbox options...
+        // },
+        workboxPluginMode: 'GenerateSW',
+        workboxOptions: {
+            runtimeCaching: [
+                {handler: 'NetworkFirst', urlPattern: new RegExp('.*')},
+            ]
+        }
+    },
+    // devServer: {
+    //     open: process.platform === 'darwin',
+    //     host: '0.0.0.0',
+    //     port: 443,
+    //     https: true,
+    // },
 };

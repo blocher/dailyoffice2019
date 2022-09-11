@@ -46,6 +46,7 @@ import {
 } from "@fortawesome/pro-duotone-svg-icons";
 import VueGtag from "vue-gtag";
 import {faFacebook} from "@fortawesome/free-brands-svg-icons";
+import './registerServiceWorker'
 
 library.add(
     faSun,
