@@ -914,6 +914,13 @@ class CanticleModule(Module):
         return file_to_lines(file)
 
     def get_canticle(self, data):
+        # check if data is a tuple
+        if isinstance(data, tuple):
+            psalter = self.office.settings["psalter"]
+            if str(psalter) == "30":
+                data = data[0]
+            else:
+                data = data[1]
         language_style = self.office.settings["language_style"]
         template = data.template.replace("html", "csv")
         if language_style == "traditional":
@@ -987,7 +994,6 @@ class EPSecondCanticle(CanticleModule):
     def get_lines(self):
 
         rotation = self.office.settings["canticle_rotation"]
-
         if rotation == "1979":
             data = BCP1979CanticleTable().get_ep_canticle_2(self.office.date)
         elif rotation == "2011":
