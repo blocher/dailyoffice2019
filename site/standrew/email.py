@@ -355,18 +355,18 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
         tuesday_number = self.get_tuesday_number()
         if tuesday_number in (1, 3):
             results = [
-                {
-                    "title": "Morningside Cell Meeting",
-                    "date": self.get_tuesday(),
-                    "time": "6 to 8 pm",
-                    "zoom_link": ZOOM_LINK,
-                    "optional": False,
-                    "leader": self.get_leader("morningside"),
-                    "notes": self.get_notes(),
-                    "meeting": "morningside",
-                    "to_addresses": self.get_morningside_to_addresses(),
-                    "extra_fields": self.cell_meeting_data("morningside", self.get_tuesday()),
-                },
+                # {
+                #     "title": "Morningside Cell Meeting",
+                #     "date": self.get_tuesday(),
+                #     "time": "6 to 8 pm",
+                #     "zoom_link": ZOOM_LINK,
+                #     "optional": False,
+                #     "leader": self.get_leader("morningside"),
+                #     "notes": self.get_notes(),
+                #     "meeting": "morningside",
+                #     "to_addresses": self.get_morningside_to_addresses(),
+                #     "extra_fields": self.cell_meeting_data("morningside", self.get_tuesday()),
+                # },
                 {
                     "title": self.get_ohara_title(),
                     "date": self.get_tuesday(),

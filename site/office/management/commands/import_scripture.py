@@ -1,3 +1,5 @@
+import re
+
 import scriptures
 from django.core.management.base import BaseCommand
 
@@ -23,15 +25,40 @@ class Command(BaseCommand):
         except:
             return None
 
+    def split_multiple_chapter_passage(self, passage):
+        passage = passage.split("-")
+
     def break_apart_passages(self, original_passage):
-        parts = original_passage.split(":")
-        if len(parts) < 2:
+        if "," not in original_passage:
             return [original_passage]
-        chapter, verses = parts[0], parts[1]
-        verses = verses.split(",")
-        verses = [verse.strip() for verse in verses]
-        passages = [f"{chapter}:{verse}" for verse in verses]
-        return passages
+        book = re.sub("[^A-Za-z ]", "", original_passage)
+        book = re.sub(" +", " ", book.strip())
+        chapter_verse = re.sub("[^0-9-,:]", "", original_passage)
+        passages = chapter_verse.split(",")
+        citations = []
+        chapter = None
+        for passage in passages:
+            passage = passage.strip()
+            if not passage:
+                continue
+
+            count = passage.count(":")
+            if count > 1:
+                citations.append(f"{book} {passage}")
+            else:
+                if ":" in passage:
+                    try:
+                        chapter, verses = passage.split(":")
+                    except ValueError as e:
+                        print("ERROR", original_passage)
+                        raise (e)
+                else:
+                    verses = passage
+                if chapter:
+                    citations.append(f"{book} {chapter}:{verses}")
+                else:
+                    citations.append(f"{book} {verses}")
+        return citations
 
     def get_passages(self, passage, translation="esv"):
         final = []
