@@ -306,7 +306,7 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
     def tuesday_subjects(self):
         tuesday_number = self.get_tuesday_number()
         if tuesday_number in (1, 3):
-            return ["Cell meetings (Tue)"]
+            return ["Full group meeting (Tue)"]
         if tuesday_number == 2:
             return ["Men's group (Tue)"]
         if tuesday_number == 4:
@@ -328,7 +328,7 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
         date = self.get_tuesday()
         if date.month == 11 and date.year == 2021 and date.day == 16:
             return "Combined Cell Meeting"
-        return "O'Hara Cell Meeting"
+        return "St. Andrew's Full Group Meeting (in O'Hara)"
 
     def get_ohara_meeting(self):
         date = self.get_tuesday()
