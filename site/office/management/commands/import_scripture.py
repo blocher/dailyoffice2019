@@ -12,11 +12,6 @@ SCOPES = "https://www.googleapis.com/auth/spreadsheets.readonly"
 
 
 class Command(BaseCommand):
-    SHEET_ID = "1s7GqYoy3HC5JD64opdRldAAi3mwsSQxtC6ZzzF2yUAg"
-    RANGE_NAME = "OfficeDates!A3:K368"
-
-    HOLY_DAY_RANGE_NAME = "OfficeDatesHolyDays!A3:G9"
-
     def parse_passage(self, passage):
 
         try:
@@ -24,9 +19,6 @@ class Command(BaseCommand):
             return scriptures.reference_to_string(*passage)
         except:
             return None
-
-    def split_multiple_chapter_passage(self, passage):
-        passage = passage.split("-")
 
     def break_apart_passages(self, original_passage):
         if "," not in original_passage:
@@ -75,7 +67,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         days = OfficeDay.objects.all()
-        translations = ["esv", "rsv", "kjv"]
+        translations = ["esv", "rsv", "kjv", "nrsvce", "nabre", "niv", "nasb"]
         texts = [
             "mp_reading_1",
             "mp_reading_2",
@@ -92,6 +84,7 @@ class Command(BaseCommand):
                     scripture = Scripture.objects.get_or_create(passage=passage)[0]
                     for translation in translations:
                         existing = getattr(scripture, translation)
+                        self.get_passages(passage, translation)
                         if not existing:
                             setattr(scripture, translation, self.get_passages(passage, translation))
                     scripture.save()

@@ -805,7 +805,7 @@ class ReadingModule(Module):
         text = self.office.readings[passage]
         text = getattr(text, translation)
         if text == "-":
-            text = getattr(text, "rsv")
+            text = getattr(text, "nrsvce")
         closing = self.closing(getattr(self.office.office_readings, "{}_testament".format(field)))
         closing_response = self.closing_response(getattr(self.office.office_readings, "{}_testament".format(field)))
         testament = getattr(self.office.office_readings, "{}_testament".format(field))

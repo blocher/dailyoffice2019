@@ -273,3 +273,7 @@ class Scripture(BaseModel):
     esv = models.TextField(blank=True, null=True)
     kjv = models.TextField(blank=True, null=True)
     rsv = models.TextField(blank=True, null=True)
+    nrsvce = models.TextField(blank=True, null=True)
+    nabre = models.TextField(blank=True, null=True)
+    niv = models.TextField(blank=True, null=True)
+    nasb = models.TextField(blank=True, null=True)
