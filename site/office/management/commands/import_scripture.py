@@ -84,9 +84,10 @@ class Command(BaseCommand):
                     scripture = Scripture.objects.get_or_create(passage=passage)[0]
                     for translation in translations:
                         existing = getattr(scripture, translation)
-                        self.get_passages(passage, translation)
                         if not existing:
-                            setattr(scripture, translation, self.get_passages(passage, translation))
+                            text = self.get_passages(passage, translation)
+                            print(text)
+                            setattr(scripture, translation, text)
                     scripture.save()
 
         mass_readings = MassReading.objects.all()
