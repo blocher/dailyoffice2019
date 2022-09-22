@@ -57,8 +57,13 @@
         <div class="mt-1 sm:float-right">
           <el-radio-group v-model="translation" size="small" @change="changeTranslation()">
             <el-radio-button size="small" name="translation" label="esv">ESV</el-radio-button>
-            <el-radio-button size="small" name="translation" label="rsv">RSV</el-radio-button>
             <el-radio-button size="small" name="translation" label="kjv">KJV</el-radio-button>
+            <el-radio-button size="small" name="translation" label="rsv">RSV</el-radio-button>
+
+            <el-radio-button size="small" name="translation" label="nasb">NASB</el-radio-button>
+            <el-radio-button size="small" name="translation" label="niv">NIV</el-radio-button>
+            <el-radio-button size="small" name="translation" label="nrsvce">NRSV</el-radio-button>
+            <el-radio-button size="small" name="translation" label="nabre">NAB-RE</el-radio-button>
           </el-radio-group>
         </div>
 
