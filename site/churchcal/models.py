@@ -284,6 +284,7 @@ class SanctoraleBasedCommemoration(Commemoration):
     number_after = models.SmallIntegerField()
     month_after = models.PositiveSmallIntegerField()
     day_after = models.PositiveSmallIntegerField()
+    additional_days_after = models.PositiveSmallIntegerField(default=0)
 
     def can_occur_in_year(self, advent_year):
         result = super().can_occur_in_year(advent_year)
@@ -309,13 +310,18 @@ class SanctoraleBasedCommemoration(Commemoration):
         if early_year >= advent_start:
             return early_year
 
-        return weekday_after(
+        return_date = weekday_after(
             weekday=self.weekday,
             month=self.month_after,
             day=self.day_after,
             year=advent_year + 1,
             number_after=self.number_after,
         )
+
+        if self.additional_days_after:
+            return_date += timedelta(days=self.additional_days_after)
+
+        return return_date
 
 
 class TemporaleCommemoration(Commemoration):
