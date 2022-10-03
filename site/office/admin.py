@@ -88,6 +88,7 @@ class CollectAdmin(admin.ModelAdmin):
     extra = 0
 
     list_display = ("title", "order", "collect_type", "attribution")
+    list_filter = ("collect_type", "tags")
 
 
 admin.site.register(AboutItem, AboutItemAdmin)
