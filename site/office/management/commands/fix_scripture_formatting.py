@@ -28,5 +28,5 @@ class Command(BaseCommand):
                 match.string = match.text.replace("Chapter ", "")
             for match in nabre.find_all("span", class_="chapternum"):
                 match.string = match.text.replace("Chapter ", "")
-            passage.nabre = str(nabre)
+            passage.nabre = str(nabre).replace("[", "").replace("]", "")
             passage.save()
