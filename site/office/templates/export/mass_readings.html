@@ -66,7 +66,7 @@
 {% endif %}
 {% if not year %}
     <p><em>Please note: Each link contains many readings and may load slowly. Please be patient.</em></p>
-    <p><strong>All readings (HTML):</strong> <a href="/mass_readings/A">Year A</a> | <a href="mass_readings/B">Year
+    <p><strong>All readings (HTML):</strong> <a href="/mass_readings/A">Year A</a> | <a href="/mass_readings/B">Year
         B</a> |
         <a href="/mass_readings/C">Year C</a></p>
     <p><strong>All readings (Microsoft Word):</strong> <a href="/mass_readings_doc/A">Year A</a> | <a
@@ -122,7 +122,7 @@
     {% for item in items %}
         <span class="pagebreak"></span>
         <h2>{{ item.name }}{% if item.service %} ({{ item.service }}) {% endif %}</h2>
-        {% if item.date_string %} <em>{{ item.date_string }}</em> {% endif %}
+        <p>{% if item.date_string %} <em>{{ item.date_string }}</em> {% endif %}</p>
 
         <p><small>
             {{ item.reading_1_selected_year_passages|striptags }}<br>
