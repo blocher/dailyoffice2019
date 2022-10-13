@@ -59,6 +59,7 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     "mjml",
+    "mathfilters",
     "drf_yasg",
     "corsheaders",
     "ckeditor",
@@ -83,7 +84,6 @@ INSTALLED_APPS = [
     "churchcal",
     "psalter",
     "bible",
-    "mathfilters",
     "meta",
     "office",
     "djrichtextfield",

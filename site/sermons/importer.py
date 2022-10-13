@@ -1,22 +1,19 @@
 import mimetypes
-
-import scriptures
-
-from bible import Passage
-from sermons.models import SermonBiblePassage, SermonLocation, Sermon
-
-from sumy.parsers.plaintext import PlaintextParser
-from sumy.nlp.tokenizers import Tokenizer
-from sumy.summarizers.lsa import LsaSummarizer as Summarizer
-from sumy.nlp.stemmers import Stemmer
-from sumy.utils import get_stop_words
-
-from sermons.text_extractor import TextExtractorFactory
-import datefinder
-import pke
 import zipfile
 
+import datefinder
+import pke
+import scriptures
+from sumy.nlp.stemmers import Stemmer
+from sumy.nlp.tokenizers import Tokenizer
+from sumy.parsers.plaintext import PlaintextParser
+from sumy.summarizers.lsa import LsaSummarizer as Summarizer
+from sumy.utils import get_stop_words
+
+from bible.passage import Passage
+from sermons.models import SermonBiblePassage, SermonLocation, Sermon
 from sermons.text_extractor import FileTypeNotSupportedException
+from sermons.text_extractor import TextExtractorFactory
 
 
 class SermonImporter(object):

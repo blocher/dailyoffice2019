@@ -13,7 +13,7 @@ from icalendar import Calendar, Event
 from meta.views import Meta
 
 from churchcal.calculations import ChurchYear
-from churchcal.models import Season, SanctoraleCommemoration
+from churchcal.models import Season, SanctoraleCommemoration, MassReading
 from office.compline import Compline
 from office.evening_prayer import EveningPrayer
 from office.family_close_of_day import FamilyCloseOfDay
@@ -21,7 +21,7 @@ from office.family_early_evening import FamilyEarlyEvening
 from office.family_midday import FamilyMidday
 from office.family_morning import FamilyMorning
 from office.midday_prayer import MiddayPrayer
-from office.models import AboutItem, UpdateNotice, StandardOfficeDay, HolyDayOfficeDay
+from office.models import AboutItem, UpdateNotice, StandardOfficeDay, HolyDayOfficeDay, LectionaryItem
 from office.morning_prayer import MorningPrayer
 from office.offices import Office
 from office.utils import passage_to_citation, testament_to_closing, testament_to_closing_response
@@ -472,6 +472,67 @@ def calendar(request):
     return HttpResponse(res)
 
 
+def mass_readings_data(year=None, no_gospel=False):
+    items = (
+        LectionaryItem.objects.select_related("sanctorale_commemoration")
+        .order_by("order")
+        .prefetch_related(
+            Prefetch(
+                "commemoration__massreading_set",
+                queryset=MassReading.objects.order_by("order")
+                .select_related("long_scripture", "short_scripture")
+                .all(),
+                to_attr="mass_readings",
+            )
+        )
+        .prefetch_related(
+            Prefetch(
+                "common__massreading_set",
+                queryset=MassReading.objects.order_by("order")
+                .select_related("long_scripture", "short_scripture")
+                .all(),
+                to_attr="mass_readings",
+            )
+        )
+        .prefetch_related(
+            Prefetch(
+                "proper__massreading_set",
+                queryset=MassReading.objects.order_by("order")
+                .select_related("long_scripture", "short_scripture")
+                .all(),
+                to_attr="mass_readings",
+            )
+        )
+        .all()
+    )
+
+    if year:
+        year = year.upper().strip()
+        if year not in ["A", "B", "C"]:
+            year = "A"
+        for item in items:
+            if year == "A":
+                item.selected_year = item.year_a
+                item.reading_1_selected_year_passages = item.reading_1_a_passages
+                item.reading_2_selected_year_passages = item.reading_2_a_passages
+                item.reading_3_selected_year_passages = item.reading_3_a_passages
+                item.reading_4_selected_year_passages = item.reading_4_a_passages
+            if year == "B":
+                item.selected_year = item.year_b
+                item.reading_1_selected_year_passages = item.reading_1_b_passages
+                item.reading_2_selected_year_passages = item.reading_2_b_passages
+                item.reading_3_selected_year_passages = item.reading_3_b_passages
+                item.reading_4_selected_year_passages = item.reading_4_b_passages
+            if year == "C":
+                item.selected_year = item.year_c
+                item.reading_1_selected_year_passages = item.reading_1_c_passages
+                item.reading_2_selected_year_passages = item.reading_2_c_passages
+                item.reading_3_selected_year_passages = item.reading_3_c_passages
+                item.reading_4_selected_year_passages = item.reading_4_c_passages
+    gospel = True if not no_gospel else False
+    return {"items": items, "year": year, "gospel": gospel}
+
+
 def readings_data(testament=""):
     commemorations = SanctoraleCommemoration.objects.filter(calendar__year=2019).select_related("rank").all()
 
@@ -547,6 +608,10 @@ def readings(request, testament=""):
     return render(request, "export/export_base.html", readings_data(testament))
 
 
+def mass_readings(request, year=None, no_gospel=False):
+    return render(request, "export/mass_readings.html", mass_readings_data(year, no_gospel))
+
+
 def readings_doc(request, testament=""):
     from docx import Document
     from htmldocx import HtmlToDocx
@@ -584,4 +649,38 @@ def readings_doc(request, testament=""):
     return response
 
 
-# needed for deploy
+def mass_readings_doc(request, year=None, no_gospel=False):
+    from docx import Document
+    from htmldocx import HtmlToDocx
+
+    def normalize_document_styles(doc):
+        for style in document.styles:
+            if hasattr(style, "font"):
+                style.font.name = "Helvetica"
+                style.font.color.rgb = RGBColor(0, 0, 0)
+        return doc
+
+    document = Document()
+    document = normalize_document_styles(document)
+    new_parser = HtmlToDocx()
+
+    html = render_to_string("export/mass_readings.html", mass_readings_data(year, no_gospel))
+    soup = BeautifulSoup(html, "html.parser")
+    for div in soup.find_all("h3", {"class": "reading-heading"}):
+        div.decompose()
+    for div in soup.find_all("p", {"class": "hide-in-doc"}):
+        div.decompose()
+    for div in soup.find_all("table", {"class": "hide-in-doc"}):
+        div.decompose()
+    for div in soup.find_all("a", {"class": "hide-in-doc"}):
+        div.decompose()
+    html = str(soup)
+    html_parts = html.split('<span class="pagebreak"></span>')
+    for part in html_parts:
+        new_parser.add_html_to_document(part.strip(), document)
+        document.add_page_break()
+    response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    response["Content-Disposition"] = "attachment; filename=bcp_2019_sunday_and_holy_day_readings.docx"
+    document.save(response)
+
+    return response

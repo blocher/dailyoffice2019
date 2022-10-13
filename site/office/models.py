@@ -1,11 +1,14 @@
+import datetime
 import re
 from functools import cached_property
 
+from bs4 import BeautifulSoup
 from ckeditor.fields import RichTextField
 from django.db import models
 
 from churchcal.base_models import BaseModel
-from churchcal.models import Commemoration
+from churchcal.models import Commemoration, Proper, Common, SanctoraleCommemoration
+from office.utils import passage_to_citation
 
 
 class OfficeDay(BaseModel):
@@ -277,3 +280,254 @@ class Scripture(BaseModel):
     nabre = models.TextField(blank=True, null=True)
     niv = models.TextField(blank=True, null=True)
     nasb = models.TextField(blank=True, null=True)
+    coverdale = models.TextField(blank=True, null=True)
+    renewed_coverdale = models.TextField(blank=True, null=True)
+
+    @staticmethod
+    def no_headings(markup):
+        soup = BeautifulSoup(markup, "html.parser")
+        for sup in soup.find_all("h1"):
+            sup.decompose()
+        for sup in soup.find_all("h2"):
+            sup.decompose()
+        for div in soup.find_all("h3"):
+            div.decompose()
+        for div in soup.find_all("h4"):
+            div.decompose()
+        for div in soup.find_all("h5"):
+            div.decompose()
+
+        return str(soup)
+
+    @property
+    def esv_no_headings(self):
+        return self.no_headings(self.esv)
+
+    @property
+    def kjv_no_headings(self):
+        return self.no_headings(self.kjv)
+
+    @property
+    def rsv_no_headings(self):
+        return self.no_headings(self.rsv)
+
+    @property
+    def nrsvce_no_headings(self):
+        return self.no_headings(self.nrsvce)
+
+    @property
+    def nabre_no_headings(self):
+        return self.no_headings(self.nabre)
+
+    @property
+    def niv_no_headings(self):
+        return self.no_headings(self.niv)
+
+    @property
+    def nasb_no_headings(self):
+        return self.no_headings(self.nasb)
+
+    @property
+    def coverdale_no_headings(self):
+        return self.no_headings(self.coverdale)
+
+    @property
+    def renewed_coverdale_no_headings(self):
+        return self.no_headings(self.renewed_coverdale)
+
+    @property
+    def apocrypha(self):
+        return self.esv == "-"
+
+    @property
+    def ending_call(self):
+        if "Psalm" in self.passage:
+            return ""
+        first_word = self.passage.split(" ")[0]
+        if first_word in ["Matthew", "Mark", "Luke", "John"]:
+            return "The Gospel of the Lord."
+        return "Here ends the reading" if self.apocrypha else "The Word of the Lord"
+
+    @property
+    def ending_response(self):
+        if "Psalm" in self.passage:
+            return ""
+        first_word = self.passage.split(" ")[0]
+        if first_word in ["Matthew", "Mark", "Luke", "John"]:
+            return "Praise to you, Lord Christ."
+        return "" if self.apocrypha else "Thanks be to God"
+
+    @property
+    def citation(self):
+        try:
+            if "Psalm" in self.passage:
+                return ""
+            return passage_to_citation(self.passage, mass=True)
+        except Exception as e:
+            print(e)
+            return "Error"
+
+    @property
+    def initial_response(self):
+        try:
+            first_word = self.passage.split(" ")[0]
+            if first_word in ["Matthew", "Mark", "Luke", "John"]:
+                return "Glory to you, Lord Christ."
+            return ""
+        except Exception as e:
+            return ""
+
+
+class LectionaryItem(BaseModel):
+    commemoration = models.ForeignKey(Commemoration, on_delete=models.SET_NULL, null=True, blank=True)
+    sanctorale_commemoration = models.ForeignKey(
+        SanctoraleCommemoration,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="sanctorale_lectionary_items",
+    )
+    proper = models.ForeignKey(Proper, on_delete=models.SET_NULL, null=True, blank=True)
+    common = models.ForeignKey(Common, on_delete=models.SET_NULL, null=True, blank=True)
+    order = models.PositiveSmallIntegerField(default=0)
+    service = models.CharField(max_length=255)
+
+    @cached_property
+    def name(self):
+        if self.commemoration:
+            return self.commemoration.name
+        if self.proper:
+            return f"Proper {self.proper.number}"
+        if self.common:
+            return self.common.name
+        return "Lectionary Entry"
+
+    @cached_property
+    def name_and_service(self):
+        if self.service:
+            return f"{self.name} ({self.service})"
+        return self.name
+
+    @cached_property
+    def mass_readings(self):
+        if self.commemoration:
+            mass_readings = self.commemoration.mass_readings
+            return [mass_reading for mass_reading in mass_readings if mass_reading.service == self.service]
+        if self.proper:
+            return self.proper.mass_readings
+        if self.common:
+            return self.common.mass_readings
+
+    def mass_readings_by_year(self, year="A"):
+        return [reading for reading in self.mass_readings if year in reading.years]
+
+    @cached_property
+    def year_a(self):
+        return self.mass_readings_by_year("A")
+
+    @cached_property
+    def year_b(self):
+        return self.mass_readings_by_year("B")
+
+    @cached_property
+    def year_c(self):
+        return self.mass_readings_by_year("C")
+
+    @cached_property
+    def date_string(self):
+        if self.sanctorale_commemoration:
+            date_string = datetime.datetime(
+                2019, self.sanctorale_commemoration.month, self.sanctorale_commemoration.day
+            )
+            return date_string.strftime("%B %-d")
+        if self.proper:
+            start = self.proper.start_date.strftime("%B %-d")
+            end = self.proper.end_date.strftime("%B %-d")
+            if self.proper.number in [1, 2]:
+                return f"Weekdays following the Sunday from {start} to {end}"
+            return f"Sunday from {start} to {end}"
+        return ""
+
+    def year_to_readings(self, year):
+        if year.upper() == "B":
+            return self.year_b
+        elif year.upper() == "C":
+            return self.year_c
+        else:
+            return self.year_a
+
+    def combine_short_and_long_passage(self, reading, year):
+        year = year.upper().strip()
+        if not reading.short_scripture:
+            return f'<a href="/mass_readings/{year}/#{self.pk}_{reading.long_scripture.pk}">{reading.long_scripture.passage}</a>'
+        short_passage = re.sub("[a-zA-Z]", "", reading.short_scripture.passage).strip()
+        return f'<a href="/mass_readings/{year}/#{self.pk}_{reading.long_scripture.pk}">{reading.long_scripture.passage} [<em> or, {short_passage}</em> ]</a>'
+
+    def passages_for_year_and_number(self, year, number):
+        readings = self.year_to_readings(year)
+        readings = [
+            self.combine_short_and_long_passage(reading, year)
+            for reading in readings
+            if reading.reading_number == number
+        ]
+        return " <em>or</em> ".join(readings)
+
+    def reading_1_passages(self, year):
+        return self.passages_for_year_and_number(year, 1)
+
+    def reading_2_passages(self, year):
+        return self.passages_for_year_and_number(year, 2)
+
+    def reading_3_passages(self, year):
+        return self.passages_for_year_and_number(year, 3)
+
+    def reading_4_passages(self, year):
+        return self.passages_for_year_and_number(year, 4)
+
+    @cached_property
+    def reading_1_a_passages(self):
+        return self.reading_1_passages(year="A")
+
+    @cached_property
+    def reading_2_a_passages(self):
+        return self.reading_2_passages(year="A")
+
+    @cached_property
+    def reading_3_a_passages(self):
+        return self.reading_3_passages(year="A")
+
+    @cached_property
+    def reading_4_a_passages(self):
+        return self.reading_4_passages(year="A")
+
+    @cached_property
+    def reading_1_b_passages(self):
+        return self.reading_1_passages(year="B")
+
+    @cached_property
+    def reading_2_b_passages(self):
+        return self.reading_2_passages(year="B")
+
+    @cached_property
+    def reading_3_b_passages(self):
+        return self.reading_3_passages(year="B")
+
+    @cached_property
+    def reading_4_b_passages(self):
+        return self.reading_4_passages(year="B")
+
+    @cached_property
+    def reading_1_c_passages(self):
+        return self.reading_1_passages(year="C")
+
+    @cached_property
+    def reading_2_c_passages(self):
+        return self.reading_2_passages(year="C")
+
+    @cached_property
+    def reading_3_c_passages(self):
+        return self.reading_3_passages(year="C")
+
+    @cached_property
+    def reading_4_c_passages(self):
+        return self.reading_4_passages(year="C")

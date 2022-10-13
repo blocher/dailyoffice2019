@@ -1,5 +1,6 @@
 <template>
   <p :class="indentClass">
+    <sup v-if="line.preface">{{ line.preface }}&nbsp;</sup>
     <strong>{{ line.content.replace(" *", "*").replace("*", "&nbsp;*") }}</strong>
   </p>
 </template>

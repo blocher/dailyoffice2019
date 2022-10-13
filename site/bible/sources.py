@@ -6,6 +6,8 @@ import scriptures
 from bs4 import BeautifulSoup
 from html2text import html2text
 
+from psalter.utils import get_psalms
+
 
 class BibleSource(ABC):
     @abstractmethod
@@ -232,3 +234,45 @@ class OremusBibleBrowser(BibleSource):
 
     def _set_headings(self):
         pass
+
+
+class BCPPsalter(BibleSource):
+    def __init__(self, passage, version="renewed_coveraale"):
+
+        self.version = version
+
+        # self.reference = scriptures.extract(passage)[0]
+        # self.passage = scriptures.reference_to_string(*self.reference)
+        self.passage = passage
+        self.html = self.get_markup()
+        self.text = self._set_text()
+        print(self.html)
+
+    def get_html(self):
+        return self.html
+
+    def get_text(self):
+        return self.text
+
+    def get_headings(self):
+        return []
+
+    def get_markup(self, passage=None):
+        passage = passage if passage else self.passage
+        if "Psalms" not in passage:
+            return "-"
+        passage = passage.replace("Psalms", "").strip()
+        if self.version == "renewed_coverdale":
+            return get_psalms(passage, simplified_citations=True, headings="none")
+        elif self.version == "coverdale":
+            return get_psalms(passage, language_style="traditional", simplified_citations=True, headings="none")
+        return "-"
+
+    def _set_text(self):
+        try:
+            str = html2text(self.html).replace("\n", " ").replace("/\s\s+/", " ").strip()
+            str = re.sub(" +", " ", str)
+            return str
+        except Exception as e:
+            print(e)
+            return None

@@ -72,7 +72,7 @@ books = {
     "Judith": ("the Book of Judith", False, "DC"),
     "Additions to Esther": ("the Book of Esther", False, "DC"),
     "Wisdom": ("the Wisdom of Solomon", False, "DC"),
-    "Sirach": ("Ecclesiasticus, the Wisdom of Jesus Son of Sirach ", False, "DC"),
+    "Sirach": ("Ecclesiasticus, the Wisdom of Jesus Son of Sirach", False, "DC"),
     "Baruch": ("the Book of Baruch the Prophet", False, "DC"),
     "Letter of Jeremiah": ("the Letter of Jeremiah", True, "DC"),
     "Prayer of Azariah": ("Prayer of Azariah", True, "DC"),
@@ -86,7 +86,7 @@ books = {
 }
 
 
-def passage_to_citation(passage):
+def passage_to_citation(passage, mass=False):
     if not passage:
         return None
 
@@ -103,11 +103,13 @@ def passage_to_citation(passage):
     if book_name == "Song of Solomon":
         book_name = "Song of Songs"
 
-    book_name = passage[0]
     if book_name == "Revelation of Jesus Christ":
         book_name = "Revelation"
 
     book = books[book_name]
+
+    if book_name in ["Matthew", "Mark", "Luke", "John"] and mass:
+        return book[0].replace("the ", "The Holy ")
 
     if book[1]:  # 1 chapter book
         return "A reading from {}, beginning with the {} verse".format(book[0], num2words(passage[2], ordinal=True))

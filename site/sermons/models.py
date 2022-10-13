@@ -1,22 +1,12 @@
-import scriptures
 from address.models import AddressField
+from array_tags.fields import TagField as ArrayField
+from array_tags.managers import TagQuerySet as ArrayQuerySet
 from django.db import models
 from django.utils.functional import cached_property
-from website.models import UUIDModel
-import mammoth
-from rake_nltk import Rake
-
-from taggit.managers import TaggableManager
-import docx
-import sumy
 from djrichtextfield.models import RichTextField
 
 from bible import BibleVersions
-
-from bible import Passage
-
-from array_tags.fields import TagField as ArrayField
-from array_tags.managers import TagQuerySet as ArrayQuerySet
+from website.models import UUIDModel
 
 
 class Sermon(UUIDModel):
@@ -47,7 +37,6 @@ class Sermon(UUIDModel):
     # tags = TaggableManager()
 
     def save(self, *args, **kwargs):
-
         self.auto_summary = self.getSummary()
         return super().save(*args, **kwargs)
 
@@ -56,7 +45,6 @@ class Sermon(UUIDModel):
 
 
 class SermonDateTime(UUIDModel):
-
     date_and_time_given = models.DateTimeField(verbose_name="Date Given", help_text="Date and Time Given", null=False)
     sermon = models.ForeignKey("Sermon", verbose_name="Sermon", on_delete=models.CASCADE, null=False)
     primary = models.BooleanField(
@@ -67,7 +55,6 @@ class SermonDateTime(UUIDModel):
 
 
 class SermonBiblePassage(UUIDModel):
-
     UNKNOWN = 0
     PROPHECY = 1
     PSALM = 2
@@ -97,7 +84,6 @@ class SermonBiblePassage(UUIDModel):
 
 
 class SermonLocation(UUIDModel):
-
     name = models.CharField(max_length=255, blank=False, null=False)
     address = AddressField(blank=True, null=True, default="", on_delete=models.SET_NULL)
     website = models.URLField(blank=True, null=True)

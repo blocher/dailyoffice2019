@@ -1,6 +1,6 @@
 <template>
   <p v-if="!line.extra_space_before" :class="indentClass">
-    <sup v-if="line.preface">{{ line.preface }}</sup>
+    <sup v-if="line.preface">{{ line.preface }}&nbsp;</sup>
     {{ line.content.replace(" *", "*").replace("*", "&nbsp;*") }}
   </p>
   <p

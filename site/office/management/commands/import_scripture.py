@@ -3,7 +3,7 @@ import re
 import scriptures
 from django.core.management.base import BaseCommand
 
-from bible import Passage
+from bible.passage import Passage
 from bible.sources import PassageNotFoundException
 from churchcal.models import MassReading
 from office.models import OfficeDay, Scripture
@@ -53,10 +53,13 @@ class Command(BaseCommand):
         return citations
 
     def get_passages(self, passage, translation="esv"):
+        if "Psalm" not in passage:
+            return
         final = []
         passages = self.break_apart_passages(passage)
         for passage in passages:
-            passage = self.parse_passage(passage)
+            if "Psalms" not in passage:
+                passage = self.parse_passage(passage)
             try:
                 result = Passage(passage, source=translation).html
                 final.append(result.strip())
@@ -67,7 +70,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         days = OfficeDay.objects.all()
-        translations = ["esv", "rsv", "kjv", "nrsvce", "nabre", "niv", "nasb"]
+        translations = ["esv", "rsv", "kjv", "nrsvce", "nabre", "niv", "nasb", "coverdale", "renewed_coverdale"]
         texts = [
             "mp_reading_1",
             "mp_reading_2",
@@ -86,7 +89,6 @@ class Command(BaseCommand):
                         existing = getattr(scripture, translation)
                         if not existing:
                             text = self.get_passages(passage, translation)
-                            print(text)
                             setattr(scripture, translation, text)
                     scripture.save()
 

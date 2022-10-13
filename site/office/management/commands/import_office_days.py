@@ -1,15 +1,13 @@
 import scriptures
-from django.core.management.base import BaseCommand
-
 from django.conf import settings
+from django.core.management.base import BaseCommand
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
+from bible.passage import Passage
 from bible.sources import PassageNotFoundException
 from churchcal.models import Commemoration
 from office.models import StandardOfficeDay, HolyDayOfficeDay
-from bible import Passage
-
 
 SCOPES = "https://www.googleapis.com/auth/spreadsheets.readonly"
 
@@ -27,7 +25,6 @@ def get_psalms(passage):
 
 
 class Command(BaseCommand):
-
     SHEET_ID = "1s7GqYoy3HC5JD64opdRldAAi3mwsSQxtC6ZzzF2yUAg"
     RANGE_NAME = "OfficeDates!A3:K368"
 

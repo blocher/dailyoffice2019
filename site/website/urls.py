@@ -22,7 +22,7 @@ from django.contrib import admin
 # from sermons import views as sermon_views
 from django.contrib.sitemaps import Sitemap
 from django.contrib.sitemaps import views
-from django.urls import path, include, re_path
+from django.urls import path, include
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django_distill import distill_path
@@ -33,10 +33,10 @@ from standrew import views as standrew_views
 from standrew.views import MovieCandidateCreate, MovieBallotCreate
 from website.api_urls import urlpatterns as api_urlpatterns
 
+
 # site.site_header = _("Elizabeth Locher's Sermon Archive")
 # site.site_title = _("Elizabeth Locher's Sermon Archive")
 # site.favicon = staticfiles('path/to/favicon')
-from website.api_urls import router_v1
 
 
 def get_about():
@@ -84,7 +84,6 @@ def get_update_notice_types():
 
 
 def get_church_years():
-
     if settings.MODE == "app":
         for year in range(settings.FIRST_BEGINNING_YEAR_APP, settings.LAST_BEGINNING_YEAR_APP + 1):
             yield {"start_year": year, "end_year": year + 1}
@@ -389,7 +388,6 @@ sitemaps = {
 
 
 def get_distill_sitemap():
-
     yield None
 
 
@@ -513,6 +511,20 @@ urlpatterns = [
     distill_path("privacy-policy/", office_views.privacy_policy, name="privacy_policy", distill_func=get_none),
     distill_path("dailyoffice.ics", office_views.calendar, name="calendar", distill_func=get_none),
     path("readings/", office_views.readings, name="readings"),
+    path("mass_readings/", office_views.mass_readings, name="mass_readings"),
+    path("mass_readings/<str:year>/", office_views.mass_readings, name="mass_readings_with_year"),
+    path(
+        "mass_readings/<str:year>/<str:no_gospel>/",
+        office_views.mass_readings,
+        name="mass_readings_with_year_no_gospel",
+    ),
+    path("mass_readings/", office_views.mass_readings_doc, name="mass_readings_doc"),
+    path("mass_readings_doc/<str:year>/", office_views.mass_readings_doc, name="mass_readings_doc_with_year"),
+    path(
+        "mass_readings_doc/<str:year>/<str:no_gospel>/",
+        office_views.mass_readings_doc,
+        name="mass_readings_doc_with_year_no_gospel",
+    ),
     path("readings/<str:testament>/", office_views.readings, name="readings_by_testament"),
     path("readings_doc/", office_views.readings_doc, name="readings_doc"),
     path("readings_doc/<str:testament>/", office_views.readings_doc, name="readings_doc_by_testament"),

@@ -1,0 +1,164 @@
+{% load static %}
+<!DOCTYPE html>
+<html id="html">
+<head>
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+    <style>
+        body {
+            max-width: 70rem;
+            padding: 2rem;
+            margin: auto;
+            font-family: "Helvetica", "Arial", sans-serif;
+            line-height: 1.5;
+            color: #555;
+        }
+
+        h1 {
+            margin: .5rem 0;
+            padding-top: .5rem;
+        }
+
+        h2, h3, h4, h5 {
+            margin: .1rem 0;
+        }
+
+        h1, h2, h3, h4, h5, strong {
+            color: #333;
+        }
+
+        .reading-heading {
+            display: none;
+        }
+
+        @media print {
+            .pagebreak {
+                page-break-after: always;
+            }
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        tr, td {
+            vertical-align: top;
+            font-size: .75rem;
+            border: solid black 1px;
+            padding: 10px;
+            margin: 0;
+        }
+
+        th {
+            text-align: left;
+        }
+
+        div.spacer {
+            height: 1rem;
+        }
+
+    </style>
+</head>
+<body id="body">
+<h1 id="table-of-contents">Sunday and Holy Day Readings <small>The Book of Common Prayer, 2019</small></h1>
+{% if year %}
+    <h2>Year {{ year }}</h2>
+    <hr>
+{% endif %}
+{% if not year %}
+    <p><em>Please note: Each link contains many readings and may load slowly. Please be patient.</em></p>
+    <p><strong>All readings (HTML):</strong> <a href="/mass_readings/A">Year A</a> | <a href="mass_readings/B">Year
+        B</a> |
+        <a href="/mass_readings/C">Year C</a></p>
+    <p><strong>All readings (Microsoft Word):</strong> <a href="/mass_readings_doc/A">Year A</a> | <a
+            href="/mass_readings_doc/B">Year B</a> |
+        <a href="/mass_readings_doc/C">Year C</a></p>
+    <p><strong>All readings except Gospels (HTML):</strong> <a href="/mass_readings/A/no_gospels">Year A</a> | <a
+            href="mass_readings/B/no_gospels">Year
+        B</a> |
+        <a href="/mass_readings/C/no_gospels">Year C</a></p>
+    <p><strong>All readings except Gospels(Microsoft Word):</strong> <a href="/mass_readings_doc/A/no_gospels">Year
+        A</a> | <a
+            href="/mass_readings_doc/B/no_gospels">Year B</a> |
+        <a href="/mass_readings_doc/C/no_gospels">Year C</a></p>
+    <table class="hide-in-doc">
+        <tr>
+            <th>Name</th>
+            <th>Year A</th>
+            <th>Year B</th>
+            <th>Year C</th>
+        </tr>
+
+        {% for item in items %}
+            <tr>
+                <td>
+                    <strong>{{ item.name }}</strong>{% if item.service %} ({{ item.service }}){% endif %}
+                    {% if item.date_string %}<em>{{ item.date_string }}</em>{% endif %}
+                </td>
+                <td>
+                    {{ item.reading_1_a_passages|safe }}<br>
+                    {{ item.reading_2_a_passages|safe }}<br>
+                    {{ item.reading_3_a_passages|safe }}<br>
+                    {{ item.reading_4_a_passages|safe }}
+                </td>
+                <td>
+                    {{ item.reading_1_b_passages|safe }}<br>
+                    {{ item.reading_2_b_passages|safe }}<br>
+                    {{ item.reading_3_b_passages|safe }}<br>
+                    {{ item.reading_4_b_passages|safe }}
+                </td>
+                <td>
+                    {{ item.reading_1_c_passages|safe }}<br>
+                    {{ item.reading_2_c_passages|safe }}<br>
+                    {{ item.reading_3_c_passages|safe }}<br>
+                    {{ item.reading_4_c_passages|safe }}
+                </td>
+            </tr>
+        {% endfor %}
+
+
+    </table>
+{% endif %}
+{% if year %}
+    {% for item in items %}
+        <span class="pagebreak"></span>
+        <h2>{{ item.name }}{% if item.service %} ({{ item.service }}) {% endif %}</h2>
+        {% if item.date_string %} <em>{{ item.date_string }}</em> {% endif %}
+
+        <p><small>
+            {{ item.reading_1_selected_year_passages|striptags }}<br>
+            {{ item.reading_2_selected_year_passages|striptags }}<br>
+            {{ item.reading_3_selected_year_passages|striptags }}<br>
+            {% if gospel %}
+                {{ item.reading_4_selected_year_passages|striptags }}<br>
+            {% endif %}
+        </small></p>
+
+        <div class="spacer"></div>
+        {% for reading in item.selected_year %}
+            {% if gospel or reading.reading_number != 4 %}
+                <h3 id="{{ item.pk }}_{{ reading.long_scripture.pk }}">{{ reading.long_scripture.passage }}</h3>
+                {% if reading.long_scripture.citation %}
+                    <p><em>Reader:</em> {{ reading.long_scripture.citation }}</p>
+                {% endif %}
+                {% if reading.long_scripture.initial_response %}
+                    <p><em>Congregation:</em> <strong>{{ reading.long_scripture.initial_response }}</strong></p>
+                {% endif %}
+                {% if "Psalm" in reading.long_scripture.passage %}
+                    <p>{{ reading.long_scripture.renewed_coverdale_no_headings|safe }} <em>(BCP 2019)</em></p>
+                {% elif reading.long_scripture.apocrypha %}
+                    <p>{{ reading.long_scripture.nrsvce_no_headings|safe }} <em>(NRSV-CE)</em></p>
+                {% else %}
+                    <p>{{ reading.long_scripture.esv_no_headings|safe }} <em>(ESV)</em></p>
+                {% endif %}
+                {% if reading.long_scripture.ending_call %}
+                    <p><em>Reader:</em> {{ reading.long_scripture.ending_call }}</p>
+                {% endif %}
+                {% if reading.long_scripture.ending_response %}
+                    <p><em>Congregation:</em> <strong>{{ reading.long_scripture.ending_response }}</strong></p>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+{% endif %}
+</body>
+</html>
