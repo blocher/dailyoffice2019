@@ -1183,13 +1183,14 @@ class AdditionalCollects(Module):
     def get_weekly_collect(self):
 
         lines = []
-        print(self.pick_weekly_collect())
-        collects = [self.pick_weekly_collect()] + [self.pick_mission_collect()] + self.get_extra_collects()
+        weekly_collect = self.pick_weekly_collect()
+        weekly_collect["weekly"] = True
+        collects = [weekly_collect] + [self.pick_mission_collect()] + self.get_extra_collects()
         language_style = self.office.settings["language_style"]
         for collect in collects:
             text = collect["traditional"] if language_style == "traditional" else collect["contemporary"]
             lines.append(Line(collect["title"], "heading"))
-            if collect["title"] != "A Prayer for Mission":
+            if "weekly" in collect.keys() and collect["weekly"]:
                 lines.append(Line(self.office.date.date.strftime("%A"), "subheading"))
             lines.append(Line(text, "leader"))
             lines.append(Line("Amen.", "congregation"))
