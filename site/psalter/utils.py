@@ -113,7 +113,6 @@ def psalm_html(
     elif heading:
         html = html + format_html("<h3>Psalm {}</h3>", citation)
         html = html + format_html("<h4>{}</h4>", verses[0].psalm.latin_title)
-    print("headings", headings)
     for i, verse in enumerate(verses):
         if headings == "half_verse":
             html = html + format_html(
@@ -138,7 +137,6 @@ def psalm_html(
         else:  # whole_verse
 
             if (i % 2) == 0:
-                print("even", i)
                 html = html + format_html(
                     "<p class='hanging-indent'><sup class='versenum'>{}</sup> {}<span class='asterisk'>*A</span> </p>",
                     verse.number,
@@ -149,7 +147,6 @@ def psalm_html(
                     verse.second_half_tle if language_style == "traditional" else verse.second_half,
                 )
             else:
-                print("odd", i)
                 html = html + format_html(
                     "<p class='hanging-indent'><sup class='versenum'>{}</sup> <strong>{}</strong> <span class='asterisk'>*</span> </p>",
                     verse.number,

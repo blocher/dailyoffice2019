@@ -198,6 +198,8 @@ export default {
           today_str +
           "?" +
           queryString
+          + "&extra_collects="
+          + this.extraCollects()
       );
     } catch (e) {
       this.error =
@@ -225,6 +227,18 @@ export default {
     displayFontSize(value) {
       return `${value}px`;
     },
+    extraCollects() {
+      if (this.serviceType != "office") {
+        return ""
+      }
+      const full_office_name = this.office.replace("_", " ").toLowerCase().split(' ').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join(' ');
+      const extraCollects = JSON.parse(localStorage.getItem('extraCollects')) || "";
+      if (!extraCollects) {
+        return ""
+      }
+      const office_extra_collects = extraCollects[full_office_name].join(",")
+      return office_extra_collects
+    }
   },
 };
 </script>

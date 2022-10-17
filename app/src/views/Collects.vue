@@ -1,5 +1,4 @@
 <template>
-
   <div class="small-container">
     <div class="about">
       <Loading v-if="loading"/>
@@ -40,19 +39,7 @@
           <p class="text-center"><em>There are no collects that match your search terms and filters.</em></p>
         </div>
 
-        <div
-            v-for="collect in displayedCollects" :key="collect.uuid"
-        >
-          <h3><span v-if="collect.number">{{ collect.number }}. </span>{{ collect.title }}</h3>
-          <div class="text-center py-2">
-            <el-tag v-for="tag in collect.tags" :key="tag.uuid" class="ml-2" type="info">{{ tag.name }}</el-tag>
-          </div>
-          <span v-if="traditional" v-html="collect.traditional_text"/>
-          <span v-if="!traditional" v-html="collect.text"/>
-          <h5>{{ collect.attribution }}</h5>
-
-
-        </div>
+        <Collect v-for="collect in displayedCollects" :key="collect.uuid" :collect=collect :traditional=traditional />
       </div>
     </div>
   </div>
@@ -61,9 +48,10 @@
 <script>
 import Loading from "@/components/Loading";
 import CollectsFilters from "@/components/CollectsFilters";
+import Collect from "@/components/Collect";
 
 export default {
-  components: {Loading, CollectsFilters},
+  components: {Loading, CollectsFilters, Collect},
   data() {
     return {
       collects: null,
@@ -83,7 +71,7 @@ export default {
     }
   },
   async created() {
-    const traditional = localStorage.getItem("tradtionalCollects", false);
+    const traditional = localStorage.getItem("traditionalCollects", false);
     if (traditional == "true" || traditional == true) {
       this.traditional = true;
     } else {
@@ -122,7 +110,7 @@ export default {
   },
   methods: {
     setTraditional() {
-      localStorage.setItem("tradtionalCollects", this.traditional);
+      localStorage.setItem("traditionalCollects", this.traditional);
     },
     formatCollectCategories(categories) {
       return categories.map((category) => {

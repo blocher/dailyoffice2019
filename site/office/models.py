@@ -236,6 +236,18 @@ class AbstractCollect(object):
         self.text = text
         self.traditional_text = traditional_text
 
+    @property
+    def traditional_text_no_tags(self):
+        from office.management.commands.import_collects import do_strip_tags
+
+        return do_strip_tags(self.traditional_text).replace(" Amen.", "")
+
+    @property
+    def text_no_tags(self):
+        from office.management.commands.import_collects import do_strip_tags
+
+        return do_strip_tags(self.text).replace(" Amen.", "")
+
 
 class Collect(BaseModel):
     COLLECT_TYPES = (

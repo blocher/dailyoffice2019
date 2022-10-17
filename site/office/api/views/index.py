@@ -59,9 +59,14 @@ class UpdateNoticeView(TemplateResponseMixin, ListAPIView):
     #     return queryset.all()
 
 
+class Collects:
+    pass
+
+
 class Settings(dict):
     def __init__(self, request):
         settings = self._get_settings(request)
+        settings["extra_collects"] = self._get_extra_collects(request)
         super().__init__(**settings)
 
     def _default_settings(self):
@@ -74,6 +79,19 @@ class Settings(dict):
         )
         defaults = {setting.name: setting.options[0].value for setting in settings}
         return defaults
+
+    def _get_extra_collects(self, request):
+        try:
+            extra_collects = request.query_params.get("extra_collects", "")
+            if not extra_collects:
+                return []
+            extra_collects = extra_collects.split(",")
+            if not extra_collects:
+                return []
+            extra_collects = Collect.objects.filter(pk__in=extra_collects).all()
+        except:
+            return []
+        return extra_collects
 
     def _get_settings(self, request):
         settings = self._default_settings().copy()
@@ -1133,8 +1151,7 @@ class MPCollectOfTheDay(Module):
     def get_collect(self, commemoration):
         style = self.office.settings["language_style"]
         collect = getattr(commemoration, self.attribute)
-        text = collect.traditional_text if style == "traditional" else collect.text
-        text = text.strip().replace("<strong>Amen.</strong>", "").replace("Amen.", "").strip()
+        text = collect.traditional_text_no_tags if style == "traditional" else collect.text_no_tags
         return text
 
     def get_lines(self):
@@ -1142,7 +1159,7 @@ class MPCollectOfTheDay(Module):
             [
                 Line("Collect of the Day", "heading"),
                 Line(commemoration.name, "subheading"),
-                Line(self.get_collect(commemoration), "html"),
+                Line(self.get_collect(commemoration), "leader"),
                 Line("Amen.", "congregation"),
             ]
             for commemoration in getattr(self.office.date, self.commemoration_attribute)
@@ -1166,7 +1183,8 @@ class AdditionalCollects(Module):
     def get_weekly_collect(self):
 
         lines = []
-        collects = [self.pick_weekly_collect()] + [self.pick_mission_collect()]
+        print(self.pick_weekly_collect())
+        collects = [self.pick_weekly_collect()] + [self.pick_mission_collect()] + self.get_extra_collects()
         language_style = self.office.settings["language_style"]
         for collect in collects:
             text = collect["traditional"] if language_style == "traditional" else collect["contemporary"]
@@ -1182,7 +1200,7 @@ class AdditionalCollects(Module):
         lines = []
         language_style = self.office.settings["language_style"]
 
-        for collect in self.pick_fixed_collects() + (self.pick_mission_collect(),):
+        for collect in self.pick_fixed_collects() + (self.pick_mission_collect(),) + set(self.get_extra_collects()):
             text = collect["traditional"] if language_style == "traditional" else collect["contemporary"]
             lines.append(Line(collect["title"], "heading"))
             lines.append(Line(text, "leader"))
@@ -1228,6 +1246,20 @@ class AdditionalCollects(Module):
         day_of_year = self.office.date.date.timetuple().tm_yday
         collect_number = day_of_year % 3
         return self.possible_mission_collects[collect_number - 1]
+
+    def get_extra_collects(self):
+        extra_collects = self.office.settings["extra_collects"]
+        if extra_collects:
+            extra_collects = [
+                {
+                    "title": extra_collect.title,
+                    "contemporary": extra_collect.text_no_tags,
+                    "traditional": extra_collect.traditional_text_no_tags,
+                }
+                for extra_collect in extra_collects
+            ]
+            return extra_collects
+        return []
 
 
 class MPAdditionalCollects(AdditionalCollects):
