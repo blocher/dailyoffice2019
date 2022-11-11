@@ -96,9 +96,7 @@ export default {
         data = await this.$http.get(
             `${process.env.VUE_APP_API_URL}api/v1/calendar/${this.year}-${this.month}-${this.day}`
         );
-        console.log(data.status);
       } catch (e) {
-        console.log(e.response);
         if (e.response.status == "404") {
           this.notFound = true;
           return;

@@ -5,8 +5,8 @@
   </div>
   <el-card class="box-card" shadow="never" style="margin:0 0 15px;" body-style="padding:10px;">
     <p><em>Pray during:</em>
-      <el-checkbox-group v-model="checkList" v-on:change="handleCheckChange">
-        <el-checkbox v-for="office in this.offices" :key="office" :label="office"/>
+      <el-checkbox-group v-model="checkList" @change="handleCheckChange">
+        <el-checkbox v-for="office in offices" :key="office" :label="office"/>
       </el-checkbox-group>
     </p>
   </el-card>
@@ -19,19 +19,11 @@
 export default {
   name: "Collect",
   props: ["collect", "traditional"],
-  methods: {
-    handleCheckChange() {
-      const extraCollects = JSON.parse(localStorage.getItem('extraCollects')) || this.defaultDict;
-      console.log(extraCollects)
-      this.offices.forEach((office) => {
-        if (this.checkList.includes(office) && !(extraCollects[office].includes(this.collect.uuid))) {
-          extraCollects[office].push(this.collect.uuid)
-        } else if (!this.checkList.includes(office) && extraCollects[office].includes(this.collect.uuid)) {
-          extraCollects[office].splice(extraCollects[office].indexOf(this.collect.uuid), 1);
-        }
-      });
-      localStorage.setItem('extraCollects', JSON.stringify(extraCollects));
-    },
+  data() {
+    return {
+      checkList: [],
+      offices: ["Morning Prayer", "Midday Prayer", "Evening Prayer", "Compline"],
+    };
   },
   async created() {
     this.defaultDict = {}
@@ -45,11 +37,18 @@ export default {
       }
     });
   },
-  data() {
-    return {
-      checkList: [],
-      offices: ["Morning Prayer", "Midday Prayer", "Evening Prayer", "Compline"],
-    };
+  methods: {
+    handleCheckChange() {
+      const extraCollects = JSON.parse(localStorage.getItem('extraCollects')) || this.defaultDict;
+      this.offices.forEach((office) => {
+        if (this.checkList.includes(office) && !(extraCollects[office].includes(this.collect.uuid))) {
+          extraCollects[office].push(this.collect.uuid)
+        } else if (!this.checkList.includes(office) && extraCollects[office].includes(this.collect.uuid)) {
+          extraCollects[office].splice(extraCollects[office].indexOf(this.collect.uuid), 1);
+        }
+      });
+      localStorage.setItem('extraCollects', JSON.stringify(extraCollects));
+    },
   },
 };
 </script>

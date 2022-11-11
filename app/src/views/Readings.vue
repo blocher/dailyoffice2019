@@ -190,7 +190,6 @@ export default {
     }
     localStorage.setItem('psalms_translation', psalmsTranslation);
     this.psalmsTranslation = psalmsTranslation;
-    console.log('psalmsTranslation', this.psalmsTranslation);
 
     await this.initialize();
 
@@ -301,7 +300,6 @@ export default {
       return link;
     },
     changeService: function (service) {
-      console.log("WHAT", service)
       this.service = service
       const link = this.serviceLink(service)
       history.pushState(
@@ -309,12 +307,10 @@ export default {
           null,
           link
       )
-      console.log("NEW SERVICE", this.service)
       this.setReadingsToShow()
     },
     setReadingsToShow: function () {
       if (this.service) {
-        console.log("SERVICE", this.service)
         let serviceItems = this.services[this.service];
         this.readingsToShow = serviceItems['readings'].map((reading) => {
           return reading;

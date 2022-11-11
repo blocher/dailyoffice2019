@@ -38,12 +38,8 @@ export default {
   mounted() {
     this.resetFontSize()
   },
-  // ready: function () {
-  //   this.resetFontSize();
-  // },
   methods: {
     resetFontSize() {
-      console.log("RESTTING");
       if (localStorage.fontSize) {
         this.fontSize = parseInt(localStorage.fontSize);
       } else {

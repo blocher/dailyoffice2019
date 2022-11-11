@@ -51,7 +51,6 @@ export default {
       await this.$store.commit("initializeSettings", this);
       this.loading = false;
     } catch (e) {
-      console.log(e);
       this.error =
           "There was an error loading the settings. Please try refreshing the page.";
       this.loading = false;

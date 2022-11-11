@@ -110,7 +110,6 @@ export default {
     // this.filterCollects([])
     this.error = false;
     this.loading = false;
-    console.log("readyToSEt");
     this.readyToSetFontSize = true;
 
   },

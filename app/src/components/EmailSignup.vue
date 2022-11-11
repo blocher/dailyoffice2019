@@ -101,8 +101,6 @@ export default {
             this.loading = false;
           })
           .catch((error) => {
-            console.error("There was an error!", error);
-            console.log(error.response);
             try {
               this.error = error.response.data[0];
               this.loading = false;
