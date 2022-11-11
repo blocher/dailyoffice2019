@@ -1566,9 +1566,7 @@ class FamilyMiddayOpeningSentence(Module):
     def get_lines(self):
         setting = self.office.settings["family-opening-sentence"]
         if setting == "family-opening-sentence-fixed":
-            text = (
-                "Blessed be the God and Father of our Lord Jesus Christ, who has blessed us in Christ with every spiritual blessing in the heavenly places.",
-            )
+            text = "Blessed be the God and Father of our Lord Jesus Christ, who has blessed us in Christ with every spiritual blessing in the heavenly places."
             language_style = self.office.settings["language_style"]
             if language_style == "traditional":
                 text = "Blessed be the God and Father of our Lord Jesus Christ, who hath blessed us with all spiritual blessings in heavenly places in Christ."
