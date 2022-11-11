@@ -4,8 +4,10 @@
         :default-active="activeIndex"
         mode="horizontal"
         menu-trigger="click"
-        unique-opened=true,
+        ellipsis=false
         :router="menuRouter"
+        unique-opened=true
+        collapse-transition=false
     >
       <el-sub-menu index="1">
         <template #title>Pray</template>
@@ -81,10 +83,14 @@
         <el-menu-item index="/psalms"> Psalms</el-menu-item>
       </el-sub-menu>
     </el-menu>
+
+
   </el-affix>
   <el-header>
     <Submenu/>
+
   </el-header>
+
 </template>
 
 <script>
@@ -103,7 +109,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped="true" lang="scss">
 .el-menu {
   color: var(--font-color);
   background-color: var(--color-bg);
@@ -113,4 +119,5 @@ export default {
   padding-left: 10px !important;
   font-size: 1.2em;
 }
+
 </style>

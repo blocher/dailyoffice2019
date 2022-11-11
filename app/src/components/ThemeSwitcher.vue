@@ -1,6 +1,12 @@
 <template>
-  <div class="block">
+  <div class="fixed top-3 right-3 z-200">
+    <el-tag class="" size="medium" type="warning">Beta site</el-tag>
+    <br>
+    <small class="float-right"><a href="https://dailyoffice2019.com">Classic site
+      <font-awesome-icon :icon="['fad', 'fa-square-up-right']"/>&nbsp;</a></small>
+  </div>
   <span class="sub-menu-item">
+
     <span class="text-xs">Light</span>&nbsp;
     <el-switch
         v-model="userTheme"
@@ -9,19 +15,10 @@
         inactive-value="light"
     />&nbsp;
     <span class="text-xs">Dark</span>
+    <br/>
+
+
   </span>
-  </div>
-  <div class="leading-tight border p-2 mt-2 inline-block">
-  <span class="sub-menu-item ">
-    <span class="text-xs">Looking for the old version?<br></span>
-    <a
-        href="https://dailyoffice2019.com"
-    >
-      <span class="text-xs">Visit the classic site&nbsp;</span>
-      <font-awesome-icon :icon="['fad', 'fa-square-up-right']"/>&nbsp;
-    </a>
-  </span>
-  </div>
 </template>
 
 <script>
@@ -63,3 +60,15 @@ export default {
   },
 };
 </script>
+
+<style scoped lang="scss">
+
+.z-200 {
+  z-index: 200;
+}
+
+small {
+  font-size: .6rem;
+}
+
+</style>

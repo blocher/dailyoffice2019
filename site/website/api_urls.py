@@ -25,6 +25,7 @@ from office.api.views.resources import (
     AboutViewSet,
     CollectCategoryViewSet,
     ScriptureViewSet,
+    GroupedCollectsViewSet,
 )
 
 schema_view = get_schema_view(
@@ -98,6 +99,11 @@ urlpatterns = [
         r"api/v1/collects",
         CollectsViewSet.as_view({"get": "list"}),
         name="collects_view",
+    ),
+    path(
+        r"api/v1/grouped_collects",
+        GroupedCollectsViewSet.as_view({"get": "list"}),
+        name="grouped_collects_view",
     ),
     path(
         r"api/v1/about",

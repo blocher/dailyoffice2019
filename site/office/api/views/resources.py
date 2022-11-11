@@ -12,6 +12,7 @@ from office.api.serializers import (
     AboutItemSerializer,
     CollectTagCategorySerializer,
     ScriptureSerializer,
+    SourceSerializer,
 )
 from office.models import Collect, AboutItem, CollectTagCategory, CollectTag, Scripture
 from psalter.models import Psalm, PsalmTopicPsalm, PsalmVerse, PsalmTopic
@@ -39,6 +40,58 @@ class CollectsViewSet(ViewSet):
     def list(self, request):
         collects = self.queryset
         serializer = CollectSerializer(collects, many=True)
+        return Response(serializer.data)
+
+
+class GroupedCollectsViewSet(ViewSet):
+    queryset = (
+        Collect.objects.order_by("collect_type__order", "order")
+        .select_related("collect_type")
+        .prefetch_related("tags__collect_tag_category")
+        .all()
+    )
+
+    def list(self, request):
+        collects = self.queryset
+        collect_tags = CollectTag.objects.select_related("collect_tag_category").order_by("order").all()
+        sources = [collect_tag for collect_tag in collect_tags if collect_tag.collect_tag_category.key == "source"]
+
+        themes = list(filter(lambda tag: tag.collect_tag_category.key == "theme", collect_tags))
+        seasons = list(filter(lambda tag: tag.collect_tag_category.key == "season", collect_tags))
+        liturgies = list(filter(lambda tag: tag.collect_tag_category.key in ["liturgy", "liturgical"], collect_tags))
+        print("liturgies", liturgies)
+
+        for source in sources:
+            if source.key == "occasional":
+                source.subcategories = []
+                for theme in themes:
+                    subcategory = theme
+                    subcategory.collects = [
+                        collect for collect in collects if theme in collect.tags.all() and source in collect.tags.all()
+                    ]
+                    source.subcategories.append(subcategory)
+            if source.key == "year":
+                source.subcategories = []
+                for season in seasons:
+                    subcategory = season
+                    subcategory.collects = [
+                        collect
+                        for collect in collects
+                        if season in collect.tags.all() and source in collect.tags.all()
+                    ]
+                    source.subcategories.append(subcategory)
+            if source.key == "liturgical":
+                source.subcategories = []
+                for liturgy in liturgies:
+                    subcategory = liturgy
+                    subcategory.collects = [
+                        collect
+                        for collect in collects
+                        if liturgy in collect.tags.all() and source in collect.tags.all()
+                    ]
+                    source.subcategories.append(subcategory)
+
+        serializer = SourceSerializer(sources, many=True)
         return Response(serializer.data)
 
 

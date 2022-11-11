@@ -1,18 +1,16 @@
 <template>
-  <h3><span v-if="collect.number">{{ collect.number }}. </span>{{ collect.title }}</h3>
-  <div class="text-center py-2">
-    <el-tag v-for="tag in collect.tags" :key="tag.uuid" class="ml-2" type="info">{{ tag.name }}</el-tag>
-  </div>
-  <el-card class="box-card" shadow="never" style="margin:0 0 15px;" body-style="padding:10px;">
-    <p><em>Pray during:</em>
-      <el-checkbox-group v-model="checkList" @change="handleCheckChange">
-        <el-checkbox v-for="office in offices" :key="office" :label="office"/>
-      </el-checkbox-group>
-    </p>
-  </el-card>
-  <span v-if="traditional" v-html="collect.traditional_text"/>
-  <span v-if="!traditional" v-html="collect.text"/>
-  <h5>{{ collect.attribution }}</h5>
+  <el-collapse-item :title="fullTitle(collect)" :name="collect.uuid">
+    <span v-if="traditional" v-html="collect.traditional_text"/>
+    <span v-if="!traditional" v-html="collect.text"/>
+    <h5>{{ collect.attribution }}</h5>
+    <el-card class="box-card" shadow="never" style="margin:0 0 15px;" body-style="padding:10px;">
+      <p><em>Pray during:</em>
+        <el-checkbox-group v-model="checkList" @change="handleCheckChange">
+          <el-checkbox v-for="office in offices" :key="office" :label="office"/>
+        </el-checkbox-group>
+      </p>
+    </el-card>
+  </el-collapse-item>
 </template>
 
 <script>
@@ -49,6 +47,21 @@ export default {
       });
       localStorage.setItem('extraCollects', JSON.stringify(extraCollects));
     },
+    fullTitle(collect) {
+      if (collect.number) {
+        return `${collect.number}. ${collect.title}`
+      } else {
+        return collect.title
+      }
+    }
   },
 };
 </script>
+
+<style lang="scss">
+.el-collapse-item__header.is-active {
+  font-weight: 800 !important;
+}
+
+</style>
+

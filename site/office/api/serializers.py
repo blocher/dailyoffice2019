@@ -70,6 +70,27 @@ class CollectSerializer(serializers.HyperlinkedModelSerializer):
         ]
 
 
+class SubcategorySerializer(serializers.Serializer):
+    uuid = serializers.UUIDField()
+    name = serializers.CharField()
+    key = serializers.CharField()
+    order = serializers.IntegerField()
+    collects = CollectSerializer(many=True, read_only=True)
+
+    class Meta:
+        fields = ["uuid", "key", "name", "order", "collects"]
+
+
+class SourceSerializer(serializers.Serializer):
+    uuid = serializers.UUIDField()
+    key = serializers.CharField()
+    name = serializers.CharField()
+    subcategories = SubcategorySerializer(many=True, read_only=True)
+
+    class Meta:
+        fields = ["uuid", "key", "name", "subcategories"]
+
+
 class PsalmVerseSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = PsalmVerse
