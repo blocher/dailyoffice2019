@@ -1,57 +1,59 @@
 <template>
   <div class="small-container">
-    <div class="about">
-      <Loading v-if="loading"/>
-      <div>
-        <h1>Collects</h1>
-        <CollectsFilters
-            v-if="!loading && !error" :filters="collectCategories"
-            @update:activeFilters="filterCollects"/>
-        <div class="flex justify-center full-width">
-          <el-input
-              v-model="search" class="full-width m-2" placeholder="Filter by word or phrase">
-            <template #prefix>
-              <el-icon class="el-input__icon">
-                <font-awesome-icon :icon="['fad', 'search']"/>
-              </el-icon>
-            </template>
-          </el-input>
-        </div>
-        <div class="flex justify-center full-width">
-          <el-switch
-              v-model="traditional"
-              size="large"
-              active-text="Traditional"
-              inactive-text="Contemporary"
-              class="align-center mt-4"
-              @change="setTraditional"
-          />
-        </div>
+    <Loading v-if="loading"/>
+    <div>
+      <h1>Collects</h1>
+      <FontSizer v-if="readyToSetFontSize"/>
+      <CollectsFilters
+          v-if="!loading && !error" :filters="collectCategories"
+          @update:activeFilters="filterCollects"/>
+      <div class="flex justify-center full-width">
+        <el-input
+            v-model="search" class="full-width m-2" placeholder="Filter by word or phrase">
+          <template #prefix>
+            <el-icon class="el-input__icon">
+              <font-awesome-icon :icon="['fad', 'search']"/>
+            </el-icon>
+          </template>
+        </el-input>
+      </div>
+      <div class="flex justify-center full-width">
+        <el-switch
+            v-model="traditional"
+            size="large"
+            active-text="Traditional"
+            inactive-text="Contemporary"
+            class="align-center mt-4"
+            @change="setTraditional"
+        />
       </div>
       <el-alert
           v-if="error" :title="error"
           type="error"
       />
-      <div v-if="!loading && !error">
-
-        <div v-if="displayedCollects.length < 1" class="h-96">
-          <h3>No results</h3>
-          <p class="text-center"><em>There are no collects that match your search terms and filters.</em></p>
-        </div>
-
-        <Collect v-for="collect in displayedCollects" :key="collect.uuid" :collect=collect :traditional=traditional />
-      </div>
     </div>
   </div>
+  <div v-if="!loading && !error" id="main">
+
+    <div v-if="displayedCollects.length < 1" class="h-96">
+      <h3>No results</h3>
+      <p class="text-center"><em>There are no collects that match your search terms and filters.</em></p>
+    </div>
+
+    <Collect v-for="collect in displayedCollects" :key="collect.uuid" :collect=collect :traditional="traditional"/>
+  </div>
+
 </template>
 
 <script>
 import Loading from "@/components/Loading";
 import CollectsFilters from "@/components/CollectsFilters";
 import Collect from "@/components/Collect";
+import FontSizer from "@/components/FontSizer";
+
 
 export default {
-  components: {Loading, CollectsFilters, Collect},
+  components: {Loading, CollectsFilters, Collect, FontSizer},
   data() {
     return {
       collects: null,
@@ -63,6 +65,7 @@ export default {
       collectCategories: [],
       traditional: false,
       search: "",
+      readyToSetFontSize: false,
     };
   },
   watch: {
@@ -107,6 +110,9 @@ export default {
     // this.filterCollects([])
     this.error = false;
     this.loading = false;
+    console.log("readyToSEt");
+    this.readyToSetFontSize = true;
+
   },
   methods: {
     setTraditional() {

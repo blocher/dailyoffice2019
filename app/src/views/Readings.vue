@@ -13,6 +13,8 @@
           selected-office="readings"
       />
 
+      <FontSizer/>
+
       <h1>Readings</h1>
 
       <el-menu
@@ -43,6 +45,7 @@
         </el-sub-menu>
 
       </el-menu>
+
       <div class="flow-root">
         <div class="mt-1 sm:float-left">
           <el-radio-group
@@ -69,8 +72,9 @@
 
       </div>
 
+
       <Loading v-if="readingsLoading"/>
-      <div class="readingsPanel" :v-if="!readingsLoading">
+      <div id="main" class="readingsPanel" :v-if="!readingsLoading">
         <div class="mt-6">
           <h2 mt-2 pt-0>{{ service }}</h2>
           <CitationGroup
@@ -103,6 +107,7 @@ import OfficeNav from "@/components/OfficeNav";
 import Reading from "@/components/Reading";
 import Collects from "@/components/Collects";
 import CitationGroup from "@/components/CitationGroup";
+import FontSizer from "@/components/FontSizer";
 import PageNotFound from "@/views/PageNotFound";
 
 export default {
@@ -115,6 +120,7 @@ export default {
     Collects,
     CitationGroup,
     PageNotFound,
+    FontSizer,
   },
   props: {},
   data() {

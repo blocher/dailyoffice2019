@@ -1,42 +1,47 @@
 <template>
   <div class="small-container">
     <div class="about">
-      <h1>About this site!</h1>
+      <h1>About this site</h1>
+      <FontSizer v-if="readyToSetFontSize"/>
       <Loading v-if="loading"/>
       <el-alert
           v-if="error" :title="error"
           type="error"
       />
-      <div v-if="!loading && !error">
-        <div v-if="mode=='web'">
-          <div v-for="item in aboutItems" :key="item.uuid">
-            <h3 v-html="item.question_for_web"></h3>
-            <p v-html="item.answer_for_web"></p>
-          </div>
-        </div>
-        <div v-if="mode=='app'">
-          <div v-for="item in aboutItems" :key="item.uuid">
-            <h3 v-html="item.question_for_app"></h3>
-            <p v-html="item.answer_for_app"></p>
-          </div>
-        </div>
+    </div>
+  </div>
+  <div v-if="!loading && !error" id="main">
+    <div v-if="mode=='web'">
+      <div v-for="item in aboutItems" :key="item.uuid">
+        <h3 v-html="item.question_for_web"></h3>
+        <p v-html="item.answer_for_web"></p>
+      </div>
+    </div>
+    <div v-if="mode=='app'">
+      <div v-for="item in aboutItems" :key="item.uuid">
+        <h3 v-html="item.question_for_app"></h3>
+        <p v-html="item.answer_for_app"></p>
       </div>
     </div>
   </div>
+
+
 </template>
 
 <script>
 
 import Loading from "@/components/Loading";
+import FontSizer from "@/components/FontSizer";
 
 export default {
-  components: {Loading},
+  components: {Loading, FontSizer},
   data() {
     return {
       aboutItems: null,
       mode: "web",
       error: null,
       loading: true,
+      readyToSetFontSize: false,
     };
   },
   async created() {
@@ -54,6 +59,7 @@ export default {
     this.aboutItems = data.data;
     this.error = false;
     this.loading = false;
+    this.readyToSetFontSize = true;
   }
 }
 </script>

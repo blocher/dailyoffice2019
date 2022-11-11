@@ -102,3 +102,17 @@ class ScriptureViewSet(ViewSet):
             scripture = self.queryset.filter(Q(passage=kwargs["pk"])).first()
         serializer = ScriptureSerializer(scripture, many=False)
         return Response(serializer.data)
+
+
+class CanticlesViewSet(ViewSet):
+    queryset = Scripture.objects.all()
+    serializer_class = ScriptureSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            uuid_obj = UUID(kwargs["pk"], version=4)
+            scripture = self.queryset.filter(Q(pk=kwargs["pk"])).first()
+        except ValueError:
+            scripture = self.queryset.filter(Q(passage=kwargs["pk"])).first()
+        serializer = ScriptureSerializer(scripture, many=False)
+        return Response(serializer.data)

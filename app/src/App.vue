@@ -1,6 +1,6 @@
 <template>
   <TopMenu/>
-  <div class="main">
+  <div class="main-body">
     <Loading v-if="loading"/>
     <BetaNote/>
     <el-alert
@@ -129,9 +129,7 @@ body {
     border: none !important;
   }
 
-  .main {
-    // max-width: 620px;
-    max-width: 1800px;
+  .main-body {
     display: block;
     text-align: left;
     padding: 1.4em;
@@ -148,6 +146,11 @@ body {
     margin: 0 auto;
     clear: both;
     overflow: visible;
+  }
+
+  #main {
+    max-width: 65ch;
+    margin: 0 auto;
   }
 
   h1,

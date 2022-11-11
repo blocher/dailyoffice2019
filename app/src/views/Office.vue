@@ -1,91 +1,68 @@
 <template>
-  <div class="small-container home office">
-    <PageNotFound v-if="notFound"/>
-    <div v-if="!notFound">
-      <Loading v-if="loading"/>
-
-
-      <CalendarCard
-          v-if="!loading"
-          :office="office"
-          :calendar-date="calendarDate"
-          :card="card"
-          :service-type="serviceType"
-      />
-      <el-alert
-          v-if="error" :title="error"
-          type="error"
-      />
-      <OfficeNav
-          :calendar-date="calendarDate"
-          :selected-office="office"
-          :service-type="serviceType"
-      />
-
-      <div class="font-size-block my-2">
-        <div class="w-1/6 inline-block">
-          <font-awesome-icon
-              :icon="['fad', 'font-case']" size="sm"
-          />
-        </div>
-        <div class="w-2/3 inline-block">
-          <el-slider
-              v-model="fontSize"
-              class="w-3/4"
-              :min="sliderMin"
-              :max="sliderMax"
-              :format-tooltip="displayFontSize"
-              @input="setFontSize"
-          />
-        </div>
-        <div class="w-1/6 inline-block text-right">
-          <font-awesome-icon
-              :icon="['fad', 'font-case']" size="lg"
-          />
-        </div>
+  <div class="home office">
+    <div class="small-container">
+      <PageNotFound v-if="notFound"/>
+      <div v-if="!notFound">
+        <Loading v-if="loading"/>
+        <CalendarCard
+            v-if="!loading"
+            :office="office"
+            :calendar-date="calendarDate"
+            :card="card"
+            :service-type="serviceType"
+        />
+        <el-alert
+            v-if="error" :title="error"
+            type="error"
+        />
+        <OfficeNav
+            :calendar-date="calendarDate"
+            :selected-office="office"
+            :service-type="serviceType"
+        />
+        <FontSizer/>
       </div>
-
-      <div id="office">
+    </div>
+    <div id="main">
+      <div
+          v-for="module in modules" :key="module.name"
+      >
         <div
-            v-for="module in modules" :key="module.name"
+            v-for="line in module.lines" :key="line.content"
         >
-          <div
-              v-for="line in module.lines" :key="line.content"
-          >
-            <OfficeHeading
-                v-if="line.line_type == 'heading'" :line="line"
-            />
-            <OfficeSubheading
-                v-if="line.line_type == 'subheading'"
-                :line="line"
-            />
-            <OfficeCitation
-                v-if="line.line_type == 'citation'" :line="line"
-            />
-            <OfficeHTML
-                v-if="line.line_type == 'html'" :line="line"
-            />
-            <OfficeLeader
-                v-if="line.line_type == 'leader'" :line="line"
-            />
-            <OfficeLeaderDialogue
-                v-if="line.line_type == 'leader_dialogue'"
-                :line="line"
-            />
-            <OfficeCongregation
-                v-if="line.line_type == 'congregation'"
-                :line="line"
-            />
-            <OfficeCongregationDialogue
-                v-if="line.line_type == 'congregation_dialogue'"
-                :line="line"
-            />
+          <OfficeHeading
+              v-if="line.line_type == 'heading'" :line="line"
+          />
+          <OfficeSubheading
+              v-if="line.line_type == 'subheading'"
+              :line="line"
+          />
+          <OfficeCitation
+              v-if="line.line_type == 'citation'" :line="line"
+          />
+          <OfficeHTML
+              v-if="line.line_type == 'html'" :line="line"
+          />
+          <OfficeLeader
+              v-if="line.line_type == 'leader'" :line="line"
+          />
+          <OfficeLeaderDialogue
+              v-if="line.line_type == 'leader_dialogue'"
+              :line="line"
+          />
+          <OfficeCongregation
+              v-if="line.line_type == 'congregation'"
+              :line="line"
+          />
+          <OfficeCongregationDialogue
+              v-if="line.line_type == 'congregation_dialogue'"
+              :line="line"
+          />
 
-            <OfficeRubric
-                v-if="line.line_type == 'rubric'" :line="line"
-            />
-            <OfficeSpacer v-if="line.line_type == 'spacer'"/>
-          </div>
+          <OfficeRubric
+              v-if="line.line_type == 'rubric'" :line="line"
+          />
+          <OfficeSpacer v-if="line.line_type == 'spacer'"/>
         </div>
       </div>
     </div>
@@ -108,6 +85,7 @@ import Loading from "@/components/Loading";
 import CalendarCard from "@/components/CalendarCard";
 import OfficeNav from "@/components/OfficeNav";
 import PageNotFound from "@/views/PageNotFound";
+import FontSizer from "@/components/FontSizer";
 
 export default {
   name: "Office",
@@ -126,6 +104,7 @@ export default {
     CalendarCard,
     OfficeNav,
     PageNotFound,
+    FontSizer,
   },
   props: {
     office: {
@@ -146,19 +125,10 @@ export default {
       loading: true,
       error: false,
       card: "",
-      fontSize: 20,
-      sliderMin: 10,
-      sliderMax: 40,
       notFound: false,
     };
   },
   mounted() {
-    if (localStorage.fontSize) {
-      this.fontSize = parseInt(localStorage.fontSize);
-    } else {
-      localStorage.fontSize = this.fontSize;
-    }
-    this.setFontSize(this.fontSize);
     localStorage.setItem("serviceType", this.serviceType);
   },
 
@@ -213,20 +183,6 @@ export default {
     this.loading = false;
   },
   methods: {
-    setFontSize(value) {
-      const office = document.getElementById("office")
-      if (office) {
-        office.style["font-size"] = `${value}px`;
-        document.querySelectorAll("office p").forEach((p) => {
-          p.style["font-size"] = `${value}px`;
-          p.style["line-height"] = `${value * 1.6}px`;
-        });
-      }
-      localStorage.fontSize = this.fontSize;
-    },
-    displayFontSize(value) {
-      return `${value}px`;
-    },
     extraCollects() {
       if (this.serviceType != "office") {
         return ""
