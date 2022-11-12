@@ -225,4 +225,9 @@ body h4 {
     margin-bottom: 10px;
   }
 }
+
+.el-collapse-item__header {
+  height: auto;
+  margin: 2px 0;
+}
 </style>
