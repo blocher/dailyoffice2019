@@ -4,7 +4,7 @@
     <span v-if="!traditional" v-html="collect.text"/>
     <h5>{{ collect.attribution }}</h5>
     <el-card class="box-card" shadow="never" style="margin:0 0 15px;" body-style="padding:10px;">
-      <p><em>Pray during:</em>
+      <p><em>Add this prayer near the end of:</em>
         <el-checkbox-group v-model="checkList" @change="handleCheckChange">
           <el-checkbox v-for="office in offices" :key="office" :label="office"/>
         </el-checkbox-group>

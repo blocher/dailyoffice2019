@@ -6,24 +6,38 @@
       <div class="flex justify-center">
         <el-checkbox-group v-model="selectedCollectTypes" size="large">
           <el-checkbox
-v-for="collectType in collects" :key="collectType.uuid" class="m-0" border
-                       :label="collectType.uuid">
+              v-for="collectType in collects" :key="collectType.uuid" border
+              :label="collectType.uuid">
             {{ collectType.name }}
           </el-checkbox>
         </el-checkbox-group>
       </div>
+      <div class="flex justify-center">
+        <el-button size="small" @click="expandAll()">{{ showAllText }}</el-button>
+        <el-button size="small" class="upside-down" @click="collapseAll()">
+          {{ hideAllText }}
+        </el-button>
+        <el-button size="small" @click="showOnlySelected">{{ showOnlyText }}
+        </el-button>
+
+      </div>
+      <div class="flex justify-center">
+
+
+      </div>
       <FontSizer v-if="readyToSetFontSize"/>
 
-      <div class="flex justify-center full-width">
-        <el-input
-            v-model="search" class="full-width m-2" placeholder="Filter by word or phrase">
-          <template #prefix>
-            <el-icon class="el-input__icon">
-              <font-awesome-icon :icon="['fad', 'search']"/>
-            </el-icon>
-          </template>
-        </el-input>
-      </div>
+      <!--      <div class="flex justify-center full-width">-->
+      <!--        <el-input-->
+      <!--            v-model="search" class="full-width m-2" placeholder="Filter by word or phrase">-->
+      <!--          <template #prefix>-->
+      <!--            <el-icon class="el-input__icon">-->
+      <!--              <font-awesome-icon :icon="['fad', 'search']"/>-->
+      <!--            </el-icon>-->
+      <!--          </template>-->
+      <!--        </el-input>-->
+      <!--      </div>-->
+
       <div class="flex justify-center full-width">
         <el-switch
             v-model="traditional"
@@ -50,15 +64,11 @@ v-for="collectType in collects" :key="collectType.uuid" class="m-0" border
     <div v-for="category in collectCategoriesToShow" :key="category.uuid">
       <h3>{{ category.name }}</h3>
       <div v-for="subcategory in category.subcategories" :key="subcategory.uuid">
-        <h4>{{ subcategory.name }}</h4>
-        <el-collapse>
-          <div v-for="collect in subcategory.collects" :key="collect.uuid">
-            <Collect :key="collect.uuid" :collect=collect :traditional="traditional"/>
-          </div>
-        </el-collapse>
+        <CollectsSubcategory
+            ref="subcategories" :traditional="traditional" :subcategory="subcategory"
+        />
       </div>
     </div>
-
 
   </div>
 
@@ -69,10 +79,10 @@ import Loading from "@/components/Loading";
 import CollectsFilters from "@/components/CollectsFilters";
 import Collect from "@/components/Collect";
 import FontSizer from "@/components/FontSizer";
-
+import CollectsSubcategory from "@/components/CollectsSubcategory";
 
 export default {
-  components: {Loading, CollectsFilters, Collect, FontSizer},
+  components: {Loading, CollectsFilters, Collect, FontSizer, CollectsSubcategory},
   data() {
     return {
       collects: null,
@@ -83,22 +93,30 @@ export default {
       readyToSetFontSize: false,
       selectedCollectTypes: [],
       allCollects: [],
-
+      openedItems: [],
+      defaultDict: {},
+      checkList: [],
+      offices: ["Morning Prayer", "Midday Prayer", "Evening Prayer", "Compline"],
+      showAllText: "Show All",
+      showAllDefaultText: "Show All",
+      hideAllText: "Hide All",
+      hideAllDefaultText: "Hide All",
+      showOnlyText: "Shows Prayers You Have Added to an Office",
+      showOnlyDefaultText: "Shows Prayers You Have Added to an Office",
     };
   },
   computed: {
     collectCategoriesToShow() {
       return this.collects.filter((category) => {
-        console.log(category, this.selectedCollectTypes);
         return this.selectedCollectTypes.includes(category.uuid);
       });
     },
   },
-  watch: {
-    search(val, oldVal) {
-      this.filterCollects(this.categories);
-    }
-  },
+  // watch: {
+  //   search(val, oldVal) {
+  //     this.filterCollects(this.categories);
+  //   }
+  // },
   async mounted() {
     const traditional = localStorage.getItem("traditionalCollects", false);
     if (traditional == "true" || traditional == true) {
@@ -140,6 +158,48 @@ export default {
       if (!this.selectedCollectTypes.length) {
         this.selectedCollectTypes = this.collects.map((category) => category.uuid);
       }
+    },
+    expandAll() {
+      this.showAllText = "...";
+      setTimeout(() => {
+        this.$refs.subcategories.forEach((subcategory) => {
+          subcategory.expandAll();
+        });
+      }, 100);
+      setTimeout(() => {
+        this.showAllText = this.showAllDefaultText;
+      }, 2000);
+    },
+    collapseAll() {
+      this.hideAllText = "...";
+      setTimeout(() => {
+        this.$refs.subcategories.forEach((subcategory) => {
+          subcategory.collapseAll();
+        });
+      }, 100);
+      setTimeout(() => {
+        this.hideAllText = this.hideAllDefaultText;
+      }, 2000);
+    },
+    showOnlySelected() {
+      this.showOnlyText = "...";
+      setTimeout(() => {
+        const defaultDict = {}
+        this.offices.forEach((office) => {
+          defaultDict[office] = []
+        })
+        let checkList = []
+        const extraCollects = JSON.parse(localStorage.getItem('extraCollects')) || this.defaultDict;
+        this.offices.forEach((office) => {
+          checkList = checkList.concat(extraCollects[office])
+        });
+        this.$refs.subcategories.forEach((subcategory) => {
+          subcategory.showOnlySelected(checkList);
+        });
+      }, 50);
+      setTimeout(() => {
+        this.showOnlyText = this.showOnlyDefaultText;
+      }, 2000);
     }
   },
 };
@@ -149,5 +209,20 @@ export default {
 body h4 {
   text-align: left;
   margin: 2em 0;
+}
+
+.upside-down span {
+  transform: scale(-1, 1);
+}
+
+.el-checkbox-group {
+  margin: 20px 0;
+}
+
+.el-checkbox {
+  @media (max-width: 675px) {
+    width: 100%;
+    margin-bottom: 10px;
+  }
 }
 </style>
