@@ -1,6 +1,6 @@
 <template>
   <div class="fixed top-3 right-3 z-200">
-    <el-tag class="" size="medium" type="warning">Beta site</el-tag>
+    <el-tag size="default" type="warning">Beta site</el-tag>
     <br>
     <small class="float-right"><a href="https://dailyoffice2019.com">Classic site
       <font-awesome-icon :icon="['fad', 'fa-square-up-right']"/>&nbsp;</a></small>

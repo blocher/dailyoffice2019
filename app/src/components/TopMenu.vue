@@ -4,10 +4,8 @@
         :default-active="activeIndex"
         mode="horizontal"
         menu-trigger="click"
-        ellipsis=false
         :router="menuRouter"
-        unique-opened=true
-        collapse-transition=false
+        :unique-opened="uniqueOpened"
     >
       <el-sub-menu index="1">
         <template #title>Pray</template>
@@ -104,6 +102,7 @@ export default {
     return {
       activeIndex: "1",
       menuRouter: true,
+      uniqueOpened: false,
     };
   },
 };
