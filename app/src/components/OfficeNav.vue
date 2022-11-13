@@ -266,11 +266,13 @@ export default {
           close_of_day_prayer: "compline",
         };
         const new_office = lookup[this.selectedOffice];
-        this.$router.push(
-            `/office/${new_office}/${this.calendarDate.getFullYear()}/${
-                this.calendarDate.getMonth() + 1
-            }/${this.calendarDate.getDate()}`
-        );
+        if (new_office) {
+          this.$router.push(
+              `/office/${new_office}/${this.calendarDate.getFullYear()}/${
+                  this.calendarDate.getMonth() + 1
+              }/${this.calendarDate.getDate()}`
+          );
+        }
       }
     },
     redirectToFamily() {
@@ -282,11 +284,13 @@ export default {
           compline: "close_of_day_prayer",
         };
         const new_office = lookup[this.selectedOffice];
-        this.$router.push(
-            `/family/${new_office}/${this.calendarDate.getFullYear()}/${
-                this.calendarDate.getMonth() + 1
-            }/${this.calendarDate.getDate()}`
-        );
+        if (new_office) {
+          this.$router.push(
+              `/family/${new_office}/${this.calendarDate.getFullYear()}/${
+                  this.calendarDate.getMonth() + 1
+              }/${this.calendarDate.getDate()}`
+          );
+        }
       }
     },
     toggleServiceType() {

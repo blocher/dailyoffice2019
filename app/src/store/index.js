@@ -22,8 +22,8 @@ export default createStore({
         };
         const result = {};
         for (const [key, value] of Object.entries(offices)) {
-          result[value] = app.$route.query[key];
-          if (result[value]) {
+          if (app.$route.query[key]) {
+            result[value] = app.$route.query[key].split(",");
             isSetting = true;
           }
         }

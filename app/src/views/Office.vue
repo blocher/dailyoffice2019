@@ -172,6 +172,7 @@ export default {
           + this.extraCollects()
       );
     } catch (e) {
+      console.log(e);
       this.error =
           "There was an error retrieving the office. Please try again.";
       this.loading = false;
