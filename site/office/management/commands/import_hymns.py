@@ -9,7 +9,6 @@ def get_for_reading(day, attribute):
     url = f"https://hymnary.org/api/scripture?reference={citation}"
     result = requests.get(url)
     if result.status_code != 200:
-        print(url, result.status_code)
         return None
     results = result.json()
     if not len(results):

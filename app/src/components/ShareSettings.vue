@@ -102,13 +102,26 @@ export default {
         this.panelSize = "37%";
       }
     },
+    getCollectProps() {
+      const extraCollects = JSON.parse(localStorage.getItem('extraCollects'))
+      if (extraCollects) {
+        const queryString = Object.keys(extraCollects)
+            .map((key) => key.toLowerCase().replace(" ", "_") + "_collects=" + extraCollects[key])
+            .join("&");
+        return `&${queryString}`;
+      }
+      return ""
+    },
     getShareLink() {
+      this.getCollectProps()
       const settings = this.$store.state.settings;
       const queryString = Object.keys(settings)
           .map((key) => key + "=" + settings[key])
-          .join("&");
+          .join("&") + this.getCollectProps();
       const path = this.$route.path;
-      const url = `${window.location.protocol}//${window.location.hostname}${path}?${queryString}`;
+      const port = parseInt(window.location.port)
+      const port_string = port == 80 || port == 443 ? "" : ":" + port
+      const url = `${window.location.protocol}//${window.location.hostname}${port_string}${path}?${queryString}`;
       return url;
     },
     async copyLink() {
