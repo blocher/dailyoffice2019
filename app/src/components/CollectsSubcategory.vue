@@ -67,7 +67,7 @@ body h4 {
   margin: 2em 0;
 }
 
-.upside-down span {
-  transform: scale(-1, 1);
+.el-collapse {
+  --el-collapse-header-height: auto !important;
 }
 </style>

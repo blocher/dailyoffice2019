@@ -64,6 +64,12 @@ export default {
 
 <style lang="scss">
 
+@forward 'element-plus/theme-chalk/src/common/var.scss' with (
+  $collapse: (
+    'header-height': auto,
+  )
+ );
+
 * {
   font-family: "Adobe Caslon Pro", serif;
   font-display: swap;
@@ -91,6 +97,7 @@ export default {
   --el-card-bg-color: white;
   --el-drawer-bg-color: white !important;
   --el-font-size-base: 16px;
+  --el-collapse-header-height: auto !important;
 
   .el-calendar {
     --el-calendar-border: 1px solid black !important;

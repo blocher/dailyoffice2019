@@ -58,8 +58,10 @@ class GroupedCollectsViewSet(ViewSet):
 
         themes = list(filter(lambda tag: tag.collect_tag_category.key == "theme", collect_tags))
         seasons = list(filter(lambda tag: tag.collect_tag_category.key == "season", collect_tags))
+        commemoration_types = list(
+            filter(lambda tag: tag.collect_tag_category.key == "commemoration_type", collect_tags)
+        )
         liturgies = list(filter(lambda tag: tag.collect_tag_category.key in ["liturgy", "liturgical"], collect_tags))
-        print("liturgies", liturgies)
 
         for source in sources:
             if source.key == "occasional":
@@ -69,7 +71,8 @@ class GroupedCollectsViewSet(ViewSet):
                     subcategory.collects = [
                         collect for collect in collects if theme in collect.tags.all() and source in collect.tags.all()
                     ]
-                    source.subcategories.append(subcategory)
+                    if subcategory.collects:
+                        source.subcategories.append(subcategory)
             if source.key == "year":
                 source.subcategories = []
                 for season in seasons:
@@ -79,7 +82,19 @@ class GroupedCollectsViewSet(ViewSet):
                         for collect in collects
                         if season in collect.tags.all() and source in collect.tags.all()
                     ]
-                    source.subcategories.append(subcategory)
+                    if subcategory.collects:
+                        source.subcategories.append(subcategory)
+                for commemoration_type in commemoration_types:
+                    subcategory = commemoration_type
+                    if subcategory.key in ["sunday", "major_feast"]:
+                        continue
+                    subcategory.collects = [
+                        collect
+                        for collect in collects
+                        if commemoration_type in collect.tags.all() and source in collect.tags.all()
+                    ]
+                    if subcategory.collects:
+                        source.subcategories.append(subcategory)
             if source.key == "liturgical":
                 source.subcategories = []
                 for liturgy in liturgies:
@@ -89,7 +104,8 @@ class GroupedCollectsViewSet(ViewSet):
                         for collect in collects
                         if liturgy in collect.tags.all() and source in collect.tags.all()
                     ]
-                    source.subcategories.append(subcategory)
+                    if subcategory.collects:
+                        source.subcategories.append(subcategory)
 
         serializer = SourceSerializer(sources, many=True)
         return Response(serializer.data)

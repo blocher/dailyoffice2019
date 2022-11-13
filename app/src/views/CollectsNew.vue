@@ -12,12 +12,12 @@
           </el-checkbox>
         </el-checkbox-group>
       </div>
-      <div class="flex justify-center">
-        <el-button size="small" @click="expandAll()">{{ showAllText }}</el-button>
-        <el-button size="small" class="upside-down" @click="collapseAll()">
+      <div class="flex justify-center flex-wrap">
+        <el-button size="small" class="mb-1" @click="expandAll()">{{ showAllText }}</el-button>
+        <el-button size="small" class="mb-1" @click="collapseAll()">
           {{ hideAllText }}
         </el-button>
-        <el-button size="small" @click="showOnlySelected">{{ showOnlyText }}
+        <el-button size="small" class="mb-1" @click="showOnlySelected">{{ showOnlyText }}
         </el-button>
 
       </div>
@@ -101,8 +101,8 @@ export default {
       showAllDefaultText: "Show All",
       hideAllText: "Hide All",
       hideAllDefaultText: "Hide All",
-      showOnlyText: "Shows Prayers You Have Added to an Office",
-      showOnlyDefaultText: "Shows Prayers You Have Added to an Office",
+      showOnlyText: "Show Only Selected Prayers",
+      showOnlyDefaultText: "Show Only Selected Prayers",
     };
   },
   computed: {
@@ -227,7 +227,7 @@ body h4 {
 }
 
 .el-collapse-item__header {
-  height: auto;
+  height: auto !important;
   margin: 2px 0;
 }
 </style>
