@@ -20,9 +20,9 @@
       <el-menu
           mode="horizontal"
           menu-trigger="click"
-          unique-opened=true,
+          :unique-opened="uniqueOpened"
           :default-active="activeIndex"
-          ellipsis=false,
+          :ellipsis="ellipsis"
       >
         <el-sub-menu index="1" ellipsis=false>
           <template #title>Office</template>
@@ -144,6 +144,8 @@ export default {
       psalmsTranslation: "contemporary",
       notFound: false,
       activeIndex: "1",
+      uniqueOpened: true,
+      ellipsis: false,
     };
   },
   computed: {
