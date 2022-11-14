@@ -27,6 +27,13 @@
       </el-tabs>
     </main>
   </div>
+  <el-drawer
+      v-model="drawerOpen" modal-class="pointer-events-none" direction="btt" :close-on-click-modal=false
+      :lock-scroll=false
+      :close-on-press-escape=false :show-close=false :with-header="false" size="auto" :modal=false :z-index=100>
+    <h4>BENTITLE</h4>
+    <p>Content</p>
+  </el-drawer>
 </template>
 
 <script>
@@ -49,6 +56,7 @@ export default {
       dailyOfficeSettings: null,
       loading: true,
       windowWidth: 0,
+      drawerOpen: true,
     };
   },
   computed: {
@@ -89,5 +97,13 @@ export default {
 <style>
 [v-cloak] {
   display: none;
+}
+
+.pointer-events-none {
+  pointer-events: none;
+}
+
+.el-drawer {
+  pointer-events: auto;
 }
 </style>
