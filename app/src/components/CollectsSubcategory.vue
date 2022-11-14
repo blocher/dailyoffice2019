@@ -52,16 +52,19 @@ export default {
     extraCollectsChanged() {
       this.$emit("extra-collects-changed");
     },
-    collapseAll() {
+    async collapseAll() {
       this.openedItems = [];
+      await this.$nextTick();
     },
-    expandAll() {
+    async expandAll() {
       this.openedItems = this.subcategory.collects.map((collect) => {
         return collect.uuid;
       });
+      await this.$nextTick();
     },
-    showOnlySelected(checkList) {
+    async showOnlySelected(checkList) {
       this.openedItems = checkList;
+      await this.$nextTick();
     },
   },
 };

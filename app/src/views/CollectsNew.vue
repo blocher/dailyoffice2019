@@ -13,11 +13,14 @@
         </el-checkbox-group>
       </div>
       <div class="flex justify-center flex-wrap">
-        <el-button size="small" class="mb-1" @click="expandAll()">{{ showAllText }}</el-button>
-        <el-button size="small" class="mb-1" @click="collapseAll()">
+        <el-button size="small" class="mb-1" :disabled='buttonsDisabled' @click="expandAll()">{{
+            showAllText
+          }}
+        </el-button>
+        <el-button size="small" class="mb-1" :disabled='buttonsDisabled' @click="collapseAll()">
           {{ hideAllText }}
         </el-button>
-        <el-button size="small" class="mb-1" @click="showOnlySelected">{{ showOnlyText }}
+        <el-button size="small" class="mb-1" :disabled='buttonsDisabled' @click="showOnlySelected">{{ showOnlyText }}
         </el-button>
 
       </div>
@@ -102,9 +105,10 @@ export default {
       showAllDefaultText: "Show All",
       hideAllText: "Hide All",
       hideAllDefaultText: "Hide All",
-      showOnlyText: "Show Only Selected Prayers",
-      showOnlyDefaultText: "Show Only Selected Prayers",
+      showOnlyText: "Show Only Chosen Prayers",
+      showOnlyDefaultText: "Show Only Chosen Prayers",
       extraCollects: {},
+      buttonsDisabled: false,
     };
   },
   computed: {
@@ -176,47 +180,41 @@ export default {
         this.selectedCollectTypes = this.collects.map((category) => category.uuid);
       }
     },
-    expandAll() {
-      this.showAllText = "...";
-      setTimeout(() => {
-        this.$refs.subcategories.forEach((subcategory) => {
-          subcategory.expandAll();
-        });
-      }, 100);
-      setTimeout(() => {
-        this.showAllText = this.showAllDefaultText;
-      }, 2000);
+    async expandAll() {
+      this.buttonsDisabled = true;
+      await this.$nextTick();
+      await this.$refs.subcategories.forEach((subcategory) => {
+        subcategory.expandAll();
+      });
+      await this.$nextTick();
+      this.buttonsDisabled = false;
     },
-    collapseAll() {
-      this.hideAllText = "...";
-      setTimeout(() => {
-        this.$refs.subcategories.forEach((subcategory) => {
-          subcategory.collapseAll();
-        });
-      }, 100);
-      setTimeout(() => {
-        this.hideAllText = this.hideAllDefaultText;
-      }, 2000);
+    async collapseAll() {
+      this.buttonsDisabled = true;
+      await this.$nextTick();
+      await this.$refs.subcategories.forEach((subcategory) => {
+        subcategory.collapseAll();
+      });
+      await this.$nextTick();
+      this.buttonsDisabled = false;
     },
-    showOnlySelected() {
-      this.showOnlyText = "...";
-      setTimeout(() => {
-        const defaultDict = {}
-        this.offices.forEach((office) => {
-          defaultDict[office] = []
-        })
-        let checkList = []
-        const extraCollects = JSON.parse(localStorage.getItem('extraCollects')) || this.defaultDict;
-        this.offices.forEach((office) => {
-          checkList = checkList.concat(extraCollects[office])
-        });
-        this.$refs.subcategories.forEach((subcategory) => {
-          subcategory.showOnlySelected(checkList);
-        });
-      }, 50);
-      setTimeout(() => {
-        this.showOnlyText = this.showOnlyDefaultText;
-      }, 2000);
+    async showOnlySelected() {
+      this.buttonsDisabled = true;
+      await this.$nextTick();
+      const defaultDict = {}
+      this.offices.forEach((office) => {
+        defaultDict[office] = []
+      })
+      let checkList = []
+      const extraCollects = JSON.parse(localStorage.getItem('extraCollects')) || this.defaultDict;
+      this.offices.forEach((office) => {
+        checkList = checkList.concat(extraCollects[office])
+      });
+      this.$refs.subcategories.forEach((subcategory) => {
+        subcategory.showOnlySelected(checkList);
+      });
+      this.buttonsDisabled = false;
+
     }
   },
 };
