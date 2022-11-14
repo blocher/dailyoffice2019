@@ -16,7 +16,7 @@
 <script>
 export default {
   name: "Collect",
-  props: ["collect", "traditional"],
+  props: ["collect", "traditional", "extraCollects"],
   data() {
     return {
       checkList: [],
@@ -24,13 +24,8 @@ export default {
     };
   },
   async created() {
-    this.defaultDict = {}
     this.offices.forEach((office) => {
-      this.defaultDict[office] = []
-    })
-    const extraCollects = JSON.parse(localStorage.getItem('extraCollects')) || this.defaultDict;
-    this.offices.forEach((office) => {
-      if (extraCollects[office].includes(this.collect.uuid)) {
+      if (this.extraCollects[office].includes(this.collect.uuid)) {
         this.checkList.push(office)
       }
     });
@@ -46,6 +41,7 @@ export default {
         }
       });
       localStorage.setItem('extraCollects', JSON.stringify(extraCollects));
+      this.$emit('extraCollectsChanged')
     },
     fullTitle(collect) {
       if (collect.number) {

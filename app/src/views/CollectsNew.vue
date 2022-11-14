@@ -65,7 +65,8 @@
       <h3>{{ category.name }}</h3>
       <div v-for="subcategory in category.subcategories" :key="subcategory.uuid">
         <CollectsSubcategory
-            ref="subcategories" :traditional="traditional" :subcategory="subcategory"
+            ref="subcategories" :traditional="traditional" :subcategory="subcategory" :extra-collects="extraCollects"
+            @extra-collects-changed="setExtraCollects"
         />
       </div>
     </div>
@@ -103,6 +104,7 @@ export default {
       hideAllDefaultText: "Hide All",
       showOnlyText: "Show Only Selected Prayers",
       showOnlyDefaultText: "Show Only Selected Prayers",
+      extraCollects: {},
     };
   },
   computed: {
@@ -112,11 +114,17 @@ export default {
       });
     },
   },
-  // watch: {
-  //   search(val, oldVal) {
-  //     this.filterCollects(this.categories);
-  //   }
-  // },
+  watch: {
+    // search(val, oldVal) {
+    //   this.filterCollects(this.categories);
+    // },
+    selectedCollectTypes() {
+      this.readyToSetFontSize = false;
+      this.$nextTick(() => {
+        this.readyToSetFontSize = true;
+      });
+    },
+  },
   async mounted() {
     const traditional = localStorage.getItem("traditionalCollects", false);
     if (traditional == "true" || traditional == true) {
@@ -146,11 +154,20 @@ export default {
       });
     });
     this.setDefaultFilter()
+    this.setExtraCollects()
     this.error = false;
     this.loading = false;
     this.readyToSetFontSize = true;
   },
   methods: {
+    setExtraCollects() {
+      this.extraCollects = JSON.parse(localStorage.getItem('extraCollects')) || this.defaultDict;
+      // this.offices.forEach((office) => {
+      //   if (extraCollects[office].includes(this.collect.uuid)) {
+      //     this.extraCollectsList.push(office)
+      //   }
+      // });
+    },
     setTraditional() {
       localStorage.setItem("traditionalCollects", this.traditional);
     },

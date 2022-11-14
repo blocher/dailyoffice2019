@@ -7,7 +7,9 @@
   </h4>
   <el-collapse v-model="openedItems">
     <div v-for="collect in subcategory.collects" :key="collect.uuid">
-      <Collect :key="collect.uuid" :collect="collect" :traditional="traditional"/>
+      <Collect
+          :key="collect.uuid" :collect="collect" :traditional="traditional" :extra-collects="extraCollects"
+          @extra-collects-changed="extraCollectsChanged"/>
     </div>
   </el-collapse>
 </template>
@@ -28,6 +30,10 @@ export default {
       type: Boolean,
       required: false,
     },
+    extraCollects: {
+      type: Object,
+      required: false,
+    },
   },
   data() {
     return {
@@ -42,10 +48,10 @@ export default {
       return this.openedItems.length === 0;
     },
   },
-
-  async mounted() {
-  },
   methods: {
+    extraCollectsChanged() {
+      this.$emit("extra-collects-changed");
+    },
     collapseAll() {
       this.openedItems = [];
     },
