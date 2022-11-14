@@ -71,18 +71,6 @@
       </RadioGroup>
     </div>
   </form>
-  <p class="full-width text-right border-2 my-2 p-2">
-    <small>
-      Hide Minor Settings
-      <el-switch
-          v-model="advanced"
-          class="ml-2"
-          active-color="#0284c7"
-          inactive-color="#e5e7eb"
-      />
-      &nbsp;Show Minor Settings
-    </small>
-  </p>
 </template>
 
 <script>
@@ -99,20 +87,7 @@ export default {
     RadioGroupLabel,
     RadioGroupOption,
   },
-  props: ["availableSettings", "site", "name"],
-  data() {
-    return {
-      advanced: false,
-    };
-  },
-  mounted() {
-    if (localStorage.advancedSettings) {
-      const stored = localStorage.advancedSettings;
-      this.advanced = stored == "true" ? true : false;
-    } else {
-      localStorage.advancedSettings = false;
-    }
-  },
+  props: ["availableSettings", "site", "name", "advanced"],
   methods: {
     changeSetting() {
       const settings = this.$store.state.settings;
@@ -134,9 +109,6 @@ export default {
       const correct_site = setting.site_name == this.site;
       const show_advanced = setting.setting_type == 1 || this.advanced;
       return correct_site && show_advanced;
-    },
-    toggleAdvanced(value) {
-      localStorage.advancedSettings = value;
     },
   },
 };
