@@ -16,4 +16,3 @@ class Command(BaseCommand):
                     passage__iexact=mass_reading.short_citation
                 ).first()
             mass_reading.save()
-            print(mass_reading.long_citation)

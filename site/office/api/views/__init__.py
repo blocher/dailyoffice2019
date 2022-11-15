@@ -34,7 +34,6 @@ class Module(object):
         return "Daily Office Module"
 
     def strip_line(self, line):
-        print(line["content"])
         line["content"] = line["content"].strip()
         line["line_type"] = line["line_type"].strip()
         return line

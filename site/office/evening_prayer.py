@@ -589,7 +589,6 @@ class EPSuffrages(OfficeSection):
 class EPCollectsOfTheDay(OfficeSection):
     @cached_property
     def data(self):
-        print(self.date.all_evening[0].evening_prayer_collect)
         return {
             "collects": (
                 (
