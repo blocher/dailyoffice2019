@@ -34,9 +34,15 @@
       :lock-scroll=false
       :close-on-press-escape=false :show-close=false :with-header="false" size="auto" :modal=false :z-index=100
   >
-    <h4>Displayed Settings</h4>
-    <div class="w-full">
-
+    <h4 @click="toggleBottomPanel">Show/Hide Settings
+      <span class="float-right"><font-awesome-icon
+          v-if="!bottomPanelExpanded"
+          :icon="['fad', 'fa-square-caret-up']"/></span>
+      <span class="float-right"><font-awesome-icon
+          v-if="bottomPanelExpanded"
+          :icon="['fad', 'fa-square-caret-down']"/></span>
+    </h4>
+    <div v-if="bottomPanelExpanded" class="w-full">
       <div class="wrapper w-full">
         <div class="text-right"><small>Daily Office</small></div>
         <div class="text-center">
@@ -91,6 +97,7 @@ export default {
       drawerOpen: true,
       advanced: false,
       openTab: "office",
+      bottomPanelExpanded: true,
     };
   },
   computed: {
@@ -147,6 +154,9 @@ export default {
     toggleOffice(value) {
       this.openTab = value;
       localStorage.settingsPane = value;
+    },
+    toggleBottomPanel() {
+      this.bottomPanelExpanded = !this.bottomPanelExpanded;
     }
   }
 };
