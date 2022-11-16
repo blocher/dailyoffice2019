@@ -13,38 +13,45 @@
           selected-office="readings"
       />
 
-      <FontSizer/>
-
       <h1>Readings</h1>
 
-      <el-menu
-          mode="horizontal"
-          menu-trigger="click"
-          :unique-opened="uniqueOpened"
-          :default-active="activeIndex"
-          :ellipsis="ellipsis"
-      >
-        <el-sub-menu index="1" ellipsis=false>
-          <template #title>Office</template>
-          <el-menu-item
-              v-for="value in daily_office" :key="value.name" class="full-width" :index="serviceLink(value.name)"
-              @click="changeService(value.name)">{{
-              value.name
-            }}
-          </el-menu-item>
-          <div class="flex-grow"/>
-        </el-sub-menu>
-        <el-sub-menu index="2" ellipsis=false>
-          <template #title>Eucharist</template>
-          <el-menu-item
-              v-for="value in holy_eucharist" :key="value.name" class="full-width" :index="serviceLink(value.name)"
-              @click="changeService(value.name)">{{
-              value.name
-            }}
-          </el-menu-item>
-        </el-sub-menu>
+      <el-row class="mt-2 content-stretch">
+        <el-col :span="24">
+          <h4 class="text-left mt-4">Daily Offices</h4>
+          <div v-for="service in dailyOfficeData" :key="service.name">
+            <div class="grid grid-cols-12 gap-3 even:bg-grey mb-2">
+              <div class="m-auto">
+                <font-awesome-icon v-if="service.active" :icon="['fad', 'fa-octagon-check']"/>
+              </div>
+              <div class="col-span-11">
+                <span v-if="service.active">{{ service.name }}</span>
+                <span v-if="!service.active"><a
+                    :href="serviceLink(service.name)"
+                    @click.prevent="changeService(service.name)">{{
+                    service.name
+                  }}</a></span>
+              </div>
+            </div>
+          </div>
 
-      </el-menu>
+          <h4 class="text-left mt-4">Holy Eucharist</h4>
+          <div v-for="service in eucharistData" :key="service.name">
+            <div class="grid grid-cols-12 gap-3 even:bg-grey  mb-6">
+              <div class="m-auto">
+                <font-awesome-icon v-if="service.active" :icon="['fad', 'fa-octagon-check']"/>
+              </div>
+              <div class="col-span-11">
+                <span v-if="service.active">{{ service.name }}</span>
+                <span v-if="!service.active"><a
+                    :href="serviceLink(service.name)"
+                    @click.prevent="changeService(service.name)">{{
+                    service.name
+                  }}</a></span>
+              </div>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
 
       <div class="flow-root">
         <div class="mt-1 sm:float-left">
@@ -74,26 +81,26 @@
 
 
       <Loading v-if="readingsLoading"/>
-      <div id="main" class="readingsPanel" :v-if="!readingsLoading">
-        <div class="mt-6">
-          <h2 mt-2 pt-0>{{ service }}</h2>
-          <CitationGroup
-              v-for="(readings, number) in groupedReadings"
-              :key="number" :readings="readings"
-              @readingLinkClick="handleReadingLinkClick"/>
-        </div>
-
-        <Collects v-if="showCollects" :collects="collectsToShow"/>
-        <Reading
-            v-for="(reading, index) in readingsToShow" :id="readingName(index)" :key="index" :reading="reading"
-            :psalm-cycle="psalmCycle" :length="reading.length" :translation="translation"
-            :psalms-translation="psalmsTranslation" @cycle-60="setCycle60"
-            @cycle-30="setCycle30"/>
-      </div>
-
-
+      <FontSizer/>
     </div>
   </div>
+  <div id="main" class="readingsPanel" :v-if="!readingsLoading">
+    <div class="mt-6">
+      <h2 mt-2 pt-0>{{ service }}</h2>
+      <CitationGroup
+          v-for="(readings, number) in groupedReadings"
+          :key="number" :readings="readings"
+          @readingLinkClick="handleReadingLinkClick"/>
+    </div>
+
+    <Collects v-if="showCollects" :collects="collectsToShow"/>
+    <Reading
+        v-for="(reading, index) in readingsToShow" :id="readingName(index)" :key="index" :reading="reading"
+        :psalm-cycle="psalmCycle" :length="reading.length" :translation="translation"
+        :psalms-translation="psalmsTranslation" @cycle-60="setCycle60"
+        @cycle-30="setCycle30"/>
+  </div>
+
 
 </template>
 
@@ -149,6 +156,22 @@ export default {
     };
   },
   computed: {
+    dailyOfficeData: function () {
+      return this.daily_office.map((service) => {
+        return {
+          active: service.name === this.service,
+          name: service.name,
+        };
+      });
+    },
+    eucharistData: function () {
+      return this.holy_eucharist.map((service) => {
+        return {
+          active: service.name === this.service,
+          name: service.name,
+        };
+      });
+    },
     groupedReadings: function () {
       const groups = {}
       this.readingsToShow.forEach(reading => {
@@ -264,6 +287,7 @@ export default {
       this.error = false;
       this.loading = false;
       this.readingsLoading = false;
+      console.log(this.daily_office);
     },
     readingID: function (reading) {
       const readingId = reading.citation.replace(/[\W_]+/g, "_")
