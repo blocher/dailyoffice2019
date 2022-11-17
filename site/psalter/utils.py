@@ -138,7 +138,7 @@ def psalm_html(
 
             if (i % 2) == 0:
                 html = html + format_html(
-                    "<p class='hanging-indent'><sup class='versenum'>{}</sup> {}<span class='asterisk'>*A</span> </p>",
+                    "<p class='hanging-indent'><sup class='versenum'>{}</sup> {} <span class='asterisk'>*</span> </p>",
                     verse.number,
                     verse.first_half_tle if language_style == "traditional" else verse.first_half,
                 )

@@ -40,7 +40,7 @@
           v-for="commemoration in card.commemorations"
           :key="commemoration.name"
       >
-        <Commemoration :commemoration="commemoration"/>
+        <Commemoration v-if="commemoration.name !=card.primary_feast" :commemoration="commemoration"/>
       </div>
     </div>
     <div
@@ -54,7 +54,7 @@
           v-for="commemoration in card.evening_commemorations"
           :key="commemoration.name"
       >
-        <Commemoration :commemoration="commemoration"/>
+        <Commemoration v-if="commemoration.name!=card.primary_evening_feast" :commemoration="commemoration"/>
       </div>
     </div>
     <div
@@ -120,8 +120,11 @@ export default {
       early_evening_prayer: "Family Prayer in the Early Evening",
       close_of_day_prayer: "Family Prayer at the Close of Day",
     };
+    const readings = {
+      readings: "Readings",
+    }
     const offices =
-        this.currentServiceType == "office" ? daily_offices : family_offices;
+        this.currentServiceType == "readings" ? readings : this.currentServiceType == "office" ? daily_offices : family_offices;
     if (offices[this.$props.office] !== undefined) {
       this.officeName = offices[this.$props.office];
     }

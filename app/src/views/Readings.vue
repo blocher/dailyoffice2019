@@ -2,11 +2,17 @@
   <div class="small-container home office">
     <Loading v-if="loading &&!notFound"/>
     <PageNotFound v-if="notFound"/>
-    <div v-if="!loading && !error && !notFound" id="readings">
-
+    <el-alert
+        v-if="error" :title="error"
+        type="error"
+    />
+    <div v-if="!loading && !notFound" id="readings">
       <CalendarCard
+          v-if="!error"
           :calendar-date="calendarDate"
           :card="card"
+          service-type="readings"
+          office="readings"
       />
       <OfficeNav
           :calendar-date="calendarDate"
@@ -14,6 +20,8 @@
       />
 
       <h1>Readings</h1>
+
+      <el-divider/>
 
       <el-row class="mt-2 content-stretch">
         <el-col :span="24">
@@ -53,33 +61,61 @@
         </el-col>
       </el-row>
 
-      <div class="flow-root">
-        <div class="mt-1 sm:float-left">
-          <el-radio-group
-              v-model="psalmsTranslation" size="small"
+      <el-divider/>
+
+      <el-row :gutter="20">
+        <el-col :span="12">
+          <h4>Psalter Version</h4>
+          <el-select
+              v-model="psalmsTranslation" class="m-1 full-width" placeholder="Select"
+              size="large" @change="changeTranslation()">
+            <el-option
+                v-for="item in psalmsTranslations"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+            />
+          </el-select>
+        </el-col>
+        <el-col :span="12">
+          <h4>Translation</h4>
+          <el-select
+              v-model="translation" class="m-1 full-width" placeholder="Select" size="large"
               @change="changeTranslation()">
-            <el-radio-button size="small" name="psalmsTranslation" label="contemporary">Contemporary Psalms
-            </el-radio-button>
-            <el-radio-button size="small" name="psalmsTranslation" label="traditional">Traditional Psalms
-            </el-radio-button>
-          </el-radio-group>
-        </div>
-        <div class="mt-1 sm:float-right">
-          <el-radio-group v-model="translation" size="small" @change="changeTranslation()">
-            <el-radio-button size="small" name="translation" label="esv">ESV</el-radio-button>
-            <el-radio-button size="small" name="translation" label="kjv">KJV</el-radio-button>
-            <el-radio-button size="small" name="translation" label="rsv">RSV</el-radio-button>
+            <el-option
+                v-for="item in translations"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+            />
+          </el-select>
+        </el-col>
+      </el-row>
 
-            <el-radio-button size="small" name="translation" label="nasb">NASB</el-radio-button>
-            <el-radio-button size="small" name="translation" label="niv">NIV</el-radio-button>
-            <el-radio-button size="small" name="translation" label="nrsvce">NRSV</el-radio-button>
-            <el-radio-button size="small" name="translation" label="nabre">NAB-RE</el-radio-button>
-          </el-radio-group>
-        </div>
+      <div class="flow-root">
+        <!--        <div class="mt-1 sm:float-left">-->
+        <!--          <el-radio-group-->
+        <!--              v-model="psalmsTranslation" size="small"-->
+        <!--              @change="changeTranslation()">-->
+        <!--            <el-radio-button size="small" name="psalmsTranslation" label="contemporary">Contemporary Psalms-->
+        <!--            </el-radio-button>-->
+        <!--            <el-radio-button size="small" name="psalmsTranslation" label="traditional">Traditional Psalms-->
+        <!--            </el-radio-button>-->
+        <!--          </el-radio-group>-->
+        <!--        </div>-->
+        <!--        <div class="mt-1 sm:float-right">-->
+        <!--          <el-radio-group v-model="translation" size="small" @change="changeTranslation()">-->
+        <!--            <el-radio-button size="small" name="translation" label="esv">ESV</el-radio-button>-->
+        <!--            <el-radio-button size="small" name="translation" label="kjv">KJV</el-radio-button>-->
+        <!--            <el-radio-button size="small" name="translation" label="rsv">RSV</el-radio-button>-->
 
+        <!--            <el-radio-button size="small" name="translation" label="nasb">NASB</el-radio-button>-->
+        <!--            <el-radio-button size="small" name="translation" label="niv">NIV</el-radio-button>-->
+        <!--            <el-radio-button size="small" name="translation" label="nrsvce">NRSV</el-radio-button>-->
+        <!--            <el-radio-button size="small" name="translation" label="nabre">NAB-RE</el-radio-button>-->
+        <!--          </el-radio-group>-->
+        <!--        </div>-->
       </div>
-
-
       <Loading v-if="readingsLoading"/>
       <FontSizer/>
     </div>
@@ -148,7 +184,26 @@ export default {
       psalmCycle: "30",
       readingsToShow: [],
       translation: "esv",
+      translations: [
+        {value: "esv", label: "ESV: English Standard Version"},
+        {value: "kjv", label: "KJV: King James Version"},
+        {value: "rsv", label: "RSV: Revised Standard Version"},
+        {value: "nasb", label: "NASB: New American Standard Bible"},
+        {value: "niv", label: "NIV: New International Version"},
+        {value: "nrsvce", label: "NRSV: New Revised Standard Version"},
+        {value: "nabre", label: "NAB-RE: New American Bible Revised Edition"},
+      ],
       psalmsTranslation: "contemporary",
+      psalmsTranslations: [
+        {
+          label: "Contemporary Psalms",
+          value: "contemporary",
+        },
+        {
+          label: "Traditional Psalms",
+          value: "traditional",
+        },
+      ],
       notFound: false,
       activeIndex: "1",
       uniqueOpened: true,
@@ -235,8 +290,9 @@ export default {
         );
 
       } catch (e) {
+        alert('hi');
         this.error =
-            "There was an error retrieving the office. Please try again.";
+            "There was an error retrieving the readings. Please try again.";
         this.loading = false;
         this.readingsLoading = false;
         return;
@@ -287,7 +343,6 @@ export default {
       this.error = false;
       this.loading = false;
       this.readingsLoading = false;
-      console.log(this.daily_office);
     },
     readingID: function (reading) {
       const readingId = reading.citation.replace(/[\W_]+/g, "_")
@@ -404,7 +459,7 @@ h3 {
 }
 
 .el-select {
-  margin-bottom: 2rem;
+  width: 100%;
 }
 
 
