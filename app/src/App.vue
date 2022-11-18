@@ -157,7 +157,7 @@ body {
 
   #main {
     max-width: 65ch;
-    margin: 0 auto;
+    margin: 0 auto 5rem;
   }
 
   h1,
