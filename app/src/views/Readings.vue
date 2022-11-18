@@ -290,7 +290,6 @@ export default {
         );
 
       } catch (e) {
-        alert('hi');
         this.error =
             "There was an error retrieving the readings. Please try again.";
         this.loading = false;
