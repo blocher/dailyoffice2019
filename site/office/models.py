@@ -56,7 +56,7 @@ class OfficeDay(BaseModel):
         try:
             result = getattr(self.readings[passage], translation)
             if not result or result.strip() in ["", "-"]:
-                result = self.readings[passage].rsv
+                result = self.readings[passage].nrsvce
             return result
         except KeyError:
             return None

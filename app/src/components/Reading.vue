@@ -95,22 +95,23 @@ export default {
       if (reading.name.includes("The Psalm")) {
         const psalmsTranslation = this.psalmsTranslation;
         if (psalmsTranslation == "traditional") {
-          return "(1532 Coverdale Psalter - 1928 BCP / 2019 Traditional Language BCP)"
+          return "(Traditional)"
         }
-        return "(Renewed Coverdale Psalter - 2019 BCP)"
+        return "(Contemporary)"
       }
       let url = ""
       let abbreviation = this.translation.toLowerCase()
-      if (abbreviation == 'esv' && this.reading.full.testament == "DC") {
-        abbreviation = 'rsv'
+      if (['esv', 'niv', 'nasb'].includes(abbreviation) && this.reading.full.testament == "DC") {
+        abbreviation = 'nrsvce'
       }
       if (abbreviation == 'kjv' && this.reading.full.testament == "DC") {
         url = `https://bible.oremus.org/?version=AV&passage=${reading.citation}`
       } else if (abbreviation == "esv") {
         url = `https://www.esv.org/${reading.citation}`
       } else {
-        url = `https://www.biblegateway.com/passage/?search=${reading.citation}&version=${this.translation.toUpperCase()}`
+        url = `https://www.biblegateway.com/passage/?search=${reading.citation}&version=${abbreviation}`
       }
+      abbreviation = abbreviation == "nrsvce" ? "nrsv" : abbreviation;
       return `<a target="_blank" href="${url}">(${abbreviation.toUpperCase()})</a>`
 
     }

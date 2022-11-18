@@ -190,6 +190,7 @@ class Commemoration(BaseModel):
 
         query = query.order_by("abbreviation", "reading_number", "order", "service")
         query = query.select_related("long_scripture", "short_scripture")
+        print(query.all())
         return query.all()
 
     def __repr__(self):
