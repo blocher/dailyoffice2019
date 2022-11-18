@@ -221,16 +221,17 @@ export default {
     } else {
       this.links = this.dailyLinks;
     }
+    const servicePart = this.currentServiceType == "family" ? `/${this.currentServiceType}` : '';
     this.dayLinks = [
       {
-        to: `/day/${yesterday.getFullYear()}/${
+        to: `${servicePart}/${this.selectedOffice}/${yesterday.getFullYear()}/${
             yesterday.getMonth() + 1
         }/${yesterday.getDate()}`,
         icon: "left",
         text: yesterday.toLocaleDateString("en-us", {weekday: "long"}),
       },
       {
-        to: `/day/${this.calendarDate.getFullYear()}/${
+        to: `${servicePart}/${this.selectedOffice}/${this.calendarDate.getFullYear()}/${
             this.calendarDate.getMonth() + 1
         }/${this.calendarDate.getDate()}`,
         text: this.calendarDate.toLocaleDateString("en-us", {
@@ -239,7 +240,7 @@ export default {
         selected: true,
       },
       {
-        to: `/day/${tomorrow.getFullYear()}/${
+        to: `${servicePart}/${this.selectedOffice}/${tomorrow.getFullYear()}/${
             tomorrow.getMonth() + 1
         }/${tomorrow.getDate()}`,
         icon: "right",
