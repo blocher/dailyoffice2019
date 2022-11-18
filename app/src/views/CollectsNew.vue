@@ -206,7 +206,7 @@ export default {
         defaultDict[office] = []
       })
       let checkList = []
-      const extraCollects = JSON.parse(localStorage.getItem('extraCollects')) || this.defaultDict;
+      const extraCollects = JSON.parse(localStorage.getItem('extraCollects')) || defaultDict;
       this.offices.forEach((office) => {
         checkList = checkList.concat(extraCollects[office])
       });

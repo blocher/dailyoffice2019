@@ -17,6 +17,7 @@
 export default {
   name: "Collect",
   props: ["collect", "traditional", "extraCollects"],
+  emits: ["extraCollectsChanged"],
   data() {
     return {
       checkList: [],
@@ -32,7 +33,11 @@ export default {
   },
   methods: {
     handleCheckChange() {
-      const extraCollects = JSON.parse(localStorage.getItem('extraCollects')) || this.defaultDict;
+      const defaultDict = {}
+      this.offices.forEach((office) => {
+        defaultDict[office] = []
+      })
+      const extraCollects = JSON.parse(localStorage.getItem('extraCollects')) || defaultDict;
       this.offices.forEach((office) => {
         if (this.checkList.includes(office) && !(extraCollects[office].includes(this.collect.uuid))) {
           extraCollects[office].push(this.collect.uuid)

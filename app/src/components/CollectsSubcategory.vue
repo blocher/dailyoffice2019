@@ -35,6 +35,7 @@ export default {
       required: false,
     },
   },
+  emits: ["extraCollectsChanged"],
   data() {
     return {
       openedItems: [],
@@ -50,7 +51,7 @@ export default {
   },
   methods: {
     extraCollectsChanged() {
-      this.$emit("extra-collects-changed");
+      this.$emit("extraCollectsChanged");
     },
     async collapseAll() {
       this.openedItems = [];
