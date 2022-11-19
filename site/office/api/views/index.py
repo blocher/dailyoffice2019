@@ -1496,8 +1496,9 @@ class GreatLitany(ShowGreatLitanyMixin, Module):
                 line["content"] = line["content"].replace(
                     "thy servant N., the President/Sovereign/Prime Minister, ", self.get_leaders()
                 )
-                #
-
+                line["content"] = line["content"].replace(
+                    "your servant N, the President/Sovereign/Prime Minister, ", self.get_leaders()
+                )
             return lines
         return None
 
