@@ -7,7 +7,6 @@ from distutils.util import strtobool
 from urllib.parse import quote
 
 import mailchimp_marketing as MailchimpMarketing
-from bs4 import BeautifulSoup
 from django.conf import settings
 from django.db.models import Prefetch
 from django.http import HttpResponse
@@ -760,13 +759,11 @@ class EPPsalms(MPPsalms):
 class ReadingModule(Module):
     def remove_headings_if_needed(self, text):
         reading_headings = self.office.settings["reading_headings"] == "on"
+        print("READING HEADINGS", reading_headings)
         if reading_headings:
             return text
 
-        soup = BeautifulSoup(text, "html.parser")
-        for h3 in soup.find_all("h3", {"class": "reading-heading"}):
-            h3.decompose()
-        return str(soup)
+        return Scripture.no_headings(text)
 
     def audio(self, passage, testament):
         if testament == "DC":
@@ -800,6 +797,7 @@ class ReadingModule(Module):
         else:
             text = Scripture.objects.get(passage=reading.short_citation)
             citation = reading.short_citation
+
         text = getattr(text, translation)
         text = self.remove_headings_if_needed(text)
 
