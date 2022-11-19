@@ -1458,7 +1458,8 @@ class GreatLitany(ShowGreatLitanyMixin, Module):
         feasts = self.office.date.all_evening if self.office_name == "evening_prayer" else self.office.date.all
         names = [feast.saint_name for feast in feasts if hasattr(feast, "saint_name") and feast.saint_name]
         names = ["the Blessed Virgin Mary"] + names
-        return ", ".join(names)
+        names = ", ".join(names)
+        return f"{names} and "
 
     def get_leaders(self):
         setting = self.office.settings["national_holidays"]
@@ -1477,18 +1478,26 @@ class GreatLitany(ShowGreatLitanyMixin, Module):
             pater = (
                 file_to_lines("pater_contemporary") if style == "contemporary" else file_to_lines("pater_traditional")
             )
+            template = "great_litany_traditional" if style == "traditional" else "great_litany"
+            supplication_template = "supplication_traditional" if style == "traditional" else "supplication"
             lines = (
-                file_to_lines("great_litany")
+                file_to_lines(template)
                 + [Line("", "spacer")]
                 + kyrie
                 + [Line("", "spacer")]
                 + pater
                 + [Line("", "spacer")]
-                + file_to_lines("supplication")
+                + file_to_lines(supplication_template)
             )
             for line in lines:
+                line["content"] = line["content"].replace("[_____________ and] ", self.get_names())
                 line["content"] = line["content"].replace("{{ names }}", self.get_names())
                 line["content"] = line["content"].replace("{{ leaders }}", self.get_leaders())
+                line["content"] = line["content"].replace(
+                    "thy servant N., the President/Sovereign/Prime Minister, ", self.get_leaders()
+                )
+                #
+
             return lines
         return None
 
