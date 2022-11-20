@@ -7,6 +7,7 @@ import Day from "@/views/Day";
 import PageNotFound from "@/views/PageNotFound";
 import Readings from "@/views/Readings";
 import Scripture from "@/views/Scripture";
+import Litany from "@/views/Litany";
 
 const routes = [
   {
@@ -37,6 +38,14 @@ const routes = [
     ],
     meta: {
       title: "Readings | The Daily Office",
+    },
+  },
+  {
+    path: "/litany/",
+    name: "litany",
+    component: Litany,
+    meta: {
+      title: "The Great Litany | The Daily Office",
     },
   },
   {

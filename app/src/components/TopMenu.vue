@@ -79,6 +79,7 @@
         <el-menu-item index="/about"> About</el-menu-item>
         <el-menu-item index="/collects"> Collects</el-menu-item>
         <el-menu-item index="/psalms"> Psalms</el-menu-item>
+        <el-menu-item index="/litany"> Great Litany</el-menu-item>
       </el-sub-menu>
     </el-menu>
 

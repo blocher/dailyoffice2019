@@ -6,7 +6,7 @@ And deliver us for thy Name’s sake.,congregation,indent,true
 "O Lord, arise and help us;",leader,hangingIndent,true
 And deliver us for thy Name’s sake.,congregation,indent,true
 "Glory be to the Father, and to the Son, and to the Holy Ghost; as it was in the beginning, is now, and ever shall be, world without end.",leader,hangingIndent,true
-Amen.,congregation,indent,true
+Amen.,congregation,"",true
 "O Lord, arise and help us;",leader,hangingIndent,true
 And deliver us for thy Name’s sake,congregation,indent,true
 "From our enemies defend us, O Christ; ",leader,hangingIndent,true
@@ -18,6 +18,6 @@ Favorably with mercy;,leader,hangingIndent,true
 "Be thou pleased to hear us, O Christ;",leader,hangingIndent,true
 "Graciously hear us, O Christ; graciously hear us, O Lord Christ.",congregation,indent,true
 The Officiant prays,rubric,hangingIndent,true
-Let us pray.,leader,hangingIndent,true
-"Look mercifully, O Father, on our infirmities; and, for the glory of thy Name, rescue us from all those evils we now endure; and grant that in all our troubles we may put our whole trust and confidence in thy mercy, serving thee in holiness and purity of life, to thy honor and glory; through our only Mediator and Advocate, Jesus Christ our Lord.",leader,hangingIndent,true
-Amen.,congregation,indent,true
+Let us pray.,leader,"",true
+"Look mercifully, O Father, on our infirmities; and, for the glory of thy Name, rescue us from all those evils we now endure; and grant that in all our troubles we may put our whole trust and confidence in thy mercy, serving thee in holiness and purity of life, to thy honor and glory; through our only Mediator and Advocate, Jesus Christ our Lord.",leader,"",true
+Amen.,congregation,"",true

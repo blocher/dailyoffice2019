@@ -2662,14 +2662,18 @@ class OfficeAPIView(APIView):
         raise NotImplementedError("You must implement this method.")
 
 
-class OfficeSerializer(serializers.Serializer):
-    calendar_day = DaySerializer(source="date")
+class GenericDailyOfficeSerializer(serializers.Serializer):
     modules = serializers.SerializerMethodField()
 
     def get_modules(self, obj):
         modules = [module.json for module in obj.get_modules()]
         modules = [module for module in modules if module and module["lines"]]
         return modules
+
+
+class OfficeSerializer(GenericDailyOfficeSerializer):
+    calendar_day = DaySerializer(source="date")
+    modules = serializers.SerializerMethodField()
 
 
 def reading_format(name, citation, text, testament, cycle=None, reading_number=None):
@@ -3194,6 +3198,87 @@ class ReadingsView(OfficeAPIView):
         psalms = request.GET.get("psalms", "contemporary")
         office = Readings(request, year, month, day, translation, psalms)
         serializer = ReadingsSerializer(office)
+        return Response(serializer.data)
+
+
+class GreatLitanyAloneModule(Module):
+    def __init__(self, style, portion="both", *args, **kwargs):
+        self.style = style
+        self.portion = portion
+        self.name = self.build_name(self.style, self.portion)
+        super().__init__(*args, **kwargs)
+
+    @staticmethod
+    def build_name(style, portion):
+        name = ""
+        if portion == "both":
+            name += "The Great Litany and the Supplication"
+        if portion == "litany":
+            name += "The Great Litany (with short ending)"
+        if portion == "supplication":
+            name += "The Supplication"
+
+        if style == "traditional":
+            name += " (Traditional)"
+
+        if style == "contemporary":
+            name += " (Contemporary)"
+
+        return name
+
+    def get_lines(self):
+        style = self.style
+        kyrie = file_to_lines("kyrie_contemporary") if style == "contemporary" else file_to_lines("kyrie_traditional")
+        pater = file_to_lines("pater_contemporary") if style == "contemporary" else file_to_lines("pater_traditional")
+        template = "great_litany_traditional" if style == "traditional" else "great_litany"
+        supplication_template = "supplication_traditional" if style == "traditional" else "supplication"
+        supplication_optional_template = (
+            "supplication_optional_traditional" if style == "traditional" else "supplication_optional"
+        )
+        short_ending_template = (
+            "great_litany_short_ending_traditional" if style == "traditional" else "great_litany_short_ending"
+        )
+
+        if self.portion == "both":
+            return (
+                file_to_lines(template)
+                + [Line("", "spacer")]
+                + kyrie
+                + [Line("", "spacer")]
+                + pater
+                + [Line("", "spacer")]
+                + file_to_lines(supplication_template)
+                + file_to_lines(supplication_optional_template)
+            )
+        if self.portion == "litany":
+            return (
+                file_to_lines(template)
+                + [Line("", "spacer")]
+                + kyrie
+                + [Line("", "spacer")]
+                + pater
+                + [Line("", "spacer")]
+                + file_to_lines(short_ending_template)
+            )
+        if self.portion == "supplication":
+            return file_to_lines(supplication_template) + file_to_lines(supplication_optional_template)
+
+
+class GreatLitanyModuleCollection:
+    def get_modules(self):
+        return (
+            GreatLitanyAloneModule(style="traditional"),
+            GreatLitanyAloneModule(style="contemporary"),
+            GreatLitanyAloneModule(style="traditional", portion="litany"),
+            GreatLitanyAloneModule(style="contemporary", portion="litany"),
+            GreatLitanyAloneModule(style="traditional", portion="supplication"),
+            GreatLitanyAloneModule(style="contemporary", portion="supplication"),
+        )
+
+
+class GreatLitanyView(OfficeAPIView):
+    def get(self, request):
+        serializer = GenericDailyOfficeSerializer(GreatLitanyModuleCollection())
         return Response(serializer.data)
 
 

@@ -25,7 +25,7 @@ class Line(dict):
 
 
 class Module(object):
-    def __init__(self, office):
+    def __init__(self, office=None):
         self.office = office
 
     def get_name(self):
