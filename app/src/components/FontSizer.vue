@@ -51,7 +51,7 @@ export default {
       const main = document.getElementById("main")
       if (main) {
         main.style["font-size"] = `${value}px`;
-        document.querySelectorAll("main h2, main h3, main p, .el-collapse-item__header, .el-collapse-item p").forEach((p) => {
+        document.querySelectorAll("#main h2, #main h3, #main p, .el-collapse-item__header, .el-collapse-item p").forEach((p) => {
           p.style["font-size"] = `${value}px`;
           p.style["line-height"] = `${value * 1.6}px`;
         });

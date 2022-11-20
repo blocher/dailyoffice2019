@@ -53,7 +53,7 @@
       <FontSizer/>
     </div>
   </div>
-  <div v-if="!loading" id="main" class="readingsPanel">
+  <div v-if="!loading && !error" id="main" class="main litany">
     <div
         v-for="(line, index) in selected.lines" :key="index"
     >
@@ -148,45 +148,40 @@ export default {
       });
     },
   },
-  async created() {
-    await this.initialize();
+  async mounted() {
+    this.loading = true;
+    this.service = "Great Litany"
+    try {
+      const data = await this.$http.get(
+          `${process.env.VUE_APP_API_URL}api/v1/litany`
+      );
+      this.modules = data['data']['modules'];
+      this.services = this.modules.map((module) => {
+        return {
+          name: module.name,
+          active: false
+        };
+      });
+
+      this.contemporaryServices = this.services.filter((service) => {
+        return service.name.includes("Contemporary");
+      });
+      this.traditionalServices = this.services.filter((service) => {
+        return service.name.includes("Traditional");
+      });
+      this.contemporaryServices[0].active = true;
+      this.selected = this.contemporaryServices[0];
+      this.changeService(this.selected.name);
+    } catch (e) {
+      this.error = "There was an error retrieving the litany. Please try again.";
+      this.loading = false;
+      return;
+    }
+    this.error = false;
+    this.loading = false;
+
   },
   methods: {
-    initialize: async function () {
-      this.loading = true;
-      this.service = "Great Litany"
-      try {
-        const data = await this.$http.get(
-            `${process.env.VUE_APP_API_URL}api/v1/litany`
-        );
-        this.modules = data['data']['modules'];
-        this.services = this.modules.map((module) => {
-          return {
-            name: module.name,
-            active: false
-          };
-        });
-
-        this.contemporaryServices = this.services.filter((service) => {
-          return service.name.includes("Contemporary");
-        });
-        this.traditionalServices = this.services.filter((service) => {
-          return service.name.includes("Traditional");
-        });
-        this.contemporaryServices[0].active = true;
-        this.selected = this.contemporaryServices[0];
-        this.changeService(this.selected.name);
-        console.log("SELECTED", this.selected, this.selected.name)
-      } catch (e) {
-        this.error =
-            "There was an error retrieving the readings. Please try again.";
-        this.loading = false;
-        return;
-      }
-      this.error = false;
-      this.loading = false;
-
-    },
     serviceLink: function (service) {
       return `/litany`;
     },
