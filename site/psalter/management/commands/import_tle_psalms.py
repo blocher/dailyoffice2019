@@ -122,9 +122,34 @@ def import_psalter(files, trad=False):
                 fonts.append(obj["fontname"])
             except TypeError:
                 pass
+
         if "Italic" in line[0]["fontname"]:
             continue
+        temp_line = line_to_text(line)
+        replace_lord = False
+        if "Lord" in temp_line:
+            for i, letter in enumerate(line):
+                try:
+                    o_in_lord = "NO"
+                    try:
+                        if letter["text"] == "o":
+                            if (
+                                line[i + 1]["text"] == "r"
+                                and line[i + 2]["text"] == "d"
+                                and line[i - 1]["text"] == "L"
+                            ):
+                                o_in_lord = "YES"
+                    except IndexError:
+                        pass
+                    if letter["text"] == "o" and o_in_lord == "YES" and letter["width"] > 6:
+                        replace_lord = True
+                    # if letter['text'] in ["L", "o", "r", "d"]:
+                    #     print(letter['text'], psalm_number, verse_number, letter['width'], o_in_lord)
+                except TypeError:
+                    pass
         line = line_to_text(line)
+        if replace_lord:
+            line = line.replace("Lord", "Lᴏʀᴅ")
         if re.match("[0-9]+\s", line) or line.isnumeric() or i >= len(lines) - 2:
             if verse_number != 0 and psalm_number != 0 and first_half:
                 # print(psalm_number, verse_number, first_half, i, len(lines))
@@ -158,6 +183,7 @@ def import_psalter(files, trad=False):
         if had_asterisk:
             first_half_complete = True
             had_asterisk = False
+    fonts = set(fonts)
 
 
 class Command(BaseCommand):
