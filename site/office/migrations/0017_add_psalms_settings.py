@@ -19,8 +19,8 @@ class Migration(migrations.Migration):
 
         new_setting = Setting.objects.create(
             name="psalm_translation",
-            title="Psalm Translation",
-            description="The Psalm Translation for use in the Daily Office",
+            title="Psalms Translation",
+            description="The Psalms Translation for use in the Daily Office",
             order=1,
             setting_type=1,
             site=1,

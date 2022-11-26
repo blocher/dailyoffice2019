@@ -22,7 +22,7 @@ export default {
 <style lang="scss" scoped>
 .logoDiv {
   max-width: 500px;
-  margin: 0 auto;
+  margin: 200px auto;
 
 }
 </style>
