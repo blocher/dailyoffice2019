@@ -57,7 +57,7 @@
                     'block text-sm font-medium',
                   ]"
                 >
-                  {{ option.name }}
+                  <strong>{{ option.name }}</strong>
                 </RadioGroupLabel>
                 <RadioGroupDescription
                     as="span"

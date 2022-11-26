@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
         initial_settings = Setting.objects.filter(setting_type=1, site=1).all()  # MainSettings
         for i, setting in enumerate(initial_settings):
-            if setting.order > 1:
+            if setting.order > 0:
                 setting.order = setting.order + 1
                 setting.save()
 
@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
             name="psalm_translation",
             title="Psalm Translation",
             description="The Psalm Translation for use in the Daily Office",
-            order=2,
+            order=1,
             setting_type=1,
             site=1,
         )
