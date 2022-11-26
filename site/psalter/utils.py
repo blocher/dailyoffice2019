@@ -66,7 +66,6 @@ def psalm_api_lines(citation, verses, heading=True, language_style="contemporary
     else:
         verses = [verse for verse in verses if verse.first_half]
     for i, verse in enumerate(verses):
-        print(headings)
         if headings == "half_verse":
             style = "leader"
         elif headings in ["none", "unison"]:
