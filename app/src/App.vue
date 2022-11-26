@@ -1,4 +1,5 @@
 <template>
+  <div id="notch" class="notch"></div>
   <TopMenu/>
   <div class="main-body">
     <Loading v-if="loading"/>
@@ -22,6 +23,7 @@ import Loading from "@/components/Loading";
 import AHPLogo from "@/components/AHPLogo";
 import {event} from 'vue-gtag'
 import BetaNote from "@/components/BetaNote";
+import {useActiveMeta, useMeta} from "vue-meta";
 
 export default {
   components: {
@@ -29,6 +31,13 @@ export default {
     TopMenu,
     Loading,
     BetaNote,
+  },
+  setup() {
+    const {meta} = useMeta({
+      htmlAttrs: {lang: 'en'},
+      viewport: 'width=device-width, initial-scale=1.0, viewport-fit=cover',
+    })
+    const metadata = useActiveMeta()
   },
   data() {
     return {
@@ -59,6 +68,13 @@ export default {
     }
     this.loading = false;
   },
+  metaInfo: {
+    meta: [
+      {charset: 'utf-8'},
+      {name: 'viewport', content: 'width=device-width, initial-scale=1.0, viewport-fit=cover'},
+      {ben: 'locher'}
+    ]
+  }
 };
 </script>
 <style src="./assets/tailwind.css"></style>
@@ -287,6 +303,24 @@ body {
 
 .el-input__inner {
   background-color: var(--el-input-bg-color, var(--el-fill-color-blank)) !important;
+}
+
+body {
+  //margin-top: calc(env(safe-area-inset-top) + 1.4rem);
+
+
+  #notch {
+    display: block;
+    position: fixed;
+    height: env(safe-area-inset-top);
+    width: 100%;
+    margin: 0;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    background-color: #26282a;
+  }
+
 }
 
 </style>

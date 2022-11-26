@@ -39,7 +39,7 @@
         <!--        >-->
       </el-button-group>
     </template>
-    <template #dateCell="{ data }">
+    <template #date-cell="{ data }">
       <div
           class="dateCellWrapper" :class="getColorForDate(data.day)" @click="clickDateCell(data, $event)"
       >

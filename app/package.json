@@ -51,6 +51,7 @@
     "vue-axios": "^3.5.2",
     "vue-gtag": "^2.0.1",
     "vue-mailchimp-subscribe": "^1.1.0",
+    "vue-meta": "^3.0.0-alpha.10",
     "vue-router": "^4.1.6",
     "vuex": "^4.1.0",
     "webfontloader": "^1.6.28",
