@@ -1183,7 +1183,7 @@ class AdditionalCollects(Module):
         lines = []
         weekly_collect = self.pick_weekly_collect()
         weekly_collect["weekly"] = True
-        collects = [weekly_collect] + [self.pick_mission_collect()] + self.get_extra_collects()
+        collects = (weekly_collect,) + (self.pick_mission_collect(),) + self.get_extra_collects()
         language_style = self.office.settings["language_style"]
         for collect in collects:
             text = collect["traditional"] if language_style == "traditional" else collect["contemporary"]
@@ -1199,7 +1199,7 @@ class AdditionalCollects(Module):
         lines = []
         language_style = self.office.settings["language_style"]
 
-        for collect in self.pick_fixed_collects() + (self.pick_mission_collect(),) + set(self.get_extra_collects()):
+        for collect in self.pick_fixed_collects() + (self.pick_mission_collect(),) + self.get_extra_collects():
             text = collect["traditional"] if language_style == "traditional" else collect["contemporary"]
             lines.append(Line(collect["title"], "heading"))
             lines.append(Line(text, "leader"))
@@ -1258,7 +1258,7 @@ class AdditionalCollects(Module):
                 for extra_collect in extra_collects
             ]
             return extra_collects
-        return []
+        return ()
 
 
 class MPAdditionalCollects(AdditionalCollects):
