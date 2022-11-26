@@ -22,10 +22,11 @@ class VersesWithLord(SimpleListFilter):
         ]
 
     def queryset(self, request, queryset):
-        print("am here", self.value())
-        value = int(self.value())
+        try:
+            value = int(self.value())
+        except (TypeError, ValueError):
+            return queryset
         if value == 1:
-            print("does match")
             return queryset.filter(
                 Q(first_half__icontains="Lord")
                 | Q(second_half__icontains="Lord")
