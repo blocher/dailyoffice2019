@@ -164,34 +164,43 @@ class MPOpeningSentence(Module):
         ):
 
             if self.office.date.date.weekday() in [6, 2]:  # Sunday, Wednesday
-                return {"sentence": "Repent, for the kingdom of heaven is at hand.", "citation": "MATTHEW 3:2"}
+                return {
+                    "sentence": "Repent, for the kingdom of heaven is at hand.",
+                    "traditional": "Repent ye: for the kingdom of heaven is at hand.",
+                    "citation": "MATTHEW 3:2",
+                }
 
             if self.office.date.date.weekday() in [0, 3, 5]:  # Monday, Thursday, Saturday
                 return {
                     "sentence": "Turn your face from my sins, and blot out all my misdeeds.",
+                    "traditional": "Turn thy face from my sins, and put out all my misdeeds.",
                     "citation": "PSALM 51:9",
                 }
 
             return {
                 "sentence": "If anyone would come after me, let him deny himself and take up his cross and follow me.",
+                "traditional": "Whosoever will come after me, let him deny himself, and take up his cross, and follow me.",
                 "citation": "MARK 8:34",
             }
 
         if self.office.date.season.name == "Advent":
             return {
                 "sentence": "In the wilderness prepare the way of the Lord; make straight in the desert a highway for our God.",
+                "traditional": "Prepare ye the way of the Lord, make straight in the desert a highway for our God.",
                 "citation": "ISAIAH 40:3",
             }
 
         if self.office.date.season.name == "Christmastide":
             return {
                 "sentence": "Fear not, for behold, I bring you good news of great joy that will be for all the people. For unto you is born this day in the city of David a Savior, who is Christ the Lord.",
+                "traditional": "Fear not: for, behold, I bring you good tidings of great joy, which shall be to all people. For unto you is born this day in the city of David a Savior, which is Christ the Lord.",
                 "citation": "LUKE 2:10-11",
             }
 
         if self.office.date.season.name == "Epiphanytide":
             return {
                 "sentence": "From the rising of the sun to its setting my name will be great among the nations, and in every place incense will be offered to my name, and a pure offering. For my name will be great among the nations, says the Lord of hosts.",
+                "traditional": "For from the rising of the sun even unto the going down of the same my name shall be great among the Gentiles; and in every place incense shall be offered unto my name, and a pure offering: for my name shall be great among the heathen, saith the Lord of hosts.",
                 "citation": "MALACHI 1:11",
             }
 
@@ -202,18 +211,21 @@ class MPOpeningSentence(Module):
         ):
             return {
                 "sentence": "Since then we have a great high priest who has passed through the heavens, Jesus, the Son of God, let us hold fast our confession. Let us then with confidence draw near to the throne of grace, that we may receive mercy and find grace to help in time of need.",
+                "traditional": "Seeing then that we have a great high priest, that is passed into the heavens, Jesus the Son of God, let us hold fast our profession. Let us therefore come boldly unto the throne of grace, that we may obtain mercy, and find grace to help in time of need.",
                 "citation": "HEBREWS 4:14, 16",
             }
 
         if self.office.date.primary.name == "The Day of Pentecost":
             return {
                 "sentence": "You will receive power when the Holy Spirit has come upon you, and you will be my witnesses in Jerusalem and in all Judea and Samaria, and to the end of the earth.",
+                "traditional": "Ye shall receive power, after that the Holy Ghost is come upon you: and ye shall be witnesses unto me both in Jerusalem, and in all Judaea, and in Samaria, and unto the uttermost part of the earth.",
                 "citation": "ACTS 1:8",
             }
 
         if self.office.date.primary.name == "Trinity Sunday":
             return {
                 "sentence": "Holy, holy, holy, is the Lord God Almighty, who was and is and is to come!",
+                "traditional": "Holy, holy, holy, is the Lord God Almighty, which was, and is, and is to come.",
                 "citation": "REVELATION 4:8",
             }
 
