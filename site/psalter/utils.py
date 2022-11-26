@@ -66,9 +66,10 @@ def psalm_api_lines(citation, verses, heading=True, language_style="contemporary
     else:
         verses = [verse for verse in verses if verse.first_half]
     for i, verse in enumerate(verses):
+        print(headings)
         if headings == "half_verse":
             style = "leader"
-        elif headings == "none":
+        elif headings in ["none", "unison"]:
             style = "congregation"
         else:  # whole_verse
             if i % 2 == 0:
@@ -87,7 +88,7 @@ def psalm_api_lines(citation, verses, heading=True, language_style="contemporary
         )
         if headings == "half_verse":
             style = "congregation"
-        elif headings == "none":
+        elif headings in ["none", "unison"]:
             style = "congregation"
         else:  # whole_verse
             if i % 2 == 0:
@@ -124,7 +125,7 @@ def psalm_html(
                 "<p class='indent'><strong>{}</strong></p>",
                 verse.second_half_tle if language_style == "traditional" else verse.second_half,
             )
-        elif headings == "none":
+        elif headings in ["none", "unison"]:
             html = html + format_html(
                 "<p class='hanging-indent'><sup class='versenum'>{}</sup> {} <span class='asterisk'>*</span> </p>",
                 verse.number,
