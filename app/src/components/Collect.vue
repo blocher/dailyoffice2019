@@ -26,7 +26,7 @@ export default {
   },
   async created() {
     this.offices.forEach((office) => {
-      if (this.extraCollects[office].includes(this.collect.uuid)) {
+      if (Object.prototype.hasOwnProperty.call(this.extraCollects, office) && this.extraCollects[office].includes(this.collect.uuid)) {
         this.checkList.push(office)
       }
     });

@@ -193,7 +193,8 @@ export default {
       if (!extraCollects) {
         return ""
       }
-      const office_extra_collects = extraCollects[full_office_name].join(",")
+      const office_extra_collects = Object.prototype.hasOwnProperty.call(extraCollects, 'full_office_name') ? extraCollects[full_office_name].join(",") : [];
+      ;
       return office_extra_collects
     }
   },
