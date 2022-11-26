@@ -14,6 +14,7 @@ declare module '@vue/runtime-core' {
     CollectsFilters: typeof import('./src/components/CollectsFilters.vue')['default']
     CollectsSubcategory: typeof import('./src/components/CollectsSubcategory.vue')['default']
     Commemoration: typeof import('./src/components/Commemoration.vue')['default']
+    ElAffix: typeof import('element-plus/es')['ElAffix']
     ElAlert: typeof import('element-plus/es')['ElAlert']
     ElBacktop: typeof import('element-plus/es')['ElBacktop']
     ElButton: typeof import('element-plus/es')['ElButton']

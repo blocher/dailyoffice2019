@@ -759,7 +759,6 @@ class EPPsalms(MPPsalms):
 class ReadingModule(Module):
     def remove_headings_if_needed(self, text):
         reading_headings = self.office.settings["reading_headings"] == "on"
-        print("READING HEADINGS", reading_headings)
         if reading_headings:
             return text
 
