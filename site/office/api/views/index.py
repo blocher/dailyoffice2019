@@ -689,7 +689,7 @@ class MPPsalms(Module):
         psalms = getattr(self.office.thirty_day_psalter_day, self.attribute)
         citations = psalms.split(",")
         heading = self.heading(citations)
-        language_style = self.office.settings["language_style"]
+        language_style = self.office.settings["psalm_translation"]
         psalms = get_psalms(psalms, api=True, language_style=language_style)
 
         return [Line(heading, "heading"), Line("Thirty Day Cycle", "subheading")] + psalms
@@ -710,7 +710,7 @@ class MPPsalms(Module):
 
         citations = psalms.split(",")
         heading = self.heading(citations)
-        language_style = self.office.settings["language_style"]
+        language_style = self.office.settings["psalm_translation"]
         psalms = get_psalms(psalms, api=True, language_style=language_style)
 
         return [Line(heading, "heading"), Line("Sixty Day Cycle", "subheading")] + psalms
@@ -727,7 +727,7 @@ class MPPsalms(Module):
             return None
 
         heading = self.heading(mass_psalm)
-        language_style = self.office.settings["language_style"]
+        language_style = self.office.settings["psalm_translation"]
         psalms = get_psalms(mass_psalm, api=True, language_style=language_style)
         return [Line(heading, "heading"), Line("Sunday & Holy Day Psalms", "subheading")] + psalms
 
