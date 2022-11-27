@@ -1,7 +1,7 @@
 <template>
   <!--  <div class="fixed top-3 right-3 z-200">-->
-  <!--    <el-tag size="default" type="warning">Beta site</el-tag>-->
-  <!--    <br>-->
+  <!--    &lt;!&ndash;      <el-tag size="default" type="warning">Beta site</el-tag>&ndash;&gt;-->
+  <!--    &lt;!&ndash;      <br>&ndash;&gt;-->
   <!--    <small class="float-right"><a href="https://dailyoffice2019.com">Classic site-->
   <!--      <font-awesome-icon :icon="['fad', 'fa-square-up-right']"/>&nbsp;</a></small>-->
   <!--  </div>-->

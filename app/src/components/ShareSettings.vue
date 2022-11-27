@@ -1,9 +1,19 @@
 <template>
+
+  <span class="sub-menu-item">
+    <a
+        href="https://classic.dailyoffice2019.com"
+        target="_blank"
+    >
+      <span class="text-xs">Classic site&nbsp;</span>
+      <font-awesome-icon :icon="['fad', 'fa-square-up-right']"/>
+    </a>
+  </span>
+  <br/>
   <span class="sub-menu-item">
     <a
         href="" @click.prevent="toggleSharePanel"
     >
-
       <span class="text-xs">Share Your Settings&nbsp;</span>
       <font-awesome-icon :icon="['fad', 'share-nodes']"/>&nbsp;
     </a>
