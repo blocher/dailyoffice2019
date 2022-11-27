@@ -65,6 +65,7 @@ import Loading from "@/components/Loading";
 import CollectsFilters from "@/components/CollectsFilters";
 import Collect from "@/components/Collect";
 import FontSizer from "@/components/FontSizer";
+import {DynamicStorage} from "@/helpers/storage";
 
 
 export default {
@@ -92,7 +93,7 @@ export default {
     }
   },
   async mounted() {
-    const traditional = localStorage.getItem("traditionalCollects", false);
+    const traditional = await DynamicStorage.getItem("traditionalCollects", false);
     if (traditional == "true" || traditional == true) {
       this.traditional = true;
     } else {
@@ -140,8 +141,8 @@ export default {
         return this.selectedCollectTypes.includes(collect.collect_type.name);
       });
     },
-    setTraditional() {
-      localStorage.setItem("traditionalCollects", this.traditional);
+    async setTraditional() {
+      await DynamicStorage.setItem("traditionalCollects", this.traditional);
     },
     setCollectTypes(categories) {
       const category = categories.filter((category) => {

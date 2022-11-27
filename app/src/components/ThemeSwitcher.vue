@@ -22,14 +22,16 @@
 </template>
 
 <script>
+import {DynamicStorage} from "@/helpers/storage";
+
 export default {
   data() {
     return {
       userTheme: "light",
     };
   },
-  mounted() {
-    let activeTheme = localStorage.getItem("user-theme");
+  async mounted() {
+    let activeTheme = await DynamicStorage.getItem("user-theme");
     if (!activeTheme) {
       activeTheme = this.getMediaPreference();
     }
@@ -37,9 +39,9 @@ export default {
     this.$watch("userTheme", this.setTheme);
   },
   methods: {
-    setTheme(theme, store = true) {
+    async setTheme(theme, store = true) {
       if (store) {
-        localStorage.setItem("user-theme", theme);
+        await DynamicStorage.setItem("user-theme", theme);
       }
       this.userTheme = theme;
       document.documentElement.className = this.getUserThemeClass();

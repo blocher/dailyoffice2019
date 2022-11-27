@@ -84,6 +84,7 @@ import CollectsFilters from "@/components/CollectsFilters";
 import Collect from "@/components/Collect";
 import FontSizer from "@/components/FontSizer";
 import CollectsSubcategory from "@/components/CollectsSubcategory";
+import {DynamicStorage} from "@/helpers/storage";
 
 export default {
   components: {Loading, CollectsFilters, Collect, FontSizer, CollectsSubcategory},
@@ -130,8 +131,8 @@ export default {
     },
   },
   async mounted() {
-    const traditional = localStorage.getItem("traditionalCollects", false);
-    if (traditional == "true" || traditional == true) {
+    const traditional = await DynamicStorage.getItem("traditionalCollects", false);
+    if (traditional === "true" || traditional == true) {
       this.traditional = true;
     } else {
       this.traditional = false;
@@ -158,22 +159,22 @@ export default {
       });
     });
     this.setDefaultFilter()
-    this.setExtraCollects()
+    await this.setExtraCollects()
     this.error = false;
     this.loading = false;
     this.readyToSetFontSize = true;
   },
   methods: {
-    setExtraCollects() {
-      this.extraCollects = JSON.parse(localStorage.getItem('extraCollects')) || this.defaultDict;
+    async setExtraCollects() {
+      this.extraCollects = JSON.parse(await DynamicStorage.getItem('extraCollects')) || this.defaultDict;
       // this.offices.forEach((office) => {
       //   if (extraCollects[office].includes(this.collect.uuid)) {
       //     this.extraCollectsList.push(office)
       //   }
       // });
     },
-    setTraditional() {
-      localStorage.setItem("traditionalCollects", this.traditional);
+    async setTraditional() {
+      await DynamicStorage.setItem("traditionalCollects", this.traditional);
     },
     setDefaultFilter() {
       if (!this.selectedCollectTypes.length) {
@@ -206,7 +207,7 @@ export default {
         defaultDict[office] = []
       })
       let checkList = []
-      const extraCollects = JSON.parse(localStorage.getItem('extraCollects')) || defaultDict;
+      const extraCollects = JSON.parse(await DynamicStorage.getItem('extraCollects')) || defaultDict;
       this.offices.forEach((office) => {
         checkList = checkList.concat(extraCollects[office])
       });

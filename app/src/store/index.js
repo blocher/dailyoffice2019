@@ -1,5 +1,7 @@
 import { createStore } from "vuex";
 import { ElMessage } from "element-plus";
+import { DynamicStorage } from "@/helpers/storage";
+import router from "@/router";
 
 export default createStore({
   state: { settings: false, availableSettings: false },
@@ -7,12 +9,14 @@ export default createStore({
     saveAvailableSettings: (state, availableSettings) => {
       state.availableSettings = availableSettings;
     },
-    saveSettings: (state, settings) => {
-      localStorage.setItem("settings", JSON.stringify(settings));
+    saveSettings: async (state, settings) => {
+      await DynamicStorage.setItem("settings", JSON.stringify(settings));
       state.settings = settings;
     },
-    initializeSettings: (state, app) => {
-      const initializeAdditionalCollects = (app) => {
+  },
+  actions: {
+    async initializeSettings({ state, commit }) {
+      const initializeAdditionalCollects = async () => {
         let isSetting = false;
         const offices = {
           morning_prayer_collects: "Morning Prayer",
@@ -22,35 +26,35 @@ export default createStore({
         };
         const result = {};
         for (const [key, value] of Object.entries(offices)) {
-          if (app.$route.query[key]) {
-            result[value] = app.$route.query[key].split(",");
+          if (router.currentRoute._value.query[key]) {
+            result[value] = router.currentRoute._value.query[key].split(",");
             isSetting = true;
           }
         }
         if (isSetting) {
-          localStorage.setItem("extraCollects", JSON.stringify(result));
+          await DynamicStorage.setItem("extraCollects", JSON.stringify(result));
         }
       };
       const availableSettings = state.availableSettings;
-      const settings_store = localStorage.getItem("settings");
+      const settings_store = await DynamicStorage.getItem("settings");
       const settings = settings_store
-        ? JSON.parse(localStorage.getItem("settings"))
+        ? JSON.parse(await DynamicStorage.getItem("settings"))
         : {};
       let applied = false;
       availableSettings.forEach((availableSetting) => {
         const key = availableSetting["name"];
         const value = availableSetting["options"][0]["value"];
-        if (app.$route.query[key]) {
+        if (router.currentRoute._value.query[key]) {
           applied = true;
-          settings[key] = app.$route.query[key];
+          settings[key] = router.currentRoute._value.query[key];
         } else if (settings[key] === undefined) {
           settings[key] = value;
         }
       });
-      localStorage.setItem("settings", JSON.stringify(settings));
+      await DynamicStorage.setItem("settings", JSON.stringify(settings));
       state.settings = settings;
-      initializeAdditionalCollects(app);
-      app.$router.replace({ query: null });
+      await initializeAdditionalCollects();
+      router.push({ path: router.currentRoute._value.fullPath, query: {} });
       if (applied) {
         ElMessage.success({
           title: "Saved",
@@ -61,8 +65,9 @@ export default createStore({
           dangerouslyUseHTMLString: true,
         });
       }
+      commit("saveSettings", settings);
+      return state;
     },
   },
-  actions: {},
   modules: {},
 });

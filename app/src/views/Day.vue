@@ -30,6 +30,7 @@
 import setCalendarDate from "@/helpers/setCalendarDate";
 import OfficeNav from "@/components/OfficeNav";
 import PageNotFound from "@/views/PageNotFound";
+import {DynamicStorage} from "@/helpers/storage";
 
 export default {
   name: "Calendar",
@@ -72,7 +73,7 @@ export default {
     if (this.$route.params.serviceType) {
       this.currentServiceType = this.$route.params.serviceType;
     } else if (!this.$route.params.office) {
-      this.currentServiceType = localStorage.getItem("serviceType") || "office";
+      this.currentServiceType = await DynamicStorage.getItem("serviceType") || "office";
     }
     await this.setDay();
 

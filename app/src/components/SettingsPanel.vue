@@ -89,8 +89,8 @@ export default {
   },
   props: ["availableSettings", "site", "name", "advanced"],
   methods: {
-    changeSetting() {
-      const settings = this.$store.state.settings;
+    async changeSetting() {
+      const settings = await this.$store.state.settings;
       this.availableSettings.forEach((setting) => {
         if (setting.active) {
           const name = setting.name;
@@ -98,7 +98,7 @@ export default {
           settings[name] = value;
         }
       });
-      this.$store.commit("saveSettings", settings);
+      await this.$store.commit("saveSettings", settings);
       return ElMessage.success({
         title: "Saved",
         message: "Your setting has been saved.",

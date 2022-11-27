@@ -13,6 +13,7 @@
 // @ is an alias to /src
 import Office from "@/views/Office";
 import PageNotFound from "@/views/PageNotFound";
+import {DynamicStorage} from "@/helpers/storage";
 
 export default {
   name: "Today",
@@ -48,7 +49,7 @@ export default {
     if (this.$route.params.serviceType) {
       this.currentServiceType = this.$route.params.serviceType;
     } else if (!this.$route.params.office) {
-      this.currentServiceType = localStorage.getItem("serviceType") || "office";
+      this.currentServiceType = await DynamicStorage.getItem("serviceType") || "office";
     }
     this.setDate();
   },

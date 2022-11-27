@@ -8,7 +8,7 @@
         class="max-w-6xl mx-auto pt-10 pb-12 px-4 lg:pb-16"
     >
       <el-tabs
-          v-model="openTab" :tab-position="tabPosition" class="h-full"
+          v-model="openTab" :tab-position="tabPosition" class="h-full" @tab-change="toggleOffice"
       >
         <el-tab-pane label="Daily Office" name="office">
           <SettingsPanel
@@ -79,6 +79,7 @@
 
 import Loading from "@/components/Loading";
 import SettingsPanel from "@/components/SettingsPanel";
+import {DynamicStorage} from "@/helpers/storage";
 
 export default {
   name: "Settings",
@@ -107,53 +108,56 @@ export default {
       // return this.windowWidth > 780 ? "left" : "top";
     },
   },
-  mounted() {
-    this.loading = true;
-    this.windowWidth = window.innerWidth;
-    window.addEventListener("resize", () => {
-      this.windowWidth = window.innerWidth;
-    });
-    this.availableSettings = this.$store.state.availableSettings;
-    const settings = this.$store.state.settings;
-    this.availableSettings.forEach((setting, i) => {
-      const name = setting.name;
-      this.availableSettings[i].active = settings[name];
-    });
-    this.dailyOfficeSettings = this.availableSettings.filter(
-        (setting) => setting.site_name == "Daily Office"
-    );
-    this.familyPrayerSettings = this.availableSettings.filter(
-        (setting) => setting.site_name == "Family Prayer"
-    );
-    if (localStorage.advancedSettings) {
-      const stored = localStorage.advancedSettings;
-      this.advanced = stored == "true" ? true : false;
-    } else {
-      localStorage.advancedSettings = false;
-    }
-    if (localStorage.settingsPane) {
-      const stored = localStorage.settingsPane;
-      if (stored) {
-        this.openTab = stored;
-      } else {
-        localStorage.settingsPane = "office";
-      }
-    }
-    this.loading = false;
+  async mounted() {
+    await this.initialize();
   },
-
   unmounted() {
     window.removeEventListener("resize", () => {
       this.windowWidth = window.innerWidth;
     });
   },
   methods: {
-    toggleAdvanced(value) {
-      localStorage.advancedSettings = value;
+    async initialize() {
+      this.loading = true;
+      this.windowWidth = window.innerWidth;
+      window.addEventListener("resize", () => {
+        this.windowWidth = window.innerWidth;
+      });
+      this.availableSettings = await this.$store.state.availableSettings;
+      await this.$store.dispatch('initializeSettings');
+      const settings = await this.$store.state.settings;
+      this.availableSettings.forEach((setting, i) => {
+        const name = setting.name;
+        this.availableSettings[i].active = settings[name];
+      });
+      this.dailyOfficeSettings = this.availableSettings.filter(
+          (setting) => setting.site_name == "Daily Office"
+      );
+      this.familyPrayerSettings = this.availableSettings.filter(
+          (setting) => setting.site_name == "Family Prayer"
+      );
+      if (await DynamicStorage.getItem("advancedSettings")) {
+        const stored = await DynamicStorage.getItem("advancedSettings");
+        this.advanced = stored == "true" ? true : false;
+      } else {
+        await DynamicStorage.setItem("advancedSettings", false);
+      }
+      if (await DynamicStorage.getItem("settingsPane")) {
+        const stored = await DynamicStorage.getItem("settingsPane");
+        if (stored) {
+          this.openTab = stored;
+        } else {
+          await DynamicStorage.setItem("settingsPane", "office")
+        }
+      }
+      this.loading = false;
     },
-    toggleOffice(value) {
+    async toggleAdvanced(value) {
+      await DynamicStorage.setItem("advancedSettings", value);
+    },
+    async toggleOffice(value) {
       this.openTab = value;
-      localStorage.settingsPane = value;
+      await DynamicStorage.setItem("settingsPane", value);
     },
     toggleBottomPanel() {
       this.bottomPanelExpanded = !this.bottomPanelExpanded;

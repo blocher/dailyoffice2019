@@ -57,7 +57,7 @@ export default {
           `${process.env.VUE_APP_API_URL}api/v1/available_settings/`
       );
       await this.$store.commit("saveAvailableSettings", settings_data.data);
-      await this.$store.commit("initializeSettings", this);
+      await this.$store.dispatch('initializeSettings');
       this.loading = false;
     } catch (e) {
       console.log(e);
@@ -68,13 +68,6 @@ export default {
     }
     this.loading = false;
   },
-  metaInfo: {
-    meta: [
-      {charset: 'utf-8'},
-      {name: 'viewport', content: 'width=device-width, initial-scale=1.0, viewport-fit=cover'},
-      {ben: 'locher'}
-    ]
-  }
 };
 </script>
 <style src="./assets/tailwind.css"></style>

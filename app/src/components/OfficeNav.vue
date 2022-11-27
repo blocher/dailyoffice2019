@@ -112,6 +112,8 @@
 <script>
 // @ is an alias to /src
 
+import {DynamicStorage} from "@/helpers/storage";
+
 export default {
   name: "OfficeNav",
   components: {},
@@ -294,15 +296,15 @@ export default {
         }
       }
     },
-    toggleServiceType() {
+    async toggleServiceType() {
       if (this.currentServiceType == "family") {
         this.currentServiceType = "office";
         this.links = this.dailyLinks;
-        localStorage.setItem("serviceType", "office");
+        await DynamicStorage.setItem("serviceType", "office");
         this.redirectToDaily();
       } else {
         this.currentServiceType = "family";
-        localStorage.setItem("serviceType", "family");
+        await DynamicStorage.setItem("serviceType", "family");
         this.links = this.familyLinks;
         this.redirectToFamily();
       }

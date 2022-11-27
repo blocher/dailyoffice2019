@@ -89,6 +89,7 @@
 <script>
 import Loading from "@/components/Loading";
 import FontSizer from "@/components/FontSizer";
+import {DynamicStorage} from "@/helpers/storage";
 
 export default {
   components: {Loading, FontSizer},
@@ -101,7 +102,7 @@ export default {
     };
   },
   async created() {
-    const traditional = localStorage.getItem("traditionalPsalms", false);
+    const traditional = await DynamicStorage.getItem("traditionalPsalms", false);
     if (traditional == "true" || traditional == true) {
       this.traditional = true;
     } else {
@@ -124,8 +125,8 @@ export default {
     this.loading = false;
   },
   methods: {
-    setTradtional() {
-      localStorage.setItem("traditionalPsalms", this.traditional);
+    async setTradtional() {
+      await DynamicStorage.setItem("traditionalPsalms", this.traditional);
     }
   }
 };

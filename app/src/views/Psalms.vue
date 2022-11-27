@@ -72,6 +72,7 @@
 
 <script>
 import Loading from "@/components/Loading";
+import {DynamicStorage} from "@/helpers/storage";
 
 export default {
   components: {Loading},
@@ -88,7 +89,7 @@ export default {
     };
   },
   async created() {
-    const traditional = localStorage.getItem("traditionalPsalms", false);
+    const traditional = await DynamicStorage.getItem("traditionalPsalms", false);
     if (traditional == "true" || traditional == true) {
       this.traditional = true;
     } else {
@@ -143,8 +144,8 @@ export default {
         ).topic_name;
       }
     },
-    setTraditional() {
-      localStorage.setItem("traditionalPsalms", this.traditional);
+    async setTraditional() {
+      await DynamicStorage.setItem("traditionalPsalms", this.traditional);
     }
 
   },

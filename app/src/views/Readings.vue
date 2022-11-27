@@ -152,6 +152,7 @@ import Collects from "@/components/Collects";
 import CitationGroup from "@/components/CitationGroup";
 import FontSizer from "@/components/FontSizer";
 import PageNotFound from "@/views/PageNotFound";
+import {DynamicStorage} from "@/helpers/storage";
 
 export default {
   name: "Readings",
@@ -255,20 +256,20 @@ export default {
   },
   async created() {
     this.calendarDate = setCalendarDate(this.$route);
-    let translation = localStorage.getItem('readings_translation');
+    let translation = await DynamicStorage.getItem('readings_translation');
     if (!translation) {
       const settings = this.$store.state.settings;
       translation = settings["bible_translation"];
     }
-    localStorage.setItem('readings_translation', translation);
+    await DynamicStorage.setItem('readings_translation', translation);
     this.translation = translation;
 
-    let psalmsTranslation = localStorage.getItem('psalms_translation');
+    let psalmsTranslation = await DynamicStorage.getItem('psalms_translation');
     if (!psalmsTranslation) {
       const settings = this.$store.state.settings;
       psalmsTranslation = settings["language_style"];
     }
-    localStorage.setItem('psalms_translation', psalmsTranslation);
+    await DynamicStorage.setItem('psalms_translation', psalmsTranslation);
     this.psalmsTranslation = psalmsTranslation;
 
     await this.initialize();
@@ -347,9 +348,9 @@ export default {
       const readingId = reading.citation.replace(/[\W_]+/g, "_")
       return `reading_${readingId}`.toLowerCase();
     },
-    changeTranslation: function () {
-      localStorage.setItem('psalms_translation', this.psalmsTranslation);
-      localStorage.setItem('readings_translation', this.translation);
+    changeTranslation: async function () {
+      await DynamicStorage.setItem('psalms_translation', this.psalmsTranslation);
+      await DynamicStorage.setItem('readings_translation', this.translation);
       this.initialize();
     },
     serviceLink: function (service) {

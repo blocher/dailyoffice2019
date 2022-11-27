@@ -86,6 +86,7 @@ import CalendarCard from "@/components/CalendarCard";
 import OfficeNav from "@/components/OfficeNav";
 import PageNotFound from "@/views/PageNotFound";
 import FontSizer from "@/components/FontSizer";
+import {DynamicStorage} from "@/helpers/storage";
 
 export default {
   name: "Office",
@@ -128,8 +129,8 @@ export default {
       notFound: false,
     };
   },
-  mounted() {
-    localStorage.setItem("serviceType", this.serviceType);
+  async mounted() {
+    await DynamicStorage.setItem("serviceType", "office");
   },
 
   async created() {
@@ -157,7 +158,7 @@ export default {
         (this.calendarDate.getMonth() + 1) +
         "-" +
         this.calendarDate.getDate();
-    const settings = this.$store.state.settings;
+    const settings = await this.$store.state.settings;
     const queryString = Object.keys(settings)
         .map((key) => key + "=" + settings[key])
         .join("&");
@@ -184,12 +185,12 @@ export default {
     this.loading = false;
   },
   methods: {
-    extraCollects() {
+    async extraCollects() {
       if (this.serviceType != "office") {
         return ""
       }
       const full_office_name = this.office.replace("_", " ").toLowerCase().split(' ').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join(' ');
-      const extraCollects = JSON.parse(localStorage.getItem('extraCollects')) || "";
+      const extraCollects = JSON.parse(await DynamicStorage.getItem('extraCollects')) || "";
       if (!extraCollects) {
         return ""
       }

@@ -53,6 +53,8 @@
 <script>
 // @ is an alias to /src
 
+import {DynamicStorage} from "@/helpers/storage";
+
 export default {
   name: "Calendar",
   components: {},
@@ -78,9 +80,9 @@ export default {
     this.setCalendar();
   },
   methods: {
-    updateIncludeMinorFeasts: function () {
+    updateIncludeMinorFeasts: async function () {
       const includeMinorFeasts = this.includeMinorFeasts ? "true" : "false"
-      localStorage.setItem("includeMinorFeasts", includeMinorFeasts);
+      await DynamicStorage.setItem("includeMinorFeasts", includeMinorFeasts);
     },
     getColorForDate: function (day) {
       try {
@@ -158,7 +160,7 @@ export default {
     },
     setCalendar: async function () {
       this.loading = true;
-      const includeMinorFeasts = localStorage.getItem("includeMinorFeasts") || "false"
+      const includeMinorFeasts = await DynamicStorage.getItem("includeMinorFeasts") || "false"
       this.includeMinorFeasts = includeMinorFeasts == "true"
       this.updateIncludeMinorFeasts()
       let data = null;

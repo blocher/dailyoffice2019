@@ -14,6 +14,8 @@
 </template>
 
 <script>
+import {DynamicStorage} from "@/helpers/storage";
+
 export default {
   name: "Collect",
   props: ["collect", "traditional", "extraCollects"],
@@ -32,12 +34,12 @@ export default {
     });
   },
   methods: {
-    handleCheckChange() {
+    async handleCheckChange() {
       const defaultDict = {}
       this.offices.forEach((office) => {
         defaultDict[office] = []
       })
-      const extraCollects = JSON.parse(localStorage.getItem('extraCollects')) || defaultDict;
+      const extraCollects = JSON.parse(await DynamicStorage.getItem('extraCollects')) || defaultDict;
       this.offices.forEach((office) => {
         if (this.checkList.includes(office) && !(extraCollects[office].includes(this.collect.uuid))) {
           extraCollects[office].push(this.collect.uuid)
@@ -45,7 +47,7 @@ export default {
           extraCollects[office].splice(extraCollects[office].indexOf(this.collect.uuid), 1);
         }
       });
-      localStorage.setItem('extraCollects', JSON.stringify(extraCollects));
+      await DynamicStorage.setItem('extraCollects', JSON.stringify(extraCollects));
       this.$emit('extraCollectsChanged')
     },
     fullTitle(collect) {

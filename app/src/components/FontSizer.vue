@@ -24,6 +24,8 @@
 </template>
 
 <script>
+import {DynamicStorage} from "@/helpers/storage";
+
 export default {
   name: "FontSizer",
   components: {},
@@ -39,15 +41,15 @@ export default {
     this.resetFontSize()
   },
   methods: {
-    resetFontSize() {
-      if (localStorage.fontSize) {
-        this.fontSize = parseInt(localStorage.fontSize);
+    async resetFontSize() {
+      if (await DynamicStorage.getItem("fontSize")) {
+        this.fontSize = parseInt(await DynamicStorage.getItem("fontSize"));
       } else {
-        localStorage.fontSize = this.fontSize;
+        await DynamicStorage.setItem("fontSize", this.fontSize);
       }
       this.setFontSize(this.fontSize)
     },
-    setFontSize(value) {
+    async setFontSize(value) {
       const main = document.getElementById("main")
       if (main) {
         main.style["font-size"] = `${value}px`;
@@ -56,7 +58,7 @@ export default {
           p.style["line-height"] = `${value * 1.6}px`;
         });
       }
-      localStorage.fontSize = this.fontSize;
+      await DynamicStorage.setItem("fontSize", this.fontSize);
     },
     displayFontSize(value) {
       return `${value}px`;

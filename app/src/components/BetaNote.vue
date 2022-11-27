@@ -14,6 +14,8 @@
 <script>
 // @ is an alias to /src
 
+import {DynamicStorage} from "@/helpers/storage";
+
 export default {
   name: "BetaNote",
   components: {},
@@ -22,16 +24,16 @@ export default {
       displayBetaNote: true,
     };
   },
-  created() {
-    if (localStorage.getItem('betaNoteDismissed') == 'true') {
+  async created() {
+    if (await DynamicStorage.getItem('betaNoteDismissed') === 'true') {
       this.displayBetaNote = false;
     } else {
       this.displayBetaNote = true;
     }
   },
   methods: {
-    dismissNote: function (reading) {
-      localStorage.setItem('betaNoteDismissed', 'true');
+    dismissNote: async function (reading) {
+      await DynamicStorage.setItem('betaNoteDismissed', 'true');
     },
   },
 };

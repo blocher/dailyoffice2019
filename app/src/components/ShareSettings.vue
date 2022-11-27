@@ -70,6 +70,7 @@
 import {Share} from "@capacitor/share";
 import {Clipboard} from "@capacitor/clipboard";
 import {ElMessage} from "element-plus";
+import {DynamicStorage} from "@/helpers/storage";
 
 export default {
   data() {
@@ -102,8 +103,8 @@ export default {
         this.panelSize = "37%";
       }
     },
-    getCollectProps() {
-      const extraCollects = JSON.parse(localStorage.getItem('extraCollects'))
+    async getCollectProps() {
+      const extraCollects = JSON.parse(await DynamicStorage.getItem('extraCollects'))
       if (extraCollects) {
         const queryString = Object.keys(extraCollects)
             .map((key) => key.toLowerCase().replace(" ", "_") + "_collects=" + extraCollects[key])
