@@ -1263,15 +1263,15 @@ class AdditionalCollects(Module):
     def get_extra_collects(self):
         extra_collects = self.office.settings["extra_collects"]
         if extra_collects:
-            extra_collects = [
+            extra_collects = (
                 {
                     "title": extra_collect.title,
                     "contemporary": extra_collect.text_no_tags,
                     "traditional": extra_collect.traditional_text_no_tags,
                 }
                 for extra_collect in extra_collects
-            ]
-            return extra_collects
+            )
+            return tuple(extra_collects)
         return ()
 
 
