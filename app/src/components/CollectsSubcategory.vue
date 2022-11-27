@@ -77,7 +77,23 @@ body h4 {
   margin: 2em 0;
 }
 
+.el-collapse-item__header {
+  margin-top: 1.5rem !important;
+}
+
 .el-collapse {
   --el-collapse-header-height: auto !important;
 }
+</style>
+
+<style lang="scss">
+
+.el-collapse-item__header {
+  padding: .5rem 0 !important;
+}
+
+.el-collapse-item {
+  margin: 0 0 .5rem !important;
+}
+
 </style>
