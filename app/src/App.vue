@@ -3,7 +3,7 @@
   <TopMenu/>
   <div class="main-body">
     <Loading v-if="loading"/>
-    <BetaNote/>
+    <!--    <BetaNote/>-->
     <el-alert
         v-if="error" :title="error"
         type="error"
