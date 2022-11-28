@@ -53,7 +53,7 @@ export default {
       this.$emit('extraCollectsChanged')
       ElMessage.success({
         title: "Saved",
-        message: "<small>Your prayer settings have been uptead</small>",
+        message: "<small>Your prayer settings have been updated.</small>",
         showClose: true,
         dangerouslyUseHTMLString: true,
         offset: getMessageOffset(),
