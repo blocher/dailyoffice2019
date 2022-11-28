@@ -82,6 +82,7 @@ import {Clipboard} from "@capacitor/clipboard";
 import {ElMessage} from "element-plus";
 import {DynamicStorage} from "@/helpers/storage";
 import {getMessageOffset} from "@/helpers/getMessageOffest";
+import {Capacitor} from "@capacitor/core";
 
 export default {
   data() {
@@ -123,6 +124,7 @@ export default {
     },
     async getShareLink() {
       await this.getCollectProps()
+      await this.$store.dispatch('initializeSettings');
       const settings = await this.$store.state.settings;
       const queryString = Object.keys(settings)
           .map((key) => key + "=" + settings[key])
@@ -130,6 +132,9 @@ export default {
       const path = this.$route.path;
       const port = parseInt(window.location.port)
       const port_string = port == 80 || port == 443 ? "" : ":" + port
+      if (Capacitor.getPlatform() != 'web') {
+        return `https://www.dailyoffice2019.com${path}?${queryString}`;
+      }
       let url = ""
       if (port_string) {
         url = `${window.location.protocol}//${window.location.hostname}${port_string}${path}?${queryString}`;

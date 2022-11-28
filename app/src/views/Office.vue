@@ -158,6 +158,8 @@ export default {
         (this.calendarDate.getMonth() + 1) +
         "-" +
         this.calendarDate.getDate();
+    this.availableSettings = await this.$store.state.availableSettings;
+    await this.$store.dispatch('initializeSettings');
     const settings = await this.$store.state.settings;
     const queryString = Object.keys(settings)
         .map((key) => key + "=" + settings[key])

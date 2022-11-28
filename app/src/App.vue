@@ -1,6 +1,6 @@
 <template>
   <div id="notch" class="notch"></div>
-  <TopMenu/>
+  <TopMenu v-if="!loading"/>
   <div class="main-body">
     <Loading v-if="loading"/>
     <!--    <BetaNote/>-->

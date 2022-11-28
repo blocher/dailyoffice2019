@@ -1177,6 +1177,7 @@ class MPCollectOfTheDay(Module):
             for commemoration in getattr(self.office.date, self.commemoration_attribute)
             if getattr(commemoration, self.attribute)
         ]
+        print(collects)
         lines = [line for collect in collects for line in collect]
         return lines
 

@@ -32,13 +32,14 @@
 
 import Loading from "@/components/Loading";
 import FontSizer from "@/components/FontSizer";
+import {Capacitor} from "@capacitor/core";
 
 export default {
   components: {Loading, FontSizer},
   data() {
     return {
       aboutItems: null,
-      mode: "web",
+      mode: Capacitor.getPlatform() != 'web' ? 'app' : 'web',
       error: null,
       loading: true,
       readyToSetFontSize: false,
