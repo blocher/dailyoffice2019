@@ -12,7 +12,7 @@
 			<key>bitcode</key>
 			<false/>
 			<key>buildNumber</key>
-			<string>1</string>
+			<string>2.0</string>
 			<key>certificate</key>
 			<dict>
 				<key>SHA1</key>
@@ -32,7 +32,7 @@
 					<key>bitcode</key>
 					<false/>
 					<key>buildNumber</key>
-					<string>1</string>
+					<string>2.0</string>
 					<key>certificate</key>
 					<dict>
 						<key>SHA1</key>
@@ -54,7 +54,7 @@
 						<string>The Daily Office, LLC</string>
 					</dict>
 					<key>versionNumber</key>
-					<string>1.0</string>
+					<string>2.0</string>
 				</dict>
 				<dict>
 					<key>architectures</key>
@@ -64,7 +64,7 @@
 					<key>bitcode</key>
 					<false/>
 					<key>buildNumber</key>
-					<string>1</string>
+					<string>2.0</string>
 					<key>certificate</key>
 					<dict>
 						<key>SHA1</key>
@@ -86,7 +86,7 @@
 						<string>The Daily Office, LLC</string>
 					</dict>
 					<key>versionNumber</key>
-					<string>1.0</string>
+					<string>2.0</string>
 				</dict>
 				<dict>
 					<key>architectures</key>
@@ -96,7 +96,39 @@
 					<key>bitcode</key>
 					<false/>
 					<key>buildNumber</key>
-					<string>1</string>
+					<string>2.0</string>
+					<key>certificate</key>
+					<dict>
+						<key>SHA1</key>
+						<string>4417ECAA2E58F7A1F1042D5F4C1A2AD6195C8F5B</string>
+						<key>dateExpires</key>
+						<string>11/26/23</string>
+						<key>type</key>
+						<string>Cloud Managed Apple Distribution</string>
+					</dict>
+					<key>name</key>
+					<string>CapacitorPreferences.framework</string>
+					<key>symbols</key>
+					<true/>
+					<key>team</key>
+					<dict>
+						<key>id</key>
+						<string>2TG4YK78KZ</string>
+						<key>name</key>
+						<string>The Daily Office, LLC</string>
+					</dict>
+					<key>versionNumber</key>
+					<string>2.0</string>
+				</dict>
+				<dict>
+					<key>architectures</key>
+					<array>
+						<string>arm64</string>
+					</array>
+					<key>bitcode</key>
+					<false/>
+					<key>buildNumber</key>
+					<string>2.0</string>
 					<key>certificate</key>
 					<dict>
 						<key>SHA1</key>
@@ -118,7 +150,7 @@
 						<string>The Daily Office, LLC</string>
 					</dict>
 					<key>versionNumber</key>
-					<string>1.0</string>
+					<string>2.0</string>
 				</dict>
 				<dict>
 					<key>architectures</key>
@@ -128,7 +160,7 @@
 					<key>bitcode</key>
 					<false/>
 					<key>buildNumber</key>
-					<string>1</string>
+					<string>2.0</string>
 					<key>certificate</key>
 					<dict>
 						<key>SHA1</key>
@@ -150,13 +182,13 @@
 						<string>The Daily Office, LLC</string>
 					</dict>
 					<key>versionNumber</key>
-					<string>1.0</string>
+					<string>2.0</string>
 				</dict>
 			</array>
 			<key>entitlements</key>
 			<dict>
 				<key>application-identifier</key>
-				<string>2TG4YK78KZ.com.dailyoffice2019.app</string>
+				<string>2TG4YK78KZ.com.dailyoffice.dailyoffice2019</string>
 				<key>beta-reports-active</key>
 				<true/>
 				<key>com.apple.developer.team-identifier</key>
@@ -169,11 +201,11 @@
 			<key>profile</key>
 			<dict>
 				<key>UUID</key>
-				<string>b85a816e-8db3-4dee-8770-a63dffecfccb</string>
+				<string>9ddbf1ab-0904-45ed-bb7b-7831d3fe1d2e</string>
 				<key>dateExpires</key>
 				<string>11/26/23</string>
 				<key>name</key>
-				<string>iOS Team Store Provisioning Profile: com.dailyoffice2019.app</string>
+				<string>iOS Team Store Provisioning Profile: com.dailyoffice.dailyoffice2019</string>
 			</dict>
 			<key>symbols</key>
 			<true/>
@@ -185,7 +217,7 @@
 				<string>The Daily Office, LLC</string>
 			</dict>
 			<key>versionNumber</key>
-			<string>1.0</string>
+			<string>2.0</string>
 		</dict>
 	</array>
 </dict>

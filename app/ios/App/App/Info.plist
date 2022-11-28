@@ -18,18 +18,43 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>UILaunchScreen</string>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen.storyboard</string>
+	<key>UILaunchScreens</key>
+	<dict>
+		<key>UIDefaultLaunchScreen</key>
+		<string></string>
+		<key>UILaunchScreenDefinitions</key>
+		<array>
+			<dict>
+				<key>UIImageName</key>
+				<string></string>
+				<key>UILaunchScreenIdentifier</key>
+				<string></string>
+			</dict>
+		</array>
+		<key>UIURLToLaunchScreenAssociations</key>
+		<dict/>
+	</dict>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>UIRequiresFullScreen</key>
+	<true/>
 	<key>UIStatusBarStyle</key>
 	<string></string>
 	<key>UISupportedInterfaceOrientations</key>
