@@ -5,7 +5,7 @@
         href="https://classic.dailyoffice2019.com"
         target="_blank"
     >
-      <span class="text-xs">Classic Site</span>
+      <span class="text-xs">Classic Site&nbsp;</span>
       <font-awesome-icon :icon="['fad', 'fa-square-up-right']"/>
     </a>
   </span>
