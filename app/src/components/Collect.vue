@@ -15,6 +15,8 @@
 
 <script>
 import {DynamicStorage} from "@/helpers/storage";
+import {ElMessage} from "element-plus";
+import {getMessageOffset} from "@/helpers/getMessageOffest";
 
 export default {
   name: "Collect",
@@ -49,6 +51,13 @@ export default {
       });
       await DynamicStorage.setItem('extraCollects', JSON.stringify(extraCollects));
       this.$emit('extraCollectsChanged')
+      ElMessage.success({
+        title: "Saved",
+        message: "<small>Your prayer settings have been uptead</small>",
+        showClose: true,
+        dangerouslyUseHTMLString: true,
+        offset: getMessageOffset(),
+      });
     },
     fullTitle(collect) {
       if (collect.number) {

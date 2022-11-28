@@ -2,6 +2,7 @@ import { createStore } from "vuex";
 import { ElMessage } from "element-plus";
 import { DynamicStorage } from "@/helpers/storage";
 import router from "@/router";
+import { getMessageOffset } from "@/helpers/getMessageOffest";
 
 export default createStore({
   state: { settings: false, availableSettings: false },
@@ -63,6 +64,7 @@ export default createStore({
           showClose: true,
           duration: 0,
           dangerouslyUseHTMLString: true,
+          offset: getMessageOffset(),
         });
       }
       commit("saveSettings", settings);

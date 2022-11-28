@@ -108,6 +108,11 @@ export default {
   --el-drawer-bg-color: white !important;
   --el-font-size-base: 16px;
   --el-collapse-header-height: auto !important;
+  --sat: env(safe-area-inset-top);
+  --sar: env(safe-area-inset-right);
+  --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left);
+
 
   .el-calendar {
     --el-calendar-border: 1px solid black !important;

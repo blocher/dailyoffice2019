@@ -81,6 +81,7 @@ import {Share} from "@capacitor/share";
 import {Clipboard} from "@capacitor/clipboard";
 import {ElMessage} from "element-plus";
 import {DynamicStorage} from "@/helpers/storage";
+import {getMessageOffset} from "@/helpers/getMessageOffest";
 
 export default {
   data() {
@@ -144,6 +145,7 @@ export default {
         message: "The Share Link has been copied to the clipboard.</small>",
         showClose: true,
         dangerouslyUseHTMLString: true,
+        offset: getMessageOffset(),
       });
 
     },

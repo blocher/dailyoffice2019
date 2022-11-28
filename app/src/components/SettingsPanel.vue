@@ -78,6 +78,7 @@
 
 import {RadioGroup, RadioGroupDescription, RadioGroupLabel, RadioGroupOption,} from "@headlessui/vue";
 import {ElMessage} from "element-plus";
+import {getMessageOffset} from "@/helpers/getMessageOffest";
 
 export default {
   name: "SettingsPanel",
@@ -103,6 +104,7 @@ export default {
         title: "Saved",
         message: "Your setting has been saved.",
         showClose: true,
+        offset: getMessageOffset(),
       });
     },
     showSetting(setting) {
