@@ -325,4 +325,8 @@ body {
   z-index: 200 !important;
 }
 
+.el-drawer {
+  padding-top: env(safe-area-inset-top);
+}
+
 </style>
