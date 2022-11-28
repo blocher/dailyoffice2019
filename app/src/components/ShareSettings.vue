@@ -90,18 +90,15 @@ export default {
       sharePanel: false,
       showSharePanel: false,
       panelSize: "37%",
+      shareLink: false,
     };
-  },
-  computed: {
-    shareLink() {
-      return this.getShareLink();
-    },
   },
   created: async function () {
     window.addEventListener("resize", this.setPanelSize);
     this.setPanelSize()
     const canShare = await Share.canShare();
     this.canShare = canShare.value;
+    this.shareLink = await this.getShareLink();
   },
   unmounted() {
     window.removeEventListener("resize", this.setPanelSize);
@@ -124,21 +121,26 @@ export default {
       }
       return ""
     },
-    getShareLink() {
-      this.getCollectProps()
-      const settings = this.$store.state.settings;
+    async getShareLink() {
+      await this.getCollectProps()
+      const settings = await this.$store.state.settings;
       const queryString = Object.keys(settings)
           .map((key) => key + "=" + settings[key])
-          .join("&") + this.getCollectProps();
+          .join("&") + await this.getCollectProps();
       const path = this.$route.path;
       const port = parseInt(window.location.port)
       const port_string = port == 80 || port == 443 ? "" : ":" + port
-      const url = `${window.location.protocol}//${window.location.hostname}${port_string}${path}?${queryString}`;
+      let url = ""
+      if (port_string) {
+        url = `${window.location.protocol}//${window.location.hostname}${port_string}${path}?${queryString}`;
+      } else {
+        url = `${window.location.protocol}//${window.location.hostname}${path}?${queryString}`;
+      }
       return url;
     },
     async copyLink() {
       await Clipboard.write({
-        string: this.getShareLink(),
+        string: await this.getShareLink(),
       });
       ElMessage.success({
         title: "Saved",
@@ -158,7 +160,7 @@ export default {
       await Share.share({
         title: "Pray the Daily Office",
         text: "Join me in praying the Daily Office using my customized settings",
-        url: this.getShareLink(),
+        url: await this.getShareLink(),
         dialogTitle: "Pray with others",
       });
     },
