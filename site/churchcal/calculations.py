@@ -628,7 +628,6 @@ class SetNamesAndCollects(object):
                 commemoration.name = "{}{}".format(commemoration.name, proper_string)
 
     def feria_collect(self, commemoration, calendar_date):
-
         if "FERIA" in commemoration.rank.name:
             i = self.i.get_current_index()
             while True:
@@ -655,12 +654,8 @@ class SetNamesAndCollects(object):
                             commemoration.name = "{} after {}".format(week_days[calendar_date.date.weekday()], name)
                         commemoration.original_proper = previous.proper
                     else:
-                        # commemoration.morning_prayer_collect = previous.primary.morning_prayer_collect.replace(
-                        #     "to be born this day of a pure virgin", "to be born of a pure virgin"
-                        # )
-                        # commemoration.evening_prayer_collect = previous.primary.evening_prayer_collect.replace(
-                        #     "to be born this day of a pure virgin", "to be born of a pure virgin"
-                        # )
+                        commemoration.morning_prayer_collect = previous.primary.morning_prayer_collect
+                        commemoration.evening_prayer_collect = previous.primary.evening_prayer_collect
                         commemoration.name = "{} after {}".format(
                             week_days[calendar_date.date.weekday()], previous.primary.name.replace("The ", "the ")
                         )

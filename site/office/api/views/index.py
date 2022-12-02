@@ -1164,6 +1164,19 @@ class MPCollectOfTheDay(Module):
         style = self.office.settings["language_style"]
         collect = getattr(commemoration, self.attribute)
         text = collect.traditional_text_no_tags if style == "traditional" else collect.text_no_tags
+        if "FERIA" in commemoration.rank.name:
+            text = text.replace("and to be born [this day] of a pure virgin:", "and to be born of a pure virgin:")
+            text = text.replace(
+                "and [as at this time] to be born of a pure Virgin:", "and to be born of a pure Virgin:"
+            )
+        else:
+            text = text.replace(
+                "and to be born [this day] of a pure virgin:", "and to be born this day of a pure virgin:"
+            )
+            text = text.replace(
+                "and [as at this time] to be born of a pure Virgin:",
+                "and as at this time to be born of a pure Virgin:",
+            )
         return text
 
     def get_lines(self):
@@ -1177,7 +1190,6 @@ class MPCollectOfTheDay(Module):
             for commemoration in getattr(self.office.date, self.commemoration_attribute)
             if getattr(commemoration, self.attribute)
         ]
-        print(collects)
         lines = [line for collect in collects for line in collect]
         return lines
 
