@@ -11,12 +11,21 @@
         <div
             class="card-info" :v-if="card"
         >
-          <h4 v-if="card && office != 'evening_prayer' && office != 'compline'" v-html="card.primary_feast">
+          <h4
+v-if="card && office != 'evening_prayer' && office != 'compline'" class="primary-feast-heading"
+              v-html="card.primary_feast">
           </h4>
+          <div class="flex items-center justify-center">
+            <a
+                v-for="link in card.commemorations[0].links" :key="link" :href="link" target="_blank"
+                class="link align-center bio_link"><small>Biography</small></a>&nbsp;
+          </div>
           <h4
               v-if="card && (office == 'evening_prayer' || office == 'compline')" v-html="card.primary_evening_feast"
           >
           </h4>
+
+
           <h5
               v-if="card && card.fast && card.fast.fast_day"
               class="text-center"
@@ -131,6 +140,11 @@ export default {
 </script>
 
 <style lang="scss">
+
+.primary-feast-heading {
+  margin-bottom: 0;
+}
+
 .card-footer {
   border-radius: var(--el-card-border-radius);
   border: 1px solid var(--el-card-border-color);
