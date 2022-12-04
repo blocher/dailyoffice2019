@@ -11,13 +11,11 @@
         <div
             class="card-info" :v-if="card"
         >
-          <h4 v-if="card && office != 'evening_prayer' && office != 'compline'">
-            {{ card.primary_feast }}
+          <h4 v-if="card && office != 'evening_prayer' && office != 'compline'" v-html="card.primary_feast">
           </h4>
           <h4
-              v-if="card && (office == 'evening_prayer' || office == 'compline')"
+              v-if="card && (office == 'evening_prayer' || office == 'compline')" v-html="card.primary_evening_feast"
           >
-            {{ card.primary_evening_feast }}
           </h4>
           <h5
               v-if="card && card.fast && card.fast.fast_day"
