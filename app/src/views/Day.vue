@@ -13,12 +13,12 @@
       >
         <CalendarCard
             v-if="!loading"
-            :office="office"
             :calendar-date="calendarDate"
             :card="card"
         />
         <OfficeNav
             :calendar-date="calendarDate" :service-type="currentServiceType"
+            :selected-office="'day'"
         />
       </div>
     </div>
