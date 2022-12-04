@@ -32,12 +32,11 @@
                 <font-awesome-icon v-if="service.active" :icon="['fad', 'fa-octagon-check']"/>
               </div>
               <div class="col-span-11">
-                <span v-if="service.active">{{ service.name }}</span>
+                <span v-if="service.active" v-html="service.name"></span>
                 <span v-if="!service.active"><a
                     :href="serviceLink(service.name)"
-                    @click.prevent="changeService(service.name)">{{
-                    service.name
-                  }}</a></span>
+                    @click.prevent="changeService(service.name)"
+                    v-html="service.name"></a></span>
               </div>
             </div>
           </div>
@@ -49,12 +48,11 @@
                 <font-awesome-icon v-if="service.active" :icon="['fad', 'fa-octagon-check']"/>
               </div>
               <div class="col-span-11">
-                <span v-if="service.active">{{ service.name }}</span>
+                <span v-if="service.active" v-html="service.name"></span>
                 <span v-if="!service.active"><a
                     :href="serviceLink(service.name)"
-                    @click.prevent="changeService(service.name)">{{
-                    service.name
-                  }}</a></span>
+                    @click.prevent="changeService(service.name)"
+                    v-html="service.name"></a></span>
               </div>
             </div>
           </div>
@@ -129,7 +127,8 @@
           @readingLinkClick="handleReadingLinkClick"/>
     </div>
 
-    <Collects v-if="showCollects" :collects="collectsToShow"/>
+    <Collects v-if="showCollects" :collects="collectsToShow" :style="'Contemporary'"/>
+    <Collects v-if="showTraditionalCollects" :collects="traditionalCollectsToShow" :style="'Traditional'"/>
     <Reading
         v-for="(reading, index) in readingsToShow" :id="readingName(index)" :key="index" :reading="reading"
         :psalm-cycle="psalmCycle" :length="reading.length" :translation="translation"
@@ -252,6 +251,25 @@ export default {
     },
     showCollects: function () {
       return this.collectsToShow.length > 0
+    },
+    traditionalCollectsToShow: function () {
+      if (this.service) {
+        let serviceItems = this.services[this.service];
+        let collects = []
+        try {
+          collects = serviceItems['traditional_collects']
+        } catch (e) {
+          return []
+        }
+        collects = collects.map(collect => {
+          return collect.replace(" Amen.", "")
+        });
+        return collects
+      }
+      return [];
+    },
+    showTraditionalCollects: function () {
+      return this.traditionalCollectsToShow.length > 0
     },
   },
   async created() {

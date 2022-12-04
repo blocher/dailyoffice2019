@@ -1164,19 +1164,7 @@ class MPCollectOfTheDay(Module):
         style = self.office.settings["language_style"]
         collect = getattr(commemoration, self.attribute)
         text = collect.traditional_text_no_tags if style == "traditional" else collect.text_no_tags
-        if "FERIA" in commemoration.rank.name:
-            text = text.replace("and to be born [this day] of a pure virgin:", "and to be born of a pure virgin:")
-            text = text.replace(
-                "and [as at this time] to be born of a pure Virgin:", "and to be born of a pure Virgin:"
-            )
-        else:
-            text = text.replace(
-                "and to be born [this day] of a pure virgin:", "and to be born this day of a pure virgin:"
-            )
-            text = text.replace(
-                "and [as at this time] to be born of a pure Virgin:",
-                "and as at this time to be born of a pure Virgin:",
-            )
+        text = adapt_christmas_collect(text, commemoration)
         return text
 
     def get_lines(self):
@@ -3023,18 +3011,34 @@ def get_reading_name_from_reading_number(reading):
     return names[reading_number]
 
 
-def get_collects_for_readings(service, commemoration, calendar_date):
+def adapt_christmas_collect(text, commemoration):
+    if "FERIA" in commemoration.rank.name:
+        text = text.replace("and to be born [this day] of a pure virgin:", "and to be born of a pure virgin:")
+        text = text.replace("and [as at this time] to be born of a pure Virgin:", "and to be born of a pure Virgin:")
+    else:
+        text = text.replace("and to be born [this day] of a pure virgin:", "and to be born this day of a pure virgin:")
+        text = text.replace(
+            "and [as at this time] to be born of a pure Virgin:",
+            "and as at this time to be born of a pure Virgin:",
+        )
+    return text
+
+
+def get_collects_for_readings(service, commemoration, calendar_date, style="contemporary"):
+    attr = "traditional_text" if style == "traditional" else "text"
     if calendar_date.proper and commemoration.rank.name in ["FERIA", "SUNDAY"]:
-        return [calendar_date.proper.collect_1.text]
+        return [getattr(calendar_date.proper.collect_1, attr)]
     if commemoration.collect_eve:
         if "Vigil" in commemoration.name or "Eve of" in commemoration.name or "Easter Vigil" in service:
-            return [commemoration.collect_eve.text]
+            return [getattr(commemoration.collect_eve), attr]
     if commemoration.collect_1:
-        collects = [commemoration.collect_1.text]
+        collects = [getattr(commemoration.collect_1, attr)]
         if commemoration.collect_2:
-            collects.append(commemoration.collect_2.text)
+            collects.append(getattr(commemoration.collect_2, attr))
     else:
-        collects = [commemoration.morning_prayer_collect.text]
+        collects = [getattr(commemoration.morning_prayer_collect, attr)]
+    collects = [adapt_christmas_collect(collect, commemoration) for collect in collects]
+
     return collects
 
 
@@ -3089,6 +3093,9 @@ def mass_readings(commemoration, mass_year, calendar_date, translation="esv"):
     for service, readings in final_readings.items():
         result[service] = {
             "collects": get_collects_for_readings(service, commemoration, calendar_date),
+            "traditional_collects": get_collects_for_readings(
+                service, commemoration, calendar_date, style="traditional"
+            ),
             "readings": final_readings[service],
             "citations": service_readings_to_citations(final_readings[service]),
             "type": "mass",
@@ -3145,6 +3152,7 @@ class ReadingsSerializer(serializers.Serializer):
         for key, value in services.items():
             services[key] = {
                 "collects": [],
+                "traditional_collects": [],
                 "readings": value,
                 "type": "daily_office",
                 "name": key,

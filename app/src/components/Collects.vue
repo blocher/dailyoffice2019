@@ -1,7 +1,7 @@
 <template>
   <div class="collectsWrapper">
     <div v-for="(collect, index) in collects" :key="index">
-      <p v-html="collect"></p>
+      <div><em>{{ style }}</em><span v-html="collect"></span></div>
       <p v-if="index != collects.length - 1"><em>or</em></p>
     </div>
   </div>
@@ -13,6 +13,7 @@
 export default {
   props: [
     "collects",
+    "style",
   ],
 };
 </script>
