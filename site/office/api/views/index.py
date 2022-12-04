@@ -1460,9 +1460,9 @@ class Dismissal(Module):
         ]
 
         if grace_rotation == "fixed":
-            grace = self.get_grace()
-        else:
             grace = self.get_fixed_grace()
+        else:
+            grace = self.get_grace()
 
         language_style = self.office.settings["language_style"]
         part = "traditional" if language_style == "traditional" else "officiant"
