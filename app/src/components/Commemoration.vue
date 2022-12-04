@@ -4,7 +4,7 @@
       <strong
       ><span class="box" :class="commemoration.colors[0]"
       />
-        {{ commemoration.name }}</strong
+        &nbsp;<span v-html="commemoration.name"></span></strong
       >
       <a
           v-for="link in commemoration.links"
