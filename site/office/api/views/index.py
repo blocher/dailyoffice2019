@@ -2417,12 +2417,17 @@ class ComplineInvitatory(Module):
 class ComplinePsalms(Module):
     name = "Psalms"
 
+    def gloria_patri(self):
+        language_style = self.office.settings["language_style"]
+        file = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
+        return [Line("", "spacer")] + file_to_lines(file)
+
     def get_lines(self):
         psalms = "4,31:1-6,91,134"
         language_style = self.office.settings["language_style"]
         psalms = get_psalms(psalms, api=True, language_style=language_style)
 
-        return [Line("The Psalms", "heading")] + psalms
+        return [Line("The Psalms", "heading")] + psalms + self.gloria_patri()
 
 
 class ComplineScripture(Module):
