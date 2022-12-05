@@ -154,6 +154,10 @@ h1, h2, h3 {
   padding-bottom: 0;
 }
 
+h1 {
+  margin: 2rem 0 3rem;
+}
+
 h3 {
   margin-bottom: 20px;
 }
