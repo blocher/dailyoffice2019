@@ -1675,8 +1675,9 @@ class FamilyMorningPsalm(Module):
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         gloria_patri = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
+        psalm_style = self.office.settings["psalm_style"]
         return (
-            get_psalms("51:10-12", api=True, language_style=language_style)
+            get_psalms("51:10-12", api=True, language_style=language_style, headings=psalm_style)
             + [Line("", "spacer")]
             + file_to_lines(gloria_patri)
         )
@@ -1686,8 +1687,9 @@ class FamilyMiddayPsalm(Module):
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         gloria_patri = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
+        psalm_style = self.office.settings["psalm_style"]
         return (
-            get_psalms("113:1-4", api=True, language_style=language_style)
+            get_psalms("113:1-4", api=True, language_style=language_style, headings=psalm_style)
             + [Line("", "spacer")]
             + file_to_lines(gloria_patri)
         )
@@ -1697,8 +1699,9 @@ class FamilyCloseOfDayPsalm(Module):
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         gloria_patri = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
+        psalm_style = self.office.settings["psalm_style"]
         return (
-            get_psalms("134", api=True, language_style=language_style)
+            get_psalms("134", api=True, language_style=language_style, headings=psalm_style)
             + [Line("", "spacer")]
             + file_to_lines(gloria_patri)
         )
@@ -2121,8 +2124,9 @@ class MiddayPsalms(Module):
         psalms = "119:105-112,121,124,126"
         language_style = self.office.settings["language_style"]
         file_name = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
+        psalm_style = self.office.settings["psalm_style"]
         lines = file_to_lines(file_name)
-        psalms = get_psalms(psalms, api=True, language_style=language_style)
+        psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style)
 
         return [Line("The Psalms", "heading")] + psalms + lines
 
@@ -2413,7 +2417,8 @@ class ComplinePsalms(Module):
     def get_lines(self):
         psalms = "4,31:1-6,91,134"
         language_style = self.office.settings["language_style"]
-        psalms = get_psalms(psalms, api=True, language_style=language_style)
+        psalm_style = self.office.settings["psalm_style"]
+        psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style)
 
         return [Line("The Psalms", "heading")] + psalms + self.gloria_patri()
 
@@ -2713,10 +2718,16 @@ def morning_prayer_30_day_psalms(obj):
     name = f"The Psalm{plural}"
     citation = obj.thirty_day_psalter_day.mp_psalms.replace(",", ", ")
     citation = f"Psalm{plural} {citation}"
+    psalm_style = obj.settings["psalm_style"]
     full = reading_format(
         name=name,
         citation=citation,
-        text=get_psalms(obj.thirty_day_psalter_day.mp_psalms, simplified_citations=True, language_style=obj.psalms),
+        text=get_psalms(
+            obj.thirty_day_psalter_day.mp_psalms,
+            simplified_citations=True,
+            language_style=obj.psalms,
+            headings=psalm_style,
+        ),
         testament="OT",
         cycle="30",
         reading_number=0,
@@ -2734,10 +2745,16 @@ def evening_prayer_30_day_psalms(obj):
     name = f"The Psalm{plural}"
     citation = obj.thirty_day_psalter_day.ep_psalms.replace(",", ", ")
     citation = f"Psalm{plural} {citation}"
+    psalm_style = obj.settings["psalm_style"]
     full = reading_format(
         name=name,
         citation=citation,
-        text=get_psalms(obj.thirty_day_psalter_day.ep_psalms, simplified_citations=True, language_style=obj.psalms),
+        text=get_psalms(
+            obj.thirty_day_psalter_day.ep_psalms,
+            simplified_citations=True,
+            language_style=obj.psalms,
+            headings=psalm_style,
+        ),
         testament="OT",
         cycle="30",
         reading_number=0,
@@ -2755,10 +2772,13 @@ def standard_morning_prayer_60_day_psalms(obj):
     name = f"The Psalm{plural}"
     citation = obj.standard_readings.mp_psalms.replace(",", ", ").replace("or", " or Psalm ")
     citation = f"Psalm{plural} {citation}"
+    psalm_style = obj.settings["psalm_style"]
     full = reading_format(
         name=name,
         citation=citation,
-        text=get_psalms(obj.standard_readings.mp_psalms, simplified_citations=True, language_style=obj.psalms),
+        text=get_psalms(
+            obj.standard_readings.mp_psalms, simplified_citations=True, language_style=obj.psalms, headings=psalm_style
+        ),
         testament="OT",
         cycle="60",
         reading_number=0,
@@ -2776,10 +2796,13 @@ def standard_evening_prayer_60_day_psalms(obj):
     name = f"The Psalm{plural}"
     citation = obj.standard_readings.ep_psalms.replace(",", ", ")
     citation = f"Psalm{plural} {citation}"
+    psalm_style = obj.settings["psalm_style"]
     full = reading_format(
         name=name,
         citation=citation,
-        text=get_psalms(obj.standard_readings.ep_psalms, simplified_citations=True, language_style=obj.psalms),
+        text=get_psalms(
+            obj.standard_readings.ep_psalms, simplified_citations=True, language_style=obj.psalms, headings=psalm_style
+        ),
         testament="OT",
         cycle="60",
         reading_number=0,
@@ -2797,10 +2820,13 @@ def holy_day_morning_prayer_60_day_psalms(obj):
     name = f"The Psalm{plural}"
     citation = obj.holy_day_readings.mp_psalms.replace(",", ", ")
     citation = f"Psalm{plural} {citation}"
+    psalm_style = obj.settings["psalm_style"]
     full = reading_format(
         name=name,
         citation=citation,
-        text=get_psalms(obj.holy_day_readings.mp_psalms, simplified_citations=True, language_style=obj.psalms),
+        text=get_psalms(
+            obj.holy_day_readings.mp_psalms, simplified_citations=True, language_style=obj.psalms, headings=psalm_style
+        ),
         testament="OT",
         cycle="60",
         reading_number=0,
@@ -2818,10 +2844,13 @@ def holy_day_evening_prayer_60_day_psalms(obj):
     name = f"The Psalm{plural}"
     citation = obj.holy_day_readings.ep_psalms.replace(",", ", ")
     citation = f"Psalm{plural} {citation}"
+    psalm_style = obj.settings["psalm_style"]
     full = reading_format(
         name=name,
         citation=citation,
-        text=get_psalms(obj.holy_day_readings.ep_psalms, simplified_citations=True, language_style=obj.psalms),
+        text=get_psalms(
+            obj.holy_day_readings.ep_psalms, simplified_citations=True, language_style=obj.psalms, headings=psalm_style
+        ),
         testament="OT",
         cycle="60",
         reading_number=0,

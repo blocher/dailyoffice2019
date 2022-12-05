@@ -298,6 +298,15 @@ export default {
       this.readingsLoading = true;
       let data = null;
       try {
+
+              this.availableSettings = await this.$store.state.availableSettings;
+    await this.$store.dispatch('initializeSettings');
+    const settings = await this.$store.state.settings;
+    const queryString = Object.keys(settings)
+        .map((key) => key + "=" + settings[key])
+        .join("&");
+
+
         const today_str =
             this.calendarDate.getFullYear() +
             "-" +
@@ -305,7 +314,7 @@ export default {
             "-" +
             this.calendarDate.getDate();
         data = await this.$http.get(
-            `${process.env.VUE_APP_API_URL}api/v1/readings/${today_str}?translation=${this.translation}&psalms=${this.psalmsTranslation}`
+            `${process.env.VUE_APP_API_URL}api/v1/readings/${today_str}?translation=${this.translation}&psalms=${this.psalmsTranslation}&`  + queryString
         );
 
       } catch (e) {
