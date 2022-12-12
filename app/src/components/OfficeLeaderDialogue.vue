@@ -29,23 +29,25 @@ export default {
 
 .row {
   display: flex;
+  align-items: baseline;
+  gap: 20px;
 }
 
 .column.left {
-  flex: 25%;
+  flex: 15%;
 }
 
 .column.right {
-  flex: 55%;
+  flex: 65%;
 }
 
 @media (min-width: 500px) {
   .column.left {
-    flex: 10%;
+    flex: 15%;
   }
 
   .column.right {
-    flex: 75%;
+    flex: 65%;
   }
 }
 

@@ -32,6 +32,7 @@ export default {
 
 .row {
   display: flex;
+  align-items: baseline;
 }
 
 .column.left {
