@@ -153,7 +153,7 @@ body {
   .main-body {
     display: block;
     text-align: left;
-    padding: 1.4em;
+    padding: 2.2em;
     margin: 0 auto;
     clear: both;
     overflow-y: scroll;
@@ -163,7 +163,7 @@ body {
     max-width: 700px;
     display: block;
     text-align: left;
-    padding: 1.4em;
+    padding: 2.2em;
     margin: 0 auto;
     clear: both;
     overflow: visible;
