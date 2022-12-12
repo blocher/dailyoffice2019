@@ -32,22 +32,19 @@ export default {
   props: {},
   data() {
     return {
-      fontSize: 20,
+      fontSize: 24,
       sliderMin: 10,
       sliderMax: 40,
     };
   },
-  mounted() {
-    this.resetFontSize()
+  async mounted() {
+    await this.resetFontSize()
   },
   methods: {
     async resetFontSize() {
-      if (await DynamicStorage.getItem("fontSize")) {
-        this.fontSize = parseInt(await DynamicStorage.getItem("fontSize"));
-      } else {
-        await DynamicStorage.setItem("fontSize", this.fontSize);
-      }
-      this.setFontSize(this.fontSize)
+      await this.$nextTick()
+      this.fontSize = parseInt(await DynamicStorage.getItem("fontSize") || 24);
+      await this.setFontSize(this.fontSize)
     },
     async setFontSize(value) {
       const main = document.getElementById("main")
@@ -59,6 +56,7 @@ export default {
         });
       }
       await DynamicStorage.setItem("fontSize", this.fontSize);
+      const test = await DynamicStorage.getItem("fontSize")
     },
     displayFontSize(value) {
       return `${value}px`;

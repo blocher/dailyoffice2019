@@ -3,6 +3,9 @@ import { Preferences } from "@capacitor/preferences";
 export const DynamicStorage = {
   setItem: async (key, value) => {
     // console.log("SET ITEM", key, value, typeof value);
+    if (typeof value === "number") {
+      value = value.toString();
+    }
     await Preferences.set({
       key: key,
       value: value,

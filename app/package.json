@@ -9,7 +9,8 @@
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",
     "capacitor:build": "vue-cli-service capacitor:build",
-    "capacitor:serve": "vue-cli-service capacitor:serve"
+    "capacitor:serve": "vue-cli-service capacitor:serve",
+    "ios": "npm run build && npx cap sync && npx cap build ios && npx cap run ios"
   },
   "dependencies": {
     "@achrinza/node-ipc": "^10.1.7",

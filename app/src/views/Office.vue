@@ -20,7 +20,7 @@
             :selected-office="office"
             :service-type="serviceType"
         />
-        <FontSizer/>
+        <FontSizer v-if="readyToSetFontSize"/>
       </div>
     </div>
     <div id="main">
@@ -124,6 +124,7 @@ export default {
       counter: 0,
       modules: null,
       loading: true,
+      readyToSetFontSize: false,
       error: false,
       card: "",
       notFound: false,
@@ -185,6 +186,8 @@ export default {
     this.card = data.data.calendar_day;
     this.error = false;
     this.loading = false;
+    await this.$nextTick();
+    this.readyToSetFontSize = true;
   },
   methods: {
     async extraCollects() {
