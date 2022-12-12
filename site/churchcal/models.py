@@ -309,6 +309,8 @@ class SanctoraleBasedCommemoration(Commemoration):
         advent_start = advent(advent_year)
 
         if early_year >= advent_start:
+            if self.additional_days_after:
+                early_year += timedelta(days=self.additional_days_after)
             return early_year
 
         return_date = weekday_after(
