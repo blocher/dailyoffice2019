@@ -3084,7 +3084,7 @@ def service_readings_to_citations(readings):
     return groups
 
 
-def mass_readings(commemoration, mass_year, calendar_date, translation="esv"):
+def mass_readings(commemoration, mass_year, calendar_date, translation="esv", psalm_style="contemporary"):
     readings = commemoration.get_all_mass_readings_for_year(mass_year)
     passages = []
     for reading in readings:
@@ -3098,7 +3098,14 @@ def mass_readings(commemoration, mass_year, calendar_date, translation="esv"):
         full = reading_format(
             name=name,
             citation=reading.long_citation,
-            text=getattr(reading.long_scripture, translation),
+            text=getattr(reading.long_scripture, translation)
+            if "psalm" not in reading.long_citation.lower()
+            else get_psalms(
+                reading.long_citation.replace("Psalms", ""),
+                simplified_citations=True,
+                language_style=psalm_style,
+                headings="none",
+            ),
             testament=reading.testament,
             reading_number=reading.reading_number,
         )
@@ -3107,7 +3114,14 @@ def mass_readings(commemoration, mass_year, calendar_date, translation="esv"):
             abbreviated = reading_format(
                 name=name,
                 citation=reading.short_citation,
-                text=getattr(reading.short_scripture, translation),
+                text=getattr(reading.short_scripture, translation)
+                if "psalm" not in reading.short_citation.lower()
+                else get_psalms(
+                    reading.short_citation.replace("Psalms", ""),
+                    simplified_citations=True,
+                    language_style=psalm_style,
+                    headings="none",
+                ),
                 testament=reading.testament,
             )
         if service_name not in final_readings.keys():
@@ -3189,7 +3203,7 @@ class ReadingsSerializer(serializers.Serializer):
         ferias = {}
         non_ferias = {}
         for commemoration in obj.date.morning_and_evening:
-            masses = mass_readings(commemoration, obj.mass_year, obj.date, obj.translation)
+            masses = mass_readings(commemoration, obj.mass_year, obj.date, obj.translation, obj.psalms)
             for mass, readings in masses.items():
                 name = f"{commemoration.name} ({mass}) " if mass not in ["", "-"] else f"{commemoration.name}"
                 if "FERIA" in commemoration.rank.name:
