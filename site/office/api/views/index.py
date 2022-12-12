@@ -340,7 +340,7 @@ class Confession(Module):
         long = (setting == "long") or (setting == "long-on-fast" and fast)
         if long:
             return (
-                file_to_lines("confession_intro_long_traditional")
+                file_to_lines("confession_intro_long_traditional") + [Line("", "spacer")]
                 if language_style == "traditional"
                 else file_to_lines("confession_intro_long") + [Line("", "spacer")]
             )
