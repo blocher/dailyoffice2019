@@ -163,7 +163,7 @@ body {
     max-width: 700px;
     display: block;
     text-align: left;
-    padding: 2.2em;
+    padding: 2rem 0;
     margin: 0 auto;
     clear: both;
     overflow: visible;
