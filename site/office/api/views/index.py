@@ -933,6 +933,70 @@ class EPFirstReading(ReadingModule):
 
 
 class CanticleModule(Module):
+    def get_antiphon(self):
+        if self.office.date.date.month != 12:
+            return None
+        antiphon_style = self.office.settings.get("o_antiphons", "hymn")
+        if antiphon_style == "paraphrase":
+            antiphon_style = "hymn"
+        if antiphon_style not in ["latin", "english", "hymn"]:
+            antiphon_style = "hymn"
+        antiphons = {
+            "16": {
+                "latin": "O Sapientia, quae ex ore Altissimi prodiisti, attingens a fine usque ad finem, fortiter suaviterque disponens omnia: veni ad docendum nos viam prudentiae.",
+                "english": "O Wisdom, who came from the mouth of the Most High, reaching from end to end and ordering all things mightily and sweetly: come, and teach us the way of prudence.",
+                "hymn": "O come, thou Wisdom from on high who orderest all things mightily; to us the path of knowledge show, and teach us in her ways to go. Rejoice! Rejoice! Emmanuel shall come to thee, O Israel.",
+                "citation": "Isaiah 11:2-3, 28:29",
+            },
+            "17": {
+                "latin": "O Adonai, et Dux domus Israel, qui Moysi in igne flammae rubi apparuisti, et ei in Sina legem dedisti: veni ad redimendum nos in brachio extento.",
+                "english": "O Lord and Ruler the house of Israel, who appeared to Moses in the flame of the burning bush and gave him the law on Sinai: come, and redeem us with outstretched arms.",
+                "hymn": "O come, O come, thou Lord of might, who to thy tribes on Sinai's height in ancient times didst give the law, in cloud, and majesty, and awe. Rejoice! Rejoice! Emmanuel shall come to thee, O Israel.",
+                "citation": "Isaiah 11:4-5, 33:22",
+            },
+            "18": {
+                "latin": "O Radix Jesse, qui stas in signum populorum, super quem continebunt reges os suum, quem Gentes deprecabuntur: veni ad liberandum nos, jam noli tardare.",
+                "english": "O Root of Jesse, that stands for an ensign of the people, before whom the kings keep silence and unto whom the Gentiles shall make supplication: come, to deliver us, and tarry not.",
+                "hymn": "O come, through Branch of Jesse's tree, free them from Satan's tyranny that trust thy mighty power to save, and give them victory oer' the grave. Rejoice! Rejoice! Emmanuel shall come to thee, O Israel.",
+                "citation": "Isaiah 11:1, 10",
+            },
+            "19": {
+                "latin": "O clavis David, et sceptrum domus Israel: qui aperis, et nemo claudit; claudis, et nemo aperit: veni, et educ vinctum de domo carceris, sedentem in tenebris.",
+                "english": "O Key of David, and scepter of the house of Israel, who opens and no man shuts, who shuts and no man opens: come, and lead forth the captive who sits in the shadows from his prison.",
+                "hymn": "O come, though Key of David, come, and open wide our heavenly home; make safe the way that leads on high, and close the path to misery. Rejoice! Rejoice! Emmanuel shall come to thee, O Israel.",
+                "citation": "Isaiah 9:6, 22:22.",
+            },
+            "20": {
+                "latin": "O Oriens, splendor lucis æternæ, et sol justitiæ: veni, et illumina sedentes in tenebris, et umbra mortis.",
+                "english": "O dawn of the east, brightness of light eternal, and sun of justice: come, and enlighten those who sit in darkness and in the shadow of death.",
+                "hymn": "O come, thou Dayspring from on high, and cheer us by thy drawing night; disperse the gloomy clouds of night, and death's dark shadow put to flight. Rejoice! Rejoice! Emmanuel shall come to thee, O Israel.",
+                "citation": "Isaiah 9:2",
+            },
+            "21": {
+                "latin": "O Rex Gentium, et desideratus earum, lapisque angularis, qui facis utraque unum: veni, et salva hominem, quem de limo formasti.",
+                "english": "O King of the gentiles and their desired One, the cornerstone that makes both one: come, and deliver man, whom you formed out of the dust of the earth.",
+                "hymn": "O come, Desire of nations, bind in one the hearts of all mankind; bid thou our sad divisions cease, and be thyself our King of Peace. Rejoice! Rejoice! Emmanuel shall come to thee, O Israel.",
+                "citation": "Isaiah 2:4, 9:7",
+            },
+            "22": {
+                "latin": "O Emmanuel, Rex et legifer noster, exspectatio gentium, et Salvator earum: veni ad salvandum nos Domine Deus noster.",
+                "english": "O Emmanuel, God with us, our King and lawgiver, the expected of the nations and their Savior: come to save us, O Lord our God.",
+                "hymn": "O come, O come, Emmanuel, and ransom captive Israel, that mourns in lonley exile here until the Sod of God appear. Rejoice! Rejoice! Emmanuel shall come to thee, O Israel.",
+                "citation": "Isaiah 7:14",
+            },
+            "23": {
+                "latin": "O Virgo virginum, quomodo fiet istud? Quia nec primam similem visa es nec habere sequentem. Filiae Jerusalem, quid me admiramini? Divinum est mysterium hoc quod cernitis.",
+                "english": "O Virgin of virgins, how shall this be? For neither before you was any like you, nor shall there be after. Daughters of Jerusalem, why do you marvel at me? The thing which you behold is a divine mystery.",
+                "hymn": "O Virgin great! How shall this be? For none before nor hence were like to thee; Why, Salem’s daughters, marvel ye? Behold, a heav’nly mystery! Rejoice! Rejoice! Emmanuel shall come to thee, O Israel.",
+                "citation": "",
+            },
+        }
+        index = str(self.office.date.date.day)
+        try:
+            return antiphons[index][antiphon_style]
+        except KeyError:
+            return None
+
     def rubric(self):
         return Line("The following Canticle is sung or said, all standing", line_type="rubric")
 
@@ -943,7 +1007,7 @@ class CanticleModule(Module):
         file = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
         return file_to_lines(file)
 
-    def get_canticle(self, data):
+    def get_canticle(self, data, antiphon=False):
         # check if data is a tuple
         if isinstance(data, tuple):
             psalter = self.office.settings["psalter"]
@@ -956,6 +1020,24 @@ class CanticleModule(Module):
         if language_style == "traditional":
             template = template.replace(".csv", "_traditional.csv")
 
+        if antiphon:
+            antiphon = self.get_antiphon()
+            return (
+                [
+                    Line(data.latin_name, "heading"),
+                    Line(data.english_name, "subheading"),
+                    self.rubric(),
+                ]
+                + [Line(antiphon, "congregation")]
+                + [Line("", "spacer")]
+                + file_to_lines(template)
+                + [
+                    Line(data.citation, "citation"),
+                ]
+                + self.gloria_lines(data)
+                + [Line("", "spacer")]
+                + [Line(antiphon, "congregation")]
+            )
         return (
             [
                 Line(data.latin_name, "heading"),
@@ -994,12 +1076,20 @@ class EPFirstCanticle(CanticleModule):
         rotation = self.office.settings["canticle_rotation"]
 
         if rotation == "1979":
+            cant2 = BCP1979CanticleTable().get_ep_canticle_2(self.office.date)
             data = BCP1979CanticleTable().get_ep_canticle_1(self.office.date)
         elif rotation == "2011":
+            cant2 = REC2011CanticleTable().get_ep_canticle_2(self.office.date, self.office.office_readings)
             data = REC2011CanticleTable().get_ep_canticle_1(self.office.date)
         else:
+            cant2 = DefaultCanticles().get_ep_canticle_2(self.office.date)
             data = DefaultCanticles().get_ep_canticle_1(self.office.date)
-        return self.get_canticle(data)
+        antiphon = False
+        if data.latin_name.lower() == "magnificat":
+            antiphon = True
+        elif cant2.latin_name.lower() != "magnificat":
+            antiphon = True
+        return self.get_canticle(data, antiphon=antiphon)
 
 
 class MPSecondCanticle(CanticleModule):
@@ -1030,7 +1120,11 @@ class EPSecondCanticle(CanticleModule):
             data = REC2011CanticleTable().get_ep_canticle_2(self.office.date, self.office.office_readings)
         else:
             data = DefaultCanticles().get_ep_canticle_2(self.office.date)
-        return self.get_canticle(data)
+        print(data.latin_name)
+        antiphon = False
+        if data.latin_name.lower() == "magnificat":
+            antiphon = True
+        return self.get_canticle(data, antiphon=antiphon)
 
 
 class MPSecondReading(ReadingModule):
@@ -1171,7 +1265,7 @@ class MPCollectOfTheDay(Module):
         collects = [
             [
                 Line("Collect of the Day", "heading"),
-                Line(commemoration.name, "subheading"),
+                Line(commemoration.name_no_tags, "subheading"),
                 Line(self.get_collect(commemoration), "leader"),
                 Line("Amen.", "congregation"),
             ]

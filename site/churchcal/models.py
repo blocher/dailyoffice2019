@@ -69,6 +69,12 @@ class Commemoration(BaseModel):
     biography = RichTextField(blank=True, null=True)
     image_link = models.URLField(null=True, blank=True)
 
+    @property
+    def name_no_tags(self):
+        from office.management.commands.import_collects import do_strip_tags
+
+        return do_strip_tags(self.name)
+
     def get_collects(self, calendar_date=None):
         if self.collect:
             return self.collect
