@@ -939,8 +939,12 @@ class CanticleModule(Module):
         antiphon_style = self.office.settings.get("o_antiphons", "hymn")
         if antiphon_style == "paraphrase":
             antiphon_style = "hymn"
-        if antiphon_style not in ["latin", "english", "hymn"]:
+        if antiphon_style == "literal":
+            antiphon_style = "english"
+        if antiphon_style not in ["latin", "english", "hymn", "none"]:
             antiphon_style = "hymn"
+        if antiphon_style == "none":
+            return ""
         antiphons = {
             "16": {
                 "latin": "O Sapientia, quae ex ore Altissimi prodiisti, attingens a fine usque ad finem, fortiter suaviterque disponens omnia: veni ad docendum nos viam prudentiae.",
@@ -950,7 +954,7 @@ class CanticleModule(Module):
             },
             "17": {
                 "latin": "O Adonai, et Dux domus Israel, qui Moysi in igne flammae rubi apparuisti, et ei in Sina legem dedisti: veni ad redimendum nos in brachio extento.",
-                "english": "O Lord and Ruler the house of Israel, who appeared to Moses in the flame of the burning bush and gave him the law on Sinai: come, and redeem us with outstretched arms.",
+                "english": "O Lord and Ruler of the house of Israel, who appeared to Moses in the flame of the burning bush and gave him the law on Sinai: come, and redeem us with outstretched arms.",
                 "hymn": "O come, O come, thou Lord of might, who to thy tribes on Sinai's height in ancient times didst give the law, in cloud, and majesty, and awe. Rejoice! Rejoice! Emmanuel shall come to thee, O Israel.",
                 "citation": "Isaiah 11:4-5, 33:22",
             },
@@ -991,6 +995,7 @@ class CanticleModule(Module):
                 "citation": "",
             },
         }
+
         index = str(self.office.date.date.day)
         try:
             return antiphons[index][antiphon_style]
@@ -1022,22 +1027,23 @@ class CanticleModule(Module):
 
         if antiphon:
             antiphon = self.get_antiphon()
-            return (
-                [
-                    Line(data.latin_name, "heading"),
-                    Line(data.english_name, "subheading"),
-                    self.rubric(),
-                ]
-                + [Line(antiphon, "congregation")]
-                + [Line("", "spacer")]
-                + file_to_lines(template)
-                + [
-                    Line(data.citation, "citation"),
-                ]
-                + self.gloria_lines(data)
-                + [Line("", "spacer")]
-                + [Line(antiphon, "congregation")]
-            )
+            if antiphon:
+                return (
+                    [
+                        Line(data.latin_name, "heading"),
+                        Line(data.english_name, "subheading"),
+                        self.rubric(),
+                    ]
+                    + [Line(antiphon, "congregation")]
+                    + [Line("", "spacer")]
+                    + file_to_lines(template)
+                    + [
+                        Line(data.citation, "citation"),
+                    ]
+                    + self.gloria_lines(data)
+                    + [Line("", "spacer")]
+                    + [Line(antiphon, "congregation")]
+                )
         return (
             [
                 Line(data.latin_name, "heading"),
