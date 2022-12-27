@@ -74,7 +74,7 @@ python-scriptures
 pytz==2021.3
 rake-nltk==1.0.6
 requests==2.27.1
-setuptools==60.9.1
+setuptools==65.5.1
 tqdm==4.62.3
 uvicorn==0.17.4
 uvloop==0.16.0
