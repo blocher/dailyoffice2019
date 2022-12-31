@@ -22,11 +22,32 @@ def parse_single_psalm(psalm):
     return ",".join(citations)
 
 
+def normalize_citations(citations):
+    citations = str(citations)
+    citations = citations.replace(" ", "").replace("or", ",").split(",")
+    cleaned = []
+    chapter = None
+    for citation in citations:
+        verses = None
+        citation_parts = citation.split(":")
+        if len(citation_parts) > 1:
+            chapter = citation_parts[0]
+            verses = citation_parts[1]
+        elif "-" not in citation:
+            chapter = citation
+            cleaned.append(f"{chapter}")
+        else:
+            verses = citation
+        if verses:
+            cleaned.append(f"{chapter}:{verses}")
+
+    return cleaned
+
+
 def get_psalms(
     citations, api=False, simplified_citations=False, language_style="contemporary", headings="whole_verse"
 ):
-    citations = str(citations)
-    citations = citations.replace(" ", "").replace("or", ",").split(",")
+    citations = normalize_citations(citations)
     html = ""
     lines = []
     for citation in citations:

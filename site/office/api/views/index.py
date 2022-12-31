@@ -2806,7 +2806,7 @@ class OfficeSerializer(GenericDailyOfficeSerializer):
 def reading_format(name, citation, text, testament, cycle=None, reading_number=None):
     return {
         "name": name,
-        "citation": citation,
+        "citation": citation.replace(",", ", "),
         "text": text,
         "testament": testament,
         "cycle": cycle,
