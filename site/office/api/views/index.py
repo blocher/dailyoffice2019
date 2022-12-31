@@ -3161,7 +3161,7 @@ def get_collects_for_readings(service, commemoration, calendar_date, style="cont
         return [getattr(calendar_date.proper.collect_1, attr)]
     if commemoration.collect_eve:
         if "Vigil" in commemoration.name or "Eve of" in commemoration.name or "Easter Vigil" in service:
-            return [getattr(commemoration.collect_eve), attr]
+            return [getattr(commemoration.collect_eve, attr)]
     if commemoration.collect_1:
         collects = [getattr(commemoration.collect_1, attr)]
         if commemoration.collect_2:
