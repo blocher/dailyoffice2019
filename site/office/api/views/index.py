@@ -819,11 +819,10 @@ class ReadingModule(Module):
             return None
 
         abbreviated = reading_length == "abbreviated"
+        print("CYCLE", reading_cycle)
         if int(reading_cycle) == 2:
-            has_alternate_reading = self.office.date.date.year % 2 == 0
-            if has_alternate_reading:
-                alternate_reading_field = "{}_reading_{}".format("ep" if office == "mp" else office, number)
-                return self.get_reading(alternate_reading_field, abbreviated, translation)
+            office = "ep" if self.office.date.date.year % 2 == 0 else "mp"
+            print("OFFICE", office)
 
         reading_field = "{}_reading_{}".format(office, number)
         return self.get_reading(reading_field, abbreviated, translation)
@@ -920,6 +919,7 @@ class MPFirstReading(ReadingModule):
     name = "First Reading"
 
     def get_lines(self):
+        print("THE FIRST LESSON")
         reading_heading = [Line("The First Lesson", line_type="heading")]
         return reading_heading + self.get_lines_for_reading("mp", 1)
 
