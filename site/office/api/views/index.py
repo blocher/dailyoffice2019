@@ -1121,14 +1121,16 @@ class EPSecondCanticle(CanticleModule):
 
         rotation = self.office.settings["canticle_rotation"]
         if rotation == "1979":
+            print("a")
             data = BCP1979CanticleTable().get_ep_canticle_2(self.office.date)
         elif rotation == "2011":
+            print("b")
             data = REC2011CanticleTable().get_ep_canticle_2(self.office.date, self.office.office_readings)
         else:
+            print("c")
             data = DefaultCanticles().get_ep_canticle_2(self.office.date)
-        print(data.latin_name)
         antiphon = False
-        if data.latin_name.lower() == "magnificat":
+        if not isinstance(data, tuple) and data.latin_name.lower() == "magnificat":
             antiphon = True
         return self.get_canticle(data, antiphon=antiphon)
 

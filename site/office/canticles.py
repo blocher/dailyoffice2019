@@ -417,6 +417,6 @@ class REC2011CanticleTable(CanticleRules):
                 sixty_day = EP2
             if thirty_day == sixty_day:
                 return thirty_day
-            return (thirty_day, sixty_day)
+            return thirty_day, sixty_day
 
         return EP2
