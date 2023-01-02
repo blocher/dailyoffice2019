@@ -19,7 +19,7 @@
     </a>
   </div>
   <div class="w-full mt-4 mx-auto content-center flex items-center justify-center gap-2">
-    <el-button :type="isOther">
+    <el-button v-if="showLinks" :type="isOther">
       <el-dropdown :hide-on-click="true" trigger="click">
     <span class="el-dropdown-link">
       More Resources
@@ -72,7 +72,7 @@
     <router-view
         v-if="!loading" :key="$route.fullPath"
     />
-    <AdditionalLinks ref="additionalLinks"/>
+    <AdditionalLinks v-if="showLinks" ref="additionalLinks"/>
 
     <AHPLogo/>
 
@@ -120,6 +120,7 @@ export default {
       isActive: true,
       name: this.$route.name,
       error: false,
+      showLinks: false,
     };
   },
   computed: {
@@ -146,14 +147,20 @@ export default {
       await this.$store.commit("saveAvailableSettings", settings_data.data);
       await this.$store.dispatch('initializeSettings');
       this.loading = false;
+      await this.$nextTick();
+      this.showLinks = true;
     } catch (e) {
       console.log(e);
       this.error =
           "There was an error loading the settings. Please try refreshing the page.";
       this.loading = false;
+      await this.$nextTick();
+      this.showLinks = true;
       return;
     }
     this.loading = false;
+    await this.$nextTick();
+    this.showLinks = true;
   },
 };
 </script>
