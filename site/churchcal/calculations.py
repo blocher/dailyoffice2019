@@ -580,12 +580,14 @@ class SetNamesAndCollects(object):
         previous.evening_required = previous.required.copy()
         previous.evening_optional = previous.optional.copy()
         feast_copy = calendar_date.primary.copy()
-        feast_copy.name = "Eve of {}".format(feast_copy.name)
 
         if feast_copy.collect_eve:
             feast_copy.evening_prayer_collect = feast_copy.collect_eve
 
-        previous.evening_required.append(feast_copy)
+        previous_names = [feast.name for feast in previous.all]
+        if feast_copy.name not in previous_names:
+            feast_copy.name = "Eve of {}".format(feast_copy.name)
+            previous.evening_required.append(feast_copy)
         previous.proper = calendar_date.proper
 
         for idx, commemoration in enumerate(previous.evening_required):

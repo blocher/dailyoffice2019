@@ -820,10 +820,7 @@ class ReadingModule(Module):
 
         abbreviated = reading_length == "abbreviated"
         if int(reading_cycle) == 2:
-            has_alternate_reading = self.office.date.date.year % 2 == 0
-            if has_alternate_reading:
-                alternate_reading_field = "{}_reading_{}".format("ep" if office == "mp" else office, number)
-                return self.get_reading(alternate_reading_field, abbreviated, translation)
+            office = "ep" if self.office.date.date.year % 2 == 0 else "mp"
 
         reading_field = "{}_reading_{}".format(office, number)
         return self.get_reading(reading_field, abbreviated, translation)
@@ -1121,13 +1118,10 @@ class EPSecondCanticle(CanticleModule):
 
         rotation = self.office.settings["canticle_rotation"]
         if rotation == "1979":
-            print("a")
             data = BCP1979CanticleTable().get_ep_canticle_2(self.office.date)
         elif rotation == "2011":
-            print("b")
             data = REC2011CanticleTable().get_ep_canticle_2(self.office.date, self.office.office_readings)
         else:
-            print("c")
             data = DefaultCanticles().get_ep_canticle_2(self.office.date)
         antiphon = False
         if not isinstance(data, tuple) and data.latin_name.lower() == "magnificat":

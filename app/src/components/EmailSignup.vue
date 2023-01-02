@@ -1,13 +1,14 @@
 <template>
-  <span class="sub-menu-item">
-    <a
-        href="" @click.prevent="emailPanel = true"
-    >
+    <span class="sub-menu-item">
+      <a
+          href="" @click.prevent="showEmailPanel()"
+      >
+        <font-awesome-icon :icon="['fad', 'envelopes']"/><br/>
+        <span class="ml-1 text-xs">Get Email Updates&nbsp;</span>
 
-      <span class="ml-1 text-xs">Get Email Updates&nbsp;</span>
-      <font-awesome-icon :icon="['fad', 'envelopes']"/>
-    </a>
-  </span>
+      </a>
+    </span>
+  <!--  <el-dropdown-item @click.prevent="emailPanel = true">Get Email Updates</el-dropdown-item>-->
   <el-drawer
       v-model="emailPanel" :size="panelSize"
       direction="rtl"
@@ -84,6 +85,9 @@ export default {
       } else {
         this.panelSize = "37%";
       }
+    },
+    showEmailPanel() {
+      this.emailPanel = true;
     },
     onSubmit() {
       this.loading = true;

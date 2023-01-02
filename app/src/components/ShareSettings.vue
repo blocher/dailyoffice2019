@@ -1,23 +1,15 @@
 <template>
 
   <span class="sub-menu-item">
-    <a
-        href="https://classic.dailyoffice2019.com"
-        target="_blank"
-    >
-      <span class="text-xs">Classic Site&nbsp;</span>
-      <font-awesome-icon :icon="['fad', 'fa-square-up-right']"/>
-    </a>
-  </span>
-  <br/>
-  <span class="sub-menu-item">
-    <a
-        href="" @click.prevent="toggleSharePanel"
-    >
-      <span class="text-xs">Share Your Settings&nbsp;</span>
-      <font-awesome-icon :icon="['fad', 'share-nodes']"/>&nbsp;
-    </a>
-  </span>
+      <a
+          href="" @click.prevent="toggleSharePanel"
+      >
+        <font-awesome-icon :icon="['fad', 'share-nodes']"/>&nbsp;<br>
+        <span class="text-xs">Share Your Settings&nbsp;</span>
+
+      </a>
+    </span>
+  <!--  <el-dropdown-item @click.prevent="toggleSharePanel">Share Your Settings</el-dropdown-item>-->
   <el-drawer
       v-model="showSharePanel" direction="rtl"
       :size="panelSize"
@@ -124,6 +116,7 @@ export default {
     },
     async getShareLink() {
       await this.getCollectProps()
+      this.availableSettings = await this.$store.state.availableSettings;
       await this.$store.dispatch('initializeSettings');
       const settings = await this.$store.state.settings;
       const queryString = Object.keys(settings)

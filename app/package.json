@@ -13,7 +13,6 @@
     "ios": "npm run build && npx cap sync && npx cap build ios && npx cap run ios"
   },
   "dependencies": {
-    "@achrinza/node-ipc": "^10.1.7",
     "@capacitor-community/electron": "^4.1.2",
     "@capacitor/android": "^4.0.0",
     "@capacitor/cli": "^4.0.0",
@@ -37,7 +36,7 @@
     "@vue/shared": "^3.2.36",
     "and": "^0.0.3",
     "axios": "^0.27.2",
-    "element-plus": "^2.2.18",
+    "element-plus": "^2.2.28",
     "follow-redirects": "^1.15.1",
     "install": "^0.13.0",
     "mitt": "^3.0.0",
