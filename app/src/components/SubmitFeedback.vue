@@ -1,13 +1,14 @@
 <template>
-  <span class="sub-menu-item">
-    <a
-        href="" @click.prevent="feedbackPanel = true"
-    >
+    <span class="sub-menu-item">
+      <a
+          href="" @click.prevent="showFeedbackPanel()"
+      >
+        <font-awesome-icon :icon="['fad', 'message-pen']"/><br/>
+        <span class="ml-1 text-xs">Submit Feedback&nbsp;</span>
 
-      <span class="ml-1 text-xs">Submit Feedback&nbsp;</span>
-      <font-awesome-icon :icon="['fad', 'message-pen']"/>
-    </a>
-  </span>
+      </a>
+    </span>
+  <!--  <el-dropdown-item @click.prevent="feedbackPanel = true">Submit Feedback</el-dropdown-item>-->
   <el-drawer
       v-model="feedbackPanel" :size="panelSize"
       direction="rtl"
@@ -15,7 +16,7 @@
     <div class="mt-4">
       <h3 class="text-left">Email Us</h3>
       <p class="text-left">
-        Have feedback or want a new feature? Email us at <a href="mailto:feedback@dailyoffice2019.com">feedback@dailyoffice2019.com</a>
+        Have feedback or want a new feature? Email us at <a target="_blank" href="mailto:feedback@dailyoffice2019.com">feedback@dailyoffice2019.com</a>
       </p>
 
       <h3 class="text-left">Join the Facebook Group</h3>
@@ -57,6 +58,9 @@ export default {
         this.panelSize = "37%";
       }
     },
+    showFeedbackPanel() {
+      this.feedbackPanel = true
+    }
   },
 };
 </script>

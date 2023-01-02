@@ -1,6 +1,67 @@
 <template>
   <div id="notch" class="notch"></div>
-  <TopMenu v-if="!loading"/>
+  <div class="m-4">
+    <ThemeSwitcher/>
+  </div>
+  <!--  <TopMenu v-if="!loading"/>-->
+  <div class="w-full mt-10 mx-auto content-center flex items-center justify-center gap-2">
+    <h2>The Daily Office</h2>
+  </div>
+  <div class="w-full mt-4 mx-auto content-center flex items-center justify-center gap-2">
+    <a href="/">
+      <el-button :type="isPray" round>Pray</el-button>
+    </a>
+    <a href="/settings">
+      <el-button :type="isSettings" round>Settings</el-button>
+    </a>
+    <a href="/calendar">
+      <el-button :type="isCalendar" round>Calendar</el-button>
+    </a>
+  </div>
+  <div class="w-full mt-4 mx-auto content-center flex items-center justify-center gap-2">
+    <el-button :type="isOther">
+      <el-dropdown :hide-on-click="true" trigger="click">
+    <span class="el-dropdown-link">
+      More Resources
+      <el-icon class="el-icon--right">
+        <arrow-down/>
+      </el-icon>
+    </span>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <a href="/about">
+              <el-dropdown-item>About</el-dropdown-item>
+            </a>
+            <a href="https://classic.dailyoffice2019.com/" target="_blank">
+              <el-dropdown-item>Classic Site&nbsp;
+                <font-awesome-icon :icon="['fad', 'fa-square-up-right']"/>
+              </el-dropdown-item>
+            </a>
+            <el-dropdown-item disabled>--Prayer Resources--</el-dropdown-item>
+            <a href="/collects">
+              <el-dropdown-item>Collects</el-dropdown-item>
+            </a>
+            <a href="/psalms">
+              <el-dropdown-item>Psalms</el-dropdown-item>
+            </a>
+            <a href="/litany">
+              <el-dropdown-item>Great Litany</el-dropdown-item>
+            </a>
+            <a href="/readings">
+              <el-dropdown-item>Readings</el-dropdown-item>
+            </a>
+            <el-dropdown-item disabled>--More--</el-dropdown-item>
+            <el-dropdown-item @click="$refs.additionalLinks.$refs.shareSettings.toggleSharePanel()">Share Settings
+            </el-dropdown-item>
+            <el-dropdown-item @click="$refs.additionalLinks.$refs.submitFeedback.showFeedbackPanel()">Submit Feedback
+            </el-dropdown-item>
+            <el-dropdown-item @click="$refs.additionalLinks.$refs.emailSignup.showEmailPanel()">Get Email Updates
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+    </el-button>
+  </div>
   <div class="main-body">
     <Loading v-if="loading"/>
     <!--    <BetaNote/>-->
@@ -11,7 +72,10 @@
     <router-view
         v-if="!loading" :key="$route.fullPath"
     />
+    <AdditionalLinks ref="additionalLinks"/>
+
     <AHPLogo/>
+
   </div>
 
   <el-backtop/>
@@ -24,6 +88,11 @@ import AHPLogo from "@/components/AHPLogo";
 import {event} from 'vue-gtag'
 import BetaNote from "@/components/BetaNote";
 import {useActiveMeta, useMeta} from "vue-meta";
+import ShareSettings from "@/components/ShareSettings.vue";
+import EmailSignup from "@/components/EmailSignup.vue";
+import SubmitFeedback from "@/components/SubmitFeedback.vue";
+import AdditionalLinks from "@/components/AdditionalLinks.vue";
+import {ArrowDown} from '@element-plus/icons-vue'
 
 export default {
   components: {
@@ -31,6 +100,11 @@ export default {
     TopMenu,
     Loading,
     BetaNote,
+    ShareSettings,
+    EmailSignup,
+    SubmitFeedback,
+    AdditionalLinks,
+    ArrowDown,
   },
   setup() {
     const {meta} = useMeta({
@@ -48,7 +122,20 @@ export default {
       error: false,
     };
   },
-
+  computed: {
+    isPray() {
+      return this.$route.name === 'Pray' || this.$route.name === 'Home' ? 'primary' : '';
+    },
+    isSettings() {
+      return this.$route.name === 'Settings' ? 'primary' : '';
+    },
+    isCalendar() {
+      return this.$route.name === 'calendar' ? 'primary' : '';
+    },
+    isOther() {
+      return this.$route.name === 'About' || this.$route.name === 'Collects' || this.$route.name === 'readings' || this.$route.name === 'litany' || this.$route.name === 'Psalms' ? 'primary' : '';
+    },
+  },
   async created() {
     document.title = "The Daily Office";
     try {

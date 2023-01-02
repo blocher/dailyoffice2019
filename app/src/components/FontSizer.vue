@@ -1,5 +1,6 @@
 <template>
-  <div class="font-size-block my-2">
+  <div class="font-size-block my-2 p-3">
+
     <div class="w-1/6 inline-block">
       <font-awesome-icon
           :icon="['fad', 'font-case']" size="sm"

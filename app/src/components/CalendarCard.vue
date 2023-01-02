@@ -1,87 +1,89 @@
 <template>
-  <el-card
-      class="box-card" :class="cardColor"
-  >
-    <template #header>
-      <div class="card-header">
-        <h1 v-if="officeName">
-          {{ officeName }}
-        </h1>
-        <h3>{{ formattedDate }}</h3>
-        <div
-            class="card-info" :v-if="card"
-        >
-          <h4
-              v-if="card && office != 'evening_prayer' && office != 'compline'" class="primary-feast-heading"
-              v-html="card.primary_feast">
-          </h4>
+  <div class="main-card" :class="{ hideBody: hideBody }">
+    <el-card
+        class="box-card" :class="cardColor"
+    >
+      <template #header>
+        <div class="card-header">
+          <h1 v-if="officeName">
+            {{ officeName }}
+          </h1>
+          <h3>{{ formattedDate }}</h3>
           <div
-              v-if="card && office != 'evening_prayer' && office != 'compline' && card.commemorations[0].links.length > 0"
-              class="flex items-center justify-center">
-            <a
-                v-for="link in card.commemorations[0].links" :key="link" :href="link" target="_blank"
-                class="link align-center bio_link"><small>Biography</small></a>&nbsp;
-          </div>
-          <h4
-              v-if="card && (office == 'evening_prayer' || office == 'compline')" v-html="card.primary_evening_feast"
+              class="card-info" :v-if="card"
           >
-          </h4>
-          <div
-              v-if="card && (office == 'evening_prayer' || office == 'compline') && card.evening_commemorations[0].links.length > 0"
-              class="flex items-center justify-center">
-            <a
-                v-for="link in card.commemorations[0].links" :key="link" :href="link" target="_blank"
-                class="link align-center bio_link"><small>Biography</small></a>&nbsp;
-          </div>
+            <h4
+                v-if="card && office != 'evening_prayer' && office != 'compline'" class="primary-feast-heading"
+                v-html="card.primary_feast">
+            </h4>
+            <div
+                v-if="card && office != 'evening_prayer' && office != 'compline' && card.commemorations[0].links.length > 0"
+                class="flex items-center justify-center">
+              <a
+                  v-for="link in card.commemorations[0].links" :key="link" :href="link" target="_blank"
+                  class="link align-center bio_link"><small>Biography</small></a>&nbsp;
+            </div>
+            <h4
+                v-if="card && (office == 'evening_prayer' || office == 'compline')" v-html="card.primary_evening_feast"
+            >
+            </h4>
+            <div
+                v-if="card && (office == 'evening_prayer' || office == 'compline') && card.evening_commemorations[0].links.length > 0"
+                class="flex items-center justify-center">
+              <a
+                  v-for="link in card.commemorations[0].links" :key="link" :href="link" target="_blank"
+                  class="link align-center bio_link"><small>Biography</small></a>&nbsp;
+            </div>
 
-          <h5
-              v-if="card && card.fast && card.fast.fast_day"
-              class="text-center"
-          >
-            Fast Day
-          </h5>
+            <h5
+                v-if="card && card.fast && card.fast.fast_day"
+                class="text-center"
+            >
+              Fast Day
+            </h5>
+          </div>
         </div>
-      </div>
-    </template>
-    <div
-        v-if="
+      </template>
+      <div
+          v-if="
         card &&
-        card.commemorations &&
+        card.commemorations.length > 1 &&
         office != 'evening_prayer' &&
         office != 'compline'
       "
-    >
-      <div
-          v-for="commemoration in card.commemorations"
-          :key="commemoration.name"
       >
-        <Commemoration v-if="commemoration.name !=card.primary_feast" :commemoration="commemoration"/>
+        <div
+            v-for="commemoration in card.commemorations"
+            :key="commemoration.name"
+        >
+          <Commemoration v-if="commemoration.name !=card.primary_feast" :commemoration="commemoration"/>
+        </div>
       </div>
-    </div>
-    <div
-        v-if="
+      <div
+          v-if="
         card &&
-        card.commemorations &&
+        card.evening_commemorations.length > 1 &&
         (office == 'evening_prayer' || office == 'compline')
       "
-    >
-      <div
-          v-for="commemoration in card.evening_commemorations"
-          :key="commemoration.name"
       >
-        <Commemoration v-if="commemoration.name!=card.primary_evening_feast" :commemoration="commemoration"/>
+        <div
+            v-for="commemoration in card.evening_commemorations"
+            :key="commemoration.name"
+        >
+          <Commemoration v-if="commemoration.name!=card.primary_evening_feast" :commemoration="commemoration"/>
+        </div>
       </div>
-    </div>
-    <div
-        v-if="card && card.season" class="width:10"
-    >
-      <div
-          class="card-footer mt-2" :class="card.season.colors[0]"
-      >
-        <h4>{{ card.season.name }}</h4>
-      </div>
-    </div>
-  </el-card>
+      <!--    <div-->
+      <!--        v-if="card && card.season" class="width:10"-->
+      <!--    >-->
+      <!--      <div-->
+      <!--          class="card-footer mt-2" :class="card.season.colors[0]"-->
+      <!--      >-->
+      <!--        <h4>{{ card.season.name }}</h4>-->
+      <!--      </div>-->
+      <!--    </div>-->
+    </el-card>
+  </div>
 </template>
 
 <script>
@@ -106,6 +108,13 @@ export default {
         return this.card.primary_color
       } else {
         return this.card.primary_evening_color
+      }
+    },
+    hideBody: function () {
+      if (this.office == 'evening_prayer' || this.office == 'compline') {
+        return this.card.evening_commemorations.length < 2
+      } else {
+        return this.card.commemorations.length < 2
       }
     }
   },
@@ -284,5 +293,10 @@ a:active.link {
     background-color: pink;
     color: black;
   }
+}
+
+
+.hideBody .el-card__body {
+  display: none;
 }
 </style>
