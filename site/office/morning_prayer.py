@@ -98,7 +98,6 @@ class MPCommemorationListing(OfficeSection):
 
 class MPOpeningSentence(OfficeSection):
     def get_sentence(self):
-
         if "Thanksgiving Day" in self.date.primary.name:
             return {
                 "sentence": "Honor the Lord with your wealth and with the firstfruits of all your produce; then your barns will be filled with plenty, and your vats will be bursting with wine.",
@@ -116,7 +115,6 @@ class MPOpeningSentence(OfficeSection):
             or self.date.primary.rank.name == "EMBER_DAY"
             or self.date.primary.rank.name == "ROGATION_DAY"
         ):
-
             if self.date.date.weekday() in [6, 2]:  # Sunday, Wednesday
                 return {"sentence": "Repent, for the kingdom of heaven is at hand.", "citation": "MATTHEW 3:2"}
 
@@ -223,7 +221,6 @@ class MPOpeningSentence(OfficeSection):
 class MPInvitatory(OfficeSection):
     @cached_property
     def antiphon(self):
-
         if "Presentation" in self.date.primary.name or "Annunciation" in self.date.primary.name:
             return {
                 "first_line": "The Word was made flesh and dwelt among us:",
@@ -377,7 +374,6 @@ class MPInvitatory(OfficeSection):
         return (thirty_day, sixty_day)
 
     def celebratory_always(self):
-
         if self.date.season.name == "Eastertide":
             return (self.pascha_nostrum, self.pascha_nostrum)
 
@@ -426,7 +422,6 @@ class MPInvitatory(OfficeSection):
 
     @cached_property
     def data(self):
-
         values = {
             "jubilate_on_sundays_and_feasts": self.jubilate_on_sundays_and_feasts(),
             "venite_most_days": self.venite_most_days(),
@@ -571,7 +566,6 @@ class MPFirstReading(Reading):
         if not self.has_mass_reading:
             return None
         for reading in self.date.mass_readings:
-
             if reading.reading_number == 1:
                 return {
                     "intro": passage_to_citation(reading.long_citation),
@@ -821,7 +815,6 @@ class MPMissionCollect(OfficeSection):
 
     @cached_property
     def data(self):
-
         mission_collects = (
             "Almighty and everlasting God, who alone works great marvels: Send down upon our clergy and the congregations committed to their charge the life-giving Spirit of your grace, shower them with the continual dew of your blessing, and ignite in them a zealous love of your Gospel; through Jesus Christ our Lord. ",
             "O God, you have made of one blood all the peoples of the earth, and sent your blessed Son to preach peace to those who are far off and to those who are near: Grant that people everywhere may seek after you and find you; bring the nations into your fold; pour out your Spirit upon all flesh; and hasten the coming of your kingdom; through Jesus Christ our Lord.",

@@ -12,7 +12,6 @@ class Command(BaseCommand):
     help = "Send weekly St. Andrew email"
 
     def handle(self, *args, **options):
-
         module = WeeklyMeetingEmailModule()
         if not module.should_send:
             return

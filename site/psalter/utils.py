@@ -156,7 +156,6 @@ def psalm_html(
                 verse.second_half_tle if language_style == "traditional" else verse.second_half,
             )
         else:  # whole_verse
-
             if (i % 2) == 0:
                 html = html + format_html(
                     "<p class='hanging-indent'><sup class='versenum'>{}</sup> {} <span class='asterisk'>*</span> </p>",

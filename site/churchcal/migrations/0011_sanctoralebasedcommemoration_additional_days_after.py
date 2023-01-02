@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("churchcal", "0010_massreading_long_scripture_and_more"),
     ]

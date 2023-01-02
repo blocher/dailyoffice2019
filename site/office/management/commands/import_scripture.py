@@ -13,7 +13,6 @@ SCOPES = "https://www.googleapis.com/auth/spreadsheets.readonly"
 
 class Command(BaseCommand):
     def parse_passage(self, passage):
-
         try:
             passage = scriptures.extract(passage)[0]
             return scriptures.reference_to_string(*passage)
@@ -68,7 +67,6 @@ class Command(BaseCommand):
         return " ".join(final)
 
     def handle(self, *args, **options):
-
         days = OfficeDay.objects.all()
         translations = ["esv", "rsv", "kjv", "nrsvce", "nabre", "niv", "nasb", "coverdale", "renewed_coverdale"]
         texts = [

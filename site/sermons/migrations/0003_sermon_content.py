@@ -5,7 +5,6 @@ import djrichtextfield.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("sermons", "0002_auto_20190802_0229")]
 
     operations = [

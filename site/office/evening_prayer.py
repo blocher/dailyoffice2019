@@ -104,7 +104,6 @@ class EPInvitatory(OfficeSection):
 
 class EPOpeningSentence(OfficeSection):
     def get_sentence(self):
-
         if "Thanksgiving Day" in self.date.primary_evening.name:
             return {
                 "sentence": "The Lord by wisdom founded the earth; by understanding he established the heavens; by his knowledge the deeps broke open, and the clouds drop down the dew.",
@@ -122,7 +121,6 @@ class EPOpeningSentence(OfficeSection):
             or self.date.primary_evening.rank.name == "EMBER_DAY"
             or self.date.primary_evening.rank.name == "ROGATION_DAY"
         ):
-
             if self.date.date.weekday() in [6, 2]:  # Sunday, Wednesday
                 return {
                     "sentence": "To the Lord our God belong mercy and forgiveness, for we have rebelled against him.",
@@ -162,7 +160,6 @@ class EPOpeningSentence(OfficeSection):
             self.date.primary_evening.name == "The Day of Pentecost"
             or self.date.primary_evening.name == "Eve of The Day of Pentecost"
         ):
-
             if self.date.date.year % 2 == 0:
                 return {
                     "sentence": "The Spirit and the Bride say, “Come.” And let the one who hears say, “Come.” And let the one who is thirsty come; let the one who desires take the water of life without price.",
@@ -547,7 +544,6 @@ class EPCanticle1(OfficeSection):
 
     @cached_property
     def data(self):
-
         return {
             "antiphon": self.get_antiphon(),
             "default": DefaultCanticles().get_ep_canticle_1(self.date),
@@ -666,7 +662,6 @@ class EPMissionCollect(OfficeSection):
 
     @cached_property
     def data(self):
-
         mission_collects = (
             "O God and Father of all, whom the whole heavens adore: Let the whole earth also worship you, all nations obey you, all tongues confess and bless you, and men, women, and children everywhere love you and serve you in peace; through Jesus Christ our Lord.",
             "Keep watch, dear Lord, with those who work, or watch, or weep this night, and give your angels charge over those who sleep. Tend the sick, Lord Christ; give rest to the weary, bless the dying, soothe the suffering, pity the afflicted, shield the joyous; and all for your love’s sake.",

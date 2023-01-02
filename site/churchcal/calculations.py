@@ -12,7 +12,6 @@ from .utils import advent, week_days, easter
 
 class CalendarDate(object):
     def __init__(self, date, calendar, year):
-
         self.date = date
         self.calendar = calendar
 
@@ -100,7 +99,6 @@ class CalendarDate(object):
 
     @cached_property
     def fast_day_reasons(self):
-
         reasons = []
 
         if self.primary.name in ["Ash Wednesday", "Good Friday"]:
@@ -123,7 +121,6 @@ class CalendarDate(object):
 
     @cached_property
     def fast_day(self):
-
         # Sundays are never fast days
         if self.date.weekday() == 6:
             return self.FAST_NONE
@@ -155,12 +152,10 @@ class CalendarDate(object):
         return self.FAST_NONE
 
     def _sort_commemorations(self):
-
         self.required = sorted(self.required, key=lambda commemoration: (commemoration.rank.precedence_rank))
         self.optional = sorted(self.optional, key=lambda commemoration: (commemoration.rank.precedence_rank))
 
     def add_commemoration(self, commemoration):
-
         if not commemoration.rank.required:
             self.optional.append(commemoration)
         else:
@@ -169,7 +164,6 @@ class CalendarDate(object):
         self._sort_commemorations()
 
     def apply_rules(self):
-
         self._sort_commemorations()
 
         transfers = self.process_transfers()
@@ -177,7 +171,6 @@ class CalendarDate(object):
         return transfers
 
     def handle_privileged_lesser_feast(self):
-
         if len(self.required) < 1:
             return None
 
@@ -192,7 +185,6 @@ class CalendarDate(object):
         return required
 
     def process_transfers(self):
-
         transfers = self.handle_privileged_lesser_feast()
         if transfers:
             return transfers
@@ -219,7 +211,6 @@ class CalendarDate(object):
         return [feast for feast in transfers if feast.rank.name != "SUNDAY"]
 
     def append_feria_if_needed(self):
-
         # Don't append Feria to a Sunday!
         if self.date.weekday() == 6:
             return
@@ -233,7 +224,6 @@ class CalendarDate(object):
         self.optional.append(FerialCommemoration(self.date, self.season, self.calendar))
 
     def finalize_day(self):
-
         self.append_feria_if_needed()
         self.optional = sorted(self.optional, key=lambda commemoration: (commemoration.rank.precedence_rank))
         if len(self.required) > 0:
@@ -347,7 +337,6 @@ class ChurchYear(object):
         )
         already_added = []
         for commemoration in commemorations:
-
             if not commemoration.can_occur_in_year(self.start_year):
                 continue
 
@@ -359,7 +348,6 @@ class ChurchYear(object):
                 pass
 
         for key, calendar_date in self.dates.items():
-
             # seasons
             self._set_season(calendar_date)
 
@@ -372,7 +360,6 @@ class ChurchYear(object):
         SetNamesAndCollects(self)
 
     def __init__(self, year_of_advent, calendar="ACNA_BCP2019"):
-
         self.calendar = Calendar.objects.filter(abbreviation=calendar).first()
 
         self.start_year = year_of_advent
@@ -421,7 +408,6 @@ class ChurchYear(object):
         # print(self.seasons)
 
     def _set_season(self, calendar_date):
-
         calendar_date.season = self.season_tracker
         calendar_date.evening_season = calendar_date.season
 
@@ -451,7 +437,6 @@ class ChurchYear(object):
 
     @cached_property
     def mass_year(self):
-
         if self.start_year % 3 == 0:
             return "A"
 
@@ -463,12 +448,10 @@ class ChurchYear(object):
 
     @cached_property
     def daily_mass_year(self):
-
         return 1 if self.end_year % 2 != 0 else 2
 
     @cached_property
     def office_year(self):
-
         return "I" if self.start_year % 2 == 0 else "II"
 
     @cached_property
@@ -509,7 +492,6 @@ class CalendarYear(object):
 
 class SetNamesAndCollects(object):
     def __init__(self, church_calendar):
-
         self.church_calendar = church_calendar
 
         checks = [
@@ -526,7 +508,6 @@ class SetNamesAndCollects(object):
                 calendar_date = next(self.i)
 
                 for commemoration in calendar_date.all:
-
                     if "SUNDAY" in commemoration.rank.name:
                         self.append_seuptuagesima_if_needed(commemoration, calendar_date)
 
@@ -555,7 +536,6 @@ class SetNamesAndCollects(object):
                 calendar_date = next(self.i)
 
                 for commemoration in calendar_date.all:
-
                     if "SUNDAY" in commemoration.rank.name:
                         self.append_o_antiphon_if_needed(commemoration, calendar_date)
 
@@ -563,7 +543,6 @@ class SetNamesAndCollects(object):
                 break
 
     def check_previous_evening(self, calendar_date):
-
         if calendar_date.primary.rank.precedence_rank > 4:
             return
 
@@ -602,7 +581,6 @@ class SetNamesAndCollects(object):
         previous.evening_season = calendar_date.season
 
     def own_collect(self, commemoration, calendar_date):
-
         if "FERIA" in commemoration.rank.name:
             return False
 
@@ -617,7 +595,6 @@ class SetNamesAndCollects(object):
             #     commemoration.evening_prayer_collect = commemoration.alternate_collect
 
     def proper_collect(self, commemoration, calendar_date):
-
         if not commemoration.rank.required:
             return
         if calendar_date.proper and calendar_date.proper.collect_1:
@@ -674,7 +651,6 @@ class SetNamesAndCollects(object):
         return False
 
     def append_seuptuagesima_if_needed(self, commemoration, calendar_date):
-
         easter_day = easter(calendar_date.date.year)
         seventy_days_before_easter = easter_day - timedelta(days=9 * 7)
         date = calendar_date.date
@@ -686,7 +662,6 @@ class SetNamesAndCollects(object):
             )
 
     def append_o_antiphon_if_needed(self, commemoration, calendar_date):
-
         if calendar_date.date.month == 12:
             if calendar_date.date.day == 16:
                 commemoration.name = mark_safe(
@@ -735,7 +710,6 @@ class SetNamesAndCollects(object):
 
     @staticmethod
     def has_collect_for_feria(calendar_date):
-
         epiphany = SetNamesAndCollects.is_epiphany(calendar_date)
         if epiphany:
             return epiphany

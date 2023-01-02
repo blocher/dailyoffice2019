@@ -6,7 +6,6 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("churchcal", "0011_sanctoralebasedcommemoration_additional_days_after"),
         ("office", "0013_scripture_nabre_scripture_nasb_scripture_niv_and_more"),

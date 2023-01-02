@@ -14,7 +14,6 @@ def reverse_load_data(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("sites", "0002_alter_domain_unique")]
 
     operations = [migrations.RunPython(load_data, reverse_load_data)]

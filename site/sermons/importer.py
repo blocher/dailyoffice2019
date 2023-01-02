@@ -76,7 +76,6 @@ class SermonExtractor(object):
 
     # TODO: Scripture paassages on same line
     def getBiblePassages(self, sermon):
-
         text = self.extractor.text()
         lines = text.splitlines()
         i = 0
@@ -134,7 +133,6 @@ class SermonExtractor(object):
                     )
 
     def getSummary(self):
-
         LANGUAGE = "english"
         SENTENCES_COUNT = 5
 
@@ -161,7 +159,6 @@ class SermonExtractor(object):
         return None
 
     def getKeyWords(self):
-
         # initialize keyphrase extraction model, here TopicRank
         extractor = pke.unsupervised.KPMiner()
 
@@ -183,7 +180,6 @@ class SermonExtractor(object):
         print(keyphrases)
 
     def getDate(self):
-
         matches = list(datefinder.find_dates(self.extractor.text()))
         if len(matches) > 0:
             if matches[0].hour == 0:

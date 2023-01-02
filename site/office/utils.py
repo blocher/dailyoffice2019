@@ -189,7 +189,6 @@ def title_case(input_string):
 
     # checking each word
     for i, word in enumerate(input_list):
-
         if word in all_caps:
             output_string += word.upper() + " "
 

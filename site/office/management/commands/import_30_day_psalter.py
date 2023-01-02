@@ -11,7 +11,6 @@ SCOPES = "https://www.googleapis.com/auth/spreadsheets.readonly"
 
 
 class Command(BaseCommand):
-
     SHEET_ID = "1s7GqYoy3HC5JD64opdRldAAi3mwsSQxtC6ZzzF2yUAg"
     RANGE_NAME = "30DayPsalter!A3:C33"
 
@@ -19,7 +18,6 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-
         service = build("sheets", "v4", developerKey=settings.GOOGLE_API_KEY)
 
         sheet = service.spreadsheets()

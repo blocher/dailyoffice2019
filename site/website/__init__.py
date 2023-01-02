@@ -11,7 +11,6 @@ def get_parish_list():
     f = open("congregations.txt", "w")
 
     for i in range(1, 1581):
-
         r = requests.get("http://www.acna.org/admin_units/{}".format(i), headers=headers)
 
         if r.status_code == 200:

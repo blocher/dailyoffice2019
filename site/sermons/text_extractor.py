@@ -17,7 +17,6 @@ class FileTypeNotSupportedException(Exception):
 class TextExtractorFactory(object):
     @staticmethod
     def get_extractor(file):
-
         if file.content_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
             return WordXExtractor(file)
 

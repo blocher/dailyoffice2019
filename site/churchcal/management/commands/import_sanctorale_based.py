@@ -3,7 +3,6 @@ from churchcal.models import CommemorationRank, SanctoraleBasedCommemoration, Co
 
 
 class Command(ImportCommemorationsBaseCommand):
-
     help = "Imports Episcopal sanctorale"
 
     RANGE_NAME = "SanctoraleBased!A2:N700"
@@ -54,7 +53,6 @@ class Command(ImportCommemorationsBaseCommand):
                 print(row[0])
 
     def import_not_after(self):
-
         for row in self.values:
             if len(row) > 11 and row[11]:
                 commemoration = SanctoraleBasedCommemoration.objects.filter(calendar=self.calendar).get(name=row[0])

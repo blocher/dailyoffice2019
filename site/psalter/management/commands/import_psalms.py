@@ -39,7 +39,6 @@ class Command(BaseCommand):
                 latin_next = False
                 first_half_next = True
             elif first_half_next:
-
                 words = line.split(" ")
                 verse = words.pop(0)
                 if not verse.isnumeric():

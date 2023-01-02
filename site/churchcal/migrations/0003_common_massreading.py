@@ -6,7 +6,6 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("churchcal", "0002_auto_20191022_1317")]
 
     operations = [

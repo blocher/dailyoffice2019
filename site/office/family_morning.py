@@ -9,7 +9,6 @@ from psalter.utils import get_psalms
 
 
 class FamilyMorning(Office):
-
     name = "Family Prayer in the Morning"
     office = "family_morning_prayer"
 
@@ -54,7 +53,6 @@ class FMHeading(OfficeSection):
 
 class FMOpeningSentence(OfficeSection):
     def get_sentences(self):
-
         return {
             "seasonal": MPOpeningSentence(self.date, self.office_readings).get_sentence(),
             "fixed": {
@@ -87,7 +85,6 @@ class FMScripture(OfficeSection):
         }
 
     def get_scripture(self):
-
         day_of_year = self.date.date.timetuple().tm_yday
         number = day_of_year % 3
 
@@ -138,7 +135,6 @@ class Pater(OfficeSection):
 class FMCollect(OfficeSection):
     @cached_property
     def data(self):
-
         day_of_year = next(MPCollectsOfTheDay(self.date, self.office_readings).data["collects"])
         day_of_week = MPCollects(self.date, self.office_readings).data["collect"]
 

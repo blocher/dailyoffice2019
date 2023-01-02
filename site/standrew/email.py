@@ -99,7 +99,6 @@ class BirthdayDecoratorMixin(object):
         return False
 
     def birthday_to_date(self, birthday):
-
         now = get_today()
         year = now.year
         if now.month == 12 and birthday[2] == 1:
@@ -116,7 +115,6 @@ class BirthdayDecoratorMixin(object):
         return datetime.strptime("{} {} {}".format(birthday[2], birthday[3], birthday[4]), "%m %d %Y").date()
 
     def birthday_in_range(self, birthday):
-
         if not self.has_birthday_completed(birthday):
             return False
 
@@ -140,7 +138,6 @@ class BirthdayDecoratorMixin(object):
 
 class BirthdaysSundayEmailModule(BirthdayDecoratorMixin, SundayEmailModule):
     def get_data(self):
-
         SPREADSHEET_ID = "1BpaVvpi66UKojz9SnO41iLKfVTggWq2jI_ReniyCeH4"
         RANGE_NAME = "A2:K35"
         service = build("sheets", "v4", developerKey=GOOGLE_API_KEY)
@@ -206,7 +203,6 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
         return []
 
     def get_movie(self):
-
         SPREADSHEET_ID = "1lRsThD20a2thgtJk97J_bqEBxJBCqXPIg_UkFAqzMq8"
         RANGE_NAME = "Movies!A2:D1000"
         service = build("sheets", "v4", developerKey=GOOGLE_API_KEY)
@@ -229,7 +225,6 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                 }
 
     def get_notes(self):
-
         SPREADSHEET_ID = "1lRsThD20a2thgtJk97J_bqEBxJBCqXPIg_UkFAqzMq8"
         RANGE_NAME = "MeetingNotes!A2:F1000"
         service = build("sheets", "v4", developerKey=GOOGLE_API_KEY)
@@ -465,7 +460,6 @@ class BirthdayDailyEmailModule(BirthdayDecoratorMixin):
 
     @cached_property
     def data(self):
-
         date = get_today()
         SPREADSHEET_ID = "1BpaVvpi66UKojz9SnO41iLKfVTggWq2jI_ReniyCeH4"
         RANGE_NAME = "A2:K35"
@@ -513,7 +507,6 @@ class CommemorationDailyEmailModule(object):
 
     @cached_property
     def data(self):
-
         date = get_today()
         result = requests.get(
             "http://api.dailyoffice2019.com/api/v1/calendar/{}-{}-{}".format(date.year, date.month, date.day)

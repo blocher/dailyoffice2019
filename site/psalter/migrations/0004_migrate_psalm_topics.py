@@ -24,7 +24,6 @@ def backwards(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("psalter", "0003_auto_20200524_1807"),
     ]

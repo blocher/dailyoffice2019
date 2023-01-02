@@ -481,7 +481,6 @@ class MovieBallotCreate(CreateView):
         return super().get(request, *args, **kwargs)
 
     def send_voted_email(self):
-
         from standrew.utils import send_movie_email
 
         ballot = (
@@ -503,7 +502,6 @@ class MovieBallotCreate(CreateView):
         send_movie_email(subject, message, "blocher@gmail.com")
 
     def post(self, request, *args, **kwargs):
-
         candidate_count = MovieCandidate.objects.filter(movie_night=get_movie_night()).count()
         ballot = request.POST.get("ballot", "")
         votes = ballot.split(",")

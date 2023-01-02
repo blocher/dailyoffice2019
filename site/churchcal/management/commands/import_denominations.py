@@ -18,7 +18,6 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-
         service = build("sheets", "v4", developerKey=settings.GOOGLE_API_KEY)
 
         sheet = service.spreadsheets()
@@ -26,7 +25,6 @@ class Command(BaseCommand):
         self.values = result.get("values", [])
 
         for row in self.values:
-
             denomination = Denomination.objects.get_or_create(name=row[0])[0]
             denomination.abbreviation = row[1]
             denomination.save()

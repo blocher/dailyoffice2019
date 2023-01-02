@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("office", "0015_lectionaryitem_sanctorale_commemoration"),
     ]

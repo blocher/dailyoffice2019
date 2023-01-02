@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("churchcal", "0007_commemoration_collect_1_commemoration_collect_2_and_more"),
     ]

@@ -85,7 +85,6 @@ class Commemoration(BaseModel):
         return None
 
     def _year_from_advent_year(self, year, month, day):
-
         advent_date = advent(year)
 
         if month > advent_date.month or (month == advent_date.month and day >= advent_date.day):
@@ -94,7 +93,6 @@ class Commemoration(BaseModel):
             return year + 1
 
     def initial_date(self, advent_year):
-
         raise NotImplementedError()
 
     @cached_property
@@ -104,7 +102,6 @@ class Commemoration(BaseModel):
         return Commemoration.objects.get(pk=self.cannot_occur_after.pk)
 
     def initial_date_string(self, advent_year):
-
         return self.initial_date(advent_year).strftime("%Y-%m-%d")
 
     def can_occur_in_year(self, advent_year):

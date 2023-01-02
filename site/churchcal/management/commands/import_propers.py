@@ -5,13 +5,11 @@ from churchcal.models import Proper
 
 
 class Command(ImportCommemorationsBaseCommand):
-
     help = "Imports Propers"
 
     RANGE_NAME = "Propers!A2:H700"
 
     def import_dates(self):
-
         Proper.objects.filter(calendar=self.calendar).delete()
         for row in self.values:
             if row[0]:
@@ -30,5 +28,4 @@ class Command(ImportCommemorationsBaseCommand):
                 print(row[0])
 
     def import_not_after(self):
-
         return

@@ -38,7 +38,6 @@ class Office(object):
 
     @cached_property
     def links(self):
-
         today = self.date.date
         yesterday = today - datetime.timedelta(days=1)
         tomorrow = today + datetime.timedelta(days=1)
@@ -364,7 +363,6 @@ class Chrysostom(OfficeSection):
 
 class Dismissal(OfficeSection):
     def get_fixed_grace(self):
-
         return {
             "officiant": "The grace of our Lord Jesus Christ, and the love of God, and the fellowship of the Holy Spirit, be with us all evermore.",
             "people": "Amen.",
@@ -394,7 +392,6 @@ class Dismissal(OfficeSection):
 
     @cached_property
     def data(self):
-
         morning_easter = self.office.office not in ["evening_prayer"] and self.date.season.name == "Eastertide"
         evening_easter = self.office.office in ["evening_prayer"] and self.date.evening_season.name == "Eastertide"
 

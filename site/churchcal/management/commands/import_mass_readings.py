@@ -62,7 +62,6 @@ class Command(ImportCommemorationsBaseCommand):
         return ", ".join(result)
 
     def get_book(self, book, passage):
-
         if book == "Canticle":
             return "-"
 
@@ -74,7 +73,6 @@ class Command(ImportCommemorationsBaseCommand):
             return "-"
 
     def get_testament(self, book, passage):
-
         if book == "Canticle":
             return "NA"
 
@@ -104,7 +102,6 @@ class Command(ImportCommemorationsBaseCommand):
             return "unknown"
 
     def handle_odd_commemoration(self, code):
-
         codes = {
             "AllSaints": "All Saints’ Day",
             "AllSaintsSunday": "All Saints' Sunday",
@@ -255,7 +252,6 @@ class Command(ImportCommemorationsBaseCommand):
             return None
 
     def get_passage(self, book, passage, reading_type):
-
         if book == "Canticle":
             canticle = self.get_canticle_class(passage)
             return "<h3>{}</h3><h4>{}</h4>{}<h5>{}</h5>".format(
@@ -287,7 +283,6 @@ class Command(ImportCommemorationsBaseCommand):
         return "<br>".join(passages)
 
     def get_canticle_class(self, label):
-
         mod = __import__("office.canticles", fromlist=[label])
         return getattr(mod, label)
 

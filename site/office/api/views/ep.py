@@ -24,7 +24,6 @@ class EPOpeningSentence(Module):
             or self.office.date.primary_evening.rank.name == "EMBER_DAY"
             or self.office.date.primary_evening.rank.name == "ROGATION_DAY"
         ):
-
             if self.office.date.date.weekday() in [6, 2]:  # Sunday, Wednesday
                 return {
                     "sentence": "To the Lord our God belong mercy and forgiveness, for we have rebelled against him.",
@@ -70,7 +69,6 @@ class EPOpeningSentence(Module):
             self.office.date.primary_evening.name == "The Day of Pentecost"
             or self.office.date.primary_evening.name == "Eve of The Day of Pentecost"
         ):
-
             if self.office.date.date.year % 2 == 0:
                 return {
                     "sentence": "The Spirit and the Bride say, “Come.” And let the one who hears say, “Come.” And let the one who is thirsty come; let the one who desires take the water of life without price.",

@@ -70,7 +70,6 @@ class MiddayPsalms(OfficeSection):
 
 class MiddayScripture(OfficeSection):
     def get_scripture(self):
-
         if self.date.date.weekday() in [0, 3, 6]:
             return {
                 "sentence": "Jesus said, “Now is the judgment of this world; now will the ruler of this world be cast out. And I, when I am lifted up from the earth, will draw all people to myself.”",
@@ -111,7 +110,6 @@ class MiddayPrayers(OfficeSection):
     ]
 
     def get_collects(self):
-
         day_of_year = self.date.date.timetuple().tm_yday
         collect_number = day_of_year % 3 + 1
 

@@ -14,7 +14,6 @@ from office.offices import Office, OfficeSection, FMCreed
 
 
 class FamilyEarlyEvening(Office):
-
     name = "Family Prayer in the Early Evening"
     office = "family_early_evening_prayer"
 
@@ -69,7 +68,6 @@ class FEERubricSection(OfficeSection):
 
 class FEEOpeningSentence(OfficeSection):
     def get_sentences(self):
-
         return {
             "seasonal": EPOpeningSentence(self.date, self.office_readings).get_sentence(),
             "fixed": {
@@ -98,7 +96,6 @@ class FEEScripture(OfficeSection):
         }
 
     def get_scripture(self):
-
         day_of_year = self.date.date.timetuple().tm_yday
         number = day_of_year % 3
 
@@ -149,7 +146,6 @@ class Pater(OfficeSection):
 class FPCollect(OfficeSection):
     @cached_property
     def data(self):
-
         day_of_year = next(EPCollectsOfTheDay(self.date, self.office_readings).data["collects"])
         day_of_week = EPCollects(self.date, self.office_readings).data["collect"]
 

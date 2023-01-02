@@ -17,7 +17,6 @@ class Command(BaseCommand):
         parser.add_argument("--calendar", dest="calendar", help="Import not after import_dates")
 
     def handle(self, *args, **options):
-
         if not options["calendar"]:
             raise Exception("You must supply a calendar id for which to import ranks.")
 

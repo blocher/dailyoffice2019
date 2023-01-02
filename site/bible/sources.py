@@ -111,7 +111,6 @@ class BibleGateway(BibleSource):
             raise PassageNotFoundException
 
     def _get_previous_heading(self):
-
         book, start_chapter, start_verse, end_chapter, end_verse = self.reference
 
         new_start_chapter = 1 if start_chapter == 1 else start_chapter - 1
@@ -216,7 +215,6 @@ class OremusBibleBrowser(BibleSource):
             raise PassageNotFoundException
 
     def _get_previous_heading(self):
-
         book, start_chapter, start_verse, end_chapter, end_verse = self.reference
 
         new_start_chapter = 1 if start_chapter == 1 else start_chapter - 1
@@ -238,7 +236,6 @@ class OremusBibleBrowser(BibleSource):
 
 class BCPPsalter(BibleSource):
     def __init__(self, passage, version="renewed_coveraale"):
-
         self.version = version
 
         # self.reference = scriptures.extract(passage)[0]

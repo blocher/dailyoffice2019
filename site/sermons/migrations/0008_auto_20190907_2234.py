@@ -8,7 +8,6 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("address", "0002_auto_20160213_1726"), ("sermons", "0007_auto_20190828_0153")]
 
     operations = [

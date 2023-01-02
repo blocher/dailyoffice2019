@@ -8,7 +8,6 @@ class Command(ImportCommemorationsBaseCommand):
     RANGE_NAME = "Commons!A1:E14"
 
     def import_dates(self):
-
         Common.objects.filter(calendar=self.calendar).delete()
         self.values.pop(0)
         for i, row in enumerate(self.values):

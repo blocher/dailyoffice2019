@@ -31,7 +31,6 @@ class BaseModel(UUIDModel, CreatableModel, UpdatableModel):
         abstract = True
 
     def copy(self):
-
         from copy import deepcopy
 
         pk = self.original_pk if hasattr(self, "original_pk") else self.pk

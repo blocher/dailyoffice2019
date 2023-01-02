@@ -142,7 +142,6 @@ class MPOpeningSentence(Module):
     name = "Opening Sentence"
 
     def get_sentence(self):
-
         if "Thanksgiving Day" in self.office.date.primary.name:
             return {
                 "sentence": "Honor the Lord with your wealth and with the firstfruits of all your produce; then your barns will be filled with plenty, and your vats will be bursting with wine.",
@@ -162,7 +161,6 @@ class MPOpeningSentence(Module):
             or self.office.date.primary.rank.name == "EMBER_DAY"
             or self.office.date.primary.rank.name == "ROGATION_DAY"
         ):
-
             if self.office.date.date.weekday() in [6, 2]:  # Sunday, Wednesday
                 return {
                     "sentence": "Repent, for the kingdom of heaven is at hand.",
@@ -402,7 +400,6 @@ class MPInvitatory(Module):
 
     @cached_property
     def antiphon(self):
-
         if "Presentation" in self.office.date.primary.name or "Annunciation" in self.office.date.primary.name:
             return {
                 "first_line": "The Word was made flesh and dwelt among us:",
@@ -624,7 +621,6 @@ class MPInvitatory(Module):
         return (thirty_day, sixty_day)
 
     def celebratory_always(self):
-
         if self.office.date.season.name == "Eastertide":
             return ("pascha_nostrum", "pascha_nostrum")
 
@@ -741,7 +737,6 @@ class ReadingModule(Module):
         return [line for line in lines if line and (line["content"] or line["line_type"] == "spacer")]
 
     def get_reading(self, field, abbreviated=False, translation="esv"):
-
         subheading = getattr(self.office.office_readings, field)
         passage = getattr(self.office.office_readings, field)
         citation = passage_to_citation(getattr(self.office.office_readings, field))
@@ -1059,7 +1054,6 @@ class MPFirstCanticle(CanticleModule):
     name = "First Canticle"
 
     def get_lines(self):
-
         rotation = self.office.settings["canticle_rotation"]
 
         if rotation == "1979":
@@ -1075,7 +1069,6 @@ class EPFirstCanticle(CanticleModule):
     name = "First Canticle"
 
     def get_lines(self):
-
         rotation = self.office.settings["canticle_rotation"]
 
         if rotation == "1979":
@@ -1099,7 +1092,6 @@ class MPSecondCanticle(CanticleModule):
     name = "Second Canticle"
 
     def get_lines(self):
-
         rotation = self.office.settings["canticle_rotation"]
 
         if rotation == "1979":
@@ -1115,7 +1107,6 @@ class EPSecondCanticle(CanticleModule):
     name = "Second Canticle"
 
     def get_lines(self):
-
         rotation = self.office.settings["canticle_rotation"]
         if rotation == "1979":
             data = BCP1979CanticleTable().get_ep_canticle_2(self.office.date)
@@ -1290,7 +1281,6 @@ class AdditionalCollects(Module):
         return {}
 
     def get_weekly_collect(self):
-
         lines = []
         weekly_collect = self.pick_weekly_collect()
         weekly_collect["weekly"] = True
@@ -1306,7 +1296,6 @@ class AdditionalCollects(Module):
         return lines
 
     def get_fixed_collect(self):
-
         lines = []
         language_style = self.office.settings["language_style"]
 
@@ -1491,7 +1480,6 @@ class Dismissal(Module):
     name = "Dismissal"
 
     def get_fixed_grace(self):
-
         return {
             "officiant": "The grace of our Lord Jesus Christ, and the love of God, and the fellowship of the Holy Spirit, be with us all evermore.",
             "traditional": "The grace of our Lord Jesus Christ, and the love of God, and the fellowship of the Holy Ghost, be with us all evermore.",
@@ -1500,7 +1488,6 @@ class Dismissal(Module):
         }
 
     def get_grace(self):
-
         if self.office.date.date.weekday() in (6, 2, 5):
             return {
                 "officiant": "The grace of our Lord Jesus Christ, and the love of God, and the fellowship of the Holy Spirit, be with us all evermore.",
@@ -1525,7 +1512,6 @@ class Dismissal(Module):
             }
 
     def get_lines(self):
-
         grace_rotation = self.office.settings["grace"]
 
         easter = self.office.date.season.name == "Eastertide"
@@ -1664,7 +1650,6 @@ class FamilyRubricSection(Module):
 
 class FamilyMorningOpeningSentence(Module):
     def get_lines(self):
-
         setting = self.office.settings["family-opening-sentence"]
         language_style = self.office.settings["language_style"]
         if language_style == "traditional":
@@ -2025,7 +2010,6 @@ class FamilyMorningCollect(Module):
             lines = MPCollectOfTheDay(self.office).get_lines()
             lines = [Line("The Collect", "heading")] + lines[1:4]
         else:
-
             text = "O Lord, our heavenly Father, almighty and everlasting God, you have brought us safely to the beginning of this day: Defend us by your mighty power, that we may not fall into sin nor run into any danger; and that, guided by your Spirit, we may do what is righteous in your sight; through Jesus Christ our Lord."
             language_style = self.office.settings["language_style"]
             if language_style == "traditional":
@@ -2231,7 +2215,6 @@ class MiddayScripture(Module):
     name = "Scripture"
 
     def get_scripture(self):
-
         if self.office.date.date.weekday() in [0, 3, 6]:
             return {
                 "sentence": "Jesus said, “Now is the judgment of this world; now will the ruler of this world be cast out. And I, when I am lifted up from the earth, will draw all people to myself.”",
@@ -2298,7 +2281,6 @@ class MiddayPrayers(Module):
     ]
 
     def get_collects(self):
-
         day_of_year = self.office.date.date.timetuple().tm_yday
         collect_number = day_of_year % 3 + 1
 
@@ -2523,7 +2505,6 @@ class ComplineScripture(Module):
     name = "Scripture"
 
     def get_scripture(self):
-
         if self.office.date.date.weekday() in [0, 4]:
             return {
                 "sentence": "You, O Lord, are in the midst of us, and we are called by your name; do not leave us.",

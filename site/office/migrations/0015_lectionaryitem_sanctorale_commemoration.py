@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("churchcal", "0011_sanctoralebasedcommemoration_additional_days_after"),
         ("office", "0014_lectionaryitem"),

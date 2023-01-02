@@ -7,7 +7,6 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     dependencies = [("sermons", "0006_sermondatetime_primary")]
 
     operations = [

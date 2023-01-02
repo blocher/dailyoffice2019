@@ -5,7 +5,6 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("office", "0010_move_collects_to_foreign_keys"),
     ]

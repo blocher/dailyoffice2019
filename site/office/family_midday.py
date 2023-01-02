@@ -11,7 +11,6 @@ from psalter.utils import get_psalms
 
 
 class FamilyMidday(Office):
-
     name = "Family Prayer at Midday"
     office = "family_midday_prayer"
 
@@ -61,7 +60,6 @@ class FNHeading(OfficeSection):
 
 class FNOpeningSentence(OfficeSection):
     def get_sentences(self):
-
         return {
             "seasonal": MPOpeningSentence(self.date, self.office_readings).get_sentence(),
             "fixed": {
@@ -90,7 +88,6 @@ class FNScripture(OfficeSection):
         }
 
     def get_scripture(self):
-
         day_of_year = self.date.date.timetuple().tm_yday
         number = day_of_year % 2
 
@@ -155,7 +152,6 @@ class FPCollect(OfficeSection):
 
     @cached_property
     def data(self):
-
         day_of_year = next(EPCollectsOfTheDay(self.date, self.office_readings).data["collects"])
         day_of_week = self.get_day_of_week_collect()
 

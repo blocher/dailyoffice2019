@@ -12,15 +12,12 @@ from churchcal.models import (
 
 
 class Command(BaseCommand):
-
     help = "Imports all Episcopal commemorations"
 
     def add_arguments(self, parser):
-
         parser.add_argument("--calendar", dest="calendar", help="Calendar to import for")
 
     def handle(self, *args, **options):
-
         if not options["calendar"]:
             raise Exception("You must supply a calendar id for which to import ranks.")
 

@@ -86,7 +86,6 @@ class ComplinePsalms(OfficeSection):
 
 class ComplineScripture(OfficeSection):
     def get_scripture(self):
-
         if self.date.date.weekday() in [0, 4]:
             return {
                 "sentence": "You, O Lord, are in the midst of us, and we are called by your name; do not leave us.",
@@ -117,7 +116,6 @@ class ComplineScripture(OfficeSection):
 
 
 class ComplinePrayers(OfficeSection):
-
     collects = [
         (
             "A Collect for Evening",
@@ -150,7 +148,6 @@ class ComplinePrayers(OfficeSection):
     ]
 
     def get_collects(self):
-
         if self.date.date.weekday() in [6]:  # Sunday
             return self.collects[0], self.collects[1], self.collects[5]
 

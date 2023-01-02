@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("office", "0012_add_translation_setting"),
         ("churchcal", "0009_remove_commemoration_alternate_collect_and_more"),

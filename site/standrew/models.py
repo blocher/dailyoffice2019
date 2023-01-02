@@ -46,7 +46,6 @@ class MovieRankedVote(BaseModel):
 
 
 class MovieCandidate(BaseModel):
-
     MOVIE_SERVICES = (
         ("amazon_prime", "Amazon Prime"),
         ("apple_tv_plus", "Apple TV Plus"),
@@ -123,7 +122,6 @@ class MovieCandidate(BaseModel):
 
 
 class MovieBallot(BaseModel):
-
     LIKELIHOOD_CHOICES = (
         (100, "I am definitely coming"),
         (75, "I will most likely come"),

@@ -31,7 +31,6 @@ class Command(BaseCommand):
     HOLY_DAY_RANGE_NAME = "OfficeDatesHolyDays!A3:G9"
 
     def get_testament(self, passage):
-
         try:
             passage = scriptures.extract(passage)[0]
             return passage[5]
@@ -39,7 +38,6 @@ class Command(BaseCommand):
             return "-"
 
     def parse_passage(self, passage):
-
         try:
             passage = scriptures.extract(passage)[0]
             return scriptures.reference_to_string(*passage)
@@ -47,14 +45,12 @@ class Command(BaseCommand):
             return None
 
     def parse_abbreviated_passage(self, original_passage, verses):
-
         verses = verses.replace(",", ", ")
         if verses:
             return "{}:{}".format(original_passage, verses)
         return None
 
     def get_abbreviated_passage(self, original_passage, verses=None):
-
         if not verses:
             return None
         verses = verses.split(",")
@@ -64,7 +60,6 @@ class Command(BaseCommand):
         return passage
 
     def get_passage(self, passage):
-
         passage = self.parse_passage(passage)
 
         try:
@@ -79,7 +74,6 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-
         service = build("sheets", "v4", developerKey=settings.GOOGLE_API_KEY)
 
         sheet = service.spreadsheets()

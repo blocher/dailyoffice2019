@@ -11,17 +11,14 @@ SCOPES = "https://www.googleapis.com/auth/spreadsheets.readonly"
 
 
 class Command(BaseCommand):
-
     help = "Imports Episcopal commemorations"
 
     def add_arguments(self, parser):
-
         parser.add_argument("--not_after", action="store_true", dest="not_after", help="Import not after import_dates")
 
         parser.add_argument("--calendar", dest="calendar", help="Calendar to import for")
 
     def handle(self, *args, **options):
-
         if not options["calendar"]:
             self.calendar = Calendar.objects.get(abbreviation="ACNA_BCP2019")
         else:
@@ -54,9 +51,7 @@ class Command(BaseCommand):
             self.import_dates()
 
     def import_dates(self):
-
         raise NotImplementedError
 
     def import_not_after(self):
-
         raise NotImplementedError

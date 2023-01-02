@@ -7,7 +7,6 @@ from delorean import Delorean
 
 
 def weekday_after(weekday, month, day, year=None, number_after=1):
-
     if not year:
         year = arrow.utcnow().format("YYYY")
 

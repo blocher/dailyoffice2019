@@ -102,7 +102,6 @@ class AboutItem(BaseModel):
     order = models.PositiveSmallIntegerField()
 
     def save(self, *args, **kwargs):
-
         return super().save(*args, **kwargs)
 
     @property
@@ -153,7 +152,6 @@ class UpdateNotice(BaseModel):
     version = models.FloatField()
 
     def save(self, *args, **kwargs):
-
         return super().save(*args, **kwargs)
 
     def mode(self):

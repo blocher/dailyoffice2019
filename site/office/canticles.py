@@ -218,7 +218,6 @@ class DefaultCanticles(CanticleRules):
 
 class BCP1979CanticleTable(CanticleRules):
     def get_mp_canticle_1(self, calendar_date):
-
         if (
             calendar_date.primary.rank.precedence_rank in [1, 3]
             and calendar_date.primary.rank.name != "PRIVILEGED_OBSERVANCE"
@@ -262,7 +261,6 @@ class BCP1979CanticleTable(CanticleRules):
             return S10
 
     def get_mp_canticle_2(self, calendar_date):
-
         if (
             calendar_date.primary.rank.precedence_rank in [1, 3]
             and calendar_date.primary.rank.name != "PRIVILEGED_OBSERVANCE"
@@ -341,7 +339,6 @@ class BCP1979CanticleTable(CanticleRules):
 
 class REC2011CanticleTable(CanticleRules):
     def get_mp_canticle_1(self, calendar_date):
-
         if (
             calendar_date.primary.rank.precedence_rank in [1, 3]
             and calendar_date.primary.rank.name != "PRIVILEGED_OBSERVANCE"
@@ -371,7 +368,6 @@ class REC2011CanticleTable(CanticleRules):
             return S5
 
         if calendar_date.season.name == "Season After Pentecost":
-
             if calendar_date.date.weekday() == 5:
                 return S10
             return S8

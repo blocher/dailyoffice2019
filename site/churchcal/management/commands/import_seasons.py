@@ -3,13 +3,11 @@ from churchcal.models import Season, Commemoration, CommemorationRank
 
 
 class Command(ImportCommemorationsBaseCommand):
-
     help = "Imports Seasons"
 
     RANGE_NAME = "Seasons!A2:I700"
 
     def import_dates(self):
-
         Season.objects.filter(calendar=self.calendar).delete()
         for i, row in enumerate(self.values):
             if row[0]:
@@ -26,5 +24,4 @@ class Command(ImportCommemorationsBaseCommand):
                 print(row[1])
 
     def import_not_after(self):
-
         return
