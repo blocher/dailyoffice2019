@@ -149,8 +149,9 @@ export default {
       });
 
     },
-    toggleSharePanel() {
+    async toggleSharePanel() {
       this.showSharePanel = !this.showSharePanel;
+      this.shareLink = await this.getShareLink()
     },
 
     async share(event) {
