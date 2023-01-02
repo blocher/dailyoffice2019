@@ -123,8 +123,8 @@ export default {
           .map((key) => key + "=" + settings[key])
           .join("&") + await this.getCollectProps();
       const path = this.$route.path;
-      const port = isNaN(window.location.port) ? "" : parseInt(window.location.port)
-      const port_string = port == 80 || port == 443 || port == "" ? "" : ":" + port
+      const port = parseInt(window.location.port)
+      const port_string = port == 8080 ? ":8080" : ""
       if (Capacitor.getPlatform() != 'web') {
         return `https://www.dailyoffice2019.com${path}?${queryString}`;
       }
