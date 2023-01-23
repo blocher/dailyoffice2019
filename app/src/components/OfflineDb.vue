@@ -56,12 +56,14 @@ export default {
         return
       }
       const date = new Date();
-      const chckDates = [];
-      for (let i = 0; i < 90; i++) {
+      date.setDate(date.getDate() - 4)
+      const links = [];
+      for (let i = 0; i < 94; i++) {
         date.setDate(date.getDate() + 1);
-        chckDates.push(new Date(date.getTime()));
+        const date_str = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+        links.push(date_str);
       }
-      // console.log(chckDates);
+      console.log('DATES', links);
       alwaysSync.forEach(async (url) => {
         url = `${process.env.VUE_APP_API_URL}${url}`;
         await precacheURL(url);

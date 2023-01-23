@@ -89,6 +89,7 @@ import PageNotFound from "@/views/PageNotFound";
 import FontSizer from "@/components/FontSizer";
 import {DynamicStorage} from "@/helpers/storage";
 import {getURL} from "@/utils/request";
+import {getOfficeURL} from "@/utils/officeURL";
 
 export default {
   name: "Office",
@@ -161,21 +162,11 @@ export default {
         (this.calendarDate.getMonth() + 1) +
         "-" +
         this.calendarDate.getDate();
-    this.availableSettings = await this.$store.state.availableSettings;
-    await this.$store.dispatch('initializeSettings');
-    const settings = await this.$store.state.settings;
-    const queryString = Object.keys(settings)
-        .map((key) => key + "=" + settings[key])
-        .join("&");
+
     let data = null;
+    const office_url = getOfficeURL(this.office, today_str)
     try {
-      data = await getURL(`${process.env.VUE_APP_API_URL}api/v1/${this.serviceType}/${this.office}/` +
-          today_str +
-          "?" +
-          queryString
-          + "&extra_collects="
-          + await this.extraCollects()
-      );
+      data = await getURL(office_url);
     } catch (e) {
       console.log(e);
       this.error =
