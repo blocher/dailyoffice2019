@@ -99,6 +99,7 @@ import OfficeCongregationDialogue from "@/components/OfficeCongregationDialogue"
 import OfficeLeaderDialogue from "@/components/OfficeLeaderDialogue";
 import OfficeRubric from "@/components/OfficeRubric";
 import OfficeSpacer from "@/components/OfficeSpacer";
+import {getURL} from "@/utils/request";
 
 export default {
   name: "Readings",
@@ -152,10 +153,17 @@ export default {
     this.loading = true;
     this.service = "Great Litany"
     try {
-      const data = await this.$http.get(
-          `${process.env.VUE_APP_API_URL}api/v1/litany`
-      );
-      this.modules = data['data']['modules'];
+      let data = null;
+      try {
+        data = await getURL(
+            `${process.env.VUE_APP_API_URL}api/v1/litany`
+        );
+      } catch {
+        this.error = "There was an error retrieving the litany. Please try again.";
+        this.loading = false;
+        return;
+      }
+      this.modules = data['modules'];
       this.services = this.modules.map((module) => {
         return {
           name: module.name,

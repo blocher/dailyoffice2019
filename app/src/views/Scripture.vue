@@ -23,6 +23,7 @@
 <script>
 
 import Loading from "@/components/Loading";
+import {getURL} from "@/utils/request";
 
 export default {
   components: {Loading},
@@ -41,13 +42,13 @@ export default {
     let data = null;
     this.passage = this.$route.params.passage
     try {
-      const data = await this.$http.get(
+      const data = await getURL(
           `${process.env.VUE_APP_API_URL}api/v1/scripture/${this.passage}`
       );
-      this.data = data.data
-      this.kjv = data.data.kjv
-      this.rsv = data.data.rsv
-      this.esv = data.data.esv
+      this.data = data
+      this.kjv = data.kjv
+      this.rsv = data.rsv
+      this.esv = data.esv
 
     } catch (e) {
       this.error =

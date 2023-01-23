@@ -85,6 +85,7 @@ import Collect from "@/components/Collect";
 import FontSizer from "@/components/FontSizer";
 import CollectsSubcategory from "@/components/CollectsSubcategory";
 import {DynamicStorage} from "@/helpers/storage";
+import {getURL} from "@/utils/request";
 
 export default {
   components: {Loading, CollectsFilters, Collect, FontSizer, CollectsSubcategory},
@@ -141,7 +142,7 @@ export default {
     let data = null;
 
     try {
-      data = await this.$http.get(
+      data = await getURL(
           `${process.env.VUE_APP_API_URL}api/v1/grouped_collects`
       );
     } catch (e) {
@@ -150,7 +151,7 @@ export default {
       this.loading = false;
       return;
     }
-    this.collects = data.data;
+    this.collects = data;
     this.collects.forEach((category) => {
       category.subcategories.forEach((subcategory) => {
         subcategory.collects.forEach((collect) => {

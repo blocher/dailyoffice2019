@@ -90,6 +90,7 @@
 import Loading from "@/components/Loading";
 import FontSizer from "@/components/FontSizer";
 import {DynamicStorage} from "@/helpers/storage";
+import {getURL} from "@/utils/request";
 
 export default {
   components: {Loading, FontSizer},
@@ -111,7 +112,7 @@ export default {
     this.setTradtional();
     let data = null;
     try {
-      data = await this.$http.get(
+      data = await getURL(
           `${process.env.VUE_APP_API_URL}api/v1/psalms/${this.$route.params.number}/`
       );
     } catch (e) {
@@ -120,7 +121,7 @@ export default {
       this.loading = false;
       return;
     }
-    this.psalm = data.data;
+    this.psalm = data;
     this.error = false;
     this.loading = false;
   },

@@ -1,4 +1,5 @@
 <template>
+  <OfflineDb/>
   <div id="notch" class="notch"></div>
   <div class="m-4">
     <ThemeSwitcher/>
@@ -85,6 +86,8 @@
 import TopMenu from "@/components/TopMenu";
 import Loading from "@/components/Loading";
 import AHPLogo from "@/components/AHPLogo";
+import OfflineDb from "@/components/OfflineDb";
+
 import {event} from 'vue-gtag'
 import BetaNote from "@/components/BetaNote";
 import {useActiveMeta, useMeta} from "vue-meta";
@@ -93,6 +96,9 @@ import EmailSignup from "@/components/EmailSignup.vue";
 import SubmitFeedback from "@/components/SubmitFeedback.vue";
 import AdditionalLinks from "@/components/AdditionalLinks.vue";
 import {ArrowDown} from '@element-plus/icons-vue'
+import {getCurrentInstance} from "vue";
+import {useSQLite} from "vue-sqlite-hook";
+import {getURL} from "@/utils/request";
 
 export default {
   components: {
@@ -105,6 +111,7 @@ export default {
     SubmitFeedback,
     AdditionalLinks,
     ArrowDown,
+    OfflineDb,
   },
   setup() {
     const {meta} = useMeta({
@@ -112,6 +119,39 @@ export default {
       viewport: 'width=device-width, initial-scale=1.0, viewport-fit=cover',
     })
     const metadata = useActiveMeta()
+
+    const app = getCurrentInstance();
+    const isModalOpen = app?.appContext.config.globalProperties.$isModalOpen;
+    const contentMessage = app?.appContext.config.globalProperties.$messageContent;
+    const jsonListeners = app?.appContext.config.globalProperties.$isJsonListeners;
+    const onProgressImport = async (progress) => {
+      if (jsonListeners.jsonListeners.value) {
+        if (!isModalOpen.isModal.value) isModalOpen.setIsModal(true);
+        contentMessage.setMessage(
+            contentMessage.message.value.concat(`${progress}\n`));
+      }
+    }
+    const onProgressExport = async (progress) => {
+      if (jsonListeners.jsonListeners.value) {
+        if (!isModalOpen.isModal.value) isModalOpen.setIsModal(true);
+        contentMessage.setMessage(
+            contentMessage.message.value.concat(`${progress}\n`));
+      }
+    }
+    if (app != null) {
+      // !!!!! if you do not want to use the progress events !!!!!
+      // since vue-sqlite-hook 2.1.1
+      // app.appContext.config.globalProperties.$sqlite = useSQLite()
+      // before
+      // app.appContext.config.globalProperties.$sqlite = useSQLite({})
+      // !!!!!                                               !!!!!
+      app.appContext.config.globalProperties.$sqlite = useSQLite({
+        onProgressImport,
+        onProgressExport
+      });
+    }
+    return;
+
   },
   data() {
     return {
@@ -141,10 +181,8 @@ export default {
     document.title = "The Daily Office";
     try {
       event('betaPageView')
-      const settings_data = await this.$http.get(
-          `${process.env.VUE_APP_API_URL}api/v1/available_settings/`
-      );
-      await this.$store.commit("saveAvailableSettings", settings_data.data);
+      const settings_data = await getURL(`${process.env.VUE_APP_API_URL}api/v1/available_settings/`);
+      await this.$store.commit("saveAvailableSettings", settings_data);
       await this.$store.dispatch('initializeSettings');
       this.loading = false;
       await this.$nextTick();

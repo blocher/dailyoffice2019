@@ -66,6 +66,7 @@ import CollectsFilters from "@/components/CollectsFilters";
 import Collect from "@/components/Collect";
 import FontSizer from "@/components/FontSizer";
 import {DynamicStorage} from "@/helpers/storage";
+import {getURL} from "@/utils/request";
 
 
 export default {
@@ -102,9 +103,8 @@ export default {
     this.setTraditional();
     let data = null;
 
-    // this.collectCategories = this.formatCollectCategories(data.data);
     try {
-      data = await this.$http.get(
+      data = await getURL(
           `${process.env.VUE_APP_API_URL}api/v1/collects`
       );
     } catch (e) {
@@ -113,10 +113,10 @@ export default {
       this.loading = false;
       return;
     }
-    this.collects = data.data;
+    this.collects = data;
 
     try {
-      data = await this.$http.get(
+      data = await getURL(
           `${process.env.VUE_APP_API_URL}api/v1/collect_categories`
       );
     } catch (e) {
@@ -125,7 +125,7 @@ export default {
       this.loading = false;
       return;
     }
-    this.setCollectTypes(data.data);
+    this.setCollectTypes(data);
 
 
     this.displayedCollects = this.collects;

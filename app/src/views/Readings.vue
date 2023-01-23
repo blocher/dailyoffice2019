@@ -152,6 +152,7 @@ import CitationGroup from "@/components/CitationGroup";
 import FontSizer from "@/components/FontSizer";
 import PageNotFound from "@/views/PageNotFound";
 import {DynamicStorage} from "@/helpers/storage";
+import {getURL} from "@/utils/request";
 
 export default {
   name: "Readings",
@@ -299,12 +300,12 @@ export default {
       let data = null;
       try {
 
-              this.availableSettings = await this.$store.state.availableSettings;
-    await this.$store.dispatch('initializeSettings');
-    const settings = await this.$store.state.settings;
-    const queryString = Object.keys(settings)
-        .map((key) => key + "=" + settings[key])
-        .join("&");
+        this.availableSettings = await this.$store.state.availableSettings;
+        await this.$store.dispatch('initializeSettings');
+        const settings = await this.$store.state.settings;
+        const queryString = Object.keys(settings)
+            .map((key) => key + "=" + settings[key])
+            .join("&");
 
 
         const today_str =
@@ -313,8 +314,8 @@ export default {
             (this.calendarDate.getMonth() + 1) +
             "-" +
             this.calendarDate.getDate();
-        data = await this.$http.get(
-            `${process.env.VUE_APP_API_URL}api/v1/readings/${today_str}?translation=${this.translation}&psalms=${this.psalmsTranslation}&`  + queryString
+        data = await getURL(
+            `${process.env.VUE_APP_API_URL}api/v1/readings/${today_str}?translation=${this.translation}&psalms=${this.psalmsTranslation}&` + queryString
         );
 
       } catch (e) {
@@ -324,8 +325,8 @@ export default {
         this.readingsLoading = false;
         return;
       }
-      this.card = data.data.calendarDate
-      this.services = data.data.services
+      this.card = data.calendarDate
+      this.services = data.services
       // iterate through keys and values of this.services
       this.morning_prayer = [];
       this.evening_prayer = [];

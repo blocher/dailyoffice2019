@@ -46,7 +46,7 @@
       </template>
       <div
           v-if="
-        card &&
+        card && !error &&
         card.commemorations.length > 1 &&
         office != 'evening_prayer' &&
         office != 'compline'
@@ -94,7 +94,7 @@ import Commemoration from "@/components/Commemoration";
 export default {
   name: "CalenderCard",
   components: {Commemoration},
-  props: ["card", "calendarDate", "office", "serviceType"],
+  props: ["card", "calendarDate", "office", "serviceType", "error"],
   data() {
     return {
       officeName: null,
@@ -111,6 +111,9 @@ export default {
       }
     },
     hideBody: function () {
+      if (this.error) {
+        return true
+      }
       if (this.office == 'evening_prayer' || this.office == 'compline') {
         return this.card.evening_commemorations.length < 2
       } else {

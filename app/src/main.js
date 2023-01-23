@@ -14,6 +14,14 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { createMetaManager } from "vue-meta";
 
+import {
+  applyPolyfills,
+  defineCustomElements as jeepSqlite,
+} from "jeep-sqlite/loader";
+import { Capacitor } from "@capacitor/core";
+import { CapacitorSQLite, SQLiteConnection } from "@capacitor-community/sqlite";
+import { useState } from "@/composables/state";
+
 // import { faTwitter } from "@fortawesome/free-brands-svg-icons";
 // import { faUserSecret } from "@fortawesome/free-solid-svg-icons";
 // import {
@@ -49,6 +57,7 @@ import {
 } from "@fortawesome/pro-duotone-svg-icons";
 import VueGtag from "vue-gtag";
 import { faFacebook } from "@fortawesome/free-brands-svg-icons";
+import { useSQLite } from "vue-sqlite-hook";
 
 library.add(
   faSun,
@@ -74,6 +83,108 @@ library.add(
   faSquareCaretDown,
   faOctagonCheck
 );
+
+applyPolyfills().then(() => {
+  jeepSqlite(window);
+});
+
+window.addEventListener("DOMContentLoaded", async () => {
+  const platform = Capacitor.getPlatform();
+  const sqlite = new SQLiteConnection(CapacitorSQLite);
+  // SQLite Hook
+  const {
+    echo,
+    getPlatform,
+    createConnection,
+    closeConnection,
+    retrieveConnection,
+    retrieveAllConnections,
+    closeAllConnections,
+    addUpgradeStatement,
+    importFromJson,
+    isJsonValid,
+    copyFromAssets,
+    isAvailable,
+  } = useSQLite();
+  //Existing Connections
+  const [existConn, setExistConn] = useState(false);
+
+  const app = createApp(App)
+    .use(router)
+    .use(
+      VueGtag,
+      {
+        appName: "The Daily Office",
+        pageTrackerScreenviewEnabled: true,
+        config: { id: "G-NPCDSDW90W" },
+      },
+      router
+    )
+    .use(store)
+    .use(VueAxios, axios)
+    .use(ElementPlus)
+    .use(createMetaManager())
+    .component("font-awesome-icon", FontAwesomeIcon);
+
+  app.config.globalProperties.$sqlite = {
+    echo: echo,
+    getPlatform: getPlatform,
+    createConnection: createConnection,
+    closeConnection: closeConnection,
+    retrieveConnection: retrieveConnection,
+    retrieveAllConnections: retrieveAllConnections,
+    closeAllConnections: closeAllConnections,
+    addUpgradeStatement: addUpgradeStatement,
+    importFromJson: importFromJson,
+    isJsonValid: isJsonValid,
+    copyFromAssets: copyFromAssets,
+    isAvailable: isAvailable,
+  };
+
+  //  Existing Connections Store
+  app.config.globalProperties.$existingConn = {
+    existConn: existConn,
+    setExistConn: setExistConn,
+  };
+
+  /* SQLite Global Variables*/
+
+  // Only if you want to use the onProgressImport/Export events
+  const [jsonListeners, setJsonListeners] = useState(false);
+  const [isModal, setIsModal] = useState(false);
+  const [message, setMessage] = useState("");
+  app.config.globalProperties.$isModalOpen = {
+    isModal: isModal,
+    setIsModal: setIsModal,
+  };
+  app.config.globalProperties.$isJsonListeners = {
+    jsonListeners: jsonListeners,
+    setJsonListeners: setJsonListeners,
+  };
+  app.config.globalProperties.$messageContent = {
+    message: message,
+    setMessage: setMessage,
+  };
+
+  try {
+    if (platform === "web") {
+      // Create the 'jeep-sqlite' Stencil component
+      const jeepSqlite = document.createElement("jeep-sqlite");
+      document.body.appendChild(jeepSqlite);
+      await customElements.whenDefined("jeep-sqlite");
+      // Initialize the Web store
+      await sqlite.initWebStore();
+    }
+    // here you can initialize some database schema if required
+
+    router.isReady().then(() => {
+      app.mount("#app");
+    });
+  } catch (err) {
+    console.log(`Error: ${err}`);
+    throw new Error(`Error: ${err}`);
+  }
+});
 
 router.beforeEach((to, from, next) => {
   // This goes through the matched routes from last to first, finding the closest route with a title.
@@ -128,25 +239,4 @@ router.beforeEach((to, from, next) => {
     .forEach((tag) => document.head.appendChild(tag));
 
   next();
-});
-
-const app = createApp(App)
-  .use(router)
-  .use(
-    VueGtag,
-    {
-      appName: "The Daily Office",
-      pageTrackerScreenviewEnabled: true,
-      config: { id: "G-NPCDSDW90W" },
-    },
-    router
-  )
-  .use(store)
-  .use(VueAxios, axios)
-  .use(ElementPlus)
-  .use(createMetaManager())
-  .component("font-awesome-icon", FontAwesomeIcon);
-
-router.isReady().then(() => {
-  app.mount("#app");
 });

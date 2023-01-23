@@ -31,6 +31,7 @@ import setCalendarDate from "@/helpers/setCalendarDate";
 import OfficeNav from "@/components/OfficeNav";
 import PageNotFound from "@/views/PageNotFound";
 import {DynamicStorage} from "@/helpers/storage";
+import {getURL} from "@/utils/request";
 
 export default {
   name: "Calendar",
@@ -94,7 +95,7 @@ export default {
       this.year = this.$route.params.year;
       let data = null;
       try {
-        data = await this.$http.get(
+        data = await getURL(
             `${process.env.VUE_APP_API_URL}api/v1/calendar/${this.year}-${this.month}-${this.day}`
         );
       } catch (e) {
@@ -107,7 +108,7 @@ export default {
         this.loading = false;
         return;
       }
-      this.card = data.data;
+      this.card = data;
 
       this.scrollToTop();
       this.loading = false;

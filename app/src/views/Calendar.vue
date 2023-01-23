@@ -10,6 +10,10 @@
         @change="updateIncludeMinorFeasts"
     />
   </div>
+  <el-alert
+      v-if="error" :title="error"
+      type="error"
+  />
   <el-calendar
       v-if="!loading" v-model="date"
   >
@@ -54,6 +58,7 @@
 // @ is an alias to /src
 
 import {DynamicStorage} from "@/helpers/storage";
+import {getURL} from "@/utils/request";
 
 export default {
   name: "Calendar",
@@ -66,6 +71,7 @@ export default {
       date: null,
       loading: true,
       includeMinorFeasts: false,
+      error: null,
     };
   },
   watch: {
@@ -177,16 +183,16 @@ export default {
       this.month = month;
       this.date = new Date(this.year, this.month - 1, 1);
       try {
-        data = await this.$http.get(
+        data = await getURL(
             `${process.env.VUE_APP_API_URL}api/v1/calendar/${this.year}-${this.month}`
         );
       } catch (e) {
         this.error =
-            "There was an error retrieving the office. Please try again.";
+            "There was an error retrieving the calendar. Please try again.";
         this.loading = false;
         return;
       }
-      data.data.forEach((day) => {
+      data.forEach((day) => {
         const dateString = day["date"];
         this.days[dateString] = day;
       });

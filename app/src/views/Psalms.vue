@@ -73,6 +73,7 @@
 <script>
 import Loading from "@/components/Loading";
 import {DynamicStorage} from "@/helpers/storage";
+import {getURL} from "@/utils/request";
 
 export default {
   components: {Loading},
@@ -95,10 +96,10 @@ export default {
     } else {
       this.traditional = false;
     }
-    this.setTraditional();
+    await this.setTraditional();
     let data = null;
     try {
-      data = await this.$http.get(
+      data = await getURL(
           `${process.env.VUE_APP_API_URL}api/v1/psalms`
       );
     } catch (e) {
@@ -107,11 +108,11 @@ export default {
       this.loading = false;
       return;
     }
-    this.psalms = data.data;
+    this.psalms = data;
     this.displayedPsalms = this.psalms;
 
     try {
-      data = await this.$http.get(
+      data = await getURL(
           `${process.env.VUE_APP_API_URL}api/v1/psalms/topics`
       );
     } catch (e) {
@@ -120,7 +121,7 @@ export default {
       this.loading = false;
       return;
     }
-    this.topics = data.data;
+    this.topics = data;
     this.error = false;
     this.loading = false;
   },

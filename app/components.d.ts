@@ -67,6 +67,7 @@ declare module '@vue/runtime-core' {
     OfficeRubric: typeof import('./src/components/OfficeRubric.vue')['default']
     OfficeSpacer: typeof import('./src/components/OfficeSpacer.vue')['default']
     OfficeSubheading: typeof import('./src/components/OfficeSubheading.vue')['default']
+    OfflineDb: typeof import('./src/components/OfflineDb.vue')['default']
     Reading: typeof import('./src/components/Reading.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

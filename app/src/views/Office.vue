@@ -10,6 +10,7 @@
             :calendar-date="calendarDate"
             :card="card"
             :service-type="serviceType"
+            :error="error"
         />
         <el-alert
             v-if="error" :title="error"
@@ -87,6 +88,7 @@ import OfficeNav from "@/components/OfficeNav";
 import PageNotFound from "@/views/PageNotFound";
 import FontSizer from "@/components/FontSizer";
 import {DynamicStorage} from "@/helpers/storage";
+import {getURL} from "@/utils/request";
 
 export default {
   name: "Office",
@@ -167,8 +169,7 @@ export default {
         .join("&");
     let data = null;
     try {
-      data = await this.$http.get(
-          `${process.env.VUE_APP_API_URL}api/v1/${this.serviceType}/${this.office}/` +
+      data = await getURL(`${process.env.VUE_APP_API_URL}api/v1/${this.serviceType}/${this.office}/` +
           today_str +
           "?" +
           queryString
@@ -182,8 +183,8 @@ export default {
       this.loading = false;
       return;
     }
-    this.modules = data.data.modules;
-    this.card = data.data.calendar_day;
+    this.modules = data.modules;
+    this.card = data.calendar_day;
     this.error = false;
     this.loading = false;
     await this.$nextTick();

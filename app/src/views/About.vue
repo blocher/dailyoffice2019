@@ -33,6 +33,7 @@
 import Loading from "@/components/Loading";
 import FontSizer from "@/components/FontSizer";
 import {Capacitor} from "@capacitor/core";
+import {getURL} from "@/utils/request";
 
 export default {
   components: {Loading, FontSizer},
@@ -48,7 +49,7 @@ export default {
   async created() {
     let data = null;
     try {
-      data = await this.$http.get(
+      data = await getURL(
           `${process.env.VUE_APP_API_URL}api/v1/about`
       );
     } catch (e) {
@@ -57,7 +58,7 @@ export default {
       this.loading = false;
       return;
     }
-    this.aboutItems = data.data;
+    this.aboutItems = data;
     this.error = false;
     this.loading = false;
     this.readyToSetFontSize = true;

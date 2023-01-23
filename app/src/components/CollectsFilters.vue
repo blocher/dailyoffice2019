@@ -200,8 +200,8 @@ import {
   TransitionChild,
   TransitionRoot,
 } from '@headlessui/vue'
-import {XIcon} from '@heroicons/vue/outline'
-import {ChevronDownIcon} from '@heroicons/vue/solid'
+import {XIcon} from '@heroicons/vue/24/outline'
+import {ChevronDownIcon} from '@heroicons/vue/20/solid'
 
 export default {
   components: {
