@@ -1,5 +1,5 @@
 <template>
-  <OfflineDb/>
+  <OfflineDb v-if="showLinks"/>
   <div id="notch" class="notch"></div>
   <div class="m-4">
     <ThemeSwitcher/>

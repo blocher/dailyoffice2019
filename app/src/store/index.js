@@ -36,7 +36,7 @@ export default createStore({
           await DynamicStorage.setItem("extraCollects", JSON.stringify(result));
         }
       };
-      const availableSettings = state.availableSettings;
+      let availableSettings = state.availableSettings;
       const settings_store = await DynamicStorage.getItem("settings");
       const settings = settings_store
         ? JSON.parse(await DynamicStorage.getItem("settings"))

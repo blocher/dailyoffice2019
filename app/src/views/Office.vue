@@ -164,7 +164,7 @@ export default {
         this.calendarDate.getDate();
 
     let data = null;
-    const office_url = getOfficeURL(this.office, today_str)
+    const office_url = await getOfficeURL(this.office, this.serviceType, today_str)
     try {
       data = await getURL(office_url);
     } catch (e) {
@@ -180,20 +180,6 @@ export default {
     this.loading = false;
     await this.$nextTick();
     this.readyToSetFontSize = true;
-  },
-  methods: {
-    async extraCollects() {
-      if (this.serviceType != "office") {
-        return ""
-      }
-      const full_office_name = this.office.replace("_", " ").toLowerCase().split(' ').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join(' ');
-      const extraCollects = JSON.parse(await DynamicStorage.getItem('extraCollects')) || "";
-      if (!extraCollects) {
-        return ""
-      }
-      const office_extra_collects = Object.prototype.hasOwnProperty.call(extraCollects, full_office_name) ? extraCollects[full_office_name].join(",") : [];
-      return office_extra_collects
-    }
   },
 };
 </script>
