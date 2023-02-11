@@ -472,7 +472,11 @@ def calendar(request):
     return HttpResponse(res)
 
 
-def mass_readings_data(year=None, no_gospel=False):
+def mass_readings_data(year=None, readings=None):
+    if not readings:
+        readings = [1, 2, 3, 4]
+    else:
+        readings = readings
     items = (
         LectionaryItem.objects.select_related("sanctorale_commemoration")
         .order_by("order")
@@ -480,6 +484,7 @@ def mass_readings_data(year=None, no_gospel=False):
             Prefetch(
                 "commemoration__massreading_set",
                 queryset=MassReading.objects.order_by("order")
+                .filter(reading_number__in=readings)
                 .select_related("long_scripture", "short_scripture")
                 .all(),
                 to_attr="mass_readings",
@@ -489,6 +494,7 @@ def mass_readings_data(year=None, no_gospel=False):
             Prefetch(
                 "common__massreading_set",
                 queryset=MassReading.objects.order_by("order")
+                .filter(reading_number__in=readings)
                 .select_related("long_scripture", "short_scripture")
                 .all(),
                 to_attr="mass_readings",
@@ -498,6 +504,7 @@ def mass_readings_data(year=None, no_gospel=False):
             Prefetch(
                 "proper__massreading_set",
                 queryset=MassReading.objects.order_by("order")
+                .filter(reading_number__in=readings)
                 .select_related("long_scripture", "short_scripture")
                 .all(),
                 to_attr="mass_readings",
@@ -529,8 +536,7 @@ def mass_readings_data(year=None, no_gospel=False):
                 item.reading_2_selected_year_passages = item.reading_2_c_passages
                 item.reading_3_selected_year_passages = item.reading_3_c_passages
                 item.reading_4_selected_year_passages = item.reading_4_c_passages
-    gospel = True if not no_gospel else False
-    return {"items": items, "year": year, "gospel": gospel}
+    return {"items": items, "year": year, "readings": readings}
 
 
 def readings_data(testament=""):
@@ -608,8 +614,13 @@ def readings(request, testament=""):
     return render(request, "export/export_base.html", readings_data(testament))
 
 
-def mass_readings(request, year=None, no_gospel=False):
-    return render(request, "export/mass_readings.html", mass_readings_data(year, no_gospel))
+def mass_readings(request, year=None, readings=0):
+    if readings:
+        readings = readings.split(",")
+        readings = [int(reading) for reading in readings if reading.isdigit()]
+    if not readings:
+        readings = [1, 2, 3, 4]
+    return render(request, "export/mass_readings.html", mass_readings_data(year, readings))
 
 
 def readings_doc(request, testament=""):
@@ -649,9 +660,15 @@ def readings_doc(request, testament=""):
     return response
 
 
-def mass_readings_doc(request, year=None, no_gospel=False):
+def mass_readings_doc(request, year=None, readings=0):
     from docx import Document
     from htmldocx import HtmlToDocx
+
+    if readings:
+        readings = readings.split(",")
+        readings = [int(reading) for reading in readings if reading.isdigit()]
+    if not readings:
+        readings = [1, 2, 3, 4]
 
     def normalize_document_styles(doc):
         for style in document.styles:
@@ -664,7 +681,7 @@ def mass_readings_doc(request, year=None, no_gospel=False):
     document = normalize_document_styles(document)
     new_parser = HtmlToDocx()
 
-    html = render_to_string("export/mass_readings.html", mass_readings_data(year, no_gospel))
+    html = render_to_string("export/mass_readings.html", mass_readings_data(year, readings))
     soup = BeautifulSoup(html, "html.parser")
     for div in soup.find_all("h3", {"class": "reading-heading"}):
         div.decompose()

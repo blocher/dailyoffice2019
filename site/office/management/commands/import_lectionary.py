@@ -48,7 +48,8 @@ def get_items():
     for proper in late_propers:
         all_saints_position = all_saints_position + 1
         feasts.insert(all_saints_position, proper)
-    return feasts + list(pre_new_year_holy_days) + list(post_new_year_holy_days)
+    commons = Common.objects.order_by("name").all()
+    return feasts + list(pre_new_year_holy_days) + list(post_new_year_holy_days) + list(commons)
 
     # commemoration = models.ForeignKey(Commemoration, on_delete=models.SET_NULL, null=True, blank=True)
     # proper = models.ForeignKey(Proper, on_delete=models.SET_NULL, null=True, blank=True)

@@ -66,20 +66,90 @@
 {% endif %}
 {% if not year %}
     <p><em>Please note: Each link contains many readings and may load slowly. Please be patient.</em></p>
-    <p><strong>All readings (HTML):</strong> <a href="/mass_readings/A">Year A</a> | <a href="/mass_readings/B">Year
-        B</a> |
-        <a href="/mass_readings/C">Year C</a></p>
-    <p><strong>All readings (Microsoft Word):</strong> <a href="/mass_readings_doc/A">Year A</a> | <a
-            href="/mass_readings_doc/B">Year B</a> |
-        <a href="/mass_readings_doc/C">Year C</a></p>
-    <p><strong>All readings except Gospels (HTML):</strong> <a href="/mass_readings/A/no_gospels">Year A</a> | <a
-            href="/mass_readings/B/no_gospels">Year
-        B</a> |
-        <a href="/mass_readings/C/no_gospels">Year C</a></p>
-    <p><strong>All readings except Gospels (Microsoft Word):</strong> <a href="/mass_readings_doc/A/no_gospels">Year
-        A</a> | <a
-            href="/mass_readings_doc/B/no_gospels">Year B</a> |
-        <a href="/mass_readings_doc/C/no_gospels">Year C</a></p>
+
+    <table class="hide-in-doc" style="width:100%">
+        <tr>
+            <th>Year</th>
+            <th>All</th>
+            <th>All (except Gospels)</th>
+            <th>Old Testament (+Acts/Revelation)</th>
+            <th>Psalms</th>
+            <th>Epistles</th>
+            <th>Gospels</th>
+        </tr>
+        <tr>
+            <td>
+                <strong>Year A</strong>
+            </td>
+            <td>
+                <a href="/mass_readings/A">HTML</a> | <a href="/mass_readings_doc/A">Word</a>
+            </td>
+            <td>
+                <a href="/mass_readings/A/1,2,3">HTML</a> | <a href="/mass_readings_doc/A/1,2,3">Word</a>
+            </td>
+            <td>
+                <a href="/mass_readings/A/1">HTML</a> | <a href="/mass_readings_doc/A/1">Word</a>
+            </td>
+            <td>
+                <a href="/mass_readings/A/2">HTML</a> | <a href="/mass_readings_doc/A/2">Word</a>
+            </td>
+            <td>
+                <a href="/mass_readings/A/3">HTML</a> | <a href="/mass_readings_doc/A/3">Word</a>
+            </td>
+            <td>
+                <a href="/mass_readings/A/4">HTML</a> | <a href="/mass_readings_doc/A/4">Word</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Year B</strong>
+            </td>
+            <td>
+                <a href="/mass_readings/B">HTML</a> | <a href="/mass_readings_doc/B">Word</a>
+            </td>
+            <td>
+                <a href="/mass_readings/B/1,2,3">HTML</a> | <a href="/mass_readings_doc/B/1,2,3">Word</a>
+            </td>
+            <td>
+                <a href="/mass_readings/B/1">HTML</a> | <a href="/mass_readings_doc/B/1">Word</a>
+            </td>
+            <td>
+                <a href="/mass_readings/B/2">HTML</a> | <a href="/mass_readings_doc/B/2">Word</a>
+            </td>
+            <td>
+                <a href="/mass_readings/B/3">HTML</a> | <a href="/mass_readings_doc/B/3">Word</a>
+            </td>
+            <td>
+                <a href="/mass_readings/B/4">HTML</a> | <a href="/mass_readings_doc/B/4">Word</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Year C</strong>
+            </td>
+            <td>
+                <a href="/mass_readings/C">HTML</a> | <a href="/mass_readings_doc/C">Word</a>
+            </td>
+            <td>
+                <a href="/mass_readings/C/1,2,3">HTML</a> | <a href="/mass_readings_doc/C/1,2,3">Word</a>
+            </td>
+            <td>
+                <a href="/mass_readings/C/1">HTML</a> | <a href="/mass_readings_doc/C/1">Word</a>
+            </td>
+            <td>
+                <a href="/mass_readings/C/2">HTML</a> | <a href="/mass_readings_doc/C/2">Word</a>
+            </td>
+            <td>
+                <a href="/mass_readings/C/3">HTML</a> | <a href="/mass_readings_doc/C/3">Word</a>
+            </td>
+            <td>
+                <a href="/mass_readings/C/4">HTML</a> | <a href="/mass_readings_doc/C/4">Word</a>
+            </td>
+        </tr>
+    </table>
+
+    <hr>
+
     <table class="hide-in-doc">
         <tr>
             <th>Name</th>
@@ -125,17 +195,23 @@
         <p>{% if item.date_string %} <em>{{ item.date_string }}</em> {% endif %}</p>
 
         <p><small>
-            {{ item.reading_1_selected_year_passages|striptags }}<br>
-            {{ item.reading_2_selected_year_passages|striptags }}<br>
-            {{ item.reading_3_selected_year_passages|striptags }}<br>
-            {% if gospel %}
+            {% if 1 in readings %}
+                {{ item.reading_1_selected_year_passages|striptags }}<br>
+            {% endif %}
+            {% if 2 in readings %}
+                {{ item.reading_2_selected_year_passages|striptags }}<br>
+            {% endif %}
+            {% if 3 in readings %}
+                {{ item.reading_3_selected_year_passages|striptags }}<br>
+            {% endif %}
+            {% if 4 in readings %}
                 {{ item.reading_4_selected_year_passages|striptags }}<br>
             {% endif %}
         </small></p>
 
         <div class="spacer"></div>
         {% for reading in item.selected_year %}
-            {% if gospel or reading.reading_number != 4 %}
+            {% if reading.reading_number in readings %}
                 <h3 id="{{ item.pk }}_{{ reading.long_scripture.pk }}">{{ reading.long_scripture.passage }}</h3>
                 {% if reading.long_scripture.citation %}
                     <p><em>Reader:</em> {{ reading.long_scripture.citation }}</p>

@@ -514,14 +514,14 @@ urlpatterns = [
     path("mass_readings/", office_views.mass_readings, name="mass_readings"),
     path("mass_readings/<str:year>/", office_views.mass_readings, name="mass_readings_with_year"),
     path(
-        "mass_readings/<str:year>/<str:no_gospel>/",
+        "mass_readings/<str:year>/<str:readings>/",
         office_views.mass_readings,
         name="mass_readings_with_year_no_gospel",
     ),
     path("mass_readings/", office_views.mass_readings_doc, name="mass_readings_doc"),
     path("mass_readings_doc/<str:year>/", office_views.mass_readings_doc, name="mass_readings_doc_with_year"),
     path(
-        "mass_readings_doc/<str:year>/<str:no_gospel>/",
+        "mass_readings_doc/<str:year>/<str:readings>/",
         office_views.mass_readings_doc,
         name="mass_readings_doc_with_year_no_gospel",
     ),
