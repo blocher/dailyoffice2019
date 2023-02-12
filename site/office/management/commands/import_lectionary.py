@@ -1,8 +1,68 @@
 from django.core.management.base import BaseCommand
+from django.db.models import Q
 
 from churchcal.calculations import ChurchYear
-from churchcal.models import Commemoration, SanctoraleCommemoration, SanctoraleBasedCommemoration, Proper, Common
+from churchcal.models import (
+    Commemoration,
+    SanctoraleCommemoration,
+    SanctoraleBasedCommemoration,
+    Proper,
+    Common,
+    MassReading,
+)
 from office.models import LectionaryItem
+
+
+def add_ember_readings():
+    common_1 = Common.objects.filter(abbreviation="EMBER_DAY_1").first()
+    if not common_1:
+        Common.objects.filter(abbreviation="EMBER_DAY").update(abbreviation="EMBER_DAY_1")
+    common_2 = Common.objects.filter(abbreviation="EMBER_DAY_2").first()
+    if not common_2:
+        common_2 = Common.objects.get(abbreviation="EMBER_DAY_1")
+        common_2.abbreviation = "EMBER_DAY_2"
+        common_2.uuid = None
+        common_2.save()
+    Common.objects.filter(abbreviation="EMBER_DAY_1").update(name="Ember Day (I)")
+    Common.objects.filter(abbreviation="EMBER_DAY_2").update(name="Ember Day (II)")
+    ember_readings = MassReading.objects.filter(abbreviation__contains="EMBER_DAY_SPRING_FRI").all()
+    for reading in ember_readings:
+        com = common_1 if reading.service == "I" else common_2
+        match = MassReading.objects.filter(
+            service=reading.service, long_citation=reading.long_citation, common=com
+        ).first()
+        if not match:
+            reading.uuid = None
+            reading.common = com
+            reading.abbreviation = "EMBER_DAY_1" if reading.service == "I" else "EMBER_DAY_2"
+            reading.commemoration = None
+            reading.save()
+
+
+def add_rogation_readings():
+    common_1 = Common.objects.filter(abbreviation="ROGATION_DAY_1").first()
+    if not common_1:
+        Common.objects.filter(abbreviation="ROGATION_DAY").update(abbreviation="ROGATION_DAY_1")
+    common_2 = Common.objects.filter(abbreviation="ROGATION_DAY_2").first()
+    if not common_2:
+        common_2 = Common.objects.get(abbreviation="ROGATION_DAY_1")
+        common_2.abbreviation = "ROGATION_DAY_2"
+        common_2.uuid = None
+        common_2.save()
+    Common.objects.filter(abbreviation="ROGATION_DAY_1").update(name="Rogation Day (I)")
+    Common.objects.filter(abbreviation="ROGATION_DAY_2").update(name="Rogation Day (II)")
+    ember_readings = MassReading.objects.filter(abbreviation__contains="ROGATION_DAY_MON").all()
+    for reading in ember_readings:
+        com = common_1 if reading.service == "I" else common_2
+        match = MassReading.objects.filter(
+            service=reading.service, long_citation=reading.long_citation, common=com
+        ).first()
+        if not match:
+            reading.uuid = None
+            reading.common = com
+            reading.abbreviation = "ROGATION_DAY_1" if reading.service == "I" else "ROGATION_DAY_2"
+            reading.commemoration = None
+            reading.save()
 
 
 def get_items():
@@ -48,8 +108,36 @@ def get_items():
     for proper in late_propers:
         all_saints_position = all_saints_position + 1
         feasts.insert(all_saints_position, proper)
-    commons = Common.objects.order_by("name").all()
-    return feasts + list(pre_new_year_holy_days) + list(post_new_year_holy_days) + list(commons)
+
+    add_ember_readings()
+    add_rogation_readings()
+
+    commons = (
+        Common.objects.order_by("name")
+        .exclude(abbreviation__contains="EMBER")
+        .exclude(abbreviation__contains="ROGATION")
+        .all()
+    )
+    holidays = []
+    for day in year:
+        if day.primary.rank.name in ["NATIONAL_DAY_UNITED_STATES", "NATIONAL_DAY_CANADA"]:
+            feast = Commemoration.objects.get(pk=day.primary.pk)
+            holidays.append(feast)
+
+    embers = (
+        Common.objects.order_by("name")
+        .filter(Q(abbreviation__contains="EMBER") | Q(abbreviation__contains="ROGATION"))
+        .all()
+    )
+
+    return (
+        feasts
+        + list(pre_new_year_holy_days)
+        + list(post_new_year_holy_days)
+        + list(embers)
+        + list(holidays)
+        + list(commons)
+    )
 
     # commemoration = models.ForeignKey(Commemoration, on_delete=models.SET_NULL, null=True, blank=True)
     # proper = models.ForeignKey(Proper, on_delete=models.SET_NULL, null=True, blank=True)
