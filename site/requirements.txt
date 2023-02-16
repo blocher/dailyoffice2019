@@ -78,7 +78,7 @@ setuptools==60.9.1
 tqdm==4.62.3
 uvicorn==0.17.4
 uvloop==0.16.0
-Werkzeug==2.0.3
+Werkzeug==2.2.3
 wheel==0.37.1
 whitenoise==6.0.0
 
