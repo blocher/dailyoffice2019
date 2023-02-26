@@ -59,7 +59,6 @@ class BibleGateway(BibleSource):
         return self.html
 
     def get_headings(self):
-        return []
         return self.headings
 
     def _get_markup(self, passage=None):
@@ -111,14 +110,14 @@ class BibleGateway(BibleSource):
             raise PassageNotFoundException
 
     def _get_previous_heading(self):
-        book, start_chapter, start_verse, end_chapter, end_verse = self.reference
+        book, start_chapter, start_verse, end_chapter, end_verse, testament = self.reference
 
         new_start_chapter = 1 if start_chapter == 1 else start_chapter - 1
         new_start_verse = 1
         new_end_chapter = start_chapter
         new_end_verse = start_verse
 
-        passage = "{} {}:{} - {}:{}".format(book, new_start_chapter, new_start_verse, new_end_chapter, new_end_verse)
+        passage = "{} {}:{}-{}:{}".format(book, new_start_chapter, new_start_verse, new_end_chapter, new_end_verse)
         markup = self._get_markup(passage)
         soup = BeautifulSoup(markup, "html5lib")
         headings = soup.find_all("div", class_="result-text-style-normal")[0].find_all("h3")
@@ -127,35 +126,33 @@ class BibleGateway(BibleSource):
         return None
 
     def _set_headings(self):
-        self.headings = False
-        return
-        try:
-            headings = self.soup.find_all("div", class_="result-text-style-normal")[0].find_all("h3")
+        # try:
+        headings = self.soup.find_all("div", class_="result-text-style-normal")[0].find_all("h3")
 
-            first_element = self.soup.find_all("div", class_="result-text-style-normal")[0].find_all()[0]
-            if first_element.name != "h3":
-                new_heading = self._get_previous_heading()
-                if new_heading:
-                    headings = [new_heading] + headings
+        first_element = self.soup.find_all("div", class_="result-text-style-normal")[0].find_all()[0]
+        if first_element.name != "h3":
+            new_heading = self._get_previous_heading()
+            if new_heading:
+                headings = [new_heading] + headings
 
-            formatted_headings = []
-            for heading in headings:
-                span = heading.find_next("span")
-                classes = span.get_attribute_list("class")
-                try:
-                    classes.remove("text")
-                except ValueError:
-                    pass
-                passage = classes[0].split("-")
-                passage = "{} {}:{}".format(passage[0], passage[1], passage[2])
-                passage = scriptures.extract(passage)[0]
-                passage = scriptures.reference_to_string(*passage)
-                formatted_headings.append((passage, heading.string))
+        formatted_headings = []
+        for heading in headings:
+            span = heading.find_next("span")
+            classes = span.get_attribute_list("class")
+            try:
+                classes.remove("text")
+            except ValueError:
+                pass
+            passage = classes[0].split("-")
+            passage = "{} {}:{}".format(passage[0], passage[1], passage[2])
+            passage = scriptures.extract(passage)[0]
+            passage = scriptures.reference_to_string(*passage)
+            formatted_headings.append((passage, heading.string))
 
-            return formatted_headings
-        except Exception as e:
-            print(e)
-            return None
+        return formatted_headings
+        # except Exception as e:
+        #     print(e)
+        #     return None
 
 
 class OremusBibleBrowser(BibleSource):
