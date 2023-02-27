@@ -22,6 +22,8 @@ class Passage(object):
         version = BibleVersions.VERSIONS.get(source, {"name": source, "adapter": BibleGateway})
         adapter = version["adapter"]
         self.lookup = adapter(passage, source)
+        self.version_abbreviation = source
+        self.version_name = version["name"]
 
     @property
     def text(self):

@@ -21,6 +21,8 @@ class BiblePassageSerializer(serializers.Serializer):
     html = serializers.CharField()
     text = serializers.CharField()
     headings = BiblePassageHeadingsSerializer(many=True)
+    version_abbreviation = serializers.CharField()
+    version_name = serializers.CharField()
 
 
 class BiblePassageView(APIView):
