@@ -1,3 +1,5 @@
+import urllib
+
 from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -32,6 +34,10 @@ class BiblePassageView(APIView):
         version = version.upper()
         if version == "NRSV":
             version = "NRSVCE"
+        print(passage)
+        passage = urllib.parse.unquote(passage)
+        passage = urllib.parse.unquote_plus(passage)
+        print(passage)
         passage = Passage(passage, source=version)
         serializer = BiblePassageSerializer(passage)
         return Response(serializer.data)
