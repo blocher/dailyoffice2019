@@ -4,6 +4,7 @@ from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 from rest_framework import routers
 
+from bible.api.BiblePassageView import BiblePassageView
 from churchcal.api.views import DayView, MonthView, YearView
 from office.api.views.index import (
     MorningPrayerView,
@@ -121,6 +122,11 @@ urlpatterns = [
         r"new/office/morning_prayer/<int:year>-<int:month>-<int:day>",
         MorningPrayerDisplayView.as_view(),
         name="morning_prayer_display_view",
+    ),
+    path(
+        r"api/v1/bible/<str:passage>/<str:version>",
+        BiblePassageView.as_view(),
+        name="bible_passage_view",
     ),
     re_path(r"^api/openapi(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
     re_path(r"^api/$", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
