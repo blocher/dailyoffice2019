@@ -2356,6 +2356,21 @@ class MiddayPrayers(Module):
         )
 
 
+class MiddayAdditonalCollects(AdditionalCollects):
+    def get_lines(self):
+        extra_collects = self.get_extra_collects()
+        collects = tuple([list(extra_collect.values()) for extra_collect in extra_collects])
+        lines = []
+        style = self.office.settings["language_style"]
+        for collect in collects:
+            leader_part = collect[2] if style == "traditional" else collect[1]
+            lines.append(Line("", "spacer"))
+            lines.append(Line(collect[0], "subheading"))
+            lines.append(Line(leader_part, "leader"))
+            lines.append(Line("Amen.", "congregation"))
+        return lines
+
+
 class MiddayConclusion(Module):
     name = "Conclusion"
 
@@ -2382,6 +2397,7 @@ class MiddayPrayer(Office):
             MiddayPsalms(self),
             MiddayScripture(self),
             MiddayPrayers(self),
+            MiddayAdditonalCollects(self),
             MiddayConclusion(self),
         ]
 
@@ -2544,7 +2560,7 @@ class ComplineScripture(Module):
         ]
 
 
-class ComplinePrayers(Module):
+class ComplinePrayers(AdditionalCollects):
     name = "Prayers"
 
     collects = [
@@ -2608,7 +2624,9 @@ class ComplinePrayers(Module):
             return self.collects[2], self.collects[4], self.collects[5]
 
     def get_collect_lines(self):
-        collects = self.get_collects()
+        extra_collects = self.get_extra_collects()
+        extra_collects = tuple([list(extra_collect.values()) for extra_collect in extra_collects])
+        collects = self.get_collects() + extra_collects
         lines = []
         style = self.office.settings["language_style"]
         for collect in collects:
