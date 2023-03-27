@@ -31,7 +31,7 @@
                 class="-mr-2 w-10 h-10 themed-background p-2 rounded-md flex items-center justify-center text-themed-400"
                 @click="open = false">
               <span class="sr-only">Close menu</span>
-              <XIcon class="h-6 w-6" aria-hidden="true"/>
+              <XMarkIcon class="h-6 w-6" aria-hidden="true"/>
             </button>
           </div>
 
@@ -200,8 +200,8 @@ import {
   TransitionChild,
   TransitionRoot,
 } from '@headlessui/vue'
-import {XIcon} from '@heroicons/vue/outline'
-import {ChevronDownIcon} from '@heroicons/vue/solid'
+import {XMarkIcon} from '@heroicons/vue/20/solid'
+import {ChevronDownIcon} from '@heroicons/vue/20/solid'
 
 export default {
   components: {
@@ -222,7 +222,7 @@ export default {
     PopoverPanel,
     TransitionChild,
     TransitionRoot,
-    XIcon,
+    XMarkIcon,
     ChevronDownIcon
   },
   props: {
