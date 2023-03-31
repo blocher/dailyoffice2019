@@ -29,7 +29,7 @@ from churchcal.calculations import get_church_year
 from office.api.serializers import UpdateNoticeSerializer
 from office.api.views import Module, Line
 from office.api.views.ep import EPOpeningSentence
-from office.canticles import DefaultCanticles, BCP1979CanticleTable, REC2011CanticleTable, EP2
+from office.canticles import DefaultCanticles, BCP1979CanticleTable, REC2011CanticleTable, EP2, EP1, S8
 from office.models import (
     UpdateNotice,
     HolyDayOfficeDay,
@@ -821,93 +821,6 @@ class ReadingModule(Module):
         return self.get_reading(reading_field, abbreviated, translation)
 
 
-class MPPsalms(ReadingModule):
-    name = "Psalms"
-    attribute = "mp_psalms"
-
-    @staticmethod
-    def heading(citations):
-        return "The Psalm{} Appointed".format("s" if len(citations) > 1 else "")
-
-    def mass(self):
-        pass
-
-    def thirty_days(self):
-        from psalter.utils import get_psalms
-
-        psalms = getattr(self.office.thirty_day_psalter_day, self.attribute)
-        citations = psalms.split(",")
-        heading = self.heading(citations)
-        language_style = self.office.settings["psalm_translation"]
-        psalm_style = self.office.settings["psalm_style"]
-        psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style)
-
-        return [Line(heading, "heading"), Line("Thirty Day Cycle", "subheading")] + psalms
-
-    def sixty_days(self):
-        from psalter.utils import get_psalms
-
-        psalms = getattr(self.office.office_readings, self.attribute)
-        psalms = psalms.split("or")
-
-        if len(psalms) > 1:
-            if (self.office.date.date.year % 2) == 0:
-                psalms = psalms[0]
-            else:
-                psalms = psalms[1]
-        else:
-            psalms = psalms[0]
-
-        citations = psalms.split(",")
-        heading = self.heading(citations)
-        language_style = self.office.settings["psalm_translation"]
-        psalm_style = self.office.settings["psalm_style"]
-        psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style)
-
-        return [Line(heading, "heading"), Line("Sixty Day Cycle", "subheading")] + psalms
-
-    def mass_psalms(self):
-        from psalter.utils import get_psalms
-
-        mass_psalm = None
-        for reading in self.office.date.mass_readings:
-            if reading.reading_type == "psalm":
-                mass_psalm = reading.long_citation.replace("Psalms", "").replace("Psalm", "").strip()
-                break
-        if not mass_psalm:
-            return None
-
-        heading = self.heading(mass_psalm)
-        language_style = self.office.settings["psalm_translation"]
-        psalm_style = self.office.settings["psalm_style"]
-        psalms = get_psalms(mass_psalm, api=True, language_style=language_style, headings=psalm_style)
-        return [Line(heading, "heading"), Line("Sunday & Holy Day Psalms", "subheading")] + psalms
-
-    def get_psalm_lines(self):
-        setting = self.office.settings["psalter"]
-        lectionary = self.office.settings["lectionary"]
-        if lectionary == "mass-readings" and self.has_mass_reading:
-            mass_psalms = self.mass_psalms()
-            if mass_psalms:
-                return mass_psalms
-
-        if setting == "60":
-            return self.sixty_days()
-        return self.thirty_days()
-
-    def gloria_patri(self):
-        language_style = self.office.settings["language_style"]
-        file = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
-        return [Line("", "spacer")] + file_to_lines(file)
-
-    def get_lines(self):
-        return self.get_psalm_lines() + self.gloria_patri()
-
-
-class EPPsalms(MPPsalms):
-    attribute = "ep_psalms"
-
-
 class MPFirstReading(ReadingModule):
     name = "First Reading"
 
@@ -997,14 +910,14 @@ class CanticleModule(Module):
     def rubric(self):
         return Line("The following Canticle is sung or said, all standing", line_type="rubric")
 
-    def gloria_lines(self, data):
-        if not data.gloria:
+    def gloria_lines(self, data, as_psalm=False):
+        if as_psalm or not data.gloria:
             return []
         language_style = self.office.settings["language_style"]
         file = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
         return file_to_lines(file)
 
-    def get_canticle(self, data, antiphon=False):
+    def get_canticle(self, data, antiphon=False, as_psalm=False):
         # check if data is a tuple
         if isinstance(data, tuple):
             psalter = self.office.settings["psalter"]
@@ -1032,13 +945,14 @@ class CanticleModule(Module):
                     + [
                         Line(data.citation, "citation"),
                     ]
-                    + self.gloria_lines(data)
+                    + self.gloria_lines(data, as_psalm=as_psalm)
                     + [Line("", "spacer")]
                     + [Line(antiphon, "congregation")]
                 )
         return (
             [
-                Line(data.latin_name, "heading"),
+                Line("The Psalms or Canticle Appointed", "heading") if as_psalm else Line(""),
+                Line(data.latin_name, "heading" if not as_psalm else "subheading"),
                 Line(data.english_name, "subheading"),
                 self.rubric(),
             ]
@@ -1046,7 +960,7 @@ class CanticleModule(Module):
             + [
                 Line(data.citation, "citation"),
             ]
-            + self.gloria_lines(data)
+            + self.gloria_lines(data, as_psalm=as_psalm)
         )
 
 
@@ -1063,6 +977,99 @@ class MPFirstCanticle(CanticleModule):
         else:
             data = DefaultCanticles().get_mp_canticle_1(self.office.date)
         return self.get_canticle(data)
+
+
+class MPPsalms(CanticleModule, ReadingModule):
+    name = "Psalms"
+    attribute = "mp_psalms"
+
+    @staticmethod
+    def heading(citations):
+        return "The Psalm{} Appointed".format("s" if len(citations) > 1 else "")
+
+    def mass(self):
+        pass
+
+    def thirty_days(self):
+        from psalter.utils import get_psalms
+
+        psalms = getattr(self.office.thirty_day_psalter_day, self.attribute)
+        citations = psalms.split(",")
+        heading = self.heading(citations)
+        language_style = self.office.settings["psalm_translation"]
+        psalm_style = self.office.settings["psalm_style"]
+        psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style)
+
+        return [Line(heading, "heading"), Line("Thirty Day Cycle", "subheading")] + psalms
+
+    def sixty_days(self):
+        from psalter.utils import get_psalms
+
+        psalms = getattr(self.office.office_readings, self.attribute)
+        psalms = psalms.split("or")
+
+        if len(psalms) > 1:
+            if (self.office.date.date.year % 2) == 0:
+                psalms = psalms[0]
+            else:
+                psalms = psalms[1]
+        else:
+            psalms = psalms[0]
+
+        citations = psalms.split(",")
+        heading = self.heading(citations)
+        language_style = self.office.settings["psalm_translation"]
+        psalm_style = self.office.settings["psalm_style"]
+        psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style)
+
+        return [Line(heading, "heading"), Line("Sixty Day Cycle", "subheading")] + psalms
+
+    def mass_psalms(self):
+        from psalter.utils import get_psalms
+
+        mass_psalm = None
+        for reading in self.office.date.mass_readings:
+            if reading.reading_type == "psalm":
+                if reading.long_citation == "ISAIAH 12:2-6":
+                    return self.get_canticle(S8(), as_psalm=True)
+                if reading.long_citation == "LUKE 1:46-55":
+                    return self.get_canticle(EP1(), as_psalm=True)
+                if "Psalm" not in reading.long_citation:
+                    return [Line(reading.long_text, "html")]
+                mass_psalm = reading.long_citation.replace("Psalms", "").replace("Psalm", "").strip()
+                break
+        if not mass_psalm:
+            return None
+
+        heading = self.heading(mass_psalm)
+        language_style = self.office.settings["psalm_translation"]
+        psalm_style = self.office.settings["psalm_style"]
+        psalms = get_psalms(mass_psalm, api=True, language_style=language_style, headings=psalm_style)
+        return [Line(heading, "heading"), Line("Sunday & Holy Day Psalms", "subheading")] + psalms
+
+    def get_psalm_lines(self):
+        setting = self.office.settings["psalter"]
+        lectionary = self.office.settings["lectionary"]
+        if lectionary == "mass-readings" and self.has_mass_reading:
+            mass_psalms = self.mass_psalms()
+            if mass_psalms:
+                return mass_psalms
+
+        if setting == "60":
+            return self.sixty_days()
+        return self.thirty_days()
+
+    def gloria_patri(self):
+        language_style = self.office.settings["language_style"]
+        file = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
+        return [Line("", "spacer")] + file_to_lines(file)
+
+    def get_lines(self):
+        return self.get_psalm_lines() + self.gloria_patri()
+
+
+class EPPsalms(MPPsalms):
+    attribute = "ep_psalms"
 
 
 class EPFirstCanticle(CanticleModule):
