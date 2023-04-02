@@ -19,7 +19,7 @@ def get_calendar_year(year):
     second_church_year = cache.get(str(second_year))
     if not second_church_year:
         second_church_year = ChurchYear(second_year)
-        cache.set(str(second_year), second_church_year, 60 * 60 * 12)
+    cache.set(str(second_year), second_church_year, 60 * 60 * 12)
     return CalendarYear(year, first_church_year, second_church_year)
 
 

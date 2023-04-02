@@ -258,12 +258,21 @@ class Collect(BaseModel):
 
     title = models.CharField(max_length=255)
     text = RichTextField()
+    normalized_text = models.TextField(blank=True, null=True)
     traditional_text = RichTextField(blank=True, null=True)
+    normalized_traditional_text = models.TextField(blank=True, null=True)
     collect_type = models.ForeignKey(CollectType, on_delete=models.SET_NULL, null=True, blank=True)
     order = models.PositiveSmallIntegerField(default=0)
     number = models.PositiveSmallIntegerField(null=True, blank=True)
     tags = models.ManyToManyField(CollectTag)
     attribution = models.CharField(max_length=255, blank=True, null=True)
+    metrical_collect = models.ForeignKey("office.MetricalCollect", null=True, blank=True, on_delete=models.SET_NULL)
+    metrical_collect_2 = models.ForeignKey(
+        "office.MetricalCollect", null=True, blank=True, on_delete=models.SET_NULL, related_name="metrical_collect_2"
+    )
+    metrical_collect_3 = models.ForeignKey(
+        "office.MetricalCollect", null=True, blank=True, on_delete=models.SET_NULL, related_name="metrical_collect_3"
+    )
 
     @property
     def traditional_text_no_tags(self):
@@ -541,3 +550,18 @@ class LectionaryItem(BaseModel):
     @cached_property
     def reading_4_c_passages(self):
         return self.reading_4_passages(year="C")
+
+
+class MetricalCollect(BaseModel):
+    collect_number = models.PositiveSmallIntegerField(null=True, blank=True)
+    original_collect = models.TextField(max_length=255, null=True, blank=True)
+    normalized_original_collect = models.TextField(max_length=255, null=True, blank=True)
+    tune_name = models.CharField(max_length=255, null=True, blank=True)
+    first_line = models.CharField(max_length=255, null=True, blank=True)
+    pdf_link = models.URLField(null=True, blank=True)
+    site_link = models.URLField(null=True, blank=True)
+    midi_link = models.URLField(null=True, blank=True)
+    lyrics = models.TextField(null=True, blank=True)
+    text_source = models.CharField(max_length=255, null=True, blank=True)
+    tune_source = models.CharField(max_length=255, null=True, blank=True)
+    name = models.CharField(max_length=255, null=True, blank=True)
