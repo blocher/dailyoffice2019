@@ -511,6 +511,7 @@ urlpatterns = [
     distill_path("privacy-policy/", office_views.privacy_policy, name="privacy_policy", distill_func=get_none),
     distill_path("dailyoffice.ics", office_views.calendar, name="calendar", distill_func=get_none),
     path("readings/", office_views.readings, name="readings"),
+    path("collects/", office_views.collects, name="collects"),
     path("mass_readings/", office_views.mass_readings, name="mass_readings"),
     path("mass_readings/<str:year>/", office_views.mass_readings, name="mass_readings_with_year"),
     path(

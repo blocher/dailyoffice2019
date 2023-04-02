@@ -551,6 +551,26 @@ class LectionaryItem(BaseModel):
     def reading_4_c_passages(self):
         return self.reading_4_passages(year="C")
 
+    @cached_property
+    def collects(self):
+        collects = []
+        if self.commemoration:
+            if self.commemoration.collect_1:
+                collects.append(self.commemoration.collect_1)
+            if self.commemoration.collect_2:
+                collects.append(self.commemoration.collect_2)
+            if self.commemoration.collect_eve:
+                collects.append(self.commemoration.collect_eve)
+        if self.proper:
+            if self.proper.collect_1:
+                collects.append(self.proper.collect_1)
+        if self.common:
+            if self.common.collect_1:
+                collects.append(self.common.collect_1)
+            if self.common.collect_2:
+                collects.append(self.common.collect_2)
+        return collects
+
 
 class MetricalCollect(BaseModel):
     collect_number = models.PositiveSmallIntegerField(null=True, blank=True)

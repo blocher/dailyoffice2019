@@ -477,9 +477,62 @@ def mass_readings_data(year=None, readings=None):
         readings = [1, 2, 3, 4]
     else:
         readings = readings
+    items = get_lectionary_items(readings)
+
+    if year:
+        year = year.upper().strip()
+        if year not in ["A", "B", "C"]:
+            year = "A"
+        for item in items:
+            if year == "A":
+                item.selected_year = item.year_a
+                item.reading_1_selected_year_passages = item.reading_1_a_passages
+                item.reading_2_selected_year_passages = item.reading_2_a_passages
+                item.reading_3_selected_year_passages = item.reading_3_a_passages
+                item.reading_4_selected_year_passages = item.reading_4_a_passages
+            if year == "B":
+                item.selected_year = item.year_b
+                item.reading_1_selected_year_passages = item.reading_1_b_passages
+                item.reading_2_selected_year_passages = item.reading_2_b_passages
+                item.reading_3_selected_year_passages = item.reading_3_b_passages
+                item.reading_4_selected_year_passages = item.reading_4_b_passages
+            if year == "C":
+                item.selected_year = item.year_c
+                item.reading_1_selected_year_passages = item.reading_1_c_passages
+                item.reading_2_selected_year_passages = item.reading_2_c_passages
+                item.reading_3_selected_year_passages = item.reading_3_c_passages
+                item.reading_4_selected_year_passages = item.reading_4_c_passages
+    return {"items": items, "year": year, "readings": readings}
+
+
+def get_lectionary_items(readings):
     items = (
         LectionaryItem.objects.select_related("sanctorale_commemoration")
         .order_by("order")
+        .select_related(
+            "commemoration__collect_1__metrical_collect",
+            "commemoration__collect_2__metrical_collect",
+            "commemoration__collect_eve__metrical_collect",
+            "proper__collect_1__metrical_collect",
+            "common__collect_1__metrical_collect",
+            "common__collect_2__metrical_collect",
+        )
+        .select_related(
+            "commemoration__collect_1__metrical_collect_2",
+            "commemoration__collect_2__metrical_collect_2",
+            "commemoration__collect_eve__metrical_collect_2",
+            "proper__collect_1__metrical_collect_2",
+            "common__collect_1__metrical_collect_2",
+            "common__collect_2__metrical_collect_2",
+        )
+        .select_related(
+            "commemoration__collect_1__metrical_collect_3",
+            "commemoration__collect_2__metrical_collect_3",
+            "commemoration__collect_eve__metrical_collect_3",
+            "proper__collect_1__metrical_collect_3",
+            "common__collect_1__metrical_collect_3",
+            "common__collect_2__metrical_collect_3",
+        )
         .prefetch_related(
             Prefetch(
                 "commemoration__massreading_set",
@@ -512,31 +565,7 @@ def mass_readings_data(year=None, readings=None):
         )
         .all()
     )
-
-    if year:
-        year = year.upper().strip()
-        if year not in ["A", "B", "C"]:
-            year = "A"
-        for item in items:
-            if year == "A":
-                item.selected_year = item.year_a
-                item.reading_1_selected_year_passages = item.reading_1_a_passages
-                item.reading_2_selected_year_passages = item.reading_2_a_passages
-                item.reading_3_selected_year_passages = item.reading_3_a_passages
-                item.reading_4_selected_year_passages = item.reading_4_a_passages
-            if year == "B":
-                item.selected_year = item.year_b
-                item.reading_1_selected_year_passages = item.reading_1_b_passages
-                item.reading_2_selected_year_passages = item.reading_2_b_passages
-                item.reading_3_selected_year_passages = item.reading_3_b_passages
-                item.reading_4_selected_year_passages = item.reading_4_b_passages
-            if year == "C":
-                item.selected_year = item.year_c
-                item.reading_1_selected_year_passages = item.reading_1_c_passages
-                item.reading_2_selected_year_passages = item.reading_2_c_passages
-                item.reading_3_selected_year_passages = item.reading_3_c_passages
-                item.reading_4_selected_year_passages = item.reading_4_c_passages
-    return {"items": items, "year": year, "readings": readings}
+    return items
 
 
 def readings_data(testament=""):
@@ -612,6 +641,11 @@ def readings_data(testament=""):
 
 def readings(request, testament=""):
     return render(request, "export/export_base.html", readings_data(testament))
+
+
+def collects(request):
+    items = get_lectionary_items([])
+    return render(request, "export/collects.html", {"items": items})
 
 
 def mass_readings(request, year=None, readings=0):
