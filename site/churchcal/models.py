@@ -145,9 +145,9 @@ class Commemoration(BaseModel):
 
         if self.name == "Easter Day":
             if time == "morning":
-                query = query.filter(service="PrincipalService")
+                query = query.filter(service="Principal Service")
             else:
-                query = query.filter(service="EveningService")
+                query = query.filter(service="Evening Service")
 
         if self.name == "Eve of The Nativity of our Lord Jesus Christ: Christmas Day":
             query = query.filter(service="I")
@@ -159,7 +159,7 @@ class Commemoration(BaseModel):
                 query = query.fitler(service="III")
 
         if self.name in ["Eve of Palm Sunday", "Palm Sunday"]:
-            query = query.filter(service="Word")
+            query = query.filter(service="Liturgy of the Word")
 
         return query.all()
 
