@@ -1,7 +1,12 @@
+import os
 import re
+import shutil
 
+import requests
 from bs4 import BeautifulSoup
+from django.conf import settings
 from django.core.management.base import BaseCommand
+from django.db.models import Q
 
 from office.models import MetricalCollect, Collect
 
@@ -147,97 +152,97 @@ class Command(BaseCommand):
     help = "My shiny new management command."
 
     def handle(self, *args, **options):
-        # normalize_collects()
-        # link = "https://metricalcollects.com/index/first_line/"
-        # r = requests.get(link)
-        # soup = BeautifulSoup(r.text, "html5lib")
-        # rows = soup.findAll("tr")
-        # for row in rows:
-        #     columns = row.findAll("td")
-        #     if columns:
-        #         site_link = columns[3].find("a").get("href")
-        #         site_link = site_link.replace("../..", "https://metricalcollects.com")
-        #         first_line = columns[0].text
-        #         tune_name = columns[1].text
-        #         collect_number = int(columns[3].text)
-        #
-        #         metrical_collect = MetricalCollect.objects.get_or_create(collect_number=collect_number)[0]
-        #         metrical_collect.first_line = first_line
-        #         metrical_collect.tune_name = tune_name
-        #         metrical_collect.site_link = site_link
-        #
-        #         r = requests.get(site_link)
-        #         soup = BeautifulSoup(r.text, "html5lib")
-        #         blocks = soup.findAll("div", class_="tabbed-block")
-        #         name = blocks[-1].find("center")
-        #         if name:
-        #             name = name.text
-        #             metrical_collect.name = name
-        #         else:
-        #             metrical_collect.name = name = ""
-        #         collect_texts = blocks[-1].findAll("p")
-        #         if collect_texts:
-        #             collect = ""
-        #             for text in collect_texts:
-        #                 i = text.find("i")
-        #                 if not i:
-        #                     if text.text.strip():
-        #                         collect = collect + text.text.strip()
-        #             metrical_collect.original_collect = collect
-        #         else:
-        #             metrical_collect.original_collect = ""
-        #
-        #         pdf_link = soup.findAll("a", class_="md-button")[0].get("href")
-        #         pdf_link = "https://metricalcollects.com" + pdf_link
-        #         metrical_collect.pdf_link = pdf_link
-        #         metrical_collect.normalized_original_collect = normalize_collect_text(
-        #             metrical_collect.original_collect
-        #         )
-        #
-        #         metrical_collect.lyrics = ""
-        #         lyrics = blocks[1].findAll("tr")
-        #         for lyric in lyrics:
-        #             columns = lyric.findAll("td")
-        #             if columns:
-        #                 line = columns[1].decode_contents()
-        #                 metrical_collect.lyrics += "<p>" + line + "</p>\n\r"
-        #         metrical_collect.lyrics = metrical_collect.lyrics.strip()
-        #
-        #         metrical_collect.midi_link = "https://metricalcollects.com" + soup.findAll("midi-player")[0].get("src")
-        #
-        #         info = blocks[2].findAll("tr")
-        #         metrical_collect.text_source = info[1].findAll("td")[1].decode_contents()
-        #         metrical_collect.tune_source = info[2].findAll("td")[1].decode_contents()
-        #
-        #         print(collect_number, name, first_line, tune_name, site_link)
-        #         metrical_collect.save()
-        #         related_collects = Collect.objects.filter(
-        #             Q(normalized_traditional_text=metrical_collect.normalized_original_collect)
-        #             | Q(normalized_text=metrical_collect.normalized_original_collect)
-        #         ).all()
-        #         if related_collects:
-        #             for collect in related_collects:
-        #                 collect.metrical_collect = metrical_collect
-        #                 collect.save()
-        #                 print("****", collect.pk)
-        #
-        # folder_to_store = settings.STATIC_ROOT + "/metrical_collects/pdf"
-        # isExist = os.path.exists(folder_to_store)
-        # if not isExist:
-        #     os.makedirs(folder_to_store)
-        # full_filename = os.path.join(folder_to_store, str(collect_number) + ".pdf")
-        # response = requests.get(metrical_collect.pdf_link, stream=True)
-        # with open(full_filename, "wb") as out_file:
-        #     shutil.copyfileobj(response.raw, out_file)
-        #
-        # folder_to_store = settings.STATIC_ROOT + "/metrical_collects/midi"
-        # isExist = os.path.exists(folder_to_store)
-        # if not isExist:
-        #     os.makedirs(folder_to_store)
-        # full_filename = os.path.join(folder_to_store, str(collect_number) + ".midi")
-        # response = requests.get(metrical_collect.midi_link, stream=True)
-        # with open(full_filename, "wb") as out_file:
-        #     shutil.copyfileobj(response.raw, out_file)
+        normalize_collects()
+        link = "https://metricalcollects.com/index/first_line/"
+        r = requests.get(link)
+        soup = BeautifulSoup(r.text, "html5lib")
+        rows = soup.findAll("tr")
+        for row in rows:
+            columns = row.findAll("td")
+            if columns:
+                site_link = columns[3].find("a").get("href")
+                site_link = site_link.replace("../..", "https://metricalcollects.com")
+                first_line = columns[0].text
+                tune_name = columns[1].text
+                collect_number = int(columns[3].text)
+
+                metrical_collect = MetricalCollect.objects.get_or_create(collect_number=collect_number)[0]
+                metrical_collect.first_line = first_line
+                metrical_collect.tune_name = tune_name
+                metrical_collect.site_link = site_link
+
+                r = requests.get(site_link)
+                soup = BeautifulSoup(r.text, "html5lib")
+                blocks = soup.findAll("div", class_="tabbed-block")
+                name = blocks[-1].find("center")
+                if name:
+                    name = name.text
+                    metrical_collect.name = name
+                else:
+                    metrical_collect.name = name = ""
+                collect_texts = blocks[-1].findAll("p")
+                if collect_texts:
+                    collect = ""
+                    for text in collect_texts:
+                        i = text.find("i")
+                        if not i:
+                            if text.text.strip():
+                                collect = collect + text.text.strip()
+                    metrical_collect.original_collect = collect
+                else:
+                    metrical_collect.original_collect = ""
+
+                pdf_link = soup.findAll("a", class_="md-button")[0].get("href")
+                pdf_link = "https://metricalcollects.com" + pdf_link
+                metrical_collect.pdf_link = pdf_link
+                metrical_collect.normalized_original_collect = normalize_collect_text(
+                    metrical_collect.original_collect
+                )
+
+                metrical_collect.lyrics = ""
+                lyrics = blocks[1].findAll("tr")
+                for lyric in lyrics:
+                    columns = lyric.findAll("td")
+                    if columns:
+                        line = columns[1].decode_contents()
+                        metrical_collect.lyrics += "<p>" + line + "</p>\n\r"
+                metrical_collect.lyrics = metrical_collect.lyrics.strip()
+
+                metrical_collect.midi_link = "https://metricalcollects.com" + soup.findAll("midi-player")[0].get("src")
+
+                info = blocks[2].findAll("tr")
+                metrical_collect.text_source = info[1].findAll("td")[1].decode_contents()
+                metrical_collect.tune_source = info[2].findAll("td")[1].decode_contents()
+
+                print(collect_number, name, first_line, tune_name, site_link)
+                metrical_collect.save()
+                related_collects = Collect.objects.filter(
+                    Q(normalized_traditional_text=metrical_collect.normalized_original_collect)
+                    | Q(normalized_text=metrical_collect.normalized_original_collect)
+                ).all()
+                if related_collects:
+                    for collect in related_collects:
+                        collect.metrical_collect = metrical_collect
+                        collect.save()
+                        print("****", collect.pk)
+
+        folder_to_store = settings.STATIC_ROOT + "/metrical_collects/pdf"
+        isExist = os.path.exists(folder_to_store)
+        if not isExist:
+            os.makedirs(folder_to_store)
+        full_filename = os.path.join(folder_to_store, str(collect_number) + ".pdf")
+        response = requests.get(metrical_collect.pdf_link, stream=True)
+        with open(full_filename, "wb") as out_file:
+            shutil.copyfileobj(response.raw, out_file)
+
+        folder_to_store = settings.STATIC_ROOT + "/metrical_collects/midi"
+        isExist = os.path.exists(folder_to_store)
+        if not isExist:
+            os.makedirs(folder_to_store)
+        full_filename = os.path.join(folder_to_store, str(collect_number) + ".midi")
+        response = requests.get(metrical_collect.midi_link, stream=True)
+        with open(full_filename, "wb") as out_file:
+            shutil.copyfileobj(response.raw, out_file)
 
         Collect.objects.update(metrical_collect=None, metrical_collect_2=None, metrical_collect_3=None)
 

@@ -95,6 +95,7 @@ INSTALLED_APPS = [
     "robots",
     "standrew",
     "sslserver",
+    "hymnal",
 ]
 
 if DEBUG:

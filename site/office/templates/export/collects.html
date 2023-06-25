@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html id="html">
+<head>
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+    <style>
+        body {
+            max-width: 70rem;
+            padding: 2rem;
+            margin: auto;
+            font-family: "Helvetica", "Arial", sans-serif;
+            line-height: 1.5;
+            color: #555;
+        }
+
+        h1 {
+            margin: .5rem 0;
+            padding-top: .5rem;
+        }
+
+        h2, h3, h4, h5 {
+            margin: .1rem 0;
+        }
+
+        h1, h2, h3, h4, h5, strong {
+            color: #333;
+        }
+
+        .reading-heading {
+            display: none;
+        }
+
+        @media print {
+            .pagebreak {
+                page-break-after: always;
+            }
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        tr, td {
+            vertical-align: top;
+            font-size: .75rem;
+            border: solid black 1px;
+            padding: 10px;
+            margin: 0;
+        }
+
+        th {
+            text-align: left;
+        }
+
+        div.spacer {
+            height: 1rem;
+        }
+
+    </style>
+</head>
+<body id="body">
+<h1 id="table-of-contents">Collects<small>The Book of Common Prayer, 2019</small></h1>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Collect(s)</th>
+        <th>Metrical Collect(s)</th>
+    </tr>
+
+    {% for item in items %}
+        <tr>
+            <td>{{ item.pk }}</td>
+            <td>
+                {{ item.name }}
+            </td>
+            <td>
+                {% for collect in item.collects %}
+                    {{ collect.text | safe }}
+                {% endfor %}
+            </td>
+            <td>
+                {% for collect in item.collects %}
+                    {% if collect.metrical_collect %}
+                        <p>{{ collect.metrical_collect.tune_name }}</p>
+                    {% endif %}
+                    {% if collect.metrical_collect_2 %}
+                        <p>{{ collect.metrical_collect_2.tune_name }}</p>
+                    {% endif %}
+                    {% if collect.metrical_collect_3 %}
+                        <p>{{ collect.metrical_collect_3.tune_name }}</p>
+                    {% endif %}
+                {% endfor %}
+            </td>
+
+        </tr>
+    {% endfor %}
+
+</table>
+
+
+</body>
+</html>
