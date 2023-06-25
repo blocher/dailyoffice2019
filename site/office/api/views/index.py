@@ -1527,8 +1527,8 @@ class Dismissal(Module):
         people = "Thanks be to God."
 
         if easter:
-            officiant = "{} Alleluia, alleluia.".format(officiant)
-            people = "{} Alleluia, alleluia.".format(people)
+            officiant = "Alleluia, alleluia. {}".format(officiant)
+            people = "Alleluia, alleluia. {} ".format(people)
 
         lines = [
             Line("Dismissal and Grace", "heading"),
