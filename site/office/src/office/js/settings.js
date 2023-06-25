@@ -1,6 +1,6 @@
 import { Plugins, StatusBarStyle } from "@capacitor/core";
 import { readingSettings } from "./reading_settings";
-import * as clipboard from "clipboard-polyfill/text";
+import * as clipboard from "clipboard-polyfill";
 
 const { StatusBar, Storage } = Plugins;
 
