@@ -27,15 +27,15 @@ repos:
 
 
   - repo: https://github.com/psf/black
-    rev: 23.1a1
+    rev: 23.3.0
     hooks:
       - id: black
         files: ^site/
         language_version: python3
-        args: [ --target-version=py310, --line-length=119 ]
+        args: [ --target-version=py311, --line-length=119 ]
 
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.31.0
+    rev: v8.43.0
     hooks:
       - id: eslint
         files: ^site/
@@ -44,17 +44,17 @@ repos:
         exclude: ^site/node_modules/|^site/office/src/office/js/fontawesome/|^site/office/src/office/css/fontawesome/
         args: [ --fix --config=site/.eslintrc ]
         additional_dependencies:
-          - eslint@8.31.0
-          - eslint-config-prettier@8.5.0
-          - "@babel/core@7.20.7"
-          - "@babel/eslint-parser@7.19.1"
-          - "@babel/preset-env@7.20.2"
-          - "@babel/preset-typescript@7.18.6"
+          - eslint@8.43.0
+          - eslint-config-prettier@8.8.0
+          - "@babel/core@7.22.5"
+          - "@babel/eslint-parser@7.22.5"
+          - "@babel/preset-env@7.22.5"
+          - "@babel/preset-typescript@7.22.5"
           - eslint-plugin-prettier@4.2.1
-          - prettier@2.8.1
+          - prettier@2.8.8
 
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.31.0
+    rev: v8.43.0
     hooks:
       - id: eslint
         files: ^app/src/
@@ -62,27 +62,27 @@ repos:
         types_or: [ javascript, jsx, ts, tsx, vue ]
         args: [ --config=app/.eslintrc.js ]
         additional_dependencies:
-          - eslint@8.31.0
-          - eslint-config-prettier@8.5.0
-          - "@babel/core@7.20.7"
-          - "@babel/eslint-parser@7.19.1"
-          - "@babel/preset-env@7.20.2"
-          - "@babel/preset-typescript@7.18.6"
+          - eslint@8.43.0
+          - eslint-config-prettier@8.8.0
+          - "@babel/core@7.22.5"
+          - "@babel/eslint-parser@7.22.5"
+          - "@babel/preset-env@7.22.5"
+          - "@babel/preset-typescript@7.22.5"
           - eslint-plugin-prettier@4.2.1
-          - prettier@2.8.1
-          - eslint-plugin-vue@^9.8.0
-          - vue-eslint-parser@^9.1.0
-          - "@typescript-eslint/eslint-plugin@^5.47.1"
-          - "@typescript-eslint/parser@^5.47.1"
-          - "@typescript-eslint/eslint-plugin-tslint@^5.47.1"
-          - "@typescript-eslint/utils@^5.47.1"
-          - "@typescript-eslint/typescript-estree@^5.47.1"
-          - "@typescript-eslint/scope-manager@^5.47.1"
+          - prettier@2.8.8
+          - eslint-plugin-vue@^9.15.1
+          - vue-eslint-parser@^9.3.1
+          - "@typescript-eslint/eslint-plugin@^5.60.0"
+          - "@typescript-eslint/parser@^5.60.0"
+          - "@typescript-eslint/eslint-plugin-tslint@^5.60.0"
+          - "@typescript-eslint/utils@^5.60.0"
+          - "@typescript-eslint/typescript-estree@^5.60.0"
+          - "@typescript-eslint/scope-manager@^5.60.0"
 
 #  - repo: https://github.com/awebdeveloper/pre-commit-stylelint
-#    rev: 1.1.14
+#    rev: 0.0.2
 #    hooks:
 #    -   id: stylelint
 #        args: [--fix]
 #        exclude: ^site/node_modules/|^site/office/src/office/js/fontawesome/|^site/office/src/office/css/fontawesome/
-#        additional_dependencies: ['stylelint@14.16.1', 'stylelint-config-standard@29.0.0', 'stylelint-scss@4.3.0', 'stylelint-config-recommended-vue@1.4.0']
+#        additional_dependencies: ['stylelint@15.9.0', 'stylelint-config-standard@33.0.0', 'stylelint-scss@5.0.1', 'stylelint-config-recommended-vue@1.4.0']
