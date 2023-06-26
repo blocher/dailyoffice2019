@@ -1,7 +1,6 @@
 import { settings } from "./settings";
 import { setupCalendar } from "./calendar";
-import { Plugins } from "@capacitor/core";
-const { SplashScreen } = Plugins;
+import { SplashScreen } from "@capacitor/splash-screen";
 import { setupApp } from "./app";
 // import { Presentation } from "./presentation";
 

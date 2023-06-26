@@ -94,6 +94,6 @@ module.exports = {
       patterns: [{ from: "office/src/office/img", to: "../img" }],
     }),
     new ExecuteArbitraryCode(RemoveOldAssets),
-    new BundleTracker({ path: __dirname, filename: "./webpack-stats.json" }),
+    new BundleTracker({ path: __dirname, filename: "webpack-stats.json" }),
   ],
 };
