@@ -131,7 +131,7 @@ class PsalmsViewSet(ViewSet):
     queryset = Psalm.objects.order_by("number").prefetch_related(
         Prefetch(
             "psalmtopicpsalm_set",
-            queryset=PsalmTopicPsalm.objects.order_by("psalm_topic__order)").select_related("psalm_topic"),
+            queryset=PsalmTopicPsalm.objects.order_by("psalm_topic__order").select_related("psalm_topic"),
             to_attr="topics",
         ),
         Prefetch("psalmverse_set", PsalmVerse.objects.order_by("number"), to_attr="verses"),
