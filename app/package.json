@@ -46,7 +46,7 @@
     "register-service-worker": "^1.7.2",
     "unplugin-auto-import": "^0.16.4",
     "unplugin-vue-components": "^0.25.1",
-    "update": "^0.4.2",
+    "update": "^0.7.4",
     "vue": "^3.3.4",
     "vue-axios": "^3.5.2",
     "vue-gtag": "^2.0.1",
