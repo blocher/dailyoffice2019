@@ -1,0 +1,54 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Table Demo"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = "Tiberius Yak"
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.table]
+formal_name = "Table Demo"
+description = "A testing app"
+sources = ["table"]
+requires = [
+    "../../core",
+]
+
+[tool.briefcase.app.table.macOS]
+requires = [
+    "../../cocoa",
+    "std-nslog>=1.0.0",
+]
+
+[tool.briefcase.app.table.linux]
+requires = [
+    "../../gtk",
+]
+
+[tool.briefcase.app.table.windows]
+requires = [
+    "../../winforms",
+]
+
+# Mobile deployments
+[tool.briefcase.app.table.iOS]
+requires = [
+    "../../iOS",
+    "std-nslog>=1.0.0",
+]
+
+[tool.briefcase.app.table.android]
+requires = [
+    "../../android",
+]
+
+# Web deployment
+[tool.briefcase.app.table.web]
+requires = [
+    "../../web",
+]
+style_framework = "Shoelace v2.3"

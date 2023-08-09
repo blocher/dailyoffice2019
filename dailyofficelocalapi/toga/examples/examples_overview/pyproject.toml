@@ -1,0 +1,55 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Examples Overview"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = "Tiberius Yak"
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.examples_overview]
+formal_name = "Examples Overview"
+description = "A testing app"
+sources = ["examples_overview"]
+requires = [
+    "../../core",
+]
+
+
+[tool.briefcase.app.examples_overview.macOS]
+requires = [
+    "../../cocoa",
+    "std-nslog>=1.0.0",
+]
+
+[tool.briefcase.app.examples_overview.linux]
+requires = [
+    "../../gtk",
+]
+
+[tool.briefcase.app.examples_overview.windows]
+requires = [
+    "../../winforms",
+]
+
+# Mobile deployments
+[tool.briefcase.app.examples_overview.iOS]
+requires = [
+    "../../iOS",
+    "std-nslog>=1.0.0",
+]
+
+[tool.briefcase.app.examples_overview.android]
+requires = [
+    "../../android",
+]
+
+# Web deployment
+[tool.briefcase.app.examples_overview.web]
+requires = [
+    "../../web",
+]
+style_framework = "Shoelace v2.3"

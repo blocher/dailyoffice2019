@@ -1,0 +1,100 @@
+# This project was generated using template: https://github.com/beeware/briefcase-template and branch: v0.3.12
+[tool.briefcase]
+project_name = "Toga Testbed"
+bundle = "org.beeware.toga"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = "Tiberius Yak"
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.testbed]
+formal_name = "Toga Testbed"
+description = "A testbed for Toga visual tests"
+icon = "src/testbed/resources/testbed"
+sources = [
+    "src/testbed",
+]
+test_sources = [
+    "tests",
+]
+requires = [
+    "../core",
+]
+test_requires = [
+    "coverage==7.2.0",
+    "pytest==7.2.0",
+    "pytest-asyncio==0.20.3",
+    "pillow==9.2.0",
+]
+
+[tool.briefcase.app.testbed.macOS]
+requires = [
+    "../cocoa",
+    "std-nslog~=1.0.0",
+]
+test_sources = [
+    "../cocoa/tests_backend",
+]
+
+[tool.briefcase.app.testbed.linux]
+test_sources = [
+    "../gtk/tests_backend",
+]
+requires = [
+    "../gtk",
+    # PyGObject #119 breaks the test suite; the fix has been merged, but we need to use
+    # a mainline version of PyGObject until we can pin an official release.
+    "git+https://gitlab.gnome.org/GNOME/pygobject.git@5acfb6cc7c34c8ce9e20aef7eaaa79f27248b1a6",
+]
+
+[tool.briefcase.app.testbed.linux.appimage]
+system_requires = [
+    "libcairo2-dev",
+    "libgirepository1.0-dev",
+    "libgtk-3-dev",
+    "libpango1.0-dev",
+    "librsvg2-dev",
+    "libwebkit2gtk-4.0-dev",
+]
+linuxdeploy_plugins = [
+    "DEPLOY_GTK_VERSION=3 gtk",
+]
+
+[tool.briefcase.app.testbed.linux.flatpak]
+flatpak_runtime = "org.gnome.Platform"
+flatpak_runtime_version = "42"
+flatpak_sdk = "org.gnome.Sdk"
+
+[tool.briefcase.app.testbed.windows]
+test_sources = [
+    "../winforms/tests_backend",
+]
+requires = [
+    "../winforms",
+]
+
+# Mobile deployments
+[tool.briefcase.app.testbed.iOS]
+test_sources = [
+    "../iOS/tests_backend",
+]
+requires = [
+    "../iOS",
+    "std-nslog~=1.0.0",
+]
+
+[tool.briefcase.app.testbed.android]
+test_sources = [
+    "../android/tests_backend",
+]
+requires = [
+    "../android",
+]
+# Coverage requires access to individual .py files.
+build_gradle_extra_content = "android.defaultConfig.python.extractPackages 'toga_android'"
+
+[tool.briefcase.app.testbed.web]
+requires = [
+    "../web"
+]

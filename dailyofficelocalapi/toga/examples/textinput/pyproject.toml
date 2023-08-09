@@ -1,0 +1,55 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Text Input Demo"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = "Tiberius Yak"
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.textinput]
+formal_name = "Text Input Demo"
+description = "A testing app"
+sources = ["textinput"]
+requires = [
+    "../../core",
+]
+
+
+[tool.briefcase.app.textinput.macOS]
+requires = [
+    "../../cocoa",
+    "std-nslog>=1.0.0",
+]
+
+[tool.briefcase.app.textinput.linux]
+requires = [
+    "../../gtk",
+]
+
+[tool.briefcase.app.textinput.windows]
+requires = [
+    "../../winforms",
+]
+
+# Mobile deployments
+[tool.briefcase.app.textinput.iOS]
+requires = [
+    "../../iOS",
+    "std-nslog>=1.0.0",
+]
+
+[tool.briefcase.app.textinput.android]
+requires = [
+    "../../android",
+]
+
+# Web deployment
+[tool.briefcase.app.textinput.web]
+requires = [
+    "../../web",
+]
+style_framework = "Shoelace v2.3"

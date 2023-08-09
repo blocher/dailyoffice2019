@@ -1,0 +1,45 @@
+*.pyc
+*~
+.*.sw[op]
+*.egg-info
+*.dist-info
+.eggs
+.coverage
+.coverage.*
+coverage.xml
+dist
+build
+_build
+distribute-*
+docs/env
+local
+*venv*
+.idea
+Pipfile*
+.tox
+node_modules
+gtk/gi
+gtk/pygtkcompat
+gtk/cairo
+.DS_Store
+pip-selfcheck.json
+pyvenv.cfg
+.vscode
+.envrc
+bin/
+lib/
+
+# Exclude briefcase packages from the examples dir.
+examples/*/macOS/
+examples/*/iOS/
+examples/*/linux/
+examples/*/android/
+examples/*/django/
+examples/*/windows/
+examples/*/web/
+
+# Memory Profiler
+mprofile_*.dat
+
+# Briefcase log files.
+briefcase.*.log

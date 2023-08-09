@@ -1,0 +1,55 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Box Demo"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = "Tiberius Yak"
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.box]
+formal_name = "Box Demo"
+description = "A testing app"
+sources = ["box"]
+requires = [
+    "../../core",
+]
+
+
+[tool.briefcase.app.box.macOS]
+requires = [
+    "../../cocoa",
+    "std-nslog>=1.0.0",
+]
+
+[tool.briefcase.app.box.linux]
+requires = [
+    "../../gtk",
+]
+
+[tool.briefcase.app.box.windows]
+requires = [
+    "../../winforms",
+]
+
+# Mobile deployments
+[tool.briefcase.app.box.iOS]
+requires = [
+    "../../iOS",
+    "std-nslog>=1.0.0",
+]
+
+[tool.briefcase.app.box.android]
+requires = [
+    "../../android",
+]
+
+# Web deployment
+[tool.briefcase.app.box.web]
+requires = [
+    "../../web",
+]
+style_framework = "Shoelace v2.3"

@@ -1,0 +1,55 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "Selection Demo"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = "Tiberius Yak"
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.selection]
+formal_name = "Selection Demo"
+description = "A testing app"
+sources = ["selection"]
+requires = [
+    "../../core",
+]
+
+
+[tool.briefcase.app.selection.macOS]
+requires = [
+    "../../cocoa",
+    "std-nslog>=1.0.0",
+]
+
+[tool.briefcase.app.selection.linux]
+requires = [
+    "../../gtk",
+]
+
+[tool.briefcase.app.selection.windows]
+requires = [
+    "../../winforms",
+]
+
+# Mobile deployments
+[tool.briefcase.app.selection.iOS]
+requires = [
+    "../../iOS",
+    "std-nslog>=1.0.0",
+]
+
+[tool.briefcase.app.selection.android]
+requires = [
+    "../../android",
+]
+
+# Web deployment
+[tool.briefcase.app.selection.web]
+requires = [
+    "../../web",
+]
+style_framework = "Shoelace v2.3"

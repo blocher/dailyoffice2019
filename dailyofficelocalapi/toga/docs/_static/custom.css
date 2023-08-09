@@ -1,0 +1,25 @@
+/* Draw lines around table edges. */
+table.docutils {
+    border: 1px solid var(--color-background-border);
+}
+
+.widget-descriptions td p,
+.widget-support td p {
+    text-align: center;
+}
+
+.widget-descriptions th:first-of-type p {
+    text-align: left;
+}
+
+.widget-support caption {
+    font-size: var(--font-size--normal);
+    font-weight: bold;
+}
+
+span.beta, span.stable {
+    /* Use fonts where the black and white circles have consistent size and alignment. */
+    font-family: Arial, "Lucida Grande", sans-serif;
+    font-size: x-large;
+    line-height: 1;
+}

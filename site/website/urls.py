@@ -520,15 +520,15 @@ urlpatterns = [
         name="mass_readings_with_year_no_gospel",
     ),
     path("mass_readings/", office_views.mass_readings_doc, name="mass_readings_doc"),
-    path("mass_readings_doc/<str:year>/", office_views.mass_readings_doc, name="mass_readings_doc_with_year"),
-    path(
-        "mass_readings_doc/<str:year>/<str:readings>/",
-        office_views.mass_readings_doc,
-        name="mass_readings_doc_with_year_no_gospel",
-    ),
+    # path("mass_readings_doc/<str:year>/", office_views.mass_readings_doc, name="mass_readings_doc_with_year"),
+    # path(
+    #     "mass_readings_doc/<str:year>/<str:readings>/",
+    #     office_views.mass_readings_doc,
+    #     name="mass_readings_doc_with_year_no_gospel",
+    # ),
     path("readings/<str:testament>/", office_views.readings, name="readings_by_testament"),
-    path("readings_doc/", office_views.readings_doc, name="readings_doc"),
-    path("readings_doc/<str:testament>/", office_views.readings_doc, name="readings_doc_by_testament"),
+    # path("readings_doc/", office_views.readings_doc, name="readings_doc"),
+    # path("readings_doc/<str:testament>/", office_views.readings_doc, name="readings_doc_by_testament"),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns = urlpatterns + api_urlpatterns
 

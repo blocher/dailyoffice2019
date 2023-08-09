@@ -1,0 +1,55 @@
+[build-system]
+requires = ["briefcase"]
+
+[tool.briefcase]
+project_name = "ProgressBar demo"
+bundle = "org.beeware"
+version = "0.0.1"
+url = "https://beeware.org"
+license = "BSD license"
+author = "Tiberius Yak"
+author_email = "tiberius@beeware.org"
+
+[tool.briefcase.app.progressbar]
+formal_name = "ProgressBar demo"
+description = "A testing app"
+sources = ["progressbar"]
+requires = [
+    "../../core",
+]
+
+
+[tool.briefcase.app.progressbar.macOS]
+requires = [
+    "../../cocoa",
+    "std-nslog>=1.0.0",
+]
+
+[tool.briefcase.app.progressbar.linux]
+requires = [
+    "../../gtk",
+]
+
+[tool.briefcase.app.progressbar.windows]
+requires = [
+    "../../winforms",
+]
+
+# Mobile deployments
+[tool.briefcase.app.progressbar.iOS]
+requires = [
+    "../../iOS",
+    "std-nslog>=1.0.0",
+]
+
+[tool.briefcase.app.progressbar.android]
+requires = [
+    "../../android",
+]
+
+# Web deployment
+[tool.briefcase.app.progressbar.web]
+requires = [
+    "../../web",
+]
+style_framework = "Shoelace v2.3"
