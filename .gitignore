@@ -19,3 +19,4 @@ site/website/.env
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
+dailyofficelocalapi/
