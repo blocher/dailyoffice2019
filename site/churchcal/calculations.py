@@ -7,6 +7,7 @@ from django.utils.safestring import mark_safe
 from indexed import IndexedOrderedDict
 
 from churchcal.models import Commemoration, FerialCommemoration, Proper, Season, Calendar, CommemorationRank
+from website import settings
 from .utils import advent, week_days, easter
 
 
@@ -825,8 +826,7 @@ def get_church_year(date_string):
     date = to_date(date_string)
     advent_start = advent(date.year)
     year = date.year if date >= advent_start else date.year - 1
-    church_year = cache.get(str(year))
-    church_year = None
+    church_year = cache.get(str(year)) if settings.USE_CALENDAR_CACHE else None
     if not church_year:
         church_year = ChurchYear(year)
         cache.set(str(year), church_year, 60 * 60 * 12)

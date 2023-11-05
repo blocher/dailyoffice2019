@@ -6,19 +6,18 @@ from rest_framework.views import APIView
 from churchcal.api.permissions import ReadOnly
 from churchcal.api.serializer import DaySerializer
 from churchcal.calculations import get_calendar_date, ChurchYear, CalendarYear
+from website import settings
 
 
 def get_calendar_year(year):
     year = int(year)
     first_year = year - 1
     second_year = year
-    first_church_year = cache.get(str(first_year))
-    first_church_year = None
+    first_church_year = cache.get(str(first_year)) if settings.USE_CALENDAR_CACHE else None
     if not first_church_year:
         first_church_year = ChurchYear(first_year)
         cache.set(str(first_year), first_church_year, 60 * 60 * 12)
-    second_church_year = cache.get(str(second_year))
-    second_church_year = None
+    second_church_year = cache.get(str(second_year)) if settings.USE_CALENDAR_CACHE else None
     if not second_church_year:
         second_church_year = ChurchYear(second_year)
     cache.set(str(second_year), second_church_year, 60 * 60 * 12)
@@ -53,8 +52,7 @@ class YearView(APIView):
     permission_classes = [ReadOnly]
 
     def get(self, request, year):
-        church_year = cache.get(str(year))
-        church_year = None
+        church_year = cache.get(str(year)) if settings.USE_CALENDAR_CACHE else None
         if not church_year:
             church_year = ChurchYear(year)
             cache.set(str(year), church_year, 60 * 60 * 12)

@@ -17,6 +17,7 @@ import environ
 env = environ.Env(
     DEBUG=(bool, False),
     DEBUG_DATES=(bool, False),
+    USE_CALENDAR_CACHE=(bool, True),
     MODE=(str, "web"),
     SECURE_SSL_REDIRECT=(bool, False),
     EMAIL_USE_TLS=(bool, True),
@@ -42,6 +43,7 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", env("SECURE_PROXY_SSL_HEADE
 # Don't run with debug turned on in production!
 DEBUG = env("DEBUG")
 DEBUG_DATES = env("DEBUG_DATES")
+USE_CALENDAR_CACHE = env("USE_CALENDAR_CACHE")
 MODE = env("MODE")
 APP_VERSION = 1.1
 
