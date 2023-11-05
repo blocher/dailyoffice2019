@@ -13,6 +13,7 @@ class CommemorationSerializer(serializers.Serializer):
     colors = serializers.SerializerMethodField()
     links = serializers.SerializerMethodField()
     # collects = serializers.SerializerMethodField()
+    collect = serializers.SerializerMethodField()
     biography = serializers.CharField()
     image_link = serializers.URLField()
 
@@ -23,6 +24,9 @@ class CommemorationSerializer(serializers.Serializer):
     def get_links(self, obj):
         links = [obj.link_1, obj.link_2, obj.link_3]
         return [link for link in links if link]
+
+    def get_collect(self, obj):
+        return obj.morning_prayer_collect.text
 
     def get_collects(self, obj):
         return {
