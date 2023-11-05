@@ -339,9 +339,12 @@ class ChurchYear(object):
         for commemoration in commemorations:
             if not commemoration.can_occur_in_year(self.start_year):
                 continue
-
             try:
-                self.dates[commemoration.initial_date_string(self.start_year)].add_commemoration(commemoration)
+                if type(commemoration.initial_date_string(self.start_year)) == list:
+                    self.dates[commemoration.initial_date_string(self.start_year)[0]].add_commemoration(commemoration)
+                    self.dates[commemoration.initial_date_string(self.start_year)[1]].add_commemoration(commemoration)
+                else:
+                    self.dates[commemoration.initial_date_string(self.start_year)].add_commemoration(commemoration)
                 already_added.append(commemoration.pk)
 
             except KeyError:
@@ -823,6 +826,7 @@ def get_church_year(date_string):
     advent_start = advent(date.year)
     year = date.year if date >= advent_start else date.year - 1
     church_year = cache.get(str(year))
+    church_year = None
     if not church_year:
         church_year = ChurchYear(year)
         cache.set(str(year), church_year, 60 * 60 * 12)

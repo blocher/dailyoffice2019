@@ -86,13 +86,18 @@ class Commemoration(BaseModel):
 
     def _year_from_advent_year(self, year, month, day):
         advent_date = advent(year)
+        advent_2_date = advent(year + 1)
+        after_advent = month > advent_date.month or (month == advent_date.month and day >= advent_date.day)
+        before_2_advent = month < advent_2_date.month or (month == advent_2_date.month and day < advent_2_date.day)
 
-        if month > advent_date.month or (month == advent_date.month and day >= advent_date.day):
+        if after_advent and before_2_advent:
+            return [year, year + 1]
+        elif after_advent:
             return year
         else:
             return year + 1
 
-    def initial_date(self, advent_year):
+    def initial_date(self, advent_year, calendar_year=None):
         raise NotImplementedError()
 
     @cached_property
@@ -102,6 +107,11 @@ class Commemoration(BaseModel):
         return Commemoration.objects.get(pk=self.cannot_occur_after.pk)
 
     def initial_date_string(self, advent_year):
+        if type(self.initial_date(advent_year)) != date:
+            return [
+                self.initial_date(advent_year)[0].strftime("%Y-%m-%d"),
+                self.initial_date(advent_year)[1].strftime("%Y-%m-%d"),
+            ]
         return self.initial_date(advent_year).strftime("%Y-%m-%d")
 
     def can_occur_in_year(self, advent_year):
@@ -193,7 +203,6 @@ class Commemoration(BaseModel):
 
         query = query.order_by("abbreviation", "reading_number", "order", "service")
         query = query.select_related("long_scripture", "short_scripture")
-        print(query.all())
         return query.all()
 
     def __repr__(self):
@@ -231,8 +240,10 @@ class SanctoraleCommemoration(Commemoration):
     saint_fill_in_the_blank = models.CharField(max_length=256, null=True, blank=True)
     common = models.ForeignKey("churchcal.Common", blank=True, null=True, on_delete=models.SET_NULL)
 
-    def initial_date(self, advent_year):
+    def initial_date(self, advent_year, calendar_year=None):
         year = self._year_from_advent_year(advent_year, self.month, self.day)
+        if type(year) == list:
+            return [date(year[0], self.month, self.day), date(year[1], self.month, self.day)]
 
         return date(year, self.month, self.day)
 
@@ -301,7 +312,7 @@ class SanctoraleBasedCommemoration(Commemoration):
             return False
         return True
 
-    def initial_date(self, advent_year):
+    def initial_date(self, advent_year, calendar_year=None):
         early_year = weekday_after(
             weekday=self.weekday,
             month=self.month_after,
@@ -334,7 +345,7 @@ class SanctoraleBasedCommemoration(Commemoration):
 class TemporaleCommemoration(Commemoration):
     days_after_easter = models.SmallIntegerField()
 
-    def initial_date(self, advent_year):
+    def initial_date(self, advent_year, calendar_year=None):
         year = advent_year + 1
         easter_date = easter(year)
         return easter_date + timedelta(days=self.days_after_easter)
@@ -353,7 +364,7 @@ class FerialCommemoration(Commemoration):
         self.color = season.color
         self.alternate_color = season.alternate_color
 
-    def initial_date(self, advent_year):
+    def initial_date(self, advent_year, calendar_year=None):
         return self.date
 
 

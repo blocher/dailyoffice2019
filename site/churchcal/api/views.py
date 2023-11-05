@@ -13,10 +13,12 @@ def get_calendar_year(year):
     first_year = year - 1
     second_year = year
     first_church_year = cache.get(str(first_year))
+    first_church_year = None
     if not first_church_year:
         first_church_year = ChurchYear(first_year)
         cache.set(str(first_year), first_church_year, 60 * 60 * 12)
     second_church_year = cache.get(str(second_year))
+    second_church_year = None
     if not second_church_year:
         second_church_year = ChurchYear(second_year)
     cache.set(str(second_year), second_church_year, 60 * 60 * 12)
@@ -52,6 +54,7 @@ class YearView(APIView):
 
     def get(self, request, year):
         church_year = cache.get(str(year))
+        church_year = None
         if not church_year:
             church_year = ChurchYear(year)
             cache.set(str(year), church_year, 60 * 60 * 12)
