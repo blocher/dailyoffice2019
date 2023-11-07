@@ -267,7 +267,7 @@ class SanctoraleCommemoration(Commemoration):
             return text.format(plural, self.saint_name)
 
         if self.saint_type in ["MISSIONARY", "PASTOR"]:
-            a = " a" if not plural else ""
+            a = "" if not plural else "s"
             return text.format(plural, self.saint_name, a, self.saint_fill_in_the_blank, plural).replace(" :", ":")
 
         if self.saint_type == "RENEWER":
