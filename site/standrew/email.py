@@ -101,7 +101,7 @@ class BirthdayDecoratorMixin(object):
     def birthday_to_date(self, birthday):
         now = get_today()
         year = now.year
-        if now.month == 12 and birthday[2] == 1:
+        if now.month == 12 and int(birthday[2]) == 1:
             year = year + 1
         return datetime.strptime("{} {} {}".format(birthday[2], birthday[3], year), "%m %d %Y").date()
 
@@ -119,6 +119,7 @@ class BirthdayDecoratorMixin(object):
             return False
 
         birthday = self.birthday_to_date(birthday)
+        print(birthday)
         return self.date_range[0] <= birthday <= self.date_range[1]
 
     def calculate_age(self, birthday):
