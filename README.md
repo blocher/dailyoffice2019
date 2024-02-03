@@ -8,27 +8,33 @@ The site invites you to join with Christians around the world in praying with th
 Daily Morning Prayer and Daily Evening Prayer are the established rites (offices) by which, both corporately and individually, God’s people annually encounter the whole of the Holy Scriptures, daily confess their sins and praise Almighty God, and offer timely thanksgivings, petitions, and intercessions.
 
 ## Contributing
-Pull requests are welcome. Take a look at the issues and see where you might help out. Updates to documentation and tests (both of which are largely missing) are also welcome.
+Pull requests are welcome. Take a look at the Github [issues](https://github.com/blocher/dailyoffice2019/issues) and see where you might help out. Updates to documentation and tests (both of which are largely missing) are also welcome.
 
 ### Requirements
-- Python 3.7 (other 3.x may work)
-- Node with npx
-- Yarn
+- Python 3.11
+- Node 16
+- Yarn (via Corepack 0.17)
 - PostgreSQL
+- Memcached 1.6
+
+The project is known to work with these versions, although it may also work with more recent versions.
 
 ### Setting up a development environment
+If you are using macOS, all the above requirements may be installed with Homebrew.
 
-#### Clone project
+#### Initial project setup
 - Clone or fork the project from `https://github.com/blocher/dailyoffice2019`
 - `cd dailyoffice2019`
+- `cp app/.env.development app/.env.local`
+- `cp site/website/.env.example site/website/.env`
 
 #### Import database
-- Connect to Postgres `sudo psql -d postgres`
+- Connect to Postgres `psql -d postgres`
 - Create database `create database dailyoffice;`
-- Create user`create user dailyoffice with password 'password';`
+- Create user `create user dailyoffice with password 'password';`
 - Grant permissions `grant all privileges on database dailyoffice to dailyoffice;`
 - Exit postgres `\q`
-- Import `psql -U dailyoffice dailyoffice < site/dailyoffice_2020_01_12.sql`
+- Import `unzip -p site/dailyoffice_2024_01_30.sql.zip dailyoffice_2024_01_30.sql | psql -U dailyoffice dailyoffice`
 
 ALTERNATE: You may import the data into a clean database using the provided `import` Django management commands
 
@@ -42,10 +48,16 @@ ALTERNATE: You may import the data into a clean database using the provided `imp
 - Install JavaScript Requirements `yarn install`
 - Bundle Javascript and CSS `npx webpack --watch`
 
-#### Run development server (in separate terminal)
+#### Run API server (in separate terminal)
 - Collect static assets `python manage.py collectstatic`
-- Start development server `python manage.py runserver`
-- The site will be accessible locally at `http://127.0.0.1:8000`
+- Start development server `python manage.py runsslserver`
+- The API documentation will be accessible locally at `https://127.0.0.1:8000/api/`
+- The classic (legacy) site will be accessible locally at `http://127.0.0.1:8000`
+
+#### Run the client (frontend) server
+- Go to the project's `app` directory
+- Follow the setup instructions in the client README: [app/README.md](app/README.md)
+- The frontend will be accessible locally at `http://127.0.0.1:8080`
 
 #### Generate static site and deploy
 - Set the `DEBUG` setting to `False` in `site\website\settings.py`
