@@ -135,28 +135,18 @@ def psalm_html(
         html = html + format_html("<h3>Psalm {}</h3>", citation)
         html = html + format_html("<h4>{}</h4>", verses[0].psalm.latin_title)
     for i, verse in enumerate(verses):
-        if headings == "half_verse":
-            html = html + format_html(
-                "<p class='hanging-indent'><sup class='versenum'>{}</sup> {} <span class='asterisk'>*</span> </p>",
-                verse.number,
-                verse.first_half_tle if language_style == "traditional" else verse.first_half,
-            )
-            html = html + format_html(
-                "<p class='indent'><strong>{}</strong></p>",
-                verse.second_half_tle if language_style == "traditional" else verse.second_half,
-            )
-        elif headings in ["none", "unison"]:
-            html = html + format_html(
-                "<p class='hanging-indent'><sup class='versenum'>{}</sup> {} <span class='asterisk'>*</span> </p>",
-                verse.number,
-                verse.first_half_tle if language_style == "traditional" else verse.first_half,
-            )
-            html = html + format_html(
-                "<p class='indent'>{}</p>",
-                verse.second_half_tle if language_style == "traditional" else verse.second_half,
-            )
-        else:  # whole_verse
-            if (i % 2) == 0:
+        if verse.first_half and verse.second_half:
+            if headings == "half_verse":
+                html = html + format_html(
+                    "<p class='hanging-indent'><sup class='versenum'>{}</sup> {} <span class='asterisk'>*</span> </p>",
+                    verse.number,
+                    verse.first_half_tle if language_style == "traditional" else verse.first_half,
+                )
+                html = html + format_html(
+                    "<p class='indent'><strong>{}</strong></p>",
+                    verse.second_half_tle if language_style == "traditional" else verse.second_half,
+                )
+            elif headings in ["none", "unison"]:
                 html = html + format_html(
                     "<p class='hanging-indent'><sup class='versenum'>{}</sup> {} <span class='asterisk'>*</span> </p>",
                     verse.number,
@@ -166,16 +156,27 @@ def psalm_html(
                     "<p class='indent'>{}</p>",
                     verse.second_half_tle if language_style == "traditional" else verse.second_half,
                 )
-            else:
-                html = html + format_html(
-                    "<p class='hanging-indent'><sup class='versenum'>{}</sup> <strong>{}</strong> <span class='asterisk'>*</span> </p>",
-                    verse.number,
-                    verse.first_half_tle if language_style == "traditional" else verse.first_half,
-                )
-                html = html + format_html(
-                    "<p class='indent'><strong>{}</strong></p>",
-                    verse.second_half_tle if language_style == "traditional" else verse.second_half,
-                )
+            else:  # whole_verse
+                if (i % 2) == 0:
+                    html = html + format_html(
+                        "<p class='hanging-indent'><sup class='versenum'>{}</sup> {} <span class='asterisk'>*</span> </p>",
+                        verse.number,
+                        verse.first_half_tle if language_style == "traditional" else verse.first_half,
+                    )
+                    html = html + format_html(
+                        "<p class='indent'>{}</p>",
+                        verse.second_half_tle if language_style == "traditional" else verse.second_half,
+                    )
+                else:
+                    html = html + format_html(
+                        "<p class='hanging-indent'><sup class='versenum'>{}</sup> <strong>{}</strong> <span class='asterisk'>*</span> </p>",
+                        verse.number,
+                        verse.first_half_tle if language_style == "traditional" else verse.first_half,
+                    )
+                    html = html + format_html(
+                        "<p class='indent'><strong>{}</strong></p>",
+                        verse.second_half_tle if language_style == "traditional" else verse.second_half,
+                    )
     html = html + "</div>"
     # html = html + format_html("<p  class='hanging-indent'>&nbsp;</p>")
     # html = html + format_html(
