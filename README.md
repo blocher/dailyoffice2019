@@ -13,7 +13,6 @@ Pull requests are welcome. Take a look at the Github [issues](https://github.com
 ### Requirements
 - Python 3.11
 - Node 16
-- Yarn (via Corepack 0.17)
 - PostgreSQL
 - Memcached 1.6
 
@@ -43,16 +42,10 @@ ALTERNATE: You may import the data into a clean database using the provided `imp
 - Load virtual environment `source env/bin/activate`
 - Install Python Requirements `pip install -r requirements.txt`
 
-#### Setup up Javascript environment
-- `cd site`
-- Install JavaScript Requirements `yarn install`
-- Bundle Javascript and CSS `npx webpack --watch`
-
 #### Run API server (in separate terminal)
 - Collect static assets `python manage.py collectstatic`
 - Start development server `python manage.py runsslserver`
 - The API documentation will be accessible locally at `https://127.0.0.1:8000/api/`
-- The classic (legacy) site will be accessible locally at `http://127.0.0.1:8000`
 
 #### Run the client (frontend) server
 - Go to the project's `app` directory
