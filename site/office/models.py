@@ -2,12 +2,12 @@ import datetime
 import re
 from functools import cached_property
 
-from bs4 import BeautifulSoup
-from ckeditor.fields import RichTextField
-from django.db import models
+from django_ckeditor_5.fields import CKEditor5Field
 
+from bs4 import BeautifulSoup
 from churchcal.base_models import BaseModel
 from churchcal.models import Commemoration, Proper, Common, SanctoraleCommemoration
+from django.db import models
 from office.utils import passage_to_citation
 
 
@@ -96,7 +96,7 @@ class ThirtyDayPsalterDay(BaseModel):
 
 class AboutItem(BaseModel):
     question = models.CharField(max_length=4000)
-    answer = RichTextField()
+    answer = CKEditor5Field()
     app_mode = models.BooleanField(default=True)
     web_mode = models.BooleanField(default=True)
     order = models.PositiveSmallIntegerField()
@@ -146,7 +146,7 @@ class AboutItem(BaseModel):
 
 
 class UpdateNotice(BaseModel):
-    notice = RichTextField()
+    notice = CKEditor5Field()
     app_mode = models.BooleanField(default=True)
     web_mode = models.BooleanField(default=True)
     version = models.FloatField()
@@ -257,9 +257,9 @@ class Collect(BaseModel):
     )
 
     title = models.CharField(max_length=255)
-    text = RichTextField()
+    text = CKEditor5Field()
     normalized_text = models.TextField(blank=True, null=True)
-    traditional_text = RichTextField(blank=True, null=True)
+    traditional_text = CKEditor5Field(blank=True, null=True)
     normalized_traditional_text = models.TextField(blank=True, null=True)
     collect_type = models.ForeignKey(CollectType, on_delete=models.SET_NULL, null=True, blank=True)
     order = models.PositiveSmallIntegerField(default=0)
