@@ -99,9 +99,9 @@ def compline(request, year, month, day):
 def midday_prayer(request, year, month, day):
     md = MiddayPrayer("{}-{}-{}".format(year, month, day))
     midday_meta = meta_defaults.copy()
-    midday_meta["title"] = midday_meta["og_title"] = midday_meta["twitter_title"] = midday_meta[
-        "gplus_title"
-    ] = md.title
+    midday_meta["title"] = midday_meta["og_title"] = midday_meta["twitter_title"] = midday_meta["gplus_title"] = (
+        md.title
+    )
     midday_meta["description"] = md.description
     midday_meta["url"] = reverse("midday_prayer", kwargs={"year": year, "month": month, "day": day})
     midday_meta["image"] = static("office/img/bcp.jpg")
@@ -113,9 +113,9 @@ def midday_prayer(request, year, month, day):
 def family_morning_prayer(request, year, month, day):
     fm = FamilyMorning("{}-{}-{}".format(year, month, day))
     family_morning_meta = meta_defaults.copy()
-    family_morning_meta["title"] = family_morning_meta["og_title"] = family_morning_meta[
-        "twitter_title"
-    ] = family_morning_meta["gplus_title"] = fm.title
+    family_morning_meta["title"] = family_morning_meta["og_title"] = family_morning_meta["twitter_title"] = (
+        family_morning_meta["gplus_title"]
+    ) = fm.title
     family_morning_meta["description"] = fm.description
     family_morning_meta["url"] = reverse("family_morning_prayer", kwargs={"year": year, "month": month, "day": day})
     family_morning_meta["image"] = static("office/img/bcp.jpg")
@@ -127,9 +127,9 @@ def family_morning_prayer(request, year, month, day):
 def family_midday_prayer(request, year, month, day):
     fm = FamilyMidday("{}-{}-{}".format(year, month, day))
     family_morning_meta = meta_defaults.copy()
-    family_morning_meta["title"] = family_morning_meta["og_title"] = family_morning_meta[
-        "twitter_title"
-    ] = family_morning_meta["gplus_title"] = fm.title
+    family_morning_meta["title"] = family_morning_meta["og_title"] = family_morning_meta["twitter_title"] = (
+        family_morning_meta["gplus_title"]
+    ) = fm.title
     family_morning_meta["description"] = fm.description
     family_morning_meta["url"] = reverse("family_midday_prayer", kwargs={"year": year, "month": month, "day": day})
     family_morning_meta["image"] = static("office/img/bcp.jpg")
@@ -141,9 +141,9 @@ def family_midday_prayer(request, year, month, day):
 def family_early_evening_prayer(request, year, month, day):
     fm = FamilyEarlyEvening("{}-{}-{}".format(year, month, day))
     family_morning_meta = meta_defaults.copy()
-    family_morning_meta["title"] = family_morning_meta["og_title"] = family_morning_meta[
-        "twitter_title"
-    ] = family_morning_meta["gplus_title"] = fm.title
+    family_morning_meta["title"] = family_morning_meta["og_title"] = family_morning_meta["twitter_title"] = (
+        family_morning_meta["gplus_title"]
+    ) = fm.title
     family_morning_meta["description"] = fm.description
     family_morning_meta["url"] = reverse(
         "family_early_evening_prayer", kwargs={"year": year, "month": month, "day": day}
@@ -157,9 +157,9 @@ def family_early_evening_prayer(request, year, month, day):
 def family_close_of_day_prayer(request, year, month, day):
     fm = FamilyCloseOfDay("{}-{}-{}".format(year, month, day))
     family_morning_meta = meta_defaults.copy()
-    family_morning_meta["title"] = family_morning_meta["og_title"] = family_morning_meta[
-        "twitter_title"
-    ] = family_morning_meta["gplus_title"] = fm.title
+    family_morning_meta["title"] = family_morning_meta["og_title"] = family_morning_meta["twitter_title"] = (
+        family_morning_meta["gplus_title"]
+    ) = fm.title
     family_morning_meta["description"] = fm.description
     family_morning_meta["url"] = reverse(
         "family_close_of_day_prayer", kwargs={"year": year, "month": month, "day": day}
@@ -214,25 +214,25 @@ def church_year(request, start_year, end_year=None, family=False):
     seasons = Season.objects.filter(calendar__abbreviation="ACNA_BCP2019").order_by("order").all()
 
     year_meta = meta_defaults.copy()
-    year_meta["title"] = year_meta["og_title"] = year_meta["twitter_title"] = year_meta[
-        "gplus_title"
-    ] = "Calendar for liturgical year {}-{} | {}".format(start_year, start_year + 1, generic_title)
-    year_meta[
-        "description"
-    ] = "Start date: {}, End date: {}, Calendar for liturgical year {}-{} according to the use of the Anglican Church in North America including links to Morning Prayer, Midday Prayer, Evening Prayer, and Compline".format(
-        "{dt:%A} {dt:%B} {dt.day}, {dt.year}".format(dt=church_year.start_date),
-        "{dt:%A} {dt:%B} {dt.day}, {dt.year}".format(dt=church_year.end_date),
-        start_year,
-        start_year + 1,
+    year_meta["title"] = year_meta["og_title"] = year_meta["twitter_title"] = year_meta["gplus_title"] = (
+        "Calendar for liturgical year {}-{} | {}".format(start_year, start_year + 1, generic_title)
+    )
+    year_meta["description"] = (
+        "Start date: {}, End date: {}, Calendar for liturgical year {}-{} according to the use of the Anglican Church in North America including links to Morning Prayer, Midday Prayer, Evening Prayer, and Compline".format(
+            "{dt:%A} {dt:%B} {dt.day}, {dt.year}".format(dt=church_year.start_date),
+            "{dt:%A} {dt:%B} {dt.day}, {dt.year}".format(dt=church_year.end_date),
+            start_year,
+            start_year + 1,
+        )
     )
     year_meta["url"] = reverse("church_year", kwargs={"start_year": start_year, "end_year": end_year})
     return render(
         request,
         "office/church_year.html",
         {
-            "hide_previous": start_year == FIRST_BEGINNING_YEAR
-            if MODE == "web"
-            else start_year == FIRST_BEGINNING_YEAR_APP,
+            "hide_previous": (
+                start_year == FIRST_BEGINNING_YEAR if MODE == "web" else start_year == FIRST_BEGINNING_YEAR_APP
+            ),
             "hide_next": start_year == LAST_BEGINNING_YEAR if MODE == "web" else start_year == LAST_BEGINNING_YEAR_APP,
             "start_year": start_year,
             "end_year": start_year + 1,
@@ -251,9 +251,9 @@ def church_year_family(request, start_year, end_year=None):
 
 def about(request):
     about_meta = meta_defaults.copy()
-    about_meta["title"] = about_meta["og_title"] = about_meta["twitter_title"] = about_meta[
-        "gplus_title"
-    ] = "About | {}".format(generic_title)
+    about_meta["title"] = about_meta["og_title"] = about_meta["twitter_title"] = about_meta["gplus_title"] = (
+        "About | {}".format(generic_title)
+    )
     about_meta["url"] = reverse("about")
 
     items = AboutItem.objects.order_by("order")
@@ -290,9 +290,9 @@ def now(request):
 
 def family(request):
     family_meta = meta_defaults.copy()
-    family_meta["title"] = family_meta["og_title"] = family_meta["twitter_title"] = family_meta[
-        "gplus_title"
-    ] = "Family Prayer | Devotions according to the Book of Common Prayer (2019)"
+    family_meta["title"] = family_meta["og_title"] = family_meta["twitter_title"] = family_meta["gplus_title"] = (
+        "Family Prayer | Devotions according to the Book of Common Prayer (2019)"
+    )
     family_meta["image"] = static("office/img/bcp.jpg")
     return render(
         request,

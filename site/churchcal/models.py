@@ -134,9 +134,7 @@ class Commemoration(BaseModel):
         proper = (
             self.original_proper
             if hasattr(self, "original_proper") and self.original_proper
-            else self.proper
-            if hasattr(self, "proper") and self.proper
-            else None
+            else self.proper if hasattr(self, "proper") and self.proper else None
         )
         if proper:
             query = MassReading.objects.filter(years__contains=year, proper=proper).order_by("reading_number")
@@ -182,9 +180,7 @@ class Commemoration(BaseModel):
         proper = (
             self.original_proper
             if hasattr(self, "original_proper") and self.original_proper
-            else self.proper
-            if hasattr(self, "proper") and self.proper
-            else None
+            else self.proper if hasattr(self, "proper") and self.proper else None
         )
         if hasattr(commemoration, "saint_type") and commemoration.saint_type:
             query = MassReading.objects.filter(common__abbreviation=commemoration.saint_type).order_by(

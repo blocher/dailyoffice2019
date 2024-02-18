@@ -31,9 +31,9 @@ class CommemorationSerializer(serializers.Serializer):
     def get_collects(self, obj):
         return {
             "collect": obj.morning_prayer_collect.text,
-            "alternate_collect": obj.evening_prayer_collect.text
-            if obj.evening_prayer_collect != obj.morning_prayer_collect
-            else None,
+            "alternate_collect": (
+                obj.evening_prayer_collect.text if obj.evening_prayer_collect != obj.morning_prayer_collect else None
+            ),
             "vigil_collect": None if not obj.collect_eve else obj.collect_eve.text,
         }
 

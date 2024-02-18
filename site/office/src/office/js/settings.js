@@ -171,7 +171,7 @@ const settings = () => {
           "//" +
           location.host +
           window.location.pathname +
-          window.location.hash
+          window.location.hash,
       );
     }
   };
@@ -224,7 +224,7 @@ const settings = () => {
       document.getElementById("html").style.fontSize = base_font_size;
       document.getElementById("font-size-range").value = base_font_size.replace(
         "px",
-        ""
+        "",
       );
     }
 
