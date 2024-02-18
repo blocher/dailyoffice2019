@@ -44,6 +44,7 @@ export default {
     "length",
     "translation",
     "psalmsTranslation",
+    "psalmStyle",
   ],
   data() {
     return {
