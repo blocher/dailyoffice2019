@@ -27,7 +27,7 @@
         <el-col :span="24">
           <h4 class="text-left mt-4">Daily Offices</h4>
           <div v-for="service in dailyOfficeData" :key="service.name">
-            <div class="grid grid-cols-12 gap-3 even:bg-grey mb-2">
+            <div class="grid grid-cols-12 gap-3 even:bg-grey mb-5">
               <div class="m-auto">
                 <font-awesome-icon v-if="service.active" :icon="['fad', 'fa-octagon-check']"/>
               </div>
@@ -43,7 +43,7 @@
 
           <h4 class="text-left mt-4">Holy Eucharist</h4>
           <div v-for="service in eucharistData" :key="service.name">
-            <div class="grid grid-cols-12 gap-3 even:bg-grey  mb-6">
+            <div class="grid grid-cols-12 gap-3 even:bg-grey mb-5">
               <div class="m-auto">
                 <font-awesome-icon v-if="service.active" :icon="['fad', 'fa-octagon-check']"/>
               </div>
@@ -348,15 +348,14 @@ export default {
       let data = null;
       try {
 
-              this.availableSettings = await this.$store.state.availableSettings;
-    await this.$store.dispatch('initializeSettings');
-    const settings = await this.$store.state.settings;
-    const queryString = Object.keys(settings)
-        .map((key) => key + "=" + settings[key])
-        .join("&");
+        this.availableSettings = await this.$store.state.availableSettings;
+        await this.$store.dispatch('initializeSettings');
+        const settings = await this.$store.state.settings;
+        const queryString = Object.keys(settings)
+            .map((key) => key + "=" + settings[key])
+            .join("&");
 
-
-        const today_str =
+        const today_str = 
             this.calendarDate.getFullYear() +
             "-" +
             (this.calendarDate.getMonth() + 1) +
@@ -367,8 +366,7 @@ export default {
         );
 
       } catch (e) {
-        this.error =
-            "There was an error retrieving the readings. Please try again.";
+        this.error = "There was an error retrieving the readings. Please try again.";
         this.loading = false;
         this.readingsLoading = false;
         return;
