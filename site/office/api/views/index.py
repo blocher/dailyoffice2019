@@ -304,8 +304,9 @@ class Office(object):
         self.date = get_calendar_date("{}-{}-{}".format(year, month, day))
 
         try:
+            print(self.date.primary)
             self.office_readings = HolyDayOfficeDay.objects.get(commemoration=self.date.primary)
-        except HolyDayOfficeDay.DoesNotExist:
+        except (HolyDayOfficeDay.DoesNotExist, ValueError):
             self.office_readings = StandardOfficeDay.objects.get(month=self.date.date.month, day=self.date.date.day)
 
         self.thirty_day_psalter_day = ThirtyDayPsalterDay.objects.get(day=self.date.date.day)
