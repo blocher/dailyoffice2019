@@ -304,7 +304,6 @@ class Office(object):
         self.date = get_calendar_date("{}-{}-{}".format(year, month, day))
 
         try:
-            print(self.date.primary)
             self.office_readings = HolyDayOfficeDay.objects.get(commemoration=self.date.primary)
         except (HolyDayOfficeDay.DoesNotExist, ValueError):
             self.office_readings = StandardOfficeDay.objects.get(month=self.date.date.month, day=self.date.date.day)
@@ -2782,8 +2781,7 @@ class Readings(Module):
 
         try:
             self.holy_day_readings = HolyDayOfficeDay.objects.get(commemoration=self.date.primary)
-            self.holy_day_scriptures = Scripture.objects.get
-        except HolyDayOfficeDay.DoesNotExist:
+        except (HolyDayOfficeDay.DoesNotExist, ValueError):
             self.holy_day_readings = None
 
         self.standard_readings = StandardOfficeDay.objects.get(month=self.date.date.month, day=self.date.date.day)
