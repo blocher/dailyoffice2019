@@ -35,9 +35,8 @@ If you are using macOS, all the above requirements may be installed with Homebre
 - Exit postgres `\q`
 - Import `unzip -p site/dailyoffice_2024_01_30.sql.zip dailyoffice_2024_01_30.sql | psql -U dailyoffice dailyoffice`
 
-ALTERNATE: You may import the data into a clean database using the provided `import` Django management commands
-
 #### Setup up python environment
+- Go to the project's `/site` directory
 - Create a Python virtual environment `python3 -m venv env`
 - Load virtual environment `source env/bin/activate`
 - Install Python Requirements `pip install -r requirements.txt`
@@ -48,19 +47,13 @@ ALTERNATE: You may import the data into a clean database using the provided `imp
 - The API documentation will be accessible locally at `https://127.0.0.1:8000/api/`
 
 #### Run the client (frontend) server
-- Go to the project's `app` directory
+- Go to the project's `/app` directory
 - Follow the setup instructions in the client README: [app/README.md](app/README.md)
 - The frontend will be accessible locally at `http://127.0.0.1:8080`
 
-#### Generate static site and deploy
-- Set the `DEBUG` setting to `False` in `site\website\settings.py`
-- Run `python manage.py collectstatic` from the `site` directory
-- Run `python manage.py distill-local` from the `site` directory.  This builds a static copy of the site in the `static_export` directory
-- Run `netlfy deploy --prod` from `static_export` directory (must be done by site owner that has Netlify credentials)
-
 ### Code formatting standard
 - Please use `black` to format code with a line length of 119 beore submitting a pull request
-- `find . -iname "*.py" | xargs black --target-version=py37 --line-length=119` from the `site` directory
+- `find . -iname "*.py" | xargs black --target-version=py311 --line-length=119` from the `site` directory
 
 ## Quick overview
 The application is built around several Django "apps".  The most important are:
