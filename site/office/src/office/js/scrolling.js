@@ -18,7 +18,7 @@ const scrollStop = (callback) => {
         callback();
       }, 5);
     },
-    false
+    false,
   );
 };
 

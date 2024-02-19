@@ -45,7 +45,7 @@ const calendar = function () {
         document.getElementById("cal-menu-dates").classList.add("off");
         document.getElementById("calendar").classList.remove("off");
       });
-    }
+    },
   );
 
   Array.from(document.getElementsByClassName("close-cal-menu")).forEach(
@@ -55,7 +55,7 @@ const calendar = function () {
         document.getElementById("cal-menu-dates").classList.add("off");
         document.getElementById("calendar").classList.remove("off");
       });
-    }
+    },
   );
 
   document

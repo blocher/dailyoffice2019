@@ -305,7 +305,7 @@ class Office(object):
 
         try:
             self.office_readings = HolyDayOfficeDay.objects.get(commemoration=self.date.primary)
-        except HolyDayOfficeDay.DoesNotExist:
+        except (HolyDayOfficeDay.DoesNotExist, ValueError):
             self.office_readings = StandardOfficeDay.objects.get(month=self.date.date.month, day=self.date.date.day)
 
         self.thirty_day_psalter_day = ThirtyDayPsalterDay.objects.get(day=self.date.date.day)
@@ -1826,12 +1826,16 @@ class FamilyMorningScripture(FamilyReadingModule):
     def get_long(self):
         translation = self.office.settings["bible_translation"]
         return {
-            "passage": self.office.office_readings.mp_reading_1_abbreviated
-            if self.office.office_readings.mp_reading_1_abbreviated
-            else self.office.office_readings.mp_reading_1,
-            "text": getattr(self.office.readings[self.office.office_readings.mp_reading_1_abbreviated], translation)
-            if self.office.office_readings.mp_reading_1_abbreviated_text
-            else getattr(self.office.readings[self.office.office_readings.mp_reading_1], translation),
+            "passage": (
+                self.office.office_readings.mp_reading_1_abbreviated
+                if self.office.office_readings.mp_reading_1_abbreviated
+                else self.office.office_readings.mp_reading_1
+            ),
+            "text": (
+                getattr(self.office.readings[self.office.office_readings.mp_reading_1_abbreviated], translation)
+                if self.office.office_readings.mp_reading_1_abbreviated_text
+                else getattr(self.office.readings[self.office.office_readings.mp_reading_1], translation)
+            ),
             "testament": self.office.office_readings.mp_reading_1_testament,
         }
 
@@ -1893,12 +1897,16 @@ class FamilyEarlyEveningScripture(FamilyReadingModule):
     def get_long(self):
         translation = self.office.settings["bible_translation"]
         return {
-            "passage": self.office.office_readings.ep_reading_1_abbreviated
-            if self.office.office_readings.ep_reading_1_abbreviated
-            else self.office.office_readings.ep_reading_1,
-            "text": getattr(self.office.readings[self.office.office_readings.ep_reading_1_abbreviated], translation)
-            if self.office.office_readings.ep_reading_1_abbreviated_text
-            else getattr(self.office.readings[self.office.office_readings.ep_reading_1], translation),
+            "passage": (
+                self.office.office_readings.ep_reading_1_abbreviated
+                if self.office.office_readings.ep_reading_1_abbreviated
+                else self.office.office_readings.ep_reading_1
+            ),
+            "text": (
+                getattr(self.office.readings[self.office.office_readings.ep_reading_1_abbreviated], translation)
+                if self.office.office_readings.ep_reading_1_abbreviated_text
+                else getattr(self.office.readings[self.office.office_readings.ep_reading_1], translation)
+            ),
             "testament": self.office.office_readings.ep_reading_1_testament,
         }
 
@@ -2774,8 +2782,7 @@ class Readings(Module):
 
         try:
             self.holy_day_readings = HolyDayOfficeDay.objects.get(commemoration=self.date.primary)
-            self.holy_day_scriptures = Scripture.objects.get
-        except HolyDayOfficeDay.DoesNotExist:
+        except (HolyDayOfficeDay.DoesNotExist, ValueError):
             self.holy_day_readings = None
 
         self.standard_readings = StandardOfficeDay.objects.get(month=self.date.date.month, day=self.date.date.day)
@@ -3213,13 +3220,15 @@ def mass_readings(commemoration, mass_year, calendar_date, translation="esv", ps
         full = reading_format(
             name=name,
             citation=reading.long_citation,
-            text=getattr(reading.long_scripture, translation)
-            if "psalm" not in reading.long_citation.lower()
-            else get_psalms(
-                reading.long_citation.replace("Psalms", ""),
-                simplified_citations=True,
-                language_style=psalm_style,
-                headings="none",
+            text=(
+                getattr(reading.long_scripture, translation)
+                if "psalm" not in reading.long_citation.lower()
+                else get_psalms(
+                    reading.long_citation.replace("Psalms", ""),
+                    simplified_citations=True,
+                    language_style=psalm_style,
+                    headings="none",
+                )
             ),
             testament=reading.testament,
             reading_number=reading.reading_number,
@@ -3229,13 +3238,15 @@ def mass_readings(commemoration, mass_year, calendar_date, translation="esv", ps
             abbreviated = reading_format(
                 name=name,
                 citation=reading.short_citation,
-                text=getattr(reading.short_scripture, translation)
-                if "psalm" not in reading.short_citation.lower()
-                else get_psalms(
-                    reading.short_citation.replace("Psalms", ""),
-                    simplified_citations=True,
-                    language_style=psalm_style,
-                    headings="none",
+                text=(
+                    getattr(reading.short_scripture, translation)
+                    if "psalm" not in reading.short_citation.lower()
+                    else get_psalms(
+                        reading.short_citation.replace("Psalms", ""),
+                        simplified_citations=True,
+                        language_style=psalm_style,
+                        headings="none",
+                    )
                 ),
                 testament=reading.testament,
             )
