@@ -2887,10 +2887,7 @@ def standard_morning_prayer_60_day_psalms(obj):
         name=name,
         citation=citation,
         text=get_psalms(
-            obj.standard_readings.mp_psalms,
-            simplified_citations=True,
-            language_style=obj.psalms, 
-            headings=obj.style
+            obj.standard_readings.mp_psalms, simplified_citations=True, language_style=obj.psalms, headings=obj.style
         ),
         testament="OT",
         cycle="60",
@@ -2914,10 +2911,7 @@ def standard_evening_prayer_60_day_psalms(obj):
         name=name,
         citation=citation,
         text=get_psalms(
-            obj.standard_readings.ep_psalms,
-            simplified_citations=True,
-            language_style=obj.psalms,
-            headings=obj.style
+            obj.standard_readings.ep_psalms, simplified_citations=True, language_style=obj.psalms, headings=obj.style
         ),
         testament="OT",
         cycle="60",
@@ -2941,10 +2935,7 @@ def holy_day_morning_prayer_60_day_psalms(obj):
         name=name,
         citation=citation,
         text=get_psalms(
-            obj.holy_day_readings.mp_psalms,
-            simplified_citations=True,
-            language_style=obj.psalms,
-            headings=obj.style
+            obj.holy_day_readings.mp_psalms, simplified_citations=True, language_style=obj.psalms, headings=obj.style
         ),
         testament="OT",
         cycle="60",
@@ -2968,10 +2959,7 @@ def holy_day_evening_prayer_60_day_psalms(obj):
         name=name,
         citation=citation,
         text=get_psalms(
-            obj.holy_day_readings.ep_psalms,
-            simplified_citations=True,
-            language_style=obj.psalms,
-            headings=obj.style
+            obj.holy_day_readings.ep_psalms, simplified_citations=True, language_style=obj.psalms, headings=obj.style
         ),
         testament="OT",
         cycle="60",
