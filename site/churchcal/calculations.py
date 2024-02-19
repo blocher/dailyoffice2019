@@ -603,9 +603,9 @@ class SetNamesAndCollects(object):
             return
         if calendar_date.proper and calendar_date.proper.collect_1:
             commemoration.proper = calendar_date.proper
-            commemoration.morning_prayer_collect = (
-                commemoration.evening_prayer_collect
-            ) = calendar_date.proper.collect_1
+            commemoration.morning_prayer_collect = commemoration.evening_prayer_collect = (
+                calendar_date.proper.collect_1
+            )
             if commemoration.rank.name == "SUNDAY" or commemoration.name in ["The Day of Pentecost", "Trinity Sunday"]:
                 proper_string = " (Proper {})".format(calendar_date.proper.number)
                 commemoration.name = "{}{}".format(commemoration.name, proper_string)

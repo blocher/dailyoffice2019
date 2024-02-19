@@ -1,10 +1,11 @@
-const AutoImport = require("unplugin-auto-import/webpack");
-const Components = require("unplugin-vue-components/webpack");
-const {ElementPlusResolver} = require("unplugin-vue-components/resolvers");
+import AutoImport from "unplugin-auto-import/webpack";
+import Components from "unplugin-vue-components/webpack";
+import {ElementPlusResolver} from "unplugin-vue-components/resolvers";
 
-module.exports = {
+
+export default {
     css: {
-        extract: false
+        extract: false,
     },
     configureWebpack: {
         plugins: [

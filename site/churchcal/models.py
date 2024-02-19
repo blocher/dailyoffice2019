@@ -1,14 +1,14 @@
 from builtins import NotImplementedError
 from datetime import date, timedelta
 
-from ckeditor.fields import RichTextField
-from django.db import models
-from django.utils.functional import cached_property
-from model_utils.managers import InheritanceManager, InheritanceQuerySetMixin, InheritanceManagerMixin
+from django_ckeditor_5.fields import CKEditor5Field
 
 from churchcal.base_models import BaseModel
 from churchcal.inheritence_query_set import _get_subclasses_recurse_without_managed, get_queryset_as_subclasses
 from churchcal.utils import advent, easter, weekday_after
+from django.db import models
+from django.utils.functional import cached_property
+from model_utils.managers import InheritanceManager, InheritanceQuerySetMixin, InheritanceManagerMixin
 
 
 class Denomination(BaseModel):
@@ -66,7 +66,7 @@ class Commemoration(BaseModel):
     link_1 = models.URLField(null=True, blank=True)
     link_2 = models.URLField(null=True, blank=True)
     link_3 = models.URLField(null=True, blank=True)
-    biography = RichTextField(blank=True, null=True)
+    biography = CKEditor5Field(blank=True, null=True)
     image_link = models.URLField(null=True, blank=True)
 
     @property
@@ -134,9 +134,7 @@ class Commemoration(BaseModel):
         proper = (
             self.original_proper
             if hasattr(self, "original_proper") and self.original_proper
-            else self.proper
-            if hasattr(self, "proper") and self.proper
-            else None
+            else self.proper if hasattr(self, "proper") and self.proper else None
         )
         if proper:
             query = MassReading.objects.filter(years__contains=year, proper=proper).order_by("reading_number")
@@ -182,9 +180,7 @@ class Commemoration(BaseModel):
         proper = (
             self.original_proper
             if hasattr(self, "original_proper") and self.original_proper
-            else self.proper
-            if hasattr(self, "proper") and self.proper
-            else None
+            else self.proper if hasattr(self, "proper") and self.proper else None
         )
         if hasattr(commemoration, "saint_type") and commemoration.saint_type:
             query = MassReading.objects.filter(common__abbreviation=commemoration.saint_type).order_by(

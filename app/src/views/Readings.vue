@@ -290,6 +290,14 @@ export default {
     await DynamicStorage.setItem('psalms_translation', psalmsTranslation);
     this.psalmsTranslation = psalmsTranslation;
 
+    let psalmCycle = await DynamicStorage.getItem('psalter');
+    if (!psalmCycle) {
+      const settings = this.$store.state.settings;
+      psalmCycle = settings["psalter"];
+    }
+    await DynamicStorage.setItem('psalter', psalmCycle);
+    this.psalmCycle = psalmCycle;
+    
     await this.initialize();
 
   },
@@ -460,11 +468,13 @@ export default {
         behavior: 'smooth'
       });
     },
-    setCycle30: function () {
+    setCycle30: async function () {
       this.psalmCycle = "30";
+      await DynamicStorage.setItem('psalter', this.psalmCycle);
     },
-    setCycle60: function () {
+    setCycle60: async function () {
       this.psalmCycle = "60";
+      await DynamicStorage.setItem('psalter', this.psalmCycle);
     },
   },
 

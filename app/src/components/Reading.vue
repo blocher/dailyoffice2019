@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show" :id="id" :class="wrapperClass">
+  <div v-show="show" :id="id" :class="wrapperClass">
     <h3>
       {{ reading.full.name }}
     </h3>

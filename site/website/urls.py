@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from datetime import date, timedelta
 
 from django.conf import settings
@@ -531,7 +532,9 @@ urlpatterns = [
     path("readings_doc/<str:testament>/", office_views.readings_doc, name="readings_doc_by_testament"),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns = urlpatterns + api_urlpatterns
-
+urlpatterns += [
+    path("ckeditor5/", include("django_ckeditor_5.urls"), name="ck_editor_5_upload_file"),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:
     import debug_toolbar
 
