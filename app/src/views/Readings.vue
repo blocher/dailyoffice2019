@@ -27,7 +27,7 @@
         <el-col :span="24">
           <h4 class="text-left mt-4">Daily Offices</h4>
           <div v-for="service in dailyOfficeData" :key="service.name">
-            <div class="grid grid-cols-12 gap-3 even:bg-grey mb-2">
+            <div class="grid grid-cols-12 gap-3 even:bg-grey mb-5">
               <div class="m-auto">
                 <font-awesome-icon v-if="service.active" :icon="['fad', 'fa-octagon-check']"/>
               </div>
@@ -43,7 +43,7 @@
 
           <h4 class="text-left mt-4">Holy Eucharist</h4>
           <div v-for="service in eucharistData" :key="service.name">
-            <div class="grid grid-cols-12 gap-3 even:bg-grey  mb-6">
+            <div class="grid grid-cols-12 gap-3 even:bg-grey mb-5">
               <div class="m-auto">
                 <font-awesome-icon v-if="service.active" :icon="['fad', 'fa-octagon-check']"/>
               </div>
@@ -61,11 +61,11 @@
 
       <el-divider/>
 
-      <el-row :gutter="20">
-        <el-col :span="12">
+      <el-row>
+        <el-col :span="24">
           <h4>Psalter Version</h4>
           <el-select
-              v-model="psalmsTranslation" class="m-1 full-width" placeholder="Select"
+              v-model="psalmsTranslation" class="mx-1 mb-4 full-width" placeholder="Select"
               size="large" @change="changeTranslation()">
             <el-option
                 v-for="item in psalmsTranslations"
@@ -75,13 +75,30 @@
             />
           </el-select>
         </el-col>
-        <el-col :span="12">
+      </el-row>
+      <el-row>
+        <el-col :span="24">
           <h4>Translation</h4>
           <el-select
-              v-model="translation" class="m-1 full-width" placeholder="Select" size="large"
+              v-model="translation" class="mx-1 mb-4 full-width" placeholder="Select" size="large"
               @change="changeTranslation()">
             <el-option
                 v-for="item in translations"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+            />
+          </el-select>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
+          <h4>Psalm Recitation Style</h4>
+          <el-select
+              v-model="psalmStyle" class="mx-1 mb-4 full-width" placeholder="Select"
+              size="large" @change="changeStyle()">
+            <el-option
+                v-for="item in psalmStyles"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -204,6 +221,21 @@ export default {
           value: "traditional",
         },
       ],
+      psalmStyle: "whole_verse",
+      psalmStyles: [
+        {
+          label: "Antiphonally by Whole Verse",
+          value: "whole_verse",
+        },
+        {
+          label: "Antiphonally by Half Verse",
+          value: "half_verse",
+        },
+        {
+          label: "In Unison",
+          value: "unison",
+        },
+      ],
       notFound: false,
       activeIndex: "1",
       uniqueOpened: true,
@@ -274,6 +306,7 @@ export default {
   },
   async created() {
     this.calendarDate = setCalendarDate(this.$route);
+    
     let translation = await DynamicStorage.getItem('readings_translation');
     if (!translation) {
       const settings = this.$store.state.settings;
@@ -297,6 +330,14 @@ export default {
     }
     await DynamicStorage.setItem('psalter', psalmCycle);
     this.psalmCycle = psalmCycle;
+
+    let psalmStyle = await DynamicStorage.getItem('psalm_style');
+    if (!psalmStyle) {
+      const settings = this.$store.state.settings;
+      psalmStyle = settings["psalm_style"];
+    }
+    await DynamicStorage.setItem('psalm_style', psalmStyle);
+    this.psalmStyle = psalmStyle;
     
     await this.initialize();
 
@@ -307,27 +348,25 @@ export default {
       let data = null;
       try {
 
-              this.availableSettings = await this.$store.state.availableSettings;
-    await this.$store.dispatch('initializeSettings');
-    const settings = await this.$store.state.settings;
-    const queryString = Object.keys(settings)
-        .map((key) => key + "=" + settings[key])
-        .join("&");
+        this.availableSettings = await this.$store.state.availableSettings;
+        await this.$store.dispatch('initializeSettings');
+        const settings = await this.$store.state.settings;
+        const queryString = Object.keys(settings)
+            .map((key) => key + "=" + settings[key])
+            .join("&");
 
-
-        const today_str =
+        const today_str = 
             this.calendarDate.getFullYear() +
             "-" +
             (this.calendarDate.getMonth() + 1) +
             "-" +
             this.calendarDate.getDate();
         data = await this.$http.get(
-            `${process.env.VUE_APP_API_URL}api/v1/readings/${today_str}?translation=${this.translation}&psalms=${this.psalmsTranslation}&`  + queryString
+            `${process.env.VUE_APP_API_URL}api/v1/readings/${today_str}?translation=${this.translation}&psalms=${this.psalmsTranslation}&style=${this.psalmStyle}&`  + queryString
         );
 
       } catch (e) {
-        this.error =
-            "There was an error retrieving the readings. Please try again.";
+        this.error = "There was an error retrieving the readings. Please try again.";
         this.loading = false;
         this.readingsLoading = false;
         return;
@@ -386,6 +425,10 @@ export default {
     changeTranslation: async function () {
       await DynamicStorage.setItem('psalms_translation', this.psalmsTranslation);
       await DynamicStorage.setItem('readings_translation', this.translation);
+      this.initialize();
+    },
+    changeStyle: async function () {
+      await DynamicStorage.setItem('psalm_style', this.psalmStyle);
       this.initialize();
     },
     serviceLink: function (service) {

@@ -2769,7 +2769,7 @@ class Compline(Office):
 
 
 class Readings(Module):
-    def __init__(self, request, year, month, day, translation="esv", psalms="contemporary"):
+    def __init__(self, request, year, month, day, translation="esv", psalms="contemporary", style="whole_verse"):
         from churchcal.calculations import get_calendar_date
 
         self.settings = Settings(request)
@@ -2778,6 +2778,7 @@ class Readings(Module):
         self.mass_year = get_church_year("{}-{}-{}".format(year, month, day)).mass_year
         self.translation = translation
         self.psalms = psalms
+        self.style = style
 
         try:
             self.holy_day_readings = HolyDayOfficeDay.objects.get(commemoration=self.date.primary)
@@ -2835,7 +2836,7 @@ def morning_prayer_30_day_psalms(obj):
             obj.thirty_day_psalter_day.mp_psalms,
             simplified_citations=True,
             language_style=obj.psalms,
-            headings=psalm_style,
+            headings=obj.style,
         ),
         testament="OT",
         cycle="30",
@@ -2862,7 +2863,7 @@ def evening_prayer_30_day_psalms(obj):
             obj.thirty_day_psalter_day.ep_psalms,
             simplified_citations=True,
             language_style=obj.psalms,
-            headings=psalm_style,
+            headings=obj.style,
         ),
         testament="OT",
         cycle="30",
@@ -2886,7 +2887,7 @@ def standard_morning_prayer_60_day_psalms(obj):
         name=name,
         citation=citation,
         text=get_psalms(
-            obj.standard_readings.mp_psalms, simplified_citations=True, language_style=obj.psalms, headings=psalm_style
+            obj.standard_readings.mp_psalms, simplified_citations=True, language_style=obj.psalms, headings=obj.style
         ),
         testament="OT",
         cycle="60",
@@ -2910,7 +2911,7 @@ def standard_evening_prayer_60_day_psalms(obj):
         name=name,
         citation=citation,
         text=get_psalms(
-            obj.standard_readings.ep_psalms, simplified_citations=True, language_style=obj.psalms, headings=psalm_style
+            obj.standard_readings.ep_psalms, simplified_citations=True, language_style=obj.psalms, headings=obj.style
         ),
         testament="OT",
         cycle="60",
@@ -2934,7 +2935,7 @@ def holy_day_morning_prayer_60_day_psalms(obj):
         name=name,
         citation=citation,
         text=get_psalms(
-            obj.holy_day_readings.mp_psalms, simplified_citations=True, language_style=obj.psalms, headings=psalm_style
+            obj.holy_day_readings.mp_psalms, simplified_citations=True, language_style=obj.psalms, headings=obj.style
         ),
         testament="OT",
         cycle="60",
@@ -2958,7 +2959,7 @@ def holy_day_evening_prayer_60_day_psalms(obj):
         name=name,
         citation=citation,
         text=get_psalms(
-            obj.holy_day_readings.ep_psalms, simplified_citations=True, language_style=obj.psalms, headings=psalm_style
+            obj.holy_day_readings.ep_psalms, simplified_citations=True, language_style=obj.psalms, headings=obj.style
         ),
         testament="OT",
         cycle="60",
@@ -3392,7 +3393,8 @@ class ReadingsView(OfficeAPIView):
     def get(self, request, year, month, day):
         translation = request.GET.get("translation", "esv")
         psalms = request.GET.get("psalms", "contemporary")
-        office = Readings(request, year, month, day, translation, psalms)
+        style = request.GET.get("style", "whole_verse")
+        office = Readings(request, year, month, day, translation, psalms, style)
         serializer = ReadingsSerializer(office)
         return Response(serializer.data)
 
