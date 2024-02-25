@@ -8,54 +8,52 @@ The site invites you to join with Christians around the world in praying with th
 Daily Morning Prayer and Daily Evening Prayer are the established rites (offices) by which, both corporately and individually, God’s people annually encounter the whole of the Holy Scriptures, daily confess their sins and praise Almighty God, and offer timely thanksgivings, petitions, and intercessions.
 
 ## Contributing
-Pull requests are welcome. Take a look at the issues and see where you might help out. Updates to documentation and tests (both of which are largely missing) are also welcome.
+Pull requests are welcome. Take a look at the Github [issues](https://github.com/blocher/dailyoffice2019/issues) and see where you might help out. Updates to documentation and tests (both of which are largely missing) are also welcome.
 
 ### Requirements
-- Python 3.7 (other 3.x may work)
-- Node with npx
-- Yarn
+- Python 3.11
+- Node 16
 - PostgreSQL
+- Memcached 1.6
+
+The project is known to work with these versions, although it may also work with more recent versions.
 
 ### Setting up a development environment
+If you are using macOS, all the above requirements may be installed with Homebrew.
 
-#### Clone project
+#### Initial project setup
 - Clone or fork the project from `https://github.com/blocher/dailyoffice2019`
 - `cd dailyoffice2019`
+- `cp app/.env.development app/.env.local`
+- `cp site/website/.env.example site/website/.env`
 
 #### Import database
-- Connect to Postgres `sudo psql -d postgres`
+- Connect to Postgres `psql -d postgres`
 - Create database `create database dailyoffice;`
-- Create user`create user dailyoffice with password 'password';`
+- Create user `create user dailyoffice with password 'password';`
 - Grant permissions `grant all privileges on database dailyoffice to dailyoffice;`
 - Exit postgres `\q`
-- Import `psql -U dailyoffice dailyoffice < site/dailyoffice_2020_01_12.sql`
-
-ALTERNATE: You may import the data into a clean database using the provided `import` Django management commands
+- Import `unzip -p site/dailyoffice_2024_01_30.sql.zip dailyoffice_2024_01_30.sql | psql -U dailyoffice dailyoffice`
 
 #### Setup up python environment
+- Go to the project's `/site` directory
 - Create a Python virtual environment `python3 -m venv env`
 - Load virtual environment `source env/bin/activate`
 - Install Python Requirements `pip install -r requirements.txt`
 
-#### Setup up Javascript environment
-- `cd site`
-- Install JavaScript Requirements `yarn install`
-- Bundle Javascript and CSS `npx webpack --watch`
-
-#### Run development server (in separate terminal)
+#### Run API server (in separate terminal)
 - Collect static assets `python manage.py collectstatic`
-- Start development server `python manage.py runserver`
-- The site will be accessible locally at `http://127.0.0.1:8000`
+- Start development server `python manage.py runsslserver`
+- The API documentation will be accessible locally at `https://127.0.0.1:8000/api/`
 
-#### Generate static site and deploy
-- Set the `DEBUG` setting to `False` in `site\website\settings.py`
-- Run `python manage.py collectstatic` from the `site` directory
-- Run `python manage.py distill-local` from the `site` directory.  This builds a static copy of the site in the `static_export` directory
-- Run `netlfy deploy --prod` from `static_export` directory (must be done by site owner that has Netlify credentials)
+#### Run the client (frontend) server
+- Go to the project's `/app` directory
+- Follow the setup instructions in the client README: [app/README.md](app/README.md)
+- The frontend will be accessible locally at `http://127.0.0.1:8080`
 
 ### Code formatting standard
 - Please use `black` to format code with a line length of 119 beore submitting a pull request
-- `find . -iname "*.py" | xargs black --target-version=py37 --line-length=119` from the `site` directory
+- `find . -iname "*.py" | xargs black --target-version=py311 --line-length=119` from the `site` directory
 
 ## Quick overview
 The application is built around several Django "apps".  The most important are:
