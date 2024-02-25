@@ -1,14 +1,14 @@
 from builtins import NotImplementedError
 from datetime import date, timedelta
 
+from django.db import models
+from django.utils.functional import cached_property
 from django_ckeditor_5.fields import CKEditor5Field
+from model_utils.managers import InheritanceManager, InheritanceQuerySetMixin, InheritanceManagerMixin
 
 from churchcal.base_models import BaseModel
 from churchcal.inheritence_query_set import _get_subclasses_recurse_without_managed, get_queryset_as_subclasses
 from churchcal.utils import advent, easter, weekday_after
-from django.db import models
-from django.utils.functional import cached_property
-from model_utils.managers import InheritanceManager, InheritanceQuerySetMixin, InheritanceManagerMixin
 
 
 class Denomination(BaseModel):
@@ -189,7 +189,7 @@ class Commemoration(BaseModel):
         elif proper:
             query = MassReading.objects.filter(years__contains=year, proper=proper).order_by("reading_number")
         else:
-            query = MassReading.objects.filter(years__contains=year, commemoration=commemoration).order_by(
+            query = MassReading.objects.filter(years__contains=year, commemoration__uuid=commemoration.uuid).order_by(
                 "reading_number"
             )
             if "Eve of" in commemoration.name:
