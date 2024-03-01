@@ -478,7 +478,7 @@ export default {
           day: this.$route.params.day,
           position: serviceValues.position
         }
-      }, undefined, { scroll: false });
+      });
       this.setReadingsToShow()
     },
     setReadingsToShow: function () {
