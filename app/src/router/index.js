@@ -171,12 +171,21 @@ const routes = [
   { path: "/:pathMatch(.*)", component: PageNotFound, name: "not_found" },
 ];
 
+const routesToNotScrollToTop = [
+  'readingsByServiceAndDate',
+  'readingsByServicePositionAndDate'
+];
+
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
   scrollBehavior(to, from, savedPosition) {
-    // always scroll to top
-    return { top: 0 };
+    if (routesToNotScrollToTop.includes(to.name)) {
+      return false;
+    } else {
+      // always scroll to top
+      return { top: 0 };
+    }
   },
 });
 
