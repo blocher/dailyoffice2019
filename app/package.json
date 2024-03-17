@@ -39,7 +39,7 @@
     "axios": "^1.6.7",
     "decode-uri-component": "^0.4.1",
     "element-plus": "^2.5.6",
-    "follow-redirects": "^1.15.5",
+    "follow-redirects": "^1.15.6",
     "install": "^0.13.0",
     "json5": "2.2.3",
     "mitt": "^3.0.1",
