@@ -303,6 +303,7 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"]
 }
+# IS this right?
 
 CORS_ALLOW_ALL_ORIGINS = True
 mimetypes.add_type("image/svg+xml", ".svg", True)
