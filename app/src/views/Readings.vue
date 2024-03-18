@@ -432,6 +432,22 @@ export default {
       this.initialize();
     },
     serviceLink: function (service) {
+      let serviceValues = this.getPositionAndServiceName(service);
+      let link = ""
+      if (serviceValues.position > 0) {
+        link = `/readings/${serviceValues.service_name}/${serviceValues.position}/${this.calendarDate.getFullYear()}/${
+            this.calendarDate.getMonth() + 1
+        }/${this.calendarDate.getDate()}`
+
+      } else {
+        link = `/readings/${serviceValues.service_name}/${this.calendarDate.getFullYear()}/${
+            this.calendarDate.getMonth() + 1
+        }/${this.calendarDate.getDate()}`
+
+      }
+      return link;
+    },
+    getPositionAndServiceName: function (service) {
       let position = 0
       let service_name = ""
       if (service.includes("Morning Prayer")) {
@@ -444,28 +460,25 @@ export default {
         service_name = "holy_eucharist"
         position = this.holy_eucharist.findIndex(p => p.name == service);
       }
-      let link = ""
-      if (position > 0) {
-        link = `/readings/${service_name}/${position}/${this.calendarDate.getFullYear()}/${
-            this.calendarDate.getMonth() + 1
-        }/${this.calendarDate.getDate()}`
-
-      } else {
-        link = `/readings/${service_name}/${this.calendarDate.getFullYear()}/${
-            this.calendarDate.getMonth() + 1
-        }/${this.calendarDate.getDate()}`
-
-      }
-      return link;
+      return {'position': position, 'service_name': service_name};
     },
     changeService: function (service) {
-      this.service = service
-      const link = this.serviceLink(service)
-      history.pushState(
-          {},
-          null,
-          link
-      )
+      this.service = service;
+      let serviceValues = this.getPositionAndServiceName(service);
+      let routeName = 'readingsByServiceAndDate';
+      if (serviceValues.position > 0) {
+        routeName = 'readingsByServicePositionAndDate';
+      }
+      this.$router.push({
+        name: routeName,
+        params: {
+          service: serviceValues.service_name,
+          year: this.$route.params.year,
+          month: this.$route.params.month,
+          day: this.$route.params.day,
+          position: serviceValues.position
+        }
+      });
       this.setReadingsToShow()
     },
     setReadingsToShow: function () {
