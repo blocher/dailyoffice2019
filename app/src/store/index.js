@@ -67,6 +67,7 @@ export default createStore({
       await DynamicStorage.setItem("settings", JSON.stringify(settings));
       await DynamicStorage.setItem("settingAbbreviations", JSON.stringify(setting_abbreviations));
       state.settings = settings;
+      state.settingAbbreviations = setting_abbreviations;
       await initializeAdditionalCollects();
       router.push({ path: router.currentRoute._value.fullPath, query: {} });
       if (applied) {

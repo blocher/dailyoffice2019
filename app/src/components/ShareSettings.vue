@@ -56,6 +56,14 @@
       set up so you are all using the same settings.
     </p>
 
+    <el-input
+        v-model="compactLink"
+        placeholder="Copy and paste share link"
+        readonly
+    >
+      
+    </el-input>
+    
     <a href="" @click="share($event)">
       <div v-if="canShare" class="full-width border-2 my-4 p-4 text-left">
         <h3 class="text-left pt-0">
@@ -74,6 +82,7 @@ import {Clipboard} from "@capacitor/clipboard";
 import {ElMessage} from "element-plus";
 import {DynamicStorage} from "@/helpers/storage";
 import {getMessageOffset} from "@/helpers/getMessageOffest";
+import {createSettingsString} from "@/helpers/createSettingsString";
 import {Capacitor} from "@capacitor/core";
 
 export default {
@@ -84,6 +93,7 @@ export default {
       showSharePanel: false,
       panelSize: "37%",
       shareLink: false,
+      compactLink: false,
     };
   },
   created: async function () {
@@ -92,6 +102,7 @@ export default {
     const canShare = await Share.canShare();
     this.canShare = canShare.value;
     this.shareLink = await this.getShareLink();
+    this.compactLink = await this.getCompactLink();
   },
   unmounted() {
     window.removeEventListener("resize", this.setPanelSize);
@@ -114,9 +125,15 @@ export default {
       }
       return ""
     },
+    async getCompactLink() {
+      await this.$store.dispatch('initializeSettings');
+      const settings = await this.$store.state.settings;
+      const settingAbbreviations = this.$store.state.settingAbbreviations;
+      const compactSettings = createSettingsString(settings, settingAbbreviations);
+      // TODO: Make URL and combine with extra parameters
+      return compactSettings;
+    },
     async getShareLink() {
-      await this.getCollectProps()
-      this.availableSettings = await this.$store.state.availableSettings;
       await this.$store.dispatch('initializeSettings');
       const settings = await this.$store.state.settings;
       const queryString = Object.keys(settings)
@@ -151,7 +168,8 @@ export default {
     },
     async toggleSharePanel() {
       this.showSharePanel = !this.showSharePanel;
-      this.shareLink = await this.getShareLink()
+      this.shareLink = await this.getShareLink();
+      this.compactLink = await this.getCompactLink();
     },
 
     async share(event) {
