@@ -188,14 +188,17 @@ class Setting(BaseModel):
     order = models.PositiveSmallIntegerField(blank=True, null=True)
     setting_type = models.PositiveSmallIntegerField(choices=SETTING_TYPES, null=False, default=MAIN_SETTINGS)
     site = models.PositiveSmallIntegerField(choices=SETTING_SITES, null=False, default=DAILY_OFFICE_SITE)
+    setting_string_order = models.PositiveSmallIntegerField(null=False, default=0)
 
 
 class SettingOption(BaseModel):
+    DEFAULT_ABBREVIATION = "A"
     setting = models.ForeignKey(Setting, on_delete=models.CASCADE)
     order = models.PositiveSmallIntegerField(blank=True, null=True)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     value = models.CharField(max_length=255)
+    abbreviation = models.CharField(null=False, max_length=1, default=DEFAULT_ABBREVIATION)
 
 
 class CollectType(BaseModel):
