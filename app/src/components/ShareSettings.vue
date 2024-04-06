@@ -55,6 +55,13 @@
       automatically be
       set up so you are all using the same settings.
     </p>
+
+    <h3 class="text-left pt-0">
+      <font-awesome-icon :icon="['fad', 'share-nodes']"/>&nbsp; Share via QR Code
+    </h3>
+    <div class="settings-qr-code">
+      <qrcode-vue :value="shareLink" :size="350" level="L" />
+    </div>
     
     <a href="" @click="share($event)">
       <div v-if="canShare" class="full-width border-2 my-4 p-4 text-left">
@@ -76,8 +83,12 @@ import {DynamicStorage} from "@/helpers/storage";
 import {getMessageOffset} from "@/helpers/getMessageOffest";
 import {createSettingsString} from "@/helpers/createSettingsString";
 import {Capacitor} from "@capacitor/core";
+import QrcodeVue from 'qrcode.vue'
 
 export default {
+  components: {
+    QrcodeVue,
+  },
   data() {
     return {
       canShare: false,
@@ -189,3 +200,11 @@ export default {
   },
 };
 </script>
+<style lang="scss">
+.settings-qr-code {
+  canvas {
+    max-width: 100%;
+    height: auto !important;
+  }
+}
+</style>
