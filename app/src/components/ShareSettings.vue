@@ -55,14 +55,6 @@
       automatically be
       set up so you are all using the same settings.
     </p>
-
-    <el-input
-        v-model="compactLink"
-        placeholder="Copy and paste share link"
-        readonly
-    >
-      
-    </el-input>
     
     <a href="" @click="share($event)">
       <div v-if="canShare" class="full-width border-2 my-4 p-4 text-left">
@@ -93,7 +85,6 @@ export default {
       showSharePanel: false,
       panelSize: "37%",
       shareLink: false,
-      compactLink: false,
     };
   },
   created: async function () {
@@ -101,8 +92,7 @@ export default {
     this.setPanelSize()
     const canShare = await Share.canShare();
     this.canShare = canShare.value;
-    this.shareLink = await this.getShareLink();
-    this.compactLink = await this.getCompactLink();
+    this.shareLink = await this.getCompactLink();
   },
   unmounted() {
     window.removeEventListener("resize", this.setPanelSize);
@@ -130,8 +120,24 @@ export default {
       const settings = await this.$store.state.settings;
       const settingAbbreviations = this.$store.state.settingAbbreviations;
       const compactSettings = createSettingsString(settings, settingAbbreviations);
-      // TODO: Make URL and combine with extra parameters
-      return compactSettings;
+      if (compactSettings === false) {
+        // If there is an error, fallback to using default
+        return await this.getShareLink();
+      }
+      const queryString = 'settings=' + compactSettings + await this.getCollectProps()
+      const path = this.$route.path;
+      const port = parseInt(window.location.port)
+      const port_string = port === 8080 ? ":8080" : ""
+      if (Capacitor.getPlatform() !== 'web') {
+        return `https://www.dailyoffice2019.com${path}?${queryString}`;
+      }
+      let url = ""
+      if (port_string) {
+        url = `${window.location.protocol}//${window.location.hostname}${port_string}${path}?${queryString}`;
+      } else {
+        url = `${window.location.protocol}//${window.location.hostname}${path}?${queryString}`;
+      }
+      return url;
     },
     async getShareLink() {
       await this.$store.dispatch('initializeSettings');
@@ -141,8 +147,8 @@ export default {
           .join("&") + await this.getCollectProps();
       const path = this.$route.path;
       const port = parseInt(window.location.port)
-      const port_string = port == 8080 ? ":8080" : ""
-      if (Capacitor.getPlatform() != 'web') {
+      const port_string = port === 8080 ? ":8080" : ""
+      if (Capacitor.getPlatform() !== 'web') {
         return `https://www.dailyoffice2019.com${path}?${queryString}`;
       }
       let url = ""
@@ -155,7 +161,7 @@ export default {
     },
     async copyLink() {
       await Clipboard.write({
-        string: await this.getShareLink(),
+        string: await this.getCompactLink(),
       });
       ElMessage.success({
         title: "Saved",
@@ -168,8 +174,7 @@ export default {
     },
     async toggleSharePanel() {
       this.showSharePanel = !this.showSharePanel;
-      this.shareLink = await this.getShareLink();
-      this.compactLink = await this.getCompactLink();
+      this.shareLink = await this.getCompactLink();
     },
 
     async share(event) {
@@ -177,7 +182,7 @@ export default {
       await Share.share({
         title: "Pray the Daily Office",
         text: "Join me in praying the Daily Office using my customized settings",
-        url: await this.getShareLink(),
+        url: await this.getCompactLink(),
         dialogTitle: "Pray with others",
       });
     },

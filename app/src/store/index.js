@@ -3,6 +3,7 @@ import { ElMessage } from "element-plus";
 import { DynamicStorage } from "@/helpers/storage";
 import router from "@/router";
 import { getMessageOffset } from "@/helpers/getMessageOffest";
+import { decodeSettingsString } from "@/helpers/decodeSettingsString";
 
 export default createStore({
   state: { settings: false, availableSettings: false },
@@ -64,6 +65,24 @@ export default createStore({
           });
         });
       });
+      // If there is a settings URL parameter, then make this take precedence
+      if (router.currentRoute._value.query['settings']) {
+        let results = decodeSettingsString(router.currentRoute._value.query['settings'], setting_abbreviations);
+        if (results.length === 0) {
+          ElMessage.warning({
+            title: "Warning",
+            message: "The settings link is invalid",
+            showClose: true,
+            duration: 0,
+            dangerouslyUseHTMLString: true,
+            offset: getMessageOffset(),
+          });
+        }
+        results.forEach(function (value) {
+          applied = true;
+          settings[value.settingName] = value.value;
+        });
+      }      
       await DynamicStorage.setItem("settings", JSON.stringify(settings));
       await DynamicStorage.setItem("settingAbbreviations", JSON.stringify(setting_abbreviations));
       state.settings = settings;
