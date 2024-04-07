@@ -15,17 +15,17 @@
       :size="panelSize"
   >
     <div class="mt-4">
-      <h3 class="text-left">Share Link</h3>
-      <p class="text-left pb-3 mx-1">
+      <h3 class="text-left pt-0">Share Link</h3>
+      <p class="text-left pb-2 mx-1">
         This share link allows you to sync your settings with others with whom
         you are praying.
       </p>
 
-      <p class="text-left pt-2 mx-1 my-4">
+      <p class="text-left pt-2 mx-1 my-2">
         <font-awesome-icon :icon="['fad', 'circle-1']"/>&nbsp;Pick the settings you want to use on the <a
           href="/settings">Settings</a> pages.
       </p>
-      <p class="text-left pt-2 mx-1 my-4">
+      <p class="text-left pt-2 mx-1 my-2">
         <font-awesome-icon :icon="['fad', 'circle-2']"/>&nbsp;Return here and click the
         <font-awesome-icon :icon="['fad', 'copy']"/>
         button below (or manually
@@ -46,21 +46,21 @@
         </el-input>
       </div>
     </div>
-    <p class="text-left pt-2 mx-1 my-4">
+    <p class="text-left pt-2 mx-1 my-2">
       <font-awesome-icon :icon="['fad', 'circle-3']"/>&nbsp;Paste the link in an email, text message, or chat and
       send to whoever you want to pray with.
     </p>
-    <p class="text-left pt-2 mx-1 my-4">
+    <p class="text-left pt-2 mx-1 my-2">
       <font-awesome-icon :icon="['fad', 'circle-4']"/>&nbsp;When the recipients click on the link, the site will
       automatically be
       set up so you are all using the same settings.
     </p>
 
-    <h3 class="text-left pt-0">
-      <font-awesome-icon :icon="['fad', 'share-nodes']"/>&nbsp; Share via QR Code
+    <h3 class="text-left">
+      <font-awesome-icon :icon="['fad', 'share-nodes']"/>&nbsp; Share Settings QR Code
     </h3>
-    <div class="settings-qr-code">
-      <qrcode-vue :value="shareLink" :size="350" level="L" />
+    <div class="settings-qr-code rounded-tl-md rounded-tr-md border-gray-300 border float-left p-2">
+      <qrcode-vue :value="shareLink" :size="350" :render-as="'svg'" level="L" />
     </div>
     
     <a href="" @click="share($event)">
@@ -202,7 +202,7 @@ export default {
 </script>
 <style lang="scss">
 .settings-qr-code {
-  canvas {
+  svg, canvas {
     max-width: 100%;
     height: auto !important;
   }
