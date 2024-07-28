@@ -119,7 +119,6 @@ class BirthdayDecoratorMixin(object):
             return False
 
         birthday = self.birthday_to_date(birthday)
-        print(birthday)
         return self.date_range[0] <= birthday <= self.date_range[1]
 
     def calculate_age(self, birthday):
@@ -301,6 +300,11 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
 
     def tuesday_subjects(self):
         tuesday_number = self.get_tuesday_number()
+        tuesday = self.get_tuesday()
+        if tuesday.year == 2024 and tuesday.month == 7 and tuesday.day == 30:
+            return ["CORRECTION: Full group meeting (Tue) (instead of the following week)"]
+        if tuesday.year == 2024 and tuesday.month == 8 and tuesday.day == 6:
+            return ["No Tuesday meeting this week (Was moved to last week)"]
         if tuesday_number in (1, 3):
             return ["Full group meeting (Tue)"]
         if tuesday_number == 2:
@@ -349,7 +353,20 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
 
     def get_required(self):
         tuesday_number = self.get_tuesday_number()
-        if tuesday_number in (1, 3):
+        tuesday = self.get_tuesday()
+        if tuesday.year == 2024 and tuesday.month == 8 and tuesday.day == 6:
+            return [
+                {
+                    "title": "No Tuesday meeting this week (Was moved to last week)",
+                    "date": self.get_tuesday(),
+                    "time": "",
+                    "optional": False,
+                    "notes": self.get_notes(),
+                    "to_addresses": ["community-of-st-andrew-all@googlegroups.com"],
+                    "meeting": "both_cells",
+                },
+            ]
+        if tuesday_number in (1, 3) or (tuesday.year == 2024 and tuesday.month == 7 and tuesday.day == 30):
             results = [
                 # {
                 #     "title": "Morningside Cell Meeting",
