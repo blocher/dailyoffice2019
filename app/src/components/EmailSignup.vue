@@ -1,18 +1,12 @@
 <template>
-    <span class="sub-menu-item">
-      <a
-          href="" @click.prevent="showEmailPanel()"
-      >
-        <font-awesome-icon :icon="['fad', 'envelopes']"/><br/>
-        <span class="ml-1 text-xs">Get Email Updates&nbsp;</span>
-
-      </a>
-    </span>
+  <span class="sub-menu-item">
+    <a href="" @click.prevent="showEmailPanel()">
+      <font-awesome-icon :icon="['fad', 'envelopes']" /><br />
+      <span class="ml-1 text-xs">Get Email Updates&nbsp;</span>
+    </a>
+  </span>
   <!--  <el-dropdown-item @click.prevent="emailPanel = true">Get Email Updates</el-dropdown-item>-->
-  <el-drawer
-      v-model="emailPanel" :size="panelSize"
-      direction="rtl"
-  >
+  <el-drawer v-model="emailPanel" :size="panelSize" direction="rtl">
     <div class="mt-4">
       <h3>Get Occasional Email Updates</h3>
       <p class="text-left">
@@ -24,41 +18,33 @@
       <el-form>
         <p class="mt-2">
           <el-input
-              v-model="emailField"
-              type="email"
-              placeholder="Email address..."
-              required
+            v-model="emailField"
+            type="email"
+            placeholder="Email address..."
+            required
           />
         </p>
         <p class="mt-2">
           <el-form-item>
-            <el-button
-                type="primary" :disabled="loading"
-                @click="onSubmit"
-            >
+            <el-button type="primary" :disabled="loading" @click="onSubmit">
               Sign Up
             </el-button>
           </el-form-item>
         </p>
         <el-alert
-            v-if="success"
-            class="text-left"
-            :title="success"
-            type="success"
+          v-if="success"
+          class="text-left"
+          :title="success"
+          type="success"
         />
-        <el-alert
-            v-if="error" class="text-left"
-            :title="error" type="error"
-        />
-        <Loading v-if="loading"/>
+        <el-alert v-if="error" class="text-left" :title="error" type="error" />
+        <Loading v-if="loading" />
       </el-form>
     </div>
   </el-drawer>
 </template>
 
-
 <script>
-
 export default {
   data() {
     return {
@@ -73,7 +59,7 @@ export default {
   },
   created: function () {
     window.addEventListener("resize", this.setPanelSize);
-    this.setPanelSize()
+    this.setPanelSize();
   },
   unmounted() {
     window.removeEventListener("resize", this.setPanelSize);
@@ -93,27 +79,27 @@ export default {
       this.loading = true;
       this.success = false;
       this.error = null;
-      const url = `${process.env.VUE_APP_API_URL}api/v1/email_signup`;
+      const url = `${import.meta.env.VUE_APP_API_URL}api/v1/email_signup`;
       const params = {
         email: this.emailField,
       };
       this.$http
-          .post(url, params)
-          .then((response) => {
-            this.success = `Thanks for signing up! We'll send an occasional email to ${this.emailField} when a new feature is launched.`;
-            this.emailField = null;
+        .post(url, params)
+        .then((response) => {
+          this.success = `Thanks for signing up! We'll send an occasional email to ${this.emailField} when a new feature is launched.`;
+          this.emailField = null;
+          this.loading = false;
+        })
+        .catch((error) => {
+          try {
+            this.error = error.response.data[0];
             this.loading = false;
-          })
-          .catch((error) => {
-            try {
-              this.error = error.response.data[0];
-              this.loading = false;
-            } catch {
-              this.error =
-                  "There was an unknown error. Please contact feedback@dailyoffice2019.com";
-            }
-            this.loading = false;
-          });
+          } catch {
+            this.error =
+              "There was an unknown error. Please contact feedback@dailyoffice2019.com";
+          }
+          this.loading = false;
+        });
     },
   },
 };

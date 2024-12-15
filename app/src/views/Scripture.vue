@@ -2,11 +2,8 @@
   <div class="small-container">
     <div class="about">
       <h1>Scripture preview</h1>
-      <Loading v-if="loading"/>
-      <el-alert
-          v-if="error" :title="error"
-          type="error"
-      />
+      <Loading v-if="loading" />
+      <el-alert v-if="error" :title="error" type="error" />
       <div v-if="!loading && !error">
         {{ passage }}
         <h3>ESV</h3>
@@ -21,11 +18,10 @@
 </template>
 
 <script>
-
-import Loading from "@/components/Loading";
+import Loading from "@/components/Loading.vue";
 
 export default {
-  components: {Loading},
+  components: { Loading },
   data() {
     return {
       passage: null,
@@ -39,24 +35,23 @@ export default {
   },
   async created() {
     let data = null;
-    this.passage = this.$route.params.passage
+    this.passage = this.$route.params.passage;
     try {
       const data = await this.$http.get(
-          `${process.env.VUE_APP_API_URL}api/v1/scripture/${this.passage}`
+        `${import.meta.env.VUE_APP_API_URL}api/v1/scripture/${this.passage}`,
       );
-      this.data = data.data
-      this.kjv = data.data.kjv
-      this.rsv = data.data.rsv
-      this.esv = data.data.esv
-
+      this.data = data.data;
+      this.kjv = data.data.kjv;
+      this.rsv = data.data.rsv;
+      this.esv = data.data.esv;
     } catch (e) {
       this.error =
-          "There was an error retrieving the passage. Please try again.";
+        "There was an error retrieving the passage. Please try again.";
       this.loading = false;
       return;
     }
     this.error = false;
     this.loading = false;
-  }
-}
+  },
+};
 </script>

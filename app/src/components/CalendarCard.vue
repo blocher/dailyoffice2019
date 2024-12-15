@@ -89,7 +89,7 @@
 <script>
 // @ is an alias to /src
 
-import Commemoration from "@/components/Commemoration";
+import Commemoration from "@/components/Commemoration.vue";
 
 export default {
   name: "CalenderCard",

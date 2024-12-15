@@ -1,13 +1,13 @@
 import Settings from "../views/Settings.vue";
 import Pray from "../views/Pray.vue";
 import { createRouter, createWebHistory } from "vue-router";
-import Today from "@/views/Today";
-import Calendar from "@/views/Calendar";
-import Day from "@/views/Day";
-import PageNotFound from "@/views/PageNotFound";
-import Readings from "@/views/Readings";
-import Scripture from "@/views/Scripture";
-import Litany from "@/views/Litany";
+import Today from "@/views/Today.vue";
+import Calendar from "@/views/Calendar.vue";
+import Day from "@/views/Day.vue";
+import PageNotFound from "@/views/PageNotFound.vue";
+import Readings from "@/views/Readings.vue";
+import Scripture from "@/views/Scripture.vue";
+import Litany from "@/views/Litany.vue";
 
 const routes = [
   {
@@ -172,12 +172,12 @@ const routes = [
 ];
 
 const routesToNotScrollToTop = [
-  'readingsByServiceAndDate',
-  'readingsByServicePositionAndDate'
+  "readingsByServiceAndDate",
+  "readingsByServicePositionAndDate",
 ];
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes,
   scrollBehavior(to, from, savedPosition) {
     if (routesToNotScrollToTop.includes(to.name)) {

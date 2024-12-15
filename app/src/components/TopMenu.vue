@@ -1,12 +1,11 @@
 <template>
-
   <el-menu
-      :default-active="activeIndex"
-      mode="horizontal"
-      menu-trigger="click"
-      :router="menuRouter"
-      :unique-opened="uniqueOpened"
-      class="fixed top-0 left-0 right-0 account-for-notch"
+    :default-active="activeIndex"
+    mode="horizontal"
+    menu-trigger="click"
+    :router="menuRouter"
+    :unique-opened="uniqueOpened"
+    class="fixed top-0 left-0 right-0 account-for-notch"
   >
     <el-sub-menu index="1">
       <template #title>Pray</template>
@@ -66,17 +65,13 @@
           Morning (Tomorrow)
         </el-menu-item>
       </el-menu-item-group>
-
-
     </el-sub-menu>
 
     <el-menu-item index="/settings"> Settings</el-menu-item>
 
     <el-sub-menu index="3">
       <template #title> Resources</template>
-      <el-menu-item index="/calendar">
-        Calendar
-      </el-menu-item>
+      <el-menu-item index="/calendar"> Calendar </el-menu-item>
       <el-menu-item index="/about"> About</el-menu-item>
       <el-menu-item index="/collects"> Collects</el-menu-item>
       <el-menu-item index="/psalms"> Psalms</el-menu-item>
@@ -84,16 +79,13 @@
     </el-sub-menu>
   </el-menu>
 
-
   <el-header>
-    <Submenu/>
-
+    <Submenu />
   </el-header>
-
 </template>
 
 <script>
-import Submenu from "@/components/Submenu";
+import Submenu from "@/components/Submenu.vue";
 
 export default {
   components: {
@@ -124,5 +116,4 @@ export default {
   padding-left: 10px !important;
   font-size: 1.2em;
 }
-
 </style>

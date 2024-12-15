@@ -1,24 +1,21 @@
 <template>
   <div class="small-container">
-    <PageNotFound v-if="notFound"/>
+    <PageNotFound v-if="notFound" />
     <div v-if="!notFound">
-      <Loading v-if="loading"/>
-      <div
-          v-if="error" class="alert-danger"
-      >
+      <Loading v-if="loading" />
+      <div v-if="error" class="alert-danger">
         {{ error }}
       </div>
-      <div
-          v-if="!loading" class="day"
-      >
+      <div v-if="!loading" class="day">
         <CalendarCard
-            v-if="!loading"
-            :calendar-date="calendarDate"
-            :card="card"
+          v-if="!loading"
+          :calendar-date="calendarDate"
+          :card="card"
         />
         <OfficeNav
-            :calendar-date="calendarDate" :service-type="currentServiceType"
-            :selected-office="'day'"
+          :calendar-date="calendarDate"
+          :service-type="currentServiceType"
+          :selected-office="'day'"
         />
       </div>
     </div>
@@ -28,13 +25,13 @@
 <script>
 // @ is an alias to /src
 import setCalendarDate from "@/helpers/setCalendarDate";
-import OfficeNav from "@/components/OfficeNav";
-import PageNotFound from "@/views/PageNotFound";
-import {DynamicStorage} from "@/helpers/storage";
+import OfficeNav from "@/components/OfficeNav.vue";
+import PageNotFound from "@/views/PageNotFound.vue";
+import { DynamicStorage } from "@/helpers/storage";
 
 export default {
   name: "Calendar",
-  components: {OfficeNav, PageNotFound},
+  components: { OfficeNav, PageNotFound },
   properties: {
     office: null,
     serviceType: {
@@ -73,10 +70,10 @@ export default {
     if (this.$route.params.serviceType) {
       this.currentServiceType = this.$route.params.serviceType;
     } else if (!this.$route.params.office) {
-      this.currentServiceType = await DynamicStorage.getItem("serviceType") || "office";
+      this.currentServiceType =
+        (await DynamicStorage.getItem("serviceType")) || "office";
     }
     await this.setDay();
-
   },
   methods: {
     scrollToTop() {
@@ -95,7 +92,7 @@ export default {
       let data = null;
       try {
         data = await this.$http.get(
-            `${process.env.VUE_APP_API_URL}api/v1/calendar/${this.year}-${this.month}-${this.day}`
+          `${import.meta.env.VUE_APP_API_URL}api/v1/calendar/${this.year}-${this.month}-${this.day}`,
         );
       } catch (e) {
         if (e.response.status == "404") {
@@ -103,7 +100,7 @@ export default {
           return;
         }
         this.error =
-            "There was an error retrieving this calendar. Please try again.";
+          "There was an error retrieving this calendar. Please try again.";
         this.loading = false;
         return;
       }

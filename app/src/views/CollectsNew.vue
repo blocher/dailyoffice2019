@@ -1,34 +1,46 @@
 <template>
   <div class="small-container">
-    <Loading v-if="loading"/>
+    <Loading v-if="loading" />
     <div>
       <h1>Collects</h1>
       <div class="flex justify-center">
         <el-checkbox-group v-model="selectedCollectTypes" size="large">
           <el-checkbox
-              v-for="collectType in collects" :key="collectType.uuid" border
-              :label="collectType.uuid">
+            v-for="collectType in collects"
+            :key="collectType.uuid"
+            border
+            :label="collectType.uuid"
+          >
             {{ collectType.name }}
           </el-checkbox>
         </el-checkbox-group>
       </div>
       <div class="flex justify-center flex-wrap">
-        <el-button size="small" class="mb-1" :disabled='buttonsDisabled' @click="expandAll()">{{
-            showAllText
-          }}
+        <el-button
+          size="small"
+          class="mb-1"
+          :disabled="buttonsDisabled"
+          @click="expandAll()"
+          >{{ showAllText }}
         </el-button>
-        <el-button size="small" class="mb-1" :disabled='buttonsDisabled' @click="collapseAll()">
+        <el-button
+          size="small"
+          class="mb-1"
+          :disabled="buttonsDisabled"
+          @click="collapseAll()"
+        >
           {{ hideAllText }}
         </el-button>
-        <el-button size="small" class="mb-1" :disabled='buttonsDisabled' @click="showOnlySelected">{{ showOnlyText }}
+        <el-button
+          size="small"
+          class="mb-1"
+          :disabled="buttonsDisabled"
+          @click="showOnlySelected"
+          >{{ showOnlyText }}
         </el-button>
-
       </div>
-      <div class="flex justify-center">
-
-
-      </div>
-      <FontSizer v-if="readyToSetFontSize"/>
+      <div class="flex justify-center"></div>
+      <FontSizer v-if="readyToSetFontSize" />
 
       <!--      <div class="flex justify-center full-width">-->
       <!--        <el-input-->
@@ -43,22 +55,18 @@
 
       <div class="flex justify-center full-width">
         <el-switch
-            v-model="traditional"
-            size="large"
-            active-text="Traditional"
-            inactive-text="Contemporary"
-            class="align-center mt-4"
-            @change="setTraditional"
+          v-model="traditional"
+          size="large"
+          active-text="Traditional"
+          inactive-text="Contemporary"
+          class="align-center mt-4"
+          @change="setTraditional"
         />
       </div>
-      <el-alert
-          v-if="error" :title="error"
-          type="error"
-      />
+      <el-alert v-if="error" :title="error" type="error" />
     </div>
   </div>
   <div v-if="!loading && !error" id="main">
-
     <!--    <div v-if="displayedCollects.length < 1" class="h-96">-->
     <!--      <h3>No results</h3>-->
     <!--      <p class="text-center"><em>There are no collects that match your search terms and filters.</em></p>-->
@@ -66,28 +74,38 @@
 
     <div v-for="category in collectCategoriesToShow" :key="category.uuid">
       <h3>{{ category.name }}</h3>
-      <div v-for="subcategory in category.subcategories" :key="subcategory.uuid">
+      <div
+        v-for="subcategory in category.subcategories"
+        :key="subcategory.uuid"
+      >
         <CollectsSubcategory
-            ref="subcategories" :traditional="traditional" :subcategory="subcategory" :extra-collects="extraCollects"
-            @extra-collects-changed="setExtraCollects"
+          ref="subcategories"
+          :traditional="traditional"
+          :subcategory="subcategory"
+          :extra-collects="extraCollects"
+          @extra-collects-changed="setExtraCollects"
         />
       </div>
     </div>
-
   </div>
-
 </template>
 
 <script>
-import Loading from "@/components/Loading";
-import CollectsFilters from "@/components/CollectsFilters";
-import Collect from "@/components/Collect";
-import FontSizer from "@/components/FontSizer";
-import CollectsSubcategory from "@/components/CollectsSubcategory";
-import {DynamicStorage} from "@/helpers/storage";
+import Loading from "@/components/Loading.vue";
+import CollectsFilters from "@/components/CollectsFilters.vue";
+import Collect from "@/components/Collect.vue";
+import FontSizer from "@/components/FontSizer.vue";
+import CollectsSubcategory from "@/components/CollectsSubcategory.vue";
+import { DynamicStorage } from "@/helpers/storage";
 
 export default {
-  components: {Loading, CollectsFilters, Collect, FontSizer, CollectsSubcategory},
+  components: {
+    Loading,
+    CollectsFilters,
+    Collect,
+    FontSizer,
+    CollectsSubcategory,
+  },
   data() {
     return {
       collects: null,
@@ -101,7 +119,12 @@ export default {
       openedItems: [],
       defaultDict: {},
       checkList: [],
-      offices: ["Morning Prayer", "Midday Prayer", "Evening Prayer", "Compline"],
+      offices: [
+        "Morning Prayer",
+        "Midday Prayer",
+        "Evening Prayer",
+        "Compline",
+      ],
       showAllText: "Expand All",
       showAllDefaultText: "Expand All",
       hideAllText: "Collapse All",
@@ -131,7 +154,10 @@ export default {
     },
   },
   async mounted() {
-    const traditional = await DynamicStorage.getItem("traditionalCollects", false);
+    const traditional = await DynamicStorage.getItem(
+      "traditionalCollects",
+      false,
+    );
     if (traditional === "true" || traditional == true) {
       this.traditional = true;
     } else {
@@ -142,11 +168,11 @@ export default {
 
     try {
       data = await this.$http.get(
-          `${process.env.VUE_APP_API_URL}api/v1/grouped_collects`
+        `${import.meta.env.VUE_APP_API_URL}api/v1/grouped_collects`,
       );
     } catch (e) {
       this.error =
-          "There was an error retrieving the collects. Please try again.";
+        "There was an error retrieving the collects. Please try again.";
       this.loading = false;
       return;
     }
@@ -158,15 +184,17 @@ export default {
         });
       });
     });
-    this.setDefaultFilter()
-    await this.setExtraCollects()
+    this.setDefaultFilter();
+    await this.setExtraCollects();
     this.error = false;
     this.loading = false;
     this.readyToSetFontSize = true;
   },
   methods: {
     async setExtraCollects() {
-      this.extraCollects = JSON.parse(await DynamicStorage.getItem('extraCollects')) || this.defaultDict;
+      this.extraCollects =
+        JSON.parse(await DynamicStorage.getItem("extraCollects")) ||
+        this.defaultDict;
       // this.offices.forEach((office) => {
       //   if (extraCollects[office].includes(this.collect.uuid)) {
       //     this.extraCollectsList.push(office)
@@ -178,7 +206,9 @@ export default {
     },
     setDefaultFilter() {
       if (!this.selectedCollectTypes.length) {
-        this.selectedCollectTypes = this.collects.map((category) => category.uuid);
+        this.selectedCollectTypes = this.collects.map(
+          (category) => category.uuid,
+        );
       }
     },
     async expandAll() {
@@ -202,21 +232,22 @@ export default {
     async showOnlySelected() {
       this.buttonsDisabled = true;
       await this.$nextTick();
-      const defaultDict = {}
+      const defaultDict = {};
       this.offices.forEach((office) => {
-        defaultDict[office] = []
-      })
-      let checkList = []
-      const extraCollects = JSON.parse(await DynamicStorage.getItem('extraCollects')) || defaultDict;
+        defaultDict[office] = [];
+      });
+      let checkList = [];
+      const extraCollects =
+        JSON.parse(await DynamicStorage.getItem("extraCollects")) ||
+        defaultDict;
       this.offices.forEach((office) => {
-        checkList = checkList.concat(extraCollects[office])
+        checkList = checkList.concat(extraCollects[office]);
       });
       this.$refs.subcategories.forEach((subcategory) => {
         subcategory.showOnlySelected(checkList);
       });
       this.buttonsDisabled = false;
-
-    }
+    },
   },
 };
 </script>

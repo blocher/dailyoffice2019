@@ -1,14 +1,11 @@
 <template>
   <div class="small-container home office">
-    <Loading v-if="loading &&!notFound"/>
-    <PageNotFound v-if="notFound"/>
-    <el-alert
-        v-if="error" :title="error"
-        type="error"
-    />
+    <Loading v-if="loading && !notFound" />
+    <PageNotFound v-if="notFound" />
+    <el-alert v-if="error" :title="error" type="error" />
     <h1>The Great Litany and the Supplication</h1>
     <div v-if="!loading && !notFound" id="readings">
-      <el-divider/>
+      <el-divider />
 
       <el-row class="mt-2 content-stretch">
         <el-col :span="24">
@@ -16,15 +13,20 @@
           <div v-for="service in contemporaryServices" :key="service.name">
             <div class="grid grid-cols-12 gap-3 even:bg-grey mb-2">
               <div class="m-auto">
-                <font-awesome-icon v-if="service.active" :icon="['fad', 'fa-octagon-check']"/>
+                <font-awesome-icon
+                  v-if="service.active"
+                  :icon="['fad', 'fa-octagon-check']"
+                />
               </div>
               <div class="col-span-11">
                 <span v-if="service.active">{{ service.name }}</span>
-                <span v-if="!service.active"><a
+                <span v-if="!service.active"
+                  ><a
                     :href="serviceLink(service.name)"
-                    @click.prevent="changeService(service.name)">{{
-                    service.name
-                  }}</a></span>
+                    @click.prevent="changeService(service.name)"
+                    >{{ service.name }}</a
+                  ></span
+                >
               </div>
             </div>
           </div>
@@ -32,73 +34,66 @@
           <div v-for="service in traditionalServices" :key="service.name">
             <div class="grid grid-cols-12 gap-3 even:bg-grey mb-2">
               <div class="m-auto">
-                <font-awesome-icon v-if="service.active" :icon="['fad', 'fa-octagon-check']"/>
+                <font-awesome-icon
+                  v-if="service.active"
+                  :icon="['fad', 'fa-octagon-check']"
+                />
               </div>
               <div class="col-span-11">
                 <span v-if="service.active">{{ service.name }}</span>
-                <span v-if="!service.active"><a
+                <span v-if="!service.active"
+                  ><a
                     :href="serviceLink(service.name)"
-                    @click.prevent="changeService(service.name)">{{
-                    service.name
-                  }}</a></span>
+                    @click.prevent="changeService(service.name)"
+                    >{{ service.name }}</a
+                  ></span
+                >
               </div>
             </div>
           </div>
         </el-col>
       </el-row>
 
-      <el-divider/>
+      <el-divider />
 
-      <Loading v-if="loading"/>
-      <FontSizer/>
+      <Loading v-if="loading" />
+      <FontSizer />
     </div>
   </div>
   <div v-if="!loading && !error" id="main" class="main litany">
-    <div
-        v-for="(line, index) in selected.lines" :key="index"
-    >
-      <OfficeHeading
-          v-if="line.line_type == 'heading'" :line="line"
-      />
-      <OfficeLeader
-          v-if="line.line_type == 'leader'" :line="line"
-      />
+    <div v-for="(line, index) in selected.lines" :key="index">
+      <OfficeHeading v-if="line.line_type == 'heading'" :line="line" />
+      <OfficeLeader v-if="line.line_type == 'leader'" :line="line" />
       <OfficeCongregation
-          v-if="line.line_type == 'congregation'"
-          :line="line"
+        v-if="line.line_type == 'congregation'"
+        :line="line"
       />
-      <OfficeRubric
-          v-if="line.line_type == 'rubric'" :line="line"
-      />
-      <OfficeSpacer v-if="line.line_type == 'spacer'"/>
+      <OfficeRubric v-if="line.line_type == 'rubric'" :line="line" />
+      <OfficeSpacer v-if="line.line_type == 'spacer'" />
     </div>
-
-
   </div>
-
-
 </template>
 
 <script>
 // @ is an alias to /src
-import Loading from "@/components/Loading";
-import CalendarCard from "@/components/CalendarCard";
-import OfficeNav from "@/components/OfficeNav";
-import Reading from "@/components/Reading";
-import Collects from "@/components/Collects";
-import CitationGroup from "@/components/CitationGroup";
-import FontSizer from "@/components/FontSizer";
-import PageNotFound from "@/views/PageNotFound";
-import OfficeHeading from "@/components/OfficeHeading";
-import OfficeSubheading from "@/components/OfficeSubheading";
-import OfficeCitation from "@/components/OfficeCitation";
-import OfficeHTML from "@/components/OfficeHTML";
-import OfficeCongregation from "@/components/OfficeCongregation";
-import OfficeLeader from "@/components/OfficeLeader";
-import OfficeCongregationDialogue from "@/components/OfficeCongregationDialogue";
-import OfficeLeaderDialogue from "@/components/OfficeLeaderDialogue";
-import OfficeRubric from "@/components/OfficeRubric";
-import OfficeSpacer from "@/components/OfficeSpacer";
+import Loading from "@/components/Loading.vue";
+import CalendarCard from "@/components/CalendarCard.vue";
+import OfficeNav from "@/components/OfficeNav.vue";
+import Reading from "@/components/Reading.vue";
+import Collects from "@/components/Collects.vue";
+import CitationGroup from "@/components/CitationGroup.vue";
+import FontSizer from "@/components/FontSizer.vue";
+import PageNotFound from "@/views/PageNotFound.vue";
+import OfficeHeading from "@/components/OfficeHeading.vue";
+import OfficeSubheading from "@/components/OfficeSubheading.vue";
+import OfficeCitation from "@/components/OfficeCitation.vue";
+import OfficeHTML from "@/components/OfficeHTML.vue";
+import OfficeCongregation from "@/components/OfficeCongregation.vue";
+import OfficeLeader from "@/components/OfficeLeader.vue";
+import OfficeCongregationDialogue from "@/components/OfficeCongregationDialogue.vue";
+import OfficeLeaderDialogue from "@/components/OfficeLeaderDialogue.vue";
+import OfficeRubric from "@/components/OfficeRubric.vue";
+import OfficeSpacer from "@/components/OfficeSpacer.vue";
 
 export default {
   name: "Readings",
@@ -150,16 +145,16 @@ export default {
   },
   async mounted() {
     this.loading = true;
-    this.service = "Great Litany"
+    this.service = "Great Litany";
     try {
       const data = await this.$http.get(
-          `${process.env.VUE_APP_API_URL}api/v1/litany`
+        `${import.meta.env.VUE_APP_API_URL}api/v1/litany`,
       );
-      this.modules = data['data']['modules'];
+      this.modules = data["data"]["modules"];
       this.services = this.modules.map((module) => {
         return {
           name: module.name,
-          active: false
+          active: false,
         };
       });
 
@@ -173,20 +168,20 @@ export default {
       this.selected = this.contemporaryServices[0];
       this.changeService(this.selected.name);
     } catch (e) {
-      this.error = "There was an error retrieving the litany. Please try again.";
+      this.error =
+        "There was an error retrieving the litany. Please try again.";
       this.loading = false;
       return;
     }
     this.error = false;
     this.loading = false;
-
   },
   methods: {
     serviceLink: function (service) {
       return `/litany`;
     },
     changeService: function (service) {
-      this.service = service
+      this.service = service;
       this.selected = this.modules.find((module) => module.name === service);
       this.contemporaryServices.forEach((service) => {
         if (service.name == this.service) {
@@ -202,15 +197,10 @@ export default {
           service.active = false;
         }
       });
-      const link = this.serviceLink(service)
-      history.pushState(
-          {},
-          null,
-          link
-      )
+      const link = this.serviceLink(service);
+      history.pushState({}, null, link);
     },
   },
-
 };
 </script>
 <style scoped lang="scss">
@@ -232,11 +222,10 @@ h3 {
   width: 100%;
 }
 
-
 .collectsWrapper {
   padding: 1rem;
   border: 1px solid var(--font-color);
-  border-radius: .25rem;
+  border-radius: 0.25rem;
   margin: 1rem 0;
 }
 

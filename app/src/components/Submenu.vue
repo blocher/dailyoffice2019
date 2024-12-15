@@ -1,16 +1,14 @@
 <template>
   <el-row class="mt-4">
     <el-col :span="12">
-      <ThemeSwitcher/>
+      <ThemeSwitcher />
     </el-col>
-    <el-col
-        :span="12" class="text-right"
-    >
-      <ShareSettings/>
-      <br>
-      <EmailSignup/>
-      <br>
-      <SubmitFeedback/>
+    <el-col :span="12" class="text-right">
+      <ShareSettings />
+      <br />
+      <EmailSignup />
+      <br />
+      <SubmitFeedback />
     </el-col>
   </el-row>
   <!--        <span class="sub-menu-item">-->
@@ -26,10 +24,10 @@
 </template>
 
 <script>
-import EmailSignup from "@/components/EmailSignup";
-import ShareSettings from "@/components/ShareSettings";
-import ThemeSwitcher from "@/components/ThemeSwitcher";
-import SubmitFeedback from "@/components/SubmitFeedback";
+import EmailSignup from "@/components/EmailSignup.vue";
+import ShareSettings from "@/components/ShareSettings.vue";
+import ThemeSwitcher from "@/components/ThemeSwitcher.vue";
+import SubmitFeedback from "@/components/SubmitFeedback.vue";
 
 export default {
   components: {

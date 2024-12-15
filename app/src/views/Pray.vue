@@ -10,9 +10,9 @@
 
 <script>
 // @ is an alias to /src
-import Office from "@/views/Office";
+import Office from "@/views/Office.vue";
 import setCalendarDate from "@/helpers/setCalendarDate";
-import PageNotFound from "@/views/PageNotFound";
+import PageNotFound from "@/views/PageNotFound.vue";
 
 export default {
   name: "Today",

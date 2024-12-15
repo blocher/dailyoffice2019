@@ -77,8 +77,8 @@
 <script>
 // @ is an alias to /src
 
-import Loading from "@/components/Loading";
-import SettingsPanel from "@/components/SettingsPanel";
+import Loading from "@/components/Loading.vue";
+import SettingsPanel from "@/components/SettingsPanel.vue";
 import {DynamicStorage} from "@/helpers/storage";
 
 export default {

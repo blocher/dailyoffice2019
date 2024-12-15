@@ -1,13 +1,17 @@
 <template>
   <div id="notch" class="notch"></div>
   <div class="m-4">
-    <ThemeSwitcher/>
+    <ThemeSwitcher />
   </div>
   <!--  <TopMenu v-if="!loading"/>-->
-  <div class="w-full mt-10 mx-auto content-center flex items-center justify-center gap-2">
+  <div
+    class="w-full mt-10 mx-auto content-center flex items-center justify-center gap-2"
+  >
     <h2>The Daily Office</h2>
   </div>
-  <div class="w-full mt-4 mx-auto content-center flex items-center justify-center gap-2">
+  <div
+    class="w-full mt-4 mx-auto content-center flex items-center justify-center gap-2"
+  >
     <a href="/">
       <el-button :type="isPray" round>Pray</el-button>
     </a>
@@ -18,23 +22,26 @@
       <el-button :type="isCalendar" round>Calendar</el-button>
     </a>
   </div>
-  <div class="w-full mt-4 mx-auto content-center flex items-center justify-center gap-2">
+  <div
+    class="w-full mt-4 mx-auto content-center flex items-center justify-center gap-2"
+  >
     <el-button v-if="showLinks" :type="isOther">
       <el-dropdown :hide-on-click="true" trigger="click">
-    <span class="el-dropdown-link">
-      More Resources
-      <el-icon class="el-icon--right">
-        <arrow-down/>
-      </el-icon>
-    </span>
+        <span class="el-dropdown-link">
+          More Resources
+          <el-icon class="el-icon--right">
+            <arrow-down />
+          </el-icon>
+        </span>
         <template #dropdown>
           <el-dropdown-menu>
             <a href="/about">
               <el-dropdown-item>About</el-dropdown-item>
             </a>
             <a href="https://classic.dailyoffice2019.com/" target="_blank">
-              <el-dropdown-item>Classic Site&nbsp;
-                <font-awesome-icon :icon="['fad', 'fa-square-up-right']"/>
+              <el-dropdown-item
+                >Classic Site&nbsp;
+                <font-awesome-icon :icon="['fad', 'fa-square-up-right']" />
               </el-dropdown-item>
             </a>
             <el-dropdown-item disabled>--Prayer Resources--</el-dropdown-item>
@@ -51,11 +58,21 @@
               <el-dropdown-item>Readings</el-dropdown-item>
             </a>
             <el-dropdown-item disabled>--More--</el-dropdown-item>
-            <el-dropdown-item @click="$refs.additionalLinks.$refs.shareSettings.toggleSharePanel()">Share Settings
+            <el-dropdown-item
+              @click="
+                $refs.additionalLinks.$refs.shareSettings.toggleSharePanel()
+              "
+              >Share Settings
             </el-dropdown-item>
-            <el-dropdown-item @click="$refs.additionalLinks.$refs.submitFeedback.showFeedbackPanel()">Submit Feedback
+            <el-dropdown-item
+              @click="
+                $refs.additionalLinks.$refs.submitFeedback.showFeedbackPanel()
+              "
+              >Submit Feedback
             </el-dropdown-item>
-            <el-dropdown-item @click="$refs.additionalLinks.$refs.emailSignup.showEmailPanel()">Get Email Updates
+            <el-dropdown-item
+              @click="$refs.additionalLinks.$refs.emailSignup.showEmailPanel()"
+              >Get Email Updates
             </el-dropdown-item>
           </el-dropdown-menu>
         </template>
@@ -63,36 +80,30 @@
     </el-button>
   </div>
   <div class="main-body">
-    <Loading v-if="loading"/>
+    <Loading v-if="loading" />
     <!--    <BetaNote/>-->
-    <el-alert
-        v-if="error" :title="error"
-        type="error"
-    />
-    <router-view
-        v-if="!loading" :key="$route.fullPath"
-    />
-    <AdditionalLinks v-if="showLinks" ref="additionalLinks"/>
+    <el-alert v-if="error" :title="error" type="error" />
+    <router-view v-if="!loading" :key="$route.fullPath" />
+    <AdditionalLinks v-if="showLinks" ref="additionalLinks" />
 
-    <AHPLogo/>
-
+    <AHPLogo />
   </div>
 
-  <el-backtop/>
+  <el-backtop />
 </template>
 
 <script>
-import TopMenu from "@/components/TopMenu";
-import Loading from "@/components/Loading";
-import AHPLogo from "@/components/AHPLogo";
-import {event} from 'vue-gtag'
-import BetaNote from "@/components/BetaNote";
-import {useActiveMeta, useMeta} from "vue-meta";
+import TopMenu from "@/components/TopMenu.vue";
+import Loading from "@/components/Loading.vue";
+import AHPLogo from "@/components/AHPLogo.vue";
+import { event } from "vue-gtag";
+import BetaNote from "@/components/BetaNote.vue";
+import { useActiveMeta, useMeta } from "vue-meta";
 import ShareSettings from "@/components/ShareSettings.vue";
 import EmailSignup from "@/components/EmailSignup.vue";
 import SubmitFeedback from "@/components/SubmitFeedback.vue";
 import AdditionalLinks from "@/components/AdditionalLinks.vue";
-import {ArrowDown} from '@element-plus/icons-vue'
+import { ArrowDown } from "@element-plus/icons-vue";
 
 export default {
   components: {
@@ -107,11 +118,11 @@ export default {
     ArrowDown,
   },
   setup() {
-    const {meta} = useMeta({
-      htmlAttrs: {lang: 'en'},
-      viewport: 'width=device-width, initial-scale=1.0, viewport-fit=cover',
-    })
-    const metadata = useActiveMeta()
+    const { meta } = useMeta({
+      htmlAttrs: { lang: "en" },
+      viewport: "width=device-width, initial-scale=1.0, viewport-fit=cover",
+    });
+    const metadata = useActiveMeta();
   },
   data() {
     return {
@@ -125,34 +136,42 @@ export default {
   },
   computed: {
     isPray() {
-      return this.$route.name === 'Pray' || this.$route.name === 'Home' ? 'primary' : '';
+      return this.$route.name === "Pray" || this.$route.name === "Home"
+        ? "primary"
+        : "";
     },
     isSettings() {
-      return this.$route.name === 'Settings' ? 'primary' : '';
+      return this.$route.name === "Settings" ? "primary" : "";
     },
     isCalendar() {
-      return this.$route.name === 'calendar' ? 'primary' : '';
+      return this.$route.name === "calendar" ? "primary" : "";
     },
     isOther() {
-      return this.$route.name === 'About' || this.$route.name === 'Collects' || this.$route.name === 'readings' || this.$route.name === 'litany' || this.$route.name === 'Psalms' ? 'primary' : '';
+      return this.$route.name === "About" ||
+        this.$route.name === "Collects" ||
+        this.$route.name === "readings" ||
+        this.$route.name === "litany" ||
+        this.$route.name === "Psalms"
+        ? "primary"
+        : "";
     },
   },
   async created() {
     document.title = "The Daily Office";
     try {
-      event('betaPageView')
+      event("betaPageView");
       const settings_data = await this.$http.get(
-          `${process.env.VUE_APP_API_URL}api/v1/available_settings/`
+        `${import.meta.env.VUE_APP_API_URL}api/v1/available_settings/`,
       );
       await this.$store.commit("saveAvailableSettings", settings_data.data);
-      await this.$store.dispatch('initializeSettings');
+      await this.$store.dispatch("initializeSettings");
       this.loading = false;
       await this.$nextTick();
       this.showLinks = true;
     } catch (e) {
       console.log(e);
       this.error =
-          "There was an error loading the settings. Please try refreshing the page.";
+        "There was an error loading the settings. Please try refreshing the page.";
       this.loading = false;
       await this.$nextTick();
       this.showLinks = true;
@@ -167,12 +186,11 @@ export default {
 <style src="./assets/tailwind.css"></style>
 
 <style lang="scss">
-
-@forward 'element-plus/theme-chalk/src/common/var.scss' with (
+@forward "element-plus/theme-chalk/src/common/var.scss" with (
   $collapse: (
-    'header-height': auto,
+    "header-height": auto,
   )
- );
+);
 
 * {
   font-family: "Adobe Caslon Pro", serif;
@@ -181,12 +199,25 @@ export default {
   -moz-osx-font-smoothing: grayscale;
 }
 
-[type='text']:focus, [type='email']:focus, [type='url']:focus, [type='password']:focus, [type='number']:focus, [type='date']:focus, [type='datetime-local']:focus, [type='month']:focus, [type='search']:focus, [type='tel']:focus, [type='time']:focus, [type='week']:focus, [multiple]:focus, textarea:focus, select:focus {
+[type="text"]:focus,
+[type="email"]:focus,
+[type="url"]:focus,
+[type="password"]:focus,
+[type="number"]:focus,
+[type="date"]:focus,
+[type="datetime-local"]:focus,
+[type="month"]:focus,
+[type="search"]:focus,
+[type="tel"]:focus,
+[type="time"]:focus,
+[type="week"]:focus,
+[multiple]:focus,
+textarea:focus,
+select:focus {
   border-color: transparent;
   outline: 0px !important;
   box-shadow: 0 0 0 0 transparent !important;
 }
-
 
 :root {
   --color-bg: #fff;
@@ -206,7 +237,6 @@ export default {
   --sar: env(safe-area-inset-right);
   --sab: env(safe-area-inset-bottom);
   --sal: env(safe-area-inset-left);
-
 
   .el-calendar {
     --el-calendar-border: 1px solid black !important;
@@ -236,7 +266,8 @@ body {
   color: var(--font-color);
   background-color: var(--color-bg);
 
-  .el-input__inner, el-select-dropdown__item {
+  .el-input__inner,
+  el-select-dropdown__item {
     font-size: 16px;
   }
 
@@ -349,8 +380,6 @@ body {
 
     &.indent {
       margin: 0 0 0 1em;
-
-
     }
 
     &.hangingIndent {
@@ -394,12 +423,14 @@ body {
 }
 
 .el-input__inner {
-  background-color: var(--el-input-bg-color, var(--el-fill-color-blank)) !important;
+  background-color: var(
+    --el-input-bg-color,
+    var(--el-fill-color-blank)
+  ) !important;
 }
 
 body {
   //margin-top: calc(env(safe-area-inset-top) + 1.4rem);
-
 
   #notch {
     display: block;
@@ -412,7 +443,6 @@ body {
     z-index: 9999;
     background-color: #26282a;
   }
-
 }
 
 .el-backtop {
@@ -422,5 +452,4 @@ body {
 .el-drawer {
   padding-top: env(safe-area-inset-top);
 }
-
 </style>

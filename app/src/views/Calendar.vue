@@ -1,18 +1,16 @@
 <template>
   <h1>Calendar</h1>
-  <Loading v-if="loading"/>
+  <Loading v-if="loading" />
   <div class="full-width text-center">
     <el-switch
-        v-model="includeMinorFeasts"
-        size="large"
-        active-text="Show All Feasts"
-        inactive-text="Show Major Feasts Only"
-        @change="updateIncludeMinorFeasts"
+      v-model="includeMinorFeasts"
+      size="large"
+      active-text="Show All Feasts"
+      inactive-text="Show Major Feasts Only"
+      @change="updateIncludeMinorFeasts"
     />
   </div>
-  <el-calendar
-      v-if="!loading" v-model="date"
-  >
+  <el-calendar v-if="!loading" v-model="date">
     <template #header="{ date }">
       <span>{{ date }}</span>
 
@@ -21,17 +19,11 @@
         <!--          >Previous Year</el-button-->
         <!--        >-->
 
-        <el-button
-            size="small" @click="selectDate('today')"> Now
-        </el-button>
-        <el-button
-            size="small" @click="selectDate('prev-month')"
-        >
+        <el-button size="small" @click="selectDate('today')"> Now</el-button>
+        <el-button size="small" @click="selectDate('prev-month')">
           Previous Month
         </el-button>
-        <el-button
-            size="small" @click="selectDate('next-month')"
-        >
+        <el-button size="small" @click="selectDate('next-month')">
           Next Month
         </el-button>
         <!--        <el-button size="small" @click="selectDate('next-year')"-->
@@ -41,7 +33,9 @@
     </template>
     <template #date-cell="{ data }">
       <div
-          class="dateCellWrapper" :class="getColorForDate(data.day)" @click="clickDateCell(data, $event)"
+        class="dateCellWrapper"
+        :class="getColorForDate(data.day)"
+        @click="clickDateCell(data, $event)"
       >
         <p>{{ parseInt(data.day.split("-")[2]) }}</p>
         <p class="calendarText" v-html="getFeastNameForDate(data.day)"></p>
@@ -53,7 +47,8 @@
 <script>
 // @ is an alias to /src
 
-import {DynamicStorage} from "@/helpers/storage";
+// @ is an alias to /src
+import { DynamicStorage } from "@/helpers/storage";
 
 export default {
   name: "Calendar",
@@ -81,55 +76,52 @@ export default {
   },
   methods: {
     updateIncludeMinorFeasts: async function () {
-      const includeMinorFeasts = this.includeMinorFeasts ? "true" : "false"
+      const includeMinorFeasts = this.includeMinorFeasts ? "true" : "false";
       await DynamicStorage.setItem("includeMinorFeasts", includeMinorFeasts);
     },
     getColorForDate: function (day) {
       try {
-        let commemorations = this.days[day].commemorations
+        let commemorations = this.days[day].commemorations;
         if (this.includeMinorFeasts) {
           commemorations = commemorations.filter((commemorations) => {
-            return commemorations.rank.name.includes("FERIA") == false
+            return commemorations.rank.name.includes("FERIA") == false;
           });
           if (!commemorations.length) {
-            return this.days[day].season.colors[0]
+            return this.days[day].season.colors[0];
           }
-          return commemorations[0]['colors'][0]
+          return commemorations[0]["colors"][0];
         } else {
           if (this.days[day].major_feast) {
-            return commemorations[0]['colors'][0]
+            return commemorations[0]["colors"][0];
           }
-          return this.days[day].season.colors[0]
+          return this.days[day].season.colors[0];
         }
-
       } catch {
-        return ""
+        return "";
       }
-
     },
     getFeastNameForDate: function (day) {
-
-      let feast = ""
+      let feast = "";
       let bold = false;
       try {
-        feast = this.days[day].major_feast
+        feast = this.days[day].major_feast;
         if (feast) {
           bold = true;
         }
       } catch {
-        feast = ""
+        feast = "";
       }
       if (this.includeMinorFeasts && !feast) {
         try {
-          feast = this.days[day].major_or_minor_feast
+          feast = this.days[day].major_or_minor_feast;
         } catch {
-          feast = ""
+          feast = "";
         }
       }
       if (bold) {
-        return `<strong>${feast}</strong>`
+        return `<strong>${feast}</strong>`;
       }
-      return feast
+      return feast;
     },
     selectDate: async function (changeType) {
       if (changeType == "prev-month") {
@@ -155,14 +147,15 @@ export default {
       }
       const year = this.year;
       const month = this.month;
-      await this.$router.push({name: "calendar", params: {year, month}});
+      await this.$router.push({ name: "calendar", params: { year, month } });
       return;
     },
     setCalendar: async function () {
       this.loading = true;
-      const includeMinorFeasts = await DynamicStorage.getItem("includeMinorFeasts") || "false"
-      this.includeMinorFeasts = includeMinorFeasts == "true"
-      this.updateIncludeMinorFeasts()
+      const includeMinorFeasts =
+        (await DynamicStorage.getItem("includeMinorFeasts")) || "false";
+      this.includeMinorFeasts = includeMinorFeasts == "true";
+      this.updateIncludeMinorFeasts();
       let data = null;
       const today = new Date();
       let year = parseInt(this.$route.params.year);
@@ -178,11 +171,11 @@ export default {
       this.date = new Date(this.year, this.month - 1, 1);
       try {
         data = await this.$http.get(
-            `${process.env.VUE_APP_API_URL}api/v1/calendar/${this.year}-${this.month}`
+          `${import.meta.env.VUE_APP_API_URL}api/v1/calendar/${this.year}-${this.month}`,
         );
       } catch (e) {
         this.error =
-            "There was an error retrieving the office. Please try again.";
+          "There was an error retrieving the office. Please try again.";
         this.loading = false;
         return;
       }
@@ -198,7 +191,7 @@ export default {
       const day = data.day.split("-");
       await this.$router.push({
         name: `day`,
-        params: {year: day[0], month: day[1], day: day[2]},
+        params: { year: day[0], month: day[1], day: day[2] },
       });
       return;
     },
@@ -206,11 +199,10 @@ export default {
 };
 </script>
 <style lang="scss">
-
 .dateCellWrapper {
   @media only screen and (max-width: 733px) {
     .calendarText {
-      font-size: .4rem;
+      font-size: 0.4rem;
     }
   }
 }
@@ -243,59 +235,45 @@ td {
 
 .dateCellWrapper {
   padding: 8px;
-  @media only screen and (max-width: 733px) {
-    padding: 3px;
-  }
   height: 100%;
   width: 100%;
   margin-bottom: auto;
+  @media only screen and (max-width: 733px) {
+    padding: 3px;
+  }
 }
 
 .el-calendar-table__row td {
   border: black 1px solid;
 }
 
-
 .red {
-
   background-color: #c21c13;
   color: white;
-
 }
 
 .green {
-
   background-color: #077339;
   color: white;
-
 }
 
 .white {
-
   background-color: white;
   color: black;
-
 }
 
 .purple {
-
   background-color: #64147d;
   color: white;
-
 }
 
 .black {
-
   background-color: black;
   color: white;
-
 }
 
 .rose {
-
   background-color: pink;
   color: black;
-
 }
-
 </style>

@@ -1,6 +1,7 @@
-const colors = require("tailwindcss/colors");
+import colors from "tailwindcss/colors";
+import forms from "@tailwindcss/forms";
 
-module.exports = {
+export default {
   content: ["./public/**/*.html", "./src/**/*.{html,js,jsx,ts,tsx,vue}"],
   // darkMode: "class", // or 'media' or 'class'
   theme: {
@@ -12,6 +13,6 @@ module.exports = {
   },
   plugins: [
     // ...
-    require("@tailwindcss/forms"),
+    forms,
   ],
 };

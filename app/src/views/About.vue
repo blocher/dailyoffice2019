@@ -2,44 +2,38 @@
   <div class="small-container">
     <div class="about">
       <h1>About this site</h1>
-      <FontSizer v-if="readyToSetFontSize"/>
-      <Loading v-if="loading"/>
-      <el-alert
-          v-if="error" :title="error"
-          type="error"
-      />
+      <FontSizer v-if="readyToSetFontSize" />
+      <Loading v-if="loading" />
+      <el-alert v-if="error" :title="error" type="error" />
     </div>
   </div>
   <div v-if="!loading && !error" id="main">
-    <div v-if="mode=='web'">
+    <div v-if="mode == 'web'">
       <div v-for="item in aboutItems" :key="item.uuid">
         <h3 v-html="item.question_for_web"></h3>
         <p v-html="item.answer_for_web"></p>
       </div>
     </div>
-    <div v-if="mode=='app'">
+    <div v-if="mode == 'app'">
       <div v-for="item in aboutItems" :key="item.uuid">
         <h3 v-html="item.question_for_app"></h3>
         <p v-html="item.answer_for_app"></p>
       </div>
     </div>
   </div>
-
-
 </template>
 
 <script>
-
-import Loading from "@/components/Loading";
-import FontSizer from "@/components/FontSizer";
-import {Capacitor} from "@capacitor/core";
+import Loading from "@/components/Loading.vue";
+import FontSizer from "@/components/FontSizer.vue";
+import { Capacitor } from "@capacitor/core";
 
 export default {
-  components: {Loading, FontSizer},
+  components: { Loading, FontSizer },
   data() {
     return {
       aboutItems: null,
-      mode: Capacitor.getPlatform() != 'web' ? 'app' : 'web',
+      mode: Capacitor.getPlatform() != "web" ? "app" : "web",
       error: null,
       loading: true,
       readyToSetFontSize: false,
@@ -49,11 +43,11 @@ export default {
     let data = null;
     try {
       data = await this.$http.get(
-          `${process.env.VUE_APP_API_URL}api/v1/about`
+        `${import.meta.env.VUE_APP_API_URL}api/v1/about`,
       );
     } catch (e) {
       this.error =
-          "There was an error retrieving the About FAQ. Please try again.";
+        "There was an error retrieving the About FAQ. Please try again.";
       this.loading = false;
       return;
     }
@@ -61,6 +55,6 @@ export default {
     this.error = false;
     this.loading = false;
     this.readyToSetFontSize = true;
-  }
-}
+  },
+};
 </script>

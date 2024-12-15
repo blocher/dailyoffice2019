@@ -11,8 +11,8 @@
 
 <script>
 // @ is an alias to /src
-import Office from "@/views/Office";
-import PageNotFound from "@/views/PageNotFound";
+import Office from "@/views/Office.vue";
+import PageNotFound from "@/views/PageNotFound.vue";
 import {DynamicStorage} from "@/helpers/storage";
 
 export default {

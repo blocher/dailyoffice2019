@@ -1,26 +1,37 @@
 <template>
-  <h4>{{ subcategory.name }}
+  <h4>
+    {{ subcategory.name }}
     <span class="float-right">
-    <el-button size="small" :disabled="disableShowAll" @click="expandAll()">Show All</el-button>
-    <el-button size="small" class="upside-down" :disabled="disableHideAll" @click="collapseAll()">Hide All</el-button>
-      </span>
+      <el-button size="small" :disabled="disableShowAll" @click="expandAll()"
+        >Show All</el-button
+      >
+      <el-button
+        size="small"
+        class="upside-down"
+        :disabled="disableHideAll"
+        @click="collapseAll()"
+        >Hide All</el-button
+      >
+    </span>
   </h4>
   <el-collapse v-model="openedItems">
     <div v-for="collect in subcategory.collects" :key="collect.uuid">
       <Collect
-          :key="collect.uuid" :collect="collect" :traditional="traditional" :extra-collects="extraCollects"
-          @extra-collects-changed="extraCollectsChanged"/>
+        :key="collect.uuid"
+        :collect="collect"
+        :traditional="traditional"
+        :extra-collects="extraCollects"
+        @extra-collects-changed="extraCollectsChanged"
+      />
     </div>
   </el-collapse>
 </template>
 
 <script>
-
-import Collect from "@/components/Collect";
-
+import Collect from "@/components/Collect.vue";
 
 export default {
-  components: {Collect},
+  components: { Collect },
   props: {
     subcategory: {
       type: Object,
@@ -87,13 +98,11 @@ body h4 {
 </style>
 
 <style lang="scss">
-
 .el-collapse-item__header {
-  padding: .5rem 0 !important;
+  padding: 0.5rem 0 !important;
 }
 
 .el-collapse-item {
-  margin: 0 0 .5rem !important;
+  margin: 0 0 0.5rem !important;
 }
-
 </style>
