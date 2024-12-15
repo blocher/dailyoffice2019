@@ -6,8 +6,8 @@
 // @ is an alias to /src
 
 export default {
-  name: "Office Heading",
+  name: 'Office Heading',
   components: {},
-  props: ["line"],
+  props: ['line'],
 };
 </script>

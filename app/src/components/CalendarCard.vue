@@ -1,43 +1,63 @@
 <template>
   <div class="main-card" :class="{ hideBody: hideBody }">
-    <el-card
-        class="box-card" :class="cardColor"
-    >
+    <el-card class="box-card" :class="cardColor">
       <template #header>
         <div class="card-header">
           <h1 v-if="officeName">
             {{ officeName }}
           </h1>
           <h3>{{ formattedDate }}</h3>
-          <div
-              class="card-info" :v-if="card"
-          >
+          <div class="card-info" :v-if="card">
             <h4
-                v-if="card && office != 'evening_prayer' && office != 'compline'" class="primary-feast-heading"
-                v-html="card.primary_feast">
-            </h4>
+              v-if="card && office != 'evening_prayer' && office != 'compline'"
+              class="primary-feast-heading"
+              v-html="card.primary_feast"
+            ></h4>
             <div
-                v-if="card && office != 'evening_prayer' && office != 'compline' && card.commemorations[0].links.length > 0"
-                class="flex items-center justify-center">
+              v-if="
+                card &&
+                office != 'evening_prayer' &&
+                office != 'compline' &&
+                card.commemorations[0].links.length > 0
+              "
+              class="flex items-center justify-center"
+            >
               <a
-                  v-for="link in card.commemorations[0].links" :key="link" :href="link" target="_blank"
-                  class="link align-center bio_link"><small>Biography</small></a>&nbsp;
+                v-for="link in card.commemorations[0].links"
+                :key="link"
+                :href="link"
+                target="_blank"
+                class="link align-center bio_link"
+                ><small>Biography</small></a
+              >&nbsp;
             </div>
             <h4
-                v-if="card && (office == 'evening_prayer' || office == 'compline')" v-html="card.primary_evening_feast"
-            >
-            </h4>
+              v-if="
+                card && (office == 'evening_prayer' || office == 'compline')
+              "
+              v-html="card.primary_evening_feast"
+            ></h4>
             <div
-                v-if="card && (office == 'evening_prayer' || office == 'compline') && card.evening_commemorations[0].links.length > 0"
-                class="flex items-center justify-center">
+              v-if="
+                card &&
+                (office == 'evening_prayer' || office == 'compline') &&
+                card.evening_commemorations[0].links.length > 0
+              "
+              class="flex items-center justify-center"
+            >
               <a
-                  v-for="link in card.commemorations[0].links" :key="link" :href="link" target="_blank"
-                  class="link align-center bio_link"><small>Biography</small></a>&nbsp;
+                v-for="link in card.commemorations[0].links"
+                :key="link"
+                :href="link"
+                target="_blank"
+                class="link align-center bio_link"
+                ><small>Biography</small></a
+              >&nbsp;
             </div>
 
             <h5
-                v-if="card && card.fast && card.fast.fast_day"
-                class="text-center"
+              v-if="card && card.fast && card.fast.fast_day"
+              class="text-center"
             >
               Fast Day
             </h5>
@@ -45,32 +65,38 @@
         </div>
       </template>
       <div
-          v-if="
-        card &&
-        card.commemorations.length > 1 &&
-        office != 'evening_prayer' &&
-        office != 'compline'
-      "
+        v-if="
+          card &&
+          card.commemorations.length > 1 &&
+          office != 'evening_prayer' &&
+          office != 'compline'
+        "
       >
         <div
-            v-for="commemoration in card.commemorations"
-            :key="commemoration.name"
+          v-for="commemoration in card.commemorations"
+          :key="commemoration.name"
         >
-          <Commemoration v-if="commemoration.name !=card.primary_feast" :commemoration="commemoration"/>
+          <Commemoration
+            v-if="commemoration.name != card.primary_feast"
+            :commemoration="commemoration"
+          />
         </div>
       </div>
       <div
-          v-if="
-        card &&
-        card.evening_commemorations.length > 1 &&
-        (office == 'evening_prayer' || office == 'compline')
-      "
+        v-if="
+          card &&
+          card.evening_commemorations.length > 1 &&
+          (office == 'evening_prayer' || office == 'compline')
+        "
       >
         <div
-            v-for="commemoration in card.evening_commemorations"
-            :key="commemoration.name"
+          v-for="commemoration in card.evening_commemorations"
+          :key="commemoration.name"
         >
-          <Commemoration v-if="commemoration.name!=card.primary_evening_feast" :commemoration="commemoration"/>
+          <Commemoration
+            v-if="commemoration.name != card.primary_evening_feast"
+            :commemoration="commemoration"
+          />
         </div>
       </div>
       <!--    <div-->
@@ -89,12 +115,12 @@
 <script>
 // @ is an alias to /src
 
-import Commemoration from "@/components/Commemoration.vue";
+import Commemoration from '@/components/Commemoration.vue';
 
 export default {
-  name: "CalenderCard",
-  components: {Commemoration},
-  props: ["card", "calendarDate", "office", "serviceType"],
+  name: 'CalenderCard',
+  components: { Commemoration },
+  props: ['card', 'calendarDate', 'office', 'serviceType'],
   data() {
     return {
       officeName: null,
@@ -105,50 +131,54 @@ export default {
   computed: {
     cardColor: function () {
       if (this.office != 'evening_prayer' && this.office != 'compline') {
-        return this.card.primary_color
+        return this.card.primary_color;
       } else {
-        return this.card.primary_evening_color
+        return this.card.primary_evening_color;
       }
     },
     hideBody: function () {
       if (this.office == 'evening_prayer' || this.office == 'compline') {
-        return this.card.evening_commemorations.length < 2
+        return this.card.evening_commemorations.length < 2;
       } else {
-        return this.card.commemorations.length < 2
+        return this.card.commemorations.length < 2;
       }
-    }
+    },
   },
   async created() {
     if (!this.currentServiceType) {
-      this.currentServiceType = "office";
+      this.currentServiceType = 'office';
     }
     const options = {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
     };
     this.formattedDate = this.$props.calendarDate.toLocaleDateString(
-        "en-US",
-        options
+      'en-US',
+      options
     );
     const daily_offices = {
-      morning_prayer: "Daily Morning Prayer",
-      midday_prayer: "Daily Midday Prayer",
-      evening_prayer: "Daily Evening Prayer",
-      compline: "Compline",
+      morning_prayer: 'Daily Morning Prayer',
+      midday_prayer: 'Daily Midday Prayer',
+      evening_prayer: 'Daily Evening Prayer',
+      compline: 'Compline',
     };
     const family_offices = {
-      morning_prayer: "Family Prayer in the Morning",
-      midday_prayer: "Family Prayer at Midday",
-      early_evening_prayer: "Family Prayer in the Early Evening",
-      close_of_day_prayer: "Family Prayer at the Close of Day",
+      morning_prayer: 'Family Prayer in the Morning',
+      midday_prayer: 'Family Prayer at Midday',
+      early_evening_prayer: 'Family Prayer in the Early Evening',
+      close_of_day_prayer: 'Family Prayer at the Close of Day',
     };
     const readings = {
-      readings: "Readings",
-    }
+      readings: 'Readings',
+    };
     const offices =
-        this.currentServiceType == "readings" ? readings : this.currentServiceType == "office" ? daily_offices : family_offices;
+      this.currentServiceType == 'readings'
+        ? readings
+        : this.currentServiceType == 'office'
+          ? daily_offices
+          : family_offices;
     if (offices[this.$props.office] !== undefined) {
       this.officeName = offices[this.$props.office];
     }
@@ -157,7 +187,9 @@ export default {
 </script>
 
 <style lang="scss" scoped="scoped">
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   margin: 0;
   padding-top: 0;
   padding-bottom: 0;
@@ -174,11 +206,9 @@ h3 {
 h4 {
   margin-bottom: 0;
 }
-
 </style>
 
 <style lang="scss">
-
 .primary-feast-heading {
   margin-bottom: 0;
 }
@@ -192,8 +222,6 @@ h4 {
   transition: var(--el-transition-duration);
   padding: 1em;
   width: 100%;
-
-
 }
 
 a:link.link {
@@ -294,7 +322,6 @@ a:active.link {
     color: black;
   }
 }
-
 
 .hideBody .el-card__body {
   display: none;

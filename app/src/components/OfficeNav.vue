@@ -1,106 +1,75 @@
 <template>
   <el-row
-      v-if="currentServiceType == 'office'"
-      :gutter="5"
-      class="mt-6 text-xs mx-auto"
+    v-if="currentServiceType == 'office'"
+    :gutter="5"
+    class="mt-6 text-xs mx-auto"
   >
-    <el-col
-        :span="12" class="text-left"> Full Daily Office mode
-    </el-col>
-    <el-col
-        :span="12" class="text-right"
-    >
-      <a
-          href=""
-          @click.stop.prevent="toggleServiceType"
-      >Switch to Family Prayer</a>
-    </el-col>
-  </el-row>
-  <el-row
-      v-else :gutter="5"
-      class="mt-6 text-xs mx-auto"
-  >
-    <el-col
-        :span="12" class="text-left"> Shorter Family Prayer mode
-    </el-col>
-    <el-col
-        :span="12" class="text-right"
-    >
-      <a
-          href="" @click.stop.prevent="toggleServiceType"
-      >Switch to full Daily Office</a
+    <el-col :span="12" class="text-left"> Full Daily Office mode </el-col>
+    <el-col :span="12" class="text-right">
+      <a href="" @click.stop.prevent="toggleServiceType"
+        >Switch to Family Prayer</a
       >
     </el-col>
-
   </el-row>
-  <el-row
-      :gutter="5" class="mt-2 text-center text-xs sm:text-sm mx-auto"
-  >
-    <el-col
-        v-for="link in links" :key="link.name"
-        :span="6"
-    >
+  <el-row v-else :gutter="5" class="mt-6 text-xs mx-auto">
+    <el-col :span="12" class="text-left"> Shorter Family Prayer mode </el-col>
+    <el-col :span="12" class="text-right">
+      <a href="" @click.stop.prevent="toggleServiceType"
+        >Switch to full Daily Office</a
+      >
+    </el-col>
+  </el-row>
+  <el-row :gutter="5" class="mt-2 text-center text-xs sm:text-sm mx-auto">
+    <el-col v-for="link in links" :key="link.name" :span="6">
       <div class="grid-content bg-purple">
         <router-link :to="link.to">
           <el-card
-              :class="selectedClass(link.name)"
-              :shadow="hoverClass(link.name)"
+            :class="selectedClass(link.name)"
+            :shadow="hoverClass(link.name)"
           >
             <p class="text-xs sm:text-sm">
-              <font-awesome-icon :icon="link.icon"/>
+              <font-awesome-icon :icon="link.icon" />
             </p>
-            <p
-                class="text-xs sm:text-sm" v-html="link.text"/>
+            <p class="text-xs sm:text-sm" v-html="link.text" />
           </el-card>
         </router-link>
       </div>
     </el-col>
   </el-row>
-  <el-row
-      :gutter="5" class="mt-2 text-center"
-  >
-    <el-col
-        :span=24
-    >
+  <el-row :gutter="5" class="mt-2 text-center">
+    <el-col :span="24">
       <div class="grid-content bg-purple">
         <router-link :to="readingsLink.to">
           <el-card
-              :class="selectedClass(readingsLink.name)"
-              :shadow="hoverClass(readingsLink.name)"
+            :class="selectedClass(readingsLink.name)"
+            :shadow="hoverClass(readingsLink.name)"
           >
             <p class="text-xs sm:text-sm">
-              <font-awesome-icon :icon="readingsLink.icon"/>&nbsp;
-              <span v-html="readingsLink.text"/>
+              <font-awesome-icon :icon="readingsLink.icon" />&nbsp;
+              <span v-html="readingsLink.text" />
             </p>
           </el-card>
         </router-link>
       </div>
     </el-col>
   </el-row>
-  <el-row
-      :gutter="5" class="mt-2 text-center"
-  >
-    <el-col
-        v-for="link in dayLinks" :key="link.text"
-        :span="8"
-    >
+  <el-row :gutter="5" class="mt-2 text-center">
+    <el-col v-for="link in dayLinks" :key="link.text" :span="8">
       <div class="grid-content bg-purple">
-        <router-link
-            :to="link.to" :v-on:click="scrollToTop"
-        >
+        <router-link :to="link.to" :v-on:click="scrollToTop">
           <el-card
-              :class="link.selected ? 'selected' : ''"
-              shadow="hover"
-              class="text-xs sm:text-sm"
+            :class="link.selected ? 'selected' : ''"
+            shadow="hover"
+            class="text-xs sm:text-sm"
           >
             <font-awesome-icon
-                v-if="link.icon == 'left'"
-                :icon="['fad', 'left']"
+              v-if="link.icon == 'left'"
+              :icon="['fad', 'left']"
             />
             {{ link.text }}
             <font-awesome-icon
-                v-if="link.icon == 'right'"
-                :icon="['fad', 'right']"
+              v-if="link.icon == 'right'"
+              :icon="['fad', 'right']"
             />
           </el-card>
         </router-link>
@@ -112,10 +81,10 @@
 <script>
 // @ is an alias to /src
 
-import {DynamicStorage} from "@/helpers/storage";
+import { DynamicStorage } from '@/helpers/storage';
 
 export default {
-  name: "OfficeNav",
+  name: 'OfficeNav',
   components: {},
   props: {
     calendarDate: {
@@ -125,7 +94,7 @@ export default {
       type: String,
     },
     serviceType: {
-      default: "office",
+      default: 'office',
       type: String,
     },
   },
@@ -144,109 +113,109 @@ export default {
     this.dailyLinks = [
       {
         to: `/morning_prayer/${this.calendarDate.getFullYear()}/${
-            this.calendarDate.getMonth() + 1
+          this.calendarDate.getMonth() + 1
         }/${this.calendarDate.getDate()}`,
-        text: "Morning<br>Prayer",
-        name: "morning_prayer",
-        icon: ["fad", "sunrise"],
+        text: 'Morning<br>Prayer',
+        name: 'morning_prayer',
+        icon: ['fad', 'sunrise'],
       },
       {
         to: `/midday_prayer/${this.calendarDate.getFullYear()}/${
-            this.calendarDate.getMonth() + 1
+          this.calendarDate.getMonth() + 1
         }/${this.calendarDate.getDate()}`,
-        text: "Midday<br>Prayer",
-        name: "midday_prayer",
-        icon: ["fad", "sun"],
+        text: 'Midday<br>Prayer',
+        name: 'midday_prayer',
+        icon: ['fad', 'sun'],
       },
       {
         to: `/evening_prayer/${this.calendarDate.getFullYear()}/${
-            this.calendarDate.getMonth() + 1
+          this.calendarDate.getMonth() + 1
         }/${this.calendarDate.getDate()}`,
-        text: "Evening<br>Prayer",
-        name: "evening_prayer",
-        icon: ["fad", "sunset"],
+        text: 'Evening<br>Prayer',
+        name: 'evening_prayer',
+        icon: ['fad', 'sunset'],
       },
       {
         to: `/compline/${this.calendarDate.getFullYear()}/${
-            this.calendarDate.getMonth() + 1
+          this.calendarDate.getMonth() + 1
         }/${this.calendarDate.getDate()}`,
-        text: "Compline<br>(Bedtime)",
-        name: "compline",
-        icon: ["fad", "moon-stars"],
+        text: 'Compline<br>(Bedtime)',
+        name: 'compline',
+        icon: ['fad', 'moon-stars'],
       },
     ];
-    this.readingsLink = {
+    (this.readingsLink = {
       to: `/readings/${this.calendarDate.getFullYear()}/${
-          this.calendarDate.getMonth() + 1
+        this.calendarDate.getMonth() + 1
       }/${this.calendarDate.getDate()}`,
       text: "Day's Readings",
-      name: "readings",
-      icon: ["fad", "book-bible"],
-    },
-
-        this.familyLinks = [
-          {
-            to: `/family/morning_prayer/${this.calendarDate.getFullYear()}/${
-                this.calendarDate.getMonth() + 1
-            }/${this.calendarDate.getDate()}`,
-            text: "Morning",
-            name: "morning_prayer",
-            icon: ["fad", "sunrise"],
-          },
-          {
-            to: `/family/midday_prayer/${this.calendarDate.getFullYear()}/${
-                this.calendarDate.getMonth() + 1
-            }/${this.calendarDate.getDate()}`,
-            text: "Midday",
-            name: "midday_prayer",
-            icon: ["fad", "sun"],
-          },
-          {
-            to: `/family/early_evening_prayer/${this.calendarDate.getFullYear()}/${
-                this.calendarDate.getMonth() + 1
-            }/${this.calendarDate.getDate()}`,
-            text: "Early Evening",
-            name: "early_evening_prayer",
-            icon: ["fad", "sunset"],
-          },
-          {
-            to: `/family/close_of_day_prayer/${this.calendarDate.getFullYear()}/${
-                this.calendarDate.getMonth() + 1
-            }/${this.calendarDate.getDate()}`,
-            text: "Close of Day",
-            name: "close_of_day_prayer",
-            icon: ["fad", "moon-stars"],
-          },
-        ];
-    if (this.currentServiceType == "family") {
+      name: 'readings',
+      icon: ['fad', 'book-bible'],
+    }),
+      (this.familyLinks = [
+        {
+          to: `/family/morning_prayer/${this.calendarDate.getFullYear()}/${
+            this.calendarDate.getMonth() + 1
+          }/${this.calendarDate.getDate()}`,
+          text: 'Morning',
+          name: 'morning_prayer',
+          icon: ['fad', 'sunrise'],
+        },
+        {
+          to: `/family/midday_prayer/${this.calendarDate.getFullYear()}/${
+            this.calendarDate.getMonth() + 1
+          }/${this.calendarDate.getDate()}`,
+          text: 'Midday',
+          name: 'midday_prayer',
+          icon: ['fad', 'sun'],
+        },
+        {
+          to: `/family/early_evening_prayer/${this.calendarDate.getFullYear()}/${
+            this.calendarDate.getMonth() + 1
+          }/${this.calendarDate.getDate()}`,
+          text: 'Early Evening',
+          name: 'early_evening_prayer',
+          icon: ['fad', 'sunset'],
+        },
+        {
+          to: `/family/close_of_day_prayer/${this.calendarDate.getFullYear()}/${
+            this.calendarDate.getMonth() + 1
+          }/${this.calendarDate.getDate()}`,
+          text: 'Close of Day',
+          name: 'close_of_day_prayer',
+          icon: ['fad', 'moon-stars'],
+        },
+      ]);
+    if (this.currentServiceType == 'family') {
       this.links = this.familyLinks;
     } else {
       this.links = this.dailyLinks;
     }
-    const servicePart = this.currentServiceType == "family" ? `/${this.currentServiceType}` : '';
+    const servicePart =
+      this.currentServiceType == 'family' ? `/${this.currentServiceType}` : '';
     this.dayLinks = [
       {
         to: `${servicePart}/${this.selectedOffice}/${yesterday.getFullYear()}/${
-            yesterday.getMonth() + 1
+          yesterday.getMonth() + 1
         }/${yesterday.getDate()}`,
-        icon: "left",
-        text: yesterday.toLocaleDateString("en-us", {weekday: "long"}),
+        icon: 'left',
+        text: yesterday.toLocaleDateString('en-us', { weekday: 'long' }),
       },
       {
         to: `${servicePart}/${this.selectedOffice}/${this.calendarDate.getFullYear()}/${
-            this.calendarDate.getMonth() + 1
+          this.calendarDate.getMonth() + 1
         }/${this.calendarDate.getDate()}`,
-        text: this.calendarDate.toLocaleDateString("en-us", {
-          weekday: "long",
+        text: this.calendarDate.toLocaleDateString('en-us', {
+          weekday: 'long',
         }),
         selected: true,
       },
       {
         to: `${servicePart}/${this.selectedOffice}/${tomorrow.getFullYear()}/${
-            tomorrow.getMonth() + 1
+          tomorrow.getMonth() + 1
         }/${tomorrow.getDate()}`,
-        icon: "right",
-        text: tomorrow.toLocaleDateString("en-us", {weekday: "long"}),
+        icon: 'right',
+        text: tomorrow.toLocaleDateString('en-us', { weekday: 'long' }),
       },
     ];
   },
@@ -255,25 +224,25 @@ export default {
       window.scrollTo(0, 0);
     },
     hoverClass(name) {
-      return name == this.selectedOffice ? "always" : "hover";
+      return name == this.selectedOffice ? 'always' : 'hover';
     },
     selectedClass(name) {
-      return name == this.selectedOffice ? "selected" : "";
+      return name == this.selectedOffice ? 'selected' : '';
     },
     redirectToDaily() {
       if (this.selectedOffice) {
         const lookup = {
-          morning_prayer: "morning_prayer",
-          midday_prayer: "midday_prayer",
-          early_evening_prayer: "evening_prayer",
-          close_of_day_prayer: "compline",
+          morning_prayer: 'morning_prayer',
+          midday_prayer: 'midday_prayer',
+          early_evening_prayer: 'evening_prayer',
+          close_of_day_prayer: 'compline',
         };
         const new_office = lookup[this.selectedOffice];
         if (new_office) {
           this.$router.push(
-              `/office/${new_office}/${this.calendarDate.getFullYear()}/${
-                  this.calendarDate.getMonth() + 1
-              }/${this.calendarDate.getDate()}`
+            `/office/${new_office}/${this.calendarDate.getFullYear()}/${
+              this.calendarDate.getMonth() + 1
+            }/${this.calendarDate.getDate()}`
           );
         }
       }
@@ -281,30 +250,30 @@ export default {
     redirectToFamily() {
       if (this.selectedOffice) {
         const lookup = {
-          morning_prayer: "morning_prayer",
-          midday_prayer: "midday_prayer",
-          evening_prayer: "early_evening_prayer",
-          compline: "close_of_day_prayer",
+          morning_prayer: 'morning_prayer',
+          midday_prayer: 'midday_prayer',
+          evening_prayer: 'early_evening_prayer',
+          compline: 'close_of_day_prayer',
         };
         const new_office = lookup[this.selectedOffice];
         if (new_office) {
           this.$router.push(
-              `/family/${new_office}/${this.calendarDate.getFullYear()}/${
-                  this.calendarDate.getMonth() + 1
-              }/${this.calendarDate.getDate()}`
+            `/family/${new_office}/${this.calendarDate.getFullYear()}/${
+              this.calendarDate.getMonth() + 1
+            }/${this.calendarDate.getDate()}`
           );
         }
       }
     },
     async toggleServiceType() {
-      if (this.currentServiceType == "family") {
-        this.currentServiceType = "office";
+      if (this.currentServiceType == 'family') {
+        this.currentServiceType = 'office';
         this.links = this.dailyLinks;
-        await DynamicStorage.setItem("serviceType", "office");
+        await DynamicStorage.setItem('serviceType', 'office');
         this.redirectToDaily();
       } else {
-        this.currentServiceType = "family";
-        await DynamicStorage.setItem("serviceType", "family");
+        this.currentServiceType = 'family';
+        await DynamicStorage.setItem('serviceType', 'family');
         this.links = this.familyLinks;
         this.redirectToFamily();
       }

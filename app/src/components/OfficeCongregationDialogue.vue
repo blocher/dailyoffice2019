@@ -17,16 +17,15 @@
 // @ is an alias to /src
 
 export default {
-  name: "Office Leader Dialogue",
+  name: 'Office Leader Dialogue',
   components: {},
-  props: ["line"],
+  props: ['line'],
 };
 </script>
 
 <style>
-
 .rubric {
-  font-size: .8em;
+  font-size: 0.8em;
   line-height: 1.2em;
 }
 

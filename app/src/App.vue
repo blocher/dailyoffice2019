@@ -93,17 +93,17 @@
 </template>
 
 <script>
-import TopMenu from "@/components/TopMenu.vue";
-import Loading from "@/components/Loading.vue";
-import AHPLogo from "@/components/AHPLogo.vue";
-import { event } from "vue-gtag";
-import BetaNote from "@/components/BetaNote.vue";
-import { useActiveMeta, useMeta } from "vue-meta";
-import ShareSettings from "@/components/ShareSettings.vue";
-import EmailSignup from "@/components/EmailSignup.vue";
-import SubmitFeedback from "@/components/SubmitFeedback.vue";
-import AdditionalLinks from "@/components/AdditionalLinks.vue";
-import { ArrowDown } from "@element-plus/icons-vue";
+import TopMenu from '@/components/TopMenu.vue';
+import Loading from '@/components/Loading.vue';
+import AHPLogo from '@/components/AHPLogo.vue';
+import { event } from 'vue-gtag';
+import BetaNote from '@/components/BetaNote.vue';
+import { useActiveMeta, useMeta } from 'vue-meta';
+import ShareSettings from '@/components/ShareSettings.vue';
+import EmailSignup from '@/components/EmailSignup.vue';
+import SubmitFeedback from '@/components/SubmitFeedback.vue';
+import AdditionalLinks from '@/components/AdditionalLinks.vue';
+import { ArrowDown } from '@element-plus/icons-vue';
 
 export default {
   components: {
@@ -119,8 +119,8 @@ export default {
   },
   setup() {
     const { meta } = useMeta({
-      htmlAttrs: { lang: "en" },
-      viewport: "width=device-width, initial-scale=1.0, viewport-fit=cover",
+      htmlAttrs: { lang: 'en' },
+      viewport: 'width=device-width, initial-scale=1.0, viewport-fit=cover',
     });
     const metadata = useActiveMeta();
   },
@@ -136,42 +136,42 @@ export default {
   },
   computed: {
     isPray() {
-      return this.$route.name === "Pray" || this.$route.name === "Home"
-        ? "primary"
-        : "";
+      return this.$route.name === 'Pray' || this.$route.name === 'Home'
+        ? 'primary'
+        : '';
     },
     isSettings() {
-      return this.$route.name === "Settings" ? "primary" : "";
+      return this.$route.name === 'Settings' ? 'primary' : '';
     },
     isCalendar() {
-      return this.$route.name === "calendar" ? "primary" : "";
+      return this.$route.name === 'calendar' ? 'primary' : '';
     },
     isOther() {
-      return this.$route.name === "About" ||
-        this.$route.name === "Collects" ||
-        this.$route.name === "readings" ||
-        this.$route.name === "litany" ||
-        this.$route.name === "Psalms"
-        ? "primary"
-        : "";
+      return this.$route.name === 'About' ||
+        this.$route.name === 'Collects' ||
+        this.$route.name === 'readings' ||
+        this.$route.name === 'litany' ||
+        this.$route.name === 'Psalms'
+        ? 'primary'
+        : '';
     },
   },
   async created() {
-    document.title = "The Daily Office";
+    document.title = 'The Daily Office';
     try {
-      event("betaPageView");
+      event('betaPageView');
       const settings_data = await this.$http.get(
-        `${import.meta.env.VUE_APP_API_URL}api/v1/available_settings/`,
+        `${import.meta.env.VUE_APP_API_URL}api/v1/available_settings/`
       );
-      await this.$store.commit("saveAvailableSettings", settings_data.data);
-      await this.$store.dispatch("initializeSettings");
+      await this.$store.commit('saveAvailableSettings', settings_data.data);
+      await this.$store.dispatch('initializeSettings');
       this.loading = false;
       await this.$nextTick();
       this.showLinks = true;
     } catch (e) {
       console.log(e);
       this.error =
-        "There was an error loading the settings. Please try refreshing the page.";
+        'There was an error loading the settings. Please try refreshing the page.';
       this.loading = false;
       await this.$nextTick();
       this.showLinks = true;
@@ -186,31 +186,31 @@ export default {
 <style src="./assets/tailwind.css"></style>
 
 <style lang="scss">
-@forward "element-plus/theme-chalk/src/common/var.scss" with (
+@forward 'element-plus/theme-chalk/src/common/var.scss' with (
   $collapse: (
-    "header-height": auto,
+    'header-height': auto,
   )
 );
 
 * {
-  font-family: "Adobe Caslon Pro", serif;
+  font-family: 'Adobe Caslon Pro', serif;
   font-display: swap;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-[type="text"]:focus,
-[type="email"]:focus,
-[type="url"]:focus,
-[type="password"]:focus,
-[type="number"]:focus,
-[type="date"]:focus,
-[type="datetime-local"]:focus,
-[type="month"]:focus,
-[type="search"]:focus,
-[type="tel"]:focus,
-[type="time"]:focus,
-[type="week"]:focus,
+[type='text']:focus,
+[type='email']:focus,
+[type='url']:focus,
+[type='password']:focus,
+[type='number']:focus,
+[type='date']:focus,
+[type='datetime-local']:focus,
+[type='month']:focus,
+[type='search']:focus,
+[type='tel']:focus,
+[type='time']:focus,
+[type='week']:focus,
 [multiple]:focus,
 textarea:focus,
 select:focus {
@@ -368,7 +368,7 @@ body {
   }
 
   p {
-    font-family: "Adobe Caslon Pro", serif;
+    font-family: 'Adobe Caslon Pro', serif;
     font-display: swap;
     font-weight: 300;
     font-style: normal;

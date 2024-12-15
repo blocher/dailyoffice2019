@@ -42,10 +42,10 @@
           </router-link>
           <br />
           <small v-if="!traditional">{{
-            psalm.verses[0].first_half.replaceAll(/[^a-zA-Z]+$/gi, "")
+            psalm.verses[0].first_half.replaceAll(/[^a-zA-Z]+$/gi, '')
           }}</small>
           <small v-if="traditional">{{
-            psalm.verses[0].first_half_tle.replaceAll(/[^a-zA-Z]+$/gi, "")
+            psalm.verses[0].first_half_tle.replaceAll(/[^a-zA-Z]+$/gi, '')
           }}</small>
           <br />
           <el-tag
@@ -65,8 +65,8 @@
 </template>
 
 <script>
-import Loading from "@/components/Loading.vue";
-import { DynamicStorage } from "@/helpers/storage";
+import Loading from '@/components/Loading.vue';
+import { DynamicStorage } from '@/helpers/storage';
 
 export default {
   components: { Loading },
@@ -77,17 +77,17 @@ export default {
       error: false,
       topics: null,
       displayedPsalms: null,
-      selectedTopic: "all",
-      selectedTopicName: "All Categories",
+      selectedTopic: 'all',
+      selectedTopicName: 'All Categories',
       traditional: false,
     };
   },
   async created() {
     const traditional = await DynamicStorage.getItem(
-      "traditionalPsalms",
-      false,
+      'traditionalPsalms',
+      false
     );
-    if (traditional == "true" || traditional == true) {
+    if (traditional == 'true' || traditional == true) {
       this.traditional = true;
     } else {
       this.traditional = false;
@@ -96,11 +96,11 @@ export default {
     let data = null;
     try {
       data = await this.$http.get(
-        `${import.meta.env.VUE_APP_API_URL}api/v1/psalms`,
+        `${import.meta.env.VUE_APP_API_URL}api/v1/psalms`
       );
     } catch (e) {
       this.error =
-        "There was an error retrieving the psalms. Please try again.";
+        'There was an error retrieving the psalms. Please try again.';
       this.loading = false;
       return;
     }
@@ -109,11 +109,11 @@ export default {
 
     try {
       data = await this.$http.get(
-        `${import.meta.env.VUE_APP_API_URL}api/v1/psalms/topics`,
+        `${import.meta.env.VUE_APP_API_URL}api/v1/psalms/topics`
       );
     } catch (e) {
       this.error =
-        "There was an error retrieving the psalms. Please try again.";
+        'There was an error retrieving the psalms. Please try again.';
       this.loading = false;
       return;
     }
@@ -127,22 +127,22 @@ export default {
       this.updateDisplayedTopic();
     },
     updateDisplayedTopic() {
-      if (this.selectedTopic === "all") {
-        this.selectedTopicName = "All Categories";
+      if (this.selectedTopic === 'all') {
+        this.selectedTopicName = 'All Categories';
         this.displayedPsalms = this.psalms;
       } else {
         this.displayedPsalms = this.psalms.filter(
           (psalm) =>
             psalm.topics.map((topic) => topic.id).indexOf(this.selectedTopic) >
-            -1,
+            -1
         );
         this.selectedTopicName = this.topics.find(
-          (topic) => topic.id === this.selectedTopic,
+          (topic) => topic.id === this.selectedTopic
         ).topic_name;
       }
     },
     async setTraditional() {
-      await DynamicStorage.setItem("traditionalPsalms", this.traditional);
+      await DynamicStorage.setItem('traditionalPsalms', this.traditional);
     },
   },
 };

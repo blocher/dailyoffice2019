@@ -24,16 +24,17 @@
 </template>
 
 <script>
-import Loading from "@/components/Loading.vue";
-import FontSizer from "@/components/FontSizer.vue";
-import { Capacitor } from "@capacitor/core";
+import Loading from '@/components/Loading.vue';
+import FontSizer from '@/components/FontSizer.vue';
+import { Capacitor } from '@capacitor/core';
 
 export default {
   components: { Loading, FontSizer },
   data() {
+    console.log('HIIII');
     return {
       aboutItems: null,
-      mode: Capacitor.getPlatform() != "web" ? "app" : "web",
+      mode: Capacitor.getPlatform() != 'web' ? 'app' : 'web',
       error: null,
       loading: true,
       readyToSetFontSize: false,
@@ -43,11 +44,11 @@ export default {
     let data = null;
     try {
       data = await this.$http.get(
-        `${import.meta.env.VUE_APP_API_URL}api/v1/about`,
+        `${import.meta.env.VUE_APP_API_URL}api/v1/about`
       );
     } catch (e) {
       this.error =
-        "There was an error retrieving the About FAQ. Please try again.";
+        'There was an error retrieving the About FAQ. Please try again.';
       this.loading = false;
       return;
     }

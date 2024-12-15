@@ -85,7 +85,7 @@
 </template>
 
 <script>
-import Submenu from "@/components/Submenu.vue";
+import Submenu from '@/components/Submenu.vue';
 
 export default {
   components: {
@@ -93,7 +93,7 @@ export default {
   },
   data() {
     return {
-      activeIndex: "1",
+      activeIndex: '1',
       menuRouter: true,
       uniqueOpened: false,
     };

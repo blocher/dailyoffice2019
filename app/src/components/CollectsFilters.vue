@@ -17,55 +17,75 @@
 <template>
   <div class="themed-background">
     <!-- Mobile filter dialog -->
-    <Dialog as="div" class="relative z-40 md:hidden" :open="open" @close="open = false">
-
-
+    <Dialog
+      as="div"
+      class="relative z-40 md:hidden"
+      :open="open"
+      @close="open = false"
+    >
       <div class="fixed inset-0 flex z-40">
-
         <DialogPanel
-            class="ml-auto relative max-w-xs w-full h-full themed-background shadow-xl py-4 pb-12 flex flex-col overflow-y-auto">
+          class="ml-auto relative max-w-xs w-full h-full themed-background shadow-xl py-4 pb-12 flex flex-col overflow-y-auto"
+        >
           <div class="px-4 flex items-center justify-between">
             <h2 class="text-lg font-medium text-themed-500">Filters</h2>
             <button
-                type="button"
-                class="-mr-2 w-10 h-10 themed-background p-2 rounded-md flex items-center justify-center text-themed-400"
-                @click="open = false">
+              type="button"
+              class="-mr-2 w-10 h-10 themed-background p-2 rounded-md flex items-center justify-center text-themed-400"
+              @click="open = false"
+            >
               <span class="sr-only">Close menu</span>
-              <XMarkIcon class="h-6 w-6" aria-hidden="true"/>
+              <XMarkIcon class="h-6 w-6" aria-hidden="true" />
             </button>
           </div>
 
           <!-- Filters -->
           <form class="mt-4">
             <Disclosure
-                v-for="section in filters" :key="section.name" v-slot="{ open }"
-                as="div" class="border-t border-gray-200 px-4 py-6">
+              v-for="section in filters"
+              :key="section.name"
+              v-slot="{ open }"
+              as="div"
+              class="border-t border-gray-200 px-4 py-6"
+            >
               <h3 class="-mx-2 -my-3 flow-root">
                 <DisclosureButton
-                    class="px-2 py-3 themed-background w-full flex items-center justify-between text-sm text-themed-400">
-                      <span class="font-medium text-themed-500">
-                        {{ section.name }}
-                      </span>
+                  class="px-2 py-3 themed-background w-full flex items-center justify-between text-sm text-themed-400"
+                >
+                  <span class="font-medium text-themed-500">
+                    {{ section.name }}
+                  </span>
                   <span class="ml-6 flex items-center">
-                        <ChevronDownIcon
-                            :class="[open ? '-rotate-180' : 'rotate-0', 'h-5 w-5 transform']"
-                            aria-hidden="true"/>
-                      </span>
+                    <ChevronDownIcon
+                      :class="[
+                        open ? '-rotate-180' : 'rotate-0',
+                        'h-5 w-5 transform',
+                      ]"
+                      aria-hidden="true"
+                    />
+                  </span>
                 </DisclosureButton>
               </h3>
               <DisclosurePanel class="pt-6">
                 <div class="space-y-6">
                   <div
-                      v-for="(option, optionIdx) in section.options" :key="option.value"
-                      class="flex items-center">
+                    v-for="(option, optionIdx) in section.options"
+                    :key="option.value"
+                    class="flex items-center"
+                  >
                     <input
-                        :id="`filter-${section.id}-${optionIdx}`" :name="`${section.id}[]`"
-                        :value="option.value" type="checkbox" :checked="isChecked(option.value)"
-                        class="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500"
-                        @change="setSelectedCategory($event)"/>
+                      :id="`filter-${section.id}-${optionIdx}`"
+                      :name="`${section.id}[]`"
+                      :value="option.value"
+                      type="checkbox"
+                      :checked="isChecked(option.value)"
+                      class="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500"
+                      @change="setSelectedCategory($event)"
+                    />
                     <label
-                        :for="`filter-${section.id}-${optionIdx}`"
-                        class="ml-3 pr-6 text-sm font-medium text-themed-500 whitespace-nowrap">
+                      :for="`filter-${section.id}-${optionIdx}`"
+                      class="ml-3 pr-6 text-sm font-medium text-themed-500 whitespace-nowrap"
+                    >
                       {{ option.label }}
                     </label>
                   </div>
@@ -77,55 +97,73 @@
       </div>
     </Dialog>
 
-
     <!-- Filters -->
     <section aria-labelledby="filter-heading">
       <h2 id="filter-heading" class="sr-only">Filters</h2>
 
       <div class="themed-background border-b border-gray-200 pb-4 full-width">
-        <div class="mx-auto px-4 flex basis-full items-center justify-center sm:px-6 lg:px-8 ful-width">
-
+        <div
+          class="mx-auto px-4 flex basis-full items-center justify-center sm:px-6 lg:px-8 ful-width"
+        >
           <button
-              type="button" class="inline-block text-sm font-medium text-themed-500 hover:text-themed-500 sm:hidden"
-              @click="open = true">Filters
+            type="button"
+            class="inline-block text-sm font-medium text-themed-500 hover:text-themed-500 sm:hidden"
+            @click="open = true"
+          >
+            Filters
             <ChevronDownIcon
-                class="inline flex-shrink-0 -mr-1 ml-1 h-5 w-5 text-themed-400 group-hover:text-themed-500"
-                aria-hidden="true"/>
+              class="inline flex-shrink-0 -mr-1 ml-1 h-5 w-5 text-themed-400 group-hover:text-themed-500"
+              aria-hidden="true"
+            />
           </button>
 
           <div class="hidden sm:block">
             <div class="flow-root">
-              <PopoverGroup class="-mx-4 flex items-center divide-x divide-gray-200 overflow-visible">
+              <PopoverGroup
+                class="-mx-4 flex items-center divide-x divide-gray-200 overflow-visible"
+              >
                 <Popover
-                    v-for="(section) in filters" :key="section.id"
-                    class="px-4 relative inline-block text-center overflow-visible">
+                  v-for="section in filters"
+                  :key="section.id"
+                  class="px-4 relative inline-block text-center overflow-visible"
+                >
                   <PopoverButton
-                      class="group inline-flex justify-center text-sm font-medium text-themed-500 hover:text-themed-500">
+                    class="group inline-flex justify-center text-sm font-medium text-themed-500 hover:text-themed-500"
+                  >
                     <span>{{ section.name }}</span>
                     <span
-                        v-if="sectionCount(section.id) > 0"
-                        class="ml-1.5 rounded py-0.5 px-1.5 bg-themed-200 text-xs font-semibold text-themed-500 tabular-nums">{{
-                        sectionCount(section.id)
-                      }}</span>
+                      v-if="sectionCount(section.id) > 0"
+                      class="ml-1.5 rounded py-0.5 px-1.5 bg-themed-200 text-xs font-semibold text-themed-500 tabular-nums"
+                      >{{ sectionCount(section.id) }}</span
+                    >
                     <ChevronDownIcon
-                        class="flex-shrink-0 -mr-1 ml-1 h-5 w-5 text-themed-400 group-hover:text-themed-500"
-                        aria-hidden="true"/>
+                      class="flex-shrink-0 -mr-1 ml-1 h-5 w-5 text-themed-400 group-hover:text-themed-500"
+                      aria-hidden="true"
+                    />
                   </PopoverButton>
 
                   <PopoverPanel
-                      class="origin-top-right absolute right-0 mt-2 themed-background rounded-md shadow-2xl p-4 ring-1 ring-black ring-opacity-5 focus:outline-none z-50 overflow-visible">
+                    class="origin-top-right absolute right-0 mt-2 themed-background rounded-md shadow-2xl p-4 ring-1 ring-black ring-opacity-5 focus:outline-none z-50 overflow-visible"
+                  >
                     <form class="space-y-4">
                       <div
-                          v-for="(option, optionIdx) in section.options" :key="option.value"
-                          class="flex items-center">
+                        v-for="(option, optionIdx) in section.options"
+                        :key="option.value"
+                        class="flex items-center"
+                      >
                         <input
-                            :id="`filter-${section.id}-${optionIdx}`" :name="`${section.id}[]`"
-                            :value="option.value" type="checkbox" :checked="isChecked(option.value)"
-                            class="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500"
-                            @change="setSelectedCategory($event)"/>
+                          :id="`filter-${section.id}-${optionIdx}`"
+                          :name="`${section.id}[]`"
+                          :value="option.value"
+                          type="checkbox"
+                          :checked="isChecked(option.value)"
+                          class="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500"
+                          @change="setSelectedCategory($event)"
+                        />
                         <label
-                            :for="`filter-${section.id}-${optionIdx}`"
-                            class="ml-3 pr-6 text-sm font-medium text-themed-500 whitespace-nowrap">
+                          :for="`filter-${section.id}-${optionIdx}`"
+                          class="ml-3 pr-6 text-sm font-medium text-themed-500 whitespace-nowrap"
+                        >
                           {{ option.label }}
                         </label>
                       </div>
@@ -172,17 +210,13 @@
 </template>
 
 <script setup>
+const activeFilters = [{ value: 'objects', label: 'Objects' }];
 
-
-const activeFilters = [{value: 'objects', label: 'Objects'}]
-
-const open = ref(false)
+const open = ref(false);
 </script>
 
 <script>
-
-
-import {ref} from 'vue'
+import { ref } from 'vue';
 import {
   Dialog,
   DialogPanel,
@@ -199,9 +233,9 @@ import {
   PopoverPanel,
   TransitionChild,
   TransitionRoot,
-} from '@headlessui/vue'
-import {XMarkIcon} from '@heroicons/vue/20/solid'
-import {ChevronDownIcon} from '@heroicons/vue/20/solid'
+} from '@headlessui/vue';
+import { XMarkIcon } from '@heroicons/vue/20/solid';
+import { ChevronDownIcon } from '@heroicons/vue/20/solid';
 
 export default {
   components: {
@@ -223,7 +257,7 @@ export default {
     TransitionChild,
     TransitionRoot,
     XMarkIcon,
-    ChevronDownIcon
+    ChevronDownIcon,
   },
   props: {
     filters: {
@@ -241,47 +275,48 @@ export default {
       selectedCategories: [],
     };
   },
-  async created() {
-
-  },
+  async created() {},
   methods: {
     setSelectedCategory: function (event) {
-      const checked = event.target.checked
-      const value = event.target.value
+      const checked = event.target.checked;
+      const value = event.target.value;
       if (checked) {
-        this.selectedCategories.push(value)
+        this.selectedCategories.push(value);
       } else {
-        this.selectedCategories = this.selectedCategories.filter(category => category !== value)
+        this.selectedCategories = this.selectedCategories.filter(
+          (category) => category !== value
+        );
       }
-      this.$emit('update:activeFilters', this.selectedCategories)
+      this.$emit('update:activeFilters', this.selectedCategories);
     },
     isChecked: function (uuid) {
-      return this.selectedCategories.includes(uuid)
+      return this.selectedCategories.includes(uuid);
     },
     sectionCount: function (uuid) {
-      const optionsInCategory = this.filters.filter(filter => filter.id === uuid)[0].options;
-      return optionsInCategory.filter(option => this.selectedCategories.includes(option.value)).length;
+      const optionsInCategory = this.filters.filter(
+        (filter) => filter.id === uuid
+      )[0].options;
+      return optionsInCategory.filter((option) =>
+        this.selectedCategories.includes(option.value)
+      ).length;
     },
   },
 };
 </script>
 
-
 <style lang="scss">
-
 .themed-background {
   background-color: var(--color-bg);
 }
 
-
 .text-themed-400 {
   font-weight: 400;
-  color: var(--font-color)
+  color: var(--font-color);
 }
 
 .text-themed-500 {
   font-weight: 500;
-  color: var(--font-color)
+  color: var(--font-color);
 }
 
 .bg-themed-200 {
@@ -291,5 +326,4 @@ export default {
   border-color: var(--el-color-info-light-8);
   border-width: 3px;
 }
-
 </style>

@@ -1,18 +1,18 @@
-import { createApp } from "vue";
+import { createApp } from 'vue';
 
-import store from "./store";
-import axios from "axios";
-import VueAxios from "vue-axios";
-import App from "./App.vue";
-import router from "./router";
-import ElementPlus from "element-plus";
-import "./assets/tailwind.css";
-import "element-plus/dist/index.css";
-import "element-plus/theme-chalk/dark/css-vars.css";
+import store from './store';
+import axios from 'axios';
+import VueAxios from 'vue-axios';
+import App from './App.vue';
+import router from './router';
+import ElementPlus from 'element-plus';
+import './assets/tailwind.css';
+import 'element-plus/dist/index.css';
+import 'element-plus/theme-chalk/dark/css-vars.css';
 
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { createMetaManager } from "vue-meta";
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { createMetaManager } from 'vue-meta';
 
 // import { faTwitter } from "@fortawesome/free-brands-svg-icons";
 // import { faUserSecret } from "@fortawesome/free-solid-svg-icons";
@@ -46,9 +46,9 @@ import {
   faSun,
   faSunrise,
   faSunset,
-} from "@fortawesome/pro-duotone-svg-icons";
-import VueGtag from "vue-gtag";
-import { faFacebook } from "@fortawesome/free-brands-svg-icons";
+} from '@fortawesome/pro-duotone-svg-icons';
+import VueGtag from 'vue-gtag';
+import { faFacebook } from '@fortawesome/free-brands-svg-icons';
 
 library.add(
   faSun,
@@ -103,7 +103,7 @@ router.beforeEach((to, from, next) => {
   }
 
   // Remove any stale meta tags from the document using the key attribute we set below.
-  Array.from(document.querySelectorAll("[data-vue-router-controlled]")).map(
+  Array.from(document.querySelectorAll('[data-vue-router-controlled]')).map(
     (el) => el.parentNode.removeChild(el)
   );
 
@@ -113,14 +113,14 @@ router.beforeEach((to, from, next) => {
   // Turn the meta tag definitions into actual elements in the head.
   nearestWithMeta.meta.metaTags
     .map((tagDef) => {
-      const tag = document.createElement("meta");
+      const tag = document.createElement('meta');
 
       Object.keys(tagDef).forEach((key) => {
         tag.setAttribute(key, tagDef[key]);
       });
 
       // We use this to track which meta tags we create so we don't interfere with other ones.
-      tag.setAttribute("data-vue-router-controlled", "");
+      tag.setAttribute('data-vue-router-controlled', '');
 
       return tag;
     })
@@ -135,9 +135,9 @@ const app = createApp(App)
   .use(
     VueGtag,
     {
-      appName: "The Daily Office",
+      appName: 'The Daily Office',
       pageTrackerScreenviewEnabled: true,
-      config: { id: "G-NPCDSDW90W" },
+      config: { id: 'G-NPCDSDW90W' },
     },
     router
   )
@@ -145,8 +145,8 @@ const app = createApp(App)
   .use(VueAxios, axios)
   .use(ElementPlus)
   .use(createMetaManager())
-  .component("font-awesome-icon", FontAwesomeIcon);
+  .component('font-awesome-icon', FontAwesomeIcon);
 
 router.isReady().then(() => {
-  app.mount("#app");
+  app.mount('#app');
 });

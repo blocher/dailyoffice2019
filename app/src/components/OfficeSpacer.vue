@@ -6,7 +6,7 @@
 // @ is an alias to /src
 
 export default {
-  name: "Office Spacer",
+  name: 'Office Spacer',
 };
 </script>
 

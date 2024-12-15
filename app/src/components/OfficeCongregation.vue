@@ -1,7 +1,9 @@
 <template>
   <p :class="indentClass">
     <sup v-if="line.preface">{{ line.preface }}&nbsp;</sup>
-    <strong>{{ line.content.replace(" *", "*").replace("*", "&nbsp;*") }}</strong>
+    <strong>{{
+      line.content.replace(' *', '*').replace('*', '&nbsp;*')
+    }}</strong>
   </p>
 </template>
 
@@ -9,17 +11,16 @@
 // @ is an alias to /src
 
 export default {
-  name: "Office Congregation",
+  name: 'Office Congregation',
   components: {},
-  props: ["line"],
+  props: ['line'],
   computed: {
     indentClass() {
-
       if (!this.line.indented) {
-        return "";
+        return '';
       }
       return this.line.indented;
-    }
-  }
+    },
+  },
 };
 </script>

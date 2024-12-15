@@ -37,7 +37,7 @@
         :class="getColorForDate(data.day)"
         @click="clickDateCell(data, $event)"
       >
-        <p>{{ parseInt(data.day.split("-")[2]) }}</p>
+        <p>{{ parseInt(data.day.split('-')[2]) }}</p>
         <p class="calendarText" v-html="getFeastNameForDate(data.day)"></p>
       </div>
     </template>
@@ -48,10 +48,10 @@
 // @ is an alias to /src
 
 // @ is an alias to /src
-import { DynamicStorage } from "@/helpers/storage";
+import { DynamicStorage } from '@/helpers/storage';
 
 export default {
-  name: "Calendar",
+  name: 'Calendar',
   components: {},
   data() {
     return {
@@ -64,10 +64,10 @@ export default {
     };
   },
   watch: {
-    "$route.params.year": function () {
+    '$route.params.year': function () {
       this.setCalendar();
     },
-    "$route.params.month": function () {
+    '$route.params.month': function () {
       this.setCalendar();
     },
   },
@@ -76,32 +76,32 @@ export default {
   },
   methods: {
     updateIncludeMinorFeasts: async function () {
-      const includeMinorFeasts = this.includeMinorFeasts ? "true" : "false";
-      await DynamicStorage.setItem("includeMinorFeasts", includeMinorFeasts);
+      const includeMinorFeasts = this.includeMinorFeasts ? 'true' : 'false';
+      await DynamicStorage.setItem('includeMinorFeasts', includeMinorFeasts);
     },
     getColorForDate: function (day) {
       try {
         let commemorations = this.days[day].commemorations;
         if (this.includeMinorFeasts) {
           commemorations = commemorations.filter((commemorations) => {
-            return commemorations.rank.name.includes("FERIA") == false;
+            return commemorations.rank.name.includes('FERIA') == false;
           });
           if (!commemorations.length) {
             return this.days[day].season.colors[0];
           }
-          return commemorations[0]["colors"][0];
+          return commemorations[0]['colors'][0];
         } else {
           if (this.days[day].major_feast) {
-            return commemorations[0]["colors"][0];
+            return commemorations[0]['colors'][0];
           }
           return this.days[day].season.colors[0];
         }
       } catch {
-        return "";
+        return '';
       }
     },
     getFeastNameForDate: function (day) {
-      let feast = "";
+      let feast = '';
       let bold = false;
       try {
         feast = this.days[day].major_feast;
@@ -109,13 +109,13 @@ export default {
           bold = true;
         }
       } catch {
-        feast = "";
+        feast = '';
       }
       if (this.includeMinorFeasts && !feast) {
         try {
           feast = this.days[day].major_or_minor_feast;
         } catch {
-          feast = "";
+          feast = '';
         }
       }
       if (bold) {
@@ -124,7 +124,7 @@ export default {
       return feast;
     },
     selectDate: async function (changeType) {
-      if (changeType == "prev-month") {
+      if (changeType == 'prev-month') {
         if (this.month == 1) {
           this.year = this.year - 1;
           this.month = 12;
@@ -132,7 +132,7 @@ export default {
           this.month = this.month - 1;
         }
       }
-      if (changeType == "next-month") {
+      if (changeType == 'next-month') {
         if (this.month == 12) {
           this.year = this.year + 1;
           this.month = 1;
@@ -140,21 +140,21 @@ export default {
           this.month = this.month + 1;
         }
       }
-      if (changeType == "today") {
+      if (changeType == 'today') {
         const today = new Date();
         this.year = today.getFullYear();
         this.month = today.getMonth() + 1;
       }
       const year = this.year;
       const month = this.month;
-      await this.$router.push({ name: "calendar", params: { year, month } });
+      await this.$router.push({ name: 'calendar', params: { year, month } });
       return;
     },
     setCalendar: async function () {
       this.loading = true;
       const includeMinorFeasts =
-        (await DynamicStorage.getItem("includeMinorFeasts")) || "false";
-      this.includeMinorFeasts = includeMinorFeasts == "true";
+        (await DynamicStorage.getItem('includeMinorFeasts')) || 'false';
+      this.includeMinorFeasts = includeMinorFeasts == 'true';
       this.updateIncludeMinorFeasts();
       let data = null;
       const today = new Date();
@@ -171,16 +171,16 @@ export default {
       this.date = new Date(this.year, this.month - 1, 1);
       try {
         data = await this.$http.get(
-          `${import.meta.env.VUE_APP_API_URL}api/v1/calendar/${this.year}-${this.month}`,
+          `${import.meta.env.VUE_APP_API_URL}api/v1/calendar/${this.year}-${this.month}`
         );
       } catch (e) {
         this.error =
-          "There was an error retrieving the office. Please try again.";
+          'There was an error retrieving the office. Please try again.';
         this.loading = false;
         return;
       }
       data.data.forEach((day) => {
-        const dateString = day["date"];
+        const dateString = day['date'];
         this.days[dateString] = day;
       });
       this.loading = false;
@@ -188,7 +188,7 @@ export default {
     clickDateCell: async function (data, event) {
       event.preventDefault();
       event.stopPropagation();
-      const day = data.day.split("-");
+      const day = data.day.split('-');
       await this.$router.push({
         name: `day`,
         params: { year: day[0], month: day[1], day: day[2] },

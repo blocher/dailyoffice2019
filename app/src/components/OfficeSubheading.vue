@@ -6,8 +6,8 @@
 // @ is an alias to /src
 
 export default {
-  name: "Office SubHeading",
+  name: 'Office SubHeading',
   components: {},
-  props: ["line"],
+  props: ['line'],
 };
 </script>

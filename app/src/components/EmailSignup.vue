@@ -54,22 +54,22 @@ export default {
       success: false,
       error: null,
       loading: false,
-      panelSize: "37%",
+      panelSize: '37%',
     };
   },
   created: function () {
-    window.addEventListener("resize", this.setPanelSize);
+    window.addEventListener('resize', this.setPanelSize);
     this.setPanelSize();
   },
   unmounted() {
-    window.removeEventListener("resize", this.setPanelSize);
+    window.removeEventListener('resize', this.setPanelSize);
   },
   methods: {
     setPanelSize() {
       if (window.innerWidth < 1024) {
-        this.panelSize = "90%";
+        this.panelSize = '90%';
       } else {
-        this.panelSize = "37%";
+        this.panelSize = '37%';
       }
     },
     showEmailPanel() {
@@ -96,7 +96,7 @@ export default {
             this.loading = false;
           } catch {
             this.error =
-              "There was an unknown error. Please contact feedback@dailyoffice2019.com";
+              'There was an unknown error. Please contact feedback@dailyoffice2019.com';
           }
           this.loading = false;
         });

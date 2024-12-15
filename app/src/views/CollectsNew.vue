@@ -91,12 +91,12 @@
 </template>
 
 <script>
-import Loading from "@/components/Loading.vue";
-import CollectsFilters from "@/components/CollectsFilters.vue";
-import Collect from "@/components/Collect.vue";
-import FontSizer from "@/components/FontSizer.vue";
-import CollectsSubcategory from "@/components/CollectsSubcategory.vue";
-import { DynamicStorage } from "@/helpers/storage";
+import Loading from '@/components/Loading.vue';
+import CollectsFilters from '@/components/CollectsFilters.vue';
+import Collect from '@/components/Collect.vue';
+import FontSizer from '@/components/FontSizer.vue';
+import CollectsSubcategory from '@/components/CollectsSubcategory.vue';
+import { DynamicStorage } from '@/helpers/storage';
 
 export default {
   components: {
@@ -112,7 +112,7 @@ export default {
       loading: true,
       error: false,
       traditional: false,
-      search: "",
+      search: '',
       readyToSetFontSize: false,
       selectedCollectTypes: [],
       allCollects: [],
@@ -120,17 +120,17 @@ export default {
       defaultDict: {},
       checkList: [],
       offices: [
-        "Morning Prayer",
-        "Midday Prayer",
-        "Evening Prayer",
-        "Compline",
+        'Morning Prayer',
+        'Midday Prayer',
+        'Evening Prayer',
+        'Compline',
       ],
-      showAllText: "Expand All",
-      showAllDefaultText: "Expand All",
-      hideAllText: "Collapse All",
-      hideAllDefaultText: "Collapse All",
-      showOnlyText: "Expand Only Chosen Prayers",
-      showOnlyDefaultText: "Expand Only Chosen Prayers",
+      showAllText: 'Expand All',
+      showAllDefaultText: 'Expand All',
+      hideAllText: 'Collapse All',
+      hideAllDefaultText: 'Collapse All',
+      showOnlyText: 'Expand Only Chosen Prayers',
+      showOnlyDefaultText: 'Expand Only Chosen Prayers',
       extraCollects: {},
       buttonsDisabled: false,
     };
@@ -155,10 +155,10 @@ export default {
   },
   async mounted() {
     const traditional = await DynamicStorage.getItem(
-      "traditionalCollects",
-      false,
+      'traditionalCollects',
+      false
     );
-    if (traditional === "true" || traditional == true) {
+    if (traditional === 'true' || traditional == true) {
       this.traditional = true;
     } else {
       this.traditional = false;
@@ -168,11 +168,11 @@ export default {
 
     try {
       data = await this.$http.get(
-        `${import.meta.env.VUE_APP_API_URL}api/v1/grouped_collects`,
+        `${import.meta.env.VUE_APP_API_URL}api/v1/grouped_collects`
       );
     } catch (e) {
       this.error =
-        "There was an error retrieving the collects. Please try again.";
+        'There was an error retrieving the collects. Please try again.';
       this.loading = false;
       return;
     }
@@ -193,7 +193,7 @@ export default {
   methods: {
     async setExtraCollects() {
       this.extraCollects =
-        JSON.parse(await DynamicStorage.getItem("extraCollects")) ||
+        JSON.parse(await DynamicStorage.getItem('extraCollects')) ||
         this.defaultDict;
       // this.offices.forEach((office) => {
       //   if (extraCollects[office].includes(this.collect.uuid)) {
@@ -202,12 +202,12 @@ export default {
       // });
     },
     async setTraditional() {
-      await DynamicStorage.setItem("traditionalCollects", this.traditional);
+      await DynamicStorage.setItem('traditionalCollects', this.traditional);
     },
     setDefaultFilter() {
       if (!this.selectedCollectTypes.length) {
         this.selectedCollectTypes = this.collects.map(
-          (category) => category.uuid,
+          (category) => category.uuid
         );
       }
     },
@@ -238,7 +238,7 @@ export default {
       });
       let checkList = [];
       const extraCollects =
-        JSON.parse(await DynamicStorage.getItem("extraCollects")) ||
+        JSON.parse(await DynamicStorage.getItem('extraCollects')) ||
         defaultDict;
       this.offices.forEach((office) => {
         checkList = checkList.concat(extraCollects[office]);

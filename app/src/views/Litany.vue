@@ -76,27 +76,27 @@
 
 <script>
 // @ is an alias to /src
-import Loading from "@/components/Loading.vue";
-import CalendarCard from "@/components/CalendarCard.vue";
-import OfficeNav from "@/components/OfficeNav.vue";
-import Reading from "@/components/Reading.vue";
-import Collects from "@/components/Collects.vue";
-import CitationGroup from "@/components/CitationGroup.vue";
-import FontSizer from "@/components/FontSizer.vue";
-import PageNotFound from "@/views/PageNotFound.vue";
-import OfficeHeading from "@/components/OfficeHeading.vue";
-import OfficeSubheading from "@/components/OfficeSubheading.vue";
-import OfficeCitation from "@/components/OfficeCitation.vue";
-import OfficeHTML from "@/components/OfficeHTML.vue";
-import OfficeCongregation from "@/components/OfficeCongregation.vue";
-import OfficeLeader from "@/components/OfficeLeader.vue";
-import OfficeCongregationDialogue from "@/components/OfficeCongregationDialogue.vue";
-import OfficeLeaderDialogue from "@/components/OfficeLeaderDialogue.vue";
-import OfficeRubric from "@/components/OfficeRubric.vue";
-import OfficeSpacer from "@/components/OfficeSpacer.vue";
+import Loading from '@/components/Loading.vue';
+import CalendarCard from '@/components/CalendarCard.vue';
+import OfficeNav from '@/components/OfficeNav.vue';
+import Reading from '@/components/Reading.vue';
+import Collects from '@/components/Collects.vue';
+import CitationGroup from '@/components/CitationGroup.vue';
+import FontSizer from '@/components/FontSizer.vue';
+import PageNotFound from '@/views/PageNotFound.vue';
+import OfficeHeading from '@/components/OfficeHeading.vue';
+import OfficeSubheading from '@/components/OfficeSubheading.vue';
+import OfficeCitation from '@/components/OfficeCitation.vue';
+import OfficeHTML from '@/components/OfficeHTML.vue';
+import OfficeCongregation from '@/components/OfficeCongregation.vue';
+import OfficeLeader from '@/components/OfficeLeader.vue';
+import OfficeCongregationDialogue from '@/components/OfficeCongregationDialogue.vue';
+import OfficeLeaderDialogue from '@/components/OfficeLeaderDialogue.vue';
+import OfficeRubric from '@/components/OfficeRubric.vue';
+import OfficeSpacer from '@/components/OfficeSpacer.vue';
 
 export default {
-  name: "Readings",
+  name: 'Readings',
   components: {
     Loading,
     CalendarCard,
@@ -145,12 +145,12 @@ export default {
   },
   async mounted() {
     this.loading = true;
-    this.service = "Great Litany";
+    this.service = 'Great Litany';
     try {
       const data = await this.$http.get(
-        `${import.meta.env.VUE_APP_API_URL}api/v1/litany`,
+        `${import.meta.env.VUE_APP_API_URL}api/v1/litany`
       );
-      this.modules = data["data"]["modules"];
+      this.modules = data['data']['modules'];
       this.services = this.modules.map((module) => {
         return {
           name: module.name,
@@ -159,17 +159,17 @@ export default {
       });
 
       this.contemporaryServices = this.services.filter((service) => {
-        return service.name.includes("Contemporary");
+        return service.name.includes('Contemporary');
       });
       this.traditionalServices = this.services.filter((service) => {
-        return service.name.includes("Traditional");
+        return service.name.includes('Traditional');
       });
       this.contemporaryServices[0].active = true;
       this.selected = this.contemporaryServices[0];
       this.changeService(this.selected.name);
     } catch (e) {
       this.error =
-        "There was an error retrieving the litany. Please try again.";
+        'There was an error retrieving the litany. Please try again.';
       this.loading = false;
       return;
     }

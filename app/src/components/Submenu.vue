@@ -24,10 +24,10 @@
 </template>
 
 <script>
-import EmailSignup from "@/components/EmailSignup.vue";
-import ShareSettings from "@/components/ShareSettings.vue";
-import ThemeSwitcher from "@/components/ThemeSwitcher.vue";
-import SubmitFeedback from "@/components/SubmitFeedback.vue";
+import EmailSignup from '@/components/EmailSignup.vue';
+import ShareSettings from '@/components/ShareSettings.vue';
+import ThemeSwitcher from '@/components/ThemeSwitcher.vue';
+import SubmitFeedback from '@/components/SubmitFeedback.vue';
 
 export default {
   components: {

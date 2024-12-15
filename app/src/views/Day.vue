@@ -24,19 +24,19 @@
 .el-row
 <script>
 // @ is an alias to /src
-import setCalendarDate from "@/helpers/setCalendarDate";
-import OfficeNav from "@/components/OfficeNav.vue";
-import PageNotFound from "@/views/PageNotFound.vue";
-import { DynamicStorage } from "@/helpers/storage";
+import setCalendarDate from '@/helpers/setCalendarDate';
+import OfficeNav from '@/components/OfficeNav.vue';
+import PageNotFound from '@/views/PageNotFound.vue';
+import { DynamicStorage } from '@/helpers/storage';
 
 export default {
-  name: "Calendar",
+  name: 'Calendar',
   components: { OfficeNav, PageNotFound },
   properties: {
     office: null,
     serviceType: {
       type: String,
-      default: "office",
+      default: 'office',
     },
   },
   data() {
@@ -51,18 +51,18 @@ export default {
       error: null,
       links: [],
       dayLinks: [],
-      currentServiceType: "office",
+      currentServiceType: 'office',
       notFound: false,
     };
   },
   watch: {
-    "$route.params.year": function () {
+    '$route.params.year': function () {
       this.setDay();
     },
-    "$route.params.month": function () {
+    '$route.params.month': function () {
       this.setDay();
     },
-    "$route.params.day": function () {
+    '$route.params.day': function () {
       this.setDay();
     },
   },
@@ -71,7 +71,7 @@ export default {
       this.currentServiceType = this.$route.params.serviceType;
     } else if (!this.$route.params.office) {
       this.currentServiceType =
-        (await DynamicStorage.getItem("serviceType")) || "office";
+        (await DynamicStorage.getItem('serviceType')) || 'office';
     }
     await this.setDay();
   },
@@ -92,15 +92,15 @@ export default {
       let data = null;
       try {
         data = await this.$http.get(
-          `${import.meta.env.VUE_APP_API_URL}api/v1/calendar/${this.year}-${this.month}-${this.day}`,
+          `${import.meta.env.VUE_APP_API_URL}api/v1/calendar/${this.year}-${this.month}-${this.day}`
         );
       } catch (e) {
-        if (e.response.status == "404") {
+        if (e.response.status == '404') {
           this.notFound = true;
           return;
         }
         this.error =
-          "There was an error retrieving this calendar. Please try again.";
+          'There was an error retrieving this calendar. Please try again.';
         this.loading = false;
         return;
       }

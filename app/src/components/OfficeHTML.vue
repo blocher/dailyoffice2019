@@ -1,24 +1,24 @@
 <template>
-  <div class="officeHTML" v-html="line.content"/>
+  <div class="officeHTML" v-html="line.content" />
 </template>
 
 <script>
 // @ is an alias to /src
 
 export default {
-  name: "Office Citation",
+  name: 'Office Citation',
   components: {},
-  props: ["line"],
+  props: ['line'],
 };
 </script>
 
 <style lang="scss">
-body .officeHTML p, body .officeHTML iframe {
+body .officeHTML p,
+body .officeHTML iframe {
   margin-bottom: 0.8em;
 }
 
 body .officeHTML h3 {
-  font-size: .75em !important;
+  font-size: 0.75em !important;
 }
-
 </style>

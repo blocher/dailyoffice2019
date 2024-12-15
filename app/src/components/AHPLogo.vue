@@ -16,7 +16,7 @@
 
 <script>
 export default {
-  name: "AHPLogo",
+  name: 'AHPLogo',
 };
 </script>
 

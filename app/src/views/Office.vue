@@ -54,25 +54,25 @@
 
 <script>
 // @ is an alias to /src
-import OfficeHeading from "@/components/OfficeHeading.vue";
-import OfficeSubheading from "@/components/OfficeSubheading.vue";
-import OfficeCitation from "@/components/OfficeCitation.vue";
-import OfficeHTML from "@/components/OfficeHTML.vue";
-import OfficeCongregation from "@/components/OfficeCongregation.vue";
-import OfficeLeader from "@/components/OfficeLeader.vue";
-import OfficeCongregationDialogue from "@/components/OfficeCongregationDialogue.vue";
-import OfficeLeaderDialogue from "@/components/OfficeLeaderDialogue.vue";
-import OfficeRubric from "@/components/OfficeRubric.vue";
-import OfficeSpacer from "@/components/OfficeSpacer.vue";
-import Loading from "@/components/Loading.vue";
-import CalendarCard from "@/components/CalendarCard.vue";
-import OfficeNav from "@/components/OfficeNav.vue";
-import PageNotFound from "@/views/PageNotFound.vue";
-import FontSizer from "@/components/FontSizer.vue";
-import { DynamicStorage } from "@/helpers/storage";
+import OfficeHeading from '@/components/OfficeHeading.vue';
+import OfficeSubheading from '@/components/OfficeSubheading.vue';
+import OfficeCitation from '@/components/OfficeCitation.vue';
+import OfficeHTML from '@/components/OfficeHTML.vue';
+import OfficeCongregation from '@/components/OfficeCongregation.vue';
+import OfficeLeader from '@/components/OfficeLeader.vue';
+import OfficeCongregationDialogue from '@/components/OfficeCongregationDialogue.vue';
+import OfficeLeaderDialogue from '@/components/OfficeLeaderDialogue.vue';
+import OfficeRubric from '@/components/OfficeRubric.vue';
+import OfficeSpacer from '@/components/OfficeSpacer.vue';
+import Loading from '@/components/Loading.vue';
+import CalendarCard from '@/components/CalendarCard.vue';
+import OfficeNav from '@/components/OfficeNav.vue';
+import PageNotFound from '@/views/PageNotFound.vue';
+import FontSizer from '@/components/FontSizer.vue';
+import { DynamicStorage } from '@/helpers/storage';
 
 export default {
-  name: "Office",
+  name: 'Office',
   components: {
     OfficeHeading,
     OfficeSubheading,
@@ -98,7 +98,7 @@ export default {
       type: Date,
     },
     serviceType: {
-      default: "office",
+      default: 'office',
       type: String,
     },
   },
@@ -109,59 +109,59 @@ export default {
       loading: true,
       readyToSetFontSize: false,
       error: false,
-      card: "",
+      card: '',
       notFound: false,
     };
   },
   async mounted() {
-    await DynamicStorage.setItem("serviceType", "office");
+    await DynamicStorage.setItem('serviceType', 'office');
   },
 
   async created() {
     const valid_daily_offices = [
-      "morning_prayer",
-      "midday_prayer",
-      "evening_prayer",
-      "compline",
+      'morning_prayer',
+      'midday_prayer',
+      'evening_prayer',
+      'compline',
     ];
     const valid_family_offices = [
-      "morning_prayer",
-      "midday_prayer",
-      "early_evening_prayer",
-      "close_of_day_prayer",
+      'morning_prayer',
+      'midday_prayer',
+      'early_evening_prayer',
+      'close_of_day_prayer',
     ];
     const valid_offices =
-      this.serviceType == "office" ? valid_daily_offices : valid_family_offices;
+      this.serviceType == 'office' ? valid_daily_offices : valid_family_offices;
     if (!valid_offices.includes(this.$props.office)) {
       this.notFound = true;
       return;
     }
     const today_str =
       this.calendarDate.getFullYear() +
-      "-" +
+      '-' +
       (this.calendarDate.getMonth() + 1) +
-      "-" +
+      '-' +
       this.calendarDate.getDate();
     this.availableSettings = await this.$store.state.availableSettings;
-    await this.$store.dispatch("initializeSettings");
+    await this.$store.dispatch('initializeSettings');
     const settings = await this.$store.state.settings;
     const queryString = Object.keys(settings)
-      .map((key) => key + "=" + settings[key])
-      .join("&");
+      .map((key) => key + '=' + settings[key])
+      .join('&');
     let data = null;
     try {
       data = await this.$http.get(
         `${import.meta.env.VUE_APP_API_URL}api/v1/${this.serviceType}/${this.office}/` +
           today_str +
-          "?" +
+          '?' +
           queryString +
-          "&extra_collects=" +
-          (await this.extraCollects()),
+          '&extra_collects=' +
+          (await this.extraCollects())
       );
     } catch (e) {
       console.log(e);
       this.error =
-        "There was an error retrieving the office. Please try again.";
+        'There was an error retrieving the office. Please try again.';
       this.loading = false;
       return;
     }
@@ -174,25 +174,25 @@ export default {
   },
   methods: {
     async extraCollects() {
-      if (this.serviceType != "office") {
-        return "";
+      if (this.serviceType != 'office') {
+        return '';
       }
       const full_office_name = this.office
-        .replace("_", " ")
+        .replace('_', ' ')
         .toLowerCase()
-        .split(" ")
+        .split(' ')
         .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
-        .join(" ");
+        .join(' ');
       const extraCollects =
-        JSON.parse(await DynamicStorage.getItem("extraCollects")) || "";
+        JSON.parse(await DynamicStorage.getItem('extraCollects')) || '';
       if (!extraCollects) {
-        return "";
+        return '';
       }
       const office_extra_collects = Object.prototype.hasOwnProperty.call(
         extraCollects,
-        full_office_name,
+        full_office_name
       )
-        ? extraCollects[full_office_name].join(",")
+        ? extraCollects[full_office_name].join(',')
         : [];
       return office_extra_collects;
     },

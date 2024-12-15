@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import Collect from "@/components/Collect.vue";
+import Collect from '@/components/Collect.vue';
 
 export default {
   components: { Collect },
@@ -46,7 +46,7 @@ export default {
       required: false,
     },
   },
-  emits: ["extraCollectsChanged"],
+  emits: ['extraCollectsChanged'],
   data() {
     return {
       openedItems: [],
@@ -62,7 +62,7 @@ export default {
   },
   methods: {
     extraCollectsChanged() {
-      this.$emit("extraCollectsChanged");
+      this.$emit('extraCollectsChanged');
     },
     async collapseAll() {
       this.openedItems = [];

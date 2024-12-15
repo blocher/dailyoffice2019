@@ -191,20 +191,20 @@
 
 <script>
 // @ is an alias to /src
-import { nextTick } from "vue";
-import Loading from "@/components/Loading.vue";
-import setCalendarDate from "@/helpers/setCalendarDate";
-import CalendarCard from "@/components/CalendarCard.vue";
-import OfficeNav from "@/components/OfficeNav.vue";
-import Reading from "@/components/Reading.vue";
-import Collects from "@/components/Collects.vue";
-import CitationGroup from "@/components/CitationGroup.vue";
-import FontSizer from "@/components/FontSizer.vue";
-import PageNotFound from "@/views/PageNotFound.vue";
-import { DynamicStorage } from "@/helpers/storage";
+import { nextTick } from 'vue';
+import Loading from '@/components/Loading.vue';
+import setCalendarDate from '@/helpers/setCalendarDate';
+import CalendarCard from '@/components/CalendarCard.vue';
+import OfficeNav from '@/components/OfficeNav.vue';
+import Reading from '@/components/Reading.vue';
+import Collects from '@/components/Collects.vue';
+import CitationGroup from '@/components/CitationGroup.vue';
+import FontSizer from '@/components/FontSizer.vue';
+import PageNotFound from '@/views/PageNotFound.vue';
+import { DynamicStorage } from '@/helpers/storage';
 
 export default {
-  name: "Readings",
+  name: 'Readings',
   components: {
     Loading,
     CalendarCard,
@@ -231,46 +231,46 @@ export default {
       service: null,
       readings: null,
       full: true,
-      psalmCycle: "30",
+      psalmCycle: '30',
       readingsToShow: [],
-      translation: "esv",
+      translation: 'esv',
       translations: [
-        { value: "esv", label: "ESV: English Standard Version" },
-        { value: "kjv", label: "KJV: King James Version" },
-        { value: "rsv", label: "RSV: Revised Standard Version" },
-        { value: "nasb", label: "NASB: New American Standard Bible" },
-        { value: "niv", label: "NIV: New International Version" },
-        { value: "nrsvce", label: "NRSV: New Revised Standard Version" },
-        { value: "nabre", label: "NAB-RE: New American Bible Revised Edition" },
+        { value: 'esv', label: 'ESV: English Standard Version' },
+        { value: 'kjv', label: 'KJV: King James Version' },
+        { value: 'rsv', label: 'RSV: Revised Standard Version' },
+        { value: 'nasb', label: 'NASB: New American Standard Bible' },
+        { value: 'niv', label: 'NIV: New International Version' },
+        { value: 'nrsvce', label: 'NRSV: New Revised Standard Version' },
+        { value: 'nabre', label: 'NAB-RE: New American Bible Revised Edition' },
       ],
-      psalmsTranslation: "contemporary",
+      psalmsTranslation: 'contemporary',
       psalmsTranslations: [
         {
-          label: "Contemporary Psalms",
-          value: "contemporary",
+          label: 'Contemporary Psalms',
+          value: 'contemporary',
         },
         {
-          label: "Traditional Psalms",
-          value: "traditional",
+          label: 'Traditional Psalms',
+          value: 'traditional',
         },
       ],
-      psalmStyle: "whole_verse",
+      psalmStyle: 'whole_verse',
       psalmStyles: [
         {
-          label: "Antiphonally by Whole Verse",
-          value: "whole_verse",
+          label: 'Antiphonally by Whole Verse',
+          value: 'whole_verse',
         },
         {
-          label: "Antiphonally by Half Verse",
-          value: "half_verse",
+          label: 'Antiphonally by Half Verse',
+          value: 'half_verse',
         },
         {
-          label: "In Unison",
-          value: "unison",
+          label: 'In Unison',
+          value: 'unison',
         },
       ],
       notFound: false,
-      activeIndex: "1",
+      activeIndex: '1',
       uniqueOpened: true,
       ellipsis: false,
     };
@@ -306,9 +306,9 @@ export default {
     collectsToShow: function () {
       if (this.service) {
         let serviceItems = this.services[this.service];
-        let collects = serviceItems["collects"];
+        let collects = serviceItems['collects'];
         collects = collects.map((collect) => {
-          return collect.replace(" Amen.", "");
+          return collect.replace(' Amen.', '');
         });
         return collects;
       }
@@ -322,12 +322,12 @@ export default {
         let serviceItems = this.services[this.service];
         let collects = [];
         try {
-          collects = serviceItems["traditional_collects"];
+          collects = serviceItems['traditional_collects'];
         } catch (e) {
           return [];
         }
         collects = collects.map((collect) => {
-          return collect.replace(" Amen.", "");
+          return collect.replace(' Amen.', '');
         });
         return collects;
       }
@@ -340,36 +340,36 @@ export default {
   async created() {
     this.calendarDate = setCalendarDate(this.$route);
 
-    let translation = await DynamicStorage.getItem("readings_translation");
+    let translation = await DynamicStorage.getItem('readings_translation');
     if (!translation) {
       const settings = this.$store.state.settings;
-      translation = settings["bible_translation"];
+      translation = settings['bible_translation'];
     }
-    await DynamicStorage.setItem("readings_translation", translation);
+    await DynamicStorage.setItem('readings_translation', translation);
     this.translation = translation;
 
-    let psalmsTranslation = await DynamicStorage.getItem("psalms_translation");
+    let psalmsTranslation = await DynamicStorage.getItem('psalms_translation');
     if (!psalmsTranslation) {
       const settings = this.$store.state.settings;
-      psalmsTranslation = settings["language_style"];
+      psalmsTranslation = settings['language_style'];
     }
-    await DynamicStorage.setItem("psalms_translation", psalmsTranslation);
+    await DynamicStorage.setItem('psalms_translation', psalmsTranslation);
     this.psalmsTranslation = psalmsTranslation;
 
-    let psalmCycle = await DynamicStorage.getItem("psalter");
+    let psalmCycle = await DynamicStorage.getItem('psalter');
     if (!psalmCycle) {
       const settings = this.$store.state.settings;
-      psalmCycle = settings["psalter"];
+      psalmCycle = settings['psalter'];
     }
-    await DynamicStorage.setItem("psalter", psalmCycle);
+    await DynamicStorage.setItem('psalter', psalmCycle);
     this.psalmCycle = psalmCycle;
 
-    let psalmStyle = await DynamicStorage.getItem("psalm_style");
+    let psalmStyle = await DynamicStorage.getItem('psalm_style');
     if (!psalmStyle) {
       const settings = this.$store.state.settings;
-      psalmStyle = settings["psalm_style"];
+      psalmStyle = settings['psalm_style'];
     }
-    await DynamicStorage.setItem("psalm_style", psalmStyle);
+    await DynamicStorage.setItem('psalm_style', psalmStyle);
     this.psalmStyle = psalmStyle;
 
     await this.initialize();
@@ -380,25 +380,25 @@ export default {
       let data = null;
       try {
         this.availableSettings = await this.$store.state.availableSettings;
-        await this.$store.dispatch("initializeSettings");
+        await this.$store.dispatch('initializeSettings');
         const settings = await this.$store.state.settings;
         const queryString = Object.keys(settings)
-          .map((key) => key + "=" + settings[key])
-          .join("&");
+          .map((key) => key + '=' + settings[key])
+          .join('&');
 
         const today_str =
           this.calendarDate.getFullYear() +
-          "-" +
+          '-' +
           (this.calendarDate.getMonth() + 1) +
-          "-" +
+          '-' +
           this.calendarDate.getDate();
         data = await this.$http.get(
           `${import.meta.env.VUE_APP_API_URL}api/v1/readings/${today_str}?translation=${this.translation}&psalms=${this.psalmsTranslation}&style=${this.psalmStyle}&` +
-            queryString,
+            queryString
         );
       } catch (e) {
         this.error =
-          "There was an error retrieving the readings. Please try again.";
+          'There was an error retrieving the readings. Please try again.';
         this.loading = false;
         this.readingsLoading = false;
         return;
@@ -411,14 +411,14 @@ export default {
       this.daily_office = [];
       this.holy_eucharist = [];
       for (const [key, value] of Object.entries(this.services)) {
-        if (value.type == "daily_office") {
+        if (value.type == 'daily_office') {
           this.daily_office.push(value);
-        } else if (value.type == "mass") {
+        } else if (value.type == 'mass') {
           this.holy_eucharist.push(value);
         }
-        if (key.includes("Morning Prayer")) {
+        if (key.includes('Morning Prayer')) {
           this.morning_prayer.push(value);
-        } else if (key.includes("Evening Prayer")) {
+        } else if (key.includes('Evening Prayer')) {
           this.evening_prayer.push(value);
         }
       }
@@ -426,17 +426,17 @@ export default {
         try {
           const service = this.$route.params.service
             .toLowerCase()
-            .replace("-", "_");
+            .replace('-', '_');
           const position = parseInt(this.$route.params.position || 0);
-          if (service == "morning_prayer") {
+          if (service == 'morning_prayer') {
             this.service = this.morning_prayer[position].name;
-          } else if (service == "evening_prayer") {
+          } else if (service == 'evening_prayer') {
             this.service = this.evening_prayer[position].name;
-          } else if (service == "daily_office") {
+          } else if (service == 'daily_office') {
             this.service = this.daily_office[position].name;
-          } else if (service == "holy_eucharist") {
+          } else if (service == 'holy_eucharist') {
             this.service = this.holy_eucharist[position].name;
-            this.activeIndex = "2";
+            this.activeIndex = '2';
           } else {
             this.service = this.morning_prayer[position].name;
           }
@@ -453,24 +453,24 @@ export default {
       this.readingsLoading = false;
     },
     readingID: function (reading) {
-      const readingId = reading.citation.replace(/[\W_]+/g, "_");
+      const readingId = reading.citation.replace(/[\W_]+/g, '_');
       return `reading_${readingId}`.toLowerCase();
     },
     changeTranslation: async function () {
       await DynamicStorage.setItem(
-        "psalms_translation",
-        this.psalmsTranslation,
+        'psalms_translation',
+        this.psalmsTranslation
       );
-      await DynamicStorage.setItem("readings_translation", this.translation);
+      await DynamicStorage.setItem('readings_translation', this.translation);
       this.initialize();
     },
     changeStyle: async function () {
-      await DynamicStorage.setItem("psalm_style", this.psalmStyle);
+      await DynamicStorage.setItem('psalm_style', this.psalmStyle);
       this.initialize();
     },
     serviceLink: function (service) {
       let serviceValues = this.getPositionAndServiceName(service);
-      let link = "";
+      let link = '';
       if (serviceValues.position > 0) {
         link = `/readings/${serviceValues.service_name}/${serviceValues.position}/${this.calendarDate.getFullYear()}/${
           this.calendarDate.getMonth() + 1
@@ -484,15 +484,15 @@ export default {
     },
     getPositionAndServiceName: function (service) {
       let position = 0;
-      let service_name = "";
-      if (service.includes("Morning Prayer")) {
-        service_name = "morning_prayer";
+      let service_name = '';
+      if (service.includes('Morning Prayer')) {
+        service_name = 'morning_prayer';
         position = this.morning_prayer.findIndex((p) => p.name == service);
-      } else if (service.includes("Evening Prayer")) {
-        service_name = "evening_prayer";
+      } else if (service.includes('Evening Prayer')) {
+        service_name = 'evening_prayer';
         position = this.evening_prayer.findIndex((p) => p.name == service);
       } else {
-        service_name = "holy_eucharist";
+        service_name = 'holy_eucharist';
         position = this.holy_eucharist.findIndex((p) => p.name == service);
       }
       return { position: position, service_name: service_name };
@@ -500,9 +500,9 @@ export default {
     changeService: function (service) {
       this.service = service;
       let serviceValues = this.getPositionAndServiceName(service);
-      let routeName = "readingsByServiceAndDate";
+      let routeName = 'readingsByServiceAndDate';
       if (serviceValues.position > 0) {
-        routeName = "readingsByServicePositionAndDate";
+        routeName = 'readingsByServicePositionAndDate';
       }
       this.$router.push({
         name: routeName,
@@ -519,7 +519,7 @@ export default {
     setReadingsToShow: function () {
       if (this.service) {
         let serviceItems = this.services[this.service];
-        this.readingsToShow = serviceItems["readings"].map((reading) => {
+        this.readingsToShow = serviceItems['readings'].map((reading) => {
           return reading;
         });
         return;
@@ -530,22 +530,22 @@ export default {
       this.readingsToShow = this.readingsToShow.map((reading) => {
         if (
           reading.full.citation == data.reading.citation &&
-          data.length == "full"
+          data.length == 'full'
         ) {
           reading.length = data.length;
         }
         if (
           reading.abbreviated.citation == data.reading.citation &&
-          data.length == "abbreviated"
+          data.length == 'abbreviated'
         ) {
           reading.length = data.length;
         }
         return reading;
       });
-      if (data.reading.cycle == "60") {
+      if (data.reading.cycle == '60') {
         this.setCycle60();
       }
-      if (data.reading.cycle == "30") {
+      if (data.reading.cycle == '30') {
         this.setCycle30();
       }
       await nextTick();
@@ -555,23 +555,23 @@ export default {
       return `reading_${index}`;
     },
     goto(id) {
-      const menu = document.getElementById("topMenu");
+      const menu = document.getElementById('topMenu');
       const menuHeight = menu ? menu.offsetHeight : 0;
       const element = document.getElementById(id);
       const top = element.offsetTop;
       window.scrollTo({
         top: top - menuHeight - 5,
         left: 0,
-        behavior: "smooth",
+        behavior: 'smooth',
       });
     },
     setCycle30: async function () {
-      this.psalmCycle = "30";
-      await DynamicStorage.setItem("psalter", this.psalmCycle);
+      this.psalmCycle = '30';
+      await DynamicStorage.setItem('psalter', this.psalmCycle);
     },
     setCycle60: async function () {
-      this.psalmCycle = "60";
-      await DynamicStorage.setItem("psalter", this.psalmCycle);
+      this.psalmCycle = '60';
+      await DynamicStorage.setItem('psalter', this.psalmCycle);
     },
   },
 };

@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import Loading from "@/components/Loading.vue";
+import Loading from '@/components/Loading.vue';
 
 export default {
   components: { Loading },
@@ -28,9 +28,9 @@ export default {
       data: null,
       error: null,
       loading: true,
-      esv: "-",
-      kjv: "-",
-      rsv: "-",
+      esv: '-',
+      kjv: '-',
+      rsv: '-',
     };
   },
   async created() {
@@ -38,7 +38,7 @@ export default {
     this.passage = this.$route.params.passage;
     try {
       const data = await this.$http.get(
-        `${import.meta.env.VUE_APP_API_URL}api/v1/scripture/${this.passage}`,
+        `${import.meta.env.VUE_APP_API_URL}api/v1/scripture/${this.passage}`
       );
       this.data = data.data;
       this.kjv = data.data.kjv;
@@ -46,7 +46,7 @@ export default {
       this.esv = data.data.esv;
     } catch (e) {
       this.error =
-        "There was an error retrieving the passage. Please try again.";
+        'There was an error retrieving the passage. Please try again.';
       this.loading = false;
       return;
     }

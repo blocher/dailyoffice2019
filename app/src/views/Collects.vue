@@ -82,11 +82,11 @@
 </template>
 
 <script>
-import Loading from "@/components/Loading.vue";
-import CollectsFilters from "@/components/CollectsFilters.vue";
-import Collect from "@/components/Collect.vue";
-import FontSizer from "@/components/FontSizer.vue";
-import { DynamicStorage } from "@/helpers/storage";
+import Loading from '@/components/Loading.vue';
+import CollectsFilters from '@/components/CollectsFilters.vue';
+import Collect from '@/components/Collect.vue';
+import FontSizer from '@/components/FontSizer.vue';
+import { DynamicStorage } from '@/helpers/storage';
 
 export default {
   components: { Loading, CollectsFilters, Collect, FontSizer },
@@ -95,12 +95,12 @@ export default {
       collects: null,
       displayedCollects: [],
       categories: null,
-      selectedCategory: "All Categories",
+      selectedCategory: 'All Categories',
       loading: true,
       error: false,
       collectCategories: [],
       traditional: false,
-      search: "",
+      search: '',
       readyToSetFontSize: false,
       collectTypes: [],
       collectsByCollectType: {},
@@ -114,10 +114,10 @@ export default {
   },
   async mounted() {
     const traditional = await DynamicStorage.getItem(
-      "traditionalCollects",
-      false,
+      'traditionalCollects',
+      false
     );
-    if (traditional == "true" || traditional == true) {
+    if (traditional == 'true' || traditional == true) {
       this.traditional = true;
     } else {
       this.traditional = false;
@@ -128,11 +128,11 @@ export default {
     // this.collectCategories = this.formatCollectCategories(data.data);
     try {
       data = await this.$http.get(
-        `${import.meta.env.VUE_APP_API_URL}api/v1/collects`,
+        `${import.meta.env.VUE_APP_API_URL}api/v1/collects`
       );
     } catch (e) {
       this.error =
-        "There was an error retrieving the collects. Please try again.";
+        'There was an error retrieving the collects. Please try again.';
       this.loading = false;
       return;
     }
@@ -140,11 +140,11 @@ export default {
 
     try {
       data = await this.$http.get(
-        `${import.meta.env.VUE_APP_API_URL}api/v1/collect_categories`,
+        `${import.meta.env.VUE_APP_API_URL}api/v1/collect_categories`
       );
     } catch (e) {
       this.error =
-        "There was an error retrieving the collect categories. Please try again.";
+        'There was an error retrieving the collect categories. Please try again.';
       this.loading = false;
       return;
     }
@@ -163,11 +163,11 @@ export default {
       });
     },
     async setTraditional() {
-      await DynamicStorage.setItem("traditionalCollects", this.traditional);
+      await DynamicStorage.setItem('traditionalCollects', this.traditional);
     },
     setCollectTypes(categories) {
       const category = categories.filter((category) => {
-        return category.key == "source";
+        return category.key == 'source';
       })[0];
 
       this.collectTypes = category.tags.map((tag) => {
@@ -184,7 +184,7 @@ export default {
               return tag.uuid;
             });
             return tag_ids.includes(collectType.id);
-          },
+          }
         );
       });
 
@@ -217,7 +217,7 @@ export default {
           });
           // all values in both categories and options
           const intersection = options.filter((value) =>
-            categories.includes(value),
+            categories.includes(value)
           );
           if (intersection.length > 0) {
             collects = collects.filter((collect) => {
