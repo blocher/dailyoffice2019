@@ -92,7 +92,7 @@ export default {
       let data = null;
       try {
         data = await this.$http.get(
-          `${import.meta.env.VUE_APP_API_URL}api/v1/calendar/${this.year}-${this.month}-${this.day}`
+          `${import.meta.env.VITE_API_URL}api/v1/calendar/${this.year}-${this.month}-${this.day}`
         );
       } catch (e) {
         if (e.response.status == '404') {

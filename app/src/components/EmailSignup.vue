@@ -79,7 +79,7 @@ export default {
       this.loading = true;
       this.success = false;
       this.error = null;
-      const url = `${import.meta.env.VUE_APP_API_URL}api/v1/email_signup`;
+      const url = `${import.meta.env.VITE_API_URL}api/v1/email_signup`;
       const params = {
         email: this.emailField,
       };

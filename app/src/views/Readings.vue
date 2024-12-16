@@ -393,7 +393,7 @@ export default {
           '-' +
           this.calendarDate.getDate();
         data = await this.$http.get(
-          `${import.meta.env.VUE_APP_API_URL}api/v1/readings/${today_str}?translation=${this.translation}&psalms=${this.psalmsTranslation}&style=${this.psalmStyle}&` +
+          `${import.meta.env.VITE_API_URL}api/v1/readings/${today_str}?translation=${this.translation}&psalms=${this.psalmsTranslation}&style=${this.psalmStyle}&` +
             queryString
         );
       } catch {

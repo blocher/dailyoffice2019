@@ -172,7 +172,7 @@ export default {
       this.date = new Date(this.year, this.month - 1, 1);
       try {
         data = await this.$http.get(
-          `${import.meta.env.VUE_APP_API_URL}api/v1/calendar/${this.year}-${this.month}`
+          `${import.meta.env.VITE_API_URL}api/v1/calendar/${this.year}-${this.month}`
         );
       } catch {
         this.error =

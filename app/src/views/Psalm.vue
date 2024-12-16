@@ -107,7 +107,7 @@ export default {
     let data = null;
     try {
       data = await this.$http.get(
-        `${import.meta.env.VUE_APP_API_URL}api/v1/psalms/${this.$route.params.number}/`
+        `${import.meta.env.VITE_API_URL}api/v1/psalms/${this.$route.params.number}/`
       );
     } catch {
       this.error =

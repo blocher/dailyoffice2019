@@ -157,7 +157,7 @@ export default {
 
     try {
       data = await this.$http.get(
-        `${import.meta.env.VUE_APP_API_URL}api/v1/grouped_collects`
+        `${import.meta.env.VITE_API_URL}api/v1/grouped_collects`
       );
     } catch {
       this.error =

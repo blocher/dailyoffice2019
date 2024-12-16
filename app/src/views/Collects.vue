@@ -128,7 +128,7 @@ export default {
     // this.collectCategories = this.formatCollectCategories(data.data);
     try {
       data = await this.$http.get(
-        `${import.meta.env.VUE_APP_API_URL}api/v1/collects`
+        `${import.meta.env.VITE_API_URL}api/v1/collects`
       );
     } catch {
       this.error =
@@ -140,7 +140,7 @@ export default {
 
     try {
       data = await this.$http.get(
-        `${import.meta.env.VUE_APP_API_URL}api/v1/collect_categories`
+        `${import.meta.env.VITE_API_URL}api/v1/collect_categories`
       );
     } catch {
       this.error =

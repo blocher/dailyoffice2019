@@ -37,7 +37,7 @@ export default {
     this.passage = this.$route.params.passage;
     try {
       const data = await this.$http.get(
-        `${import.meta.env.VUE_APP_API_URL}api/v1/scripture/${this.passage}`
+        `${import.meta.env.VITE_API_URL}api/v1/scripture/${this.passage}`
       );
       this.data = data.data;
       this.kjv = data.data.kjv;

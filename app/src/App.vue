@@ -151,7 +151,7 @@ export default {
     try {
       event('betaPageView');
       const settings_data = await this.$http.get(
-        `${import.meta.env.VUE_APP_API_URL}api/v1/available_settings/`
+        `${import.meta.env.VITE_API_URL}api/v1/available_settings/`
       );
       await this.$store.commit('saveAvailableSettings', settings_data.data);
       await this.$store.dispatch('initializeSettings');

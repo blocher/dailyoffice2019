@@ -128,7 +128,7 @@ export default {
     this.service = 'Great Litany';
     try {
       const data = await this.$http.get(
-        `${import.meta.env.VUE_APP_API_URL}api/v1/litany`
+        `${import.meta.env.VITE_API_URL}api/v1/litany`
       );
       this.modules = data['data']['modules'];
       this.services = this.modules.map((module) => {

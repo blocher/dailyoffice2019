@@ -151,7 +151,7 @@ export default {
     let data = null;
     try {
       data = await this.$http.get(
-        `${import.meta.env.VUE_APP_API_URL}api/v1/${this.serviceType}/${this.office}/` +
+        `${import.meta.env.VITE_API_URL}api/v1/${this.serviceType}/${this.office}/` +
           today_str +
           '?' +
           queryString +
