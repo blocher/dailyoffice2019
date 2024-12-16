@@ -23,29 +23,29 @@
     <div id="main">
       <div v-for="module in modules" :key="module.name">
         <div v-for="line in module.lines" :key="line.content">
-          <OfficeHeading v-if="line.line_type == 'heading'" :line="line" />
+          <OfficeHeading v-if="line.line_type === 'heading'" :line="line" />
           <OfficeSubheading
-            v-if="line.line_type == 'subheading'"
+            v-if="line.line_type === 'subheading'"
             :line="line"
           />
-          <OfficeCitation v-if="line.line_type == 'citation'" :line="line" />
-          <OfficeHTML v-if="line.line_type == 'html'" :line="line" />
-          <OfficeLeader v-if="line.line_type == 'leader'" :line="line" />
+          <OfficeCitation v-if="line.line_type === 'citation'" :line="line" />
+          <OfficeHTML v-if="line.line_type === 'html'" :line="line" />
+          <OfficeLeader v-if="line.line_type === 'leader'" :line="line" />
           <OfficeLeaderDialogue
-            v-if="line.line_type == 'leader_dialogue'"
+            v-if="line.line_type === 'leader_dialogue'"
             :line="line"
           />
           <OfficeCongregation
-            v-if="line.line_type == 'congregation'"
+            v-if="line.line_type === 'congregation'"
             :line="line"
           />
           <OfficeCongregationDialogue
-            v-if="line.line_type == 'congregation_dialogue'"
+            v-if="line.line_type === 'congregation_dialogue'"
             :line="line"
           />
 
-          <OfficeRubric v-if="line.line_type == 'rubric'" :line="line" />
-          <OfficeSpacer v-if="line.line_type == 'spacer'" />
+          <OfficeRubric v-if="line.line_type === 'rubric'" :line="line" />
+          <OfficeSpacer v-if="line.line_type === 'spacer'" />
         </div>
       </div>
     </div>
@@ -158,8 +158,7 @@ export default {
           '&extra_collects=' +
           (await this.extraCollects())
       );
-    } catch (e) {
-      console.log(e);
+    } catch {
       this.error =
         'There was an error retrieving the office. Please try again.';
       this.loading = false;
@@ -174,7 +173,7 @@ export default {
   },
   methods: {
     async extraCollects() {
-      if (this.serviceType != 'office') {
+      if (this.serviceType !== 'office') {
         return '';
       }
       const full_office_name = this.office
@@ -188,13 +187,12 @@ export default {
       if (!extraCollects) {
         return '';
       }
-      const office_extra_collects = Object.prototype.hasOwnProperty.call(
+      return Object.prototype.hasOwnProperty.call(
         extraCollects,
         full_office_name
       )
         ? extraCollects[full_office_name].join(',')
         : [];
-      return office_extra_collects;
     },
   },
 };

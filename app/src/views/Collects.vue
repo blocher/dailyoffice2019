@@ -108,7 +108,7 @@ export default {
     };
   },
   watch: {
-    search(val, oldVal) {
+    search() {
       this.filterCollects(this.categories);
     },
   },
@@ -130,7 +130,7 @@ export default {
       data = await this.$http.get(
         `${import.meta.env.VUE_APP_API_URL}api/v1/collects`
       );
-    } catch (e) {
+    } catch {
       this.error =
         'There was an error retrieving the collects. Please try again.';
       this.loading = false;
@@ -142,7 +142,7 @@ export default {
       data = await this.$http.get(
         `${import.meta.env.VUE_APP_API_URL}api/v1/collect_categories`
       );
-    } catch (e) {
+    } catch {
       this.error =
         'There was an error retrieving the collect categories. Please try again.';
       this.loading = false;
@@ -187,8 +187,6 @@ export default {
           }
         );
       });
-
-      console.log(this.collectsByCollectType);
     },
     formatCollectCategories(categories) {
       return categories.map((category) => {

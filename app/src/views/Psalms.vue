@@ -98,7 +98,7 @@ export default {
       data = await this.$http.get(
         `${import.meta.env.VUE_APP_API_URL}api/v1/psalms`
       );
-    } catch (e) {
+    } catch {
       this.error =
         'There was an error retrieving the psalms. Please try again.';
       this.loading = false;
@@ -111,7 +111,7 @@ export default {
       data = await this.$http.get(
         `${import.meta.env.VUE_APP_API_URL}api/v1/psalms/topics`
       );
-    } catch (e) {
+    } catch {
       this.error =
         'There was an error retrieving the psalms. Please try again.';
       this.loading = false;

@@ -92,8 +92,6 @@
 
 <script>
 import Loading from '@/components/Loading.vue';
-import CollectsFilters from '@/components/CollectsFilters.vue';
-import Collect from '@/components/Collect.vue';
 import FontSizer from '@/components/FontSizer.vue';
 import CollectsSubcategory from '@/components/CollectsSubcategory.vue';
 import { DynamicStorage } from '@/helpers/storage';
@@ -101,8 +99,6 @@ import { DynamicStorage } from '@/helpers/storage';
 export default {
   components: {
     Loading,
-    CollectsFilters,
-    Collect,
     FontSizer,
     CollectsSubcategory,
   },
@@ -143,9 +139,6 @@ export default {
     },
   },
   watch: {
-    // search(val, oldVal) {
-    //   this.filterCollects(this.categories);
-    // },
     selectedCollectTypes() {
       this.readyToSetFontSize = false;
       this.$nextTick(() => {
@@ -158,11 +151,7 @@ export default {
       'traditionalCollects',
       false
     );
-    if (traditional === 'true' || traditional == true) {
-      this.traditional = true;
-    } else {
-      this.traditional = false;
-    }
+    this.traditional = traditional === 'true' || traditional === true;
     this.setTraditional();
     let data = null;
 
@@ -170,7 +159,7 @@ export default {
       data = await this.$http.get(
         `${import.meta.env.VUE_APP_API_URL}api/v1/grouped_collects`
       );
-    } catch (e) {
+    } catch {
       this.error =
         'There was an error retrieving the collects. Please try again.';
       this.loading = false;
@@ -195,11 +184,6 @@ export default {
       this.extraCollects =
         JSON.parse(await DynamicStorage.getItem('extraCollects')) ||
         this.defaultDict;
-      // this.offices.forEach((office) => {
-      //   if (extraCollects[office].includes(this.collect.uuid)) {
-      //     this.extraCollectsList.push(office)
-      //   }
-      // });
     },
     async setTraditional() {
       await DynamicStorage.setItem('traditionalCollects', this.traditional);

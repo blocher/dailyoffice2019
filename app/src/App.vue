@@ -93,36 +93,26 @@
 </template>
 
 <script>
-import TopMenu from '@/components/TopMenu.vue';
 import Loading from '@/components/Loading.vue';
 import AHPLogo from '@/components/AHPLogo.vue';
 import { event } from 'vue-gtag';
-import BetaNote from '@/components/BetaNote.vue';
 import { useActiveMeta, useMeta } from 'vue-meta';
-import ShareSettings from '@/components/ShareSettings.vue';
-import EmailSignup from '@/components/EmailSignup.vue';
-import SubmitFeedback from '@/components/SubmitFeedback.vue';
 import AdditionalLinks from '@/components/AdditionalLinks.vue';
 import { ArrowDown } from '@element-plus/icons-vue';
 
 export default {
   components: {
     AHPLogo,
-    TopMenu,
     Loading,
-    BetaNote,
-    ShareSettings,
-    EmailSignup,
-    SubmitFeedback,
     AdditionalLinks,
     ArrowDown,
   },
   setup() {
-    const { meta } = useMeta({
+    useMeta({
       htmlAttrs: { lang: 'en' },
       viewport: 'width=device-width, initial-scale=1.0, viewport-fit=cover',
     });
-    const metadata = useActiveMeta();
+    useActiveMeta();
   },
   data() {
     return {
@@ -168,8 +158,7 @@ export default {
       this.loading = false;
       await this.$nextTick();
       this.showLinks = true;
-    } catch (e) {
-      console.log(e);
+    } catch {
       this.error =
         'There was an error loading the settings. Please try refreshing the page.';
       this.loading = false;

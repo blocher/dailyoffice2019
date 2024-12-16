@@ -8,7 +8,7 @@ import cypressPlugin from 'eslint-plugin-cypress';
 
 export default [
   {
-    files: ['**/*.js', '**/*.vue', '**/*.ts'],
+    files: ['**/*.js', '**/*.vue'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -20,6 +20,7 @@ export default [
         navigator: 'readonly',
         location: 'readonly',
         history: 'readonly',
+        getComputedStyle: 'readonly',
         console: 'readonly',
         module: 'readonly',
         require: 'readonly',
@@ -41,7 +42,6 @@ export default [
       ...vue.configs['vue3-recommended'].rules, // Vue 3 recommended rules
       // ...prettierConfig.rules, // Disable conflicting Prettier rules
       'prettier/prettier': 'error', // Run Prettier as an ESLint rule
-      ...vueScopedCss.configs.recommended.rules, // Scoped CSS linting
       'no-console': 'error',
       'no-debugger': 'error',
       'vue/no-deprecated-slot-attribute': 'off',

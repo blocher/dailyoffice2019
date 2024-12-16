@@ -58,7 +58,7 @@ export default {
           });
       }
       await DynamicStorage.setItem('fontSize', this.fontSize);
-      const test = await DynamicStorage.getItem('fontSize');
+      await DynamicStorage.getItem('fontSize');
     },
     displayFontSize(value) {
       return `${value}px`;

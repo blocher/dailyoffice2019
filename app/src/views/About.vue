@@ -31,7 +31,6 @@ import { Capacitor } from '@capacitor/core';
 export default {
   components: { Loading, FontSizer },
   data() {
-    console.log('HIIII');
     return {
       aboutItems: null,
       mode: Capacitor.getPlatform() != 'web' ? 'app' : 'web',
@@ -46,7 +45,7 @@ export default {
       data = await this.$http.get(
         `${import.meta.env.VUE_APP_API_URL}api/v1/about`
       );
-    } catch (e) {
+    } catch {
       this.error =
         'There was an error retrieving the About FAQ. Please try again.';
       this.loading = false;

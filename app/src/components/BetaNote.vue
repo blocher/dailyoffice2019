@@ -17,6 +17,7 @@
 <script>
 // @ is an alias to /src
 
+// @ is an alias to /src
 import { DynamicStorage } from '@/helpers/storage';
 
 export default {
@@ -35,7 +36,7 @@ export default {
     }
   },
   methods: {
-    dismissNote: async function (reading) {
+    dismissNote: async function () {
       await DynamicStorage.setItem('betaNoteDismissed', 'true');
     },
   },

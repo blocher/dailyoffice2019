@@ -323,7 +323,7 @@ export default {
         let collects = [];
         try {
           collects = serviceItems['traditional_collects'];
-        } catch (e) {
+        } catch {
           return [];
         }
         collects = collects.map((collect) => {
@@ -396,7 +396,7 @@ export default {
           `${import.meta.env.VUE_APP_API_URL}api/v1/readings/${today_str}?translation=${this.translation}&psalms=${this.psalmsTranslation}&style=${this.psalmStyle}&` +
             queryString
         );
-      } catch (e) {
+      } catch {
         this.error =
           'There was an error retrieving the readings. Please try again.';
         this.loading = false;
@@ -440,7 +440,7 @@ export default {
           } else {
             this.service = this.morning_prayer[position].name;
           }
-        } catch (e) {
+        } catch {
           this.notFound = true;
         }
       } else {

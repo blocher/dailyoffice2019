@@ -48,6 +48,7 @@
 // @ is an alias to /src
 
 // @ is an alias to /src
+// @ is an alias to /src
 import { DynamicStorage } from '@/helpers/storage';
 
 export default {
@@ -173,7 +174,7 @@ export default {
         data = await this.$http.get(
           `${import.meta.env.VUE_APP_API_URL}api/v1/calendar/${this.year}-${this.month}`
         );
-      } catch (e) {
+      } catch {
         this.error =
           'There was an error retrieving the office. Please try again.';
         this.loading = false;

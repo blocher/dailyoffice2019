@@ -98,7 +98,7 @@ export default {
       'traditionalPsalms',
       false
     );
-    if (traditional == 'true' || traditional == true) {
+    if (traditional === 'true' || traditional === true) {
       this.traditional = true;
     } else {
       this.traditional = false;
@@ -109,7 +109,7 @@ export default {
       data = await this.$http.get(
         `${import.meta.env.VUE_APP_API_URL}api/v1/psalms/${this.$route.params.number}/`
       );
-    } catch (e) {
+    } catch {
       this.error =
         'There was an error retrieving the psalms. Please try again.';
       this.loading = false;

@@ -77,21 +77,11 @@
 <script>
 // @ is an alias to /src
 import Loading from '@/components/Loading.vue';
-import CalendarCard from '@/components/CalendarCard.vue';
-import OfficeNav from '@/components/OfficeNav.vue';
-import Reading from '@/components/Reading.vue';
-import Collects from '@/components/Collects.vue';
-import CitationGroup from '@/components/CitationGroup.vue';
 import FontSizer from '@/components/FontSizer.vue';
 import PageNotFound from '@/views/PageNotFound.vue';
 import OfficeHeading from '@/components/OfficeHeading.vue';
-import OfficeSubheading from '@/components/OfficeSubheading.vue';
-import OfficeCitation from '@/components/OfficeCitation.vue';
-import OfficeHTML from '@/components/OfficeHTML.vue';
 import OfficeCongregation from '@/components/OfficeCongregation.vue';
 import OfficeLeader from '@/components/OfficeLeader.vue';
-import OfficeCongregationDialogue from '@/components/OfficeCongregationDialogue.vue';
-import OfficeLeaderDialogue from '@/components/OfficeLeaderDialogue.vue';
 import OfficeRubric from '@/components/OfficeRubric.vue';
 import OfficeSpacer from '@/components/OfficeSpacer.vue';
 
@@ -99,21 +89,11 @@ export default {
   name: 'Readings',
   components: {
     Loading,
-    CalendarCard,
-    OfficeNav,
-    Reading,
-    Collects,
-    CitationGroup,
     PageNotFound,
     FontSizer,
     OfficeHeading,
-    OfficeSubheading,
-    OfficeCitation,
-    OfficeHTML,
     OfficeCongregation,
     OfficeLeader,
-    OfficeCongregationDialogue,
-    OfficeLeaderDialogue,
     OfficeRubric,
     OfficeSpacer,
   },
@@ -167,7 +147,7 @@ export default {
       this.contemporaryServices[0].active = true;
       this.selected = this.contemporaryServices[0];
       this.changeService(this.selected.name);
-    } catch (e) {
+    } catch {
       this.error =
         'There was an error retrieving the litany. Please try again.';
       this.loading = false;
@@ -177,21 +157,21 @@ export default {
     this.loading = false;
   },
   methods: {
-    serviceLink: function (service) {
+    serviceLink: function () {
       return `/litany`;
     },
     changeService: function (service) {
       this.service = service;
       this.selected = this.modules.find((module) => module.name === service);
       this.contemporaryServices.forEach((service) => {
-        if (service.name == this.service) {
+        if (service.name === this.service) {
           service.active = true;
         } else {
           service.active = false;
         }
       });
       this.traditionalServices.forEach((service) => {
-        if (service.name == this.service) {
+        if (service.name === this.service) {
           service.active = true;
         } else {
           service.active = false;

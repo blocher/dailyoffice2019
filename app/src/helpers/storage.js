@@ -17,7 +17,7 @@ export const DynamicStorage = {
       const { value } = await Preferences.get({ key: key });
       // console.log("GET ITEM", key, value);
       return value;
-    } catch (error) {
+    } catch {
       // console.log("ERROR", error);
       return '';
     }

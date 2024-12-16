@@ -210,7 +210,7 @@
 </template>
 
 <script setup>
-const activeFilters = [{ value: 'objects', label: 'Objects' }];
+// const activeFilters = [{ value: 'objects', label: 'Objects' }];
 
 const open = ref(false);
 </script>
@@ -223,39 +223,25 @@ import {
   Disclosure,
   DisclosureButton,
   DisclosurePanel,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
   Popover,
   PopoverButton,
   PopoverGroup,
   PopoverPanel,
-  TransitionChild,
-  TransitionRoot,
 } from '@headlessui/vue';
 import { XMarkIcon } from '@heroicons/vue/20/solid';
 import { ChevronDownIcon } from '@heroicons/vue/20/solid';
 
 export default {
   components: {
-    // eslint-disable-next-line vue/no-reserved-component-names
     Dialog,
     DialogPanel,
     Disclosure,
     DisclosureButton,
     DisclosurePanel,
-    // eslint-disable-next-line vue/no-reserved-component-names
-    Menu,
-    MenuButton,
-    MenuItem,
-    MenuItems,
     Popover,
     PopoverButton,
     PopoverGroup,
     PopoverPanel,
-    TransitionChild,
-    TransitionRoot,
     XMarkIcon,
     ChevronDownIcon,
   },
@@ -264,10 +250,6 @@ export default {
       type: Array,
       required: true,
     },
-    // activeFilters: {
-    //   type: Array,
-    //   required: true,
-    // },
   },
   data() {
     return {

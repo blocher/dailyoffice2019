@@ -34,7 +34,6 @@ export default {
     };
   },
   async created() {
-    let data = null;
     this.passage = this.$route.params.passage;
     try {
       const data = await this.$http.get(
@@ -44,7 +43,7 @@ export default {
       this.kjv = data.data.kjv;
       this.rsv = data.data.rsv;
       this.esv = data.data.esv;
-    } catch (e) {
+    } catch {
       this.error =
         'There was an error retrieving the passage. Please try again.';
       this.loading = false;

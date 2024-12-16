@@ -85,7 +85,7 @@ export default {
       };
       this.$http
         .post(url, params)
-        .then((response) => {
+        .then(() => {
           this.success = `Thanks for signing up! We'll send an occasional email to ${this.emailField} when a new feature is launched.`;
           this.emailField = null;
           this.loading = false;
