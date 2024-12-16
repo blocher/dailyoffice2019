@@ -99,6 +99,7 @@ import { event } from 'vue-gtag';
 import { useActiveMeta, useMeta } from 'vue-meta';
 import AdditionalLinks from '@/components/AdditionalLinks.vue';
 import { ArrowDown } from '@element-plus/icons-vue';
+import ThemeSwitcher from '@/components/ThemeSwitcher.vue';
 
 export default {
   components: {
@@ -106,6 +107,7 @@ export default {
     Loading,
     AdditionalLinks,
     ArrowDown,
+    ThemeSwitcher,
   },
   setup() {
     useMeta({
