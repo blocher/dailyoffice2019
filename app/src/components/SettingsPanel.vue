@@ -95,13 +95,15 @@ export default {
   methods: {
     async changeSetting() {
       const settings = await this.$store.state.settings;
-      this.availableSettings.forEach((setting) => {
-        if (setting.active) {
-          const name = setting.name;
-          const value = setting.active;
-          settings[name] = value;
-        }
-      });
+      if (this.availableSettings) {
+        this.availableSettings.forEach((setting) => {
+          if (setting.active) {
+            const name = setting.name;
+            const value = setting.active;
+            settings[name] = value;
+          }
+        });
+      }
       await this.$store.commit('saveSettings', settings);
       return ElMessage.success({
         title: 'Saved',

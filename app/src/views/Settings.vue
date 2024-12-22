@@ -92,6 +92,7 @@
 <script>
 // @ is an alias to /src
 
+// @ is an alias to /src
 import Loading from '@/components/Loading.vue';
 import SettingsPanel from '@/components/SettingsPanel.vue';
 import { DynamicStorage } from '@/helpers/storage';
@@ -141,16 +142,19 @@ export default {
       this.availableSettings = await this.$store.state.availableSettings;
       await this.$store.dispatch('initializeSettings');
       const settings = await this.$store.state.settings;
-      this.availableSettings.forEach((setting, i) => {
-        const name = setting.name;
-        this.availableSettings[i].active = settings[name];
-      });
-      this.dailyOfficeSettings = this.availableSettings.filter(
-        (setting) => setting.site_name == 'Daily Office'
-      );
-      this.familyPrayerSettings = this.availableSettings.filter(
-        (setting) => setting.site_name == 'Family Prayer'
-      );
+      if (this.availableSettings) {
+        this.availableSettings.forEach((setting, i) => {
+          const name = setting.name;
+          this.availableSettings[i].active = settings[name];
+        });
+
+        this.dailyOfficeSettings = this.availableSettings.filter(
+          (setting) => setting.site_name == 'Daily Office'
+        );
+        this.familyPrayerSettings = this.availableSettings.filter(
+          (setting) => setting.site_name == 'Family Prayer'
+        );
+      }
       if (await DynamicStorage.getItem('advancedSettings')) {
         const stored = await DynamicStorage.getItem('advancedSettings');
         this.advanced = stored == 'true' ? true : false;

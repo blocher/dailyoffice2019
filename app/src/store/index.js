@@ -42,16 +42,18 @@ export default createStore({
         ? JSON.parse(await DynamicStorage.getItem('settings'))
         : {};
       let applied = false;
-      availableSettings.forEach((availableSetting) => {
-        const key = availableSetting['name'];
-        const value = availableSetting['options'][0]['value'];
-        if (router.currentRoute._value.query[key]) {
-          applied = true;
-          settings[key] = router.currentRoute._value.query[key];
-        } else if (settings[key] === undefined) {
-          settings[key] = value;
-        }
-      });
+      if (availableSettings) {
+        availableSettings.forEach((availableSetting) => {
+          const key = availableSetting['name'];
+          const value = availableSetting['options'][0]['value'];
+          if (router.currentRoute._value.query[key]) {
+            applied = true;
+            settings[key] = router.currentRoute._value.query[key];
+          } else if (settings[key] === undefined) {
+            settings[key] = value;
+          }
+        });
+      }
       await DynamicStorage.setItem('settings', JSON.stringify(settings));
       state.settings = settings;
       await initializeAdditionalCollects();

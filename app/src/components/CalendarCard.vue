@@ -115,6 +115,10 @@
 <script>
 // @ is an alias to /src
 
+// @ is an alias to /src
+// @ is an alias to /src
+// @ is an alias to /src
+// @ is an alias to /src
 import Commemoration from '@/components/Commemoration.vue';
 
 export default {
@@ -130,14 +134,16 @@ export default {
   },
   computed: {
     cardColor: function () {
-      if (this.office != 'evening_prayer' && this.office != 'compline') {
+      if (!this.card) return true;
+      if (this.office !== 'evening_prayer' && this.office !== 'compline') {
         return this.card.primary_color;
       } else {
         return this.card.primary_evening_color;
       }
     },
     hideBody: function () {
-      if (this.office == 'evening_prayer' || this.office == 'compline') {
+      if (!this.card) return true;
+      if (this.office === 'evening_prayer' || this.office === 'compline') {
         return this.card.evening_commemorations.length < 2;
       } else {
         return this.card.commemorations.length < 2;
@@ -148,6 +154,7 @@ export default {
     if (!this.currentServiceType) {
       this.currentServiceType = 'office';
     }
+
     const options = {
       weekday: 'long',
       year: 'numeric',
