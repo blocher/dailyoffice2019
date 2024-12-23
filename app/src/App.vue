@@ -38,12 +38,6 @@
             <a href="/about">
               <el-dropdown-item>About</el-dropdown-item>
             </a>
-            <a href="https://classic.dailyoffice2019.com/" target="_blank">
-              <el-dropdown-item
-                >Classic Site&nbsp;
-                <font-awesome-icon :icon="['fad', 'fa-square-up-right']" />
-              </el-dropdown-item>
-            </a>
             <el-dropdown-item disabled>--Prayer Resources--</el-dropdown-item>
             <a href="/collects">
               <el-dropdown-item>Collects</el-dropdown-item>
