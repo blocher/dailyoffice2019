@@ -71,8 +71,8 @@ class BibleGateway(BibleSource):
 
     def _set_text(self):
         try:
-            str = html2text(self.html).replace("\n", " ").replace("/\s\s+/", " ").strip()
-            str = re.sub(" +", " ", str)
+            str = html2text(self.html).replace("\n", " ").replace(r"/\s\s+/", " ").strip()
+            str = re.sub(r" +", " ", str)
             return str
         except Exception as e:
             print(e)
@@ -192,8 +192,8 @@ class OremusBibleBrowser(BibleSource):
 
     def _set_text(self):
         try:
-            str = html2text(self.html).replace("\n", " ").replace("/\s\s+/", " ").strip()
-            str = re.sub(" +", " ", str)
+            str = html2text(self.html).replace("\n", " ").replace(r"/\s\s+/", " ").strip()
+            str = re.sub(r" +", " ", str)
             return str
         except Exception as e:
             print(e)
@@ -264,8 +264,8 @@ class BCPPsalter(BibleSource):
 
     def _set_text(self):
         try:
-            str = html2text(self.html).replace("\n", " ").replace("/\s\s+/", " ").strip()
-            str = re.sub(" +", " ", str)
+            str = html2text(self.html).replace("\n", " ").replace(r"/\s\s+/", " ").strip()
+            str = re.sub(r" +", " ", str)
             return str
         except Exception as e:
             print(e)

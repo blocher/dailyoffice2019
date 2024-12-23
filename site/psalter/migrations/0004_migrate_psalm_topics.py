@@ -10,7 +10,7 @@ def forwards(apps, schema_editor):
     PsalmTopicPsalm = apps.get_model("psalter", "PsalmTopicPsalm")
 
     for psalm_topic in PsalmTopic.objects.order_by("order").all():
-        psalms = re.sub("[^\\d,]+", "", psalm_topic.psalms)
+        psalms = re.sub(r"[^\\d,]+", "", psalm_topic.psalms)
         psalms = psalms.split(",")
         i = 0
         for psalm in psalms:

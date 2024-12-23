@@ -42,7 +42,7 @@ def clean_collect(input, strip_tags=False, remove_line_breaks=False, add_tags=Tr
         input = input.replace("\n", " ").replace("\r", "")
     input = input.replace("<strong>Amen.", "").replace("<strong> Amen.", "")
     input = input.replace("Amen.", "").replace("Amen", "")
-    input = re.sub(" +", " ", input)
+    input = re.sub(r" +", " ", input)
     input = input.strip()
     if input and add_tags:
         input = f"<p>{input} <strong>Amen.</strong></p>"

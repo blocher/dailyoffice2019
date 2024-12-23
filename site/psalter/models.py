@@ -36,7 +36,7 @@ class PsalmTopic(UUIDModel):
 
     @property
     def psalm_list(self):
-        psalms = re.sub("[^\\d,]+", "", self.psalms)
+        psalms = re.sub(r"[^\\d,]+", "", self.psalms)
         return psalms.split(",")
 
     class Meta:
@@ -50,7 +50,7 @@ class PsalmTopicPsalm(UUIDModel):
 
     @property
     def psalm_list(self):
-        psalms = re.sub("[^\\d,]+", "", self.psalms)
+        psalms = re.sub(r"[^\\d,]+", "", self.psalms)
         return psalms.split(",")
 
     class Meta:

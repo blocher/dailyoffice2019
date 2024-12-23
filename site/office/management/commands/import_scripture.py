@@ -22,9 +22,9 @@ class Command(BaseCommand):
     def break_apart_passages(self, original_passage):
         if "," not in original_passage:
             return [original_passage]
-        book = re.sub("[^A-Za-z ]", "", original_passage)
-        book = re.sub(" +", " ", book.strip())
-        chapter_verse = re.sub("[^0-9-,:]", "", original_passage)
+        book = re.sub(r"[^A-Za-z ]", "", original_passage)
+        book = re.sub(r" +", " ", book.strip())
+        chapter_verse = re.sub(r"[^0-9-,:]", "", original_passage)
         passages = chapter_verse.split(",")
         citations = []
         chapter = None

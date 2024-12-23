@@ -226,7 +226,7 @@ class Command(ImportCommemorationsBaseCommand):
                 return numbered_commemoration
 
         ordinals = ("First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth", "Ninth", "Tenth")
-        code = re.sub("([A-Z])", " \g<0>", code).strip().split(" ")
+        code = re.sub(r"([A-Z])", " \g<0>", code).strip().split(" ")
         try:
             res = (
                 Commemoration.objects.filter(calendar=self.calendar)

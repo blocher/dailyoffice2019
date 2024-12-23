@@ -2,12 +2,12 @@ import datetime
 import re
 from functools import cached_property
 
+from bs4 import BeautifulSoup
+from django.db import models
 from django_ckeditor_5.fields import CKEditor5Field
 
-from bs4 import BeautifulSoup
 from churchcal.base_models import BaseModel
 from churchcal.models import Commemoration, Proper, Common, SanctoraleCommemoration
-from django.db import models
 from office.utils import passage_to_citation
 
 
@@ -136,7 +136,7 @@ class AboutItem(BaseModel):
         return "app"
 
     def display_name(self):
-        return "{} ({})".format(re.sub("<[^<]+?>", "", self.question), self.mode())
+        return "{} ({})".format(re.sub(r"<[^<]+?>", "", self.question), self.mode())
 
     def __str__(self):
         return self.display_name()
@@ -479,7 +479,7 @@ class LectionaryItem(BaseModel):
         year = year.upper().strip()
         if not reading.short_scripture:
             return f'<a href="/mass_readings/{year}/#{self.pk}_{reading.long_scripture.pk}">{reading.long_scripture.passage}</a>'
-        short_passage = re.sub("[a-zA-Z]", "", reading.short_scripture.passage).strip()
+        short_passage = re.sub(r"[a-zA-Z]", "", reading.short_scripture.passage).strip()
         return f'<a href="/mass_readings/{year}/#{self.pk}_{reading.long_scripture.pk}">{reading.long_scripture.passage} [<em> or, {short_passage}</em> ]</a>'
 
     def passages_for_year_and_number(self, year, number):

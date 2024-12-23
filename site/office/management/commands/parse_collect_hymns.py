@@ -128,7 +128,7 @@ def normalize_collect_text(text):
     regex = re.compile("[^a-zA-Z ]")
     text = regex.sub(" ", text)
     text = text.strip().lower()
-    text = re.sub("\s\s+", " ", text)
+    text = re.sub(r"\s\s+", " ", text)
     return text
 
 

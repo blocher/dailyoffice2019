@@ -69,7 +69,7 @@ def clean(input):
     input = title_case(input)
     input = remove_smart_quotes(input)
     input = input.replace("\n", " ").replace("\r", "")
-    input = re.sub(" +", " ", input)
+    input = re.sub(r" +", " ", input)
     input = input.strip()
     return input
 
@@ -82,7 +82,7 @@ def clean_collect(input, strip_tags=False, remove_line_breaks=False, add_tags=Tr
         input = input.replace("\n", " ").replace("\r", "")
     input = input.replace("<strong>Amen.", "").replace("<strong> Amen.", "")
     input = input.replace("Amen.", "").replace("Amen", "")
-    input = re.sub(" +", " ", input)
+    input = re.sub(r" +", " ", input)
     input = input.strip()
     if input and add_tags:
         input = f"<p>{input} <strong>Amen.</strong></p>"
@@ -91,13 +91,13 @@ def clean_collect(input, strip_tags=False, remove_line_breaks=False, add_tags=Tr
 
 
 def number(input):
-    input = re.sub("[^0-9]", "", input)
+    input = re.sub(r"[^0-9]", "", input)
     input = int(input)
     return input
 
 
 def remove_number(input):
-    input = re.sub("^[0-9]+\.", "", input)
+    input = re.sub(r"^[0-9]+\.", "", input)
     input = input.replace("Benedict of Nursia", "")
     input = input.strip()
     input = input.split("  ")
@@ -124,7 +124,7 @@ def name_without_saint(input):
     input = input.replace("Saint", "")
     input = input.replace("(I)", "")
     input = input.replace("(II)", "")
-    input = re.sub(" +", " ", input)
+    input = re.sub(r" +", " ", input)
     input = input.strip()
     return input
 
@@ -133,7 +133,7 @@ def proper_number(proper):
     proper = proper.lower()
     if "proper" not in proper:
         return None
-    proper = re.sub("[^0-9]", "", proper)
+    proper = re.sub(r"[^0-9]", "", proper)
     proper = int(proper)
     return proper
 
