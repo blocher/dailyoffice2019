@@ -28,10 +28,10 @@ yes | npx update-browserslist-db@latest
 echo "======Migrating Database======"
 python3.13 manage.py migrate --no-input
 
-echo "======Running Webpack and Collceting Static Files======"
+echo "======Collecting Static Files======"
 # enable corepack
-mkdir -p static
-npx webpack
+#mkdir -p static
+#npx webpack
 python3.12 manage.py collectstatic --noinput --clear
 
 echo "======Clearing Memcached======"

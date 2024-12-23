@@ -4,592 +4,704 @@
     "../img/app_store.svg": {
       "name": "../img/app_store.svg",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/img/app_store.svg",
-      "publicPath": "/static/office/js/../img/app_store.svg"
+      "publicPath": "/static/office/js/../img/app_store.svg",
+      "sourceFilename": "office/src/office/img/app_store.svg"
     },
     "../img/bcp_evening_prayer.jpg": {
       "name": "../img/bcp_evening_prayer.jpg",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/img/bcp_evening_prayer.jpg",
-      "publicPath": "/static/office/js/../img/bcp_evening_prayer.jpg"
+      "publicPath": "/static/office/js/../img/bcp_evening_prayer.jpg",
+      "sourceFilename": "office/src/office/img/bcp_evening_prayer.jpg"
     },
     "../img/bcp.jpg": {
       "name": "../img/bcp.jpg",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/img/bcp.jpg",
-      "publicPath": "/static/office/js/../img/bcp.jpg"
+      "publicPath": "/static/office/js/../img/bcp.jpg",
+      "sourceFilename": "office/src/office/img/bcp.jpg"
     },
     "../img/google-play-badge.png": {
       "name": "../img/google-play-badge.png",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/img/google-play-badge.png",
-      "publicPath": "/static/office/js/../img/google-play-badge.png"
+      "publicPath": "/static/office/js/../img/google-play-badge.png",
+      "sourceFilename": "office/src/office/img/google-play-badge.png"
     },
     "0345712b0bd21a1341b2.woff": {
       "name": "0345712b0bd21a1341b2.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/0345712b0bd21a1341b2.woff",
-      "publicPath": "/static/office/js/0345712b0bd21a1341b2.woff"
+      "publicPath": "/static/office/js/0345712b0bd21a1341b2.woff",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-BoldItalic.woff"
     },
     "072e73178c34406263a4.woff": {
       "name": "072e73178c34406263a4.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/072e73178c34406263a4.woff",
-      "publicPath": "/static/office/js/072e73178c34406263a4.woff"
+      "publicPath": "/static/office/js/072e73178c34406263a4.woff",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-regular-400.woff"
     },
     "07d88e75f867e9c8d85b.eot": {
       "name": "07d88e75f867e9c8d85b.eot",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/07d88e75f867e9c8d85b.eot",
-      "publicPath": "/static/office/js/07d88e75f867e9c8d85b.eot"
+      "publicPath": "/static/office/js/07d88e75f867e9c8d85b.eot",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Regular.eot"
     },
     "088be14f688685a55a45.ttf": {
       "name": "088be14f688685a55a45.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/088be14f688685a55a45.ttf",
-      "publicPath": "/static/office/js/088be14f688685a55a45.ttf"
+      "publicPath": "/static/office/js/088be14f688685a55a45.ttf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Semibold.ttf"
     },
     "08c4900df36e41f30ed9.svg": {
       "name": "08c4900df36e41f30ed9.svg",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/08c4900df36e41f30ed9.svg",
-      "publicPath": "/static/office/js/08c4900df36e41f30ed9.svg"
+      "publicPath": "/static/office/js/08c4900df36e41f30ed9.svg",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Semibold.svg"
     },
     "0e27347def35941f0adb.woff2": {
       "name": "0e27347def35941f0adb.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/0e27347def35941f0adb.woff2",
-      "publicPath": "/static/office/js/0e27347def35941f0adb.woff2"
+      "publicPath": "/static/office/js/0e27347def35941f0adb.woff2",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-thin-100.woff2"
     },
     "149a6b9ab513cdae59f1.woff2": {
       "name": "149a6b9ab513cdae59f1.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/149a6b9ab513cdae59f1.woff2",
-      "publicPath": "/static/office/js/149a6b9ab513cdae59f1.woff2"
+      "publicPath": "/static/office/js/149a6b9ab513cdae59f1.woff2",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-regular-400.woff2"
     },
     "18222b499215e52d7a82.woff": {
       "name": "18222b499215e52d7a82.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/18222b499215e52d7a82.woff",
-      "publicPath": "/static/office/js/18222b499215e52d7a82.woff"
+      "publicPath": "/static/office/js/18222b499215e52d7a82.woff",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-light-300.woff"
     },
     "19b385352699194e4246.svg": {
       "name": "19b385352699194e4246.svg",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/19b385352699194e4246.svg",
-      "publicPath": "/static/office/js/19b385352699194e4246.svg"
+      "publicPath": "/static/office/js/19b385352699194e4246.svg",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-BoldItalic.svg"
     },
     "23e368196f7b6a398044.woff": {
       "name": "23e368196f7b6a398044.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/23e368196f7b6a398044.woff",
-      "publicPath": "/static/office/js/23e368196f7b6a398044.woff"
+      "publicPath": "/static/office/js/23e368196f7b6a398044.woff",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-solid-900.woff"
     },
     "2502fdacd5ec8fae5211.otf": {
       "name": "2502fdacd5ec8fae5211.otf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/2502fdacd5ec8fae5211.otf",
-      "publicPath": "/static/office/js/2502fdacd5ec8fae5211.otf"
+      "publicPath": "/static/office/js/2502fdacd5ec8fae5211.otf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-BoldItalic.otf"
     },
     "2b3c40ec6ad47e91546d.eot": {
       "name": "2b3c40ec6ad47e91546d.eot",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/2b3c40ec6ad47e91546d.eot",
-      "publicPath": "/static/office/js/2b3c40ec6ad47e91546d.eot"
+      "publicPath": "/static/office/js/2b3c40ec6ad47e91546d.eot",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Italic.eot"
     },
     "32445a5653dc6fabb074.woff": {
       "name": "32445a5653dc6fabb074.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/32445a5653dc6fabb074.woff",
-      "publicPath": "/static/office/js/32445a5653dc6fabb074.woff"
+      "publicPath": "/static/office/js/32445a5653dc6fabb074.woff",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Regular.woff"
     },
     "3b04d1ac2c031108d3c4.woff": {
       "name": "3b04d1ac2c031108d3c4.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/3b04d1ac2c031108d3c4.woff",
-      "publicPath": "/static/office/js/3b04d1ac2c031108d3c4.woff"
+      "publicPath": "/static/office/js/3b04d1ac2c031108d3c4.woff",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Italic.woff"
     },
     "3bf8b8521f603858bb3b.woff2": {
       "name": "3bf8b8521f603858bb3b.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/3bf8b8521f603858bb3b.woff2",
-      "publicPath": "/static/office/js/3bf8b8521f603858bb3b.woff2"
+      "publicPath": "/static/office/js/3bf8b8521f603858bb3b.woff2",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-light-300.woff2"
     },
     "3cedacfdf8acbc01f347.ttf": {
       "name": "3cedacfdf8acbc01f347.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/3cedacfdf8acbc01f347.ttf",
-      "publicPath": "/static/office/js/3cedacfdf8acbc01f347.ttf"
+      "publicPath": "/static/office/js/3cedacfdf8acbc01f347.ttf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-SemiboldItalic.ttf"
     },
     "3f9b34bb47c232621b2b.ttf": {
       "name": "3f9b34bb47c232621b2b.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/3f9b34bb47c232621b2b.ttf",
-      "publicPath": "/static/office/js/3f9b34bb47c232621b2b.ttf"
+      "publicPath": "/static/office/js/3f9b34bb47c232621b2b.ttf",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-regular-400.ttf"
     },
     "47b10a0c141b9be0e43f.woff": {
       "name": "47b10a0c141b9be0e43f.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/47b10a0c141b9be0e43f.woff",
-      "publicPath": "/static/office/js/47b10a0c141b9be0e43f.woff"
+      "publicPath": "/static/office/js/47b10a0c141b9be0e43f.woff",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Bold.woff"
     },
     "49d9cfe50c4c7c819171.svg": {
       "name": "49d9cfe50c4c7c819171.svg",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/49d9cfe50c4c7c819171.svg",
-      "publicPath": "/static/office/js/49d9cfe50c4c7c819171.svg"
+      "publicPath": "/static/office/js/49d9cfe50c4c7c819171.svg",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-SemiboldItalic.svg"
     },
     "527ce51ae7c6002569ab.eot": {
       "name": "527ce51ae7c6002569ab.eot",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/527ce51ae7c6002569ab.eot",
-      "publicPath": "/static/office/js/527ce51ae7c6002569ab.eot"
+      "publicPath": "/static/office/js/527ce51ae7c6002569ab.eot",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Semibold.eot"
     },
     "5b2688feed672622c768.ttf": {
       "name": "5b2688feed672622c768.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/5b2688feed672622c768.ttf",
-      "publicPath": "/static/office/js/5b2688feed672622c768.ttf"
+      "publicPath": "/static/office/js/5b2688feed672622c768.ttf",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-brands-400.ttf"
     },
     "66ed4ecc92e1120384bf.woff2": {
       "name": "66ed4ecc92e1120384bf.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/66ed4ecc92e1120384bf.woff2",
-      "publicPath": "/static/office/js/66ed4ecc92e1120384bf.woff2"
+      "publicPath": "/static/office/js/66ed4ecc92e1120384bf.woff2",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-BoldItalic.woff2"
     },
     "71b9c22e9e3ad0b15540.woff": {
       "name": "71b9c22e9e3ad0b15540.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/71b9c22e9e3ad0b15540.woff",
-      "publicPath": "/static/office/js/71b9c22e9e3ad0b15540.woff"
+      "publicPath": "/static/office/js/71b9c22e9e3ad0b15540.woff",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Semibold.woff"
     },
     "79a40e83cf6122b3b07e.woff": {
       "name": "79a40e83cf6122b3b07e.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/79a40e83cf6122b3b07e.woff",
-      "publicPath": "/static/office/js/79a40e83cf6122b3b07e.woff"
+      "publicPath": "/static/office/js/79a40e83cf6122b3b07e.woff",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-duotone-900.woff"
     },
     "7bd18b2c1b3b6348f5d9.woff2": {
       "name": "7bd18b2c1b3b6348f5d9.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/7bd18b2c1b3b6348f5d9.woff2",
-      "publicPath": "/static/office/js/7bd18b2c1b3b6348f5d9.woff2"
+      "publicPath": "/static/office/js/7bd18b2c1b3b6348f5d9.woff2",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Semibold.woff2"
     },
     "84270a4fd526659137de.otf": {
       "name": "84270a4fd526659137de.otf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/84270a4fd526659137de.otf",
-      "publicPath": "/static/office/js/84270a4fd526659137de.otf"
+      "publicPath": "/static/office/js/84270a4fd526659137de.otf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Bold.otf"
     },
     "86a38453bd02d5f8243b.ttf": {
       "name": "86a38453bd02d5f8243b.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/86a38453bd02d5f8243b.ttf",
-      "publicPath": "/static/office/js/86a38453bd02d5f8243b.ttf"
+      "publicPath": "/static/office/js/86a38453bd02d5f8243b.ttf",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-thin-100.ttf"
     },
     "8cb31ade76302b35726c.svg": {
       "name": "8cb31ade76302b35726c.svg",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/8cb31ade76302b35726c.svg",
-      "publicPath": "/static/office/js/8cb31ade76302b35726c.svg"
+      "publicPath": "/static/office/js/8cb31ade76302b35726c.svg",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Regular.svg"
     },
     "8f7757e03e53eca304f2.ttf": {
       "name": "8f7757e03e53eca304f2.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/8f7757e03e53eca304f2.ttf",
-      "publicPath": "/static/office/js/8f7757e03e53eca304f2.ttf"
+      "publicPath": "/static/office/js/8f7757e03e53eca304f2.ttf",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-light-300.ttf"
     },
     "90f3c831b452aaa9f258.ttf": {
       "name": "90f3c831b452aaa9f258.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/90f3c831b452aaa9f258.ttf",
-      "publicPath": "/static/office/js/90f3c831b452aaa9f258.ttf"
+      "publicPath": "/static/office/js/90f3c831b452aaa9f258.ttf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Italic.ttf"
     },
     "94247afb4546f8386782.ttf": {
       "name": "94247afb4546f8386782.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/94247afb4546f8386782.ttf",
-      "publicPath": "/static/office/js/94247afb4546f8386782.ttf"
+      "publicPath": "/static/office/js/94247afb4546f8386782.ttf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Bold.ttf"
     },
     "9ee401386d0e01e65c1b.eot": {
       "name": "9ee401386d0e01e65c1b.eot",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/9ee401386d0e01e65c1b.eot",
-      "publicPath": "/static/office/js/9ee401386d0e01e65c1b.eot"
+      "publicPath": "/static/office/js/9ee401386d0e01e65c1b.eot",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-BoldItalic.eot"
     },
     "a0de784ee60b1f6309dc.otf": {
       "name": "a0de784ee60b1f6309dc.otf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/a0de784ee60b1f6309dc.otf",
-      "publicPath": "/static/office/js/a0de784ee60b1f6309dc.otf"
+      "publicPath": "/static/office/js/a0de784ee60b1f6309dc.otf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Regular.otf"
     },
     "a346a60fcd2ce7e78c12.woff": {
       "name": "a346a60fcd2ce7e78c12.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/a346a60fcd2ce7e78c12.woff",
-      "publicPath": "/static/office/js/a346a60fcd2ce7e78c12.woff"
+      "publicPath": "/static/office/js/a346a60fcd2ce7e78c12.woff",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-brands-400.woff"
     },
     "a45ef01cd4a352f3ea26.ttf": {
       "name": "a45ef01cd4a352f3ea26.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/a45ef01cd4a352f3ea26.ttf",
-      "publicPath": "/static/office/js/a45ef01cd4a352f3ea26.ttf"
+      "publicPath": "/static/office/js/a45ef01cd4a352f3ea26.ttf",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-solid-900.ttf"
     },
     "a498864a784372d6607e.woff2": {
       "name": "a498864a784372d6607e.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/a498864a784372d6607e.woff2",
-      "publicPath": "/static/office/js/a498864a784372d6607e.woff2"
+      "publicPath": "/static/office/js/a498864a784372d6607e.woff2",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-SemiboldItalic.woff2"
     },
     "a71b7c10754cb4568a5a.ttf": {
       "name": "a71b7c10754cb4568a5a.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/a71b7c10754cb4568a5a.ttf",
-      "publicPath": "/static/office/js/a71b7c10754cb4568a5a.ttf"
+      "publicPath": "/static/office/js/a71b7c10754cb4568a5a.ttf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-BoldItalic.ttf"
     },
     "a946fcc26b62bc1775dc.woff2": {
       "name": "a946fcc26b62bc1775dc.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/a946fcc26b62bc1775dc.woff2",
-      "publicPath": "/static/office/js/a946fcc26b62bc1775dc.woff2"
+      "publicPath": "/static/office/js/a946fcc26b62bc1775dc.woff2",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-duotone-900.woff2"
     },
     "aa5f111c018954adc71b.woff": {
       "name": "aa5f111c018954adc71b.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/aa5f111c018954adc71b.woff",
-      "publicPath": "/static/office/js/aa5f111c018954adc71b.woff"
+      "publicPath": "/static/office/js/aa5f111c018954adc71b.woff",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-SemiboldItalic.woff"
     },
     "ab289ae6871d13e1013e.svg": {
       "name": "ab289ae6871d13e1013e.svg",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/ab289ae6871d13e1013e.svg",
-      "publicPath": "/static/office/js/ab289ae6871d13e1013e.svg"
+      "publicPath": "/static/office/js/ab289ae6871d13e1013e.svg",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Italic.svg"
     },
     "ab3a26dbe32202ffc7ac.otf": {
       "name": "ab3a26dbe32202ffc7ac.otf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/ab3a26dbe32202ffc7ac.otf",
-      "publicPath": "/static/office/js/ab3a26dbe32202ffc7ac.otf"
+      "publicPath": "/static/office/js/ab3a26dbe32202ffc7ac.otf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-SemiboldItalic.otf"
     },
     "b6ebc879b626e026d254.svg": {
       "name": "b6ebc879b626e026d254.svg",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/b6ebc879b626e026d254.svg",
-      "publicPath": "/static/office/js/b6ebc879b626e026d254.svg"
+      "publicPath": "/static/office/js/b6ebc879b626e026d254.svg",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Bold.svg"
     },
     "b906cf6881ff546dd888.woff2": {
       "name": "b906cf6881ff546dd888.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/b906cf6881ff546dd888.woff2",
-      "publicPath": "/static/office/js/b906cf6881ff546dd888.woff2"
+      "publicPath": "/static/office/js/b906cf6881ff546dd888.woff2",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Regular.woff2"
     },
-    "bundle.18e70b6ebfa4f4901ad9.js": {
-      "name": "bundle.18e70b6ebfa4f4901ad9.js",
-      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/bundle.18e70b6ebfa4f4901ad9.js",
-      "publicPath": "/static/office/js/bundle.18e70b6ebfa4f4901ad9.js"
+    "bundle.1df468b621292a80869e.js": {
+      "name": "bundle.1df468b621292a80869e.js",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/bundle.1df468b621292a80869e.js",
+      "publicPath": "/static/office/js/bundle.1df468b621292a80869e.js"
     },
-    "bundle.67ef40af4263827d6525.js": {
-      "name": "bundle.67ef40af4263827d6525.js",
-      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/bundle.67ef40af4263827d6525.js",
-      "publicPath": "/static/office/js/bundle.67ef40af4263827d6525.js"
+    "bundle.670fc427532dbd80583f.js": {
+      "name": "bundle.670fc427532dbd80583f.js",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/bundle.670fc427532dbd80583f.js",
+      "publicPath": "/static/office/js/bundle.670fc427532dbd80583f.js"
     },
-    "bundle.79a0c08d4411cedaa511.js": {
-      "name": "bundle.79a0c08d4411cedaa511.js",
-      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/bundle.79a0c08d4411cedaa511.js",
-      "publicPath": "/static/office/js/bundle.79a0c08d4411cedaa511.js"
+    "bundle.b4628a2c3b3fc507a60a.js": {
+      "name": "bundle.b4628a2c3b3fc507a60a.js",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/bundle.b4628a2c3b3fc507a60a.js",
+      "publicPath": "/static/office/js/bundle.b4628a2c3b3fc507a60a.js"
     },
-    "bundle.bf127eabbed5387c48e5.js": {
-      "name": "bundle.bf127eabbed5387c48e5.js",
-      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/bundle.bf127eabbed5387c48e5.js",
-      "publicPath": "/static/office/js/bundle.bf127eabbed5387c48e5.js"
+    "bundle.c330522541353e517740.js": {
+      "name": "bundle.c330522541353e517740.js",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/bundle.c330522541353e517740.js",
+      "publicPath": "/static/office/js/bundle.c330522541353e517740.js"
     },
-    "bundle.c2f756deea139f3ffc20.js": {
-      "name": "bundle.c2f756deea139f3ffc20.js",
-      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/bundle.c2f756deea139f3ffc20.js",
-      "publicPath": "/static/office/js/bundle.c2f756deea139f3ffc20.js"
+    "bundle.d63f5038e1a73ff20da9.js": {
+      "name": "bundle.d63f5038e1a73ff20da9.js",
+      "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/bundle.d63f5038e1a73ff20da9.js",
+      "publicPath": "/static/office/js/bundle.d63f5038e1a73ff20da9.js"
     },
     "c0191dbae1a9a051738d.otf": {
       "name": "c0191dbae1a9a051738d.otf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/c0191dbae1a9a051738d.otf",
-      "publicPath": "/static/office/js/c0191dbae1a9a051738d.otf"
+      "publicPath": "/static/office/js/c0191dbae1a9a051738d.otf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Semibold.otf"
     },
     "c047a9313a95e4693ea0.eot": {
       "name": "c047a9313a95e4693ea0.eot",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/c047a9313a95e4693ea0.eot",
-      "publicPath": "/static/office/js/c047a9313a95e4693ea0.eot"
+      "publicPath": "/static/office/js/c047a9313a95e4693ea0.eot",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Bold.eot"
     },
     "ce9a92f7f1340a577e5d.woff2": {
       "name": "ce9a92f7f1340a577e5d.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/ce9a92f7f1340a577e5d.woff2",
-      "publicPath": "/static/office/js/ce9a92f7f1340a577e5d.woff2"
+      "publicPath": "/static/office/js/ce9a92f7f1340a577e5d.woff2",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Italic.woff2"
     },
     "d7781512faffab1b3495.ttf": {
       "name": "d7781512faffab1b3495.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/d7781512faffab1b3495.ttf",
-      "publicPath": "/static/office/js/d7781512faffab1b3495.ttf"
+      "publicPath": "/static/office/js/d7781512faffab1b3495.ttf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Regular.ttf"
     },
     "e96ce09ca2675591998e.eot": {
       "name": "e96ce09ca2675591998e.eot",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/e96ce09ca2675591998e.eot",
-      "publicPath": "/static/office/js/e96ce09ca2675591998e.eot"
+      "publicPath": "/static/office/js/e96ce09ca2675591998e.eot",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-SemiboldItalic.eot"
     },
     "e9dc7f36b43cfca31191.ttf": {
       "name": "e9dc7f36b43cfca31191.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/e9dc7f36b43cfca31191.ttf",
-      "publicPath": "/static/office/js/e9dc7f36b43cfca31191.ttf"
+      "publicPath": "/static/office/js/e9dc7f36b43cfca31191.ttf",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-duotone-900.ttf"
     },
     "f6e5b8c987ab6f555b4b.woff": {
       "name": "f6e5b8c987ab6f555b4b.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/f6e5b8c987ab6f555b4b.woff",
-      "publicPath": "/static/office/js/f6e5b8c987ab6f555b4b.woff"
+      "publicPath": "/static/office/js/f6e5b8c987ab6f555b4b.woff",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-thin-100.woff"
     },
     "f6ed548623081f235c71.woff2": {
       "name": "f6ed548623081f235c71.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/f6ed548623081f235c71.woff2",
-      "publicPath": "/static/office/js/f6ed548623081f235c71.woff2"
+      "publicPath": "/static/office/js/f6ed548623081f235c71.woff2",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-solid-900.woff2"
     },
     "f786cb2fe33d8c388336.woff2": {
       "name": "f786cb2fe33d8c388336.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/f786cb2fe33d8c388336.woff2",
-      "publicPath": "/static/office/js/f786cb2fe33d8c388336.woff2"
+      "publicPath": "/static/office/js/f786cb2fe33d8c388336.woff2",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Bold.woff2"
     },
     "f915aad9e9e202b0e601.woff2": {
       "name": "f915aad9e9e202b0e601.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/f915aad9e9e202b0e601.woff2",
-      "publicPath": "/static/office/js/f915aad9e9e202b0e601.woff2"
+      "publicPath": "/static/office/js/f915aad9e9e202b0e601.woff2",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-brands-400.woff2"
     },
     "faabdae87aea03faa345.otf": {
       "name": "faabdae87aea03faa345.otf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/faabdae87aea03faa345.otf",
-      "publicPath": "/static/office/js/faabdae87aea03faa345.otf"
+      "publicPath": "/static/office/js/faabdae87aea03faa345.otf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Italic.otf"
     },
     "fonts/ACaslonPro-Bold.eot": {
       "name": "fonts/ACaslonPro-Bold.eot",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Bold.eot",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Bold.eot"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Bold.eot",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Bold.eot"
     },
     "fonts/ACaslonPro-Bold.otf": {
       "name": "fonts/ACaslonPro-Bold.otf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Bold.otf",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Bold.otf"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Bold.otf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Bold.otf"
     },
     "fonts/ACaslonPro-Bold.svg": {
       "name": "fonts/ACaslonPro-Bold.svg",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Bold.svg",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Bold.svg"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Bold.svg",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Bold.svg"
     },
     "fonts/ACaslonPro-Bold.ttf": {
       "name": "fonts/ACaslonPro-Bold.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Bold.ttf",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Bold.ttf"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Bold.ttf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Bold.ttf"
     },
     "fonts/ACaslonPro-Bold.woff": {
       "name": "fonts/ACaslonPro-Bold.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Bold.woff",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Bold.woff"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Bold.woff",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Bold.woff"
     },
     "fonts/ACaslonPro-Bold.woff2": {
       "name": "fonts/ACaslonPro-Bold.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Bold.woff2",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Bold.woff2"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Bold.woff2",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Bold.woff2"
     },
     "fonts/ACaslonPro-BoldItalic.eot": {
       "name": "fonts/ACaslonPro-BoldItalic.eot",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.eot",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.eot"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.eot",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-BoldItalic.eot"
     },
     "fonts/ACaslonPro-BoldItalic.otf": {
       "name": "fonts/ACaslonPro-BoldItalic.otf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.otf",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.otf"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.otf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-BoldItalic.otf"
     },
     "fonts/ACaslonPro-BoldItalic.svg": {
       "name": "fonts/ACaslonPro-BoldItalic.svg",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.svg",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.svg"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.svg",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-BoldItalic.svg"
     },
     "fonts/ACaslonPro-BoldItalic.ttf": {
       "name": "fonts/ACaslonPro-BoldItalic.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.ttf",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.ttf"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.ttf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-BoldItalic.ttf"
     },
     "fonts/ACaslonPro-BoldItalic.woff": {
       "name": "fonts/ACaslonPro-BoldItalic.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.woff",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.woff"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.woff",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-BoldItalic.woff"
     },
     "fonts/ACaslonPro-BoldItalic.woff2": {
       "name": "fonts/ACaslonPro-BoldItalic.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-BoldItalic.woff2",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.woff2"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-BoldItalic.woff2",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-BoldItalic.woff2"
     },
     "fonts/ACaslonPro-Italic.eot": {
       "name": "fonts/ACaslonPro-Italic.eot",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Italic.eot",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.eot"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.eot",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Italic.eot"
     },
     "fonts/ACaslonPro-Italic.otf": {
       "name": "fonts/ACaslonPro-Italic.otf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Italic.otf",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.otf"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.otf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Italic.otf"
     },
     "fonts/ACaslonPro-Italic.svg": {
       "name": "fonts/ACaslonPro-Italic.svg",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Italic.svg",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.svg"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.svg",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Italic.svg"
     },
     "fonts/ACaslonPro-Italic.ttf": {
       "name": "fonts/ACaslonPro-Italic.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Italic.ttf",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.ttf"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.ttf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Italic.ttf"
     },
     "fonts/ACaslonPro-Italic.woff": {
       "name": "fonts/ACaslonPro-Italic.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Italic.woff",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.woff"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.woff",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Italic.woff"
     },
     "fonts/ACaslonPro-Italic.woff2": {
       "name": "fonts/ACaslonPro-Italic.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Italic.woff2",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.woff2"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Italic.woff2",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Italic.woff2"
     },
     "fonts/ACaslonPro-Regular.eot": {
       "name": "fonts/ACaslonPro-Regular.eot",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Regular.eot",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.eot"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.eot",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Regular.eot"
     },
     "fonts/ACaslonPro-Regular.otf": {
       "name": "fonts/ACaslonPro-Regular.otf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Regular.otf",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.otf"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.otf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Regular.otf"
     },
     "fonts/ACaslonPro-Regular.svg": {
       "name": "fonts/ACaslonPro-Regular.svg",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Regular.svg",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.svg"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.svg",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Regular.svg"
     },
     "fonts/ACaslonPro-Regular.ttf": {
       "name": "fonts/ACaslonPro-Regular.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Regular.ttf",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.ttf"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.ttf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Regular.ttf"
     },
     "fonts/ACaslonPro-Regular.woff": {
       "name": "fonts/ACaslonPro-Regular.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Regular.woff",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.woff"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.woff",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Regular.woff"
     },
     "fonts/ACaslonPro-Regular.woff2": {
       "name": "fonts/ACaslonPro-Regular.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Regular.woff2",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.woff2"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Regular.woff2",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Regular.woff2"
     },
     "fonts/ACaslonPro-Semibold.eot": {
       "name": "fonts/ACaslonPro-Semibold.eot",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Semibold.eot",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.eot"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.eot",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Semibold.eot"
     },
     "fonts/ACaslonPro-Semibold.otf": {
       "name": "fonts/ACaslonPro-Semibold.otf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Semibold.otf",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.otf"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.otf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Semibold.otf"
     },
     "fonts/ACaslonPro-Semibold.svg": {
       "name": "fonts/ACaslonPro-Semibold.svg",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Semibold.svg",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.svg"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.svg",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Semibold.svg"
     },
     "fonts/ACaslonPro-Semibold.ttf": {
       "name": "fonts/ACaslonPro-Semibold.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Semibold.ttf",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.ttf"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.ttf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Semibold.ttf"
     },
     "fonts/ACaslonPro-Semibold.woff": {
       "name": "fonts/ACaslonPro-Semibold.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Semibold.woff",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.woff"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.woff",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Semibold.woff"
     },
     "fonts/ACaslonPro-Semibold.woff2": {
       "name": "fonts/ACaslonPro-Semibold.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-Semibold.woff2",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.woff2"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-Semibold.woff2",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-Semibold.woff2"
     },
     "fonts/ACaslonPro-SemiboldItalic.eot": {
       "name": "fonts/ACaslonPro-SemiboldItalic.eot",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.eot",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.eot"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.eot",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-SemiboldItalic.eot"
     },
     "fonts/ACaslonPro-SemiboldItalic.otf": {
       "name": "fonts/ACaslonPro-SemiboldItalic.otf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.otf",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.otf"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.otf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-SemiboldItalic.otf"
     },
     "fonts/ACaslonPro-SemiboldItalic.svg": {
       "name": "fonts/ACaslonPro-SemiboldItalic.svg",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.svg",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.svg"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.svg",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-SemiboldItalic.svg"
     },
     "fonts/ACaslonPro-SemiboldItalic.ttf": {
       "name": "fonts/ACaslonPro-SemiboldItalic.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.ttf",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.ttf"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.ttf",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-SemiboldItalic.ttf"
     },
     "fonts/ACaslonPro-SemiboldItalic.woff": {
       "name": "fonts/ACaslonPro-SemiboldItalic.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.woff",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.woff"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.woff",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-SemiboldItalic.woff"
     },
     "fonts/ACaslonPro-SemiboldItalic.woff2": {
       "name": "fonts/ACaslonPro-SemiboldItalic.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/ACaslonPro-SemiboldItalic.woff2",
-      "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.woff2"
+      "publicPath": "/static/office/js/fonts/ACaslonPro-SemiboldItalic.woff2",
+      "sourceFilename": "office/src/office/css/fonts/ACaslonPro-SemiboldItalic.woff2"
     },
     "fonts/fa-brands-400.ttf": {
       "name": "fonts/fa-brands-400.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-brands-400.ttf",
-      "publicPath": "/static/office/js/fonts/fa-brands-400.ttf"
+      "publicPath": "/static/office/js/fonts/fa-brands-400.ttf",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-brands-400.ttf"
     },
     "fonts/fa-brands-400.woff": {
       "name": "fonts/fa-brands-400.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-brands-400.woff",
-      "publicPath": "/static/office/js/fonts/fa-brands-400.woff"
+      "publicPath": "/static/office/js/fonts/fa-brands-400.woff",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-brands-400.woff"
     },
     "fonts/fa-brands-400.woff2": {
       "name": "fonts/fa-brands-400.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-brands-400.woff2",
-      "publicPath": "/static/office/js/fonts/fa-brands-400.woff2"
+      "publicPath": "/static/office/js/fonts/fa-brands-400.woff2",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-brands-400.woff2"
     },
     "fonts/fa-duotone-900.ttf": {
       "name": "fonts/fa-duotone-900.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-duotone-900.ttf",
-      "publicPath": "/static/office/js/fonts/fa-duotone-900.ttf"
+      "publicPath": "/static/office/js/fonts/fa-duotone-900.ttf",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-duotone-900.ttf"
     },
     "fonts/fa-duotone-900.woff": {
       "name": "fonts/fa-duotone-900.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-duotone-900.woff",
-      "publicPath": "/static/office/js/fonts/fa-duotone-900.woff"
+      "publicPath": "/static/office/js/fonts/fa-duotone-900.woff",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-duotone-900.woff"
     },
     "fonts/fa-duotone-900.woff2": {
       "name": "fonts/fa-duotone-900.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-duotone-900.woff2",
-      "publicPath": "/static/office/js/fonts/fa-duotone-900.woff2"
+      "publicPath": "/static/office/js/fonts/fa-duotone-900.woff2",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-duotone-900.woff2"
     },
     "fonts/fa-light-300.ttf": {
       "name": "fonts/fa-light-300.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-light-300.ttf",
-      "publicPath": "/static/office/js/fonts/fa-light-300.ttf"
+      "publicPath": "/static/office/js/fonts/fa-light-300.ttf",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-light-300.ttf"
     },
     "fonts/fa-light-300.woff": {
       "name": "fonts/fa-light-300.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-light-300.woff",
-      "publicPath": "/static/office/js/fonts/fa-light-300.woff"
+      "publicPath": "/static/office/js/fonts/fa-light-300.woff",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-light-300.woff"
     },
     "fonts/fa-light-300.woff2": {
       "name": "fonts/fa-light-300.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-light-300.woff2",
-      "publicPath": "/static/office/js/fonts/fa-light-300.woff2"
+      "publicPath": "/static/office/js/fonts/fa-light-300.woff2",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-light-300.woff2"
     },
     "fonts/fa-regular-400.ttf": {
       "name": "fonts/fa-regular-400.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-regular-400.ttf",
-      "publicPath": "/static/office/js/fonts/fa-regular-400.ttf"
+      "publicPath": "/static/office/js/fonts/fa-regular-400.ttf",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-regular-400.ttf"
     },
     "fonts/fa-regular-400.woff": {
       "name": "fonts/fa-regular-400.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-regular-400.woff",
-      "publicPath": "/static/office/js/fonts/fa-regular-400.woff"
+      "publicPath": "/static/office/js/fonts/fa-regular-400.woff",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-regular-400.woff"
     },
     "fonts/fa-regular-400.woff2": {
       "name": "fonts/fa-regular-400.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-regular-400.woff2",
-      "publicPath": "/static/office/js/fonts/fa-regular-400.woff2"
+      "publicPath": "/static/office/js/fonts/fa-regular-400.woff2",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-regular-400.woff2"
     },
     "fonts/fa-solid-900.ttf": {
       "name": "fonts/fa-solid-900.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-solid-900.ttf",
-      "publicPath": "/static/office/js/fonts/fa-solid-900.ttf"
+      "publicPath": "/static/office/js/fonts/fa-solid-900.ttf",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-solid-900.ttf"
     },
     "fonts/fa-solid-900.woff": {
       "name": "fonts/fa-solid-900.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-solid-900.woff",
-      "publicPath": "/static/office/js/fonts/fa-solid-900.woff"
+      "publicPath": "/static/office/js/fonts/fa-solid-900.woff",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-solid-900.woff"
     },
     "fonts/fa-solid-900.woff2": {
       "name": "fonts/fa-solid-900.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-solid-900.woff2",
-      "publicPath": "/static/office/js/fonts/fa-solid-900.woff2"
+      "publicPath": "/static/office/js/fonts/fa-solid-900.woff2",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-solid-900.woff2"
     },
     "fonts/fa-thin-100.ttf": {
       "name": "fonts/fa-thin-100.ttf",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-thin-100.ttf",
-      "publicPath": "/static/office/js/fonts/fa-thin-100.ttf"
+      "publicPath": "/static/office/js/fonts/fa-thin-100.ttf",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-thin-100.ttf"
     },
     "fonts/fa-thin-100.woff": {
       "name": "fonts/fa-thin-100.woff",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-thin-100.woff",
-      "publicPath": "/static/office/js/fonts/fa-thin-100.woff"
+      "publicPath": "/static/office/js/fonts/fa-thin-100.woff",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-thin-100.woff"
     },
     "fonts/fa-thin-100.woff2": {
       "name": "fonts/fa-thin-100.woff2",
       "path": "/Users/benjaminlocher/projects/dailyoffice2019/site/office/static/office/js/fonts/fa-thin-100.woff2",
-      "publicPath": "/static/office/js/fonts/fa-thin-100.woff2"
+      "publicPath": "/static/office/js/fonts/fa-thin-100.woff2",
+      "sourceFilename": "office/src/office/css/fontawesome/webfonts/fa-thin-100.woff2"
     }
   },
   "chunks": {
     "main": [
-      "bundle.67ef40af4263827d6525.js"
+      "bundle.b4628a2c3b3fc507a60a.js"
     ]
   },
   "publicPath": "/static/office/js/"

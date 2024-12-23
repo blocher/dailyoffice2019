@@ -1,9 +1,12 @@
 from datetime import date
 
 from bs4 import BeautifulSoup
+from churchcal.calculations import ChurchYear
+from churchcal.models import Season, SanctoraleCommemoration, MassReading
 from django.core import serializers
 from django.db.models import Prefetch
 from django.http import HttpResponse
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.templatetags.static import static
@@ -11,9 +14,6 @@ from django.urls import reverse
 from docx.shared import RGBColor
 from icalendar import Calendar, Event
 from meta.views import Meta
-
-from churchcal.calculations import ChurchYear
-from churchcal.models import Season, SanctoraleCommemoration, MassReading
 from office.compline import Compline
 from office.evening_prayer import EveningPrayer
 from office.family_close_of_day import FamilyCloseOfDay
@@ -307,12 +307,15 @@ def handle404(request, exception):
     return response
 
 
-def four_oh_four(request):
+def four_oh_four(request, exception):
     return render(request, "404.html")
 
 
-def robots(request):
-    return render(request, "robots.txt", content_type="text/plain")
+def four_oh_four_redirect(request, exception):
+    domain_name = request.get_host()
+    if "127.0.0.1" in domain_name:
+        return HttpResponseRedirect("http://localhost:5173/")
+    return HttpResponseRedirect("https://www.dailyoffice2019.com/")
 
 
 def psalms(request):
