@@ -736,7 +736,7 @@ class ReadingModule(Module):
         ]
         return [line for line in lines if line and (line["content"] or line["line_type"] == "spacer")]
 
-    def get_reading(self, field, abbreviated=False, translation="esv"):
+    def get_reading(self, field, abbreviated=False, translation="esv", text_only=False):
         subheading = getattr(self.office.office_readings, field)
         passage = getattr(self.office.office_readings, field)
         citation = passage_to_citation(getattr(self.office.office_readings, field))
@@ -765,6 +765,9 @@ class ReadingModule(Module):
                     text = getattr(text_obj, "nrsvce")
 
         text = self.remove_headings_if_needed(text)
+
+        if text_only:
+            return text
 
         lines = [
             Line(subheading, "subheading"),
@@ -1831,11 +1834,7 @@ class FamilyMorningScripture(FamilyReadingModule):
                 if self.office.office_readings.mp_reading_1_abbreviated
                 else self.office.office_readings.mp_reading_1
             ),
-            "text": (
-                getattr(self.office.readings[self.office.office_readings.mp_reading_1_abbreviated], translation)
-                if self.office.office_readings.mp_reading_1_abbreviated_text
-                else getattr(self.office.readings[self.office.office_readings.mp_reading_1], translation)
-            ),
+            "text": self.get_reading("mp_reading_1", True, translation, text_only=True),
             "testament": self.office.office_readings.mp_reading_1_testament,
         }
 
@@ -1869,7 +1868,7 @@ class FamilyMiddayScripture(FamilyReadingModule):
         translation = self.office.settings["bible_translation"]
         return {
             "passage": self.office.office_readings.mp_reading_2,
-            "text": getattr(self.office.readings[self.office.office_readings.mp_reading_2], translation),
+            "text": self.get_reading("mp_reading_2", True, translation, text_only=True),
             "testament": self.office.office_readings.mp_reading_2_testament,
         }
 
@@ -1902,11 +1901,7 @@ class FamilyEarlyEveningScripture(FamilyReadingModule):
                 if self.office.office_readings.ep_reading_1_abbreviated
                 else self.office.office_readings.ep_reading_1
             ),
-            "text": (
-                getattr(self.office.readings[self.office.office_readings.ep_reading_1_abbreviated], translation)
-                if self.office.office_readings.ep_reading_1_abbreviated_text
-                else getattr(self.office.readings[self.office.office_readings.ep_reading_1], translation)
-            ),
+            "text": self.get_reading("ep_reading_1", True, translation, text_only=True),
             "testament": self.office.office_readings.ep_reading_1_testament,
         }
 
@@ -1940,7 +1935,7 @@ class FamilyCloseOfDayScripture(FamilyReadingModule):
         translation = self.office.settings["bible_translation"]
         return {
             "passage": self.office.office_readings.ep_reading_2,
-            "text": getattr(self.office.readings[self.office.office_readings.ep_reading_2], translation),
+            "text": self.get_reading("ep_reading_2", True, translation, text_only=True),
             "testament": self.office.office_readings.ep_reading_2_testament,
         }
 
