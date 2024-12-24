@@ -358,7 +358,7 @@ class Scripture(BaseModel):
 
     @property
     def apocrypha(self):
-        return self.esv == "-"
+        return self.esv == "-" or self.esv == ""
 
     @property
     def ending_call(self):

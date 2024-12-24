@@ -742,7 +742,7 @@ class ReadingModule(Module):
         citation = passage_to_citation(getattr(self.office.office_readings, field))
         text_obj = self.office.readings[passage]
         text = getattr(text_obj, translation)
-        if text in ["-", "<html><head></head><body>-</body></html>"]:
+        if text in ["-", "<html><head></head><body>-</body></html>", ""]:
             text = getattr(text_obj, "nrsvce")
         closing = self.closing(getattr(self.office.office_readings, "{}_testament".format(field)))
         closing_response = self.closing_response(getattr(self.office.office_readings, "{}_testament".format(field)))
