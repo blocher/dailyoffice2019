@@ -304,6 +304,8 @@ class Scripture(BaseModel):
 
     @staticmethod
     def no_headings(markup):
+        if not markup:
+            markup = ""
         soup = BeautifulSoup(markup, "html.parser")
         for sup in soup.find_all("h1"):
             sup.decompose()
