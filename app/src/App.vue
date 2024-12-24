@@ -177,9 +177,80 @@ export default {
   )
 );
 
+@font-face {
+  font-family: 'Adobe Caslon Pro';
+  src:
+    url('/assets/fonts/ACaslonPro-Regular.woff2') format('woff2'),
+    url('/assets/fonts/ACaslonPro-Regular.woff') format('woff'),
+    url('/assets/fonts/ACaslonPro-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adobe Caslon Pro';
+  src:
+    url('/assets/fonts/ACaslonPro-Italic.woff2') format('woff2'),
+    url('/assets/fonts/ACaslonPro-Italic.woff') format('woff'),
+    url('/assets/fonts/ACaslonPro-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adobe Caslon Pro';
+  src:
+    url('/assets/fonts/ACaslonPro-Semibold.woff2') format('woff2'),
+    url('/assets/fonts/ACaslonPro-Semibold.woff') format('woff'),
+    url('/assets/fonts/ACaslonPro-Semibold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adobe Caslon Pro';
+  src:
+    url('/assets/fonts/ACaslonPro-SemiboldItalic.woff2') format('woff2'),
+    url('/assets/fonts/ACaslonPro-SemiboldItalic.woff') format('woff'),
+    url('/assets/fonts/ACaslonPro-SemiboldItalic.ttf') format('truetype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adobe Caslon Pro';
+  src:
+    url('/assets/fonts/ACaslonPro-Bold.woff2') format('woff2'),
+    url('/assets/fonts/ACaslonPro-Bold.woff') format('woff'),
+    url('/assets/fonts/ACaslonPro-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adobe Caslon Pro';
+  src:
+    url('/assets/fonts/ACaslonPro-BoldItalic.woff2') format('woff2'),
+    url('/assets/fonts/ACaslonPro-BoldItalic.woff') format('woff'),
+    url('/assets/fonts/ACaslonPro-BoldItalic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adobe Caslon Pro';
+  src: url('/assets/fonts/') format('woff2');
+  font-display: swap;
+}
+
 * {
   font-family: 'Adobe Caslon Pro', serif;
-  font-display: swap;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

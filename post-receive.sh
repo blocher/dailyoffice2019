@@ -9,7 +9,7 @@ git --work-tree=/var/www/api.dailyoffice2019.com --git-dir=/var/repo/api.dailyof
 
 echo "======Making and activating venv======"
 sudo rm -rf env
-python3.12 -m venv env
+python3.13 -m venv env
 . env/bin/activate
 cd site
 
@@ -32,7 +32,7 @@ echo "======Collecting Static Files======"
 # enable corepack
 #mkdir -p static
 #npx webpack
-python3.12 manage.py collectstatic --noinput --clear
+python3.13 manage.py collectstatic --noinput --clear
 
 echo "======Clearing Memcached======"
 echo "flush_all" | nc -q 2 localhost 11211
@@ -55,4 +55,4 @@ sudo find . -name "*.pyo" -exec rm -f {} \;
 python -m compileall .
 
 echo "======Enabling Kronos cron-tasks======"
-python3.12 manage.py installtasks
+python3.13 manage.py installtasks
