@@ -293,6 +293,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2.1;
+				DEVELOPMENT_TEAM = 2TG4YK78KZ;
 				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "The Daily Office";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -302,7 +303,7 @@
 				);
 				MARKETING_VERSION = 2.1;
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
-				PRODUCT_BUNDLE_IDENTIFIER = com.dailyoffice2019.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.dailyoffice.dailyoffice2019;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_VERSION = 5.0;
@@ -316,6 +317,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2.1;
+				DEVELOPMENT_TEAM = 2TG4YK78KZ;
 				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "The Daily Office";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -324,7 +326,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 2.1;
-				PRODUCT_BUNDLE_IDENTIFIER = com.dailyoffice2019.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.dailyoffice.dailyoffice2019;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
 				SWIFT_VERSION = 5.0;

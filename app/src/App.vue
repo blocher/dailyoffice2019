@@ -321,6 +321,7 @@ select:focus {
 body {
   color: var(--font-color);
   background-color: var(--color-bg);
+  margin-top: calc(env(safe-area-inset-top) + 1.4rem) !important;
 
   .el-input__inner,
   el-select-dropdown__item {
@@ -483,10 +484,6 @@ body {
     --el-input-bg-color,
     var(--el-fill-color-blank)
   ) !important;
-}
-
-body {
-  //margin-top: calc(env(safe-area-inset-top) + 1.4rem);
 
   #notch {
     display: block;
