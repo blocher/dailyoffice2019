@@ -4,6 +4,7 @@
 	"webDir": "dist",
 	"bundledWebRuntime": false,
 	"packageClassList": [
+		"AppPlugin",
 		"ClipboardPlugin",
 		"PreferencesPlugin",
 		"SharePlugin"
