@@ -1,7 +1,7 @@
 exclude: .*\node_modules\|.*\static|.*\.sql
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v5.0.0
     hooks:
       - id: trailing-whitespace
         files: ^site/
@@ -27,12 +27,12 @@ repos:
 
 
   - repo: https://github.com/psf/black
-    rev: 24.2.0
+    rev: 24.10.0
     hooks:
       - id: black
         files: ^site/
         language_version: python3
-        args: [ --target-version=py311, --line-length=119 ]
+        args: [ --target-version=py313, --line-length=119 ]
 
   #    rev: v8.56.0
   #    hooks:
@@ -68,12 +68,12 @@ repos:
           - prettier@3.4.2
           - eslint-plugin-vue@^9.32.0
           - vue-eslint-parser@^9.4.3
-          - "@typescript-eslint/eslint-plugin@^8.18.0"
-          - "@typescript-eslint/parser@^8.18.0"
+          - "@typescript-eslint/eslint-plugin@^8.18.2"
+          - "@typescript-eslint/parser@^8.18.2"
           - "@typescript-eslint/eslint-plugin-tslint@^7.0.2"
-          - "@typescript-eslint/utils@^8.18.0"
-          - "@typescript-eslint/typescript-estree@^8.18.0"
-          - "@typescript-eslint/scope-manager@^8.18.0"
+          - "@typescript-eslint/utils@^8.18.2"
+          - "@typescript-eslint/typescript-estree@^8.18.2"
+          - "@typescript-eslint/scope-manager@^8.18.2"
 
 #  - repo: https://github.com/awebdeveloper/pre-commit-stylelint
 #    rev: 0.0.2

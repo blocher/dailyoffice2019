@@ -44,9 +44,9 @@ export default [
       'prettier/prettier': 'error', // Run Prettier as an ESLint rule
       'no-console': 'error',
       'no-debugger': 'error',
-      'vue/no-deprecated-slot-attribute': 'off',
-      'vue/no-unused-components': 'warn',
-      'no-unused-vars': 'warn',
+      'vue/no-deprecated-slot-attribute': 'error',
+      'vue/no-unused-components': 'error',
+      'no-unused-vars': 'error',
       'vue/multi-word-component-names': 'off',
       'vue/script-setup-uses-vars': 'error',
       'vue/no-v-html': 'off',
