@@ -158,8 +158,8 @@ export default {
         'settings=' + compactSettings + (await this.getCollectProps());
       const path = this.$route.path;
       const port = parseInt(window.location.port);
-      // const port_string = port === 8080 ? ':8080' : '';
-      const port_string = `:${port}`;
+      const port_string =
+        port && port !== '80' && port !== '443' ? `:${port}` : '';
       if (Capacitor.getPlatform() !== 'web') {
         return `https://www.dailyoffice2019.com${path}?${queryString}`;
       }
