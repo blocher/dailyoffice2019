@@ -3484,6 +3484,7 @@ class SettingOptionSerializer(serializers.ModelSerializer):
             "description",
             "value",
             "order",
+            "abbreviation",
         )
 
 
@@ -3512,6 +3513,7 @@ class SettingSerializer(serializers.ModelSerializer):
             "setting_type",
             "setting_type_name",
             "order",
+            "setting_string_order",
             "options",
         )
 

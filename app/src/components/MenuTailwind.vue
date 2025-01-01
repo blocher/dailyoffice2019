@@ -166,12 +166,12 @@
                 </PopoverPanel>
               </transition>
             </Popover>
-            <rounter-link
+            <router-link
               to="/settings"
               class="text-base font-medium text-gray-200 hover:text-gray-400"
             >
               Settings
-            </rounter-link>
+            </router-link>
             <Popover v-slot="{ open }">
               <PopoverButton
                 :class="[
