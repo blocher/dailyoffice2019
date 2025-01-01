@@ -48,7 +48,6 @@
     "unplugin-auto-import": "^0.19.0",
     "unplugin-vue-components": "^0.28",
     "update": "^0.7.4",
-    "vite": "^6.0.5",
     "vue": "^3.4.19",
     "vue-axios": "^3.5.2",
     "vue-gtag": "^2.0.1",
@@ -57,7 +56,6 @@
     "vue-router": "^4.5.0",
     "vuex": "^4.1.0",
     "webfontloader": "^1.6.28",
-    "webpack": "^5.97.1",
     "word-wrap": "^1.2.5"
   },
   "devDependencies": {
@@ -80,7 +78,7 @@
     "@vitest/ui": "^2.1.8",
     "@vue/compiler-sfc": "^3.4.19",
     "@vue/eslint-config-prettier": "^10.1.0",
-    "@vue/eslint-config-typescript": "^14.1.4",
+    "@vue/eslint-config-typescript": "^14.2.0",
     "@vue/test-utils": "^2.4.6",
     "autoprefixer": "^10.4.20",
     "chai": "^5.1.2",
@@ -99,6 +97,7 @@
     "sass": "^1.83.0",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.2",
+    "vite": "^6.0.6",
     "vitest": "^2.1.8",
     "vue-cli-plugin-capacitor": "^2.0.1",
     "vue-eslint-parser": "^9.4.3"

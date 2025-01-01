@@ -73,6 +73,7 @@ repos:
           - "@typescript-eslint/eslint-plugin-tslint@^7.0.2"
           - "@typescript-eslint/utils@^8.18.2"
           - "@typescript-eslint/typescript-estree@^8.18.2"
+          - "@vue/eslint-config-typescript@^14.2.0"
           - "@typescript-eslint/scope-manager@^8.18.2"
 
 #  - repo: https://github.com/awebdeveloper/pre-commit-stylelint
