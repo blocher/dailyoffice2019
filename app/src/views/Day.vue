@@ -28,10 +28,12 @@ import setCalendarDate from '@/helpers/setCalendarDate';
 import OfficeNav from '@/components/OfficeNav.vue';
 import PageNotFound from '@/views/PageNotFound.vue';
 import { DynamicStorage } from '@/helpers/storage';
+import CalendarCard from '@/components/CalendarCard.vue';
+import Loading from '@/components/Loading.vue';
 
 export default {
   name: 'Calendar',
-  components: { OfficeNav, PageNotFound },
+  components: { OfficeNav, PageNotFound, CalendarCard, Loading },
   properties: {
     office: null,
     serviceType: {
