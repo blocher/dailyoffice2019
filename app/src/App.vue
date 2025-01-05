@@ -323,6 +323,18 @@ body {
   background-color: var(--color-bg);
   margin-top: calc(env(safe-area-inset-top) + 1.4rem) !important;
 
+  #notch {
+    display: block;
+    position: fixed;
+    height: env(safe-area-inset-top);
+    width: 100%;
+    margin: 0;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    background-color: #26282a;
+  }
+
   .el-input__inner,
   el-select-dropdown__item {
     font-size: 16px;
@@ -484,18 +496,6 @@ body {
     --el-input-bg-color,
     var(--el-fill-color-blank)
   ) !important;
-
-  #notch {
-    display: block;
-    position: fixed;
-    height: env(safe-area-inset-top);
-    width: 100%;
-    margin: 0;
-    top: 0;
-    left: 0;
-    z-index: 9999;
-    background-color: #26282a;
-  }
 }
 
 .el-backtop {
