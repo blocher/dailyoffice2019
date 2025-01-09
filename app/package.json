@@ -62,7 +62,8 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.25.9",
-    "@capacitor/android": "^6.0.0",
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^6.0.0",
     "@capacitor/clipboard": "^6.0.0",
     "@capacitor/core": "^6.0.0",
