@@ -81,6 +81,9 @@
     <AdditionalLinks v-if="showLinks" ref="additionalLinks" />
 
     <AHPLogo />
+    <p>
+      <small><a href="/privacy-policy">Privacy Policy</a></small>
+    </p>
   </div>
 
   <el-backtop />

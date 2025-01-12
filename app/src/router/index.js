@@ -105,6 +105,18 @@ const routes = [
     },
   },
   {
+    path: '/privacy-policy',
+    name: 'Privacy Policy',
+    meta: {
+      title: 'Privacy Policy | The Daily Office',
+    },
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () =>
+      import(/* webpackChunkName: "about" */ '../views/PrivacyPolicy.vue'),
+  },
+  {
     path: '/about',
     name: 'About',
     meta: {
