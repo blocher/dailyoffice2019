@@ -20,6 +20,7 @@ from office.api.views.index import (
     FamilyCloseOfDayPrayerView,
     ReadingsView,
     GreatLitanyView,
+    AudioViewSet,
 )
 from office.api.views.resources import (
     CollectsViewSet,
@@ -58,6 +59,11 @@ urlpatterns = [
     path(r"api/v1/litany", GreatLitanyView.as_view(), name="litany"),
     path(r"api/v1/calendar/<int:year>-<int:month>", MonthView.as_view(), name="month_view"),
     path(r"api/v1/calendar/<int:year>", YearView.as_view(), name="month_view"),
+    path(
+        r"api/v1/audio",
+        AudioViewSet.as_view({"post": "retrieve"}),
+        name="audio_view",
+    ),
     path(
         r"api/v1/office/morning_prayer/<int:year>-<int:month>-<int:day>",
         MorningPrayerView.as_view(),

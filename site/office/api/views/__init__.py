@@ -1,6 +1,8 @@
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 
+from office.utils import generate_uuid_from_string
+
 
 class Line(dict):
     def __init__(
@@ -49,6 +51,8 @@ class Module(object):
             if line and (line.get("content") or (line.get("line_type") and line["line_type"] == "spacer"))
         ]
         lines = [self.mark_html_safe(line) for line in lines]
+        for line in lines:
+            line["id"] = generate_uuid_from_string(line["content"])
         return lines
 
     def get_lines(self):

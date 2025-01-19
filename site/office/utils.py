@@ -204,3 +204,12 @@ def title_case(input_string):
             output_string += temp + " "
 
     return output_string
+
+
+import uuid
+
+
+def generate_uuid_from_string(input_string: str) -> str:
+    namespace = uuid.NAMESPACE_DNS
+    generated_uuid = uuid.uuid5(namespace, input_string)
+    return str(generated_uuid)

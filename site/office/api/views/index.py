@@ -22,6 +22,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import ViewSet
 
 from churchcal.api.permissions import ReadOnly
 from churchcal.api.serializer import DaySerializer
@@ -40,7 +41,7 @@ from office.models import (
     Collect,
     Scripture,
 )
-from office.utils import passage_to_citation, get_client_ip
+from office.utils import passage_to_citation, get_client_ip, generate_uuid_from_string
 from psalter.utils import get_psalms
 
 
@@ -3326,6 +3327,45 @@ class ReadingsSerializer(serializers.Serializer):
         services.update(non_ferias)
         services.update(ferias)
         return services
+
+
+class AudioViewSet(ViewSet):
+    permission_classes = [AllowAny]
+
+    @csrf_exempt
+    def retrieve(self, request):
+        content = request.POST.get("content")
+        if not content:
+            return
+        line_type = request.POST.get("line_type", "leader")
+        if "leader" in line_type:
+            voice_type = "alloy"
+        elif "congregation" in line_type:
+            voice_type = "ash"
+        elif "html" in line_type:
+            voice_type = "echo"
+        else:
+            return Response({"path": ""})
+        audio_id = generate_uuid_from_string(content)
+        filename = f"{audio_id}.mp3"
+        file_path = os.path.join(settings.MEDIA_ROOT, filename)
+        exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
+        if exists:
+            return Response({"path": file_path})
+        try:
+            from pathlib import Path
+            from openai import OpenAI
+
+            client = OpenAI()
+            response = client.audio.speech.create(
+                model="tts-1",
+                voice=voice_type,
+                input=content,
+            )
+            response.stream_to_file(file_path)
+        except Exception as e:
+            return Response({"error": str(e)}, 500)
+        return Response({"path": file_path})
 
 
 class MorningPrayerView(OfficeAPIView):
