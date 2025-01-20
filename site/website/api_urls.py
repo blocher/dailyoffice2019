@@ -21,6 +21,7 @@ from office.api.views.index import (
     ReadingsView,
     GreatLitanyView,
     AudioViewSet,
+    MorningPrayerAudioView,
 )
 from office.api.views.resources import (
     CollectsViewSet,
@@ -103,6 +104,46 @@ urlpatterns = [
         r"api/v1/family/close_of_day_prayer/<int:year>-<int:month>-<int:day>",
         FamilyCloseOfDayPrayerView.as_view(),
         name="family_close_of_day_view",
+    ),
+    path(
+        r"api/v1/office/morning_prayer/<int:year>-<int:month>-<int:day>/audio",
+        MorningPrayerAudioView.as_view(),
+        name="morning_prayer_audio_view",
+    ),
+    path(
+        r"api/v1/office/evening_prayer/<int:year>-<int:month>-<int:day>/audio",
+        EveningPrayerView.as_view(),
+        name="evening_prayer_audio_view",
+    ),
+    path(
+        r"api/v1/office/midday_prayer/<int:year>-<int:month>-<int:day>/audio",
+        MiddayPrayerView.as_view(),
+        name="midday_audio_view",
+    ),
+    path(
+        r"api/v1/office/compline/<int:year>-<int:month>-<int:day>/audio",
+        ComplineView.as_view(),
+        name="compline_audio_view",
+    ),
+    path(
+        r"api/v1/family/morning_prayer/<int:year>-<int:month>-<int:day>/audio",
+        FamilyMorningPrayerView.as_view(),
+        name="family_morning_prayer_audio_view",
+    ),
+    path(
+        r"api/v1/family/early_evening_prayer/<int:year>-<int:month>-<int:day>/audio",
+        FamilyEarlyEveningPrayerView.as_view(),
+        name="family_early_evening_prayer_audio_view",
+    ),
+    path(
+        r"api/v1/family/midday_prayer/<int:year>-<int:month>-<int:day>/audio",
+        FamilyMiddayPrayerView.as_view(),
+        name="family_midday_audio_view",
+    ),
+    path(
+        r"api/v1/family/close_of_day_prayer/<int:year>-<int:month>-<int:day>/audio",
+        FamilyCloseOfDayPrayerView.as_view(),
+        name="family_close_of_day_audio_view",
     ),
     path(
         r"api/v1/collects",

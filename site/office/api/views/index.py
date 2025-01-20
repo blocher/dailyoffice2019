@@ -8,6 +8,7 @@ from urllib.parse import quote
 import mailchimp_marketing as MailchimpMarketing
 from distutils.util import strtobool
 from django.conf import settings
+from django.contrib.sites.models import Site
 from django.db.models import Prefetch
 from django.http import HttpResponse
 from django.template.loader import render_to_string
@@ -2801,10 +2802,86 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         modules = [module for module in modules if module and module["lines"]]
         return modules
 
+    @staticmethod
+    def get_line_audio_file(line):
+        content = line["content"]
+        line_type = line["line_type"]
+        if "leader" in line_type:
+            voice_type = "onyx"
+        elif "congregation" in line_type:
+            voice_type = "ash"
+        elif "html" in line_type:
+            voice_type = "echo"
+        else:
+            return
+        audio_id = generate_uuid_from_string(f"{line_type} {voice_type} {content}")
+        filename = f"{audio_id}.mp3"
+        file_path = os.path.join(settings.MEDIA_ROOT, filename)
+        exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
+        domain = Site.objects.get_current().domain
+        path = settings.MEDIA_URL + filename
+        file_url = f"https://{domain}{path}"
+        if exists:
+            print("A")
+            return file_url
+        try:
+            from pathlib import Path
+            from openai import OpenAI
+
+            client = OpenAI()
+            response = client.audio.speech.create(
+                model="tts-1",
+                voice=voice_type,
+                input=content,
+            )
+            response.stream_to_file(file_path)
+        except Exception as e:
+            return
+        print("B")
+        print(file_url)
+        return file_url
+
+    def handle_html(self, line):
+        import re
+        from bs4 import BeautifulSoup
+
+        # Remove HTML tags using BeautifulSoup
+        soup = BeautifulSoup(line["content"], "html.parser")
+        plain_text = soup.get_text()
+
+        # Remove chapter and verse numbers (digits with spaces before and after or at the start of a line)
+        text_without_verses = re.sub(r"(\b\d+\b\s)", "", plain_text)
+
+        # Split the text into sentences using punctuation as delimiters
+        sentences = re.split(r"[.!?]\s+", text_without_verses.strip())
+
+        # Return the list of sentences
+        return [
+            self.get_line_audio_file({"line_type": "html", "content": sentence.strip()})
+            for sentence in sentences
+            if sentence.strip()
+        ]
+
+    def get_audio(self, obj):
+        modules = self.get_modules(obj)
+        tracks = []
+        for module in modules:
+            for line in module["lines"]:
+                if line["line_type"] == "html":
+                    tracks = tracks + self.handle_html(line)
+                else:
+                    tracks = tracks + [self.get_line_audio_file(line)]
+        tracks = [track for track in tracks if track]
+        return tracks
+
 
 class OfficeSerializer(GenericDailyOfficeSerializer):
     calendar_day = DaySerializer(source="date")
     modules = serializers.SerializerMethodField()
+
+
+class OfficeAudioSerializer(GenericDailyOfficeSerializer):
+    audio = serializers.SerializerMethodField()
 
 
 def reading_format(name, citation, text, testament, cycle=None, reading_number=None):
@@ -3334,10 +3411,11 @@ class AudioViewSet(ViewSet):
 
     @csrf_exempt
     def retrieve(self, request):
-        content = request.POST.get("content")
+        data = json.loads(request.body)
+        content = data.get("content", None)
         if not content:
-            return
-        line_type = request.POST.get("line_type", "leader")
+            return Response({"path": ""})
+        line_type = data.get("line_type", "leader")
         if "leader" in line_type:
             voice_type = "alloy"
         elif "congregation" in line_type:
@@ -3346,12 +3424,13 @@ class AudioViewSet(ViewSet):
             voice_type = "echo"
         else:
             return Response({"path": ""})
-        audio_id = generate_uuid_from_string(content)
+        audio_id = generate_uuid_from_string(f"{line_type} {voice_type} {content}")
         filename = f"{audio_id}.mp3"
         file_path = os.path.join(settings.MEDIA_ROOT, filename)
         exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
+        file_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
         if exists:
-            return Response({"path": file_path})
+            return Response({"path": file_url})
         try:
             from pathlib import Path
             from openai import OpenAI
@@ -3364,14 +3443,25 @@ class AudioViewSet(ViewSet):
             )
             response.stream_to_file(file_path)
         except Exception as e:
-            return Response({"error": str(e)}, 500)
-        return Response({"path": file_path})
+            return Response({"error": str(e)})
+        return Response({"path": file_url})
 
 
 class MorningPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
+
         office = MorningPrayer(request, year, month, day)
-        serializer = OfficeSerializer(office)
+        if request.GET.get("include_audio_links"):
+            serializer = OfficeAudioSerializer(office)
+        else:
+            serializer = OfficeSerializer(office)
+        return Response(serializer.data)
+
+
+class MorningPrayerAudioView(OfficeAPIView):
+    def get(self, request, year, month, day):
+        office = MorningPrayer(request, year, month, day)
+        serializer = OfficeAudioSerializer(office)
         return Response(serializer.data)
 
 

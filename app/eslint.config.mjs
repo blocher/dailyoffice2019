@@ -28,6 +28,7 @@ export default [
         __dirname: 'readonly',
         cy: 'readonly',
         Cypress: 'readonly',
+        Audio: 'readonly',
       },
     },
     plugins: {

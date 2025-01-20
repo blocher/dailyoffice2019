@@ -5,7 +5,6 @@
       <div v-if="!notFound">
         <Loading v-if="loading" />
         <CalendarCard
-          v-if="!loading"
           :office="office"
           :calendar-date="calendarDate"
           :card="card"
@@ -50,6 +49,8 @@
       </div>
     </div>
   </div>
+
+  <AudioPlayer v-if="!loading && audioReady" :urls="audioLinks" />
 </template>
 
 <script>
@@ -70,10 +71,12 @@ import OfficeNav from '@/components/OfficeNav.vue';
 import PageNotFound from '@/views/PageNotFound.vue';
 import FontSizer from '@/components/FontSizer.vue';
 import { DynamicStorage } from '@/helpers/storage';
+import AudioPlayer from '@/components/AudioPlayer.vue';
 
 export default {
   name: 'Office',
   components: {
+    AudioPlayer,
     OfficeHeading,
     OfficeSubheading,
     OfficeCitation,
@@ -111,6 +114,8 @@ export default {
       error: false,
       card: '',
       notFound: false,
+      audioLinks: [],
+      audioReady: false,
     };
   },
   async mounted() {
@@ -149,15 +154,15 @@ export default {
       .map((key) => key + '=' + settings[key])
       .join('&');
     let data = null;
+    const office_url =
+      `${import.meta.env.VITE_API_URL}api/v1/${this.serviceType}/${this.office}/` +
+      today_str +
+      '?' +
+      queryString +
+      '&extra_collects=' +
+      (await this.extraCollects());
     try {
-      data = await this.$http.get(
-        `${import.meta.env.VITE_API_URL}api/v1/${this.serviceType}/${this.office}/` +
-          today_str +
-          '?' +
-          queryString +
-          '&extra_collects=' +
-          (await this.extraCollects())
-      );
+      data = await this.$http.get(office_url);
     } catch {
       this.error =
         'There was an error retrieving the office. Please try again.';
@@ -170,8 +175,76 @@ export default {
     this.loading = false;
     await this.$nextTick();
     this.readyToSetFontSize = true;
+    this.audioLinks = await this.setAudioLinks(office_url);
+    this.audioReady = true;
   },
   methods: {
+    async setAudioLinks(url) {
+      url = `${url}&include_audio_links=true`;
+      try {
+        const data = await this.$http.get(url);
+        this.audioLinks = data.data.audio;
+        return data.data.audio;
+      } catch {
+        return;
+      }
+    },
+    async setAudioLinksBak() {
+      const audio_links = [];
+      for (const module of this.modules) {
+        audio_links.push(...(await this.getAudioLinksForModule(module)));
+      }
+      return audio_links;
+    },
+    async getAudioLinksForModule(module) {
+      const links = [];
+      for (const line of module.lines) {
+        const url = await this.getAudioLinkForLine(line);
+        if (url) {
+          links.push(url);
+        }
+      }
+      return links;
+    },
+    async getAudioLinkForLine(line) {
+      if (!('content' in line) || !line.content) {
+        return null;
+      }
+
+      if (!('line_type' in line) || !line.line_type) {
+        return null;
+      }
+
+      if (
+        ![
+          'html',
+          'congregation',
+          'leader',
+          'leader_dialogue',
+          'congregation_dialogue',
+        ].includes(line.line_type)
+      ) {
+        return null;
+      }
+
+      const data = await this.$http.post(
+        `${import.meta.env.VITE_API_URL}api/v1/audio`,
+        {
+          content: line.content,
+          line_type: line.line_type,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      try {
+        return data.data.path;
+      } catch {
+        return null;
+      }
+    },
     async extraCollects() {
       if (this.serviceType !== 'office') {
         return '';
