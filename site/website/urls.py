@@ -555,4 +555,4 @@ if settings.DEBUG:
 # admin.site.index_title = "Sermon Database Administration"
 
 # handler404 = "sermons.views.handle404"
-handler404 = "office.views.four_oh_four_redirect"
+handler404 = "office.views.four_oh_four"
