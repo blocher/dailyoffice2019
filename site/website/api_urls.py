@@ -21,7 +21,6 @@ from office.api.views.index import (
     ReadingsView,
     GreatLitanyView,
     AudioViewSet,
-    MorningPrayerAudioView,
 )
 from office.api.views.resources import (
     CollectsViewSet,
@@ -104,11 +103,6 @@ urlpatterns = [
         r"api/v1/family/close_of_day_prayer/<int:year>-<int:month>-<int:day>",
         FamilyCloseOfDayPrayerView.as_view(),
         name="family_close_of_day_view",
-    ),
-    path(
-        r"api/v1/office/morning_prayer/<int:year>-<int:month>-<int:day>/audio",
-        MorningPrayerAudioView.as_view(),
-        name="morning_prayer_audio_view",
     ),
     path(
         r"api/v1/office/evening_prayer/<int:year>-<int:month>-<int:day>/audio",

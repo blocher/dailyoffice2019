@@ -2881,7 +2881,8 @@ class OfficeSerializer(GenericDailyOfficeSerializer):
 
 
 class OfficeAudioSerializer(GenericDailyOfficeSerializer):
-    audio = serializers.SerializerMethodField()
+    pass
+    # audio = serializers.SerializerMethodField()
 
 
 def reading_format(name, citation, text, testament, cycle=None, reading_number=None):
@@ -3458,59 +3459,73 @@ class MorningPrayerView(OfficeAPIView):
         return Response(serializer.data)
 
 
-class MorningPrayerAudioView(OfficeAPIView):
-    def get(self, request, year, month, day):
-        office = MorningPrayer(request, year, month, day)
-        serializer = OfficeAudioSerializer(office)
-        return Response(serializer.data)
-
-
 class FamilyMorningPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
         office = FamilyMorningPrayer(request, year, month, day)
-        serializer = OfficeSerializer(office)
+        if request.GET.get("include_audio_links"):
+            serializer = OfficeAudioSerializer(office)
+        else:
+            serializer = OfficeSerializer(office)
         return Response(serializer.data)
 
 
 class FamilyMiddayPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
         office = FamilyMiddayPrayer(request, year, month, day)
-        serializer = OfficeSerializer(office)
+        if request.GET.get("include_audio_links"):
+            serializer = OfficeAudioSerializer(office)
+        else:
+            serializer = OfficeSerializer(office)
         return Response(serializer.data)
 
 
 class FamilyEarlyEveningPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
         office = FamilyEarlyEveningPrayer(request, year, month, day)
-        serializer = OfficeSerializer(office)
+        if request.GET.get("include_audio_links"):
+            serializer = OfficeAudioSerializer(office)
+        else:
+            serializer = OfficeSerializer(office)
         return Response(serializer.data)
 
 
 class FamilyCloseOfDayPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
         office = FamilyCloseOfDayPrayer(request, year, month, day)
-        serializer = OfficeSerializer(office)
+        if request.GET.get("include_audio_links"):
+            serializer = OfficeAudioSerializer(office)
+        else:
+            serializer = OfficeSerializer(office)
         return Response(serializer.data)
 
 
 class EveningPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
         office = EveningPrayer(request, year, month, day)
-        serializer = OfficeSerializer(office)
+        if request.GET.get("include_audio_links"):
+            serializer = OfficeAudioSerializer(office)
+        else:
+            serializer = OfficeSerializer(office)
         return Response(serializer.data)
 
 
 class MiddayPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
         office = MiddayPrayer(request, year, month, day)
-        serializer = OfficeSerializer(office)
+        if request.GET.get("include_audio_links"):
+            serializer = OfficeAudioSerializer(office)
+        else:
+            serializer = OfficeSerializer(office)
         return Response(serializer.data)
 
 
 class ComplineView(OfficeAPIView):
     def get(self, request, year, month, day):
         office = Compline(request, year, month, day)
-        serializer = OfficeSerializer(office)
+        if request.GET.get("include_audio_links"):
+            serializer = OfficeAudioSerializer(office)
+        else:
+            serializer = OfficeSerializer(office)
         return Response(serializer.data)
 
 

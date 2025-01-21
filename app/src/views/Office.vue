@@ -50,7 +50,7 @@
     </div>
   </div>
 
-  <AudioPlayer v-if="!loading && audioReady" :urls="audioLinks" />
+  <!--  <AudioPlayer v-if="!loading && audioReady" :urls="audioLinks" />-->
 </template>
 
 <script>
@@ -71,12 +71,12 @@ import OfficeNav from '@/components/OfficeNav.vue';
 import PageNotFound from '@/views/PageNotFound.vue';
 import FontSizer from '@/components/FontSizer.vue';
 import { DynamicStorage } from '@/helpers/storage';
-import AudioPlayer from '@/components/AudioPlayer.vue';
+// import AudioPlayer from '@/components/AudioPlayer.vue';
 
 export default {
   name: 'Office',
   components: {
-    AudioPlayer,
+    // AudioPlayer,
     OfficeHeading,
     OfficeSubheading,
     OfficeCitation,
@@ -175,8 +175,8 @@ export default {
     this.loading = false;
     await this.$nextTick();
     this.readyToSetFontSize = true;
-    this.audioLinks = await this.setAudioLinks(office_url);
-    this.audioReady = true;
+    // this.audioLinks = await this.setAudioLinks(office_url);
+    // this.audioReady = true;
   },
   methods: {
     async setAudioLinks(url) {
