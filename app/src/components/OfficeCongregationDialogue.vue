@@ -1,4 +1,5 @@
 <template>
+  <span :data-line-id="line.id"></span>
   <div class="row">
     <div class="column left">
       <p class="rubric">

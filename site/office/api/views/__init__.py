@@ -35,12 +35,16 @@ class Module(object):
             return self.name
         return "Daily Office Module"
 
+    def get_safe_name(self):
+        return "".join(filter(str.isalpha, self.get_name().replace(" ", "_").lower()))
+
     def strip_line(self, line):
         line["content"] = line["content"].strip()
         line["line_type"] = line["line_type"].strip()
         return line
 
     def get_formatted_lines(self):
+        i = 0
         lines = self.get_lines()
         if not lines:
             return lines
@@ -52,7 +56,9 @@ class Module(object):
         ]
         lines = [self.mark_html_safe(line) for line in lines]
         for line in lines:
-            line["id"] = generate_uuid_from_string(line["content"])
+            line["audio_id"] = generate_uuid_from_string(line["content"])
+            line["id"] = f"{self.get_safe_name()}_{i}_{line['audio_id']}"
+            i = i + 1
         return lines
 
     def get_lines(self):

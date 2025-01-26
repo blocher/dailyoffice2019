@@ -6,6 +6,7 @@
       </p>
     </div>
     <div class="column right">
+      <span :data-line-id="line.id"></span>
       <p>{{ line.content }}</p>
     </div>
   </div>

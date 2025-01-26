@@ -1,4 +1,5 @@
 <template>
+  <span :data-line-id="line.id"></span>
   <p v-if="!line.extra_space_before" :class="indentClass">
     <sup v-if="line.preface">{{ line.preface }}&nbsp;</sup>
     {{ line.content.replace(' *', '*').replace('*', '&nbsp;*') }}

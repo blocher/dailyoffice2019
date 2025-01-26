@@ -725,10 +725,11 @@ class ReadingModule(Module):
 
         text = getattr(text, translation)
         text = self.remove_headings_if_needed(text)
+        text = GenericDailyOfficeSerializer.handle_html(text, html=True, no_generate=True)
 
         lines = [
             Line(citation, "subheading"),
-            Line(self.audio(citation, reading.testament), "html"),
+            Line(self.audio(citation, reading.testament), "audio"),
             Line(passage_to_citation(citation), "leader"),
             Line("", "spacer"),
             Line(text, "html", "leader"),
@@ -768,17 +769,24 @@ class ReadingModule(Module):
 
         text = self.remove_headings_if_needed(text)
 
+        text = GenericDailyOfficeSerializer.handle_html(
+            text, html=True, no_generate=True, id=f"{self.get_safe_name()}_4_ad0aad27-4e5d-5ce3-8947-2bef1e5a5586"
+        )
+
         if text_only:
             return text
 
         lines = [
             Line(subheading, "subheading"),
-            Line(self.audio(passage, testament), "html"),
-            Line(citation, "leader"),
+            Line(self.audio(passage, testament), "audio"),
+            Line(citation, "reader"),
             Line("", "spacer"),
-            Line(text, "html", "leader"),
+            Line(
+                text,
+                "html",
+            ),
             Line("", "spacer"),
-            Line(closing, "leader"),
+            Line(closing, "reader"),
             Line(closing_response, "congregation"),
         ]
         return [line for line in lines if line and (line["content"] or line["line_type"] == "spacer")]
@@ -1810,7 +1818,7 @@ class FamilyReadingModule(ReadingModule):
             return [
                 Line("A READING FROM HOLY SCRIPTURE", "heading"),
                 Line(scripture["passage"], "subheading"),
-                Line(audio, "html") if audio and audio_setting == "on" else Line("", "html"),
+                Line(audio, "audio") if audio and audio_setting == "on" else Line("", "audio"),
                 Line(self.remove_headings_if_needed(scripture["text"]), "html"),
                 Line("A period of silence may follow.", "rubric"),
             ]
@@ -2803,7 +2811,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         return modules
 
     @staticmethod
-    def get_line_audio_file(line):
+    def get_line_audio_file(line, no_generate=False):
         content = line["content"]
         line_type = line["line_type"]
         if "leader" in line_type:
@@ -2811,6 +2819,8 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         elif "congregation" in line_type:
             voice_type = "ash"
         elif "html" in line_type:
+            voice_type = "echo"
+        elif "reader" in line_type:
             voice_type = "echo"
         else:
             return
@@ -2821,8 +2831,9 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         domain = Site.objects.get_current().domain
         path = settings.MEDIA_URL + filename
         file_url = f"https://{domain}{path}"
+        if no_generate:
+            return file_url
         if exists:
-            print("A")
             return file_url
         try:
             from pathlib import Path
@@ -2837,30 +2848,43 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             response.stream_to_file(file_path)
         except Exception as e:
             return
-        print("B")
         print(file_url)
         return file_url
 
-    def handle_html(self, line):
+    @staticmethod
+    def handle_html(line, html=False, no_generate=False, id=None):
         import re
         from bs4 import BeautifulSoup
 
-        # Remove HTML tags using BeautifulSoup
-        soup = BeautifulSoup(line["content"], "html.parser")
-        plain_text = soup.get_text()
+        print("HANDLING HTML", html)
 
-        # Remove chapter and verse numbers (digits with spaces before and after or at the start of a line)
-        text_without_verses = re.sub(r"(\b\d+\b\s)", "", plain_text)
+        lines = []
+        audio_files = []
 
-        # Split the text into sentences using punctuation as delimiters
-        sentences = re.split(r"[.!?]\s+", text_without_verses.strip())
+        sentences = re.split(r"(?<=[.!?])", line)
+        print(len(sentences))
+        for sentence in sentences:
+            soup = BeautifulSoup(sentence, "html.parser")
+            plain_text = soup.get_text()
+            text_without_verses = re.sub(r"(\b\d+\b\s)", "", plain_text)
+            url = GenericDailyOfficeSerializer.get_line_audio_file(
+                Line(text_without_verses, "reader"), no_generate=no_generate
+            )
+            uuid_match = re.search(r"/uploads/([0-9a-fA-F-]+)\.mp3", url)
+            if uuid_match:
+                uuid = uuid_match.group(1)
+            if id is not None:
+                id = re.sub(r"_[^_]+$", f"_{uuid}", id)
+            lines.append(f"<span data-line-id='{id}'></span>{sentence}")
+            audio_files.append({"line_id": id, "url": url})
+        result = "".join(lines)
 
-        # Return the list of sentences
-        return [
-            self.get_line_audio_file({"line_type": "html", "content": sentence.strip()})
-            for sentence in sentences
-            if sentence.strip()
-        ]
+        if html:
+            result = result.replace("--end of footnotes-->", "").replace("--end of crossrefs-->", "")
+            result = result.strip()
+            return result
+
+        return audio_files
 
     def get_audio(self, obj):
         modules = self.get_modules(obj)
@@ -2868,9 +2892,17 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         for module in modules:
             for line in module["lines"]:
                 if line["line_type"] == "html":
-                    tracks = tracks + self.handle_html(line)
-                else:
-                    tracks = tracks + [self.get_line_audio_file(line)]
+                    tracks = tracks + self.handle_html(line["content"], id=line["id"])
+                elif line["line_type"] in ["reader"]:
+                    tracks = tracks + [{"line_id": line["id"], "url": self.get_line_audio_file(line)}]
+                elif line["line_type"] in [
+                    "reader",
+                    "leader",
+                    "congregation",
+                    "leader_dialogue",
+                    "congregation_dialogue",
+                ]:
+                    tracks = tracks + [{"line_id": line["id"], "url": self.get_line_audio_file(line)}]
         tracks = [track for track in tracks if track]
         return tracks
 
@@ -2881,8 +2913,7 @@ class OfficeSerializer(GenericDailyOfficeSerializer):
 
 
 class OfficeAudioSerializer(GenericDailyOfficeSerializer):
-    pass
-    # audio = serializers.SerializerMethodField()
+    audio = serializers.SerializerMethodField()
 
 
 def reading_format(name, citation, text, testament, cycle=None, reading_number=None):

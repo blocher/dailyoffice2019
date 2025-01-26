@@ -28,8 +28,14 @@
             :line="line"
           />
           <OfficeCitation v-if="line.line_type === 'citation'" :line="line" />
-          <OfficeHTML v-if="line.line_type === 'html'" :line="line" />
-          <OfficeLeader v-if="line.line_type === 'leader'" :line="line" />
+          <OfficeHTML
+            v-if="line.line_type === 'html' || line.line_type === 'audio'"
+            :line="line"
+          />
+          <OfficeLeader
+            v-if="line.line_type === 'leader' || line.line_type === 'reader'"
+            :line="line"
+          />
           <OfficeLeaderDialogue
             v-if="line.line_type === 'leader_dialogue'"
             :line="line"
@@ -38,6 +44,7 @@
             v-if="line.line_type === 'congregation'"
             :line="line"
           />
+
           <OfficeCongregationDialogue
             v-if="line.line_type === 'congregation_dialogue'"
             :line="line"
@@ -50,7 +57,7 @@
     </div>
   </div>
 
-  <!--  <AudioPlayer v-if="!loading && audioReady" :urls="audioLinks" />-->
+  <AudioPlayer v-if="!loading && audioReady" :urls="audioLinks" />
 </template>
 
 <script>
@@ -71,11 +78,13 @@ import OfficeNav from '@/components/OfficeNav.vue';
 import PageNotFound from '@/views/PageNotFound.vue';
 import FontSizer from '@/components/FontSizer.vue';
 import { DynamicStorage } from '@/helpers/storage';
+import AudioPlayer from '@/components/AudioPlayer.vue'; // import AudioPlayer from '@/components/AudioPlayer.vue';
 // import AudioPlayer from '@/components/AudioPlayer.vue';
 
 export default {
   name: 'Office',
   components: {
+    AudioPlayer,
     // AudioPlayer,
     OfficeHeading,
     OfficeSubheading,
@@ -175,8 +184,8 @@ export default {
     this.loading = false;
     await this.$nextTick();
     this.readyToSetFontSize = true;
-    // this.audioLinks = await this.setAudioLinks(office_url);
-    // this.audioReady = true;
+    this.audioLinks = await this.setAudioLinks(office_url);
+    this.audioReady = true;
   },
   methods: {
     async setAudioLinks(url) {
@@ -218,10 +227,12 @@ export default {
       if (
         ![
           'html',
+          'audio',
           'congregation',
           'leader',
           'leader_dialogue',
           'congregation_dialogue',
+          'reader',
         ].includes(line.line_type)
       ) {
         return null;

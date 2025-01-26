@@ -1,12 +1,22 @@
 <template>
   <div class="audio-player">
-    <div>
-      <button @click="start">Play</button>
-      <button @click="stop">Stop</button>
-      <button @click="pause">Pause</button>
-      <button @click="resume">Resume</button>
+    <div
+      v-for="(url, index) in urls"
+      :key="index"
+      :class="{ playing: index === currentIndex }"
+    >
+      <p>Track {{ index + 1 }}: {{ url }}</p>
     </div>
-    <p v-if="currentTrack">Now Playing: {{ currentTrack }}</p>
+    <div class="controls">
+      <button :disabled="isPlaying && !isPaused" @click="startAudio">
+        ▶ Play
+      </button>
+      <button :disabled="!isPlaying" @click="pauseAudio">⏸ Pause</button>
+      <button :disabled="!isPlaying" @click="stopAudio">⏹ Stop</button>
+      <button :disabled="!isPlaying && !isPaused" @click="startFromBeginning">
+        ⏮ Start from Beginning
+      </button>
+    </div>
   </div>
 </template>
 
@@ -21,78 +31,115 @@ export default {
   },
   data() {
     return {
-      audio: null,
-      currentIndex: 0,
-      currentTrack: '',
+      audioElements: [],
+      currentIndex: null,
+      isPlaying: false,
+      isPaused: false,
     };
   },
   mounted() {
-    this.audio = new Audio();
-    this.audio.addEventListener('ended', this.playNext);
-  },
-  beforeUnmount() {
-    if (this.audio) {
-      this.audio.pause();
-      this.audio.removeEventListener('ended', this.playNext);
-      this.audio = null;
-    }
+    this.preloadAudio();
   },
   methods: {
-    playNext() {
-      this.currentIndex++;
-      if (this.currentIndex < this.urls.length) {
-        this.play();
-      } else {
-        // console.log('All tracks have been played.');
-        this.currentTrack = '';
+    preloadAudio() {
+      this.audioElements = this.urls.map((url) => {
+        const audio = new Audio(url.url);
+        audio.preload = 'auto'; // Preload and use cached copies if available
+        return audio;
+      });
+    },
+    startAudio() {
+      if (this.currentIndex === null || this.isPaused) {
+        if (this.currentIndex === null) {
+          this.currentIndex = 0; // Start from the beginning
+        }
+        this.playAudioAtIndex(this.currentIndex);
       }
     },
-    play() {
-      if (this.urls[this.currentIndex]) {
-        this.currentTrack = this.urls[this.currentIndex];
-        this.audio.src = this.currentTrack;
-        this.audio
-          .play()
-          .then(() => {}) //console.log(`Playing: ${this.currentTrack}`))
-          .catch(() => {}); //console.error('Error playing audio:', error));
+    playAudioAtIndex(index) {
+      const audio = this.audioElements[index];
+      if (audio) {
+        this.isPlaying = true;
+        this.isPaused = false;
+        audio.play();
+        this.scrollToLineId(this.urls[index].line_id); // Scroll to the corresponding element
+        audio.onended = () => {
+          this.currentIndex++;
+          if (this.currentIndex < this.audioElements.length) {
+            this.playAudioAtIndex(this.currentIndex);
+          } else {
+            this.isPlaying = false;
+            this.currentIndex = null;
+          }
+        };
       }
     },
-    start() {
-      this.currentIndex = 0;
-      this.play();
+    pauseAudio() {
+      if (this.currentIndex !== null) {
+        const audio = this.audioElements[this.currentIndex];
+        if (audio) {
+          audio.pause();
+          this.isPaused = true;
+          this.isPlaying = false;
+        }
+      }
     },
-    stop() {
-      if (this.audio) {
-        this.audio.pause();
-        this.audio.currentTime = 0;
+    stopAudio() {
+      if (this.currentIndex !== null) {
+        const audio = this.audioElements[this.currentIndex];
+        if (audio) {
+          audio.pause();
+          audio.currentTime = 0;
+          this.isPlaying = false;
+          this.isPaused = false;
+          this.currentIndex = null;
+        }
+      }
+    },
+    startFromBeginning() {
+      if (this.currentIndex !== null) {
+        this.stopAudio();
         this.currentIndex = 0;
-        this.currentTrack = '';
+        this.playAudioAtIndex(this.currentIndex);
       }
     },
-    pause() {
-      if (this.audio) {
-        this.audio.pause();
-      }
-    },
-    resume() {
-      if (this.audio && this.audio.paused) {
-        this.audio.play();
+    scrollToLineId(lineId) {
+      if (lineId) {
+        const element = document.querySelector(`[data-line-id="${lineId}"]`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
       }
     },
   },
 };
 </script>
 
-<style scoped>
+<style>
 .audio-player {
-  margin: 20px;
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  max-width: 300px;
+}
+
+.audio-player .playing {
+  font-weight: bold;
+  color: green;
+}
+
+.controls {
+  margin-top: 10px;
 }
 
 button {
   margin-right: 10px;
+  padding: 10px 15px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 </style>
