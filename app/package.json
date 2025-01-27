@@ -36,7 +36,7 @@
     "and": "^0.0.3",
     "axios": "^1.7.9",
     "decode-uri-component": "^0.4.1",
-    "element-plus": "^2.9.1",
+    "element-plus": "^2.9.3",
     "follow-redirects": "^1.15.9",
     "install": "^0.13.0",
     "json5": "2.2.3",

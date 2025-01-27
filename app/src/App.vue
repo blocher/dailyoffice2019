@@ -502,6 +502,7 @@ body {
 }
 
 .el-backtop {
+  display: none !important;
   z-index: 200 !important;
 }
 

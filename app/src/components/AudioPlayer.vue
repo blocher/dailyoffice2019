@@ -2,72 +2,108 @@
   <div class="audio-player">
     <div class="controls fixed-controls">
       <div class="menu-and-buttons">
-        <select
-          v-model="currentHeadingIndex"
-          @change="handleTrackChangeForHeading"
-        >
-          <option key="-1" disabled value="-1">Jump to..</option>
-          <option
-            v-for="(heading, index) in headings"
-            :key="heading.next_id"
-            :value="heading.next_id"
+        <el-button-group v-if="audioReady">
+          <el-button
+            size="small"
+            :disabled="isPlaying && !isPaused"
+            @click="startAudio"
           >
-            {{ heading.heading }}
-          </option>
-        </select>
-        <div class="button-group">
-          <button :disabled="isPlaying && !isPaused" @click="startAudio">
             ▶ Play/Resume
-          </button>
-          <button :disabled="!isPlaying" @click="pauseAudio">⏸ Pause</button>
-          <button
+          </el-button>
+          <el-button size="small" :disabled="!isPlaying" @click="pauseAudio">
+            ⏸ Pause
+          </el-button>
+          <el-button
+            size="small"
             :disabled="!isPlaying && !isPaused"
             @click="startFromBeginning"
           >
-            ⏮ Start from Beginning
-          </button>
-        </div>
+            ⏮ Restart
+          </el-button>
+        </el-button-group>
+        <Loading v-if="loading || !audioReady" />
+        <el-select
+          v-model="currentHeadingIndex"
+          class="smallSelector"
+          placeholder="Jump to..."
+          @change="handleTrackChangeForHeading"
+        >
+          <el-option
+            v-for="(heading, index) in headings"
+            :key="heading.next_id"
+            size="small"
+            :value="heading.next_id"
+          >
+            {{ heading.heading }}
+          </el-option>
+        </el-select>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import Loading from '@/components/Loading.vue';
+
 export default {
   name: 'AudioPlayer',
+  components: { Loading },
   props: {
     audio: {
       type: Object,
       required: true,
     },
+    audioReady: {
+      type: Boolean,
+      required: true,
+    },
+    office: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
-      currentIndex: -1,
-      currentHeadingIndex: -1,
+      currentIndex: null,
+      currentHeadingIndex: null,
       isPlaying: false,
       isPaused: false,
       tracks: [],
       headings: [],
-      audioCache: {},
+      loading: false,
+      audioElements: {},
     };
   },
   mounted() {
     this.tracks = this.audio.tracks;
     this.headings = this.audio.headings;
-    this.preloadAudio();
+  },
+  updated() {
+    this.tracks = this.audio.tracks;
+    this.headings = this.audio.headings;
+    this.stopAllAudio();
+  },
+  beforeUnmount() {
+    this.stopAllAudio();
   },
   methods: {
-    preloadAudio() {
-      this.tracks.forEach((track) => {
+    loadAudio(index) {
+      if (!this.audioElements[index]) {
+        const track = this.tracks[index];
         const audio = new Audio(track.url);
-        audio.preload = 'auto'; // Preload and cache the audio
-        this.audioCache[track.url] = audio;
-      });
+        audio.preload = 'metadata'; // Load only metadata initially
+        this.audioElements[index] = audio;
+      }
+      return this.audioElements[index];
     },
     startAudio() {
-      if (this.currentIndex === null || this.isPaused) {
-        if (this.currentIndex === null) {
+      if (
+        this.currentIndex === null ||
+        this.isPaused ||
+        this.currentIndex === -1 ||
+        this.currentIndex === 0
+      ) {
+        if (this.currentIndex === null || this.currentIndex === -1) {
           this.currentIndex = 0; // Start from the beginning
         }
         this.playAudioAtIndex(this.currentIndex);
@@ -75,13 +111,38 @@ export default {
     },
     playAudioAtIndex(index) {
       const track = this.tracks[index];
-      const audio = this.audioCache[track.url];
+      const audio = this.loadAudio(index);
+
       if (audio) {
         this.stopAllAudio();
         this.isPlaying = true;
         this.isPaused = false;
-        audio.play();
-        this.scrollToLineId(track.line_id); // Scroll to the corresponding element
+
+        // Add event handlers for error and stalled states
+        audio.onerror = () => {
+          this.isPlaying = false;
+        };
+
+        audio.onstalled = () => {
+          this.loading = true;
+        };
+
+        audio.addEventListener('canplay', () => {
+          this.loading = false;
+        });
+
+        audio.oncanplay = function () {
+          this.loading = false;
+        };
+
+        // Handle playback normally
+        audio.play().catch(() => {
+          this.isPlaying = false;
+        });
+
+        this.scrollToLineId(track.line_id);
+
+        // Properly transition to the next track
         audio.onended = () => {
           this.currentIndex++;
           if (this.currentIndex < this.tracks.length) {
@@ -95,8 +156,7 @@ export default {
     },
     pauseAudio() {
       if (this.currentIndex !== null) {
-        const track = this.tracks[this.currentIndex];
-        const audio = this.audioCache[track.url];
+        const audio = this.audioElements[this.currentIndex];
         if (audio) {
           audio.pause();
           this.isPaused = true;
@@ -106,8 +166,7 @@ export default {
     },
     stopAudio() {
       if (this.currentIndex !== null) {
-        const track = this.tracks[this.currentIndex];
-        const audio = this.audioCache[track.url];
+        const audio = this.audioElements[this.currentIndex];
         if (audio) {
           audio.pause();
           audio.currentTime = 0;
@@ -117,7 +176,7 @@ export default {
       }
     },
     stopAllAudio() {
-      Object.values(this.audioCache).forEach((audio) => {
+      Object.values(this.audioElements).forEach((audio) => {
         audio.pause();
         audio.currentTime = 0;
       });
@@ -149,11 +208,12 @@ export default {
         const index = this.tracks.findIndex(
           (track) => track.line_id === this.currentHeadingIndex
         );
-        if (index !== -1) {
+        if (index !== null) {
           this.currentIndex = index;
           this.playAudioAtIndex(this.currentIndex);
         }
       }
+      this.currentHeadingIndex = null;
     },
   },
 };
@@ -203,5 +263,9 @@ button {
 button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+.smallSelector {
+  max-width: 350px !important;
 }
 </style>

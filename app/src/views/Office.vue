@@ -19,6 +19,34 @@
         <FontSizer v-if="readyToSetFontSize" />
       </div>
     </div>
+    <div style="max-width: 65ch; margin: 0 auto 5rem">
+      <el-alert type="info" :closable="false">
+        <h3>New! Audio Player</h3>
+        <p style="text-align: center">
+          Try the new audio experience to listen to the Daily Office out loud.
+        </p>
+        <p style="text-align: center">
+          <el-switch
+            v-model="audioEnabled"
+            size="large"
+            active-text="Hide Audio Controls"
+            inactive-text="Show Audio Controls"
+          />
+        </p>
+        <p v-if="audioEnabled" style="color: red; text-align: center">
+          Audio controls are visible at the bottom of the page.
+        </p>
+        <p>
+          <br />
+          ⚠
+          <small
+            >This is an experimental feature and may not always work perfectly.
+            Please report any issues or feedback to
+            feedback@dailyoffice2019.com.</small
+          >
+        </p>
+      </el-alert>
+    </div>
     <div id="main">
       <div v-for="module in modules" :key="module.name">
         <div v-for="line in module.lines" :key="line.content">
@@ -57,7 +85,12 @@
     </div>
   </div>
 
-  <AudioPlayer v-if="!loading && audioReady" :audio="audioLinks" />
+  <AudioPlayer
+    v-if="!loading && audioEnabled"
+    :audio="audioLinks"
+    :audioReady="audioReady"
+    :office="office"
+  />
 </template>
 
 <script>
@@ -125,10 +158,21 @@ export default {
       notFound: false,
       audioLinks: [],
       audioReady: false,
+      audioEnabled: false,
     };
+  },
+  watch: {
+    async audioEnabled(newVal) {
+      await DynamicStorage.setItem('audioEnabled', newVal ? 'true' : 'false');
+    },
   },
   async mounted() {
     await DynamicStorage.setItem('serviceType', 'office');
+    const audioEnabled =
+      (await DynamicStorage.getItem('audioEnabled', 'false')) === 'true'
+        ? true
+        : false;
+    this.audioEnabled = audioEnabled;
   },
 
   async created() {
