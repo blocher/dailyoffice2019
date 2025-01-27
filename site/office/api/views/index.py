@@ -2726,7 +2726,7 @@ class ComplineCanticle(Module):
         gloria_patri_filename = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
         return (
             [
-                Line("NUNC DIMITTIS", "heading"),
+                Line("Nunc Dimittis", "heading"),
                 Line("The Song of Simeon", "subheading"),
                 Line(
                     "The Officiant and People say or sing the Song of Simeon with this Antiphon, all standing",
@@ -2747,7 +2747,7 @@ class ComplineConclusion(Module):
 
     def get_lines(self):
         return [
-            Line("THE DISMISSAL", "heading"),
+            Line("The Dismissal", "heading"),
             Line("Let us bless the Lord.", "leader_dialogue"),
             Line("Thanks be to God.", "congregation_dialogue"),
             Line("The Officiant concludes with the following", "rubric"),
@@ -2889,8 +2889,24 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
     def get_audio(self, obj):
         modules = self.get_modules(obj)
         tracks = []
+        headings = []
         for module in modules:
-            for line in module["lines"]:
+            for i, line in enumerate(module["lines"]):
+                if line["line_type"] in ["heading"]:
+                    j = i
+                    look_ahead_line = module["lines"][j + 1] if j + 1 < len(module["lines"]) else None
+                    while j + 1 < len(module["lines"]) and look_ahead_line["line_type"] not in [
+                        "reader",
+                        "leader",
+                        "congregation",
+                        "leader_dialogue",
+                        "congregation_dialogue",
+                        "html",
+                    ]:
+                        look_ahead_line = module["lines"][j + 1]
+                        j = j + 1
+                    headings.append({"heading": line["content"], "next_id": look_ahead_line["id"]})
+
                 if line["line_type"] == "html":
                     tracks = tracks + self.handle_html(line["content"], id=line["id"])
                 elif line["line_type"] in ["reader"]:
@@ -2902,9 +2918,12 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     "leader_dialogue",
                     "congregation_dialogue",
                 ]:
-                    tracks = tracks + [{"line_id": line["id"], "url": self.get_line_audio_file(line)}]
+                    tracks = tracks + [
+                        {"line_id": line["id"], "module": module["name"], "url": self.get_line_audio_file(line)}
+                    ]
         tracks = [track for track in tracks if track]
-        return tracks
+        headings = [heading for heading in headings if heading]
+        return {"tracks": tracks, "headings": headings}
 
 
 class OfficeSerializer(GenericDailyOfficeSerializer):

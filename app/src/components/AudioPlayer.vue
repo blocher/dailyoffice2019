@@ -1,21 +1,33 @@
 <template>
   <div class="audio-player">
-    <div
-      v-for="(url, index) in urls"
-      :key="index"
-      :class="{ playing: index === currentIndex }"
-    >
-      <p>Track {{ index + 1 }}: {{ url }}</p>
-    </div>
-    <div class="controls">
-      <button :disabled="isPlaying && !isPaused" @click="startAudio">
-        ▶ Play
-      </button>
-      <button :disabled="!isPlaying" @click="pauseAudio">⏸ Pause</button>
-      <button :disabled="!isPlaying" @click="stopAudio">⏹ Stop</button>
-      <button :disabled="!isPlaying && !isPaused" @click="startFromBeginning">
-        ⏮ Start from Beginning
-      </button>
+    <div class="controls fixed-controls">
+      <div class="menu-and-buttons">
+        <select
+          v-model="currentHeadingIndex"
+          @change="handleTrackChangeForHeading"
+        >
+          <option key="-1" disabled value="-1">Jump to..</option>
+          <option
+            v-for="(heading, index) in headings"
+            :key="heading.next_id"
+            :value="heading.next_id"
+          >
+            {{ heading.heading }}
+          </option>
+        </select>
+        <div class="button-group">
+          <button :disabled="isPlaying && !isPaused" @click="startAudio">
+            ▶ Play/Resume
+          </button>
+          <button :disabled="!isPlaying" @click="pauseAudio">⏸ Pause</button>
+          <button
+            :disabled="!isPlaying && !isPaused"
+            @click="startFromBeginning"
+          >
+            ⏮ Start from Beginning
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -24,28 +36,33 @@
 export default {
   name: 'AudioPlayer',
   props: {
-    urls: {
-      type: Array,
+    audio: {
+      type: Object,
       required: true,
     },
   },
   data() {
     return {
-      audioElements: [],
-      currentIndex: null,
+      currentIndex: -1,
+      currentHeadingIndex: -1,
       isPlaying: false,
       isPaused: false,
+      tracks: [],
+      headings: [],
+      audioCache: {},
     };
   },
   mounted() {
+    this.tracks = this.audio.tracks;
+    this.headings = this.audio.headings;
     this.preloadAudio();
   },
   methods: {
     preloadAudio() {
-      this.audioElements = this.urls.map((url) => {
-        const audio = new Audio(url.url);
-        audio.preload = 'auto'; // Preload and use cached copies if available
-        return audio;
+      this.tracks.forEach((track) => {
+        const audio = new Audio(track.url);
+        audio.preload = 'auto'; // Preload and cache the audio
+        this.audioCache[track.url] = audio;
       });
     },
     startAudio() {
@@ -57,15 +74,17 @@ export default {
       }
     },
     playAudioAtIndex(index) {
-      const audio = this.audioElements[index];
+      const track = this.tracks[index];
+      const audio = this.audioCache[track.url];
       if (audio) {
+        this.stopAllAudio();
         this.isPlaying = true;
         this.isPaused = false;
         audio.play();
-        this.scrollToLineId(this.urls[index].line_id); // Scroll to the corresponding element
+        this.scrollToLineId(track.line_id); // Scroll to the corresponding element
         audio.onended = () => {
           this.currentIndex++;
-          if (this.currentIndex < this.audioElements.length) {
+          if (this.currentIndex < this.tracks.length) {
             this.playAudioAtIndex(this.currentIndex);
           } else {
             this.isPlaying = false;
@@ -76,7 +95,8 @@ export default {
     },
     pauseAudio() {
       if (this.currentIndex !== null) {
-        const audio = this.audioElements[this.currentIndex];
+        const track = this.tracks[this.currentIndex];
+        const audio = this.audioCache[track.url];
         if (audio) {
           audio.pause();
           this.isPaused = true;
@@ -86,15 +106,23 @@ export default {
     },
     stopAudio() {
       if (this.currentIndex !== null) {
-        const audio = this.audioElements[this.currentIndex];
+        const track = this.tracks[this.currentIndex];
+        const audio = this.audioCache[track.url];
         if (audio) {
           audio.pause();
           audio.currentTime = 0;
           this.isPlaying = false;
           this.isPaused = false;
-          this.currentIndex = null;
         }
       }
+    },
+    stopAllAudio() {
+      Object.values(this.audioCache).forEach((audio) => {
+        audio.pause();
+        audio.currentTime = 0;
+      });
+      this.isPlaying = false;
+      this.isPaused = false;
     },
     startFromBeginning() {
       if (this.currentIndex !== null) {
@@ -108,6 +136,22 @@ export default {
         const element = document.querySelector(`[data-line-id="${lineId}"]`);
         if (element) {
           element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    },
+    handleTrackChange() {
+      if (this.currentIndex !== null) {
+        this.playAudioAtIndex(this.currentIndex);
+      }
+    },
+    handleTrackChangeForHeading() {
+      if (this.currentHeadingIndex !== null) {
+        const index = this.tracks.findIndex(
+          (track) => track.line_id === this.currentHeadingIndex
+        );
+        if (index !== -1) {
+          this.currentIndex = index;
+          this.playAudioAtIndex(this.currentIndex);
         }
       }
     },
@@ -125,12 +169,30 @@ export default {
   color: green;
 }
 
-.controls {
-  margin-top: 10px;
+.audio-list {
+  margin-bottom: 100px; /* Reserve space for fixed controls */
+}
+
+.controls.fixed-controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  border-top: 2px solid #ccc;
+  background-color: #fff;
+  padding: 10px;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.menu-and-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 button {
-  margin-right: 10px;
   padding: 10px 15px;
   font-size: 14px;
   border-radius: 5px;

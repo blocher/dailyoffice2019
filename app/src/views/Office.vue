@@ -57,7 +57,7 @@
     </div>
   </div>
 
-  <AudioPlayer v-if="!loading && audioReady" :urls="audioLinks" />
+  <AudioPlayer v-if="!loading && audioReady" :audio="audioLinks" />
 </template>
 
 <script>

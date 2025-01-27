@@ -12,6 +12,7 @@ class Line(dict):
         indented=False,
         preface=None,
         extra_space_before=False,
+        audio_heading_content=None,
         *args,
         **kwargs,
     ):
@@ -21,6 +22,7 @@ class Line(dict):
             indented=indented,
             preface=preface,
             extra_space_before=extra_space_before,
+            audio_heading_content=audio_heading_content,
             *args,
             **kwargs,
         )
