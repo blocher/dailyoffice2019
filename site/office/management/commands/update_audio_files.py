@@ -7,7 +7,7 @@ from django.urls import resolve
 from django.utils import timezone
 
 
-@kronos.register("21 23 * * *")
+@kronos.register("55 9 * * *")
 class Command(BaseCommand):
     help = "My shiny new management command."
 
@@ -118,6 +118,9 @@ class Command(BaseCommand):
                         },
                         {
                             "morning_prayer_invitatory": "invitatory_rotating",
+                        },
+                        {
+                            "reading_length": "abbreviated",
                         },
                     ]
                     for change in more_changes:
