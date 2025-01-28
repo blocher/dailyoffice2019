@@ -729,7 +729,7 @@ class ReadingModule(Module):
 
         lines = [
             Line(citation, "subheading"),
-            Line(self.audio(citation, reading.testament), "audio"),
+            Line(self.audio(citation, reading.testament), "html"),
             Line(passage_to_citation(citation), "leader"),
             Line("", "spacer"),
             Line(text, "html", "leader"),
@@ -778,7 +778,7 @@ class ReadingModule(Module):
 
         lines = [
             Line(subheading, "subheading"),
-            Line(self.audio(passage, testament), "audio"),
+            Line(self.audio(passage, testament), "html"),
             Line(citation, "reader"),
             Line("", "spacer"),
             Line(
@@ -1818,7 +1818,7 @@ class FamilyReadingModule(ReadingModule):
             return [
                 Line("A READING FROM HOLY SCRIPTURE", "heading"),
                 Line(scripture["passage"], "subheading"),
-                Line(audio, "audio") if audio and audio_setting == "on" else Line("", "audio"),
+                Line(audio, "html") if audio and audio_setting == "on" else Line("", "html"),
                 Line(self.remove_headings_if_needed(scripture["text"]), "html"),
                 Line("A period of silence may follow.", "rubric"),
             ]
