@@ -8,7 +8,7 @@
             :disabled="isPlaying && !isPaused"
             @click="startAudio"
           >
-            ▶ Play/Resume
+            ▶ Play
           </el-button>
           <el-button size="small" :disabled="!isPlaying" @click="pauseAudio">
             ⏸ Pause
@@ -21,8 +21,9 @@
             ⏮ Restart
           </el-button>
         </el-button-group>
-        <Loading v-if="!loading" :small="true" />
+        <Loading v-if="loading" :small="true" />
         <el-select
+          v-if="audioReady && headings.length"
           v-model="currentHeadingIndex"
           class="smallSelector"
           placeholder="Jump to..."
@@ -90,7 +91,7 @@ export default {
       if (!this.audioElements[index]) {
         const track = this.tracks[index];
         const audio = new Audio(track.url);
-        audio.preload = 'metadata'; // Load only metadata initially
+        audio.preload = 'metadata';
         this.audioElements[index] = audio;
       }
       return this.audioElements[index];
@@ -103,7 +104,7 @@ export default {
         this.currentIndex === 0
       ) {
         if (this.currentIndex === null || this.currentIndex === -1) {
-          this.currentIndex = 0; // Start from the beginning
+          this.currentIndex = 0;
         }
         this.playAudioAtIndex(this.currentIndex);
       }
@@ -117,7 +118,6 @@ export default {
         this.isPlaying = true;
         this.isPaused = false;
 
-        // Add event handlers for error and stalled states
         audio.onerror = () => {
           this.isPlaying = false;
         };
@@ -130,18 +130,12 @@ export default {
           this.loading = false;
         });
 
-        audio.oncanplay = function () {
-          this.loading = false;
-        };
-
-        // Handle playback normally
         audio.play().catch(() => {
           this.isPlaying = false;
         });
 
         this.scrollToLineId(track.line_id);
 
-        // Properly transition to the next track
         audio.onended = () => {
           this.currentIndex++;
           if (this.currentIndex < this.tracks.length) {
@@ -220,7 +214,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .audio-player {
   padding: 10px;
 }
@@ -231,7 +225,7 @@ export default {
 }
 
 .audio-list {
-  margin-bottom: 100px; /* Reserve space for fixed controls */
+  margin-bottom: 100px;
 }
 
 .controls.fixed-controls {
@@ -240,18 +234,20 @@ export default {
   left: 0;
   width: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   border-top: 2px solid #ccc;
-  background-color: #fff;
+  background-color: var(--color-bg);
   padding: 10px;
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
   z-index: 100;
+  flex-wrap: nowrap;
 }
 
 .menu-and-buttons {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
 }
 
 button {
@@ -263,11 +259,26 @@ button {
 }
 
 button:disabled {
-  background-color: #ccc;
   cursor: not-allowed;
 }
 
 .smallSelector {
-  max-width: 350px !important;
+  max-width: 200px;
+  flex-shrink: 1;
+}
+
+@media (max-width: 768px) {
+  .smallSelector {
+    max-width: 150px;
+  }
+
+  .menu-and-buttons {
+    flex-wrap: nowrap;
+    gap: 5px;
+  }
+
+  button {
+    flex-shrink: 0;
+  }
 }
 </style>
