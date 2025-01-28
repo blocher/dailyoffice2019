@@ -13,7 +13,7 @@ class Command(BaseCommand):
 
         now = timezone.now()
         start_date = now - timedelta(days=1)
-        date_list = [(start_date + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(9)]
+        date_list = [(start_date + timedelta(days=i)) for i in range(9)]
 
         for day in date_list:
 
