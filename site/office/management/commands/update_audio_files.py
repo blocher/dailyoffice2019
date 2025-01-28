@@ -10,64 +10,132 @@ class Command(BaseCommand):
     help = "My shiny new management command."
 
     def handle(self, *args, **options):
-        # Create a RequestFactory instance
-        factory = RequestFactory()
 
         now = timezone.now()
         start_date = now - timedelta(days=1)
-        date_list = [(start_date + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(7)]
+        date_list = [(start_date + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(9)]
 
-        # Create a mock GET request
-        base_url = "/api/v1/office/evening_prayer/2025-1-20"
+        for day in date_list:
 
-        # Define the query parameters as a dictionary
-        query_params = {
-            "language_style": "contemporary",
-            "psalm_translation": "contemporary",
-            "bible_translation": "esv",
-            "psalter": "60",
-            "reading_cycle": "1",
-            "reading_length": "full",
-            "reading_audio": "off",
-            "canticle_rotation": "1979",
-            "psalm_style": "whole_verse",
-            "lectionary": "daily-office-readings",
-            "confession": "long-on-fast",
-            "absolution": "lay",
-            "morning_prayer_invitatory": "invitatory_traditional",
-            "reading_headings": "off",
-            "language_style_for_our_father": "traditional",
-            "national_holidays": "all",
-            "suffrages": "rotating",
-            "collects": "rotating",
-            "mp_great_litany": "mp_litany_off",
-            "ep_great_litany": "ep_litany_off",
-            "general_thanksgiving": "on",
-            "chrysostom": "on",
-            "grace": "rotating",
-            "o_antiphons": "literal",
-            "family_readings": "long",
-            "family_reading_audio": "off",
-            "family_collect": "time_of_day",
-            "family-opening-sentence": "family-opening-sentence-fixed",
-            "family-creed": "family-creed-no",
-            "extra_collects": "",
-            "include_audio_links": "true",
-        }
+            offices = [
+                "office/morning_prayer",
+                "office/midday_prayer",
+                "office/evening_prayer",
+                "office/compline",
+                "family/morning_prayer/",
+                "family/midday_prayer/",
+                "family/early_evening_prayer",
+                "family/close_of_day_prayer",
+            ]
 
-        # Create the mock request
-        factory = RequestFactory()
-        request = factory.get(base_url, data=query_params)
-        # Resolve the view based on the URL
-        match = resolve(base_url)
+            for office in offices:
 
-        # Call the resolved view with the mock request
-        response = match.func(request, *match.args, **match.kwargs)
+                # Create a mock GET request
+                base_url = f"/api/v1/{office}/{day.strftime("%Y-%m-%d")}"
 
-        # Check if the response is a TemplateResponse
-        if hasattr(response, "render") and callable(response.render):
-            response = response.render()  # Render the TemplateResponse explicitly
+                # Define the query parameters as a dictionary
+                query_params = {
+                    "language_style": "contemporary",
+                    "psalm_translation": "contemporary",
+                    "bible_translation": "esv",
+                    "psalter": "60",  # needed
+                    "reading_cycle": "1",
+                    "reading_length": "full",
+                    "reading_audio": "off",
+                    "canticle_rotation": "1979",  # needed
+                    "psalm_style": "whole_verse",  # needed
+                    "lectionary": "daily-office-readings",  # needed
+                    "confession": "long-on-fast",
+                    "absolution": "lay",  # needed
+                    "morning_prayer_invitatory": "invitatory_traditional",  # needed
+                    "reading_headings": "off",
+                    "language_style_for_our_father": "traditional",
+                    "national_holidays": "all",
+                    "suffrages": "rotating",
+                    "collects": "rotating",
+                    "mp_great_litany": "mp_litany_on",
+                    "ep_great_litany": "ep_litany_on",
+                    "general_thanksgiving": "on",
+                    "chrysostom": "on",
+                    "grace": "rotating",
+                    "o_antiphons": "literal",
+                    "family_readings": "brief",
+                    "family_reading_audio": "off",
+                    "family_collect": "time_of_day",
+                    "family-opening-sentence": "family-opening-sentence-fixed",
+                    "family-creed": "family-creed-yes",
+                    "extra_collects": "",
+                    "include_audio_links": "true",
+                }
 
-        # Print the response content
-        print(response.content)
-        print(response.status_code)
+                contemporary_and_traditional = [
+                    {
+                        "language_style": "contemporary",
+                        "psalm_translation": "contemporary",
+                        "bible_translation": "esv",
+                        "language_style_for_our_father": "contemporary",
+                    },
+                    {
+                        "language_style": "traditional",
+                        "psalm_translation": "traditional",
+                        "bible_translation": "kjv",
+                        "language_style_for_our_father": "traditional",
+                    },
+                ]
+
+                for style in contemporary_and_traditional:
+                    new_params = query_params.copy()
+                    new_params |= style
+                    more_changes = [
+                        {
+                            "psalter": "30",
+                        },
+                        {
+                            "canticle_rotation": "default",
+                        },
+                        {
+                            "canticle_rotation": "2011",
+                        },
+                        {
+                            "psalm_style": "half_verse",
+                        },
+                        {
+                            "psalm_style": "unison",
+                        },
+                        {
+                            "lectionary": "mass-readings",
+                        },
+                        {
+                            "absolution": "priest",
+                        },
+                        {
+                            "morning_prayer_invitatory": "invitatory_jubilate_on_feasts",
+                        },
+                        {
+                            "morning_prayer_invitatory": "celebratory_always",
+                        },
+                        {
+                            "morning_prayer_invitatory": "invitatory_rotating",
+                        },
+                    ]
+                    for change in more_changes:
+                        newest_params = new_params.copy()
+                        newest_params |= change
+
+                        # Create the mock request
+                        factory = RequestFactory()
+                        request = factory.get(base_url, data=newest_params)
+                        print(base_url, newest_params)
+                        # Resolve the view based on the URL
+                        match = resolve(base_url)
+
+                        # Call the resolved view with the mock request
+                        response = match.func(request, *match.args, **match.kwargs)
+
+                        # Check if the response is a TemplateResponse
+                        if hasattr(response, "render") and callable(response.render):
+                            response = response.render()  # Render the TemplateResponse explicitly
+
+                        # Print the response content
+                        print(response.content)
+                        print(response.status_code)

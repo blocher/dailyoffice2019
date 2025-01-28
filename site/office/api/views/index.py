@@ -2858,13 +2858,10 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         import re
         from bs4 import BeautifulSoup
 
-        print("HANDLING HTML", html)
-
         lines = []
         audio_files = []
 
         sentences = re.split(r"(?<=[.!?])", line)
-        print(len(sentences))
         for sentence in sentences:
             soup = BeautifulSoup(sentence, "html.parser")
             plain_text = soup.get_text()
