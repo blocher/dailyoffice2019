@@ -81,7 +81,6 @@ export default {
   updated() {
     this.tracks = this.audio.tracks;
     this.headings = this.audio.headings;
-    this.stopAllAudio();
   },
   beforeUnmount() {
     this.stopAllAudio();
@@ -244,6 +243,7 @@ export default {
   background-color: #fff;
   padding: 10px;
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 100;
 }
 
 .menu-and-buttons {

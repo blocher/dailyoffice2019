@@ -2824,6 +2824,8 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             voice_type = "echo"
         else:
             return
+        content = content.replace("LORD", "Lord")
+        content = content.replace("Lᴏʀᴅ", "Lord")
         audio_id = generate_uuid_from_string(f"{line_type} {voice_type} {content}")
         filename = f"{audio_id}.mp3"
         file_path = os.path.join(settings.MEDIA_ROOT, filename)
@@ -2870,13 +2872,14 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             url = GenericDailyOfficeSerializer.get_line_audio_file(
                 Line(text_without_verses, "reader"), no_generate=no_generate
             )
-            uuid_match = re.search(r"/uploads/([0-9a-fA-F-]+)\.mp3", url)
-            if uuid_match:
-                uuid = uuid_match.group(1)
-            if id is not None:
-                id = re.sub(r"_[^_]+$", f"_{uuid}", id)
-            lines.append(f"<span data-line-id='{id}'></span>{sentence}")
-            audio_files.append({"line_id": id, "url": url})
+            if url:
+                uuid_match = re.search(r"/uploads/([0-9a-fA-F-]+)\.mp3", url)
+                if uuid_match:
+                    uuid = uuid_match.group(1)
+                if id is not None:
+                    id = re.sub(r"_[^_]+$", f"_{uuid}", id)
+                lines.append(f"<span data-line-id='{id}'></span>{sentence}")
+                audio_files.append({"line_id": id, "url": url})
         result = "".join(lines)
 
         if html:
