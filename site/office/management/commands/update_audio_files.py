@@ -1,11 +1,13 @@
 from datetime import timedelta
 
+import kronos
 from django.core.management.base import BaseCommand
 from django.test import RequestFactory
 from django.urls import resolve
 from django.utils import timezone
 
 
+@kronos.register("21 23 * * *")
 class Command(BaseCommand):
     help = "My shiny new management command."
 
