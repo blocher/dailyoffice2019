@@ -21,7 +21,7 @@
             ⏮ Restart
           </el-button>
         </el-button-group>
-        <Loading v-if="loading || !audioReady" />
+        <Loading v-if="!loading" :small="true" />
         <el-select
           v-model="currentHeadingIndex"
           class="smallSelector"
@@ -162,6 +162,8 @@ export default {
           this.isPlaying = false;
         }
       }
+      this.isPaused = true;
+      this.isPlaying = false;
     },
     stopAudio() {
       if (this.currentIndex !== null) {
@@ -170,7 +172,7 @@ export default {
           audio.pause();
           audio.currentTime = 0;
           this.isPlaying = false;
-          this.isPaused = false;
+          this.isPaused = true;
         }
       }
     },
