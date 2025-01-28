@@ -770,7 +770,7 @@ class ReadingModule(Module):
         text = self.remove_headings_if_needed(text)
 
         text = GenericDailyOfficeSerializer.handle_html(
-            text, html=True, no_generate=True, id=f"{self.get_safe_name()}_4_ad0aad27-4e5d-5ce3-8947-2bef1e5a5586"
+            text, html=True, no_generate=True, id=f"{self.get_safe_name()}_5_ad0aad27-4e5d-5ce3-8947-2bef1e5a5586"
         )
 
         if text_only:
@@ -1581,10 +1581,10 @@ class GreatLitany(ShowGreatLitanyMixin, Module):
     def get_leaders(self):
         setting = self.office.settings["national_holidays"]
         if setting == "us":
-            return "your servant Joe Biden, the President of the United States of America, "
+            return "your servant Donald Trump, the President of the United States of America, "
         if setting == "canada":
             return "your servants His Majesty King Charles, the Sovereign, and Justin Trudeau, the Prime Minister of Canada, "
-        return "your servant Joe Biden, the President of the United States of America, your servants His Majesty King Charles, the Sovereign, and Justin Trudeau, the Prime Minister of Canada, Claudia Sheinbaum Pardo, the president of Mexico, "
+        return "your servant Donald Trump, the President of the United States of America, your servants His Majesty King Charles, the Sovereign, and Justin Trudeau, the Prime Minister of Canada, Claudia Sheinbaum Pardo, the president of Mexico, "
 
     def get_lines(self):
         if self.show_great_litany:

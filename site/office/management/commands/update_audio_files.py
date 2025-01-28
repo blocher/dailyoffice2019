@@ -24,8 +24,8 @@ class Command(BaseCommand):
                 "office/midday_prayer",
                 "office/evening_prayer",
                 "office/compline",
-                "family/morning_prayer/",
-                "family/midday_prayer/",
+                "family/morning_prayer",
+                "family/midday_prayer",
                 "family/early_evening_prayer",
                 "family/close_of_day_prayer",
             ]
