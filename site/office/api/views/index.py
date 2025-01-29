@@ -2963,6 +2963,19 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                         look_ahead_line = module["lines"][j + 1]
                         j = j + 1
                     print(line["content"], look_ahead_line)
+                    if (
+                        look_ahead_line["line_type"]
+                        not in [
+                            "reader",
+                            "leader",
+                            "congregation",
+                            "leader_dialogue",
+                            "congregation_dialogue",
+                            "html",
+                        ]
+                        or "iframe" in look_ahead_line["content"]
+                    ):
+                        continue
                     headings.append({"heading": line["content"], "next_id": look_ahead_line["id"]})
 
                 if line["line_type"] == "html" and "<iframe" in line["content"]:
