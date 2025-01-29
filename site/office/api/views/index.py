@@ -2904,6 +2904,11 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         import re
         from bs4 import BeautifulSoup
 
+        if "<iframe" in line and html:
+            return line
+        if "<iframe" in line and not html:
+            return []
+
         lines = []
         audio_files = []
 
@@ -2943,9 +2948,8 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 if line["line_type"] in ["heading"]:
                     j = i
                     look_ahead_line = module["lines"][j + 1] if j + 1 < len(module["lines"]) else None
-                    while (
-                        j + 1 < len(module["lines"])
-                        and look_ahead_line["line_type"]
+                    while j + 1 < len(module["lines"]) and (
+                        look_ahead_line["line_type"]
                         not in [
                             "reader",
                             "leader",
@@ -2954,11 +2958,11 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                             "congregation_dialogue",
                             "html",
                         ]
-                        and "<iframe" not in line["content"]
+                        or "iframe" in look_ahead_line["content"]
                     ):
                         look_ahead_line = module["lines"][j + 1]
                         j = j + 1
-                    print(type(look_ahead_line))
+                    print(line["content"], look_ahead_line)
                     headings.append({"heading": line["content"], "next_id": look_ahead_line["id"]})
 
                 if line["line_type"] == "html" and "<iframe" in line["content"]:
@@ -2980,7 +2984,6 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     ]
         tracks = [track for track in tracks if track]
         headings = [heading for heading in headings if heading]
-        print(headings)
         return {"tracks": tracks, "headings": headings}
 
 
