@@ -1,7 +1,24 @@
 <template>
   <div class="audio-player">
-    <div class="controls fixed-controls">
-      <div class="menu-and-buttons">
+    <div class="controls fixed-controls" style="width: 100%">
+      <div v-if="!isEsvOrKjv || !isWithinSevenDays" class="menu-and-buttons">
+        <span v-if="!isEsvOrKjv">
+          <small
+            >&nbsp;&nbsp;Audio is only available if the selected bible
+            translation is the English Standard Version (ESV) or the Kings James
+            Version.&nbsp;&nbsp;
+            <a href="/settings"> Change Settings >>> </a>
+          </small>
+        </span>
+        <span v-if="!isWithinSevenDays">
+          <small
+            >&nbsp;&nbsp;Audio is for today and the next seven days.&nbsp;&nbsp;
+            <a href="/"> Go to Today >>> </a>
+          </small>
+        </span>
+      </div>
+
+      <div v-if="isEsvOrKjv" class="menu-and-buttons">
         <el-button-group v-if="audioReady">
           <el-button
             size="small"
@@ -61,6 +78,16 @@ export default {
     office: {
       type: String,
       required: true,
+    },
+    isEsvOrKjv: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+    isWithinSevenDays: {
+      type: Boolean,
+      required: true,
+      default: false,
     },
   },
   data() {

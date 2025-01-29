@@ -770,7 +770,7 @@ class ReadingModule(Module):
         text = self.remove_headings_if_needed(text)
 
         text = GenericDailyOfficeSerializer.handle_html(
-            text, html=True, no_generate=True, id=f"{self.get_safe_name()}_5_ad0aad27-4e5d-5ce3-8947-2bef1e5a5586"
+            text, html=True, no_generate=True, id=f"{self.get_safe_name()}_ad0aad27-4e5d-5ce3-8947-2bef1e5a5586"
         )
 
         if text_only:
@@ -2887,6 +2887,8 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         return audio_files
 
     def get_audio(self, obj):
+        if hasattr(obj.settings, "bible_translation") and obj.settings.bible_translation not in ["esv", "kjv"]:
+            return []
         modules = self.get_modules(obj)
         tracks = []
         headings = []
@@ -2908,7 +2910,8 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     headings.append({"heading": line["content"], "next_id": look_ahead_line["id"]})
 
                 if line["line_type"] == "html":
-                    tracks = tracks + self.handle_html(line["content"], id=line["id"])
+                    temp_id = "_".join([line["id"].split("_")[0], line["id"].split("_")[-1]])
+                    tracks = tracks + self.handle_html(line["content"], id=temp_id)
                 elif line["line_type"] in ["reader"]:
                     tracks = tracks + [{"line_id": line["id"], "url": self.get_line_audio_file(line)}]
                 elif line["line_type"] in [

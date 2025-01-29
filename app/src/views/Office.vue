@@ -29,8 +29,8 @@
           <el-switch
             v-model="audioEnabled"
             size="large"
-            active-text="Hide Audio Controls"
-            inactive-text="Show Audio Controls"
+            active-text="Show Audio Controls"
+            inactive-text="Hide Audio Controls"
           />
         </p>
         <p v-if="audioEnabled" style="color: red; text-align: center">
@@ -90,6 +90,8 @@
     :audio="audioLinks"
     :audioReady="audioReady"
     :office="office"
+    :isEsvOrKjv="isEsvOrKjv"
+    :isWithinSevenDays="isWithinSevenDays"
   />
 </template>
 
@@ -159,7 +161,21 @@ export default {
       audioLinks: [],
       audioReady: false,
       audioEnabled: false,
+      isEsvOrKjv: false,
     };
+  },
+  computed: {
+    isWithinSevenDays() {
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+      const sevenDaysFromNow = new Date(today);
+      sevenDaysFromNow.setDate(today.getDate() + 7);
+
+      return (
+        this.calendarDate >= yesterday && this.calendarDate <= sevenDaysFromNow
+      );
+    },
   },
   watch: {
     async audioEnabled(newVal) {
@@ -203,6 +219,13 @@ export default {
     this.availableSettings = await this.$store.state.availableSettings;
     await this.$store.dispatch('initializeSettings');
     const settings = await this.$store.state.settings;
+    if (
+      !Object.prototype.hasOwnProperty.call(settings, 'bible_translation') ||
+      !settings.bible_translation
+    ) {
+      settings.bible_translation = 'esv';
+    }
+    this.isEsvOrKjv = ['esv', 'kjv'].includes(settings.bible_translation);
     const queryString = Object.keys(settings)
       .map((key) => key + '=' + settings[key])
       .join('&');
@@ -228,9 +251,12 @@ export default {
     this.loading = false;
     await this.$nextTick();
     this.readyToSetFontSize = true;
-    this.audioLinks = await this.setAudioLinks(office_url);
+    if (this.isEsvOrKjv) {
+      this.audioLinks = await this.setAudioLinks(office_url);
+    }
     this.audioReady = true;
   },
+
   methods: {
     async setAudioLinks(url) {
       url = `${url}&include_audio_links=true`;
@@ -239,7 +265,7 @@ export default {
         this.audioLinks = data.data.audio;
         return data.data.audio;
       } catch {
-        return;
+        return [];
       }
     },
     async setAudioLinksBak() {
