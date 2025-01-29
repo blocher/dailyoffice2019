@@ -2943,19 +2943,26 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 if line["line_type"] in ["heading"]:
                     j = i
                     look_ahead_line = module["lines"][j + 1] if j + 1 < len(module["lines"]) else None
-                    while j + 1 < len(module["lines"]) and look_ahead_line["line_type"] not in [
-                        "reader",
-                        "leader",
-                        "congregation",
-                        "leader_dialogue",
-                        "congregation_dialogue",
-                        "html",
-                    ]:
+                    while (
+                        j + 1 < len(module["lines"])
+                        and look_ahead_line["line_type"]
+                        not in [
+                            "reader",
+                            "leader",
+                            "congregation",
+                            "leader_dialogue",
+                            "congregation_dialogue",
+                            "html",
+                        ]
+                        and "<iframe" not in line["content"]
+                    ):
                         look_ahead_line = module["lines"][j + 1]
                         j = j + 1
                     print(type(look_ahead_line))
                     headings.append({"heading": line["content"], "next_id": look_ahead_line["id"]})
 
+                if line["line_type"] == "html" and "<iframe" in line["content"]:
+                    continue
                 if line["line_type"] == "html":
                     temp_id = "_".join([line["id"].split("_")[0], line["id"].split("_")[-1]])
                     tracks = tracks + self.handle_html(line["content"], id=temp_id)
