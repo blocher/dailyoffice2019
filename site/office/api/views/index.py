@@ -1669,6 +1669,8 @@ class FamilyRubricSection(Module):
 
 
 class FamilyMorningOpeningSentence(Module):
+    name = "Opening Sentence"
+
     def get_lines(self):
         setting = self.office.settings["family-opening-sentence"]
         language_style = self.office.settings["language_style"]
@@ -1687,6 +1689,8 @@ class FamilyMorningOpeningSentence(Module):
 
 
 class FamilyMiddayOpeningSentence(Module):
+    name = "Opening Sentence"
+
     def get_lines(self):
         setting = self.office.settings["family-opening-sentence"]
         if setting == "family-opening-sentence-fixed":
@@ -1707,6 +1711,8 @@ class FamilyMiddayOpeningSentence(Module):
 
 
 class FamilyEarlyEveningHymn(Module):
+    name = "Hymn"
+
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         filename = "phos_hilaron_traditional" if language_style == "traditional" else "phos_hilaron"
@@ -1714,6 +1720,8 @@ class FamilyEarlyEveningHymn(Module):
 
 
 class FamilyCloseOfDayHymn(Module):
+    name = "Hymn"
+
     def get_lines(self):
         canticle = CanticleModule(self.office).get_canticle(EP2)
         canticle = [line for line in canticle if line["line_type"] != "rubric"]
@@ -1721,6 +1729,8 @@ class FamilyCloseOfDayHymn(Module):
 
 
 class FamilyCloseOfDayClosingSentence(Module):
+    name = "Closing Sentence"
+
     def get_lines(self):
         return [
             Line("Closing Sentence", "heading"),
@@ -1733,6 +1743,8 @@ class FamilyCloseOfDayClosingSentence(Module):
 
 
 class FamilyEarlyEveningOpeningSentence(Module):
+    name = "Opening Sentence"
+
     def get_lines(self):
         setting = self.office.settings["family-opening-sentence"]
         language_style = self.office.settings["language_style"]
@@ -1753,6 +1765,8 @@ class FamilyEarlyEveningOpeningSentence(Module):
 
 
 class FamilyCloseOfDayOpeningSentence(Module):
+    name = "Opening Sentence"
+
     def get_lines(self):
         setting = self.office.settings["family-opening-sentence"]
         language_style = self.office.settings["language_style"]
@@ -1773,6 +1787,8 @@ class FamilyCloseOfDayOpeningSentence(Module):
 
 
 class FamilyMorningPsalm(Module):
+    name = "Psalm"
+
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         gloria_patri = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
@@ -1785,6 +1801,8 @@ class FamilyMorningPsalm(Module):
 
 
 class FamilyMiddayPsalm(Module):
+    name = "Psalm"
+
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         gloria_patri = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
@@ -1797,6 +1815,8 @@ class FamilyMiddayPsalm(Module):
 
 
 class FamilyCloseOfDayPsalm(Module):
+    name = "Psalm"
+
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         gloria_patri = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
@@ -1809,6 +1829,8 @@ class FamilyCloseOfDayPsalm(Module):
 
 
 class FamilyReadingModule(ReadingModule):
+    name = "Reading"
+
     def get_lines(self):
         setting = self.office.settings["family_readings"]
         audio_setting = self.office.settings["family_reading_audio"]
@@ -1816,10 +1838,18 @@ class FamilyReadingModule(ReadingModule):
             scripture = self.get_long()
             audio = self.audio(scripture["passage"], "NT")
             return [
-                Line("A READING FROM HOLY SCRIPTURE", "heading"),
+                Line("A Reading from Holy Scripture", "heading"),
                 Line(scripture["passage"], "subheading"),
                 Line(audio, "html") if audio and audio_setting == "on" else Line("", "html"),
-                Line(self.remove_headings_if_needed(scripture["text"]), "html"),
+                Line(
+                    GenericDailyOfficeSerializer.handle_html(
+                        self.remove_headings_if_needed(scripture["text"]),
+                        html=True,
+                        no_generate=True,
+                        id=f"{self.get_safe_name()}_ad0aad27-4e5d-5ce3-8947-2bef1e5a5586",
+                    ),
+                    "html",
+                ),
                 Line("A period of silence may follow.", "rubric"),
             ]
         scripture = self.get_scripture()
@@ -1827,15 +1857,25 @@ class FamilyReadingModule(ReadingModule):
         passage = scripture["traditional"] if language_style == "traditional" else scripture["sentence"]
         audio = self.audio(scripture["citation"], "NT")
         return [
-            Line("A READING FROM HOLY SCRIPTURE", "heading"),
+            Line("A Reading from Holy Scripture", "heading"),
             Line(scripture["citation"], "subheading"),
             Line(audio, "html") if audio and audio_setting == "on" else Line("", "html"),
-            Line(passage, "html"),
+            Line(
+                GenericDailyOfficeSerializer.handle_html(
+                    passage,
+                    html=True,
+                    no_generate=True,
+                    id=f"{self.get_safe_name()}_ad0aad27-4e5d-5ce3-8947-2bef1e5a5586",
+                ),
+                "html",
+            ),
             Line("A period of silence may follow.", "rubric"),
         ]
 
 
 class FamilyMorningScripture(FamilyReadingModule):
+    name = "Reading"
+
     def get_long(self):
         translation = self.office.settings["bible_translation"]
         return {
@@ -1874,6 +1914,8 @@ class FamilyMorningScripture(FamilyReadingModule):
 
 
 class FamilyMiddayScripture(FamilyReadingModule):
+    name = "Reading"
+
     def get_long(self):
         translation = self.office.settings["bible_translation"]
         return {
@@ -1903,6 +1945,8 @@ class FamilyMiddayScripture(FamilyReadingModule):
 
 
 class FamilyEarlyEveningScripture(FamilyReadingModule):
+    name = "Reading"
+
     def get_long(self):
         translation = self.office.settings["bible_translation"]
         return {
@@ -1941,6 +1985,8 @@ class FamilyEarlyEveningScripture(FamilyReadingModule):
 
 
 class FamilyCloseOfDayScripture(FamilyReadingModule):
+    name = "Reading"
+
     def get_long(self):
         translation = self.office.settings["bible_translation"]
         return {
@@ -2907,6 +2953,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     ]:
                         look_ahead_line = module["lines"][j + 1]
                         j = j + 1
+                    print(type(look_ahead_line))
                     headings.append({"heading": line["content"], "next_id": look_ahead_line["id"]})
 
                 if line["line_type"] == "html":
@@ -2926,6 +2973,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     ]
         tracks = [track for track in tracks if track]
         headings = [heading for heading in headings if heading]
+        print(headings)
         return {"tracks": tracks, "headings": headings}
 
 
