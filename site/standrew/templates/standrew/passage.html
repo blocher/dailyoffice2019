@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bible Study Passage</title>
+    <link rel="stylesheet"
+          href="https://early.webawesome.com/webawesome@3.0.0-alpha.10/dist/styles/themes/default.css"/>
+    <link rel="stylesheet" href="https://early.webawesome.com/webawesome@3.0.0-alpha.10/dist/styles/webawesome.css"/>
+    <script type="module"
+            src="https://early.webawesome.com/webawesome@3.0.0-alpha.10/dist/webawesome.loader.js"></script>
+</head>
+<body>
+
+<wa-page>
+    <wa-page mobile-breakpoint="920">
+        <div slot="banner" class="wa-body-s">
+            <a href="#" class="wa-cluster wa-align-items-baseline wa-gap-xs" style="flex-wrap: nowrap;">
+                <wa-icon name="church"></wa-icon>
+
+            </a>
+        </div>
+        <header slot="header" class="wa-split">
+            <div class="wa-cluster">
+                <wa-icon name="church"
+                         style="color: var(--wa-color-brand-fill-loud); font-size: 1.5em;"></wa-icon>
+                <span id="brand-name" class="wa-heading-s">St. Andrew's Bible Study</span>
+            </div>
+
+        </header>
+        <nav slot="subheader">
+            <div class="wa-split" style="flex-wrap: nowrap; width: 100%;">
+                {% if previous %}
+                <a href="/bible_study/{{ previous.pk }}" class="wa-flank">
+                    <wa-icon name="chevron-left"></wa-icon>
+                    <span class="wa-caption-m">{{ previous.passage_title }}</span>
+
+                    {% else %}
+                    <div></div>
+                       {% endif %}
+                    {% if next %}
+                <a href="/bible_study/{{ next.pk }}" class="wa-flank:end">
+                    <span class="wa-caption-m">{{ next.passage_title }}</span>
+                    <wa-icon name="chevron-right"></wa-icon>
+                </a>
+                    {% endif %}
+            </div>
+
+        </nav>
+        <nav slot="navigation-header">
+            <div class="wa-flank">
+                <wa-avatar image="{{ day.image_url }}" label=""></wa-avatar>
+                <div class="wa-stack wa-gap-3xs">
+                    <span class="wa-heading-s">{{  day.passage_title }}</span>
+                    <span class="wa-caption-s"><em>{{  day.passage_string }}</em></span>
+                </div>
+            </div>
+        </nav>
+        <nav slot="navigation">
+
+            <a href="#identification">Identification</a>
+            <a href="#range">Range and Habitat</a>
+            <a href="#behavior">Behavior</a>
+            <a href="#conservation">Conservation</a>
+        </nav>
+
+        <header slot="main-header">
+            <div class="wa-flank:end wa-border-radius-l wa-dark"
+                 style="background-color: var(--wa-color-surface-lowered); --content-percentage: 35%; padding: var(--wa-space-m);">
+                <div class="wa-stack" style="margin: var(--wa-space-2xl);">
+                    <h4>{{ day.date }}</h4>
+                    <h1>{{ day.passage_title }}</h1>
+                    <h2>{{ day.jesus_story_book_title }}</h2>
+                    <wa-divider></wa-divider>
+                    <div class="wa-cluster wa-gap-xs">
+                        {% for passage in day.biblestudydaypassage_set.all %}
+                        <wa-tag id="tag_{{ passage.bible_study_passage.pk }}" size="medium">
+                            {{ passage.bible_study_passage.passage }}
+                        </wa-tag>
+                        <wa-tooltip for="tag_{{ passage.bible_study_passage.pk }}">
+                            {{ passage.bible_study_passage.formatted_html|safe }}
+                        </wa-tooltip>
+                        {% endfor %}
+
+                    </div>
+                    <div class="wa-flank">
+                        <wa-icon name="ruler"></wa-icon>
+                        <span class="wa-caption-m">L 21.5" | WS 48.5"</span>
+                    </div>
+                    <div class="wa-flank">
+                        <wa-icon name="earth-americas"></wa-icon>
+                        <span class="wa-caption-m">North America (Widespread), Central America (Limited), South America (Limited)</span>
+                    </div>
+                    <div class="wa-flank">
+                        <wa-icon name="shield-heart"></wa-icon>
+                        <span class="wa-caption-m">Least Concern</span>
+                    </div>
+                </div>
+                <div class="wa-frame" style="border-radius: var(--wa-border-radius-l);">
+                    <img src={{ day.image_url }}/>
+                </div>
+            </div>
+        </header>
+        <main class="wa-body-m">
+            <wa-details summary="Jesus Storybook Bible: {{ day.jesus_story_book_title }}">
+                <h4>{{ day.jesus_story_book_title }} ({{ day.passage_title }})</h4>
+                <p>{{ day.jesus_story_book_summary }}</p>
+            </wa-details>
+            {% if day.biblestudydaypassage_set.all|length > 1%}
+            <wa-divider style="--width: 2px;"></wa-divider>
+            <h3>Intersection of {{ day.passage_string }}</h3>
+            <div class="wa-cluster wa-gap-xs">
+                <wa-details summary="Reflection">
+                    <h4>Reflection</h4>
+                    <p>{{ day.formatted_reflection|safe }}</p>
+                </wa-details>
+                <wa-details summary="Study Questions">
+                    <h4>Study Questions</h4>
+                    <ul>
+                        {% for question in day.study_questions %}
+                        <li>{{ question }}</li>
+                        {% endfor %}
+                    </ul>
+                </wa-details>
+                <wa-details summary="Practical Questions">
+                    <h4>Practical Questions</h4>
+                    <ul>
+                        {% for question in day.practical_questions %}
+                        <li>{{ question }}</li>
+
+                        {% endfor %}
+                    </ul>
+                </wa-details>
+                <wa-details summary="How do the passages intersect?">
+                    <h4>How do the passages intersect?</h4>
+                    <p>{{ day.intersection|safe }}</p>
+                </wa-details>
+            </div>
+            {% endif %}
+            {% for passage in day.biblestudydaypassage_set.all %}
+            <wa-divider style="--width: 2px;"></wa-divider>
+            <h3>{{ passage.bible_study_passage.passage }}</h3>
+            <div class="wa-cluster wa-gap-xs">
+                {% for heading in passage.bible_study_passage.headings %}
+                <wa-tag size="small">{{ heading }}</wa-tag>
+                {% endfor %}
+                <p>{{ passage.bible_study_passage.theme }}</p>
+                <wa-details summary="Full Text: English Standard Version">
+                    <h4>{{ passage.bible_study_passage.passage }} (ESV)</h4>
+                    <p>{{ passage.bible_study_passage.formatted_html|safe }}</p>
+                </wa-details>
+                <wa-details summary="The Four Senses of Scriptural Interpretation">
+                    <h4>The Four Senses of Scriptural Interpretation</h4>
+                    {%for key, value in passage.bible_study_passage.four_senses.items %}
+                    <h5>{{ key|title }}</h5>
+                    <p>{{ value }}</p>
+                    {% endfor %}
+                </wa-details>
+                <wa-details summary="Background">
+                    <h4>Background</h4>
+                    <p>{{ passage.bible_study_passage.formatted_background|safe }}</p>
+                </wa-details>
+                <wa-details summary="Interesting Observations">
+                    <h4>Interesting Observations</h4>
+                    <p>{{ passage.bible_study_passage.formatted_interesting_points|safe }}</p>
+                </wa-details>
+                <wa-details summary="Reflection">
+                    <h4>Reflection</h4>
+                    <p>{{ passage.bible_study_passage.formatted_reflection|safe }}</p>
+                </wa-details>
+                <wa-details summary="Study Questions">
+                    <h4>Study Questions</h4>
+                    <ul>
+                        {% for question in passage.bible_study_passage.study_questions %}
+                        <li>{{ question }}</li>
+
+                        {% endfor %}
+                    </ul>
+                </wa-details>
+                <wa-details summary="Practical Questions">
+                    <h4>Practical Questions</h4>
+                    <ul>
+                        {% for question in passage.bible_study_passage.practical_questions %}
+                        <li>{{ question }}</li>
+
+                        {% endfor %}
+                    </ul>
+                </wa-details>
+                <wa-details summary="Primary Sources and More Reading">
+                    <h4>Primary Sources and More Reading</h4>
+
+                    {% for key, source in passage.bible_study_passage.primary_sources.items %}
+                    {% if key == "patristic" %}
+                    <p><strong>Patristic Era Sources (0-700 A.D.)</strong></p>
+                    <ul>
+                        {% for item in source %}
+                        <li><a target="_blank" href="{{ item.source_url }}">{{ item.source_title }}</a>
+                            ({{ item.author_name }})
+                            <br><em><small>{{ item.source_description }}</small></em></li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% for key, source in passage.bible_study_passage.primary_sources.items %}
+                    {% if key == "doctor" %}
+                    <strong>Doctors of the Church</strong>
+                    <ul>
+                        {% for item in source %}
+                        <li><a target="_blank" href="{{ item.source_url }}">{{ item.source_title }}</a>
+                            ({{ item.author_name }})
+                            <br><em><small>{{ item.source_description }}</small></em></li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% for key, source in passage.bible_study_passage.primary_sources.items %}
+                    {% if key == "reformation" %}
+                    <strong>Reformation Era and Later Sources (1500-1950 A.D.)</strong>
+                    <ul>
+                        {% for item in source %}
+                        <li><a target="_blank" href="{{ item.source_url }}">{{ item.source_title }}</a>
+                            ({{ item.author_name }} | {{ item.author_denomination }})
+                            <br><em><small>{{ item.source_description }}</small></em></li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% for key, source in passage.bible_study_passage.primary_sources.items %}
+                    {% if key == "modern" %}
+                    <strong>Modern Era Sources (1950-Present)</strong>
+                    <ul>
+                        {% for item in source %}
+                        <li><a target="_blank" href="{{ item.source_url }}">{{ item.source_title }}</a>
+                            ({{ item.author_name }} | {{ item.author_denomination }})
+                            <br><em><small>{{ item.source_description }}</small></em></li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    {% endfor %}
+                </wa-details>
+
+
+            </div>
+            <h4></h4>
+            {% endfor %}
+
+        </main>
+        <footer slot="main-footer">
+            <section>
+
+            </section>
+        </footer>
+        <aside slot="aside">
+            <h2 class="wa-heading-m">Browse stories</h2>
+            {% for menu_day in days %}
+            {% if menu_day != day %}
+            <a href="/bible_study/{{ menu_day.pk }}" class="wa-flank">
+                <wa-card with-image>
+                    <img
+                            slot="image"
+                            src="{{ menu_day.image_url }}"
+                            alt="{{ menu_day.passage_title }}"
+                    />
+                    <div class="wa-stack wa-gap-3xs">
+                        <span class="wa-caption-s"><strong>{{ menu_day.date }}</strong></span>
+                        <wa-divider></wa-divider>
+                        <span class="wa-heading-s">{{ menu_day.passage_title }}</span>
+                        <span class="wa-caption-s"><em>{{ menu_day.jesus_story_book_title }}</em></span>
+                        <span class="wa-caption-s"><br>{{ menu_day.passage_string }}</span>
+                        <p></p>
+                    </div>
+                </wa-card>
+            </a>
+            {% else %}
+            <wa-card with-image class="wa-dark">
+                <img
+                        slot="image"
+                        src="{{ menu_day.image_url }}"
+                        alt="{{ menu_day.passage_title }}"
+                />
+                <div class="wa-stack wa-gap-3xs">
+                    <span class="wa-caption-s">{{ menu_day.date }}</span>
+                    <wa-divider></wa-divider>
+                    <span class="wa-heading-s">{{ menu_day.passage_title }}</span>
+                    <span class="wa-caption-s"><em>{{ menu_day.jesus_story_book_title }}</em></span>
+                    <span class="wa-caption-s"><br>{{ menu_day.passage_string }}</span>
+                </div>
+            </wa-card>
+            {% endif %}
+            <!--             class="wa-flank:end wa-border-radius-l wa-dark"-->
+            <!--                 style="background-color: var(&#45;&#45;wa-color-surface-lowered); &#45;&#45;content-percentage: 35%; padding: var(&#45;&#45;wa-space-m);"-->
+            {% endfor %}
+        </aside>
+        <footer slot="footer" class="wa-grid wa-gap-xl">
+            <div class="wa-cluster" style="flex-wrap: nowrap;">
+                <wa-icon name="church" style="font-size: 1.5em;"></wa-icon>
+                <span class="wa-heading-s">The Community of St. Andrew</span>
+            </div>
+
+        </footer>
+    </wa-page>
+
+    <style>
+        wa-page {
+            --menu-width: 15rem;
+            --aside-width: 15rem;
+        }
+
+        wa-page[view='desktop'] {
+            [slot*='navigation'] {
+                border-inline-end: var(--wa-border-width-s) var(--wa-border-style) var(--wa-color-surface-border);
+            }
+        }
+
+        wa-page[view='mobile'] {
+            --menu-width: auto;
+            --aside-width: auto;
+        }
+
+        wa-details {
+            width: 100%;
+        }
+
+        [slot='banner'] {
+            --wa-color-text-link: var(--wa-color-neutral-on-loud);
+            background-color: var(--wa-color-neutral-fill-loud);
+        }
+
+        [slot='header'] {
+            --wa-link-decoration-default: none;
+            border-block-end: var(--wa-border-width-s) var(--wa-border-style) var(--wa-color-surface-border);
+        }
+
+        [slot*='header'] a {
+            font-weight: var(--wa-font-weight-action);
+        }
+
+        [slot='subheader'] {
+            background-color: var(--wa-color-surface-lowered);
+            border-block-end: var(--wa-border-width-s) var(--wa-border-style) var(--wa-color-surface-border);
+        }
+
+        [slot='navigation-header'] {
+            border-block-end: var(--wa-border-width-s) var(--wa-border-style) var(--wa-color-surface-border);
+        }
+
+        [slot*='navigation'] a {
+            --wa-color-text-link: var(--wa-color-text-normal);
+        }
+
+        [slot='navigation-footer'] {
+            border-block-start: var(--wa-border-width-s) var(--wa-border-style) var(--wa-color-surface-border);
+
+            .wa-flank {
+                --flank-size: 1.25em;
+            }
+        }
+
+        [slot='main-header'],
+        main,
+        [slot='main-footer'] {
+            max-inline-size: 60rem;
+            margin-inline: auto;
+        }
+
+        [slot='main-footer'] {
+            border-block-start: var(--wa-border-width-s) var(--wa-border-style) var(--wa-color-surface-border);
+        }
+
+        [slot='footer'] {
+            --wa-color-text-link: var(--wa-color-text-quiet);
+            background-color: var(--wa-color-surface-lowered);
+            font-size: var(--wa-font-size-s);
+        }
+    </style>
+
+    <script>
+        const sectionAnchors = document.querySelectorAll("[slot*='navigation'] a[href*='#']");
+        sectionAnchors.forEach((sectionAnchor) => sectionAnchor.setAttribute("data-drawer", "close"));
+    </script>
+</body>
+</html>

@@ -409,6 +409,8 @@ urlpatterns = [
     path("email", standrew_views.current_email),
     path("feast_email", standrew_views.feast_email),
     path("meeting_email", standrew_views.meeting_email),
+    path("bible_study", standrew_views.bible_study),
+    path("bible_study/<uuid:id>", standrew_views.bible_study_passage),
     # path(
     #     "standrew/movies/results/<uuid:movie_night>/", standrew_views.movie_night_results,
     #     name="movie-night-results"

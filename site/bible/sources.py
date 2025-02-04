@@ -63,8 +63,9 @@ class BibleGateway(BibleSource):
 
     def _get_markup(self, passage=None):
         passage = passage if passage else self.passage
-        r = requests.get("https://beta.biblegateway.com/passage/?search={}&version={}".format(passage, self.version))
-        print("https://beta.biblegateway.com/passage/?search={}&version={}".format(passage, self.version))
+        r = requests.get("https://biblegateway.com/passage/?search={}&version={}".format(passage, self.version))
+        print("https://biblegateway.com/passage/?search={}&version={}".format(passage, self.version))
+        print(r)
         if r.status_code == 200:
             return r.text
         raise Exception("Error getting passage")

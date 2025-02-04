@@ -1,8 +1,10 @@
-import pyrankvote
-from churchcal.base_models import BaseModel
+import re
+
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.db.models import Prefetch
 from pyrankvote import Ballot
+
+from churchcal.base_models import BaseModel
 from standrew.helpers import get_election_results, serialize_election_result
 from website.settings import SITE_ADDRESS
 
@@ -162,3 +164,80 @@ class MovieDetails(BaseModel):
 class MovieVeto(BaseModel):
     voter = models.ForeignKey("MovieVoter", on_delete=models.SET_NULL, null=True, blank=True)
     candidate = models.ForeignKey("MovieCandidate", on_delete=models.SET_NULL, null=True, blank=True)
+
+
+class BibleStudyDay(BaseModel):
+    date = models.DateField(blank=True, null=True)
+
+    jesus_story_book_number = models.PositiveSmallIntegerField(blank=True, null=True)
+    jesus_story_book_title = models.CharField(max_length=512, blank=True, null=True)
+    jesus_story_book_summary = models.TextField(blank=True, null=True)
+    jesus_story_book_content = models.TextField(blank=True, null=True)
+    passage_title = models.CharField(max_length=512, blank=True, null=True)
+    image_url = models.URLField(blank=True, null=True)
+
+    sermon = models.TextField(blank=True, null=True)
+    intersection = models.TextField(blank=True, null=True)
+    study_questions = ArrayField(models.CharField(max_length=512), blank=True, null=True)
+    practical_questions = ArrayField(models.CharField(max_length=512), blank=True, null=True)
+    reflection = models.TextField(blank=True, null=True)
+
+    @property
+    def passage_string(self):
+        return ", ".join([passage.bible_study_passage.passage for passage in self.biblestudydaypassage_set.all()])
+
+    def formatted_reflection(self):
+        if not self.reflection:
+            return ""
+        return re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", self.reflection.replace("\n", "<br>"))
+
+
+class BibleStudyDayPassage(BaseModel):
+    bible_study_day = models.ForeignKey("BibleStudyDay", on_delete=models.CASCADE)
+    bible_study_passage = models.ForeignKey("BibleStudyPassage", on_delete=models.CASCADE)
+
+
+class BibleStudyPassage(BaseModel):
+    passage = models.CharField(max_length=256)
+    text = models.TextField(blank=True, null=True)
+    html = models.TextField(blank=True, null=True)
+    headings = ArrayField(models.CharField(max_length=512), blank=True, null=True)
+    extracted_headings = ArrayField(models.CharField(max_length=512), blank=True, null=True)
+    theme = models.TextField(blank=True, null=True)
+    four_senses = models.JSONField(blank=True, null=True)
+    background = models.TextField(blank=True, null=True)
+    primary_sources = models.JSONField(blank=True, null=True)
+    interesting_points = models.TextField(blank=True, null=True)
+    study_questions = ArrayField(models.CharField(max_length=512), blank=True, null=True)
+    practical_questions = ArrayField(models.CharField(max_length=512), blank=True, null=True)
+    reflection = models.TextField(blank=True, null=True)
+    image_url = models.URLField(blank=True, null=True)
+
+    def formatted_background(self):
+        if not self.background:
+            return ""
+        return re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", self.background.replace("\n", "<br>"))
+
+    def formatted_interesting_points(self):
+        if not self.interesting_points:
+            return ""
+        return re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", self.interesting_points.replace("\n", "<br>"))
+
+    def formatted_reflection(self):
+        if not self.reflection:
+            return ""
+        return re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", self.reflection.replace("\n", "<br>"))
+
+    def formatted_html(self):
+        if not self.html:
+            return ""
+        return (
+            self.html.replace("<h1", "<h5")
+            .replace("<h2", "<h5")
+            .replace("<h3", "<h5")
+            .replace("<h4", "<h5")
+            .replace("</h1", "</h5")
+            .replace("</h2", "</h5")
+            .replace("</h3", "</h5")
+            .replace("</h4", "</h5")
+        )

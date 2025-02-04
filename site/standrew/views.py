@@ -3,7 +3,6 @@ import operator
 from datetime import timedelta
 from functools import reduce
 from itertools import groupby
-from math import ceil, floor
 from types import SimpleNamespace
 
 import requests
@@ -13,8 +12,11 @@ from django.db.models import Prefetch
 from django.forms import ModelForm
 from django.http import HttpResponse, Http404
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views.generic import CreateView
+from math import floor
+
 from standrew.email import weekly_email, CommemorationDailyEmailModule, WeeklyMeetingEmailModule
 from standrew.models import (
     MovieCandidate,
@@ -24,6 +26,8 @@ from standrew.models import (
     MovieRankedVote,
     MovieVeto,
     MovieNight,
+    BibleStudyDay,
+    BibleStudyDayPassage,
 )
 from standrew.utils import (
     get_movie_night,
@@ -32,7 +36,6 @@ from standrew.utils import (
     check_if_voting_open,
     CandidateResultDecorator,
     get_today,
-    send_movie_email,
 )
 from website.settings import YOUTUBE_API_KEY, IMDB_API_KEY, UTELLY_API_KEY, OMDB_API_KEY, SITE_ADDRESS
 
@@ -516,3 +519,38 @@ class MovieBallotCreate(CreateView):
             MovieVeto.objects.get_or_create(candidate=candidate, voter_id=self.object.voter_id)
         self.send_voted_email()
         return result
+
+
+def bible_study(self):
+    today = timezone.now().date()
+    days = BibleStudyDay.objects.order_by("date", "jesus_story_book_number", "created").filter(date__gte=today).all()
+    if days:
+        day = days[0]
+    else:
+        day = BibleStudyDay.objects.order_by("date", "jesus_story_book_number", "created").first()
+    return bible_study_passage(self, day.uuid)
+
+
+def bible_study_passage(self, id):
+    days = (
+        BibleStudyDay.objects.prefetch_related(
+            Prefetch(
+                "biblestudydaypassage_set",
+                queryset=BibleStudyDayPassage.objects.order_by("created").select_related("bible_study_passage"),
+            )
+        )
+        .order_by("jesus_story_book_number")
+        .all()
+    )
+
+    day = [(i, day) for i, day in enumerate(days) if day.uuid == id]
+    if len(day) < 1:
+        raise Http404
+    context = {
+        "day": day[0][1],
+        "previous": days[day[0][0] - 1] if day[0][0] > 0 else None,
+        "next": days[day[0][0] + 1] if day[0][0] < len(days) - 1 else None,
+        "days": days,
+    }
+    html = render_to_string("standrew/passage.html", context)
+    return HttpResponse(html)
