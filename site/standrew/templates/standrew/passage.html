@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://backers.webawesome.com/dist/styles/webawesome.css">
 <link id="color-stylesheet" rel="stylesheet" href="https://backers.webawesome.com/dist/styles/utilities.css">
 <link rel="stylesheet" href="https://backers.webawesome.com/dist/styles/forms.css">
-<script src="https://backers.webawesome.com/dist/webawesome.loader.js" type="module"></script>
+<script src="https://backers.webawesome.com/dist/webawesome.loader.js" type="module" data-fa-kit-code="0f6e90a8c2"></script>
 <!--    <script type="module">-->
 <!--        import {setKitCode} from 'https://early.webawesome.com/webawesome@3.0.0-alpha.10/dist/webawesome.loader.js';-->
 <!--        setKitCode('0f6e90a8c2');-->
@@ -473,6 +473,18 @@
 
     [slot='main-footer'] {
         border-block-start: var(--wa-border-width-s) var(--wa-border-style) var(--wa-color-surface-border);
+    }
+
+    wa-page[view='mobile'] {
+        --menu-width: auto;
+        --aside-width: auto;
+
+        [slot='main-header'],
+        main,
+        [slot='main-footer'] {
+            padding: 10px;
+        }
+
     }
 
     [slot='footer'] {
