@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bible Study Passage</title>
+    <title>{{ day.passage_title }} | St. Andrew's Bible Study</title>
     <link rel="stylesheet"
           href="https://early.webawesome.com/webawesome@3.0.0-alpha.10/dist/styles/themes/default.css"/>
     <link rel="stylesheet" href="https://early.webawesome.com/webawesome@3.0.0-alpha.10/dist/styles/webawesome.css"/>
@@ -13,111 +13,135 @@
 <body>
 
 
-    <wa-page mobile-breakpoint="920">
-        <div slot="banner" class="wa-body-s">
-                <wa-icon name="church" color="white"></wa-icon>
+<wa-page mobile-breakpoint="920">
+    <div slot="banner" class="wa-body-s">
+        <wa-icon name="church" color="white"></wa-icon>
+    </div>
+    <header slot="header" class="wa-split">
+        <div class="wa-cluster">
+            <wa-icon name="church"
+                     style="color: var(--wa-color-brand-fill-loud); font-size: 1.5em;"></wa-icon>
+            <span id="brand-name" class="wa-heading-s">St. Andrew's Bible Study</span>
         </div>
-        <header slot="header" class="wa-split">
-            <div class="wa-cluster">
-                <wa-icon name="church"
-                         style="color: var(--wa-color-brand-fill-loud); font-size: 1.5em;"></wa-icon>
-                <span id="brand-name" class="wa-heading-s">St. Andrew's Bible Study</span>
+        <div class="wa-cluster" style="display: flex; align-items: center;">
+            <wa-button size="small" class="open-drawer">Browse All Stories</wa-button>
+            <p data-toggle-nav style="cursor:pointer">
+                <wa-icon name="bars"></wa-icon>
+            </p>
+        </div>
+
+    </header>
+    <nav slot="subheader">
+        <div class="wa-split" style="flex-wrap: nowrap; width: 100%;">
+            {% if previous %}
+            <a href="/bible_study/{{ previous.pk }}" class="wa-flank">
+                <wa-icon name="chevron-left"></wa-icon>
+                <span class="wa-caption-m">{{ previous.passage_title }}</span>
+
+                {% else %}
+                <div></div>
+                {% endif %}
+                {% if next %}
+                <a href="/bible_study/{{ next.pk }}" class="wa-flank:end">
+                    <span class="wa-caption-m">{{ next.passage_title }}</span>
+                    <wa-icon name="chevron-right"></wa-icon>
+                </a>
+                {% endif %}
+        </div>
+
+    </nav>
+    <nav slot="navigation-header">
+        <div class="wa-flank">
+            <wa-avatar image="{{ day.image_url }}" label=""></wa-avatar>
+            <div class="wa-stack wa-gap-3xs">
+                <span class="wa-heading-s">{{ day.passage_title }}</span>
+                <span class="wa-caption-s"><em>{{ day.passage_string }}</em></span>
             </div>
-            <div class="wa-cluster" style="display: flex; align-items: center;">
-                <wa-button size="small" class="open-drawer">Browse All Stories</wa-button>
-                <p data-toggle-nav style="cursor:pointer"><wa-icon name="bars"></wa-icon></p>
+        </div>
+    </nav>
+    <nav slot="navigation" class="wa-gap-xs">
+
+        <wa-button class="open-drawer">Browse All Stories</wa-button>
+        <wa-divider></wa-divider>
+        <a class="nav-link" href="#jesus_storybook_bible_heading"><strong>Jesus Story Book Bible</strong></a>
+        <a class="nav-link" href="#jesus_storybook_bible_summary">{{ day.jesus_story_book_title }}
+            ({{ day.passage_title }})</a>
+        <wa-divider></wa-divider>
+        {% if day.biblestudydaypassage_set.all|length > 1%}
+        <a class="nav-link" href="#intersection_heading"><strong>Intersection of {{ day.passage_string }}</strong></a>
+        <a class="nav-link" href="#intersection_reflection">Reflection</a>
+        <a class="nav-link" href="#intersection_study_questions">Study Questions</a>
+        <a class="nav-link" href="#intersection_practical_questions">Practical Questions</a>
+        <a class="nav-link" href="#intersection_intersection">How do the passages intersect?</a>
+        <wa-divider></wa-divider>
+        {% endif %}
+        {% for passage in day.biblestudydaypassage_set.all %}
+        <a class="nav-link"
+           href="#passage{{ forloop.counter0 }}_heading"><strong>{{ passage.bible_study_passage.passage }}</strong></a>
+        <a class="nav-link" href="#passage{{ forloop.counter0 }}_full_passage">Full Text: English Standard Version</a>
+        <a class="nav-link" href="#passage{{ forloop.counter0 }}_four_senses">The Four Senses of Scriptural
+            Interpretation</a>
+        <a class="nav-link" href="#passage{{ forloop.counter0 }}_background">Background</a>
+        <a class="nav-link" href="#passage{{ forloop.counter0 }}_interseting_observations">Interesting Observations</a>
+        <a class="nav-link" href="#passage{{ forloop.counter0 }}_reflection">Reflection</a>
+        <a class="nav-link" href="#passage{{ forloop.counter0 }}_study_questions">Study Questions</a>
+        <a class="nav-link" href="#passage{{ forloop.counter0 }}_practical_questions">Practical Questions</a>
+        <a class="nav-link" href="#passage{{ forloop.counter0 }}_primary_sources">Primary Sources and More Reading</a>
+        <wa-divider></wa-divider>
+        {% endfor %}
+
+
+    </nav>
+
+    <header slot="main-header">
+        <div class="wa-flank:end wa-border-radius-l wa-dark"
+             style="background-color: var(--wa-color-surface-lowered); --content-percentage: 35%; padding: var(--wa-space-m);">
+            <div class="wa-stack" style="margin: var(--wa-space-2xl);">
+                <h4>{{ day.date }}</h4>
+                <h1>{{ day.passage_title }}</h1>
+                <h2>{{ day.jesus_story_book_title }}</h2>
+                <wa-divider></wa-divider>
+                <div class="wa-cluster wa-gap-xs">
+                    {% for passage in day.biblestudydaypassage_set.all %}
+                    <wa-tag id="tag_{{ passage.bible_study_passage.pk }}" size="medium">
+                        {{ passage.bible_study_passage.passage }}
+                    </wa-tag>
+                    <wa-tooltip for="tag_{{ passage.bible_study_passage.pk }}">
+                        {{ passage.bible_study_passage.formatted_html|safe }}
+                    </wa-tooltip>
+                    {% endfor %}
+
                 </div>
 
-        </header>
-        <nav slot="subheader">
-            <div class="wa-split" style="flex-wrap: nowrap; width: 100%;">
-                {% if previous %}
-                <a href="/bible_study/{{ previous.pk }}" class="wa-flank">
-                    <wa-icon name="chevron-left"></wa-icon>
-                    <span class="wa-caption-m">{{ previous.passage_title }}</span>
-
-                    {% else %}
-                    <div></div>
-                    {% endif %}
-                    {% if next %}
-                    <a href="/bible_study/{{ next.pk }}" class="wa-flank:end">
-                        <span class="wa-caption-m">{{ next.passage_title }}</span>
-                        <wa-icon name="chevron-right"></wa-icon>
-                    </a>
-                    {% endif %}
             </div>
-
-        </nav>
-        <nav slot="navigation-header">
-            <div class="wa-flank">
-                <wa-avatar image="{{ day.image_url }}" label=""></wa-avatar>
-                <div class="wa-stack wa-gap-3xs">
-                    <span class="wa-heading-s">{{ day.passage_title }}</span>
-                    <span class="wa-caption-s"><em>{{ day.passage_string }}</em></span>
-                </div>
+            <div class="wa-frame" style="border-radius: var(--wa-border-radius-l);">
+                <img src={{ day.image_url }}/>
             </div>
-        </nav>
-        <nav slot="navigation">
+        </div>
+    </header>
+    <main class="wa-body-m">
 
-            <a href="#identification">Identification</a>
-            <a href="#range">Range and Habitat</a>
-            <a href="#behavior">Behavior</a>
-            <a href="#conservation">Conservation</a>
-            <wa-button class="open-drawer">Browse All Stories</wa-button>
-
-        </nav>
-
-        <header slot="main-header">
-            <div class="wa-flank:end wa-border-radius-l wa-dark"
-                 style="background-color: var(--wa-color-surface-lowered); --content-percentage: 35%; padding: var(--wa-space-m);">
-                <div class="wa-stack" style="margin: var(--wa-space-2xl);">
-                    <h4>{{ day.date }}</h4>
-                    <h1>{{ day.passage_title }}</h1>
-                    <h2>{{ day.jesus_story_book_title }}</h2>
-                    <wa-divider></wa-divider>
-                    <div class="wa-cluster wa-gap-xs">
-                        {% for passage in day.biblestudydaypassage_set.all %}
-                        <wa-tag id="tag_{{ passage.bible_study_passage.pk }}" size="medium">
-                            {{ passage.bible_study_passage.passage }}
-                        </wa-tag>
-                        <wa-tooltip for="tag_{{ passage.bible_study_passage.pk }}">
-                            {{ passage.bible_study_passage.formatted_html|safe }}
-                        </wa-tooltip>
-                        {% endfor %}
-
-                    </div>
-                    <div class="wa-flank">
-                        <wa-icon name="ruler"></wa-icon>
-                        <span class="wa-caption-m">L 21.5" | WS 48.5"</span>
-                    </div>
-                    <div class="wa-flank">
-                        <wa-icon name="earth-americas"></wa-icon>
-                        <span class="wa-caption-m">North America (Widespread), Central America (Limited), South America (Limited)</span>
-                    </div>
-                    <div class="wa-flank">
-                        <wa-icon name="shield-heart"></wa-icon>
-                        <span class="wa-caption-m">Least Concern</span>
-                    </div>
-                </div>
-                <div class="wa-frame" style="border-radius: var(--wa-border-radius-l);">
-                    <img src={{ day.image_url }}/>
-                </div>
-            </div>
-        </header>
-        <main class="wa-body-m">
-            <wa-details summary="Jesus Storybook Bible: {{ day.jesus_story_book_title }}">
+        <wa-card style="--border-width:3px">
+            <h3 id="jesus_storybook_bible_heading">Jesus Storybook Bible</h3>
+            <span id="jesus_storybook_bible_summary_anchor"></span>
+            <wa-details id="jesus_storybook_bible_summary"
+                        summary="Jesus Storybook Bible: {{ day.jesus_story_book_title }}">
                 <h4>{{ day.jesus_story_book_title }} ({{ day.passage_title }})</h4>
                 <p>{{ day.jesus_story_book_summary }}</p>
             </wa-details>
-            {% if day.biblestudydaypassage_set.all|length > 1%}
-            <wa-divider style="--width: 2px;"></wa-divider>
-            <h3>Intersection of {{ day.passage_string }}</h3>
+        </wa-card>
+        {% if day.biblestudydaypassage_set.all|length > 1%}
+        <span id="jesus_storybook_bible_heading_anchor"></span>
+        <wa-card style="--border-width:3px">
+            <h3 id="intersection_heading">Intersection of {{ day.passage_string }}</h3>
             <div class="wa-cluster wa-gap-xs">
-                <wa-details summary="Reflection">
+                <span id="intersection_reflection_anchor"></span>
+                <wa-details id="intersection_reflection" summary="Reflection">
                     <h4>Reflection</h4>
                     <p>{{ day.formatted_reflection|safe }}</p>
                 </wa-details>
-                <wa-details summary="Study Questions">
+                <span id="intersection_study_questions_anchor"></span>
+                <wa-details id="intersection_study_questions" summary="Study Questions">
                     <h4>Study Questions</h4>
                     <ul>
                         {% for question in day.study_questions %}
@@ -125,7 +149,8 @@
                         {% endfor %}
                     </ul>
                 </wa-details>
-                <wa-details summary="Practical Questions">
+                <span id="intersection_practical_questions_anchor"></span>
+                <wa-details id="intersection_practical_questions" summary="Practical Questions">
                     <h4>Practical Questions</h4>
                     <ul>
                         {% for question in day.practical_questions %}
@@ -134,44 +159,55 @@
                         {% endfor %}
                     </ul>
                 </wa-details>
-                <wa-details summary="How do the passages intersect?">
+                <span id="intersection_intersection_anchor"></span>
+                <wa-details id="intersection_intersection" summary="How do the passages intersect?">
                     <h4>How do the passages intersect?</h4>
                     <p>{{ day.intersection|safe }}</p>
                 </wa-details>
             </div>
-            {% endif %}
-            {% for passage in day.biblestudydaypassage_set.all %}
-            <wa-divider style="--width: 2px;"></wa-divider>
-            <h3>{{ passage.bible_study_passage.passage }}</h3>
+        </wa-card>
+        {% endif %}
+        {% for passage in day.biblestudydaypassage_set.all %}
+        <wa-card style="--border-width:3px">
+            <h3 id="passage{{ forloop.counter0 }}_heading">{{ passage.bible_study_passage.passage }}</h3>
             <div class="wa-cluster wa-gap-xs">
                 {% for heading in passage.bible_study_passage.headings %}
                 <wa-tag size="small">{{ heading }}</wa-tag>
                 {% endfor %}
                 <p>{{ passage.bible_study_passage.theme }}</p>
-                <wa-details summary="Full Text: English Standard Version">
+                <span id="passage{{ forloop.counter0 }}_full_passage_anchor"></span>
+                <wa-details id="passage{{ forloop.counter0 }}_full_passage"
+                            summary="Full Text: English Standard Version">
                     <h4>{{ passage.bible_study_passage.passage }} (ESV)</h4>
                     <p>{{ passage.bible_study_passage.formatted_html|safe }}</p>
                 </wa-details>
-                <wa-details summary="The Four Senses of Scriptural Interpretation">
+                <span id="passage{{ forloop.counter0 }}_four_senses_anchor"></span>
+                <wa-details id="passage{{ forloop.counter0 }}_four_senses"
+                            summary="The Four Senses of Scriptural Interpretation">
                     <h4>The Four Senses of Scriptural Interpretation</h4>
                     {%for key, value in passage.bible_study_passage.four_senses.items %}
                     <h5>{{ key|title }}</h5>
                     <p>{{ value }}</p>
                     {% endfor %}
                 </wa-details>
-                <wa-details summary="Background">
+                <span id="passage{{ forloop.counter0 }}_background_anchor"></span>
+                <wa-details id="passage{{ forloop.counter0 }}_background" summary="Background">
                     <h4>Background</h4>
                     <p>{{ passage.bible_study_passage.formatted_background|safe }}</p>
                 </wa-details>
-                <wa-details summary="Interesting Observations">
+                <span id="passage{{ forloop.counter0 }}_interseting_observations_anchor"></span>
+                <wa-details id="passage{{ forloop.counter0 }}_interseting_observations"
+                            summary="Interesting Observations">
                     <h4>Interesting Observations</h4>
                     <p>{{ passage.bible_study_passage.formatted_interesting_points|safe }}</p>
                 </wa-details>
-                <wa-details summary="Reflection">
+                <span id="passage{{ forloop.counter0 }}_reflection_anchor"></span>
+                <wa-details id="passage{{ forloop.counter0 }}_reflection" summary="Reflection">
                     <h4>Reflection</h4>
                     <p>{{ passage.bible_study_passage.formatted_reflection|safe }}</p>
                 </wa-details>
-                <wa-details summary="Study Questions">
+                <span id="passage{{ forloop.counter0 }}_study_questions_anchor"></span>
+                <wa-details id="passage{{ forloop.counter0 }}_study_questions" summary="Study Questions">
                     <h4>Study Questions</h4>
                     <ul>
                         {% for question in passage.bible_study_passage.study_questions %}
@@ -180,7 +216,8 @@
                         {% endfor %}
                     </ul>
                 </wa-details>
-                <wa-details summary="Practical Questions">
+                <span id="passage{{ forloop.counter0 }}_practical_questions_anchor"></span>
+                <wa-details id="passage{{ forloop.counter0 }}_practical_questions" summary="Practical Questions">
                     <h4>Practical Questions</h4>
                     <ul>
                         {% for question in passage.bible_study_passage.practical_questions %}
@@ -189,7 +226,9 @@
                         {% endfor %}
                     </ul>
                 </wa-details>
-                <wa-details summary="Primary Sources and More Reading">
+                <span id="passage{{ forloop.counter0 }}_primary_sources_anchor"></span>
+                <wa-details id="passage{{ forloop.counter0 }}_primary_sources"
+                            summary="Primary Sources and More Reading">
                     <h4>Primary Sources and More Reading</h4>
 
                     {% for key, source in passage.bible_study_passage.primary_sources.items %}
@@ -247,65 +286,65 @@
 
 
             </div>
-            <h4></h4>
-            {% endfor %}
+        </wa-card>
+        {% endfor %}
 
-        </main>
-        <footer slot="main-footer">
-            <section>
+    </main>
+    <footer slot="main-footer">
+        <section>
 
-            </section>
-        </footer>
-        <wa-drawer label="Browse Stories" with-header with-footer class="drawer-overview">
-            <div class="wa-stack">
-                {% for menu_day in days %}
-                {% if menu_day != day %}
-                <a href="/bible_study/{{ menu_day.pk }}" class="wa-gap-l">
-                    <wa-card with-image>
-                        <img
-                                slot="image"
-                                src="{{ menu_day.image_url }}"
-                                alt="{{ menu_day.passage_title }}"
-                        />
-                        <div class="wa-stack">
-                            <span class="wa-caption-s"><strong>{{ menu_day.date }}</strong></span>
-                            <wa-divider></wa-divider>
-                            <span class="wa-heading-s">{{ menu_day.passage_title }}</span>
-                            <span class="wa-caption-s"><em>{{ menu_day.jesus_story_book_title }}</em></span>
-                            <span class="wa-caption-s"><br>{{ menu_day.passage_string }}</span>
-                            <p></p>
-                        </div>
-                    </wa-card>
-
-                </a>
-                {% else %}
-                <wa-card with-image class="wa-dark">
+        </section>
+    </footer>
+    <wa-drawer label="Browse Stories" with-header with-footer class="drawer-overview">
+        <div class="wa-stack">
+            {% for menu_day in days %}
+            {% if menu_day != day %}
+            <a href="/bible_study/{{ menu_day.pk }}" class="wa-gap-l">
+                <wa-card with-image>
                     <img
                             slot="image"
                             src="{{ menu_day.image_url }}"
                             alt="{{ menu_day.passage_title }}"
                     />
-                    <div class="wa-stack wa-gap-3xs">
-                        <span class="wa-caption-s">{{ menu_day.date }}</span>
+                    <div class="wa-stack">
+                        <span class="wa-caption-s"><strong>{{ menu_day.date }}</strong></span>
                         <wa-divider></wa-divider>
                         <span class="wa-heading-s">{{ menu_day.passage_title }}</span>
                         <span class="wa-caption-s"><em>{{ menu_day.jesus_story_book_title }}</em></span>
                         <span class="wa-caption-s"><br>{{ menu_day.passage_string }}</span>
+                        <p></p>
                     </div>
                 </wa-card>
 
-                {% endif %}
-                {% endfor %}
-            </div>
-        </wa-drawer>
-        <footer slot="footer" class="wa-grid wa-gap-xl">
-            <div class="wa-cluster" style="flex-wrap: nowrap;">
-                <wa-icon name="church" style="font-size: 1.5em;"></wa-icon>
-                <span class="wa-heading-s">The Community of St. Andrew</span>
-            </div>
+            </a>
+            {% else %}
+            <wa-card with-image class="wa-dark">
+                <img
+                        slot="image"
+                        src="{{ menu_day.image_url }}"
+                        alt="{{ menu_day.passage_title }}"
+                />
+                <div class="wa-stack wa-gap-3xs">
+                    <span class="wa-caption-s">{{ menu_day.date }}</span>
+                    <wa-divider></wa-divider>
+                    <span class="wa-heading-s">{{ menu_day.passage_title }}</span>
+                    <span class="wa-caption-s"><em>{{ menu_day.jesus_story_book_title }}</em></span>
+                    <span class="wa-caption-s"><br>{{ menu_day.passage_string }}</span>
+                </div>
+            </wa-card>
 
-        </footer>
-    </wa-page>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </wa-drawer>
+    <footer slot="footer" class="wa-grid wa-gap-xl">
+        <div class="wa-cluster" style="flex-wrap: nowrap;">
+            <wa-icon name="church" style="font-size: 1.5em;"></wa-icon>
+            <span class="wa-heading-s">The Community of St. Andrew</span>
+        </div>
+
+    </footer>
+</wa-page>
 
 <style>
     wa-page {
@@ -326,6 +365,10 @@
 
     wa-details {
         width: 100%;
+    }
+
+    main wa-card {
+        margin-bottom: 3rem;
     }
 
     [slot='banner'] {
@@ -353,6 +396,8 @@
 
     [slot*='navigation'] a {
         --wa-color-text-link: var(--wa-color-text-normal);
+        margin: 0;
+        padding: 0;
     }
 
     [slot='navigation-footer'] {
@@ -389,6 +434,58 @@
     const openButtons = document.querySelectorAll('.open-drawer');
 
     openButtons.forEach(button => button.addEventListener('click', () => drawer.open = true));
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const sectionAnchors = document.querySelectorAll("[slot*='navigation'] a[href*='#']");
+        sectionAnchors.forEach((sectionAnchor) => sectionAnchor.setAttribute("data-drawer", "close"));
+
+        const drawer = document.querySelector('.drawer-overview');
+        const openButtons = document.querySelectorAll('.open-drawer');
+
+        openButtons.forEach(button => button.addEventListener('click', () => drawer.open = true));
+
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', async (event) => {
+                event.preventDefault();
+                const targetId = link.getAttribute('href').split('#')[1];
+                const targetElement = document.getElementById(targetId);
+
+                if (targetElement) {
+                    const waDetailsElements = document.querySelectorAll('wa-details');
+
+                    // Hide all wa-details elements
+                    await Promise.all(Array.from(waDetailsElements).map(el => el.hide()));
+
+                    // Show the target wa-details element
+                    await targetElement.show();
+
+                    console.log(`#${targetId}_anchor`);
+
+                    const scrollToElement = document.querySelector(`#${targetId}_anchor`);
+                    console.log(scrollToElement);
+
+                    scrollToElement.scrollIntoView({ behavior: 'smooth' });
+                    //
+                    // const shadowRoot = targetElement.shadowRoot;
+                    // if (shadowRoot) {
+                    //     const scrollableElement = Array.from(shadowRoot.querySelectorAll("*")).find(el => {
+                    //         const overflowY = getComputedStyle(el).overflowY;
+                    //         return (overflowY === "auto" || overflowY === "scroll") && el.scrollHeight > el.clientHeight;
+                    //     });
+                    //     console.log(scrollableElement);
+                    //     const subheaderNav = document.querySelector('nav[slot="subheader"]');
+                    //     shadowRoot.scrollTo({
+                    //         top: subheaderNav.getBoundingClientRect().bottom, // Adjust pixel value
+                    //         behavior: "smooth"
+                    //     });
+                    // } else {
+                    //     console.warn("Shadow DOM is closed or not accessible.");
+                    // }
+
+                }
+            });
+        });
+    });
 
 </script>
 </body>
