@@ -184,9 +184,9 @@
             <wa-callout variant="brand" appearance="outlined accent">
                 <wa-icon slot="icon" name="quotes"></wa-icon>
                 {{ passage.bible_study_passage.primary_verse.esv_verse_text }} -
-                <strong>{{ passage.bible_study_passage.primary_verse.book }} {{
-                        passage.bible_study_passage.primary_verse.chapter
-                    }}:{{ passage.bible_study_passage.primary_verse.verse }} (ESV)</strong>
+                <strong>{{ passage.bible_study_passage.primary_verse.book }}
+                    {{ passage.bible_study_passage.primary_verse.chapter }}:
+                    {{ passage.bible_study_passage.primary_verse.verse }} (ESV)</strong>
             </wa-callout>
             <div class="wa-cluster wa-gap-xs">
                 {% for heading in passage.bible_study_passage.headings %}
@@ -281,7 +281,10 @@
                     <p><strong>Patristic Era Sources (0-700 A.D.)</strong></p>
                     <ul>
                         {% for item in source %}
-                        <li><a target="_blank" href='https://www.google.com/search?q="{{ item.source_title }}" "{{ item.author_name }}"'>{{ item.source_title }}</a>
+                        <li><a target="_blank"
+                               href='https://www.google.com/search?q="{{ item.source_title }}" "{{ item.author_name }}"'>{{
+                                item.source_title
+                            }}</a>
                             ({{ item.author_name }})
                             <br><em><small>{{ item.source_description }}</small></em></li>
                         {% endfor %}
@@ -294,7 +297,10 @@
                     <strong>Doctors of the Church</strong>
                     <ul>
                         {% for item in source %}
-                        <li><a target="_blank" href='https://www.google.com/search?q="{{ item.source_title }}" "{{ item.author_name }}"'>{{ item.source_title }}</a>
+                        <li><a target="_blank"
+                               href='https://www.google.com/search?q="{{ item.source_title }}" "{{ item.author_name }}"'>{{
+                                item.source_title
+                            }}</a>
                             ({{ item.author_name }})
                             <br><em><small>{{ item.source_description }}</small></em></li>
                         {% endfor %}
@@ -307,7 +313,10 @@
                     <strong>Reformation Era and Later Sources (1500-1950 A.D.)</strong>
                     <ul>
                         {% for item in source %}
-                        <li><a target="_blank" href='https://www.google.com/search?q="{{ item.source_title }}" "{{ item.author_name }}"'>{{ item.source_title }}</a>
+                        <li><a target="_blank"
+                               href='https://www.google.com/search?q="{{ item.source_title }}" "{{ item.author_name }}"'>{{
+                                item.source_title
+                            }}</a>
                             ({{ item.author_name }} | {{ item.author_denomination }})
                             <br><em><small>{{ item.source_description }}</small></em></li>
                         {% endfor %}
@@ -320,7 +329,10 @@
                     <strong>Modern Era Sources (1950-Present)</strong>
                     <ul>
                         {% for item in source %}
-                        <li><a target="_blank" href='https://www.google.com/search?q="{{ item.source_title }}" "{{ item.author_name }}"'>{{ item.source_title }}</a>
+                        <li><a target="_blank"
+                               href='https://www.google.com/search?q="{{ item.source_title }}" "{{ item.author_name }}"'>{{
+                                item.source_title
+                            }}</a>
                             ({{ item.author_name }} | {{ item.author_denomination }})
                             <br><em><small>{{ item.source_description }}</small></em></li>
                         {% endfor %}
