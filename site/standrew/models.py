@@ -176,11 +176,11 @@ class BibleStudyDay(BaseModel):
     passage_title = models.CharField(max_length=512, blank=True, null=True)
     image_url = models.URLField(blank=True, null=True)
 
-    sermon = models.TextField(blank=True, null=True)
     intersection = models.TextField(blank=True, null=True)
     study_questions = ArrayField(models.CharField(max_length=512), blank=True, null=True)
     practical_questions = ArrayField(models.CharField(max_length=512), blank=True, null=True)
     reflection = models.TextField(blank=True, null=True)
+    quote = models.JSONField(blank=True, null=True)
 
     @property
     def passage_string(self):
@@ -212,6 +212,7 @@ class BibleStudyPassage(BaseModel):
     practical_questions = ArrayField(models.CharField(max_length=512), blank=True, null=True)
     reflection = models.TextField(blank=True, null=True)
     image_url = models.URLField(blank=True, null=True)
+    primary_verse = models.JSONField(blank=True, null=True)
 
     def formatted_background(self):
         if not self.background:

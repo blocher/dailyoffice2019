@@ -9,6 +9,11 @@
     <link rel="stylesheet" href="https://early.webawesome.com/webawesome@3.0.0-alpha.10/dist/styles/webawesome.css"/>
     <script type="module"
             src="https://early.webawesome.com/webawesome@3.0.0-alpha.10/dist/webawesome.loader.js"></script>
+    <script type="module">
+        import {setKitCode} from 'https://early.webawesome.com/webawesome@3.0.0-alpha.10/dist/webawesome.loader.js';
+
+        setKitCode('0f6e90a8c2');
+    </script>
 </head>
 <body>
 
@@ -100,6 +105,12 @@
                 <h4>{{ day.date }}</h4>
                 <h1>{{ day.passage_title }}</h1>
                 <h2>{{ day.jesus_story_book_title }}</h2>
+                <wa-callout variant="neutral" appearance="outlined accent">
+                    <wa-icon slot="icon" name="scroll-old"></wa-icon>
+                    {{ day.quote.quote }} - <strong>{{ day.quote.saint_name }}
+                    ({{ day.quote.approximate_date }})
+                </strong>
+                </wa-callout>
                 <wa-divider></wa-divider>
                 <div class="wa-cluster wa-gap-xs">
                     {% for passage in day.biblestudydaypassage_set.all %}
@@ -170,6 +181,13 @@
         {% for passage in day.biblestudydaypassage_set.all %}
         <wa-card style="--border-width:3px">
             <h3 id="passage{{ forloop.counter0 }}_heading">{{ passage.bible_study_passage.passage }}</h3>
+            <wa-callout variant="brand" appearance="outlined accent">
+                <wa-icon slot="icon" name="quotes"></wa-icon>
+                {{ passage.bible_study_passage.primary_verse.esv_verse_text }} -
+                <strong>{{ passage.bible_study_passage.primary_verse.book }} {{
+                        passage.bible_study_passage.primary_verse.chapter
+                    }}:{{ passage.bible_study_passage.primary_verse.verse }} (ESV)</strong>
+            </wa-callout>
             <div class="wa-cluster wa-gap-xs">
                 {% for heading in passage.bible_study_passage.headings %}
                 <wa-tag size="small">{{ heading }}</wa-tag>
@@ -186,32 +204,35 @@
                             summary="The Four Senses of Scriptural Interpretation">
                     <h4>The Four Senses of Scriptural Interpretation</h4>
                     {%for key, value in passage.bible_study_passage.four_senses.items %}
-                        {% if key == "literal" %}
-                            <h5>Literal</h5>
-                            <p><small><em>The plain historical reading</em></small></p>
-                            <p>{{ value }}</p>
-                        {% endif %}
+                    {% if key == "literal" %}
+                    <h5>Literal</h5>
+                    <p><small><em>The plain historical reading</em></small></p>
+                    <p>{{ value }}</p>
+                    {% endif %}
                     {% endfor %}
                     {%for key, value in passage.bible_study_passage.four_senses.items %}
-                        {% if key == "literal" or key == "typological" %}
-                            <h5>Typological (or Allegorical)</h5>
-                            <p><small><em>Seeing events, persons, or institutions in the Old Testament as foreshadowing or prefiguring realities fulfilled in the New Testament.</em></small></p>
-                            <p>{{ value }}</p>
-                        {% endif %}
+                    {% if key == "allegorical" or key == "typological" %}
+                    <h5>Typological (or Allegorical)</h5>
+                    <p><small><em>Seeing events, persons, or institutions in the Old Testament as foreshadowing or
+                        prefiguring realities fulfilled in the New Testament.</em></small></p>
+                    <p>{{ value }}</p>
+                    {% endif %}
                     {% endfor %}
                     {%for key, value in passage.bible_study_passage.four_senses.items %}
-                        {% if key == "tropological" or key == "moral" or key == "moral_or_tropological" %}
-                            <h5>Tropological (or Moral)</h5>
-                            <p><small><em>Applying the meaning of a passage to the moral life of believers</em></small></p>
-                            <p>{{ value }}</p>
-                        {% endif %}
+                    {% if key == "tropological" or key == "moral" or key == "moral_or_tropological" %}
+                    <h5>Tropological (or Moral)</h5>
+                    <p><small><em>Applying the meaning of a passage to the moral life of believers</em></small></p>
+                    <p>{{ value }}</p>
+                    {% endif %}
                     {% endfor %}
                     {%for key, value in passage.bible_study_passage.four_senses.items %}
-                        {% if key == "anagogical" or key == "eschatelogical" %}
-                            <h5>Anagogical (or Eschatelogical)</h5>
-                            <p><small><em>Looking beyond the literal and moral senses to focus on the ultimate, heavenly reality, includig final destiny of the soul, the afterlife, and the fulfillment of God's promises in eternity</em></small></p>
-                            <p>{{ value }}</p>
-                        {% endif %}
+                    {% if key == "anagogical" or key == "eschatelogical" %}
+                    <h5>Anagogical (or Eschatelogical)</h5>
+                    <p><small><em>Looking beyond the literal and moral senses to focus on the ultimate, heavenly
+                        reality, includig final destiny of the soul, the afterlife, and the fulfillment of God's
+                        promises in eternity</em></small></p>
+                    <p>{{ value }}</p>
+                    {% endif %}
                     {% endfor %}
                 </wa-details>
                 <span id="passage{{ forloop.counter0 }}_background_anchor"></span>
@@ -260,7 +281,7 @@
                     <p><strong>Patristic Era Sources (0-700 A.D.)</strong></p>
                     <ul>
                         {% for item in source %}
-                        <li><a target="_blank" href="{{ item.source_url }}">{{ item.source_title }}</a>
+                        <li><a target="_blank" href='https://www.google.com/search?q="{{ item.source_title }}" "{{ item.author_name }}"'>{{ item.source_title }}</a>
                             ({{ item.author_name }})
                             <br><em><small>{{ item.source_description }}</small></em></li>
                         {% endfor %}
@@ -273,7 +294,7 @@
                     <strong>Doctors of the Church</strong>
                     <ul>
                         {% for item in source %}
-                        <li><a target="_blank" href="{{ item.source_url }}">{{ item.source_title }}</a>
+                        <li><a target="_blank" href='https://www.google.com/search?q="{{ item.source_title }}" "{{ item.author_name }}"'>{{ item.source_title }}</a>
                             ({{ item.author_name }})
                             <br><em><small>{{ item.source_description }}</small></em></li>
                         {% endfor %}
@@ -286,7 +307,7 @@
                     <strong>Reformation Era and Later Sources (1500-1950 A.D.)</strong>
                     <ul>
                         {% for item in source %}
-                        <li><a target="_blank" href="{{ item.source_url }}">{{ item.source_title }}</a>
+                        <li><a target="_blank" href='https://www.google.com/search?q="{{ item.source_title }}" "{{ item.author_name }}"'>{{ item.source_title }}</a>
                             ({{ item.author_name }} | {{ item.author_denomination }})
                             <br><em><small>{{ item.source_description }}</small></em></li>
                         {% endfor %}
@@ -299,7 +320,7 @@
                     <strong>Modern Era Sources (1950-Present)</strong>
                     <ul>
                         {% for item in source %}
-                        <li><a target="_blank" href="{{ item.source_url }}">{{ item.source_title }}</a>
+                        <li><a target="_blank" href='https://www.google.com/search?q="{{ item.source_title }}" "{{ item.author_name }}"'>{{ item.source_title }}</a>
                             ({{ item.author_name }} | {{ item.author_denomination }})
                             <br><em><small>{{ item.source_description }}</small></em></li>
                         {% endfor %}
@@ -488,7 +509,7 @@
                     const scrollToElement = document.querySelector(`#${targetId}_anchor`);
                     console.log(scrollToElement);
 
-                    scrollToElement.scrollIntoView({ behavior: 'smooth' });
+                    scrollToElement.scrollIntoView({behavior: 'smooth'});
                     //
                     // const shadowRoot = targetElement.shadowRoot;
                     // if (shadowRoot) {

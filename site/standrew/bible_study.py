@@ -60,7 +60,7 @@ def prepare_bible_study_passage(citation):
         f"List three or more primary sources that interpret {citation} in each of these categories: patristic (written between year 0 and year 700), doctors (only from doctors of the church, east or west), reformation and later (from 1500 to 1950) and modern from (1950 to {timezone.now().year}). For modern sources, please include only Roman Catholic, Eastern Orthodox, Anglican, Episcopal, and Lutheran sources. For each one, include 1-2 sentences summarizing the source, the authors name and (if available) birth and death dates, a URL to read the full source, and the author's Christian denomination). Make sure the URL is a valid, current URL still accessible on the Internet. NEVER make up a URL.",
         f"What are some unique, interesting, or far-out points that can be said about {citation}? Don't just give the same comon, boring stuff.",
         f"Study questions: Prepare six or more questions for a bible study on {citation} that include a range of themes and will provoke interesting, challenging conversation. You might want to include questions about the historical, cultural, and literary context, the theological meaning, different interpretations, and how it all applies to our lives today as lay Christians and in family life. Any questions that provoke hearty conversations are great.",
-        f"Practical questions: Prepare three or more questions for a bible study on Hebrews 1 that about how it can be applied to our common life today as lay Christians living in the world. These questions should be far ranging and spark great conversations!",
+        f"Practical questions: Prepare three or more questions for a bible study on {citation} that about how it can be applied to our common life today as lay Christians living in the world. These questions should be far ranging and spark great conversations!",
         f"Prepare a lengthy lecture or reflection based on {citation} that is suitable for a bible study. It should be about 300-500 words. It should cite multiple sources from different eras. It should be compelling, convicting, and motivational.",
         f"What are the title or subject headings you might commonly find printed for this passage: {citation} in the RSV?",
     ]
@@ -368,3 +368,129 @@ def google_image_search():
             print(images)
         else:
             print(f"Error: {response.status_code}, {response.text}")
+
+
+def add_quotes():
+    class Quote(BaseModel):
+        quote: str
+        saint_name: str | None
+        approximate_date: str | None
+
+    days = BibleStudyDay.objects.all()
+    for study_day in days:
+
+        passages = [x.bible_study_passage.passage for x in study_day.biblestudydaypassage_set.all()]
+        citation = ", ".join(passages)
+        text = " == ".join([x.bible_study_passage.text for x in study_day.biblestudydaypassage_set.all()])
+
+        questions = [
+            f"For the rest of this conversation, I am working with the passage(s) {citation}. The full text of the passage is: {text}.",
+            f"Provide exactly one profound or inspiring quote from a saint of the church that relates to the passage {citation}. Include the quote, the name of the saint or doctor, and the approximate date of the quote.",
+        ]
+
+        messages = [
+            {
+                "role": "system",
+                "content": "You are a Roman Catholic priest who always answers pastorally better never contradicts the magisterium of the Roman Catholic church. You should answer just the question without adding conversation.",
+            },
+        ]
+
+        client = OpenAI()
+        for i, question in enumerate(questions):
+            messages.append({"role": "user", "content": question})
+            params = {
+                "model": "gpt-4o",
+                "messages": messages,
+            }
+            if "quote" in question:
+                params["response_format"] = Quote
+            completion = client.beta.chat.completions.parse(**params)
+            if i == 1:
+                print(completion.choices[0].message.content)
+                content = json.loads(completion.choices[0].message.content)
+                study_day.quote = content
+                study_day.save()
+
+
+def add_verses():
+    class Verse(BaseModel):
+        esv_verse_text: str
+        book: str
+        chapter: int
+        verse: int
+
+    passages = BibleStudyPassage.objects.all()
+    for passage in passages:
+        questions = [
+            f"Using the passage: {passage.passage}, pick out exactly one verse that you would consider the crux or most important verse in the passage. Return the text from the English Standard Version of the Bible as well as the book, chapter, and verse",
+        ]
+
+        messages = [
+            {
+                "role": "system",
+                "content": "You are a Roman Catholic priest who always answers pastorally better never contradicts the magisterium of the Roman Catholic church. You should answer just the question without adding conversation.",
+            },
+        ]
+
+        client = OpenAI()
+        for i, question in enumerate(questions):
+            messages.append({"role": "user", "content": question})
+            params = {
+                "model": "gpt-4o",
+                "messages": messages,
+            }
+            if "crux" in question:
+                params["response_format"] = Verse
+            completion = client.beta.chat.completions.parse(**params)
+            if i == 0:
+                print(completion.choices[0].message.content)
+                content = json.loads(completion.choices[0].message.content)
+                passage.primary_verse = content
+                passage.save()
+
+
+def google_search(search_string):
+    url = "https://www.googleapis.com/customsearch/v1"
+
+    params = {
+        "q": search_string,
+        "cx": settings.GOOGLE_CUSTOM_SEARCH_ENGINE_KEY,  # Custom Search Engine ID
+        "key": settings.GOOGLE_API_KEY,  # API Key
+        "num": 1,  # Number of results
+        "User-Agent": "Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36",
+    }
+
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        results = response.json()
+        items = [item["link"] for item in results.get("items", [])]
+        if items:
+            return items[0]
+    else:
+        print(response.status_code)
+
+    return ""
+
+
+def fix_links():
+    passages = BibleStudyPassage.objects.order_by("created").all()
+    for passage in passages:
+        categories = passage.primary_sources
+        for category, sources in categories.items():
+            for source in sources:
+                search_string = f'"{source['source_title']}" "{source['author_name']}" "{passage.passage}"'
+                url = google_search(search_string)
+                if not url:
+                    search_string = f'"{source['source_title']}" "{source['author_name']}"'
+                    url = google_search(search_string)
+                if not url:
+                    search_string = f'"{source['author_name']}"'
+                    url = google_search(search_string)
+                print(url)
+                new_sources = []
+                for new_source in passage.primary_sources[category]:
+                    if new_source["source_title"] == source["source_title"]:
+                        new_source["source_url"] = url
+                    new_sources = new_sources + [new_source]
+                passage.primary_sources[category] = new_sources
+                passage.save()
