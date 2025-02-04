@@ -41,8 +41,8 @@ def prepare_bible_study_passage(citation):
 
     class FourSenses(BaseModel):
         literal: str
-        allegorical: str
-        moral_or_tropological: str
+        typological: str
+        tropological: str
         anagogical: str
 
     class Questions(BaseModel):
@@ -55,7 +55,7 @@ def prepare_bible_study_passage(citation):
         f"For the rest of this conversation, I am working with the passage {citation}. The full text of the passage is: {scripture.text}.",
         f"Extract headings from the passage {scripture.html}. Make them text only (remove any html).",
         f"What is the main theme of this passage: {citation}?",
-        f"Throughout time how has the church interpreted {citation} according to each of the four senses of scripture: literal, allegorical, moral or tropological, and anagogical? Be fairly detailed and cite sources.",
+        f"Throughout time how has the church interpreted {citation} according to each of the four senses of scripture: literal, typological or allegorical, moral or tropological, and anagogical or eschatological? Be fairly detailed and cite sources.",
         f"Provide any background needed to understand {citation} in terms of authorship, date, historical context, literary context, references to other scripture passages, and what happened before and after these passages in the Bible. Be detailed.",
         f"List three or more primary sources that interpret {citation} in each of these categories: patristic (written between year 0 and year 700), doctors (only from doctors of the church, east or west), reformation and later (from 1500 to 1950) and modern from (1950 to {timezone.now().year}). For modern sources, please include only Roman Catholic, Eastern Orthodox, Anglican, Episcopal, and Lutheran sources. For each one, include 1-2 sentences summarizing the source, the authors name and (if available) birth and death dates, a URL to read the full source, and the author's Christian denomination). Make sure the URL is a valid, current URL still accessible on the Internet. NEVER make up a URL.",
         f"What are some unique, interesting, or far-out points that can be said about {citation}? Don't just give the same comon, boring stuff.",
@@ -338,15 +338,12 @@ def import_jesus_storybook_bible():
         if not study_day.image_url:
             study_day.image_url = create_image(study_day)
             study_day.save()
-        # for passage in chapter[3]:
-        #     passage = BibleStudyPassage.objects.get_or_create(passage=passage)[0]
-        #     study_day.biblestudydaypassage_set.get_or_create(
-        #         bible_study_passage=passage
-        #     )
-        # if study_day.jesus_story_book_number < 2:
-        #     for passage in study_day.biblestudydaypassage_set.all():
-        #         prepare_bible_study_passage(passage.bible_study_passage.passage)
-        #     prepare_bible_study(study_day)
+        for passage in chapter[3]:
+            passage = BibleStudyPassage.objects.get_or_create(passage=passage)[0]
+            study_day.biblestudydaypassage_set.get_or_create(bible_study_passage=passage)
+        for passage in study_day.biblestudydaypassage_set.all():
+            prepare_bible_study_passage(passage.bible_study_passage.passage)
+        prepare_bible_study(study_day)
 
 
 def google_image_search():

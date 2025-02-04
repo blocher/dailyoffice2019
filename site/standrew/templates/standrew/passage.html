@@ -186,8 +186,32 @@
                             summary="The Four Senses of Scriptural Interpretation">
                     <h4>The Four Senses of Scriptural Interpretation</h4>
                     {%for key, value in passage.bible_study_passage.four_senses.items %}
-                    <h5>{{ key|title }}</h5>
-                    <p>{{ value }}</p>
+                        {% if key == "literal" %}
+                            <h5>Literal</h5>
+                            <p><small><em>The plain historical reading</em></small></p>
+                            <p>{{ value }}</p>
+                        {% endif %}
+                    {% endfor %}
+                    {%for key, value in passage.bible_study_passage.four_senses.items %}
+                        {% if key == "literal" or key == "typological" %}
+                            <h5>Typological (or Allegorical)</h5>
+                            <p><small><em>Seeing events, persons, or institutions in the Old Testament as foreshadowing or prefiguring realities fulfilled in the New Testament.</em></small></p>
+                            <p>{{ value }}</p>
+                        {% endif %}
+                    {% endfor %}
+                    {%for key, value in passage.bible_study_passage.four_senses.items %}
+                        {% if key == "tropological" or key == "moral" or key == "moral_or_tropological" %}
+                            <h5>Tropological (or Moral)</h5>
+                            <p><small><em>Applying the meaning of a passage to the moral life of believers</em></small></p>
+                            <p>{{ value }}</p>
+                        {% endif %}
+                    {% endfor %}
+                    {%for key, value in passage.bible_study_passage.four_senses.items %}
+                        {% if key == "anagogical" or key == "eschatelogical" %}
+                            <h5>Anagogical (or Eschatelogical)</h5>
+                            <p><small><em>Looking beyond the literal and moral senses to focus on the ultimate, heavenly reality, includig final destiny of the soul, the afterlife, and the fulfillment of God's promises in eternity</em></small></p>
+                            <p>{{ value }}</p>
+                        {% endif %}
                     {% endfor %}
                 </wa-details>
                 <span id="passage{{ forloop.counter0 }}_background_anchor"></span>
