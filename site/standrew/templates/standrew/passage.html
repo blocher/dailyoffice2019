@@ -12,13 +12,10 @@
 </head>
 <body>
 
-<wa-page>
+
     <wa-page mobile-breakpoint="920">
         <div slot="banner" class="wa-body-s">
-            <a href="#" class="wa-cluster wa-align-items-baseline wa-gap-xs" style="flex-wrap: nowrap;">
-                <wa-icon name="church"></wa-icon>
-
-            </a>
+                <wa-icon name="church" color="white"></wa-icon>
         </div>
         <header slot="header" class="wa-split">
             <div class="wa-cluster">
@@ -26,6 +23,10 @@
                          style="color: var(--wa-color-brand-fill-loud); font-size: 1.5em;"></wa-icon>
                 <span id="brand-name" class="wa-heading-s">St. Andrew's Bible Study</span>
             </div>
+            <div class="wa-cluster" style="display: flex; align-items: center;">
+                <wa-button size="small" class="open-drawer">Browse All Stories</wa-button>
+                <p data-toggle-nav style="cursor:pointer"><wa-icon name="bars"></wa-icon></p>
+                </div>
 
         </header>
         <nav slot="subheader">
@@ -37,12 +38,12 @@
 
                     {% else %}
                     <div></div>
-                       {% endif %}
+                    {% endif %}
                     {% if next %}
-                <a href="/bible_study/{{ next.pk }}" class="wa-flank:end">
-                    <span class="wa-caption-m">{{ next.passage_title }}</span>
-                    <wa-icon name="chevron-right"></wa-icon>
-                </a>
+                    <a href="/bible_study/{{ next.pk }}" class="wa-flank:end">
+                        <span class="wa-caption-m">{{ next.passage_title }}</span>
+                        <wa-icon name="chevron-right"></wa-icon>
+                    </a>
                     {% endif %}
             </div>
 
@@ -51,8 +52,8 @@
             <div class="wa-flank">
                 <wa-avatar image="{{ day.image_url }}" label=""></wa-avatar>
                 <div class="wa-stack wa-gap-3xs">
-                    <span class="wa-heading-s">{{  day.passage_title }}</span>
-                    <span class="wa-caption-s"><em>{{  day.passage_string }}</em></span>
+                    <span class="wa-heading-s">{{ day.passage_title }}</span>
+                    <span class="wa-caption-s"><em>{{ day.passage_string }}</em></span>
                 </div>
             </div>
         </nav>
@@ -62,6 +63,8 @@
             <a href="#range">Range and Habitat</a>
             <a href="#behavior">Behavior</a>
             <a href="#conservation">Conservation</a>
+            <wa-button class="open-drawer">Browse All Stories</wa-button>
+
         </nav>
 
         <header slot="main-header">
@@ -253,47 +256,48 @@
 
             </section>
         </footer>
-        <aside slot="aside">
-            <h2 class="wa-heading-m">Browse stories</h2>
-            {% for menu_day in days %}
-            {% if menu_day != day %}
-            <a href="/bible_study/{{ menu_day.pk }}" class="wa-flank">
-                <wa-card with-image>
+        <wa-drawer label="Browse Stories" with-header with-footer class="drawer-overview">
+            <div class="wa-stack">
+                {% for menu_day in days %}
+                {% if menu_day != day %}
+                <a href="/bible_study/{{ menu_day.pk }}" class="wa-gap-l">
+                    <wa-card with-image>
+                        <img
+                                slot="image"
+                                src="{{ menu_day.image_url }}"
+                                alt="{{ menu_day.passage_title }}"
+                        />
+                        <div class="wa-stack">
+                            <span class="wa-caption-s"><strong>{{ menu_day.date }}</strong></span>
+                            <wa-divider></wa-divider>
+                            <span class="wa-heading-s">{{ menu_day.passage_title }}</span>
+                            <span class="wa-caption-s"><em>{{ menu_day.jesus_story_book_title }}</em></span>
+                            <span class="wa-caption-s"><br>{{ menu_day.passage_string }}</span>
+                            <p></p>
+                        </div>
+                    </wa-card>
+
+                </a>
+                {% else %}
+                <wa-card with-image class="wa-dark">
                     <img
                             slot="image"
                             src="{{ menu_day.image_url }}"
                             alt="{{ menu_day.passage_title }}"
                     />
                     <div class="wa-stack wa-gap-3xs">
-                        <span class="wa-caption-s"><strong>{{ menu_day.date }}</strong></span>
+                        <span class="wa-caption-s">{{ menu_day.date }}</span>
                         <wa-divider></wa-divider>
                         <span class="wa-heading-s">{{ menu_day.passage_title }}</span>
                         <span class="wa-caption-s"><em>{{ menu_day.jesus_story_book_title }}</em></span>
                         <span class="wa-caption-s"><br>{{ menu_day.passage_string }}</span>
-                        <p></p>
                     </div>
                 </wa-card>
-            </a>
-            {% else %}
-            <wa-card with-image class="wa-dark">
-                <img
-                        slot="image"
-                        src="{{ menu_day.image_url }}"
-                        alt="{{ menu_day.passage_title }}"
-                />
-                <div class="wa-stack wa-gap-3xs">
-                    <span class="wa-caption-s">{{ menu_day.date }}</span>
-                    <wa-divider></wa-divider>
-                    <span class="wa-heading-s">{{ menu_day.passage_title }}</span>
-                    <span class="wa-caption-s"><em>{{ menu_day.jesus_story_book_title }}</em></span>
-                    <span class="wa-caption-s"><br>{{ menu_day.passage_string }}</span>
-                </div>
-            </wa-card>
-            {% endif %}
-            <!--             class="wa-flank:end wa-border-radius-l wa-dark"-->
-            <!--                 style="background-color: var(&#45;&#45;wa-color-surface-lowered); &#45;&#45;content-percentage: 35%; padding: var(&#45;&#45;wa-space-m);"-->
-            {% endfor %}
-        </aside>
+
+                {% endif %}
+                {% endfor %}
+            </div>
+        </wa-drawer>
         <footer slot="footer" class="wa-grid wa-gap-xl">
             <div class="wa-cluster" style="flex-wrap: nowrap;">
                 <wa-icon name="church" style="font-size: 1.5em;"></wa-icon>
@@ -303,83 +307,89 @@
         </footer>
     </wa-page>
 
-    <style>
-        wa-page {
-            --menu-width: 15rem;
-            --aside-width: 15rem;
+<style>
+    wa-page {
+        --menu-width: 15rem;
+        --aside-width: 0rem;
+    }
+
+    wa-page[view='desktop'] {
+        [slot*='navigation'] {
+            border-inline-end: var(--wa-border-width-s) var(--wa-border-style) var(--wa-color-surface-border);
         }
+    }
 
-        wa-page[view='desktop'] {
-            [slot*='navigation'] {
-                border-inline-end: var(--wa-border-width-s) var(--wa-border-style) var(--wa-color-surface-border);
-            }
+    wa-page[view='mobile'] {
+        --menu-width: auto;
+        --aside-width: auto;
+    }
+
+    wa-details {
+        width: 100%;
+    }
+
+    [slot='banner'] {
+        --wa-color-text-link: var(--wa-color-neutral-on-loud);
+        background-color: var(--wa-color-neutral-fill-loud);
+    }
+
+    [slot='header'] {
+        --wa-link-decoration-default: none;
+        border-block-end: var(--wa-border-width-s) var(--wa-border-style) var(--wa-color-surface-border);
+    }
+
+    [slot*='header'] a {
+        font-weight: var(--wa-font-weight-action);
+    }
+
+    [slot='subheader'] {
+        background-color: var(--wa-color-surface-lowered);
+        border-block-end: var(--wa-border-width-s) var(--wa-border-style) var(--wa-color-surface-border);
+    }
+
+    [slot='navigation-header'] {
+        border-block-end: var(--wa-border-width-s) var(--wa-border-style) var(--wa-color-surface-border);
+    }
+
+    [slot*='navigation'] a {
+        --wa-color-text-link: var(--wa-color-text-normal);
+    }
+
+    [slot='navigation-footer'] {
+        border-block-start: var(--wa-border-width-s) var(--wa-border-style) var(--wa-color-surface-border);
+
+        .wa-flank {
+            --flank-size: 1.25em;
         }
+    }
 
-        wa-page[view='mobile'] {
-            --menu-width: auto;
-            --aside-width: auto;
-        }
+    [slot='main-header'],
+    main,
+    [slot='main-footer'] {
+        max-inline-size: 70rem;
+        margin-inline: auto;
+    }
 
-        wa-details {
-            width: 100%;
-        }
+    [slot='main-footer'] {
+        border-block-start: var(--wa-border-width-s) var(--wa-border-style) var(--wa-color-surface-border);
+    }
 
-        [slot='banner'] {
-            --wa-color-text-link: var(--wa-color-neutral-on-loud);
-            background-color: var(--wa-color-neutral-fill-loud);
-        }
+    [slot='footer'] {
+        --wa-color-text-link: var(--wa-color-text-quiet);
+        background-color: var(--wa-color-surface-lowered);
+        font-size: var(--wa-font-size-s);
+    }
+</style>
 
-        [slot='header'] {
-            --wa-link-decoration-default: none;
-            border-block-end: var(--wa-border-width-s) var(--wa-border-style) var(--wa-color-surface-border);
-        }
+<script>
+    const sectionAnchors = document.querySelectorAll("[slot*='navigation'] a[href*='#']");
+    sectionAnchors.forEach((sectionAnchor) => sectionAnchor.setAttribute("data-drawer", "close"));
 
-        [slot*='header'] a {
-            font-weight: var(--wa-font-weight-action);
-        }
+    const drawer = document.querySelector('.drawer-overview');
+    const openButtons = document.querySelectorAll('.open-drawer');
 
-        [slot='subheader'] {
-            background-color: var(--wa-color-surface-lowered);
-            border-block-end: var(--wa-border-width-s) var(--wa-border-style) var(--wa-color-surface-border);
-        }
+    openButtons.forEach(button => button.addEventListener('click', () => drawer.open = true));
 
-        [slot='navigation-header'] {
-            border-block-end: var(--wa-border-width-s) var(--wa-border-style) var(--wa-color-surface-border);
-        }
-
-        [slot*='navigation'] a {
-            --wa-color-text-link: var(--wa-color-text-normal);
-        }
-
-        [slot='navigation-footer'] {
-            border-block-start: var(--wa-border-width-s) var(--wa-border-style) var(--wa-color-surface-border);
-
-            .wa-flank {
-                --flank-size: 1.25em;
-            }
-        }
-
-        [slot='main-header'],
-        main,
-        [slot='main-footer'] {
-            max-inline-size: 60rem;
-            margin-inline: auto;
-        }
-
-        [slot='main-footer'] {
-            border-block-start: var(--wa-border-width-s) var(--wa-border-style) var(--wa-color-surface-border);
-        }
-
-        [slot='footer'] {
-            --wa-color-text-link: var(--wa-color-text-quiet);
-            background-color: var(--wa-color-surface-lowered);
-            font-size: var(--wa-font-size-s);
-        }
-    </style>
-
-    <script>
-        const sectionAnchors = document.querySelectorAll("[slot*='navigation'] a[href*='#']");
-        sectionAnchors.forEach((sectionAnchor) => sectionAnchor.setAttribute("data-drawer", "close"));
-    </script>
+</script>
 </body>
 </html>
