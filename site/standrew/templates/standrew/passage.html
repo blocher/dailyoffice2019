@@ -282,9 +282,9 @@
                     <ul>
                         {% for item in source %}
                         <li><a target="_blank"
-                               href='https://www.google.com/search?q="{{ item.source_title }}" "{{ item.author_name }}"'>{{
-                                item.source_title
-                            }}</a>
+                               href='https://www.google.com/search?q="{{ item.source_title }}" "{{ item.author_name }}"'>
+                                {{ item.source_title }}
+                            </a>
                             ({{ item.author_name }})
                             <br><em><small>{{ item.source_description }}</small></em></li>
                         {% endfor %}
