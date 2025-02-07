@@ -1,3 +1,4 @@
+import kronos
 import pytz
 from django.core.mail import EmailMultiAlternatives
 from django.core.management.base import BaseCommand
@@ -9,6 +10,8 @@ from standrew.views import bible_study_passage_email
 from website.settings import DEBUG
 
 
+@kronos.register("0 17 * * 1")
+@kronos.register("0 8 * * 6")
 class Command(BaseCommand):
     help = "Send weekly St. Andrew Bible Study email"
 

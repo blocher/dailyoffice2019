@@ -57,6 +57,10 @@
             max-width: 600px;
         }
 
+        p {
+            font-size: 12px;
+        }
+
         .card {
             border: 1px solid #ddd;
             padding: 15px;
@@ -96,28 +100,43 @@
         .pre-header {
             background-color: #fff9c4;
             padding: 10px 15px;
-            font-size: 14px;
+            font-size: 10px;
             text-align: left;
             border-bottom: 1px solid #ddd;
+            line-height: 11px;
         }
+
+        .inline-list {
+            display: block;
+            padding: 0;
+            list-style: disc;
+        }
+
+        .inline-list li {
+            display: inline;
+            margin-right: 3px;
+            font-size: 9px;
+        }
+
+
     </style>
 </head>
 <body>
 <div class="email-container">
     <div class="pre-header">
-        <p>Below is the study guide for {{ passage }} fo the upcoming <strong>St. Andrew's Bible Study</strong>. This includes:
-            <ul>
-            <li>full text of the passage;</li>
-            <li>a summary of the corresponding chapter in the <em>Jesus Storybook Bible</em>;</li>
-            <li> the four senses of scriptural interpretation;</li>
-            <li> background information;</li>
-            <li> study questions;</li>
-            <li> practical questions;</li>
-            <li>a reflection, and</li>
-            <li>options for further reading.</li>
+        <p>Below is the study guide for the upcoming <strong>St. Andrew's Bible Study</strong>. This includes:
+            <ul class="inline-list">
+            <li> &bull; full text of the passage;</li>
+            <li> &bull; a summary of the corresponding chapter in the <em>Jesus Storybook Bible</em>;</li>
+            <li> &bull; the four senses of scriptural interpretation;</li>
+            <li> &bull; background information;</li>
+            <li> &bull; study questions;</li>
+            <li> &bull; practical questions;</li>
+            <li> &bull; a reflection, and</li>
+            <li> &bull; options for further reading.</li>
             </ul>
         </p>
-        <p><small>Much of this content was generated with carefully crafted AI prompts and citations are provided. Nonetheless, please double check all facts.</small></p>
+        <p><em><small>Much of this content was generated with carefully crafted AI prompts and citations are provided. Nonetheless, please double check all facts.</small></em></p>
         <p><a href="https://api.dailyoffice2019.com/bible_study/{{ id }}" target="_blank">View as an interactive website.</a></p>
     </div>
     {{ content|safe }}
