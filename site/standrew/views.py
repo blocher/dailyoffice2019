@@ -5,6 +5,7 @@ from functools import reduce
 from itertools import groupby
 from types import SimpleNamespace
 
+import pytz
 import requests
 from cachetools.func import lru_cache
 from django.core.exceptions import ValidationError
@@ -522,13 +523,89 @@ class MovieBallotCreate(CreateView):
 
 
 def bible_study(self):
-    today = timezone.now().date()
+    today = (
+        timezone.now()
+        .astimezone(pytz.timezone("US/Eastern"))
+        .replace(hour=23, minute=59, second=59, microsecond=1000000 - 1)
+    )
     days = BibleStudyDay.objects.order_by("date", "jesus_story_book_number", "created").filter(date__gte=today).all()
     if days:
         day = days[0]
     else:
         day = BibleStudyDay.objects.order_by("date", "jesus_story_book_number", "created").first()
     return bible_study_passage(self, day.uuid)
+
+
+def bible_study_passage_email(self, id):
+    def fetch_main_content(url, tag="main"):
+        import requests
+        from bs4 import BeautifulSoup
+
+        # Fetch the page content
+
+        response = requests.get(url)
+        if response.status_code != 200:
+            raise Exception(f"Failed to fetch the page: {response.status_code}")
+
+        # Parse the HTML with BeautifulSoup
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        # Find the <main> tag
+
+        main_tag = soup.find(tag) if tag.startswith("#") else soup.find(id=tag[1:])
+        if not main_tag:
+            raise Exception("No <main> tag found on the page.")
+
+        # Replace custom web components with their inner HTML
+        def replace_custom_elements(element):
+            while True:
+                custom_elements = element.find_all(lambda tag: "-" in tag.name)
+                if not custom_elements:
+                    break
+                for sub_element in custom_elements:
+                    inner_html = sub_element.decode_contents()
+                    if sub_element.name == "wa-callout":
+                        inner_html = f'<div class="callout">{inner_html}</div>'
+                    if sub_element.name == "wa-card":
+                        inner_html = f'<div class="card">{inner_html}</div>'
+                    if sub_element.name == "wa-details":
+                        inner_html = f'<div class="details">{inner_html}</div>'
+                    new_element = BeautifulSoup(inner_html, "html.parser")
+                    sub_element.replace_with(new_element)
+
+        from bs4 import BeautifulSoup
+
+        def remove_attributes_from_sub_elements(element):
+            for attr in ["class", "style", "id"]:
+                element.attrs.pop(attr, None)  # Removes attribute if it exists
+            for tag in element.find_all(True):  # Finds all sub-elements
+                for attr in ["class", "style", "id"]:
+                    if attr in tag.attrs:
+                        print(tag.attrs[attr])
+                    if (
+                        attr in tag.attrs
+                        and "callout" not in tag.attrs[attr]
+                        and "details" not in tag.attrs[attr]
+                        and "card" not in tag.attrs[attr]
+                    ):
+                        tag.attrs.pop(attr, None)  # Removes attribute if it exists
+            return element
+
+        replace_custom_elements(main_tag)
+        main_tag = remove_attributes_from_sub_elements(main_tag)
+
+        return str(main_tag)
+
+    # Example Usage
+    url = "https://api.dailyoffice2019.com/bible_study"  # Replace with your target page
+    header_html = fetch_main_content(url, tag="#main-header")
+    email_html = fetch_main_content(url)
+    context = {
+        "content": header_html + email_html,
+    }
+
+    html = render_to_string("standrew/passage_email.html", context)
+    return HttpResponse(html)
 
 
 def bible_study_passage(self, id):

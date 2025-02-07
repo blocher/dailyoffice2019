@@ -22,11 +22,13 @@
         <wa-icon name="church" color="white"></wa-icon>
     </div>
     <header slot="header" class="wa-split">
-        <div class="wa-cluster">
-            <wa-icon name="church"
-                     style="color: var(--wa-color-brand-fill-loud); font-size: 1.5em;"></wa-icon>
-            <span id="brand-name" class="wa-heading-s">St. Andrew's Bible Study</span>
-        </div>
+        <a href="/bible_study">
+            <div class="wa-cluster">
+                <wa-icon name="church"
+                         style="color: var(--wa-color-brand-fill-loud); font-size: 1.5em;"></wa-icon>
+                <span id="brand-name" class="wa-heading-s">St. Andrew's Bible Study</span>
+            </div>
+        </a>
         <div class="wa-cluster" style="display: flex; align-items: center;">
             <wa-button size="small" class="open-drawer">Browse All Stories</wa-button>
             <p data-toggle-nav style="cursor:pointer">
@@ -97,7 +99,7 @@
 
     </nav>
 
-    <header slot="main-header">
+    <header slot="main-header" id="main-header">
         <div class="wa-flank:end wa-border-radius-l wa-dark"
              style="background-color: var(--wa-color-surface-lowered); --content-percentage: 35%; padding: var(--wa-space-m);">
             <div class="wa-stack" style="margin: var(--wa-space-2xl);">
