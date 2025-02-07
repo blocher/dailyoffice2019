@@ -552,7 +552,8 @@ def bible_study_passage_email(self, id):
 
         # Find the <main> tag
 
-        main_tag = soup.find(tag) if tag.startswith("#") else soup.find(id=tag[1:])
+        print(tag[1:])
+        main_tag = soup.find(id=tag[1:]) if tag.startswith("#") else soup.find(tag)
         if not main_tag:
             raise Exception("No <main> tag found on the page.")
 
@@ -564,14 +565,21 @@ def bible_study_passage_email(self, id):
                     break
                 for sub_element in custom_elements:
                     inner_html = sub_element.decode_contents()
+                    # if sub_element.name == "wa-tooltip":
+                    #     continue
                     if sub_element.name == "wa-callout":
                         inner_html = f'<div class="callout">{inner_html}</div>'
                     if sub_element.name == "wa-card":
                         inner_html = f'<div class="card">{inner_html}</div>'
                     if sub_element.name == "wa-details":
                         inner_html = f'<div class="details">{inner_html}</div>'
-                    new_element = BeautifulSoup(inner_html, "html.parser")
-                    sub_element.replace_with(new_element)
+                    if sub_element.name == "wa-tag":
+                        inner_html = f'<div class="tag">{inner_html}</div>'
+                    if sub_element.name == "wa-tooltip":
+                        sub_element.decompose()
+                    else:
+                        new_element = BeautifulSoup(inner_html, "html.parser")
+                        sub_element.replace_with(new_element)
 
         from bs4 import BeautifulSoup
 
@@ -587,6 +595,7 @@ def bible_study_passage_email(self, id):
                         and "callout" not in tag.attrs[attr]
                         and "details" not in tag.attrs[attr]
                         and "card" not in tag.attrs[attr]
+                        and "tag" not in tag.attrs[attr]
                     ):
                         tag.attrs.pop(attr, None)  # Removes attribute if it exists
             return element
