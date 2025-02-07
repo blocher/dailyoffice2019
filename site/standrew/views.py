@@ -17,6 +17,7 @@ from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views.generic import CreateView
 from math import floor
+from premailer import transform
 
 from standrew.email import weekly_email, CommemorationDailyEmailModule, WeeklyMeetingEmailModule
 from standrew.models import (
@@ -523,11 +524,7 @@ class MovieBallotCreate(CreateView):
 
 
 def bible_study(self):
-    today = (
-        timezone.now()
-        .astimezone(pytz.timezone("US/Eastern"))
-        .replace(hour=23, minute=59, second=59, microsecond=1000000 - 1)
-    )
+    today = timezone.now().astimezone(pytz.timezone("US/Eastern")).replace(hour=0, minute=0, second=0, microsecond=0)
     days = BibleStudyDay.objects.order_by("date", "jesus_story_book_number", "created").filter(date__gte=today).all()
     if days:
         day = days[0]
@@ -536,7 +533,7 @@ def bible_study(self):
     return bible_study_passage(self, day.uuid)
 
 
-def bible_study_passage_email(self, id):
+def bible_study_passage_email(self=None, id=None, raw_html=False, subject=None):
     def fetch_main_content(url, tag="main"):
         import requests
         from bs4 import BeautifulSoup
@@ -550,9 +547,6 @@ def bible_study_passage_email(self, id):
         # Parse the HTML with BeautifulSoup
         soup = BeautifulSoup(response.text, "html.parser")
 
-        # Find the <main> tag
-
-        print(tag[1:])
         main_tag = soup.find(id=tag[1:]) if tag.startswith("#") else soup.find(tag)
         if not main_tag:
             raise Exception("No <main> tag found on the page.")
@@ -588,8 +582,6 @@ def bible_study_passage_email(self, id):
                 element.attrs.pop(attr, None)  # Removes attribute if it exists
             for tag in element.find_all(True):  # Finds all sub-elements
                 for attr in ["class", "style", "id"]:
-                    if attr in tag.attrs:
-                        print(tag.attrs[attr])
                     if (
                         attr in tag.attrs
                         and "callout" not in tag.attrs[attr]
@@ -606,14 +598,20 @@ def bible_study_passage_email(self, id):
         return str(main_tag)
 
     # Example Usage
-    url = "https://api.dailyoffice2019.com/bible_study"  # Replace with your target page
+    url = f"https://api.dailyoffice2019.com/bible_study/{id}"  # Replace with your target page
     header_html = fetch_main_content(url, tag="#main-header")
-    email_html = fetch_main_content(url)
+    body_html = fetch_main_content(url)
+    email_html = header_html + body_html
     context = {
-        "content": header_html + email_html,
+        "content": email_html,
+        "id": id,
+        "title": subject if subject else "St. Andrew's Bible Study",
     }
 
     html = render_to_string("standrew/passage_email.html", context)
+    html = transform(html, base_url="https://api.dailyoffice2019.com", remove_classes=True)
+    if raw_html:
+        return html
     return HttpResponse(html)
 
 

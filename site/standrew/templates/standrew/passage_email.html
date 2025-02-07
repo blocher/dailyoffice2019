@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Template</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>{{ title }}</title>
     <style>
         body {
             margin: 0;
@@ -91,12 +90,36 @@
             background-color: #0073e6;
             border-radius: 12px;
             text-transform: uppercase;
-            margin: 5px 0 10px;
+            margin: 5px 5px 10px 0;
+        }
+
+        .pre-header {
+            background-color: #fff9c4;
+            padding: 10px 15px;
+            font-size: 14px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
         }
     </style>
 </head>
 <body>
 <div class="email-container">
+    <div class="pre-header">
+        <p>Below is the study guide for {{ passage }} fo the upcoming <strong>St. Andrew's Bible Study</strong>. This includes:
+            <ul>
+            <li>full text of the passage;</li>
+            <li>a summary of the corresponding chapter in the <em>Jesus Storybook Bible</em>;</li>
+            <li> the four senses of scriptural interpretation;</li>
+            <li> background information;</li>
+            <li> study questions;</li>
+            <li> practical questions;</li>
+            <li>a reflection, and</li>
+            <li>options for further reading.</li>
+            </ul>
+        </p>
+        <p><small>Much of this content was generated with carefully crafted AI prompts and citations are provided. Nonetheless, please double check all facts.</small></p>
+        <p><a href="https://api.dailyoffice2019.com/bible_study/{{ id }}" target="_blank">View as an interactive website.</a></p>
+    </div>
     {{ content|safe }}
 </div>
 </body>
