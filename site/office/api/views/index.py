@@ -2960,7 +2960,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
         domain = Site.objects.get_current().domain
         path = settings.MEDIA_URL + filename
-        file_url = f"https://{domain}{path}"
+        file_url = f"https://{domain}/api/v1/audio_track/{filename}"
 
         temp_file_list = os.path.join(settings.MEDIA_ROOT, f"{filename}.txt")
         track_list = []

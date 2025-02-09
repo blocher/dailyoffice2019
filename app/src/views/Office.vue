@@ -84,9 +84,10 @@
       </div>
     </div>
   </div>
-
+  {{ audioLinks }}
+  {{ audioLinks.length }}
   <AudioPlayer
-    v-if="!loading && audioEnabled"
+    v-if="!loading && audioEnabled && audioLinks && audioLinks.length"
     :audio="audioLinks"
     :audioReady="audioReady"
     :office="office"
@@ -262,8 +263,8 @@ export default {
       url = `${url}&include_audio_links=true`;
       try {
         const data = await this.$http.get(url);
-        this.audioLinks = data.data.audio;
-        return data.data.audio;
+        this.audioLinks = data.data.audio.single_track;
+        return data.data.audio.single_track;
       } catch {
         return [];
       }

@@ -3,16 +3,16 @@
     <div class="controls fixed-controls" style="width: 100%">
       <div v-if="!isEsvOrKjv || !isWithinSevenDays" class="menu-and-buttons">
         <span v-if="!isEsvOrKjv">
-          <small
-            >&nbsp;&nbsp;Audio is only available if the selected bible
+          <small>
+            &nbsp;&nbsp;Audio is only available if the selected bible
             translation is the English Standard Version (ESV) or the Kings James
             Version.&nbsp;&nbsp;
             <a href="/settings"> Change Settings >>> </a>
           </small>
         </span>
         <span v-if="!isWithinSevenDays">
-          <small
-            >&nbsp;&nbsp;Audio is for today and the next seven days.&nbsp;&nbsp;
+          <small>
+            &nbsp;&nbsp;Audio is for today and the next seven days.&nbsp;&nbsp;
             <a href="/"> Go to Today >>> </a>
           </small>
         </span>
@@ -30,29 +30,38 @@
           <el-button size="small" :disabled="!isPlaying" @click="pauseAudio">
             ⏸ Pause
           </el-button>
-          <el-button
-            size="small"
-            :disabled="!isPlaying && !isPaused"
-            @click="startFromBeginning"
-          >
-            ⏮ Restart
-          </el-button>
         </el-button-group>
         <Loading v-if="loading" :small="true" />
         <el-select
-          v-if="audioReady && headings.length"
-          v-model="currentHeadingIndex"
-          class="smallSelector"
-          placeholder="Jump to..."
-          @change="handleTrackChangeForHeading"
+          v-if="audioReady && trackSegments.length"
+          v-model="playbackSpeed"
+          class="smallestSelector"
+          placeholder="Speed"
+          @change="handleSpeedChange"
         >
           <el-option
-            v-for="(heading, index) in headings"
-            :key="heading.next_id"
+            v-for="(speed, index) in speeds"
+            :key="speed"
             size="small"
-            :value="heading.next_id"
+            :value="speed"
           >
-            {{ heading.heading }}
+            {{ speed }}
+          </el-option>
+        </el-select>
+        <el-select
+          v-if="audioReady && trackSegments.length"
+          v-model="currentTrackSegment"
+          class="smallSelector"
+          placeholder="Jump to..."
+          @change="handleTrackSegmentChange"
+        >
+          <el-option
+            v-for="(segment, index) in trackSegments"
+            :key="segment.start_time"
+            size="small"
+            :value="segment.start_time"
+          >
+            {{ segment.name }}
           </el-option>
         </el-select>
       </div>
@@ -92,150 +101,101 @@ export default {
   },
   data() {
     return {
-      currentIndex: null,
-      currentHeadingIndex: null,
+      currentTrackSegment: null,
       isPlaying: false,
       isPaused: false,
-      tracks: [],
-      headings: [],
-      loading: false,
-      audioElements: {},
+      trackSegments: [],
+      loading: true,
+      audioElement: null,
+      playbackSpeed: '1.0x',
+      speeds: [
+        '0.5x',
+        '0.6x',
+        '0.7x',
+        '0.8x',
+        '0.9x',
+        '1.0x',
+        '1.1x',
+        '1.2x',
+        '1.3x',
+        '1.4x',
+        '1.5x',
+        '1.6x',
+        '1.7x',
+        '1.8x',
+        '1.9x',
+        '2.0x',
+      ],
     };
   },
   mounted() {
-    this.tracks = this.audio.tracks;
-    this.headings = this.audio.headings;
-  },
-  updated() {
-    this.tracks = this.audio.tracks;
-    this.headings = this.audio.headings;
+    if (this.audio && Array.isArray(this.audio[2])) {
+      this.audioElement = new Audio(this.audio[0] || '', {
+        preload: 'auto',
+      });
+      this.audioElement.load();
+      if (this.audioElement.readyState === this.audioElement.HAVE_ENOUGH_DATA) {
+        this.loading = false;
+      }
+      this.audioElement.addEventListener('canplaythrough', () => {
+        this.loading = false;
+      });
+      this.audioElement.addEventListener('ended', () => {
+        this.stopAudio();
+      });
+
+      this.trackSegments = this.audio[2];
+    } else {
+      // console.error('Invalid audio prop format:', this.audio);
+    }
   },
   beforeUnmount() {
-    this.stopAllAudio();
+    this.stopAudio();
   },
   methods: {
-    loadAudio(index) {
-      if (!this.audioElements[index]) {
-        const track = this.tracks[index];
-        const audio = new Audio(track.url);
-        audio.preload = 'metadata';
-        this.audioElements[index] = audio;
-      }
-      return this.audioElements[index];
-    },
     startAudio() {
-      if (
-        this.currentIndex === null ||
-        this.isPaused ||
-        this.currentIndex === -1 ||
-        this.currentIndex === 0
-      ) {
-        if (this.currentIndex === null || this.currentIndex === -1) {
-          this.currentIndex = 0;
-        }
-        this.playAudioAtIndex(this.currentIndex);
-      }
-    },
-    playAudioAtIndex(index) {
-      const track = this.tracks[index];
-      const audio = this.loadAudio(index);
-
-      if (audio) {
-        this.stopAllAudio();
+      if (this.audioElement) {
+        this.audioElement.play();
         this.isPlaying = true;
         this.isPaused = false;
-
-        audio.onerror = () => {
-          this.isPlaying = false;
-        };
-
-        audio.onstalled = () => {
-          this.loading = true;
-        };
-
-        audio.addEventListener('canplay', () => {
-          this.loading = false;
-        });
-
-        audio.play().catch(() => {
-          this.isPlaying = false;
-        });
-
-        this.scrollToLineId(track.line_id);
-
-        audio.onended = () => {
-          this.currentIndex++;
-          if (this.currentIndex < this.tracks.length) {
-            this.playAudioAtIndex(this.currentIndex);
-          } else {
-            this.isPlaying = false;
-            this.currentIndex = null;
-          }
-        };
       }
     },
     pauseAudio() {
-      if (this.currentIndex !== null) {
-        const audio = this.audioElements[this.currentIndex];
-        if (audio) {
-          audio.pause();
-          this.isPaused = true;
-          this.isPlaying = false;
-        }
+      if (this.audioElement) {
+        this.audioElement.pause();
+        this.isPaused = true;
+        this.isPlaying = false;
       }
-      this.isPaused = true;
-      this.isPlaying = false;
     },
     stopAudio() {
-      if (this.currentIndex !== null) {
-        const audio = this.audioElements[this.currentIndex];
-        if (audio) {
-          audio.pause();
-          audio.currentTime = 0;
-          this.isPlaying = false;
-          this.isPaused = true;
-        }
+      if (this.audioElement) {
+        this.audioElement.pause();
+        this.audioElement.currentTime = 0;
+        this.isPlaying = false;
+        this.isPaused = false;
       }
-    },
-    stopAllAudio() {
-      Object.values(this.audioElements).forEach((audio) => {
-        audio.pause();
-        audio.currentTime = 0;
-      });
-      this.isPlaying = false;
-      this.isPaused = false;
     },
     startFromBeginning() {
-      if (this.currentIndex !== null) {
-        this.stopAudio();
-        this.currentIndex = 0;
-        this.playAudioAtIndex(this.currentIndex);
+      if (this.audioElement) {
+        this.audioElement.currentTime = 0;
+        this.startAudio();
       }
     },
-    scrollToLineId(lineId) {
-      if (lineId) {
-        const element = document.querySelector(`[data-line-id="${lineId}"]`);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }
-    },
-    handleTrackChange() {
-      if (this.currentIndex !== null) {
-        this.playAudioAtIndex(this.currentIndex);
-      }
-    },
-    handleTrackChangeForHeading() {
-      if (this.currentHeadingIndex !== null) {
-        const index = this.tracks.findIndex(
-          (track) => track.line_id === this.currentHeadingIndex
+    handleSpeedChange() {
+      if (this.audioElement) {
+        this.audioElement.playbackRate = parseFloat(
+          this.playbackSpeed.replace(/[^\d.]/g, '')
         );
-        if (index !== null) {
-          this.currentIndex = index;
-          this.playAudioAtIndex(this.currentIndex);
-        }
       }
-      this.currentHeadingIndex = null;
+    },
+    handleTrackSegmentChange() {
+      if (this.audioElement && this.currentTrackSegment !== null) {
+        this.stopAudio();
+        const skipTo = parseFloat(this.currentTrackSegment);
+        this.audioElement.currentTime = skipTo;
+        this.startAudio();
+        this.currentTrackSegment = null;
+      }
     },
   },
 };
@@ -249,6 +209,10 @@ export default {
 .audio-player .playing {
   font-weight: bold;
   color: green;
+}
+
+.el-button-group {
+  width: 100%;
 }
 
 .audio-list {
@@ -275,6 +239,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  flex-wrap: nowrap;
 }
 
 button {
@@ -292,6 +257,12 @@ button:disabled {
 .smallSelector {
   max-width: 200px;
   flex-shrink: 1;
+}
+
+.smallestSelector {
+  max-width: 75px;
+  flex-shrink: 1;
+  margin-right: 5px;
 }
 
 @media (max-width: 768px) {
