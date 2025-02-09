@@ -84,8 +84,6 @@
       </div>
     </div>
   </div>
-  {{ audioLinks }}
-  {{ audioLinks.length }}
   <AudioPlayer
     v-if="!loading && audioEnabled && audioLinks && audioLinks.length"
     :audio="audioLinks"
