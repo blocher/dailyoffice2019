@@ -2,6 +2,7 @@ import csv
 import datetime
 import json
 import os
+import subprocess
 from collections import defaultdict
 from urllib.parse import quote
 
@@ -17,6 +18,7 @@ from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import TemplateResponseMixin
 from mailchimp_marketing.api_client import ApiClientError
+from mutagen.mp3 import MP3
 from rest_framework import serializers, mixins, viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
@@ -2869,7 +2871,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         elif "reader" in line_type:
             voice_type = "echo"
         else:
-            return
+            return None, None
         content = content.replace("LORD", "Lord")
         content = content.replace("Lᴏʀᴅ", "Lord")
         audio_id = generate_uuid_from_string(f"{line_type} {voice_type} {content}")
@@ -2880,9 +2882,9 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         path = settings.MEDIA_URL + filename
         file_url = f"https://{domain}{path}"
         if no_generate:
-            return file_url
+            return file_url, path
         if exists:
-            return file_url
+            return file_url, path
         try:
             from pathlib import Path
             from openai import OpenAI
@@ -2895,9 +2897,9 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             )
             response.stream_to_file(file_path)
         except Exception as e:
-            return
+            return None, None
         print(file_url)
-        return file_url
+        return file_url, path
 
     @staticmethod
     def handle_html(line, html=False, no_generate=False, id=None):
@@ -2919,7 +2921,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             text_without_verses = re.sub(r"(\b\d+\b\s)", "", plain_text)
             url = GenericDailyOfficeSerializer.get_line_audio_file(
                 Line(text_without_verses, "reader"), no_generate=no_generate
-            )
+            )[0]
             if url:
                 uuid_match = re.search(r"/uploads/([0-9a-fA-F-]+)\.mp3", url)
                 if uuid_match:
@@ -2936,6 +2938,54 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             return result
 
         return audio_files
+
+    @staticmethod
+    def get_single_track(tracks):
+
+        def get_audio_duration(file_path):
+            audio = MP3(file_path)
+            return audio.info.length
+
+        print(tracks)
+        tracks = [
+            {"path": f"{settings.BASE_DIR}{track["path"]}", "name": track["module"]}
+            for track in tracks
+            if "path" in track
+        ]
+        mp3_files = [track for track in tracks if os.path.exists(track["path"])]
+        full_string = " ".join([track["path"] for track in mp3_files])
+        audio_id = generate_uuid_from_string(full_string)
+        filename = f"{audio_id}.mp3"
+        file_path = os.path.join(settings.MEDIA_ROOT, filename)
+        exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
+        domain = Site.objects.get_current().domain
+        path = settings.MEDIA_URL + filename
+        file_url = f"https://{domain}{path}"
+
+        temp_file_list = os.path.join(settings.MEDIA_ROOT, f"{filename}.txt")
+        track_list = []
+        start_time = 0
+        name = ""
+        with open(temp_file_list, "w") as f:
+            for track in mp3_files:
+                f.write(f"file '{os.path.abspath(track['path'])}'\n")
+                duration = get_audio_duration(track["path"])  # Function to get audio duration
+                if track["name"] != name:
+                    name = track["name"]
+                    track_list.append({"name": track["name"], "start_time": start_time})
+                start_time += duration
+
+        if exists:
+            return file_url, path, track_list
+
+        ffmpeg_cmd = ["ffmpeg", "-f", "concat", "-safe", "0", "-i", temp_file_list, "-c", "copy", file_path]
+
+        result = subprocess.run(ffmpeg_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        # Cleanup temp file list
+        os.remove(temp_file_list)
+
+        return file_url, path, track_list
 
     def get_audio(self, obj):
         if hasattr(obj.settings, "bible_translation") and obj.settings.bible_translation not in ["esv", "kjv"]:
@@ -2984,7 +3034,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     temp_id = "_".join([line["id"].split("_")[0], line["id"].split("_")[-1]])
                     tracks = tracks + self.handle_html(line["content"], id=temp_id)
                 elif line["line_type"] in ["reader"]:
-                    tracks = tracks + [{"line_id": line["id"], "url": self.get_line_audio_file(line)}]
+                    tracks = tracks + [{"line_id": line["id"], "url": self.get_line_audio_file(line)[0]}]
                 elif line["line_type"] in [
                     "reader",
                     "leader",
@@ -2992,12 +3042,13 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     "leader_dialogue",
                     "congregation_dialogue",
                 ]:
-                    tracks = tracks + [
-                        {"line_id": line["id"], "module": module["name"], "url": self.get_line_audio_file(line)}
-                    ]
+                    url, path = self.get_line_audio_file(line)
+                    tracks = tracks + [{"line_id": line["id"], "module": module["name"], "url": url, "path": path}]
         tracks = [track for track in tracks if track]
         headings = [heading for heading in headings if heading]
-        return {"tracks": tracks, "headings": headings}
+        single_track = self.get_single_track(tracks)
+
+        return {"tracks": tracks, "headings": headings, "single_track": single_track}
 
 
 class OfficeSerializer(GenericDailyOfficeSerializer):
