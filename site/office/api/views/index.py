@@ -678,6 +678,8 @@ class MPInvitatory(Module):
 
 
 class EPInvitatory(Module):
+    name = "Invitatory"
+
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         file = "phos_hilaron_traditional" if language_style == "traditional" else "phos_hilaron"
@@ -2898,11 +2900,10 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             response.stream_to_file(file_path)
         except Exception as e:
             return None, None
-        print(file_url)
         return file_url, path
 
     @staticmethod
-    def handle_html(line, html=False, no_generate=False, id=None):
+    def handle_html(line, html=False, no_generate=False, id=None, module="Reading"):
         import re
         from bs4 import BeautifulSoup
 
@@ -2919,9 +2920,9 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             soup = BeautifulSoup(sentence, "html.parser")
             plain_text = soup.get_text()
             text_without_verses = re.sub(r"(\b\d+\b\s)", "", plain_text)
-            url = GenericDailyOfficeSerializer.get_line_audio_file(
+            url, path = GenericDailyOfficeSerializer.get_line_audio_file(
                 Line(text_without_verses, "reader"), no_generate=no_generate
-            )[0]
+            )
             if url:
                 uuid_match = re.search(r"/uploads/([0-9a-fA-F-]+)\.mp3", url)
                 if uuid_match:
@@ -2929,7 +2930,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 if id is not None:
                     id = re.sub(r"_[^_]+$", f"_{uuid}", id)
                 lines.append(f"<span data-line-id='{id}'></span>{sentence}")
-                audio_files.append({"line_id": id, "url": url})
+                audio_files.append({"line_id": id, "url": url, "path": path, "module": module})
         result = "".join(lines)
 
         if html:
@@ -2946,7 +2947,6 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             audio = MP3(file_path)
             return audio.info.length
 
-        print(tracks)
         tracks = [
             {"path": f"{settings.BASE_DIR}{track["path"]}", "name": track["module"]}
             for track in tracks
@@ -3012,7 +3012,6 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     ):
                         look_ahead_line = module["lines"][j + 1]
                         j = j + 1
-                    print(line["content"], look_ahead_line)
                     if (
                         look_ahead_line["line_type"]
                         not in [
@@ -3032,9 +3031,8 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     continue
                 if line["line_type"] == "html":
                     temp_id = "_".join([line["id"].split("_")[0], line["id"].split("_")[-1]])
-                    tracks = tracks + self.handle_html(line["content"], id=temp_id)
-                elif line["line_type"] in ["reader"]:
-                    tracks = tracks + [{"line_id": line["id"], "url": self.get_line_audio_file(line)[0]}]
+                    print(self.handle_html(line["content"], id=temp_id))
+                    tracks = tracks + self.handle_html(line["content"], id=temp_id, module=module["name"])
                 elif line["line_type"] in [
                     "reader",
                     "leader",
