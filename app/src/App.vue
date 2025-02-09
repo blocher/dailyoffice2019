@@ -86,7 +86,7 @@
     </p>
   </div>
 
-  <el-backtop />
+  <el-backtop :bottom="backtopBotton" />
 </template>
 
 <script>
@@ -97,6 +97,7 @@ import { useActiveMeta, useMeta } from 'vue-meta';
 import AdditionalLinks from '@/components/AdditionalLinks.vue';
 import { ArrowDown } from '@element-plus/icons-vue';
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue';
+import { DynamicStorage } from '@/helpers/storage.js';
 
 export default {
   components: {
@@ -121,8 +122,10 @@ export default {
       name: this.$route.name,
       error: false,
       showLinks: false,
+      audioEnabled: false,
     };
   },
+
   computed: {
     isPray() {
       return this.$route.name === 'Pray' || this.$route.name === 'Home'
@@ -144,6 +147,16 @@ export default {
         ? 'primary'
         : '';
     },
+    backtopBotton() {
+      return this.audioEnabled ? 80 : 40;
+    },
+  },
+  async mounted() {
+    const audioEnabled =
+      (await DynamicStorage.getItem('audioEnabled', 'false')) === 'true'
+        ? true
+        : false;
+    this.audioEnabled = audioEnabled;
   },
   async created() {
     document.title = 'The Daily Office';
@@ -499,11 +512,6 @@ body {
     --el-input-bg-color,
     var(--el-fill-color-blank)
   ) !important;
-}
-
-.el-backtop {
-  display: none !important;
-  z-index: 200 !important;
 }
 
 .el-drawer {
