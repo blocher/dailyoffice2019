@@ -2758,6 +2758,8 @@ class ComplinePrayers(AdditionalCollects):
 
 
 class ComplineCanticle(Module):
+    name = "Nunc Dimittis"
+
     @property
     def antiphon(self):
         return "Guide us waking, O Lord, and guard us sleeping; that awake we may watch with Christ, and asleep we may rest in peace.{}".format(
