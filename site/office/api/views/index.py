@@ -1625,10 +1625,14 @@ class GreatLitany(ShowGreatLitanyMixin, Module):
 
 
 class MPGreatLitany(GreatLitany):
+    name = "Great Litany"
+
     office_name = "morning_prayer"
 
 
 class EPGreatLitany(GreatLitany):
+    name = "Great Litany"
+
     office_name = "evening_prayer"
 
 
