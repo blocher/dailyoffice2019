@@ -64,6 +64,12 @@
             {{ segment.name }}
           </el-option>
         </el-select>
+        <el-switch
+          v-model="enableScrolling"
+          active-text="Scroll On"
+          inactive-text="Scroll Off"
+          class="scroll-toggle"
+        ></el-switch>
       </div>
     </div>
   </div>
@@ -109,6 +115,7 @@ export default {
       loading: true,
       audioElement: null,
       playbackSpeed: '1.0x',
+      enableScrolling: true,
       speeds: [
         '0.5x',
         '0.6x',
@@ -130,10 +137,12 @@ export default {
     };
   },
   mounted() {
-    if (this.audio && Array.isArray(this.audio[2])) {
-      this.audioElement = new Audio(this.audio[0] || '', {
-        preload: 'auto',
-      });
+    if (
+      this.audio &&
+      Array.isArray(this.audio[2]) &&
+      Array.isArray(this.audio[3])
+    ) {
+      this.audioElement = new Audio(this.audio[0] || '', { preload: 'auto' });
       this.audioElement.load();
       if (this.audioElement.readyState === this.audioElement.HAVE_ENOUGH_DATA) {
         this.loading = false;
@@ -141,15 +150,11 @@ export default {
       this.audioElement.addEventListener('canplaythrough', () => {
         this.loading = false;
       });
-      this.audioElement.addEventListener('ended', () => {
-        this.stopAudio();
-      });
       this.audioElement.addEventListener('timeupdate', this.handleTimeUpdate);
+      this.audioElement.addEventListener('ended', this.stopAudio);
 
       this.trackSegments = this.audio[2];
       this.detailedSegments = this.audio[3];
-    } else {
-      // console.error('Invalid audio prop format:', this.audio);
     }
   },
   beforeUnmount() {
@@ -184,12 +189,6 @@ export default {
         this.isPaused = false;
       }
     },
-    startFromBeginning() {
-      if (this.audioElement) {
-        this.audioElement.currentTime = 0;
-        this.startAudio();
-      }
-    },
     handleSpeedChange() {
       if (this.audioElement) {
         this.audioElement.playbackRate = parseFloat(
@@ -199,15 +198,13 @@ export default {
     },
     handleTrackSegmentChange() {
       if (this.audioElement && this.currentTrackSegment !== null) {
-        this.stopAudio();
-        const skipTo = parseFloat(this.currentTrackSegment);
-        this.audioElement.currentTime = skipTo;
+        this.audioElement.currentTime = parseFloat(this.currentTrackSegment);
         this.startAudio();
         this.currentTrackSegment = null;
       }
     },
     handleTimeUpdate() {
-      if (!this.isPlaying) return; // Prevent scrolling before play starts
+      if (!this.isPlaying || !this.enableScrolling) return;
       const currentTime = this.audioElement.currentTime;
       for (const segment of this.detailedSegments) {
         if (Math.abs(currentTime - segment.start_time) < 0.5) {
@@ -217,6 +214,7 @@ export default {
       }
     },
     scrollToSegment(segmentId) {
+      if (!this.enableScrolling) return;
       const element = document.querySelector(`[data-line-id='${segmentId}']`);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -242,6 +240,10 @@ export default {
 
 .audio-list {
   margin-bottom: 100px;
+}
+
+.el-switch {
+  margin-left: 10px;
 }
 
 .controls.fixed-controls {
