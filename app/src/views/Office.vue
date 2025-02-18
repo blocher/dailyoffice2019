@@ -86,7 +86,7 @@
     </div>
   </div>
   <AudioPlayer
-    v-if="!loading && audioEnabled"
+    v-if="!loading && audioEnabled && audioLinks && audioLinks.length"
     :audio="audioLinks"
     :audioReady="audioReady"
     :office="office"
