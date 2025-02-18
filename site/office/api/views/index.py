@@ -2953,8 +2953,9 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             audio = MP3(file_path)
             return audio.info.length
 
+        print(tracks)
         tracks = [
-            {"path": f"{settings.BASE_DIR}{track["path"]}", "name": track["module"]}
+            {"path": f"{settings.BASE_DIR}{track["path"]}", "name": track["module"], "id": track["line_id"]}
             for track in tracks
             if "path" in track
         ]
@@ -2970,6 +2971,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
 
         temp_file_list = os.path.join(settings.MEDIA_ROOT, f"{filename}.txt")
         track_list = []
+        short_track_list = []
         start_time = 0
         name = ""
         with open(temp_file_list, "w") as f:
@@ -2979,10 +2981,11 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 if track["name"] != name:
                     name = track["name"]
                     track_list.append({"name": track["name"], "start_time": start_time})
+                short_track_list.append({"id": track["id"], "start_time": start_time})
                 start_time += duration
 
         if exists:
-            return file_url, path, track_list
+            return file_url, path, track_list, short_track_list
 
         ffmpeg_cmd = ["ffmpeg", "-f", "concat", "-safe", "0", "-i", temp_file_list, "-c", "copy", file_path]
 
@@ -2991,7 +2994,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         # Cleanup temp file list
         os.remove(temp_file_list)
 
-        return file_url, path, track_list
+        return file_url, path, track_list, short_track_list
 
     def get_audio(self, obj):
         if hasattr(obj.settings, "bible_translation") and obj.settings.bible_translation not in ["esv", "kjv"]:

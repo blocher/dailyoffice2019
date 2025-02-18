@@ -105,6 +105,7 @@ export default {
       isPlaying: false,
       isPaused: false,
       trackSegments: [],
+      detailedSegments: [],
       loading: true,
       audioElement: null,
       playbackSpeed: '1.0x',
@@ -143,14 +144,22 @@ export default {
       this.audioElement.addEventListener('ended', () => {
         this.stopAudio();
       });
+      this.audioElement.addEventListener('timeupdate', this.handleTimeUpdate);
 
       this.trackSegments = this.audio[2];
+      this.detailedSegments = this.audio[3];
     } else {
       // console.error('Invalid audio prop format:', this.audio);
     }
   },
   beforeUnmount() {
     this.stopAudio();
+    if (this.audioElement) {
+      this.audioElement.removeEventListener(
+        'timeupdate',
+        this.handleTimeUpdate
+      );
+    }
   },
   methods: {
     startAudio() {
@@ -195,6 +204,21 @@ export default {
         this.audioElement.currentTime = skipTo;
         this.startAudio();
         this.currentTrackSegment = null;
+      }
+    },
+    handleTimeUpdate() {
+      const currentTime = this.audioElement.currentTime;
+      for (const segment of this.detailedSegments) {
+        if (Math.abs(currentTime - segment.start_time) < 0.5) {
+          this.scrollToSegment(segment.id);
+          break;
+        }
+      }
+    },
+    scrollToSegment(segmentId) {
+      const element = document.querySelector(`[data-line-id='${segmentId}']`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     },
   },

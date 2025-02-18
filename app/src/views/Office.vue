@@ -19,8 +19,8 @@
         <FontSizer v-if="readyToSetFontSize" />
       </div>
     </div>
+
     <div style="max-width: 65ch; margin: 0 auto 5rem">
-      A
       <el-alert type="info" :closable="false">
         <h3>New! Audio Player</h3>
         <p style="text-align: center">
@@ -51,7 +51,6 @@
     <div id="main">
       <div v-for="module in modules" :key="module.name">
         <div v-for="line in module.lines" :key="line.content">
-          This is the office heading!
           <OfficeHeading v-if="line.line_type === 'heading'" :line="line" />
           <OfficeSubheading
             v-if="line.line_type === 'subheading'"
