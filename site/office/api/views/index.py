@@ -2873,7 +2873,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         if "leader" in line_type:
             voice_type = "onyx"
         elif "congregation" in line_type:
-            voice_type = "ash"
+            voice_type = "nova"
         elif "html" in line_type:
             voice_type = "echo"
         elif "reader" in line_type:
@@ -3602,7 +3602,7 @@ class AudioViewSet(ViewSet):
         if "leader" in line_type:
             voice_type = "alloy"
         elif "congregation" in line_type:
-            voice_type = "ash"
+            voice_type = "nova"
         elif "html" in line_type:
             voice_type = "echo"
         else:
