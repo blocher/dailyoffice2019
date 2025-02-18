@@ -2,12 +2,10 @@ import csv
 import datetime
 import json
 import os
-import pwd
 import subprocess
 from collections import defaultdict
 from urllib.parse import quote
 
-import grp
 import mailchimp_marketing as MailchimpMarketing
 from distutils.util import strtobool
 from django.conf import settings
@@ -2909,12 +2907,12 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
 
         except Exception as e:
             return None, None
-        user_name = "dailyoffice"
-        group_name = "dailyoffice"
-        uid = pwd.getpwnam(user_name).pw_uid
-        gid = grp.getgrnam(group_name).gr_gid
+        # user_name = "dailyoffice"
+        # group_name = "dailyoffice"
+        # uid = pwd.getpwnam(user_name).pw_uid
+        # gid = grp.getgrnam(group_name).gr_gid
         os.chmod(file_path, 0o777)
-        os.chown(file_path, uid, gid)
+        # os.chown(file_path, uid, gid)
         return file_url, path
 
     @staticmethod
@@ -2984,21 +2982,21 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         name = ""
         if not os.path.exists(temp_file_list):
             open(temp_file_list, "w").close()
-        user_name = "dailyoffice"
-        group_name = "dailyoffice"
-        uid = pwd.getpwnam(user_name).pw_uid
-        gid = grp.getgrnam(group_name).gr_gid
+        # user_name = "dailyoffice"
+        # group_name = "dailyoffice"
+        # uid = pwd.getpwnam(user_name).pw_uid
+        # gid = grp.getgrnam(group_name).gr_gid
         os.chmod(temp_file_list, 0o777)
-        os.chown(temp_file_list, uid, gid)
+        # os.chown(temp_file_list, uid, gid)
         with open(temp_file_list, "w") as f:
             for track in mp3_files:
                 f.write(f"file '{os.path.abspath(track['path'])}'\n")
-                user_name = "dailyoffice"
-                group_name = "dailyoffice"
-                uid = pwd.getpwnam(user_name).pw_uid
-                gid = grp.getgrnam(group_name).gr_gid
+                # user_name = "dailyoffice"
+                # group_name = "dailyoffice"
+                # uid = pwd.getpwnam(user_name).pw_uid
+                # gid = grp.getgrnam(group_name).gr_gid
                 os.chmod(track["path"], 0o777)
-                os.chown(track["path"], uid, gid)
+                # os.chown(track["path"], uid, gid)
                 duration = get_audio_duration(track["path"])  # Function to get audio duration
                 if track["name"] != name:
                     name = track["name"]
