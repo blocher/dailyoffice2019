@@ -2904,8 +2904,11 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 input=content,
             )
             response.stream_to_file(file_path)
+
         except Exception as e:
             return None, None
+        os.chmod(file_path, 0o777)
+        os.chown(file_path, "dailyoffice", "dailyoffice")
         return file_url, path
 
     @staticmethod
@@ -2953,7 +2956,6 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             audio = MP3(file_path)
             return audio.info.length
 
-        print(tracks)
         tracks = [
             {"path": f"{settings.BASE_DIR}{track["path"]}", "name": track["module"], "id": track["line_id"]}
             for track in tracks
@@ -2974,9 +2976,15 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         short_track_list = []
         start_time = 0
         name = ""
+        if not os.path.exists(temp_file_list):
+            open(temp_file_list, "w").close()
+            os.chown(temp_file_list["path"], "dailyoffice", "dailyoffice")
+        os.chmod(temp_file_list, 0o777)
         with open(temp_file_list, "w") as f:
             for track in mp3_files:
                 f.write(f"file '{os.path.abspath(track['path'])}'\n")
+                os.chmod(track["path"], 0o777)
+                os.chown(track["path"], "dailyoffice", "dailyoffice")
                 duration = get_audio_duration(track["path"])  # Function to get audio duration
                 if track["name"] != name:
                     name = track["name"]
