@@ -2978,8 +2978,8 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         name = ""
         if not os.path.exists(temp_file_list):
             open(temp_file_list, "w").close()
-            os.chown(temp_file_list["path"], "dailyoffice", "dailyoffice")
         os.chmod(temp_file_list, 0o777)
+        os.chown(temp_file_list, "dailyoffice", "dailyoffice")
         with open(temp_file_list, "w") as f:
             for track in mp3_files:
                 f.write(f"file '{os.path.abspath(track['path'])}'\n")
