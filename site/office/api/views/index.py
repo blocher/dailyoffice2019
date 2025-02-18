@@ -2911,7 +2911,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         # group_name = "dailyoffice"
         # uid = pwd.getpwnam(user_name).pw_uid
         # gid = grp.getgrnam(group_name).gr_gid
-        os.chmod(file_path, 0o777)
+        # os.chmod(file_path, 0o777)
         # os.chown(file_path, uid, gid)
         return file_url, path
 
@@ -2986,7 +2986,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         # group_name = "dailyoffice"
         # uid = pwd.getpwnam(user_name).pw_uid
         # gid = grp.getgrnam(group_name).gr_gid
-        os.chmod(temp_file_list, 0o777)
+        # os.chmod(temp_file_list, 0o777)
         # os.chown(temp_file_list, uid, gid)
         with open(temp_file_list, "w") as f:
             for track in mp3_files:
@@ -2995,7 +2995,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 # group_name = "dailyoffice"
                 # uid = pwd.getpwnam(user_name).pw_uid
                 # gid = grp.getgrnam(group_name).gr_gid
-                os.chmod(track["path"], 0o777)
+                # os.chmod(track["path"], 0o777)
                 # os.chown(track["path"], uid, gid)
                 duration = get_audio_duration(track["path"])  # Function to get audio duration
                 if track["name"] != name:
