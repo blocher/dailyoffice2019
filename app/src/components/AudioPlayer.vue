@@ -207,6 +207,7 @@ export default {
       }
     },
     handleTimeUpdate() {
+      if (!this.isPlaying) return; // Prevent scrolling before play starts
       const currentTime = this.audioElement.currentTime;
       for (const segment of this.detailedSegments) {
         if (Math.abs(currentTime - segment.start_time) < 0.5) {
