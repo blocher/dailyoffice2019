@@ -286,7 +286,9 @@ def go(commemoration, overwrite=False):
 
 
 def run_all_bios(overwrite=False):
-    commemorations = Commemoration.objects.all()
+    commemorations = Commemoration.objects.filter(calendar__year=2019).all()
     for c in commemorations:
-        if hasattr(c, "saint_name"):
+        if hasattr(c, "saint_name") and c.saint_name:
+            print(c.name)
+            print(c.saint_name)
             go(c, overwrite)
