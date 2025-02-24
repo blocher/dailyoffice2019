@@ -215,7 +215,7 @@ def prepare_bible_study(study_day):
     study_day.save()
 
 
-def create_image(study_day):
+def create_image(study_day, source="openai"):
     passages = [x.bible_study_passage.passage for x in study_day.biblestudydaypassage_set.all()]
 
     client = OpenAI()

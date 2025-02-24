@@ -1,6 +1,7 @@
 from builtins import NotImplementedError
 from datetime import date, timedelta
 
+from django.contrib.postgres.fields.array import ArrayField
 from django.db import models
 from django.utils.functional import cached_property
 from django_ckeditor_5.fields import CKEditor5Field
@@ -68,6 +69,27 @@ class Commemoration(BaseModel):
     link_3 = models.URLField(null=True, blank=True)
     biography = CKEditor5Field(blank=True, null=True)
     image_link = models.URLField(null=True, blank=True)
+
+    ai_one_sentence = models.TextField(null=True, blank=True)
+    ai_quote = models.TextField(null=True, blank=True)
+    ai_quote_by = models.TextField(null=True, blank=True)
+    ai_quote_citations = ArrayField(models.URLField(), null=True, blank=True)
+    ai_verse = models.TextField(null=True, blank=True)
+    ai_verse_citation = models.TextField(null=True, blank=True)
+    ai_hagiography = models.TextField(null=True, blank=True)
+    ai_hagiography_citations = ArrayField(models.URLField(), null=True, blank=True)
+    ai_legend = models.TextField(null=True, blank=True)
+    ai_legend_citations = ArrayField(models.URLField(), null=True, blank=True)
+    ai_bullet_points = models.TextField(null=True, blank=True)
+    ai_bullet_points_citations = ArrayField(models.URLField(), null=True, blank=True)
+    ai_traditions = models.TextField(null=True, blank=True)
+    ai_traditions_citations = ArrayField(models.URLField(), null=True, blank=True)
+    ai_foods = models.TextField(null=True, blank=True)
+    ai_foods_citations = ArrayField(models.URLField(), null=True, blank=True)
+
+    ai_lesser_feasts_and_fasts = models.TextField(null=True, blank=True)
+    ai_martyrology = models.TextField(null=True, blank=True)
+    ai_butler = models.TextField(null=True, blank=True)
 
     @property
     def name_no_tags(self):
