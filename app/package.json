@@ -102,7 +102,7 @@
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.2",
     "vite": "^6.0.6",
-    "vitest": "^2.1.8",
+    "vitest": "^2.1.9",
     "vue-cli-plugin-capacitor": "^2.0.1",
     "vue-eslint-parser": "^9.4.3"
   },
