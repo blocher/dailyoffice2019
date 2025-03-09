@@ -76,10 +76,7 @@
           v-for="commemoration in card.commemorations"
           :key="commemoration.name"
         >
-          <Commemoration
-            v-if="commemoration.name != card.primary_feast"
-            :commemoration="commemoration"
-          />
+          <Commemoration :commemoration="commemoration" />
         </div>
       </div>
       <div
@@ -93,10 +90,7 @@
           v-for="commemoration in card.evening_commemorations"
           :key="commemoration.name"
         >
-          <Commemoration
-            v-if="commemoration.name != card.primary_evening_feast"
-            :commemoration="commemoration"
-          />
+          <Commemoration :commemoration="commemoration" />
         </div>
       </div>
       <!--    <div-->
@@ -115,6 +109,7 @@
 <script>
 // @ is an alias to /src
 
+// @ is an alias to /src
 // @ is an alias to /src
 // @ is an alias to /src
 // @ is an alias to /src

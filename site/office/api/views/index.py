@@ -28,8 +28,9 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
 
 from churchcal.api.permissions import ReadOnly
-from churchcal.api.serializer import DaySerializer
+from churchcal.api.serializer import DaySerializer, CommemorationSerializer
 from churchcal.calculations import get_church_year
+from churchcal.models import Commemoration
 from office.api.serializers import UpdateNoticeSerializer
 from office.api.views import Module, Line
 from office.api.views.ep import EPOpeningSentence
@@ -3738,6 +3739,13 @@ class ReadingsView(OfficeAPIView):
         style = request.GET.get("style", "whole_verse")
         office = Readings(request, year, month, day, translation, psalms, style)
         serializer = ReadingsSerializer(office)
+        return Response(serializer.data)
+
+
+class CommemorationsView(OfficeAPIView):
+    def get(self, request, uuid):
+        commemoration = Commemoration.objects.get(pk=uuid)
+        serializer = CommemorationSerializer(commemoration)
         return Response(serializer.data)
 
 

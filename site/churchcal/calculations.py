@@ -827,6 +827,7 @@ def get_church_year(date_string):
     advent_start = advent(date.year)
     year = date.year if date >= advent_start else date.year - 1
     church_year = cache.get(str(year)) if settings.USE_CALENDAR_CACHE else None
+    church_year = None
     if not church_year:
         church_year = ChurchYear(year)
         cache.set(str(year), church_year, 60 * 60 * 12)

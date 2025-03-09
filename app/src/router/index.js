@@ -8,6 +8,7 @@ import PageNotFound from '@/views/PageNotFound.vue';
 import Readings from '@/views/Readings.vue';
 import Scripture from '@/views/Scripture.vue';
 import Litany from '@/views/Litany.vue';
+import Commemoration from '@/views/Commemoration.vue';
 
 const routes = [
   {
@@ -86,6 +87,14 @@ const routes = [
     component: Pray,
     meta: {
       title: 'Pray | Family Prayer',
+    },
+  },
+  {
+    path: '/commemorations/:uuid',
+    name: 'Commemoration',
+    component: Commemoration,
+    meta: {
+      title: 'Commemoration',
     },
   },
   {

@@ -1,3 +1,5 @@
+import re
+
 from rest_framework import serializers
 
 
@@ -8,6 +10,7 @@ class RankSerializer(serializers.Serializer):
 
 
 class CommemorationSerializer(serializers.Serializer):
+    uuid = serializers.UUIDField()
     name = serializers.CharField()
     rank = RankSerializer()
     colors = serializers.SerializerMethodField()
@@ -16,6 +19,63 @@ class CommemorationSerializer(serializers.Serializer):
     collect = serializers.SerializerMethodField()
     biography = serializers.CharField()
     image_link = serializers.URLField()
+
+    ai_bullet_points = serializers.SerializerMethodField()
+    ai_bullet_points_citations = serializers.ListField(child=serializers.CharField())
+    ai_foods = serializers.SerializerMethodField()
+    ai_foods_citations = serializers.ListField(child=serializers.CharField())
+    ai_hagiography = serializers.CharField()
+    ai_hagiography_citations = serializers.ListField(child=serializers.CharField())
+    ai_legend = serializers.CharField()
+    ai_legend_citations = serializers.ListField(child=serializers.CharField())
+    ai_lesser_feasts_and_fasts = serializers.CharField()
+    ai_martyrology = serializers.CharField()
+    ai_one_sentence = serializers.SerializerMethodField()
+    ai_quote = serializers.CharField()
+    ai_quote_by = serializers.CharField()
+    ai_quote_citations = serializers.ListField(child=serializers.CharField())
+    ai_traditions = serializers.SerializerMethodField()
+    ai_traditions_citations = serializers.ListField(child=serializers.CharField())
+    ai_verse = serializers.CharField()
+    ai_verse_citation = serializers.CharField()
+
+    # def combine_with_citations(self, text, citations):
+    #
+    #     def replace_match(match):
+    #         index = int(match.group(1)) + 1
+    #         # Extract the integer inside brackets
+    #         value = f'<a href="{citations[index]}"><i class="fa-duotone fa-arrow-up-right-from-square"></i></a>'
+    #         return value if 0 <= index < len(citations) else match.group(
+    #             0)  # Replace if valid, else keep original
+    #
+    #     return re.sub(r'\[(\d+)\]', replace_match, text)
+
+    def remove_citations(self, text: str | None) -> str:
+        if not text:
+            return ""
+        return re.sub(r"\[\d+\]", "", text)
+
+    def parse_bullets(self, text):
+        if text:
+            pattern = r"\s[-•]\s"
+            items = re.split(pattern, text)
+            items = [re.sub(r"^[\s\-\•]+", "", item) for item in items]
+            if items:
+                return items
+            return [text]
+        return ""
+
+    def get_ai_one_sentence(self, obj):
+        return self.remove_citations(obj.ai_one_sentence)
+
+    def get_ai_bullet_points(self, obj):
+        return self.parse_bullets(obj.ai_bullet_points)
+
+    def get_ai_foods(self, obj):
+        return self.parse_bullets(obj.ai_foods)
+
+    def get_ai_traditions(self, obj):
+        return self.parse_bullets(obj.ai_traditions)
 
     def get_colors(self, obj):
         colors = [obj.color, obj.additional_color, obj.alternate_color, obj.alternate_color_2]
@@ -26,7 +86,8 @@ class CommemorationSerializer(serializers.Serializer):
         return [link for link in links if link]
 
     def get_collect(self, obj):
-        return obj.morning_prayer_collect.text
+        if hasattr(obj, "morning_prayer_collect"):
+            return obj.morning_prayer_collect.text
 
     def get_collects(self, obj):
         return {

@@ -49,11 +49,15 @@
 
 // @ is an alias to /src
 // @ is an alias to /src
+// @ is an alias to /src
 import { DynamicStorage } from '@/helpers/storage';
+import Loading from '@/components/Loading.vue';
 
 export default {
   name: 'Calendar',
-  components: {},
+  components: {
+    Loading,
+  },
   data() {
     return {
       year: null,
