@@ -26,6 +26,7 @@ import { createMetaManager } from 'vue-meta';
 // import { faFeather } from "@fortawesome/pro-thin-svg-icons";
 import {
   faBookBible,
+  faBooks,
   faCircle1,
   faCircle2,
   faCircle3,
@@ -62,6 +63,7 @@ library.add(
   faCopy,
   faFacebook,
   faEnvelopes,
+  faBooks,
   faBookBible,
   faMessagePen,
   faCircle1,

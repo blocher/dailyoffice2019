@@ -10,12 +10,12 @@
         <a
           v-if="commemoration.ai_one_sentence"
           :href="link"
-          class="link bio_link float-right"
+          class="bio_link float-right"
         >
-          &nbsp;<el-button type="success">Read More</el-button> &nbsp;<el-tag
-            type="warning"
-            >New!
-          </el-tag>
+          &nbsp;<el-button type="success">
+            <font-awesome-icon :icon="['fad', 'books']" />
+            &nbsp; Learn More&nbsp;&nbsp;<small><em>New!!</em></small>
+          </el-button>
         </a>
       </p>
       <p v-if="commemoration.ai_one_sentence">
@@ -42,6 +42,14 @@ export default {
 </script>
 <style>
 .bio_link {
-  margin-right: 0.5em;
+  margin: 1em;
+}
+
+.bio_link:hover,
+.bio_link:focus,
+.bio_link:active {
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+  text-decoration-thickness: 0;
 }
 </style>

@@ -57,7 +57,13 @@ class CommemorationSerializer(serializers.Serializer):
 
     def parse_bullets(self, text):
         if text:
-            pattern = r"\s[-•]\s"
+            text = text.strip()
+            if text[0] == "-":
+                pattern = r"\s[-]\s"
+            elif text[0] == "•":
+                pattern = r"\s[•]\s"
+            else:
+                pattern = r"\s[-•]\s"
             items = re.split(pattern, text)
             items = [re.sub(r"^[\s\-\•]+", "", item) for item in items]
             if items:

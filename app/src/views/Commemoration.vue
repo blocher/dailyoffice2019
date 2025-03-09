@@ -145,43 +145,52 @@
               <strong>Collect:</strong> {{ commemoration.collect }}
             </div>
 
-            <div v-if="commemoration.ai_traditions">
-              <el-card class="subcard">
-                <template #header>
-                  <div class="card-header">
-                    <span>Traditions</span>
-                  </div>
-                </template>
-                <ul class="bullet-points">
-                  <li
-                    v-for="(point, index) in commemoration.ai_traditions"
-                    :key="index"
-                    v-html="
-                      addCitations(point, commemoration.ai_traditions_citations)
-                    "
-                  ></li>
-                </ul>
-              </el-card>
-            </div>
+            <el-row :gutter="20">
+              <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+                <div v-if="commemoration.ai_traditions">
+                  <el-card class="subcard">
+                    <template #header>
+                      <div class="card-header">
+                        <span>Traditions</span>
+                      </div>
+                    </template>
+                    <ul class="bullet-points">
+                      <li
+                        v-for="(point, index) in commemoration.ai_traditions"
+                        :key="index"
+                        v-html="
+                          addCitations(
+                            point,
+                            commemoration.ai_traditions_citations
+                          )
+                        "
+                      ></li>
+                    </ul>
+                  </el-card>
+                </div>
+              </el-col>
 
-            <div v-if="commemoration.ai_foods">
-              <el-card class="subcard">
-                <template #header>
-                  <div class="card-header">
-                    <span>Foods</span>
-                  </div>
-                </template>
-                <ul class="bullet-points">
-                  <li
-                    v-for="(point, index) in commemoration.ai_foods"
-                    :key="index"
-                    v-html="
-                      addCitations(point, commemoration.ai_foods_citations)
-                    "
-                  ></li>
-                </ul>
-              </el-card>
-            </div>
+              <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+                <div v-if="commemoration.ai_foods">
+                  <el-card class="subcard">
+                    <template #header>
+                      <div class="card-header">
+                        <span>Foods</span>
+                      </div>
+                    </template>
+                    <ul class="bullet-points">
+                      <li
+                        v-for="(point, index) in commemoration.ai_foods"
+                        :key="index"
+                        v-html="
+                          addCitations(point, commemoration.ai_foods_citations)
+                        "
+                      ></li>
+                    </ul>
+                  </el-card>
+                </div>
+              </el-col>
+            </el-row>
 
             <el-alert type="success" :closable="false">
               <template #title>
@@ -322,14 +331,49 @@ h4 {
 .floating-box {
   float: left; /* or right */
   width: 33%;
-  margin: 10px;
+  margin: 10px 20px 20px 0;
   background-color: lightblue;
   text-align: center;
   padding: 20px;
 }
 
+@media (max-width: 768px) {
+  .floating-box {
+    float: none;
+    width: 100%;
+    margin: 0;
+    max-width: 100%;
+  }
+
+  .el-card {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+}
+
 .subcard {
   margin-top: 20px;
   margin-bottom: 20px;
+}
+
+.card-container {
+  display: flex;
+  /* Ensure the container allows wrapping if there are multiple rows */
+  flex-wrap: wrap;
+}
+
+.card-container .el-col {
+  display: flex;
+  flex-direction: column;
+  /* Ensure columns stretch to the same height */
+  flex: 1;
+}
+
+.card-container .el-card {
+  display: flex;
+  flex-direction: column;
+  /* Make sure the card takes up all available space within the column */
+  flex: 1;
 }
 </style>
