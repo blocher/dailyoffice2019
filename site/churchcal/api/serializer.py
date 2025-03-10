@@ -20,6 +20,8 @@ class CommemorationSerializer(serializers.Serializer):
     biography = serializers.CharField()
     image_link = serializers.URLField()
 
+    saint_name = serializers.SerializerMethodField()
+
     ai_bullet_points = serializers.SerializerMethodField()
     ai_bullet_points_citations = serializers.ListField(child=serializers.CharField())
     ai_foods = serializers.SerializerMethodField()
@@ -27,6 +29,7 @@ class CommemorationSerializer(serializers.Serializer):
     ai_hagiography = serializers.CharField()
     ai_hagiography_citations = serializers.ListField(child=serializers.CharField())
     ai_legend = serializers.CharField()
+    ai_legend_title = serializers.CharField()
     ai_legend_citations = serializers.ListField(child=serializers.CharField())
     ai_lesser_feasts_and_fasts = serializers.CharField()
     ai_martyrology = serializers.CharField()
@@ -38,6 +41,8 @@ class CommemorationSerializer(serializers.Serializer):
     ai_traditions_citations = serializers.ListField(child=serializers.CharField())
     ai_verse = serializers.CharField()
     ai_verse_citation = serializers.CharField()
+    ai_image_1 = serializers.URLField()
+    ai_image_2 = serializers.URLField()
 
     # def combine_with_citations(self, text, citations):
     #
@@ -70,6 +75,12 @@ class CommemorationSerializer(serializers.Serializer):
                 return items
             return [text]
         return ""
+
+    def get_saint_name(self, obj):
+        if hasattr(obj, "saint_name") and obj.saint_name:
+            return obj.saint_name
+        if obj.name:
+            return ",".split(obj.name)[0]
 
     def get_ai_one_sentence(self, obj):
         return self.remove_citations(obj.ai_one_sentence)

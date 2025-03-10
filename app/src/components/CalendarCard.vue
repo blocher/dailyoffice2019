@@ -22,14 +22,14 @@
               "
               class="flex items-center justify-center"
             >
-              <a
-                v-for="link in card.commemorations[0].links"
-                :key="link"
-                :href="link"
-                target="_blank"
-                class="link align-center bio_link"
-                ><small>Biography</small></a
-              >&nbsp;
+              <!--              <a-->
+              <!--                v-for="link in card.commemorations[0].links"-->
+              <!--                :key="link"-->
+              <!--                :href="link"-->
+              <!--                target="_blank"-->
+              <!--                class="link align-center bio_link"-->
+              <!--                ><small>Biography</small></a-->
+              <!--              >&nbsp;-->
             </div>
             <h4
               v-if="
@@ -45,14 +45,14 @@
               "
               class="flex items-center justify-center"
             >
-              <a
-                v-for="link in card.commemorations[0].links"
-                :key="link"
-                :href="link"
-                target="_blank"
-                class="link align-center bio_link"
-                ><small>Biography</small></a
-              >&nbsp;
+              <!--              <a-->
+              <!--                v-for="link in card.commemorations[0].links"-->
+              <!--                :key="link"-->
+              <!--                :href="link"-->
+              <!--                target="_blank"-->
+              <!--                class="link align-center bio_link"-->
+              <!--                ><small>Biography</small></a-->
+              <!--              >&nbsp;-->
             </div>
 
             <h5
@@ -109,6 +109,7 @@
 <script>
 // @ is an alias to /src
 
+// @ is an alias to /src
 // @ is an alias to /src
 // @ is an alias to /src
 // @ is an alias to /src

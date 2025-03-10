@@ -26,6 +26,19 @@
         <el-card v-if="!loading && commemoration" class="commemoration-card">
           <template #header>
             <div class="card-header">
+              <img
+                v-if="commemoration.ai_image_1"
+                style="
+                  max-height: 200px;
+                  width: auto;
+                  display: block;
+                  margin-right: 20px;
+                  object-fit: contain;
+                "
+                :src="commemoration.ai_image_1"
+                :alt="commemoration.name"
+              />
+
               <span>{{ commemoration.ai_one_sentence }}</span>
             </div>
           </template>
@@ -86,7 +99,15 @@
               <el-card class="subcard">
                 <template #header>
                   <div class="card-header">
-                    <span>A Story from the Life</span>
+                    <span
+                      >{{ commemoration.ai_legend_title }}:
+                      <small
+                        >A Story from the Life of
+                        {{
+                          commemoration.saint_name || commemoration.name
+                        }}</small
+                      ></span
+                    >
                   </div>
                 </template>
                 <p

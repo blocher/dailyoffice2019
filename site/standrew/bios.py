@@ -151,13 +151,13 @@ def perplexity(message):
     headers = {"Authorization": f"Bearer {settings.PERPLEXITY_API_KEY}", "Content-Type": "application/json"}
 
     response = requests.request("POST", url, json=payload, headers=headers)
-    print(response)
     result = json.loads(response.content)
-    print(result)
     return (result["choices"][0]["message"]["content"], result["citations"])
 
 
 def clean_string(s):
+    if not s:
+        return ""
     cleaned = s.replace(" ", " ")
     cleaned = re.sub(r"【.*?】", "", cleaned)
     cleaned = re.sub(r"\s+", " ", cleaned)
@@ -292,3 +292,35 @@ def run_all_bios(overwrite=False):
             print(c.name)
             print(c.saint_name)
             go(c, overwrite)
+
+
+def get_duckduckgo_images(prompt, num_images=2):
+    search_url = f"https://duckduckgo.com/i.js?q={prompt}"
+    response = requests.get(search_url)
+    response.raise_for_status()
+    images = response.json()["results"]
+
+    return [img["image"] for img in images[:num_images]]
+
+
+def google_image_search(query):
+    url = "https://www.googleapis.com/customsearch/v1"
+
+    params = {
+        "q": query,
+        "cx": settings.GOOGLE_CUSTOM_SEARCH_ENGINE_KEY,  # Custom Search Engine ID
+        "key": settings.GOOGLE_API_KEY,  # API Key
+        "searchType": "image",  # Image search
+        "num": 5,  # Number of results
+        "imgSize": "large",  # Ensure images are at least 500px by 500px
+    }
+
+    response = requests.get(url, params=params)
+
+    if response.status_code == 200:
+        results = response.json()
+        images = [item["link"] for item in results.get("items", [])]
+        return images
+    else:
+        print(f"Error: {response.status_code}, {response.text}")
+        return []
