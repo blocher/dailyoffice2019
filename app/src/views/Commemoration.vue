@@ -93,7 +93,7 @@
           </template>
         </el-alert>
 
-        <div class="bullet-points-wrapper floating-box">
+        <el-card class="bullet-points-wrapper floating-box box-card">
           <ul class="bullet-points">
             <li
               v-for="(point, index) in commemoration.ai_bullet_points"
@@ -103,7 +103,7 @@
               "
             ></li>
           </ul>
-        </div>
+        </el-card>
 
         <div class="text-content">
           <h3>{{ commemoration.name }}</h3>
@@ -401,7 +401,6 @@ img {
   float: left; /* or right */
   width: 33%;
   margin: 10px 20px 20px 0;
-  background-color: lightblue;
   text-align: center;
   padding: 20px;
 }
