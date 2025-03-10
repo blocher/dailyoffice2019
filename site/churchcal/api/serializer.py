@@ -85,6 +85,8 @@ class CommemorationSerializer(serializers.Serializer):
         return ""
 
     def get_previous_commemoration(self, obj):
+        if not hasattr(obj, "month") or not hasattr(obj, "day"):
+            return None
         next = (
             Commemoration.objects.filter(
                 sanctoralecommemoration__month__isnull=False,
@@ -104,6 +106,8 @@ class CommemorationSerializer(serializers.Serializer):
         return None
 
     def get_next_commemoration(self, obj):
+        if not hasattr(obj, "month") or not hasattr(obj, "day"):
+            return None
         next = (
             Commemoration.objects.filter(
                 sanctoralecommemoration__month__isnull=False,
