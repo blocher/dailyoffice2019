@@ -131,7 +131,11 @@ class CommemorationSerializer(serializers.Serializer):
     def get_ai_legend(self, obj):
         if not obj.ai_legend_title:
             return obj.ai_legend.strip()
-        return obj.ai_legend.replace(obj.ai_legend_title, "").strip()
+        if obj.ai_legend and obj.ai_legend_title:
+            return obj.ai_legend.replace(obj.ai_legend_title, "").strip()
+        if obj.ai_legend:
+            return obj.ai_legend.strip()
+        return ""
 
     def get_saint_name(self, obj):
         if hasattr(obj, "saint_name") and obj.saint_name:
