@@ -1,6 +1,7 @@
 import calendar
 import re
 
+from django.db.models.query_utils import Q
 from rest_framework import serializers
 
 from churchcal.models import Commemoration
@@ -94,7 +95,10 @@ class CommemorationSerializer(serializers.Serializer):
                 ai_one_sentence__isnull=False,
             )
             .order_by("-sanctoralecommemoration__month", "-sanctoralecommemoration__day")
-            .filter(sanctoralecommemoration__month__lte=obj.month, sanctoralecommemoration__day__lte=obj.day)
+            .filter(
+                Q(sanctoralecommemoration__month__lt=obj.month)
+                | Q(sanctoralecommemoration__month=obj.month, sanctoralecommemoration__day__lte=obj.day)
+            )
             .exclude(uuid=obj.uuid)
             .first()
         )
@@ -115,7 +119,10 @@ class CommemorationSerializer(serializers.Serializer):
                 ai_one_sentence__isnull=False,
             )
             .order_by("sanctoralecommemoration__month", "sanctoralecommemoration__day")
-            .filter(sanctoralecommemoration__month__gte=obj.month, sanctoralecommemoration__day__gte=obj.day)
+            .filter(
+                Q(sanctoralecommemoration__month__gt=obj.month)
+                | Q(sanctoralecommemoration__month=obj.month, sanctoralecommemoration__day__gte=obj.day)
+            )
             .exclude(uuid=obj.uuid)
             .first()
         )
