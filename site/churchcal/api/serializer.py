@@ -129,6 +129,8 @@ class CommemorationSerializer(serializers.Serializer):
         return None
 
     def get_ai_legend(self, obj):
+        if not obj.ai_legend:
+            return ""
         if not obj.ai_legend_title:
             return obj.ai_legend.strip()
         if obj.ai_legend and obj.ai_legend_title:
