@@ -1,6 +1,9 @@
+import calendar
 import re
 
 from rest_framework import serializers
+
+from churchcal.models import Commemoration
 
 
 class RankSerializer(serializers.Serializer):
@@ -28,7 +31,7 @@ class CommemorationSerializer(serializers.Serializer):
     ai_foods_citations = serializers.ListField(child=serializers.CharField())
     ai_hagiography = serializers.CharField()
     ai_hagiography_citations = serializers.ListField(child=serializers.CharField())
-    ai_legend = serializers.CharField()
+    ai_legend = serializers.SerializerMethodField()
     ai_legend_title = serializers.CharField()
     ai_legend_citations = serializers.ListField(child=serializers.CharField())
     ai_lesser_feasts_and_fasts = serializers.CharField()
@@ -43,6 +46,11 @@ class CommemorationSerializer(serializers.Serializer):
     ai_verse_citation = serializers.CharField()
     ai_image_1 = serializers.URLField()
     ai_image_2 = serializers.URLField()
+
+    date_string = serializers.SerializerMethodField()
+
+    previous_commemoration = serializers.SerializerMethodField()
+    next_commemoration = serializers.SerializerMethodField()
 
     # def combine_with_citations(self, text, citations):
     #
@@ -75,6 +83,55 @@ class CommemorationSerializer(serializers.Serializer):
                 return items
             return [text]
         return ""
+
+    def get_previous_commemoration(self, obj):
+        next = (
+            Commemoration.objects.filter(
+                sanctoralecommemoration__month__isnull=False,
+                sanctoralecommemoration__day__isnull=False,
+                ai_one_sentence__isnull=False,
+            )
+            .order_by("-sanctoralecommemoration__month", "-sanctoralecommemoration__day")
+            .filter(sanctoralecommemoration__month__lte=obj.month, sanctoralecommemoration__day__lte=obj.day)
+            .exclude(uuid=obj.uuid)
+            .first()
+        )
+        if next:
+            return {
+                "name": next.name,
+                "uuid": next.uuid,
+            }
+        return None
+
+    def get_next_commemoration(self, obj):
+        next = (
+            Commemoration.objects.filter(
+                sanctoralecommemoration__month__isnull=False,
+                sanctoralecommemoration__day__isnull=False,
+                ai_one_sentence__isnull=False,
+            )
+            .order_by("sanctoralecommemoration__month", "sanctoralecommemoration__day")
+            .filter(sanctoralecommemoration__month__gte=obj.month, sanctoralecommemoration__day__gte=obj.day)
+            .exclude(uuid=obj.uuid)
+            .first()
+        )
+        if next:
+            return {
+                "name": next.name,
+                "uuid": next.uuid,
+            }
+        return None
+
+    def get_date_string(self, obj):
+        if hasattr(obj, "month"):
+            month_name = calendar.month_name[obj.month]  # Get full month name
+            return f"{month_name} {obj.day}"
+        return None
+
+    def get_ai_legend(self, obj):
+        if not obj.ai_legend_title:
+            return obj.ai_legend.strip()
+        return obj.ai_legend.replace(obj.ai_legend_title, "").strip()
 
     def get_saint_name(self, obj):
         if hasattr(obj, "saint_name") and obj.saint_name:

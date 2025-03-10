@@ -213,7 +213,7 @@ def go(commemoration, overwrite=False):
         (
             "ai_legend",
             "ai_legend_citations",
-            f"Tell an story, anecdote, or pious legend from the life of {person} that is intresting and revealing of their character and faith. Begin with a Title on its own line. Include just the title and story -- no intro text or other text. Tell it as storyteller with a narrative, dramatic style.",
+            f"Tell an story, anecdote, or pious legend from the life of {person} that is interesting and revealing of their character and faith. Begin with a Title on its own line. Include just the title and story -- no intro text or other text. Tell it as storyteller with a narrative, dramatic style.",
         ),
         (
             "ai_bullet_points",

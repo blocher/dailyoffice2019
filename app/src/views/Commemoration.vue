@@ -1,236 +1,250 @@
 <template>
   <div class="home">
-    <el-container>
-      <el-header v-if="!loading && commemoration">
+    <div v-if="!loading && commemoration">
+      <div style="width: 100%">
         <h1>{{ commemoration.name }}</h1>
-      </el-header>
-      <el-main>
-        <div style="max-width: 600px; margin: 0 auto">
-          <el-alert type="warning" show-icon :closable="false">
-            <template #title>
-              <p>
-                This is an <strong>experimental</strong> feature. The
-                information is compiled from
-                <strong>unofficial</strong> sources, and was built with
-                assistance by AI. While we attempt to cite and link to all
-                original sources, there may still be errors. Please report any
-                factual or theological errors to
-                <a href="mailto:feedback@dailyoffice2019.com"
-                  >feedback@dailyoffice2019.com</a
-                >
-                for correction.
-              </p>
-            </template>
-          </el-alert>
+        <h3
+          v-if="commemoration.date_string"
+          style="
+            width: 100%;
+            margin: 0 auto 20px;
+            text-align: center;
+            display: block;
+          "
+        >
+          {{ commemoration.date_string }}
+        </h3>
+      </div>
+    </div>
+    <div style="max-width: 600px; margin: 0 auto">
+      <el-alert type="warning" show-icon :closable="false">
+        <template #title>
+          <p>
+            This is an <strong>experimental</strong> feature. The information is
+            compiled from <strong>unofficial</strong> sources, and was built
+            with assistance by AI. While we attempt to cite and link to all
+            original sources, there may still be errors. Please report any
+            factual or theological errors to
+            <a href="mailto:feedback@dailyoffice2019.com"
+              >feedback@dailyoffice2019.com</a
+            >
+            for correction.
+          </p>
+        </template>
+      </el-alert>
+    </div>
+    <div class="arrowsRow">
+      <el-row style="width: 100%">
+        <el-col :span="12" style="text-align: left">
+          <font-awesome-icon :icon="['fad', 'left']" />&nbsp;<a
+            v-if="!loading && commemoration.previous_commemoration"
+            :href="commemoration.previous_commemoration.uuid"
+            :title="commemoration.previous_commemoration.name"
+          >
+            {{ commemoration.previous_commemoration.name }}
+          </a>
+        </el-col>
+        <el-col :span="12" style="text-align: right">
+          <a
+            v-if="!loading && commemoration.next_commemoration"
+            :href="commemoration.next_commemoration.uuid"
+            :title="commemoration.next_commemoration.name"
+          >
+            {{ commemoration.next_commemoration.name }}&nbsp;<font-awesome-icon
+              :icon="['fad', 'right']"
+            />
+          </a>
+        </el-col>
+      </el-row>
+    </div>
+
+    <el-card v-if="!loading && commemoration" class="commemoration-card">
+      <template #header>
+        <div class="card-header">
+          <img
+            v-if="commemoration.ai_image_1"
+            :src="commemoration.ai_image_1"
+            :alt="commemoration.name"
+          />
+          <p>{{ commemoration.ai_one_sentence }}</p>
         </div>
-        <el-card v-if="!loading && commemoration" class="commemoration-card">
-          <template #header>
-            <div class="card-header">
-              <img
-                v-if="commemoration.ai_image_1"
-                style="
-                  max-height: 200px;
-                  width: auto;
-                  display: block;
-                  margin-right: 20px;
-                  object-fit: contain;
-                "
-                :src="commemoration.ai_image_1"
-                :alt="commemoration.name"
-              />
+      </template>
 
-              <span>{{ commemoration.ai_one_sentence }}</span>
-            </div>
-          </template>
+      <div v-if="commemoration.image_link" class="image-container">
+        <el-image :src="commemoration.image_link" fit="contain" />
+      </div>
 
-          <div v-if="commemoration.image_link" class="image-container">
-            <el-image :src="commemoration.image_link" fit="contain" />
-          </div>
-
-          <div class="details">
-            <el-alert type="success" :closable="false">
-              <template #title>
-                <p>
-                  <strong
-                    v-html="
-                      addCitations(
-                        commemoration.ai_quote,
-                        commemoration.ai_quote_citations
-                      )
-                    "
-                  ></strong>
-                </p>
-                <p v-if="commemoration.ai_quote_by">
-                  <em>-- {{ commemoration.ai_quote_by }}</em>
-                </p>
-              </template>
-            </el-alert>
-
-            <div class="bullet-points-wrapper floating-box">
-              <ul class="bullet-points">
-                <li
-                  v-for="(point, index) in commemoration.ai_bullet_points"
-                  :key="index"
-                  v-html="
-                    addCitations(
-                      point,
-                      commemoration.ai_bullet_points_citations
-                    )
-                  "
-                ></li>
-              </ul>
-            </div>
-
-            <div class="text-content">
-              <h3>{{ commemoration.name }}</h3>
-
-              <div
-                v-if="commemoration.ai_hagiography"
+      <div class="details">
+        <el-alert type="success" :closable="false">
+          <template #title>
+            <p>
+              <strong
                 v-html="
                   addCitations(
-                    commemoration.ai_hagiography,
-                    commemoration.ai_hagiography_citations
+                    commemoration.ai_quote,
+                    commemoration.ai_quote_citations
                   )
                 "
-              ></div>
-            </div>
+              ></strong>
+            </p>
+            <p v-if="commemoration.ai_quote_by">
+              <em>-- {{ commemoration.ai_quote_by }}</em>
+            </p>
+          </template>
+        </el-alert>
 
-            <div v-if="commemoration.ai_legend">
-              <el-card class="subcard">
-                <template #header>
-                  <div class="card-header">
-                    <span
-                      >{{ commemoration.ai_legend_title }}:
-                      <small
-                        >A Story from the Life of
-                        {{
-                          commemoration.saint_name || commemoration.name
-                        }}</small
-                      ></span
-                    >
-                  </div>
-                </template>
-                <p
-                  v-html="
-                    addCitations(
-                      commemoration.ai_legend,
-                      commemoration.ai_legend_citations
-                    )
-                  "
-                ></p>
-              </el-card>
-            </div>
-            <div>
-              <el-card class="subcard">
-                <template #header>
-                  <div class="card-header">
-                    <span>Ecumenical Sources</span>
-                  </div>
-                </template>
-                <el-tabs
-                  v-model="activeName"
-                  class="demo-tabs"
-                  @tab-click="handleClick"
-                >
-                  <el-tab-pane
-                    label="Lesser Feasts and Fasts, 2018 (Episcopal)"
-                    name="first"
-                  >
-                    <p v-if="commemoration.ai_lesser_feasts_and_fasts">
-                      {{ commemoration.ai_lesser_feasts_and_fasts }}
-                    </p>
-                    <p v-else>Not available.</p>
-                  </el-tab-pane>
-                  <el-tab-pane
-                    label="Roman Martyrology (Catholic)"
-                    name="second"
-                  >
-                    <p v-if="commemoration.ai_martyrology">
-                      {{ commemoration.ai_martyrology }}
-                    </p>
-                    <p v-else>Not available.</p>
-                  </el-tab-pane>
-                  <el-tab-pane
-                    label="Alban Butler's Lives of the Saints (Catholic)"
-                    name="third"
-                  >
-                    <p v-if="commemoration.ai_butler">
-                      {{ commemoration.ai_butler }}
-                    </p>
-                    <p v-else>Not available.</p>
-                  </el-tab-pane>
-                </el-tabs>
-              </el-card>
-            </div>
-            <div v-if="commemoration.collect">
-              <strong>Collect:</strong> {{ commemoration.collect }}
-            </div>
-
-            <el-row :gutter="20">
-              <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
-                <div v-if="commemoration.ai_traditions">
-                  <el-card class="subcard">
-                    <template #header>
-                      <div class="card-header">
-                        <span>Traditions</span>
-                      </div>
-                    </template>
-                    <ul class="bullet-points">
-                      <li
-                        v-for="(point, index) in commemoration.ai_traditions"
-                        :key="index"
-                        v-html="
-                          addCitations(
-                            point,
-                            commemoration.ai_traditions_citations
-                          )
-                        "
-                      ></li>
-                    </ul>
-                  </el-card>
-                </div>
-              </el-col>
-
-              <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
-                <div v-if="commemoration.ai_foods">
-                  <el-card class="subcard">
-                    <template #header>
-                      <div class="card-header">
-                        <span>Foods</span>
-                      </div>
-                    </template>
-                    <ul class="bullet-points">
-                      <li
-                        v-for="(point, index) in commemoration.ai_foods"
-                        :key="index"
-                        v-html="
-                          addCitations(point, commemoration.ai_foods_citations)
-                        "
-                      ></li>
-                    </ul>
-                  </el-card>
-                </div>
-              </el-col>
-            </el-row>
-
-            <el-alert type="success" :closable="false">
-              <template #title>
-                <p>
-                  <strong>{{ commemoration.ai_verse }}</strong>
-                </p>
-                <p v-if="commemoration.ai_verse_citation">
-                  <em>-- {{ commemoration.ai_verse_citation }}</em>
-                </p>
-              </template>
-            </el-alert>
-          </div>
-        </el-card>
-        <Loading v-if="loading" />
-        <div v-if="error" class="error-message">
-          <el-alert :title="error" type="error" :closable="false" />
+        <div class="bullet-points-wrapper floating-box">
+          <ul class="bullet-points">
+            <li
+              v-for="(point, index) in commemoration.ai_bullet_points"
+              :key="index"
+              v-html="
+                addCitations(point, commemoration.ai_bullet_points_citations)
+              "
+            ></li>
+          </ul>
         </div>
-      </el-main>
-    </el-container>
+
+        <div class="text-content">
+          <h3>{{ commemoration.name }}</h3>
+
+          <div
+            v-if="commemoration.ai_hagiography"
+            v-html="
+              addCitations(
+                commemoration.ai_hagiography,
+                commemoration.ai_hagiography_citations
+              )
+            "
+          ></div>
+        </div>
+
+        <div v-if="commemoration.ai_legend">
+          <el-card class="subcard">
+            <template #header>
+              <div class="card-header">
+                <span
+                  >{{ commemoration.ai_legend_title }}:
+                  <small
+                    >A Story from the Life of
+                    {{ commemoration.saint_name || commemoration.name }}</small
+                  ></span
+                >
+              </div>
+            </template>
+            <p
+              v-html="
+                addCitations(
+                  commemoration.ai_legend,
+                  commemoration.ai_legend_citations
+                )
+              "
+            ></p>
+          </el-card>
+        </div>
+        <!--        <div>-->
+        <!--          <el-card class="subcard">-->
+        <!--            <template #header>-->
+        <!--              <div class="card-header">-->
+        <!--                <span>Ecumenical Sources</span>-->
+        <!--              </div>-->
+        <!--            </template>-->
+        <!--            <el-tabs-->
+        <!--              v-model="activeName"-->
+        <!--              class="demo-tabs"-->
+        <!--              @tab-click="handleClick"-->
+        <!--            >-->
+        <!--              <el-tab-pane-->
+        <!--                label="Lesser Feasts and Fasts, 2018 (Episcopal)"-->
+        <!--                name="first"-->
+        <!--              >-->
+        <!--                <p v-if="commemoration.ai_lesser_feasts_and_fasts">-->
+        <!--                  {{ commemoration.ai_lesser_feasts_and_fasts }}-->
+        <!--                </p>-->
+        <!--                <p v-else>Not available.</p>-->
+        <!--              </el-tab-pane>-->
+        <!--              <el-tab-pane label="Roman Martyrology (Catholic)" name="second">-->
+        <!--                <p v-if="commemoration.ai_martyrology">-->
+        <!--                  {{ commemoration.ai_martyrology }}-->
+        <!--                </p>-->
+        <!--                <p v-else>Not available.</p>-->
+        <!--              </el-tab-pane>-->
+        <!--              <el-tab-pane-->
+        <!--                label="Alban Butler's Lives of the Saints (Catholic)"-->
+        <!--                name="third"-->
+        <!--              >-->
+        <!--                <p v-if="commemoration.ai_butler">-->
+        <!--                  {{ commemoration.ai_butler }}-->
+        <!--                </p>-->
+        <!--                <p v-else>Not available.</p>-->
+        <!--              </el-tab-pane>-->
+        <!--            </el-tabs>-->
+        <!--          </el-card>-->
+        <!--        </div>-->
+        <div v-if="commemoration.collect">
+          <strong>Collect:</strong> {{ commemoration.collect }}
+        </div>
+
+        <el-row :gutter="20">
+          <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+            <div v-if="commemoration.ai_traditions">
+              <el-card class="subcard">
+                <template #header>
+                  <div class="card-header">
+                    <span>Traditions</span>
+                  </div>
+                </template>
+                <ul class="bullet-points">
+                  <li
+                    v-for="(point, index) in commemoration.ai_traditions"
+                    :key="index"
+                    v-html="
+                      addCitations(point, commemoration.ai_traditions_citations)
+                    "
+                  ></li>
+                </ul>
+              </el-card>
+            </div>
+          </el-col>
+
+          <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+            <div v-if="commemoration.ai_foods">
+              <el-card class="subcard">
+                <template #header>
+                  <div class="card-header">
+                    <span>Foods</span>
+                  </div>
+                </template>
+                <ul class="bullet-points">
+                  <li
+                    v-for="(point, index) in commemoration.ai_foods"
+                    :key="index"
+                    v-html="
+                      addCitations(point, commemoration.ai_foods_citations)
+                    "
+                  ></li>
+                </ul>
+              </el-card>
+            </div>
+          </el-col>
+        </el-row>
+
+        <el-alert type="success" :closable="false">
+          <template #title>
+            <p>
+              <strong>{{ commemoration.ai_verse }}</strong>
+            </p>
+            <p v-if="commemoration.ai_verse_citation">
+              <em>-- {{ commemoration.ai_verse_citation }}</em>
+            </p>
+          </template>
+        </el-alert>
+      </div>
+    </el-card>
+    <Loading v-if="loading" />
+    <div v-if="error" class="error-message">
+      <el-alert :title="error" type="error" :closable="false" />
+    </div>
   </div>
 </template>
 
@@ -296,8 +310,36 @@ export default {
 h2,
 h3,
 h4 {
-  text-align: left !important;
+  text-align: left;
   padding-top: 10px;
+}
+
+img {
+  max-height: 200px;
+  width: auto;
+  display: block;
+  margin-right: 20px;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  img {
+    width: 300px;
+    max-height: 100%;
+    display: block;
+    margin: 0 auto 20px;
+  }
+}
+
+.arrowsRow {
+  width: 80%;
+  margin: 0 auto 10px;
+}
+
+@media (max-width: 768px) {
+  .arrowsRow {
+    width: 100%;
+  }
 }
 
 .commemoration-card {
@@ -309,6 +351,12 @@ h4 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+@media (max-width: 768px) {
+  .card-header {
+    display: block;
+  }
 }
 
 .image-container {
