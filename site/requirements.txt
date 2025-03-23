@@ -8,6 +8,8 @@ arrow>=1.3.0,<2.0
 Babel>=2.16.0,<3
 beautifulsoup4>=4.12.3,<5
 black>=24.2.0,<25
+boto3==1.26.160
+botocore==1.29.160
 bugsnag>=4.6.1,<5
 cryptography>=44.0.0,<45
 Delorean>=1.0.0,<2.0
@@ -33,6 +35,7 @@ django-mjml>=1.2,<2
 django-model-utils>=5.0.0,<6
 django-richtextfield>=1.6.1,<2
 django-robots
+django-storages[s3]>=1.14.5,<2
 django-taggit>=6.1.0,<7
 django_tinymce>=4.1.0,<5
 django-webpack-loader>=3.0.1,<4

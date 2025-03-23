@@ -180,6 +180,29 @@ MEDIA_ROOT = BASE_DIR + "/uploads/"
 
 MEDIA_URL = "/uploads/"
 
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "bucket_name": env("STORAGES_BUCKET_NAME"),
+            "region_name": env("STORAGES_REGION_NAME"),
+            "endpoint_url": env("STORAGES_ENDPOINT_URL"),
+            "access_key": env("STORAGES_ACCESS_KEY_ID"),
+            "secret_key": env("STORAGES_SECRET_ACCESS_KEY"),
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        "OPTIONS": {
+            "bucket_name": env("STORAGES_BUCKET_NAME"),
+            "region_name": env("STORAGES_REGION_NAME"),
+            "endpoint_url": env("STORAGES_ENDPOINT_URL"),
+            "access_key": env("STORAGES_ACCESS_KEY_ID"),
+            "secret_key": env("STORAGES_SECRET_ACCESS_KEY"),
+        },
+    },
+}
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
