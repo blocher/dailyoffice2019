@@ -3,13 +3,19 @@ import datetime
 import json
 import os
 import subprocess
+import tempfile
 from collections import defaultdict
+from io import BytesIO
+from pprint import pprint
 from urllib.parse import quote
 
 import mailchimp_marketing as MailchimpMarketing
+import requests
 from distutils.util import strtobool
 from django.conf import settings
 from django.contrib.sites.models import Site
+from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.db.models import Prefetch
 from django.http import HttpResponse
 from django.template.loader import render_to_string
@@ -18,7 +24,9 @@ from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import TemplateResponseMixin
 from mailchimp_marketing.api_client import ApiClientError
+from mutagen.easyid3 import EasyID3
 from mutagen.mp3 import MP3
+from pydub import AudioSegment
 from rest_framework import serializers, mixins, viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import ListAPIView
@@ -2868,56 +2876,59 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         return modules
 
     @staticmethod
-    def get_line_audio_file(line, no_generate=False):
+    def get_line_audio_file(line, no_generate=False, id_only=False, filename_only=False):
         content = line["content"]
         line_type = line["line_type"]
+        instructions = ""
         if "leader" in line_type:
-            voice_type = "onyx"
+            voice_type = "verse"
+            instructions = "Male voice range\nAlways pronounce the word Amen like in latin (ˈ)ä-ˈmen \nAccent: standard American\nAffect: Warm, authoritative, and inviting, reflecting the guiding presence of a seasoned clergy member.\nTone: Reverent and formal, embodying the dignity and solemnity of Episcopal liturgical tradition in the United States.\nEmotion: Calm assurance and compassion, conveying a deep sense of spiritual responsibility and care for the congregation.\nPronunciation: Clear and deliberate, ensuring each word is articulated with precision to facilitate understanding and reflection.\nPause: Thoughtful pauses at natural breaks, such as the end of prayers or liturgical responses, allowing the congregation time to reflect and respond."
         elif "congregation" in line_type:
+            voice_type = "coral"
+            instructions = "Female voice range\nAlways pronounce the word Amen like in latin (ˈ)ä-ˈmen \nAccent: standard American\nAffect: Unified and earnest, reflecting the collective devotion and participation of the faithful.\nTone: Respectful and harmonious, embodying the communal nature of worship.\nEmotion: Sincere engagement, expressing a shared commitment to the prayers and responses.\nPronunciation: Uniform and clear, with a moderate pace to ensure synchronicity among congregants."
+        elif "html" in line_type or "reader" in [line_type]:
             voice_type = "ash"
-        elif "html" in line_type:
-            voice_type = "echo"
-        elif "reader" in line_type:
-            voice_type = "echo"
+            instructions = "Male voice range\nAlways pronounce the word Amen like in latin (ˈ)ä-ˈmen \nAffect: Solemn and expressive, conveying the depth and significance of the scriptural passages.\nTone: Narrative and engaging, bringing the scriptures to life while maintaining reverence.\nEmotion: Reflective and insightful, capturing the varied moods of the biblical texts, from lamentation to praise.\nPronunciation: Articulate and measured, with careful attention to phrasing and emphasis to enhance comprehension.\nPause: Considered pauses at punctuation marks and between thematic sections to allow listeners to absorb the message."
         else:
             return None, None
         content = content.replace("LORD", "Lord")
         content = content.replace("Lᴏʀᴅ", "Lord")
         audio_id = generate_uuid_from_string(f"{line_type} {voice_type} {content}")
-        filename = f"{audio_id}.mp3"
-        file_path = os.path.join(settings.MEDIA_ROOT, filename)
-        exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
-        domain = Site.objects.get_current().domain
-        path = settings.MEDIA_URL + filename
-        file_url = f"https://{domain}{path}"
+        if id_only:
+            return audio_id
+        filename = f"audio/{audio_id}.mp3"
+        file_url = f"https://s3.us-east-005.backblazeb2.com/dailyoffice2019/{filename}"
+        if filename_only:
+            return file_url, filename
+        exists = default_storage.exists(filename)
+
         if no_generate:
-            return file_url, path
+            return file_url, filename
         if exists:
-            return file_url, path
+            print(file_url, filename, "exists")
+            return file_url, filename
         try:
-            from pathlib import Path
             from openai import OpenAI
 
             client = OpenAI()
             response = client.audio.speech.create(
-                model="tts-1",
+                model="gpt-4o-mini-tts",
                 voice=voice_type,
                 input=content,
+                instructions=instructions,
             )
-            response.stream_to_file(file_path)
+            audio_content = b""
+            for data in response.iter_bytes():
+                audio_content += data
+            default_storage.save(filename, ContentFile(audio_content))
 
         except Exception as e:
             return None, None
-        # user_name = "dailyoffice"
-        # group_name = "dailyoffice"
-        # uid = pwd.getpwnam(user_name).pw_uid
-        # gid = grp.getgrnam(group_name).gr_gid
-        # os.chmod(file_path, 0o777)
-        # os.chown(file_path, uid, gid)
-        return file_url, path
+        print(file_url, filename, "generated")
+        return file_url, filename
 
     @staticmethod
-    def handle_html(line, html=False, no_generate=False, id=None, module="Reading"):
+    def handle_html(line, html=False, filename_only=False, no_generate=False, id=None, module="Reading"):
         import re
         from bs4 import BeautifulSoup
 
@@ -2934,17 +2945,16 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             soup = BeautifulSoup(sentence, "html.parser")
             plain_text = soup.get_text()
             text_without_verses = re.sub(r"(\b\d+\b\s)", "", plain_text)
-            url, path = GenericDailyOfficeSerializer.get_line_audio_file(
-                Line(text_without_verses, "reader"), no_generate=no_generate
-            )
+            line = Line(text_without_verses, "reader")
+            url, file_name = GenericDailyOfficeSerializer.get_line_audio_file(line, filename_only=True)
             if url:
-                uuid_match = re.search(r"/uploads/([0-9a-fA-F-]+)\.mp3", url)
+                uuid_match = re.search(r"/audio/([0-9a-fA-F-]+)\.mp3", url)
                 if uuid_match:
                     uuid = uuid_match.group(1)
                 if id is not None:
                     id = re.sub(r"_[^_]+$", f"_{uuid}", id)
                 lines.append(f"<span data-line-id='{id}'></span>{sentence}")
-                audio_files.append({"line_id": id, "url": url, "path": path, "module": module})
+                audio_files.append({"line_id": id, "url": url, "file_name": file_name, "module": module, "line": line})
         result = "".join(lines)
 
         if html:
@@ -2955,66 +2965,153 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         return audio_files
 
     @staticmethod
+    def concat_mp3_files(tracks, file_name):
+        """
+        Concatenate multiple MP3 files stored on default Django storage into one MP3 file.
+
+        :param file_names: List of file paths in storage
+        :return: Path of the new MP3 file in storage
+        """
+
+        print(tracks)
+
+        combined = AudioSegment.empty()
+
+        lengths = []
+
+        track_list = []
+        heading_track_list = []
+        module = ""
+        for track in tracks:
+            name = track["file_name"]
+
+            with default_storage.open(name, "rb") as f:
+                segment = AudioSegment.from_file(f, format="mp3")
+                track_list.append({"id": track["line_id"], "start_time": len(combined) / 1000})
+                if track["module"] != module:
+                    module = track["module"]
+                    heading_track_list.append({"name": module, "start_time": len(combined) / 1000})
+                combined += segment
+
+        # Export to memory
+        output_filename = f"merged_audio/{file_name}"
+        # mp3_bytes = combined.export(format="mp3").read()
+
+        mp3_buffer = BytesIO()
+        combined.export(mp3_buffer, format="mp3")
+        mp3_buffer.seek(0)
+
+        # Add metadata using mutagen on the in-memory buffer
+        audio = MP3(mp3_buffer, ID3=EasyID3)
+        audio["tracknumber"] = json.dumps(track_list)
+        audio["grouping"] = json.dumps(heading_track_list)
+        audio.save(mp3_buffer)
+
+        # Rewind the buffer for saving
+        mp3_buffer.seek(0)
+
+        # Save to default storage
+        saved_path = default_storage.save(output_filename, ContentFile(mp3_buffer.getvalue()))
+        url = default_storage.url(saved_path)
+        return saved_path, url, heading_track_list, track_list
+
+    @staticmethod
     def get_single_track(tracks):
+        file_names = [track["file_name"] for track in tracks]
+        file_name = f"merged_audio/{generate_uuid_from_string(" ".join(file_names))}.mp3"
+        if default_storage.exists(file_name):
+            url = default_storage.url(file_name)
+            response = requests.get(url)
+            mp3_data = BytesIO(response.content)
 
-        def get_audio_duration(file_path):
-            audio = MP3(file_path)
-            return audio.info.length
+            # Parse metadata
+            audio = MP3(mp3_data, ID3=EasyID3)
+            track_list = []
+            for key, value in audio.items():
+                if key == "tracknumber":
+                    track_list = json.loads(value[0])
+                if key == "grouping":
+                    heading_track_list = json.loads(value[0])
+            return url, file_name, heading_track_list, track_list
+        file_names = [GenericDailyOfficeSerializer.get_line_audio_file(track["line"])[1] for track in tracks]
+        file_name, url, heading_track_list, track_list = GenericDailyOfficeSerializer.concat_mp3_files(
+            tracks, file_name
+        )
+        return url, file_name, heading_track_list, track_list
 
+        pprint(tracks)
         tracks = [
-            {"path": f"{settings.BASE_DIR}{track["path"]}", "name": track["module"], "id": track["line_id"]}
+            {"path": track["path"], "name": track["module"], "id": track["line_id"]}
             for track in tracks
             if "path" in track
         ]
-        mp3_files = [track for track in tracks if os.path.exists(track["path"])]
-        full_string = " ".join([track["path"] for track in mp3_files])
+
+        mp3_files = [track for track in tracks if default_storage.exists(track["path"])]
+        paths = [track["path"] for track in mp3_files]
+        full_string = " ".join(paths)
         audio_id = generate_uuid_from_string(full_string)
-        filename = f"{audio_id}.mp3"
-        file_path = os.path.join(settings.MEDIA_ROOT, filename)
-        exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
+        filename = f"audio/{audio_id}.mp3"
+        # print(filename, 'here')
+        # file_path = default_storage.path(filename)
+        exists = default_storage.exists(filename) and default_storage.size(filename) > 0
         domain = Site.objects.get_current().domain
-        path = settings.MEDIA_URL + filename
-        file_url = f"https://{domain}/api/v1/audio_track/{filename}"
+        path = default_storage.url(filename)
+        file_url = f"https://{domain}{path}"
 
-        temp_file_list = os.path.join(settings.MEDIA_ROOT, f"{filename}.txt")
-        track_list = []
-        short_track_list = []
-        start_time = 0
-        name = ""
-        if not os.path.exists(temp_file_list):
-            open(temp_file_list, "w").close()
-        # user_name = "dailyoffice"
-        # group_name = "dailyoffice"
-        # uid = pwd.getpwnam(user_name).pw_uid
-        # gid = grp.getgrnam(group_name).gr_gid
-        # os.chmod(temp_file_list, 0o777)
-        # os.chown(temp_file_list, uid, gid)
-        with open(temp_file_list, "w") as f:
-            for track in mp3_files:
-                f.write(f"file '{os.path.abspath(track['path'])}'\n")
-                # user_name = "dailyoffice"
-                # group_name = "dailyoffice"
-                # uid = pwd.getpwnam(user_name).pw_uid
-                # gid = grp.getgrnam(group_name).gr_gid
-                # os.chmod(track["path"], 0o777)
-                # os.chown(track["path"], uid, gid)
-                duration = get_audio_duration(track["path"])  # Function to get audio duration
-                if track["name"] != name:
-                    name = track["name"]
-                    track_list.append({"name": track["name"], "start_time": start_time})
-                short_track_list.append({"id": track["id"], "start_time": start_time})
-                start_time += duration
+        temp_files = []
 
-        if exists:
-            return file_url, path, track_list, short_track_list
+        for path in paths:
+            tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
+            with default_storage.open(path, "rb") as s3_file:
+                tmp.write(s3_file.read())
+                tmp.flush()
+            temp_files.append(tmp)
 
-        ffmpeg_cmd = ["ffmpeg", "-f", "concat", "-safe", "0", "-i", temp_file_list, "-c", "copy", file_path]
+        # Step 2: Build ffmpeg command using downloaded temp files
+        input_args = sum([["-i", f.name] for f in temp_files], [])
+        ffmpeg_cmd = [
+            "ffmpeg",
+            "-hide_banner",
+            *input_args,
+            "-filter_complex",
+            f"concat=n={len(temp_files)}:v=0:a=1",
+            "-f",
+            "mp3",
+            "pipe:1",
+        ]
 
+        # temp_file_list = f"{filename}.txt"
+        # temp_file_list_path = os.path.join(settings.MEDIA_ROOT, temp_file_list)
+        # track_list = []
+        # short_track_list = []
+        # start_time = 0
+        # name = ""
+        # with open(temp_file_list_path, 'w') as f:
+        #     f.write('')
+        # with open(temp_file_list_path, 'a') as f:
+        #     for track in mp3_files:
+        #         print(track['path'])
+        #         f.write(f"file '{track['path']}'\n")
+        #         duration = get_audio_duration(track["path"])  # Function to get audio duration
+        #         if track["name"] != name:
+        #             name = track["name"]
+        #             track_list.append({"name": track["name"], "start_time": start_time})
+        #         short_track_list.append({"id": track["id"], "start_time": start_time})
+        #         start_time += duration
+        #
+        # if exists:
+        #     return file_url, path, track_list, short_track_list
+        #
+        # file_path = os.path.join(settings.MEDIA_ROOT, filename.replace('audio/', ''))
+        # ffmpeg_cmd = ["ffmpeg", "-f", "concat", "-safe", "0", "-i", temp_file_list_path, "-c", "copy", file_path]
+
+        file_path = os.path.join(settings.MEDIA_ROOT, filename.replace("audio/", ""))
         result = subprocess.run(ffmpeg_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        print(result)
+        default_storage.save(filename, ContentFile(open(file_path, "rb").read()))
+        os.remove(f"{filename}.tmp")
 
-        # Cleanup temp file list
-        os.remove(temp_file_list)
-
+        return file_url, path, [], []
         return file_url, path, track_list, short_track_list
 
     def get_audio(self, obj):
@@ -3061,8 +3158,9 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     continue
                 if line["line_type"] == "html":
                     temp_id = "_".join([line["id"].split("_")[0], line["id"].split("_")[-1]])
-                    print(self.handle_html(line["content"], id=temp_id))
-                    tracks = tracks + self.handle_html(line["content"], id=temp_id, module=module["name"])
+                    tracks = tracks + self.handle_html(
+                        line["content"], id=temp_id, module=module["name"], filename_only=True
+                    )
                 elif line["line_type"] in [
                     "reader",
                     "leader",
@@ -3070,8 +3168,10 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     "leader_dialogue",
                     "congregation_dialogue",
                 ]:
-                    url, path = self.get_line_audio_file(line)
-                    tracks = tracks + [{"line_id": line["id"], "module": module["name"], "url": url, "path": path}]
+                    url, file_name = self.get_line_audio_file(line, filename_only=True)
+                    tracks = tracks + [
+                        {"line_id": line["id"], "module": module["name"], "file_name": file_name, "line": line}
+                    ]
         tracks = [track for track in tracks if track]
         headings = [heading for heading in headings if heading]
         single_track = self.get_single_track(tracks)

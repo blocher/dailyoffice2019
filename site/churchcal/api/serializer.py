@@ -177,7 +177,7 @@ class CommemorationSerializer(serializers.Serializer):
         return [link for link in links if link]
 
     def get_collect(self, obj):
-        if hasattr(obj, "morning_prayer_collect"):
+        if hasattr(obj, "morning_prayer_collect") and hasattr(obj.morning_prayer_collect, "text"):
             return obj.morning_prayer_collect.text
 
     def get_collects(self, obj):

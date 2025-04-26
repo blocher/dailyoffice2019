@@ -59,8 +59,9 @@ class YearView(APIView):
 
     def get(self, request, year):
         church_year = cache.get(str(year)) if settings.USE_CALENDAR_CACHE else None
+        church_year = None
         if not church_year:
-            church_year = ChurchYear(year)
+            church_year = ChurchYear(year, "TEC_BCP1979_LFF2006")
             cache.set(str(year), church_year, 60 * 60 * 12)
         serializer = DaySerializer([date for date in church_year], many=True)
         return Response(serializer.data)
