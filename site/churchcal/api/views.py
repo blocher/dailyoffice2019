@@ -15,18 +15,19 @@ from churchcal.calculations import get_calendar_date, ChurchYear, CalendarYear
 from website import settings
 
 
-def get_calendar_year(year):
+def get_calendar_year(year, calendar):
     year = int(year)
     first_year = year - 1
     second_year = year
-    first_church_year = cache.get(str(first_year)) if settings.USE_CALENDAR_CACHE else None
+    print(calendar)
+    first_church_year = cache.get(f"{first_year}_{calendar}") if settings.USE_CALENDAR_CACHE else None
     if not first_church_year:
         first_church_year = ChurchYear(first_year)
-        cache.set(str(first_year), first_church_year, 60 * 60 * 12)
-    second_church_year = cache.get(str(second_year)) if settings.USE_CALENDAR_CACHE else None
+        cache.set(f"{first_year}_{calendar}", first_church_year, 60 * 60 * 12)
+    second_church_year = cache.get(f"{second_year}_{calendar}") if settings.USE_CALENDAR_CACHE else None
     if not second_church_year:
         second_church_year = ChurchYear(second_year)
-    cache.set(str(second_year), second_church_year, 60 * 60 * 12)
+    cache.set(f"{second_year}_{calendar}", second_church_year, 60 * 60 * 12)
     return CalendarYear(year, first_church_year, second_church_year)
 
 
@@ -47,7 +48,7 @@ class MonthView(APIView):
     permission_classes = [ReadOnly]
 
     def get(self, request, year, month):
-        calendar_year = get_calendar_year(year)
+        calendar_year = get_calendar_year(year, request.GET.get("calendar", "ACNA_BCP2019"))
         serializer = DaySerializer(
             [date for date in calendar_year if date.date.month == month and date.date.year == year], many=True
         )
@@ -58,10 +59,11 @@ class YearView(APIView):
     permission_classes = [ReadOnly]
 
     def get(self, request, year):
-        church_year = cache.get(str(year)) if settings.USE_CALENDAR_CACHE else None
+        calendar = request.GET.get("calendar", "ACNA_BCP2019")
+        church_year = cache.get(f"{year}_{calendar}") if settings.USE_CALENDAR_CACHE else None
         if not church_year:
-            church_year = ChurchYear(year)
-            cache.set(str(year), church_year, 60 * 60 * 12)
+            church_year = ChurchYear(year, calendar)
+            cache.set(f"{year}_{calendar}", church_year, 60 * 60 * 12)
         serializer = DaySerializer([date for date in church_year], many=True)
         return Response(serializer.data)
 

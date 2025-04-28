@@ -194,7 +194,10 @@ class CalendarDate(object):
             return []
 
         required = self.required.copy()
-        if self.season.name not in ("Advent", "Lent", "Holy Week", "Eastertide"):
+        if (
+            self.season.name not in ("Advent", "Lent", "Holy Week", "Eastertide")
+            and self.calendar.abbreviation == "ACNA_BCP2019"
+        ):
             if self.required[1].rank.precedence_rank < 4:
                 alternate_sunday = self.required[1].copy()
                 if alternate_sunday.rank.name != "SUNDAY":
