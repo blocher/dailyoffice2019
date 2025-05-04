@@ -120,7 +120,7 @@ class Command(BaseCommand):
             rank__name__in=["LESSER_FEAST_TRIAL_USE", "LESSER_FEAST"]
         ).all().delete()
 
-        calendar = Calendar.objects.get(abbreviation="TEC_BCP1979_LFF2006")
+        calendar = Calendar.objects.get(abbreviation="TEC_BCP1979_LFF2024")
         for entry in parse_lff_calendar():
             month = datetime.datetime.strptime(entry["Month"], "%B").month
             day = entry["Day"]
