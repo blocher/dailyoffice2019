@@ -22,11 +22,11 @@ def get_calendar_year(year, calendar):
     print(calendar)
     first_church_year = cache.get(f"{first_year}_{calendar}") if settings.USE_CALENDAR_CACHE else None
     if not first_church_year:
-        first_church_year = ChurchYear(first_year)
+        first_church_year = ChurchYear(first_year, calendar)
         cache.set(f"{first_year}_{calendar}", first_church_year, 60 * 60 * 12)
     second_church_year = cache.get(f"{second_year}_{calendar}") if settings.USE_CALENDAR_CACHE else None
     if not second_church_year:
-        second_church_year = ChurchYear(second_year)
+        second_church_year = ChurchYear(second_year, calendar)
     cache.set(f"{second_year}_{calendar}", second_church_year, 60 * 60 * 12)
     return CalendarYear(year, first_church_year, second_church_year)
 
