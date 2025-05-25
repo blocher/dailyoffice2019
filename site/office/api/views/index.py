@@ -1588,8 +1588,8 @@ class GreatLitany(ShowGreatLitanyMixin, Module):
         if setting == "us":
             return "your servant Donald Trump, the President of the United States of America, "
         if setting == "canada":
-            return "your servants His Majesty King Charles, the Sovereign, and Justin Trudeau, the Prime Minister of Canada, "
-        return "your servant Donald Trump, the President of the United States of America, your servants His Majesty King Charles, the Sovereign, and Justin Trudeau, the Prime Minister of Canada, Claudia Sheinbaum Pardo, the president of Mexico, "
+            return "your servants His Majesty King Charles, the Sovereign, and Mark Carney, the Prime Minister of Canada, "
+        return "your servant Donald Trump, the President of the United States of America, your servants His Majesty King Charles, the Sovereign, and Mark Carney, the Prime Minister of Canada, Claudia Sheinbaum Pardo, the president of Mexico, "
 
     def get_lines(self):
         if self.show_great_litany:
