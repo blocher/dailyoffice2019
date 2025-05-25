@@ -89,8 +89,8 @@ const routes = [
       title: 'Pray | Family Prayer',
     },
   },
-  {
-    path: '/commemorations/:uuid',
+ {
+      path: '/commemorations/:uuid',
     name: 'Commemoration',
     component: Commemoration,
     meta: {
@@ -104,7 +104,14 @@ const routes = [
     meta: {
       title: 'Settings | The Daily Office',
     },
-  },
+  },{
+  path: '/:serviceType',
+  name: 'Family Prayer',
+  component: Today,
+  meta: {
+    title: 'Pray | Family Prayer',
+  }
+},
   {
     path: '/',
     name: 'Home',
