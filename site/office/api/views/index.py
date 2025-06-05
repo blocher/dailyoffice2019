@@ -2886,8 +2886,9 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         content = content.replace("Lᴏʀᴅ", "Lord")
         audio_id = generate_uuid_from_string(f"{line_type} {voice_type} {content}")
         filename = f"{audio_id}.mp3"
-        file_path = os.path.join(settings.MEDIA_ROOT, filename)
-        exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
+        
+        # Use Django storage instead of direct filesystem access
+        exists = default_storage.exists(filename) and default_storage.size(filename) > 0
         domain = Site.objects.get_current().domain
         path = settings.MEDIA_URL + filename
         file_url = f"https://{domain}{path}"
@@ -2896,6 +2897,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         if exists:
             return file_url, path
         try:
+            import tempfile
             from pathlib import Path
             from openai import OpenAI
 
@@ -2905,7 +2907,17 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 voice=voice_type,
                 input=content,
             )
-            response.stream_to_file(file_path)
+            
+            # Stream to a temporary file first, then save to storage
+            with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as temp_file:
+                response.stream_to_file(temp_file.name)
+                
+                # Now save to Django storage
+                with open(temp_file.name, "rb") as audio_file:
+                    default_storage.save(filename, audio_file)
+                
+                # Clean up temp file
+                os.unlink(temp_file.name)
 
         except Exception as e:
             return None, None
@@ -3046,8 +3058,8 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             ffmpeg_cmd = ["ffmpeg", "-f", "concat", "-safe", "0", "-i", temp_file_list, "-c", "copy", temp_output_file]
             result = subprocess.run(ffmpeg_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
-            # Upload the result back to storage
-            if os.path.exists(temp_output_file):
+            # Upload the result back to storage if ffmpeg succeeded
+            if result.returncode == 0 and os.path.exists(temp_output_file):
                 with open(temp_output_file, "rb") as output_file:
                     default_storage.save(filename, output_file)
             
