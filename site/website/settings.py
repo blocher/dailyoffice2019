@@ -240,13 +240,6 @@ WEBPACK_LOADER = {
     }
 }
 
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
-        "LOCATION": "127.0.0.1:11211",
-    }
-}
-
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 SITE_ID = 1
@@ -464,4 +457,22 @@ CKEDITOR_5_CONFIGS = {
             "reversed": "true",
         }
     },
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
+        "LOCATION": "127.0.0.1:11211",
+    },
+    "django-backblaze-b2": {
+        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
+        "LOCATION": "127.0.0.1:11211",
+    },
+}
+
+BACKBLAZE_CONFIG = {
+    # however you want to securely retrieve these values
+    "application_key_id": env("STORAGES_ACCESS_KEY_ID"),
+    "application_key": env("STORAGES_SECRET_ACCESS_KEY"),
+    "bucket": env("STORAGES_BUCKET_NAME"),
 }
