@@ -6,6 +6,7 @@ from typing import List
 import openai
 import requests
 from pydantic import BaseModel
+from django.core.files.storage import default_storage
 
 from churchcal.models import Commemoration
 from website import settings
@@ -16,8 +17,23 @@ openai.api_key = settings.OPENAI_API_KEY
 
 # Upload PDF files as knowledge sources
 def upload_file(path):
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    with open(f"{dir_path}/data/{path}", "rb") as file:
+    """Upload a file from Django storage to OpenAI"""
+    storage_path = f"standrew/data/{path}"
+    
+    if not default_storage.exists(storage_path):
+        # Fallback to local file if not in storage (for development)
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        local_path = f"{dir_path}/data/{path}"
+        if os.path.exists(local_path):
+            with open(local_path, "rb") as file:
+                response = openai.files.create(file=file, purpose="assistants")
+                print(response)
+                return response.id
+        else:
+            raise FileNotFoundError(f"File not found in storage or locally: {path}")
+    
+    # File exists in storage
+    with default_storage.open(storage_path, "rb") as file:
         response = openai.files.create(file=file, purpose="assistants")
         print(response)
         return response.id
@@ -36,20 +52,39 @@ def create_vector_store():
     ]
     vector_store = openai.beta.vector_stores.create(name="ACNA Documents")
 
-    # Ready the files for upload to OpenAI
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    file_paths = [f"{dir_path}/data/{path}" for path, title in files]
-    file_streams = [open(path, "rb") for path in file_paths]
+    # Prepare files for upload to OpenAI
+    file_streams = []
+    for path, title in files:
+        storage_path = f"standrew/data/{path}"
+        
+        if default_storage.exists(storage_path):
+            # File exists in storage
+            file_streams.append(default_storage.open(storage_path, "rb"))
+        else:
+            # Fallback to local file (for development)
+            dir_path = os.path.dirname(os.path.realpath(__file__))
+            local_path = f"{dir_path}/data/{path}"
+            if os.path.exists(local_path):
+                file_streams.append(open(local_path, "rb"))
+            else:
+                print(f"Warning: File not found in storage or locally: {path}")
+                continue
 
     # Use the upload and poll SDK helper to upload the files, add them to the vector store,
     # and poll the status of the file batch for completion.
-    file_batch = openai.beta.vector_stores.file_batches.upload_and_poll(
-        vector_store_id=vector_store.id, files=file_streams
-    )
+    if file_streams:
+        file_batch = openai.beta.vector_stores.file_batches.upload_and_poll(
+            vector_store_id=vector_store.id, files=file_streams
+        )
 
-    # You can print the status and the file counts of the batch to see the result of this operation.
-    print(file_batch.status)
-    print(file_batch.file_counts)
+        # Close all file streams
+        for stream in file_streams:
+            stream.close()
+
+        # You can print the status and the file counts of the batch to see the result of this operation.
+        print(file_batch.status)
+        print(file_batch.file_counts)
+    
     return vector_store, files
 
 

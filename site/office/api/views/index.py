@@ -10,6 +10,7 @@ import mailchimp_marketing as MailchimpMarketing
 from distutils.util import strtobool
 from django.conf import settings
 from django.contrib.sites.models import Site
+from django.core.files.storage import default_storage
 from django.db.models import Prefetch
 from django.http import HttpResponse
 from django.template.loader import render_to_string
@@ -2956,8 +2957,24 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
 
     @staticmethod
     def get_single_track(tracks):
+        import tempfile
 
-        def get_audio_duration(file_path):
+        def get_audio_duration_from_storage(storage_path):
+            """Get audio duration from a file in storage"""
+            # Extract just the filename from the full path
+            filename = storage_path.replace(f"{settings.BASE_DIR}", "").lstrip("/")
+            
+            # Check if file exists in storage
+            if not default_storage.exists(filename):
+                return 0
+                
+            # For metadata reading, we need to open the file
+            with default_storage.open(filename, "rb") as file:
+                audio = MP3(file)
+                return audio.info.length
+
+        def get_audio_duration_from_file(file_path):
+            """Get audio duration from a local file"""
             audio = MP3(file_path)
             return audio.info.length
 
@@ -2966,54 +2983,75 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             for track in tracks
             if "path" in track
         ]
-        mp3_files = [track for track in tracks if os.path.exists(track["path"])]
+        
+        # Filter tracks to only those that exist in storage
+        valid_tracks = []
+        for track in tracks:
+            # Extract filename from full path
+            filename = track["path"].replace(f"{settings.BASE_DIR}", "").lstrip("/")
+            if default_storage.exists(filename):
+                track["storage_filename"] = filename
+                valid_tracks.append(track)
+        
+        mp3_files = valid_tracks
         full_string = " ".join([track["path"] for track in mp3_files])
         audio_id = generate_uuid_from_string(full_string)
         filename = f"{audio_id}.mp3"
-        file_path = os.path.join(settings.MEDIA_ROOT, filename)
-        exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
+        
+        # Check if output file already exists in storage
+        exists = default_storage.exists(filename) and default_storage.size(filename) > 0
         domain = Site.objects.get_current().domain
         path = settings.MEDIA_URL + filename
         file_url = f"https://{domain}/api/v1/audio_track/{filename}"
 
-        temp_file_list = os.path.join(settings.MEDIA_ROOT, f"{filename}.txt")
         track_list = []
         short_track_list = []
         start_time = 0
         name = ""
-        if not os.path.exists(temp_file_list):
-            open(temp_file_list, "w").close()
-        # user_name = "dailyoffice"
-        # group_name = "dailyoffice"
-        # uid = pwd.getpwnam(user_name).pw_uid
-        # gid = grp.getgrnam(group_name).gr_gid
-        # os.chmod(temp_file_list, 0o777)
-        # os.chown(temp_file_list, uid, gid)
-        with open(temp_file_list, "w") as f:
-            for track in mp3_files:
-                f.write(f"file '{os.path.abspath(track['path'])}'\n")
-                # user_name = "dailyoffice"
-                # group_name = "dailyoffice"
-                # uid = pwd.getpwnam(user_name).pw_uid
-                # gid = grp.getgrnam(group_name).gr_gid
-                # os.chmod(track["path"], 0o777)
-                # os.chown(track["path"], uid, gid)
-                duration = get_audio_duration(track["path"])  # Function to get audio duration
-                if track["name"] != name:
-                    name = track["name"]
-                    track_list.append({"name": track["name"], "start_time": start_time})
-                short_track_list.append({"id": track["id"], "start_time": start_time})
-                start_time += duration
+        
+        # Build track list with durations
+        for track in mp3_files:
+            duration = get_audio_duration_from_storage(track["path"])
+            if track["name"] != name:
+                name = track["name"]
+                track_list.append({"name": track["name"], "start_time": start_time})
+            short_track_list.append({"id": track["id"], "start_time": start_time})
+            start_time += duration
 
         if exists:
             return file_url, path, track_list, short_track_list
 
-        ffmpeg_cmd = ["ffmpeg", "-f", "concat", "-safe", "0", "-i", temp_file_list, "-c", "copy", file_path]
+        # If the concatenated file doesn't exist, create it
+        # We need to download files temporarily for ffmpeg processing
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_file_list = os.path.join(temp_dir, f"{filename}.txt")
+            temp_output_file = os.path.join(temp_dir, filename)
+            local_files = []
+            
+            # Download each file to temp directory
+            with open(temp_file_list, "w") as f:
+                for track in mp3_files:
+                    # Create a temporary local file
+                    local_filename = os.path.join(temp_dir, os.path.basename(track["storage_filename"]))
+                    
+                    # Download from storage to local temp file
+                    with default_storage.open(track["storage_filename"], "rb") as storage_file:
+                        with open(local_filename, "wb") as local_file:
+                            local_file.write(storage_file.read())
+                    
+                    local_files.append(local_filename)
+                    f.write(f"file '{os.path.abspath(local_filename)}'\n")
 
-        result = subprocess.run(ffmpeg_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            # Run ffmpeg on local files
+            ffmpeg_cmd = ["ffmpeg", "-f", "concat", "-safe", "0", "-i", temp_file_list, "-c", "copy", temp_output_file]
+            result = subprocess.run(ffmpeg_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
-        # Cleanup temp file list
-        os.remove(temp_file_list)
+            # Upload the result back to storage
+            if os.path.exists(temp_output_file):
+                with open(temp_output_file, "rb") as output_file:
+                    default_storage.save(filename, output_file)
+            
+            # Temporary files are automatically cleaned up when exiting the context
 
         return file_url, path, track_list, short_track_list
 
@@ -3630,12 +3668,14 @@ class AudioViewSet(ViewSet):
             return Response({"path": ""})
         audio_id = generate_uuid_from_string(f"{line_type} {voice_type} {content}")
         filename = f"{audio_id}.mp3"
-        file_path = os.path.join(settings.MEDIA_ROOT, filename)
-        exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
+        
+        # Check if file exists in storage
+        exists = default_storage.exists(filename) and default_storage.size(filename) > 0
         file_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
         if exists:
             return Response({"path": file_url})
         try:
+            import tempfile
             from pathlib import Path
             from openai import OpenAI
 
@@ -3645,7 +3685,17 @@ class AudioViewSet(ViewSet):
                 voice=voice_type,
                 input=content,
             )
-            response.stream_to_file(file_path)
+            
+            # Stream to a temporary file first, then save to storage
+            with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as temp_file:
+                response.stream_to_file(temp_file.name)
+                
+                # Now save to Django storage
+                with open(temp_file.name, "rb") as audio_file:
+                    default_storage.save(filename, audio_file)
+                
+                # Clean up temp file
+                os.unlink(temp_file.name)
         except Exception as e:
             return Response({"error": str(e)})
         return Response({"path": file_url})

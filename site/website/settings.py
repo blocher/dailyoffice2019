@@ -476,3 +476,14 @@ BACKBLAZE_CONFIG = {
     "application_key": env("STORAGES_SECRET_ACCESS_KEY"),
     "bucket": env("STORAGES_BUCKET_NAME"),
 }
+
+# Configure Django storage to use Backblaze B2
+STORAGES = {
+    "default": {
+        "BACKEND": "django_backblaze_b2.DjangoBackblazeB2Storage",
+        "OPTIONS": BACKBLAZE_CONFIG,
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}

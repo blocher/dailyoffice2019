@@ -1,6 +1,8 @@
 import datetime
 from datetime import date
+from io import BytesIO
 
+from django.core.files.storage import default_storage
 from django.core.management.base import BaseCommand
 from icalendar import Calendar, Event
 
@@ -125,14 +127,18 @@ class Command(BaseCommand):
         start = current_year - 3
         end = current_year + 10
         for year in range(start, end):
-            # find the root directory of the project
-
             print("Generating {}".format(year))
-            with open(f"{settings.BASE_DIR}/churchcal/ics/acna_church_calendar_{year}-{year + 1}.ics", "wb") as f:
-                f.write(self.build_calendar(year))
+            
+            # Generate regular calendar
+            calendar_data = self.build_calendar(year)
+            filename = f"churchcal/ics/acna_church_calendar_{year}-{year + 1}.ics"
+            calendar_file = BytesIO(calendar_data)
+            default_storage.save(filename, calendar_file)
 
             print("Generating Major Only{}".format(year))
-            with open(
-                f"{settings.BASE_DIR}/churchcal/ics/acna_church_calendar_major_days_only_{year}-{year + 1}.ics", "wb"
-            ) as f:
-                f.write(self.build_calendar(year, major=True))
+            
+            # Generate major days only calendar
+            major_calendar_data = self.build_calendar(year, major=True)
+            major_filename = f"churchcal/ics/acna_church_calendar_major_days_only_{year}-{year + 1}.ics"
+            major_calendar_file = BytesIO(major_calendar_data)
+            default_storage.save(major_filename, major_calendar_file)

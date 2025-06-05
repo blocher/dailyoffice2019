@@ -3,6 +3,7 @@ import os
 from typing import List
 
 import requests
+from django.core.files.storage import default_storage
 from django.core.files.temp import NamedTemporaryFile
 from django.utils import timezone
 from openai import OpenAI
@@ -236,15 +237,14 @@ def create_image(study_day, source="openai"):
             img_temp.flush()
             img_temp.seek(0)
 
-            # Define the path where the image will be saved
+            # Define the filename
             img_name = f"{study_day.pk}.png"
-            img_path = os.path.join(settings.MEDIA_ROOT, img_name)
-
-            with open(img_path, "wb") as f:
-                f.write(img_temp.read())
+            
+            # Save to Django storage instead of direct filesystem
+            saved_path = default_storage.save(img_name, img_temp)
 
         # Return the public URL
-        return os.path.join(settings.MEDIA_URL, img_name)
+        return settings.MEDIA_URL + saved_path
     else:
         return None
 

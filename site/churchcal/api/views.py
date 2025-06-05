@@ -2,6 +2,7 @@ import os
 
 from django.conf import settings
 from django.core.cache import cache
+from django.core.files.storage import default_storage
 from django.http import FileResponse
 from django.http import HttpResponse, HttpResponseNotFound
 from django.utils import timezone
@@ -73,24 +74,22 @@ class AudioTrackView(APIView):
 
     def get(self, request, *args, **kwargs):
         filename = kwargs["track"]
-        file_path = os.path.join(settings.MEDIA_ROOT, filename)
-        print(file_path)
-
-        if not os.path.exists(file_path):
+        
+        # Use Django storage instead of direct filesystem access
+        if not default_storage.exists(filename):
             return HttpResponseNotFound("Audio file not found.")
 
         try:
-            audio = MP3(file_path)
-            duration = int(audio.info.length)  # Duration in seconds
+            # For getting metadata, we need to open the file temporarily
+            with default_storage.open(filename, "rb") as file:
+                audio = MP3(file)
+                duration = int(audio.info.length)  # Duration in seconds
         except Exception:
             duration = "Unknown"  # Fallback if metadata cannot be read
 
-        # Open the file in binary mode
-        audio_file = open(file_path, "rb")
-
-        # Create a streaming response
-        response = FileResponse(audio_file, content_type="audio/mpeg")
-        file_size = os.path.getsize(file_path)
+        # Get file size
+        file_size = default_storage.size(filename)
+        
         # Handle Range header
         range_header = request.headers.get("Range")
         if range_header:
@@ -103,7 +102,8 @@ class AudioTrackView(APIView):
             range_end = min(range_end, file_size - 1)
             content_length = range_end - range_start + 1
 
-            with open(file_path, "rb") as audio_file:
+            # Open file and read the range
+            with default_storage.open(filename, "rb") as audio_file:
                 audio_file.seek(range_start)
                 audio_data = audio_file.read(content_length)
 
@@ -112,10 +112,8 @@ class AudioTrackView(APIView):
             response["Content-Length"] = str(content_length)
         else:
             # Serve the full file if no Range header is present
-            with open(file_path, "rb") as audio_file:
-                audio_data = audio_file.read()
-
-            response = HttpResponse(audio_data, content_type="audio/mpeg")
+            audio_file = default_storage.open(filename, "rb")
+            response = FileResponse(audio_file, content_type="audio/mpeg")
             response["Content-Length"] = str(file_size)
 
         # Set Content-Disposition for inline playback
