@@ -465,24 +465,19 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
         "LOCATION": "127.0.0.1:11211",
     },
-    "django-backblaze-b2": {
-        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
-        "LOCATION": "django_backblaze_b2_cache_table",
-    },
 }
 
-BACKBLAZE_CONFIG = {
-    # however you want to securely retrieve these values
-    "application_key_id": env("STORAGES_ACCESS_KEY_ID"),
-    "application_key": env("STORAGES_SECRET_ACCESS_KEY"),
-    "bucket": env("STORAGES_BUCKET_NAME"),
-}
-
-# Configure Django storage to use Backblaze B2
+# Configure Django storage to use Backblaze B2 via django-storages
 STORAGES = {
     "default": {
-        "BACKEND": "django_backblaze_b2.BackblazeB2Storage",
-        "OPTIONS": BACKBLAZE_CONFIG,
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        "OPTIONS": {
+            "access_key": env("STORAGES_ACCESS_KEY_ID"),
+            "secret_key": env("STORAGES_SECRET_ACCESS_KEY"),
+            "bucket_name": env("STORAGES_BUCKET_NAME"),
+            "endpoint_url": env("STORAGES_ENDPOINT_URL", default="https://s3.us-west-004.backblazeb2.com"),
+            "region_name": env("STORAGES_REGION_NAME", default="us-west-004"),
+        },
     },
     "staticfiles": {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
