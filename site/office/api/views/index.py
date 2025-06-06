@@ -12,6 +12,7 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.files.storage import default_storage
 from django.db.models import Prefetch
+from django_backblaze_b2.cache_account_info import MissingAccountData
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.utils.functional import cached_property
@@ -116,6 +117,37 @@ class Settings(dict):
 # rubric
 # leader_dialogue
 # congregation_dialogue
+
+
+def safe_storage_exists(filename):
+    """
+    Safely check if a file exists in storage, handling B2 authentication errors.
+    Returns False if the file doesn't exist or if there are authentication issues.
+    """
+    try:
+        return default_storage.exists(filename)
+    except MissingAccountData:
+        # If B2 storage has authentication issues, assume file doesn't exist
+        # This allows the API to continue functioning and generate new files if needed
+        return False
+    except Exception:
+        # Handle any other storage-related errors gracefully
+        return False
+
+
+def safe_storage_size(filename):
+    """
+    Safely get the size of a file in storage, handling B2 authentication errors.
+    Returns 0 if the file doesn't exist or if there are authentication issues.
+    """
+    try:
+        return default_storage.size(filename)
+    except MissingAccountData:
+        # If B2 storage has authentication issues, assume file size is 0
+        return 0
+    except Exception:
+        # Handle any other storage-related errors gracefully
+        return 0
 
 
 def file_to_lines(filename):
@@ -2888,7 +2920,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         filename = f"{audio_id}.mp3"
         
         # Use Django storage instead of direct filesystem access
-        exists = default_storage.exists(filename) and default_storage.size(filename) > 0
+        exists = safe_storage_exists(filename) and safe_storage_size(filename) > 0
         domain = Site.objects.get_current().domain
         path = settings.MEDIA_URL + filename
         file_url = f"https://{domain}{path}"
@@ -2977,13 +3009,17 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             filename = storage_path.replace(f"{settings.BASE_DIR}", "").lstrip("/")
             
             # Check if file exists in storage
-            if not default_storage.exists(filename):
+            if not safe_storage_exists(filename):
                 return 0
                 
             # For metadata reading, we need to open the file
-            with default_storage.open(filename, "rb") as file:
-                audio = MP3(file)
-                return audio.info.length
+            try:
+                with default_storage.open(filename, "rb") as file:
+                    audio = MP3(file)
+                    return audio.info.length
+            except (MissingAccountData, Exception):
+                # If we can't open the file due to storage issues, return 0
+                return 0
 
         def get_audio_duration_from_file(file_path):
             """Get audio duration from a local file"""
@@ -3001,7 +3037,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         for track in tracks:
             # Extract filename from full path
             filename = track["path"].replace(f"{settings.BASE_DIR}", "").lstrip("/")
-            if default_storage.exists(filename):
+            if safe_storage_exists(filename):
                 track["storage_filename"] = filename
                 valid_tracks.append(track)
         
@@ -3011,7 +3047,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         filename = f"{audio_id}.mp3"
         
         # Check if output file already exists in storage
-        exists = default_storage.exists(filename) and default_storage.size(filename) > 0
+        exists = safe_storage_exists(filename) and safe_storage_size(filename) > 0
         domain = Site.objects.get_current().domain
         path = settings.MEDIA_URL + filename
         file_url = f"https://{domain}/api/v1/audio_track/{filename}"
@@ -3035,35 +3071,48 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
 
         # If the concatenated file doesn't exist, create it
         # We need to download files temporarily for ffmpeg processing
-        with tempfile.TemporaryDirectory() as temp_dir:
-            temp_file_list = os.path.join(temp_dir, f"{filename}.txt")
-            temp_output_file = os.path.join(temp_dir, filename)
-            local_files = []
-            
-            # Download each file to temp directory
-            with open(temp_file_list, "w") as f:
-                for track in mp3_files:
-                    # Create a temporary local file
-                    local_filename = os.path.join(temp_dir, os.path.basename(track["storage_filename"]))
-                    
-                    # Download from storage to local temp file
-                    with default_storage.open(track["storage_filename"], "rb") as storage_file:
-                        with open(local_filename, "wb") as local_file:
-                            local_file.write(storage_file.read())
-                    
-                    local_files.append(local_filename)
-                    f.write(f"file '{os.path.abspath(local_filename)}'\n")
+        try:
+            with tempfile.TemporaryDirectory() as temp_dir:
+                temp_file_list = os.path.join(temp_dir, f"{filename}.txt")
+                temp_output_file = os.path.join(temp_dir, filename)
+                local_files = []
+                
+                # Download each file to temp directory
+                with open(temp_file_list, "w") as f:
+                    for track in mp3_files:
+                        # Create a temporary local file
+                        local_filename = os.path.join(temp_dir, os.path.basename(track["storage_filename"]))
+                        
+                        # Download from storage to local temp file
+                        try:
+                            with default_storage.open(track["storage_filename"], "rb") as storage_file:
+                                with open(local_filename, "wb") as local_file:
+                                    local_file.write(storage_file.read())
+                            
+                            local_files.append(local_filename)
+                            f.write(f"file '{os.path.abspath(local_filename)}'\n")
+                        except (MissingAccountData, Exception):
+                            # Skip this file if we can't access it
+                            continue
 
-            # Run ffmpeg on local files
-            ffmpeg_cmd = ["ffmpeg", "-f", "concat", "-safe", "0", "-i", temp_file_list, "-c", "copy", temp_output_file]
-            result = subprocess.run(ffmpeg_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                # Run ffmpeg on local files only if we have files to process
+                if local_files:
+                    ffmpeg_cmd = ["ffmpeg", "-f", "concat", "-safe", "0", "-i", temp_file_list, "-c", "copy", temp_output_file]
+                    result = subprocess.run(ffmpeg_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
-            # Upload the result back to storage if ffmpeg succeeded
-            if result.returncode == 0 and os.path.exists(temp_output_file):
-                with open(temp_output_file, "rb") as output_file:
-                    default_storage.save(filename, output_file)
-            
-            # Temporary files are automatically cleaned up when exiting the context
+                    # Upload the result back to storage if ffmpeg succeeded
+                    if result.returncode == 0 and os.path.exists(temp_output_file):
+                        try:
+                            with open(temp_output_file, "rb") as output_file:
+                                default_storage.save(filename, output_file)
+                        except (MissingAccountData, Exception):
+                            # If we can't save the file, just continue without the concatenated track
+                            pass
+                
+                # Temporary files are automatically cleaned up when exiting the context
+        except Exception:
+            # If anything fails in the concatenation process, just return the individual tracks
+            pass
 
         return file_url, path, track_list, short_track_list
 
@@ -3682,7 +3731,7 @@ class AudioViewSet(ViewSet):
         filename = f"{audio_id}.mp3"
         
         # Check if file exists in storage
-        exists = default_storage.exists(filename) and default_storage.size(filename) > 0
+        exists = safe_storage_exists(filename) and safe_storage_size(filename) > 0
         file_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
         if exists:
             return Response({"path": file_url})
