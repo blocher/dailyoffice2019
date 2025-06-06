@@ -463,26 +463,10 @@ CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
         "LOCATION": "127.0.0.1:11211",
-        "OPTIONS": {
-            "default_noreply": False,
-            "allow_unicode_keys": True,  # Important to avoid bytes keys
-            "no_delay": True,  # Disable Nagle's algorithm
-            "ignore_exc": True,  # Ignore memcached errors in some cases
-            "max_pool_size": 4,  # Manage connection pool more efficiently
-            "connect_timeout": 0.5,
-        },
     },
     "django-backblaze-b2": {
-        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
-        "LOCATION": "127.0.0.1:11211",
-        "OPTIONS": {
-            "default_noreply": False,
-            "allow_unicode_keys": True,
-            "no_delay": True,
-            "ignore_exc": True,
-            "max_pool_size": 4,
-            "connect_timeout": 0.5,
-        },
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "django_backblaze_b2_cache_table",
     },
 }
 
