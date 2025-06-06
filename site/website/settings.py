@@ -463,10 +463,20 @@ CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
         "LOCATION": "127.0.0.1:11211",
+        "OPTIONS": {
+            "use_binary": False,
+            "default_noreply": False,
+            "allow_unicode_keys": True,  # Important to avoid bytes keys
+        },
     },
     "django-backblaze-b2": {
         "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
         "LOCATION": "127.0.0.1:11211",
+        "OPTIONS": {
+            "use_binary": False,
+            "default_noreply": False,
+            "allow_unicode_keys": True,
+        },
     },
 }
 
