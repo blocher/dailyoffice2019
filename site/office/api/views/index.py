@@ -2980,10 +2980,22 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             if not default_storage.exists(filename):
                 return 0
                 
-            # For metadata reading, we need to open the file
-            with default_storage.open(filename, "rb") as file:
-                audio = MP3(file)
-                return audio.info.length
+            try:
+                # For django-storages compatibility, download to temporary file first
+                # This avoids issues with boto3/S3 file objects and mutagen library
+                with tempfile.NamedTemporaryFile(suffix='.mp3') as temp_file:
+                    # Read the file content from storage
+                    with default_storage.open(filename, "rb") as storage_file:
+                        # Copy content to temporary file
+                        temp_file.write(storage_file.read())
+                        temp_file.flush()
+                    
+                    # Now read with mutagen from the temporary file
+                    audio = MP3(temp_file.name)
+                    return audio.info.length
+            except Exception:
+                # Return 0 if there's any error reading the file or its metadata
+                return 0
 
         def get_audio_duration_from_file(file_path):
             """Get audio duration from a local file"""
