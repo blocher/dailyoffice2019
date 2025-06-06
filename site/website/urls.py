@@ -545,9 +545,7 @@ urlpatterns = [
     path("readings_doc/<str:testament>/", office_views.readings_doc, name="readings_doc_by_testament"),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns = urlpatterns + api_urlpatterns
-path("", include("django_backblaze_b2.urls")),
 urlpatterns += [
-    path("", include("django_backblaze_b2.urls")),
     path("ckeditor5/", include("django_ckeditor_5.urls"), name="ck_editor_5_upload_file"),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:

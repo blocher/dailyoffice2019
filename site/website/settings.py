@@ -96,7 +96,6 @@ INSTALLED_APPS = [
     "webpack_loader",
     "robots",
     "standrew",
-    "django_backblaze_b2",
 ]
 
 if DEBUG:
