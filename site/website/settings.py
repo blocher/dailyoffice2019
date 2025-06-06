@@ -480,7 +480,7 @@ BACKBLAZE_CONFIG = {
 # Configure Django storage to use Backblaze B2
 STORAGES = {
     "default": {
-        "BACKEND": "django_backblaze_b2.DjangoBackblazeB2Storage",
+        "BACKEND": "django_backblaze_b2.BackblazeB2Storage",
         "OPTIONS": BACKBLAZE_CONFIG,
     },
     "staticfiles": {
