@@ -469,7 +469,7 @@ CACHES = {
             "no_delay": True,  # Disable Nagle's algorithm
             "ignore_exc": True,  # Ignore memcached errors in some cases
             "max_pool_size": 4,  # Manage connection pool more efficiently
-            "socket_timeout": 0.5,  # Timeouts to prevent hanging operations
+            "connect_timeout": 0.5,
         },
     },
     "django-backblaze-b2": {
@@ -481,7 +481,7 @@ CACHES = {
             "no_delay": True,
             "ignore_exc": True,
             "max_pool_size": 4,
-            "socket_timeout": 0.5,
+            "connect_timeout": 0.5,
         },
     },
 }
