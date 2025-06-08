@@ -88,12 +88,29 @@
     </div>
   </div>
   <AudioPlayer
-    v-if="!loading && audioEnabled && audioLinks && audioLinks.length"
+    v-if="
+      !loading &&
+      audioEnabled &&
+      audioLinks &&
+      audioLinks.length &&
+      isWithinSevenDays &&
+      isEsvOrKjv
+    "
     :audio="audioLinks"
     :audioReady="audioReady"
     :office="office"
     :isEsvOrKjv="isEsvOrKjv"
     :isWithinSevenDays="isWithinSevenDays"
+  />
+  <AudioPlayerMessage
+    v-if="
+      !loading &&
+      audioEnabled &&
+      (!isWithinSevenDays || isEsvOrKjv || !audioLinks || !audioLinks.length)
+    "
+    :isEsvOrKjv="isEsvOrKjv"
+    :isWithinSevenDays="isWithinSevenDays"
+    :audioReady="audioReady"
   />
 </template>
 
@@ -115,12 +132,14 @@ import OfficeNav from '@/components/OfficeNav.vue';
 import PageNotFound from '@/views/PageNotFound.vue';
 import FontSizer from '@/components/FontSizer.vue';
 import { DynamicStorage } from '@/helpers/storage';
-import AudioPlayer from '@/components/AudioPlayer.vue'; // import AudioPlayer from '@/components/AudioPlayer.vue';
+import AudioPlayer from '@/components/AudioPlayer.vue';
+import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue'; // import AudioPlayer from '@/components/AudioPlayer.vue';
 // import AudioPlayer from '@/components/AudioPlayer.vue';
 
 export default {
   name: 'Office',
   components: {
+    AudioPlayerMessage,
     AudioPlayer,
     // AudioPlayer,
     OfficeHeading,
@@ -170,9 +189,9 @@ export default {
     isWithinSevenDays() {
       const today = new Date();
       const yesterday = new Date(today);
-      yesterday.setDate(today.getDate() - 2);
+      yesterday.setDate(today.getDate() - 3);
       const sevenDaysFromNow = new Date(today);
-      sevenDaysFromNow.setDate(today.getDate() + 8);
+      sevenDaysFromNow.setDate(today.getDate() + 9);
 
       return (
         this.calendarDate >= yesterday && this.calendarDate <= sevenDaysFromNow
