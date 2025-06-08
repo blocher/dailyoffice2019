@@ -497,14 +497,14 @@ export default {
       }
       return { position: position, service_name: service_name };
     },
-    changeService: function (service) {
+    changeService: async function (service) {
       this.service = service;
       let serviceValues = this.getPositionAndServiceName(service);
       let routeName = 'readingsByServiceAndDate';
       if (serviceValues.position > 0) {
         routeName = 'readingsByServicePositionAndDate';
       }
-      this.$router.push({
+      await this.$router.push({
         name: routeName,
         params: {
           service: serviceValues.service_name,
@@ -514,7 +514,9 @@ export default {
           position: serviceValues.position,
         },
       });
-      this.setReadingsToShow();
+
+      // Reload the data from the API
+      await this.initialize();
     },
     setReadingsToShow: function () {
       if (this.service) {
