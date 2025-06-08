@@ -290,6 +290,7 @@ export default {
 
   methods: {
     async setAudioLinks(url) {
+      if (import.meta.env.VITE_FETCH_AUDIO_ON) return [];
       url = `${url}&include_audio_links=true`;
       try {
         const data = await this.$http.get(url);

@@ -92,7 +92,6 @@
 <script>
 import Loading from '@/components/Loading.vue';
 import AHPLogo from '@/components/AHPLogo.vue';
-import { event } from 'vue-gtag';
 import { useActiveMeta, useMeta } from 'vue-meta';
 import AdditionalLinks from '@/components/AdditionalLinks.vue';
 import { ArrowDown } from '@element-plus/icons-vue';
@@ -162,7 +161,6 @@ export default {
   async created() {
     document.title = 'The Daily Office';
     try {
-      event('betaPageView');
       const settings_data = await this.$http.get(
         `${import.meta.env.VITE_API_URL}api/v1/available_settings/`
       );

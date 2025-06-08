@@ -48,7 +48,7 @@ import {
   faSunrise,
   faSunset,
 } from '@fortawesome/pro-duotone-svg-icons';
-import VueGtag from 'vue-gtag';
+import { createGtag, event } from 'vue-gtag';
 import { faFacebook } from '@fortawesome/free-brands-svg-icons';
 
 library.add(
@@ -135,19 +135,32 @@ router.beforeEach((to, from, next) => {
 const app = createApp(App)
   .use(router)
   .use(
-    VueGtag,
-    {
-      appName: 'The Daily Office',
-      pageTrackerScreenviewEnabled: true,
-      config: { id: 'G-NPCDSDW90W' },
-    },
-    router
+    createGtag({
+      tagId: 'G-NPCDSDW90W',
+      config: {
+        send_page_view: false, // we'll handle pageviews manually via router
+      },
+      // Auto-track using the Vue router
+      pageTracker: {
+        router,
+        useScreenview: false,
+        // Example: exclude admin pages
+        exclude: (to) => to.meta.noAnalytics === true,
+        // Template lets you customize the payload per route
+        template: (to) => ({
+          page_path: to.fullPath,
+          page_title: to.meta.title || document.title,
+        }),
+      },
+    })
   )
   .use(store)
   .use(VueAxios, axios)
   .use(ElementPlus)
   .use(createMetaManager())
   .component('font-awesome-icon', FontAwesomeIcon);
+
+app.config.globalProperties.$gtag = { event };
 
 router.isReady().then(() => {
   app.mount('#app');
