@@ -170,9 +170,9 @@ export default {
     isWithinSevenDays() {
       const today = new Date();
       const yesterday = new Date(today);
-      yesterday.setDate(today.getDate() - 1);
+      yesterday.setDate(today.getDate() - 2);
       const sevenDaysFromNow = new Date(today);
-      sevenDaysFromNow.setDate(today.getDate() + 7);
+      sevenDaysFromNow.setDate(today.getDate() + 8);
 
       return (
         this.calendarDate >= yesterday && this.calendarDate <= sevenDaysFromNow
