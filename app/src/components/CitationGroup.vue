@@ -6,8 +6,8 @@
         @click.prevent="goToReading(reading.full, 'full')"
         >{{ reading.full.citation }}</a
       >
-      <span v-if="reading.full.cycle == '30'">(30 Day Cycle)</span
-      ><span v-if="reading.full.cycle == '60'">(60 Day Cycle)</span>
+      <span v-if="reading.full.cycle == '30'"> (30 Day Cycle)</span
+      ><span v-if="reading.full.cycle == '60'"> (60 Day Cycle)</span>
       <span
         v-if="
           reading.abbreviated &&

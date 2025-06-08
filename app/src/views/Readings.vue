@@ -504,13 +504,20 @@ export default {
       if (serviceValues.position > 0) {
         routeName = 'readingsByServicePositionAndDate';
       }
+
+      // Use route params if available, otherwise use calendarDate
+      const year = this.$route.params.year || this.calendarDate.getFullYear();
+      const month =
+        this.$route.params.month || this.calendarDate.getMonth() + 1;
+      const day = this.$route.params.day || this.calendarDate.getDate();
+
       await this.$router.push({
         name: routeName,
         params: {
           service: serviceValues.service_name,
-          year: this.$route.params.year,
-          month: this.$route.params.month,
-          day: this.$route.params.day,
+          year: year,
+          month: month,
+          day: day,
           position: serviceValues.position,
         },
       });
