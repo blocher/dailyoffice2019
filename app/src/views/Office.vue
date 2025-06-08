@@ -91,6 +91,7 @@
     v-if="
       !loading &&
       audioEnabled &&
+      audioReady &&
       audioLinks &&
       audioLinks.length &&
       isWithinSevenDays &&
@@ -106,7 +107,11 @@
     v-if="
       !loading &&
       audioEnabled &&
-      (!isWithinSevenDays || isEsvOrKjv || !audioLinks || !audioLinks.length)
+      (!isWithinSevenDays ||
+        !isEsvOrKjv ||
+        !audioLinks ||
+        !audioLinks.length ||
+        !audioReady)
     "
     :isEsvOrKjv="isEsvOrKjv"
     :isWithinSevenDays="isWithinSevenDays"
