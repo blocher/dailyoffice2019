@@ -109,7 +109,7 @@
                       class="-m-3 p-3 flex flex-col justify-between rounded-lg hover:bg-gray-50"
                     >
                       <div class="flex md:h-full lg:flex-col">
-                        <div class="flex-shrink-0">
+                        <div class="shrink-0">
                           <span
                             class="inline-flex items-center justify-center h-10 w-10 rounded-md bg-indigo-500 text-white sm:h-12 sm:w-12"
                           >
@@ -155,7 +155,7 @@
                         >
                           <component
                             :is="item.icon"
-                            class="flex-shrink-0 h-6 w-6 text-gray-400"
+                            class="shrink-0 h-6 w-6 text-gray-400"
                             aria-hidden="true"
                           />
                           <span class="ml-3">{{ item.name }}</span>
@@ -228,7 +228,7 @@
                             >
                               <component
                                 :is="item.icon"
-                                class="flex-shrink-0 h-6 w-6 text-gray-400"
+                                class="shrink-0 h-6 w-6 text-gray-400"
                                 aria-hidden="true"
                               />
                               <span class="ml-4">{{ item.name }}</span>
@@ -254,7 +254,7 @@
                             >
                               <component
                                 :is="item.icon"
-                                class="flex-shrink-0 h-6 w-6 text-gray-400"
+                                class="shrink-0 h-6 w-6 text-gray-400"
                                 aria-hidden="true"
                               />
                               <span class="ml-4">{{ item.name }}</span>
@@ -282,7 +282,7 @@
                               :href="post.href"
                               class="-m-3 p-3 flex rounded-lg hover:bg-gray-100"
                             >
-                              <div class="hidden sm:block flex-shrink-0">
+                              <div class="hidden sm:block shrink-0">
                                 <img
                                   class="w-32 h-20 object-cover rounded-md"
                                   :src="post.imageUrl"
@@ -365,7 +365,7 @@
                     class="-m-3 flex items-center p-3 rounded-lg hover:bg-gray-50"
                   >
                     <div
-                      class="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-md bg-indigo-500 text-white sm:h-12 sm:w-12"
+                      class="shrink-0 flex items-center justify-center h-10 w-10 rounded-md bg-indigo-500 text-white sm:h-12 sm:w-12"
                     >
                       <component
                         :is="item.icon"

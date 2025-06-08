@@ -6,13 +6,45 @@ import vueScopedCss from 'eslint-plugin-vue-scoped-css';
 import vueEslintParser from 'vue-eslint-parser';
 import cypressPlugin from 'eslint-plugin-cypress';
 
+// Use a simpler config approach
 export default [
+  // Basic eslint recommended rules
+  eslintJs.configs.recommended,
+
+  // Vue files specific configuration
+  {
+    files: ['**/*.vue'],
+    plugins: {
+      vue,
+    },
+    languageOptions: {
+      parser: vueEslintParser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
+    },
+    rules: {
+      // Common Vue rules that should be present in most versions
+      'vue/multi-word-component-names': 'off',
+      'vue/no-v-html': 'off',
+      'vue/no-v-text-v-html-on-component': 'off',
+      'vue/no-deprecated-slot-attribute': 'error',
+      'vue/no-unused-components': 'error',
+      'vue/require-v-for-key': 'error',
+      'vue/no-use-v-if-with-v-for': 'error',
+    },
+  },
+
+  // General JS/Vue configuration
   {
     files: ['**/*.js', '**/*.vue'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
-      parser: vueEslintParser,
       globals: {
         ...globals.mocha,
         window: 'readonly',
@@ -38,22 +70,25 @@ export default [
       cypress: cypressPlugin,
     },
     rules: {
-      ...cypressPlugin.configs.recommended.rules,
-      ...eslintJs.configs.recommended.rules, // Include `eslint:recommended`
-      ...vue.configs['vue3-recommended'].rules, // Vue 3 recommended rules
-      // ...prettierConfig.rules, // Disable conflicting Prettier rules
-      'prettier/prettier': 'error', // Run Prettier as an ESLint rule
+      // Basic rules
       'no-console': 'error',
       'no-debugger': 'error',
-      'vue/no-deprecated-slot-attribute': 'error',
-      'vue/no-unused-components': 'error',
       'no-unused-vars': 'error',
-      'vue/multi-word-component-names': 'off',
-      'vue/script-setup-uses-vars': 'error',
-      'vue/no-v-html': 'off',
-      'vue/no-v-text-v-html-on-component': 'off',
+
+      // Prettier rule
+      'prettier/prettier': 'error',
+
+      // Cypress rules
+      'cypress/no-assigning-return-values': 'error',
+      'cypress/no-unnecessary-waiting': 'error',
+      'cypress/assertion-before-screenshot': 'warn',
+      'cypress/no-force': 'warn',
+      'cypress/no-async-tests': 'error',
+      'cypress/no-pause': 'error',
     },
   },
+
+  // Files to ignore
   {
     ignores: [
       'node_modules/**',
@@ -65,13 +100,3 @@ export default [
     ],
   },
 ];
-
-//            "no-console": "off",
-//             "no-debugger": "off",
-//             "vue/no-deprecated-slot-attribute": "off",
-//             "vue/no-unused-components": "warn",
-//             "no-unused-vars": "warn",
-//             "vue/multi-word-component-names": "off",
-//             "vue/script-setup-uses-vars": "error",
-//             "vue/no-v-html": "off",
-//             "vue/no-v-text-v-html-on-component": "off",

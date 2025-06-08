@@ -112,7 +112,7 @@
           >
             Filters
             <ChevronDownIcon
-              class="inline flex-shrink-0 -mr-1 ml-1 h-5 w-5 text-themed-400 group-hover:text-themed-500"
+              class="inline shrink-0 -mr-1 ml-1 h-5 w-5 text-themed-400 group-hover:text-themed-500"
               aria-hidden="true"
             />
           </button>
@@ -137,7 +137,7 @@
                       >{{ sectionCount(section.id) }}</span
                     >
                     <ChevronDownIcon
-                      class="flex-shrink-0 -mr-1 ml-1 h-5 w-5 text-themed-400 group-hover:text-themed-500"
+                      class="shrink-0 -mr-1 ml-1 h-5 w-5 text-themed-400 group-hover:text-themed-500"
                       aria-hidden="true"
                     />
                   </PopoverButton>
@@ -194,7 +194,7 @@
       <!--                <span>{{ activeFilter.label }}</span>-->
       <!--                <button-->
       <!--                    type="button"-->
-      <!--                    class="flex-shrink-0 ml-1 h-4 w-4 p-1 rounded-full inline-flex text-themed-400 hover:bg-themed-200 hover:text-themed-500">-->
+      <!--                    class="shrink-0 ml-1 h-4 w-4 p-1 rounded-full inline-flex text-themed-400 hover:bg-themed-200 hover:text-themed-500">-->
       <!--                  <span class="sr-only">Remove filter for {{ activeFilter.label }}</span>-->
       <!--                  <svg class="h-2 w-2" stroke="currentColor" fill="none" viewBox="0 0 8 8">-->
       <!--                    <path stroke-linecap="round" stroke-width="1.5" d="M1 1l6 6m0-6L1 7"/>-->

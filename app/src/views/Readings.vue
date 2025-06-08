@@ -611,7 +611,7 @@ h3 {
   margin: 1rem 0;
 }
 
-.flex-grow {
+.grow {
   flex-grow: 1;
 }
 </style>
