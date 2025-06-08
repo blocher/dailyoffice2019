@@ -65,32 +65,49 @@ const routes = [
       title: 'Calendar | The Daily Office',
     },
   },
+  // Place the most specific routes first
   {
-    path: '/:serviceType/:office/:forward?/',
-    name: 'Today',
-    component: Today,
-    meta: {
-      title: 'Pray | The Daily Office',
-    },
-  },
-  {
-    path: '/:office/:year/:month:/:day',
-    name: 'Pray',
-    component: Pray,
-    meta: {
-      title: 'Pray | The Daily Office',
-    },
-  },
-  {
-    path: '/:serviceType/:office/:year/:month:/:day',
-    name: 'Family Prayer',
+    path: '/:serviceType/:office/:year/:month/:day',
+    name: 'FamilyPrayerWithDate',
     component: Pray,
     meta: {
       title: 'Pray | Family Prayer',
     },
   },
- {
-      path: '/commemorations/:uuid',
+  {
+    path: '/:office/:year/:month/:day',
+    name: 'PrayWithDate',
+    component: Pray,
+    meta: {
+      title: 'Pray | The Daily Office',
+    },
+  },
+  {
+    path: '/:serviceType/:office/:forward?/',
+    name: 'FamilyPrayerToday',
+    component: Today,
+    meta: {
+      title: 'Pray | Family Prayer',
+    },
+  },
+  {
+    path: '/:serviceType/:office',
+    name: 'FamilyPrayer',
+    component: Today,
+    meta: {
+      title: 'Pray | Family Prayer',
+    },
+  },
+  {
+    path: '/:serviceType',
+    name: 'FamilyPrayer',
+    component: Today,
+    meta: {
+      title: 'Pray | Family Prayer',
+    },
+  },
+  {
+    path: '/commemorations/:uuid',
     name: 'Commemoration',
     component: Commemoration,
     meta: {
@@ -104,14 +121,7 @@ const routes = [
     meta: {
       title: 'Settings | The Daily Office',
     },
-  },{
-  path: '/:serviceType',
-  name: 'Family Prayer',
-  component: Today,
-  meta: {
-    title: 'Pray | Family Prayer',
-  }
-},
+  },
   {
     path: '/',
     name: 'Home',
