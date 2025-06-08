@@ -86,7 +86,7 @@
     </p>
   </div>
 
-  <el-backtop :bottom="backtopBotton" />
+  <el-backtop :bottom="backtopBottom" />
 </template>
 
 <script>
@@ -147,8 +147,9 @@ export default {
         ? 'primary'
         : '';
     },
-    backtopBotton() {
-      return this.audioEnabled ? 80 : 40;
+    backtopBottom() {
+      return 80;
+      //return this.audioEnabled ? 80 : 40;
     },
   },
   async mounted() {
