@@ -252,6 +252,9 @@ class ChurchYearIterator:
         if key:
             self.jump_by_key(key)
 
+    def __iter__(self):
+        return self
+
     def __next__(self):
         if self._index < len(self._church_year.dates):
             result = self._church_year.dates.values()[self._index]
