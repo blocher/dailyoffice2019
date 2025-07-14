@@ -334,7 +334,7 @@ class MPOpeningSentence(Module):
         if self.office.date.date.weekday() == 0:
             return {
                 "sentence": "I was glad when they said unto me, “We will go into the house of the Lord.",
-                "traditional": "I was glad when they said unto me, We will go into the house ofthe Lord.",
+                "traditional": "I was glad when they said unto me, We will go into the house of the Lord.",
                 "citation": "PSALM 122:1",
             }
 
