@@ -144,7 +144,7 @@ export default {
         icon: ['fad', 'moon-stars'],
       },
     ];
-    (this.readingsLink = {
+    ((this.readingsLink = {
       to: `/readings/${this.calendarDate.getFullYear()}/${
         this.calendarDate.getMonth() + 1
       }/${this.calendarDate.getDate()}`,
@@ -185,7 +185,7 @@ export default {
           name: 'close_of_day_prayer',
           icon: ['fad', 'moon-stars'],
         },
-      ]);
+      ]));
     if (this.currentServiceType == 'family') {
       this.links = this.familyLinks;
     } else {
