@@ -1,3 +1,5 @@
+/* eslint-env node */
+/* global process */
 import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';

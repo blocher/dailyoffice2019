@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "905429382209",
+    "firebase_url": "https://daily-office-2019.firebaseio.com",
+    "project_id": "daily-office-2019",
+    "storage_bucket": "daily-office-2019.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:905429382209:android:6cc3ce52655e63765882c0",
+        "android_client_info": {
+          "package_name": "com.dailyoffice.dailyoffice2019"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCiKIU6aCEVuWCNiCGuuLiq4q07xjZYL8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -18,6 +18,7 @@
   "dependencies": {
     "@achrinza/node-ipc": "^10.1.11",
     "@capacitor-community/electron": "^5.0.1",
+    "@capacitor-firebase/analytics": "^7.3.0",
     "@capacitor/app": "^7.0.0",
     "@capacitor/assets": "^3.0.5",
     "@capacitor/clipboard": "^7.0.0",
@@ -44,6 +45,7 @@
     "decode-uri-component": "^0.4.1",
     "dompurify": "^3.2.6",
     "element-plus": "^2.10.5",
+    "firebase": "^11.10.0",
     "follow-redirects": "^1.15.9",
     "install": "^0.13.0",
     "json5": "2.2.3",

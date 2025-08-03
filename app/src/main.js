@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { createApp } from 'vue';
 
 import store from './store';
@@ -50,6 +51,8 @@ import {
 } from '@fortawesome/pro-duotone-svg-icons';
 import { createGtag, event } from 'vue-gtag';
 import { faFacebook } from '@fortawesome/free-brands-svg-icons';
+import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
+import { Capacitor } from '@capacitor/core';
 
 library.add(
   faSun,
@@ -130,6 +133,54 @@ router.beforeEach((to, from, next) => {
     .forEach((tag) => document.head.appendChild(tag));
 
   next();
+});
+
+router.afterEach(async (to, from) => {
+  if (!Capacitor.isNativePlatform()) return;
+  const screenName = typeof to.name === 'string' ? to.name : to.path;
+  const prevScreen = typeof from.name === 'string' ? from.name : from.path;
+  const params = Object.keys(to.params || {}).length
+    ? JSON.stringify(to.params)
+    : undefined;
+  const query = Object.keys(to.query || {}).length
+    ? JSON.stringify(to.query)
+    : undefined;
+  try {
+    await FirebaseAnalytics.setCurrentScreen({
+      screenName,
+      screenClassOverride: screenName,
+    });
+    console.log('FirebaseAnalytics setCurrentScreen', {
+      screenName,
+      screenClassOverride: screenName,
+    });
+  } catch (err) {
+    console.error('FirebaseAnalytics setCurrentScreen error', err);
+  }
+  try {
+    await FirebaseAnalytics.logEvent({
+      name: 'screen_view',
+      params: {
+        screen_name: screenName,
+        screen_class: screenName,
+        page_path: to.fullPath,
+        page_title: to.meta?.title || document.title,
+        previous_screen_name: prevScreen,
+        previous_screen_class: prevScreen,
+        ...(params ? { screen_params: params } : {}),
+        ...(query ? { screen_query: query } : {}),
+      },
+    });
+    console.log('FirebaseAnalytics logEvent', {
+      event: 'screen_view',
+      screenName,
+      path: to.fullPath,
+      params,
+      query,
+    });
+  } catch (err) {
+    console.error('FirebaseAnalytics logEvent error', err);
+  }
 });
 
 const app = createApp(App)
