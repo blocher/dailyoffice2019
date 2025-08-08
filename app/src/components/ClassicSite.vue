@@ -1,9 +1,6 @@
 <template>
-  <span class="sub-menu-item">
-    <a href="https://classic.dailyoffice2019.com" target="_blank">
-      <font-awesome-icon :icon="['fad', 'fa-square-up-right']" /><br />
-      <span class="text-xs">Classic Site&nbsp;</span>
-    </a>
+  <!-- Classic Site component removed as part of visual refresh -->
+  <span class="sub-menu-item" style="display: none;">
   </span>
 </template>
 

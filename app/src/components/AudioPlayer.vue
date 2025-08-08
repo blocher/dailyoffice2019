@@ -226,7 +226,7 @@ export default {
 
 <style scoped>
 .audio-player {
-  padding: 10px;
+  padding: 0;
 }
 
 .audio-player .playing {
@@ -234,30 +234,22 @@ export default {
   color: green;
 }
 
-.el-button-group {
-  width: 100%;
-}
-
-.audio-list {
-  margin-bottom: 100px;
-}
-
-.el-switch {
-  margin-left: 10px;
-}
-
 .controls.fixed-controls {
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
-  display: flex;
-  flex-direction: row;
-  border-top: 2px solid #ccc;
   background-color: var(--color-bg);
-  padding: 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  padding: 12px 16px;
   z-index: 100;
-  flex-wrap: nowrap;
+  backdrop-filter: blur(8px);
+}
+
+:root.dark .controls.fixed-controls {
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .menu-and-buttons {
@@ -267,43 +259,177 @@ export default {
   align-items: center;
   width: 100%;
   flex-wrap: nowrap;
+  gap: 8px;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-button {
-  padding: 10px 15px;
-  font-size: 14px;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
+/* Enhanced button styling */
+.el-button-group {
+  display: flex;
+  gap: 4px;
 }
 
-button:disabled {
+.el-button-group .el-button {
+  font-family: 'Adobe Caslon Pro', serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: 6px;
+  padding: 8px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  background-color: var(--color-bg);
+  color: var(--font-color);
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+:root.dark .el-button-group .el-button {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.el-button-group .el-button:hover:not(:disabled) {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+:root.dark .el-button-group .el-button:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.el-button-group .el-button:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
+}
+
+/* Enhanced select styling */
+.smallSelector,
+.smallestSelector {
+  font-family: 'Adobe Caslon Pro', serif;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .smallSelector {
-  max-width: 200px;
+  max-width: 180px;
   flex-shrink: 1;
 }
 
 .smallestSelector {
-  max-width: 75px;
+  max-width: 70px;
   flex-shrink: 1;
-  margin-right: 5px;
+  margin-right: 4px;
 }
 
+/* Enhanced switch styling */
+.el-switch {
+  margin-left: 8px;
+}
+
+.scroll-toggle {
+  font-family: 'Adobe Caslon Pro', serif;
+  font-size: 0.8rem;
+}
+
+/* Error/info messages styling */
+.menu-and-buttons small {
+  font-family: 'Adobe Caslon Pro', serif;
+  font-size: 0.8rem;
+  color: var(--font-color);
+  opacity: 0.8;
+  line-height: 1.3;
+  text-align: center;
+  flex: 1;
+}
+
+.menu-and-buttons small a {
+  color: var(--link-color);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.menu-and-buttons small a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive design improvements */
 @media (max-width: 768px) {
-  .smallSelector {
-    max-width: 150px;
+  .controls.fixed-controls {
+    padding: 10px 12px;
   }
-
+  
   .menu-and-buttons {
-    flex-wrap: nowrap;
-    gap: 5px;
+    gap: 6px;
   }
+  
+  .smallSelector {
+    max-width: 140px;
+    font-size: 0.8rem;
+  }
+  
+  .smallestSelector {
+    max-width: 60px;
+    font-size: 0.8rem;
+  }
+  
+  .el-button-group .el-button {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+  }
+  
+  .menu-and-buttons small {
+    font-size: 0.75rem;
+  }
+}
 
-  button {
-    flex-shrink: 0;
+@media (max-width: 480px) {
+  .controls.fixed-controls {
+    padding: 8px 10px;
   }
+  
+  .menu-and-buttons {
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: center;
+  }
+  
+  .el-button-group {
+    order: 1;
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 6px;
+  }
+  
+  .smallSelector,
+  .smallestSelector {
+    order: 2;
+    max-width: 120px;
+    font-size: 0.75rem;
+  }
+  
+  .el-switch {
+    order: 3;
+    margin: 0;
+  }
+  
+  .menu-and-buttons small {
+    order: 0;
+    width: 100%;
+    margin-bottom: 6px;
+    font-size: 0.7rem;
+  }
+}
+
+/* Loading component styling within audio player */
+.audio-player .loading-container {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 8px;
 }
 </style>
