@@ -4,7 +4,11 @@
     <div id="notch" class="notch"></div>
     
     <!-- Main Header Section -->
-    <div class="header-container">
+    <div 
+      class="header-container" 
+      :data-seasonal-color="seasonalColor"
+      :style="seasonalColor ? { '--seasonal-color': seasonalColor } : {}"
+    >
       <!-- Theme Switcher in top right -->
       <div class="theme-switcher-container">
         <ThemeSwitcher />
@@ -148,6 +152,10 @@ export default {
     isOther: {
       type: String,
       default: '',
+    },
+    seasonalColor: {
+      type: String,
+      default: null,
     },
   },
   emits: ['share-settings', 'submit-feedback', 'email-signup'],
@@ -327,7 +335,7 @@ export default {
   }
 }
 
-// Seasonal color integration (placeholder for seasonal styling)
+// Seasonal color integration
 .header-container {
   position: relative;
   
@@ -342,6 +350,42 @@ export default {
       height: 3px;
       background: var(--seasonal-color, var(--link-color));
       border-radius: 2px;
+    }
+  }
+  
+  // Apply seasonal color when available
+  &[data-seasonal-color] {
+    .main-title {
+      position: relative;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -0.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 2px;
+        background: var(--seasonal-color);
+        border-radius: 1px;
+        opacity: 0.8;
+      }
+    }
+    
+    .nav-button.is-primary {
+      --el-color-primary: var(--seasonal-color);
+      --el-color-primary-light-3: var(--seasonal-color);
+      --el-color-primary-light-5: var(--seasonal-color);
+      --el-color-primary-light-7: var(--seasonal-color);
+      --el-color-primary-light-9: var(--seasonal-color);
+    }
+    
+    .resources-button.is-primary {
+      --el-color-primary: var(--seasonal-color);
+      --el-color-primary-light-3: var(--seasonal-color);
+      --el-color-primary-light-5: var(--seasonal-color);
+      --el-color-primary-light-7: var(--seasonal-color);
+      --el-color-primary-light-9: var(--seasonal-color);
     }
   }
 }
