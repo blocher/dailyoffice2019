@@ -1,84 +1,65 @@
 <template>
-  <span class="sub-menu-item">
-    <a href="" @click.prevent="toggleSharePanel">
-      <font-awesome-icon :icon="['fad', 'share-nodes']" />&nbsp;<br />
-      <span class="text-xs">Share Your Settings&nbsp;</span>
-    </a>
-  </span>
-  <!--  <el-dropdown-item @click.prevent="toggleSharePanel">Share Your Settings</el-dropdown-item>-->
-  <el-drawer v-model="showSharePanel" direction="rtl" :size="panelSize">
-    <div class="mt-4">
-      <h2 class="text-left pt-0">
-        <font-awesome-icon :icon="['fad', 'share-nodes']" />&nbsp; Share Link
+  <div class="settings-action">
+    <button @click.prevent="toggleSharePanel" class="action-button">
+      <span class="action-icon">🔗</span>
+      <span class="action-text">Share Settings</span>
+    </button>
+  </div>
+  
+  <el-drawer v-model="showSharePanel" direction="rtl" :size="panelSize" class="elegant-drawer">
+    <div class="drawer-content">
+      <h2 class="drawer-title">
+        🔗 Share Link
       </h2>
-      <p class="text-left pb-2 mx-1">
+      <p class="drawer-description">
         This share link allows you to sync your settings with others with whom
         you are praying.
       </p>
 
-      <p class="text-left pt-2 mx-1 my-2">
-        <font-awesome-icon :icon="['fad', 'circle-1']" />&nbsp;Pick the settings
-        you want to use on the <a href="/settings">Settings</a> pages.
-      </p>
-      <p class="text-left pt-2 mx-1 my-2">
-        <font-awesome-icon :icon="['fad', 'circle-2']" />&nbsp;Return here and
-        click the
-        <font-awesome-icon :icon="['fad', 'copy']" />
-        button below (or manually copy the link).
-      </p>
-      <div @click="copyLink">
-        <el-input
-          v-model="shareLink"
-          placeholder="Copy and paste share link"
-          readonly
-        >
-          <template #append>
-            <div class="copyLinkWrapper">
-              <font-awesome-icon :icon="['fad', 'copy']" />
-            </div>
-          </template>
-        </el-input>
-      </div>
-      <p class="text-left pt-2 mx-1 my-2">
-        <font-awesome-icon :icon="['fad', 'circle-3']" />&nbsp;Paste the link in
-        an email, text message, or chat and send to whoever you want to pray
-        with.
-      </p>
-      <p class="text-left pt-2 mx-1 my-2">
-        <font-awesome-icon :icon="['fad', 'circle-4']" />&nbsp;When the
-        recipients click on the link, the site will automatically be set up so
-        you are all using the same settings.
-      </p>
-    </div>
-    <div v-if="canShare" class="mt-4">
-      <h2 class="text-left pt-0 pt-4">
-        <font-awesome-icon :icon="['fad', 'share-nodes']" />&nbsp; Share using
-        an app
-      </h2>
-
-      <div class="full-width mt-4 text-left">
-        <a href="" @click="share($event)">
-          <el-button type="primary" round>Share with an app</el-button>
-        </a>
-        <p class="mt-4">
-          Click this button to shware with an app on your phone or computer such
-          as your e-mail client, iMessages, or contact book
+      <div class="step-instructions">
+        <p class="instruction-step">
+          <span class="step-number">1</span>Pick the settings
+          you want to use on the <a href="/settings">Settings</a> pages.
+        </p>
+        <p class="instruction-step">
+          <span class="step-number">2</span>Return here and
+          click the copy button below (or manually copy the link).
+        </p>
+        <div @click="copyLink" class="link-input-container">
+          <el-input
+            v-model="shareLink"
+            placeholder="Copy and paste share link"
+            readonly
+            class="share-input"
+          >
+            <template #append>
+              <div class="copy-button">
+                📋
+              </div>
+            </template>
+          </el-input>
+        </div>
+        <p class="instruction-step">
+          <span class="step-number">3</span>Paste the link in
+          an email, text message, or chat and send to whoever you want to pray
+          with.
+        </p>
+        <p class="instruction-step">
+          <span class="step-number">4</span>When the
+          recipients click on the link, the site will automatically be set up so
+          you are all using the same settings.
         </p>
       </div>
-    </div>
-    <div class="pb-4">
-      <h2 class="text-left">
-        <font-awesome-icon :icon="['fad', 'share-nodes']" />&nbsp; Share
-        Settings QR Code
-      </h2>
-      <div class="w-full settings-qr-code float-left p-2">
-        <qrcode-vue
-          :value="shareLink"
-          :size="350"
-          :render-as="'svg'"
-          level="L"
-          class="mb-4"
-        />
+
+      <div class="link-details">
+        <el-collapse>
+          <el-collapse-item title="🔧 Advanced Options" name="1">
+            <p>
+              <a target="_blank" :href="shareLink">{{ shareLink }}</a>
+            </p>
+            <QrcodeVue :value="shareLink" :size="200" level="M" />
+          </el-collapse-item>
+        </el-collapse>
       </div>
     </div>
   </el-drawer>
@@ -224,7 +205,162 @@ export default {
   },
 };
 </script>
-<style lang="scss">
+
+<style lang="scss" scoped>
+.settings-action {
+  display: flex;
+  justify-content: center;
+}
+
+.action-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem;
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  color: var(--font-color);
+  font-family: 'Adobe Caslon Pro', serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  min-width: 100px;
+}
+
+.action-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+:root.dark .action-button {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+:root.dark .action-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.action-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.action-text {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.elegant-drawer {
+  .el-drawer__body {
+    padding: 0;
+  }
+}
+
+.drawer-content {
+  padding: 2rem;
+  font-family: 'Adobe Caslon Pro', serif;
+}
+
+.drawer-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 0 0 1rem 0;
+  color: var(--font-color);
+  text-align: left;
+  padding-top: 0;
+}
+
+.drawer-description {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 2rem;
+  color: var(--font-color);
+  opacity: 0.9;
+  text-align: left;
+  padding-bottom: 0.5rem;
+  margin: 0 0.25rem 2rem 0.25rem;
+}
+
+.step-instructions {
+  margin-bottom: 2rem;
+}
+
+.instruction-step {
+  display: flex;
+  align-items: flex-start;
+  margin: 1rem 0.25rem;
+  padding: 0.5rem 0;
+  text-align: left;
+  line-height: 1.5;
+}
+
+.step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background-color: rgba(0, 0, 0, 0.1);
+  color: var(--font-color);
+  border-radius: 50%;
+  font-weight: 600;
+  font-size: 0.8rem;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+:root.dark .step-number {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.link-input-container {
+  margin: 1rem 0;
+}
+
+.share-input {
+  font-family: 'Adobe Caslon Pro', serif;
+}
+
+.copy-button {
+  cursor: pointer;
+  padding: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.copy-button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+:root.dark .copy-button {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+:root.dark .copy-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.link-details {
+  margin-top: 2rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding-top: 1rem;
+}
+
+:root.dark .link-details {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .settings-qr-code {
   svg,
   canvas {

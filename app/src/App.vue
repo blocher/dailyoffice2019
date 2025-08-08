@@ -1,81 +1,90 @@
 <template>
   <div id="notch" class="notch"></div>
-  <div class="m-4">
-    <ThemeSwitcher />
-  </div>
-  <!--  <TopMenu v-if="!loading"/>-->
-  <div
-    class="w-full mt-10 mx-auto content-center flex items-center justify-center gap-2"
-  >
-    <h2>The Daily Office</h2>
-  </div>
-  <div
-    class="w-full mt-4 mx-auto content-center flex items-center justify-center gap-2"
-  >
-    <a href="/">
-      <el-button :type="isPray" round>Pray</el-button>
-    </a>
-    <a href="/settings">
-      <el-button :type="isSettings" round>Settings</el-button>
-    </a>
-    <a href="/calendar">
-      <el-button :type="isCalendar" round>Calendar</el-button>
-    </a>
-  </div>
-  <div
-    class="w-full mt-4 mx-auto content-center flex items-center justify-center gap-2"
-  >
-    <el-button v-if="showLinks" :type="isOther">
-      <el-dropdown :hide-on-click="true" trigger="click">
-        <span class="el-dropdown-link">
-          More Resources
-          <el-icon class="el-icon--right">
-            <arrow-down />
-          </el-icon>
-        </span>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <a href="/about">
-              <el-dropdown-item>About</el-dropdown-item>
-            </a>
-            <el-dropdown-item disabled>--Prayer Resources--</el-dropdown-item>
-            <a href="/collects">
-              <el-dropdown-item>Collects</el-dropdown-item>
-            </a>
-            <a href="/psalms">
-              <el-dropdown-item>Psalms</el-dropdown-item>
-            </a>
-            <a href="/litany">
-              <el-dropdown-item>Great Litany</el-dropdown-item>
-            </a>
-            <a href="/readings">
-              <el-dropdown-item>Readings</el-dropdown-item>
-            </a>
-            <el-dropdown-item disabled>--More--</el-dropdown-item>
-            <el-dropdown-item
-              @click="
-                $refs.additionalLinks.$refs.shareSettings.toggleSharePanel()
-              "
-              >Share Settings
-            </el-dropdown-item>
-            <el-dropdown-item
-              @click="
-                $refs.additionalLinks.$refs.submitFeedback.showFeedbackPanel()
-              "
-              >Submit Feedback
-            </el-dropdown-item>
-            <el-dropdown-item
-              @click="$refs.additionalLinks.$refs.emailSignup.showEmailPanel()"
-              >Get Email Updates
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-    </el-button>
-  </div>
+  
+  <!-- Redesigned Header Section -->
+  <header class="book-header" :class="seasonalAccentClass">
+    <div class="header-container">
+      <!-- Theme switcher moved to top right corner -->
+      <div class="theme-switcher-container">
+        <ThemeSwitcher />
+      </div>
+      
+      <!-- Main title with elegant typography -->
+      <div class="main-title-section">
+        <h1 class="book-title">The Daily Office</h1>
+        <div class="title-ornament">✠</div>
+        <p class="book-subtitle">Book of Common Prayer 2019</p>
+        <div v-if="seasonalColor" class="seasonal-indicator" :class="`seasonal-${seasonalColor}`"></div>
+      </div>
+      
+      <!-- Primary navigation with refined styling -->
+      <nav class="primary-navigation">
+        <div class="nav-row primary-actions">
+          <a href="/" class="nav-link" :class="{ active: isPray }">
+            <span class="nav-text">Pray</span>
+          </a>
+          <a href="/settings" class="nav-link" :class="{ active: isSettings }">
+            <span class="nav-text">Settings</span>
+          </a>
+          <a href="/calendar" class="nav-link" :class="{ active: isCalendar }">
+            <span class="nav-text">Calendar</span>
+          </a>
+        </div>
+        
+        <!-- Secondary navigation dropdown with better styling -->
+        <div class="nav-row secondary-actions" v-if="showLinks">
+          <div class="resources-dropdown">
+            <el-dropdown :hide-on-click="true" trigger="click" class="elegant-dropdown">
+              <span class="dropdown-trigger">
+                More Resources
+                <span class="dropdown-arrow">▾</span>
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu class="elegant-dropdown-menu">
+                  <a href="/about">
+                    <el-dropdown-item>About</el-dropdown-item>
+                  </a>
+                  <el-dropdown-item disabled class="section-divider">Prayer Resources</el-dropdown-item>
+                  <a href="/collects">
+                    <el-dropdown-item>Collects</el-dropdown-item>
+                  </a>
+                  <a href="/psalms">
+                    <el-dropdown-item>Psalms</el-dropdown-item>
+                  </a>
+                  <a href="/litany">
+                    <el-dropdown-item>Great Litany</el-dropdown-item>
+                  </a>
+                  <a href="/readings">
+                    <el-dropdown-item>Readings</el-dropdown-item>
+                  </a>
+                  <el-dropdown-item disabled class="section-divider">More</el-dropdown-item>
+                  <el-dropdown-item
+                    @click="
+                      $refs.additionalLinks.$refs.shareSettings.toggleSharePanel()
+                    "
+                    >Share Settings
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    @click="
+                      $refs.additionalLinks.$refs.submitFeedback.showFeedbackPanel()
+                    "
+                    >Submit Feedback
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    @click="$refs.additionalLinks.$refs.emailSignup.showEmailPanel()"
+                    >Get Email Updates
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
   <div class="main-body">
     <Loading v-if="loading" />
-    <!--    <BetaNote/>-->
     <el-alert v-if="error" :title="error" type="error" />
     <router-view v-if="!loading" :key="$route.fullPath" />
     <AdditionalLinks v-if="showLinks" ref="additionalLinks" />
@@ -95,7 +104,6 @@ import AHPLogo from '@/components/AHPLogo.vue';
 import { event } from 'vue-gtag';
 import { useActiveMeta, useMeta } from 'vue-meta';
 import AdditionalLinks from '@/components/AdditionalLinks.vue';
-import { ArrowDown } from '@element-plus/icons-vue';
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue';
 import { DynamicStorage } from '@/helpers/storage.js';
 
@@ -104,7 +112,6 @@ export default {
     AHPLogo,
     Loading,
     AdditionalLinks,
-    ArrowDown,
     ThemeSwitcher,
   },
   setup() {
@@ -123,32 +130,32 @@ export default {
       error: false,
       showLinks: false,
       audioEnabled: false,
+      seasonalColor: null,
     };
   },
 
   computed: {
     isPray() {
-      return this.$route.name === 'Pray' || this.$route.name === 'Home'
-        ? 'primary'
-        : '';
+      return this.$route.name === 'Pray' || this.$route.name === 'Home';
     },
     isSettings() {
-      return this.$route.name === 'Settings' ? 'primary' : '';
+      return this.$route.name === 'Settings';
     },
     isCalendar() {
-      return this.$route.name === 'calendar' ? 'primary' : '';
+      return this.$route.name === 'calendar';
     },
     isOther() {
       return this.$route.name === 'About' ||
         this.$route.name === 'Collects' ||
         this.$route.name === 'readings' ||
         this.$route.name === 'litany' ||
-        this.$route.name === 'Psalms'
-        ? 'primary'
-        : '';
+        this.$route.name === 'Psalms';
     },
     backtopBotton() {
       return this.audioEnabled ? 80 : 40;
+    },
+    seasonalAccentClass() {
+      return this.seasonalColor ? `seasonal-accent-${this.seasonalColor}` : '';
     },
   },
   async mounted() {
@@ -181,6 +188,31 @@ export default {
     this.loading = false;
     await this.$nextTick();
     this.showLinks = true;
+    
+    // Fetch seasonal color
+    await this.fetchSeasonalColor();
+  },
+  methods: {
+    async fetchSeasonalColor() {
+      try {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const dateString = `${year}-${month}-${day}`;
+        
+        const response = await this.$http.get(
+          `${import.meta.env.VITE_API_URL}api/v1/calendar/${dateString}/`
+        );
+        
+        if (response.data && response.data.season && response.data.season.colors) {
+          this.seasonalColor = response.data.season.colors[0];
+        }
+      } catch (error) {
+        console.warn('Could not fetch seasonal color:', error);
+        // Gracefully degrade - no seasonal accent
+      }
+    },
   },
 };
 </script>
@@ -516,5 +548,323 @@ body {
 
 .el-drawer {
   padding-top: env(safe-area-inset-top);
+}
+
+/* Book-like Header Styles */
+.book-header {
+  background-color: var(--color-bg);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 2rem 0 1.5rem 0;
+  margin-bottom: 2rem;
+}
+
+:root.dark .book-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.header-container {
+  max-width: 65ch;
+  margin: 0 auto;
+  padding: 0 2rem;
+  position: relative;
+}
+
+.theme-switcher-container {
+  position: absolute;
+  top: 0;
+  right: 2rem;
+  z-index: 10;
+}
+
+.main-title-section {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.book-title {
+  font-family: 'Adobe Caslon Pro', serif;
+  font-size: 2.5rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin: 0 0 0.5rem 0;
+  color: var(--font-color);
+  line-height: 1.2;
+}
+
+.title-ornament {
+  font-size: 1.5rem;
+  margin: 0.5rem 0;
+  color: var(--font-color);
+  opacity: 0.7;
+}
+
+.book-subtitle {
+  font-family: 'Adobe Caslon Pro', serif;
+  font-size: 0.9rem;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 0;
+  color: var(--font-color);
+  opacity: 0.8;
+}
+
+.primary-navigation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-row {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.primary-actions {
+  justify-content: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding-bottom: 1rem;
+}
+
+:root.dark .primary-actions {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--font-color);
+  font-family: 'Adobe Caslon Pro', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.nav-link:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+:root.dark .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.nav-link.active {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-color: rgba(0, 0, 0, 0.2);
+  font-weight: 700;
+}
+
+:root.dark .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.secondary-actions {
+  margin-top: 0.5rem;
+}
+
+.resources-dropdown {
+  position: relative;
+}
+
+.dropdown-trigger {
+  font-family: 'Adobe Caslon Pro', serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--font-color);
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dropdown-trigger:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+:root.dark .dropdown-trigger:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dropdown-arrow {
+  font-size: 0.8rem;
+  transition: transform 0.2s ease;
+}
+
+.section-divider {
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  color: var(--font-color) !important;
+  opacity: 0.6 !important;
+  padding: 0.5rem 1rem !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+  margin: 0.25rem 0 !important;
+}
+
+:root.dark .section-divider {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .book-title {
+    font-size: 2rem;
+  }
+  
+  .header-container {
+    padding: 0 1rem;
+  }
+  
+  .theme-switcher-container {
+    right: 1rem;
+  }
+  
+  .nav-row {
+    gap: 1rem;
+  }
+  
+  .nav-link {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .book-title {
+    font-size: 1.5rem;
+  }
+  
+  .nav-row {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .nav-link {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.6rem;
+  }
+}
+
+/* Seasonal Color Integration */
+.seasonal-indicator {
+  width: 60px;
+  height: 3px;
+  margin: 0.5rem auto 0 auto;
+  border-radius: 2px;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+.seasonal-red {
+  background-color: #c21c13;
+}
+
+.seasonal-green {
+  background-color: #077339;
+}
+
+.seasonal-white {
+  background-color: #666;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+:root.dark .seasonal-white {
+  background-color: #ccc;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.seasonal-purple {
+  background-color: #64147d;
+}
+
+.seasonal-black {
+  background-color: #333;
+}
+
+.seasonal-rose {
+  background-color: #ffb6c1;
+}
+
+/* Seasonal accent borders for header */
+.book-header.seasonal-accent-red {
+  border-bottom: 2px solid #c21c13;
+}
+
+.book-header.seasonal-accent-green {
+  border-bottom: 2px solid #077339;
+}
+
+.book-header.seasonal-accent-white {
+  border-bottom: 2px solid #666;
+}
+
+:root.dark .book-header.seasonal-accent-white {
+  border-bottom: 2px solid #ccc;
+}
+
+.book-header.seasonal-accent-purple {
+  border-bottom: 2px solid #64147d;
+}
+
+.book-header.seasonal-accent-black {
+  border-bottom: 2px solid #333;
+}
+
+.book-header.seasonal-accent-rose {
+  border-bottom: 2px solid #ffb6c1;
+}
+
+/* Seasonal accent for navigation active states */
+.seasonal-accent-red .nav-link.active {
+  border-color: #c21c13;
+  background-color: rgba(194, 28, 19, 0.1);
+}
+
+.seasonal-accent-green .nav-link.active {
+  border-color: #077339;
+  background-color: rgba(7, 115, 57, 0.1);
+}
+
+.seasonal-accent-white .nav-link.active {
+  border-color: #666;
+  background-color: rgba(102, 102, 102, 0.1);
+}
+
+:root.dark .seasonal-accent-white .nav-link.active {
+  border-color: #ccc;
+  background-color: rgba(204, 204, 204, 0.1);
+}
+
+.seasonal-accent-purple .nav-link.active {
+  border-color: #64147d;
+  background-color: rgba(100, 20, 125, 0.1);
+}
+
+.seasonal-accent-black .nav-link.active {
+  border-color: #333;
+  background-color: rgba(51, 51, 51, 0.1);
+}
+
+.seasonal-accent-rose .nav-link.active {
+  border-color: #ffb6c1;
+  background-color: rgba(255, 182, 193, 0.1);
 }
 </style>
