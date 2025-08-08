@@ -1,9 +1,7 @@
 <template>
+  <!-- Classic Site component removed as per Visual Refresh 2.0 requirements -->
   <span class="sub-menu-item">
-    <a href="https://classic.dailyoffice2019.com" target="_blank">
-      <font-awesome-icon :icon="['fad', 'fa-square-up-right']" /><br />
-      <span class="text-xs">Classic Site&nbsp;</span>
-    </a>
+    <!-- Placeholder for future functionality or remove component entirely -->
   </span>
 </template>
 

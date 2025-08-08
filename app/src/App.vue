@@ -1,81 +1,17 @@
 <template>
-  <div id="notch" class="notch"></div>
-  <div class="m-4">
-    <ThemeSwitcher />
-  </div>
-  <!--  <TopMenu v-if="!loading"/>-->
-  <div
-    class="w-full mt-10 mx-auto content-center flex items-center justify-center gap-2"
-  >
-    <h2>The Daily Office</h2>
-  </div>
-  <div
-    class="w-full mt-4 mx-auto content-center flex items-center justify-center gap-2"
-  >
-    <a href="/">
-      <el-button :type="isPray" round>Pray</el-button>
-    </a>
-    <a href="/settings">
-      <el-button :type="isSettings" round>Settings</el-button>
-    </a>
-    <a href="/calendar">
-      <el-button :type="isCalendar" round>Calendar</el-button>
-    </a>
-  </div>
-  <div
-    class="w-full mt-4 mx-auto content-center flex items-center justify-center gap-2"
-  >
-    <el-button v-if="showLinks" :type="isOther">
-      <el-dropdown :hide-on-click="true" trigger="click">
-        <span class="el-dropdown-link">
-          More Resources
-          <el-icon class="el-icon--right">
-            <arrow-down />
-          </el-icon>
-        </span>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <a href="/about">
-              <el-dropdown-item>About</el-dropdown-item>
-            </a>
-            <el-dropdown-item disabled>--Prayer Resources--</el-dropdown-item>
-            <a href="/collects">
-              <el-dropdown-item>Collects</el-dropdown-item>
-            </a>
-            <a href="/psalms">
-              <el-dropdown-item>Psalms</el-dropdown-item>
-            </a>
-            <a href="/litany">
-              <el-dropdown-item>Great Litany</el-dropdown-item>
-            </a>
-            <a href="/readings">
-              <el-dropdown-item>Readings</el-dropdown-item>
-            </a>
-            <el-dropdown-item disabled>--More--</el-dropdown-item>
-            <el-dropdown-item
-              @click="
-                $refs.additionalLinks.$refs.shareSettings.toggleSharePanel()
-              "
-              >Share Settings
-            </el-dropdown-item>
-            <el-dropdown-item
-              @click="
-                $refs.additionalLinks.$refs.submitFeedback.showFeedbackPanel()
-              "
-              >Submit Feedback
-            </el-dropdown-item>
-            <el-dropdown-item
-              @click="$refs.additionalLinks.$refs.emailSignup.showEmailPanel()"
-              >Get Email Updates
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-    </el-button>
-  </div>
+  <DailyOfficeHeader 
+    :show-links="showLinks"
+    :is-pray="isPray"
+    :is-settings="isSettings"
+    :is-calendar="isCalendar"
+    :is-other="isOther"
+    @share-settings="$refs.additionalLinks.$refs.shareSettings.toggleSharePanel()"
+    @submit-feedback="$refs.additionalLinks.$refs.submitFeedback.showFeedbackPanel()"
+    @email-signup="$refs.additionalLinks.$refs.emailSignup.showEmailPanel()"
+  />
+  
   <div class="main-body">
     <Loading v-if="loading" />
-    <!--    <BetaNote/>-->
     <el-alert v-if="error" :title="error" type="error" />
     <router-view v-if="!loading" :key="$route.fullPath" />
     <AdditionalLinks v-if="showLinks" ref="additionalLinks" />
@@ -94,8 +30,7 @@ import Loading from '@/components/Loading.vue';
 import AHPLogo from '@/components/AHPLogo.vue';
 import { useActiveMeta, useMeta } from 'vue-meta';
 import AdditionalLinks from '@/components/AdditionalLinks.vue';
-import { ArrowDown } from '@element-plus/icons-vue';
-import ThemeSwitcher from '@/components/ThemeSwitcher.vue';
+import DailyOfficeHeader from '@/components/DailyOfficeHeader.vue';
 import { DynamicStorage } from '@/helpers/storage.js';
 
 export default {
@@ -103,8 +38,7 @@ export default {
     AHPLogo,
     Loading,
     AdditionalLinks,
-    ArrowDown,
-    ThemeSwitcher,
+    DailyOfficeHeader,
   },
   setup() {
     useMeta({
@@ -336,19 +270,6 @@ select:focus {
 body {
   color: var(--font-color);
   background-color: var(--color-bg);
-  margin-top: calc(env(safe-area-inset-top) + 1.4rem) !important;
-
-  #notch {
-    display: block;
-    position: fixed;
-    height: env(safe-area-inset-top);
-    width: 100%;
-    margin: 0;
-    top: 0;
-    left: 0;
-    z-index: 9999;
-    background-color: #26282a;
-  }
 
   .el-input__inner,
   el-select-dropdown__item {
