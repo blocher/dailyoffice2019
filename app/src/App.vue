@@ -2,7 +2,7 @@
   <div id="notch" class="notch"></div>
   
   <!-- Redesigned Header Section -->
-  <header class="book-header">
+  <header class="book-header" :class="seasonalAccentClass">
     <div class="header-container">
       <!-- Theme switcher moved to top right corner -->
       <div class="theme-switcher-container">
@@ -14,6 +14,7 @@
         <h1 class="book-title">The Daily Office</h1>
         <div class="title-ornament">✠</div>
         <p class="book-subtitle">Book of Common Prayer 2019</p>
+        <div v-if="seasonalColor" class="seasonal-indicator" :class="`seasonal-${seasonalColor}`"></div>
       </div>
       
       <!-- Primary navigation with refined styling -->
@@ -129,6 +130,7 @@ export default {
       error: false,
       showLinks: false,
       audioEnabled: false,
+      seasonalColor: null,
     };
   },
 
@@ -151,6 +153,9 @@ export default {
     },
     backtopBotton() {
       return this.audioEnabled ? 80 : 40;
+    },
+    seasonalAccentClass() {
+      return this.seasonalColor ? `seasonal-accent-${this.seasonalColor}` : '';
     },
   },
   async mounted() {
@@ -183,6 +188,31 @@ export default {
     this.loading = false;
     await this.$nextTick();
     this.showLinks = true;
+    
+    // Fetch seasonal color
+    await this.fetchSeasonalColor();
+  },
+  methods: {
+    async fetchSeasonalColor() {
+      try {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const dateString = `${year}-${month}-${day}`;
+        
+        const response = await this.$http.get(
+          `${import.meta.env.VITE_API_URL}api/v1/calendar/${dateString}/`
+        );
+        
+        if (response.data && response.data.season && response.data.season.colors) {
+          this.seasonalColor = response.data.season.colors[0];
+        }
+      } catch (error) {
+        console.warn('Could not fetch seasonal color:', error);
+        // Gracefully degrade - no seasonal accent
+      }
+    },
   },
 };
 </script>
@@ -731,5 +761,110 @@ body {
     font-size: 0.8rem;
     padding: 0.3rem 0.6rem;
   }
+}
+
+/* Seasonal Color Integration */
+.seasonal-indicator {
+  width: 60px;
+  height: 3px;
+  margin: 0.5rem auto 0 auto;
+  border-radius: 2px;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+.seasonal-red {
+  background-color: #c21c13;
+}
+
+.seasonal-green {
+  background-color: #077339;
+}
+
+.seasonal-white {
+  background-color: #666;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+:root.dark .seasonal-white {
+  background-color: #ccc;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.seasonal-purple {
+  background-color: #64147d;
+}
+
+.seasonal-black {
+  background-color: #333;
+}
+
+.seasonal-rose {
+  background-color: #ffb6c1;
+}
+
+/* Seasonal accent borders for header */
+.book-header.seasonal-accent-red {
+  border-bottom: 2px solid #c21c13;
+}
+
+.book-header.seasonal-accent-green {
+  border-bottom: 2px solid #077339;
+}
+
+.book-header.seasonal-accent-white {
+  border-bottom: 2px solid #666;
+}
+
+:root.dark .book-header.seasonal-accent-white {
+  border-bottom: 2px solid #ccc;
+}
+
+.book-header.seasonal-accent-purple {
+  border-bottom: 2px solid #64147d;
+}
+
+.book-header.seasonal-accent-black {
+  border-bottom: 2px solid #333;
+}
+
+.book-header.seasonal-accent-rose {
+  border-bottom: 2px solid #ffb6c1;
+}
+
+/* Seasonal accent for navigation active states */
+.seasonal-accent-red .nav-link.active {
+  border-color: #c21c13;
+  background-color: rgba(194, 28, 19, 0.1);
+}
+
+.seasonal-accent-green .nav-link.active {
+  border-color: #077339;
+  background-color: rgba(7, 115, 57, 0.1);
+}
+
+.seasonal-accent-white .nav-link.active {
+  border-color: #666;
+  background-color: rgba(102, 102, 102, 0.1);
+}
+
+:root.dark .seasonal-accent-white .nav-link.active {
+  border-color: #ccc;
+  background-color: rgba(204, 204, 204, 0.1);
+}
+
+.seasonal-accent-purple .nav-link.active {
+  border-color: #64147d;
+  background-color: rgba(100, 20, 125, 0.1);
+}
+
+.seasonal-accent-black .nav-link.active {
+  border-color: #333;
+  background-color: rgba(51, 51, 51, 0.1);
+}
+
+.seasonal-accent-rose .nav-link.active {
+  border-color: #ffb6c1;
+  background-color: rgba(255, 182, 193, 0.1);
 }
 </style>
