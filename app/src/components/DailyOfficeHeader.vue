@@ -80,13 +80,13 @@
                 </a>
                 <a href="/litany">
                   <el-dropdown-item>
-                    <font-awesome-icon :icon="['fas', 'fa-list']" class="menu-icon" />
+                    <font-awesome-icon :icon="['fas', 'fa-list-ul']" class="menu-icon" />
                     Great Litany
                   </el-dropdown-item>
                 </a>
                 <a href="/readings">
                   <el-dropdown-item>
-                    <font-awesome-icon :icon="['fas', 'fa-book-bible']" class="menu-icon" />
+                    <font-awesome-icon :icon="['fas', 'fa-book-open']" class="menu-icon" />
                     Readings
                   </el-dropdown-item>
                 </a>
@@ -96,7 +96,7 @@
                     $emit('share-settings')
                   "
                 >
-                  <font-awesome-icon :icon="['fas', 'fa-share']" class="menu-icon" />
+                  <font-awesome-icon :icon="['fas', 'fa-share-alt']" class="menu-icon" />
                   Share Settings
                 </el-dropdown-item>
                 <el-dropdown-item
@@ -104,7 +104,7 @@
                     $emit('submit-feedback')
                   "
                 >
-                  <font-awesome-icon :icon="['fas', 'fa-comment']" class="menu-icon" />
+                  <font-awesome-icon :icon="['fas', 'fa-comment-dots']" class="menu-icon" />
                   Submit Feedback
                 </el-dropdown-item>
                 <el-dropdown-item
@@ -289,10 +289,57 @@ export default {
 }
 
 .resources-dropdown {
+  min-width: 200px;
+  background: var(--color-bg);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 0.5rem 0;
+  
+  .el-dropdown-menu__item {
+    padding: 0.75rem 1rem;
+    font-family: 'Adobe Caslon Pro', serif;
+    font-weight: 500;
+    letter-spacing: 0.025em;
+    transition: all 0.2s ease;
+    
+    &:not(.is-disabled):hover {
+      background: linear-gradient(
+        90deg,
+        var(--el-fill-color-light) 0%,
+        var(--el-fill-color-lighter) 100%
+      );
+      transform: translateX(2px);
+    }
+    
+    &.is-disabled {
+      background: transparent;
+      cursor: default;
+      
+      &:hover {
+        background: transparent;
+        transform: none;
+      }
+    }
+    
+    a {
+      color: inherit;
+      text-decoration: none;
+      display: block;
+      width: 100%;
+    }
+  }
+
   .menu-icon {
-    margin-right: 0.5rem;
+    margin-right: 0.75rem;
     width: 1rem;
     opacity: 0.7;
+    transition: opacity 0.2s ease;
+  }
+  
+  .el-dropdown-menu__item:not(.is-disabled):hover .menu-icon {
+    opacity: 1;
   }
 
   .section-divider {
@@ -303,12 +350,75 @@ export default {
     color: var(--el-text-color-secondary);
     border-top: 1px solid var(--el-border-color-lighter);
     margin-top: 0.5rem;
-    padding-top: 0.5rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.25rem;
+    position: relative;
 
     &:first-of-type {
       border-top: none;
       margin-top: 0;
-      padding-top: 0;
+      padding-top: 0.5rem;
+    }
+    
+    // Add decorative element
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 30px;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        var(--el-border-color) 50%,
+        transparent 100%
+      );
+    }
+  }
+}
+
+// Book-like paper texture for dropdown
+.resources-dropdown::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.02) 0%,
+    transparent 25%,
+    rgba(0, 0, 0, 0.01) 75%,
+    transparent 100%
+  );
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+// Dark mode adjustments
+:root.dark {
+  .resources-dropdown {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    
+    &::before {
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.01) 0%,
+        transparent 25%,
+        rgba(0, 0, 0, 0.02) 75%,
+        transparent 100%
+      );
+    }
+    
+    .el-dropdown-menu__item:not(.is-disabled):hover {
+      background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.05) 0%,
+        rgba(255, 255, 255, 0.03) 100%
+      );
     }
   }
 }
