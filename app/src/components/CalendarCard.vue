@@ -107,22 +107,8 @@
     </div>
   </div>
 </template>
-      <!--      >-->
-      <!--        <h4>{{ card.season.name }}</h4>-->
-      <!--      </div>-->
-      <!--    </div>-->
-    </el-card>
-  </div>
-</template>
 
 <script>
-// @ is an alias to /src
-
-// @ is an alias to /src
-// @ is an alias to /src
-// @ is an alias to /src
-// @ is an alias to /src
-// @ is an alias to /src
 // @ is an alias to /src
 import Commemoration from '@/components/Commemoration.vue';
 
