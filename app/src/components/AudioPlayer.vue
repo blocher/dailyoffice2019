@@ -371,7 +371,7 @@ export default {
   }
 }
 
-// Warning/info text styling
+/* Warning/info text styling */
 .audio-warning {
   background: var(--el-color-warning-light-9);
   border: 1px solid var(--el-color-warning-light-7);
@@ -396,9 +396,9 @@ export default {
   }
 }
 
-// Book-like enhancements
+/* Book-like enhancements */
 .controls.fixed-controls {
-  // Add subtle paper-like texture
+  /* Add subtle paper-like texture */
   position: relative;
   
   &::before {
@@ -416,7 +416,7 @@ export default {
     pointer-events: none;
   }
   
-  // Add page edge shadow
+  /* Add page edge shadow */
   &::after {
     content: '';
     position: absolute;
@@ -432,7 +432,7 @@ export default {
   }
 }
 
-// Responsive breakpoints for better mobile experience
+/* Responsive breakpoints for better mobile experience */
 @media (max-width: 1024px) {
   .menu-and-buttons {
     flex-wrap: wrap;
