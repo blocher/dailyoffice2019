@@ -274,7 +274,7 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
     def cell_meeting_data(self, cell, meeting_day):
         cell = cell.replace("'", "").capitalize()
         SPREADSHEET_ID = "1lRsThD20a2thgtJk97J_bqEBxJBCqXPIg_UkFAqzMq8"
-        RANGE_NAME = "{}!A1:N100".format(cell)
+        RANGE_NAME = "{}!A1:N200".format(cell)
         service = build("sheets", "v4", developerKey=GOOGLE_API_KEY)
         sheet = service.spreadsheets()
         try:
