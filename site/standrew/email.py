@@ -83,6 +83,7 @@ class LiturgicalCalendarSundayEmailModule(SundayEmailModule):
         return weekdays
 
     def render(self):
+        print(self.get_data())
         return render_to_string("emails/weekly_email/liturgical_celebrations.html", {"days": self.get_data()})
 
 

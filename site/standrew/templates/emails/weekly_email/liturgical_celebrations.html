@@ -20,9 +20,11 @@
                     {% else %}
                             <span class="events__name__subdued">{{feast.name}}
                     {% endif %}
-                    {% for link in feast.links %}
-                       <small><a href="{{ link }}" target="_blank">Read Biography</a>&nbsp;</small>
-                    {% endfor %}
+
+                    {% if feast.ai_one_sentence %}
+                       <p style="font-weight: 300; text-transform: none;"><small>{{ feast.ai_one_sentence }}</small></p>
+                       <p style="font-weight: 300;"><small><a href="https://www.dailyoffice2019.com/commemorations/{{ feast.uuid }}/" target="_blank">Read Biography</a>&nbsp;</small></p>
+                    {% endif %}
                     </span>
                     {% if feast.rank.precedence <= 6 %}
                         <span class="events__collect">{{ feast.collects.collect }}</span>
