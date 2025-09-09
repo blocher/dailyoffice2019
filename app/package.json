@@ -106,7 +106,7 @@
     "sass": "^1.89.2",
     "tailwindcss": "^4.1.11",
     "typescript": "^5.9.2",
-    "vite": "^7.0.6",
+    "vite": "^7.1.5",
     "vitest": "^3.2.4",
     "vue-cli-plugin-capacitor": "^2.0.1",
     "vue-eslint-parser": "^10.2.0"
