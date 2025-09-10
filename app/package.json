@@ -44,7 +44,7 @@
     "axios": "^1.11.0",
     "decode-uri-component": "^0.4.1",
     "dompurify": "^3.2.6",
-    "element-plus": "^2.10.5",
+    "element-plus": "^2.11.0",
     "firebase": "^11.10.0",
     "follow-redirects": "^1.15.9",
     "install": "^0.13.0",
