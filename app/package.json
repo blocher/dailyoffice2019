@@ -41,7 +41,7 @@
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/shared": "^3.5.18",
     "and": "^0.0.3",
-    "axios": "^1.11.0",
+    "axios": "^1.12.1",
     "decode-uri-component": "^0.4.1",
     "dompurify": "^3.2.6",
     "element-plus": "^2.10.5",
