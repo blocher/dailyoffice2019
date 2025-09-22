@@ -103,9 +103,18 @@ router.beforeEach((to, from, next) => {
   // If a route with a title was found, set the document (page) title to that value.
   if (nearestWithTitle) {
     document.title = nearestWithTitle.meta.title;
+
+    // Update Open Graph title
+    updateMetaTag('property', 'og:title', nearestWithTitle.meta.title);
+    updateMetaTag('name', 'twitter:title', nearestWithTitle.meta.title);
   } else if (previousNearestWithMeta) {
     document.title = previousNearestWithMeta.meta.title;
+    updateMetaTag('property', 'og:title', previousNearestWithMeta.meta.title);
+    updateMetaTag('name', 'twitter:title', previousNearestWithMeta.meta.title);
   }
+
+  // Update Open Graph URL
+  updateMetaTag('property', 'og:url', window.location.href);
 
   // Remove any stale meta tags from the document using the key attribute we set below.
   Array.from(document.querySelectorAll('[data-vue-router-controlled]')).map(
@@ -134,6 +143,19 @@ router.beforeEach((to, from, next) => {
 
   next();
 });
+
+// Helper function to update meta tags
+function updateMetaTag(attribute, value, content) {
+  let metaTag = document.querySelector(`meta[${attribute}="${value}"]`);
+  if (metaTag) {
+    metaTag.setAttribute('content', content);
+  } else {
+    metaTag = document.createElement('meta');
+    metaTag.setAttribute(attribute, value);
+    metaTag.setAttribute('content', content);
+    document.head.appendChild(metaTag);
+  }
+}
 
 router.afterEach(async (to, from) => {
   if (!Capacitor.isNativePlatform()) return;

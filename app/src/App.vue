@@ -93,6 +93,7 @@
 import Loading from '@/components/Loading.vue';
 import AHPLogo from '@/components/AHPLogo.vue';
 import { useActiveMeta, useMeta } from 'vue-meta';
+import { useRoute } from 'vue-router';
 import AdditionalLinks from '@/components/AdditionalLinks.vue';
 import { ArrowDown } from '@element-plus/icons-vue';
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue';
@@ -107,10 +108,13 @@ export default {
     ThemeSwitcher,
   },
   setup() {
-    useMeta({
+    const route = useRoute();
+    // Bind title to current route meta so it doesn't revert to the default
+    useMeta(() => ({
+      title: route.meta?.title || 'The Daily Office',
       htmlAttrs: { lang: 'en' },
       viewport: 'width=device-width, initial-scale=1.0, viewport-fit=cover',
-    });
+    }));
     useActiveMeta();
   },
   data() {
@@ -159,7 +163,6 @@ export default {
     this.audioEnabled = audioEnabled;
   },
   async created() {
-    document.title = 'The Daily Office';
     try {
       const settings_data = await this.$http.get(
         `${import.meta.env.VITE_API_URL}api/v1/available_settings/`
