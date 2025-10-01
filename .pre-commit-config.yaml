@@ -1,7 +1,7 @@
 exclude: .*\node_modules\|.*\static|.*\.sql
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
         files: ^site/
@@ -27,14 +27,14 @@ repos:
 
 
   - repo: https://github.com/psf/black
-    rev: 25.1.0
+    rev: 25.9.0
     hooks:
       - id: black
         files: ^site/
         language_version: python3
         args: [ --target-version=py313, --line-length=119 ]
 
-  #    rev: v9.28.0
+  #    rev: v9.36.0
   #    hooks:
   #      - id: eslint
   #        files: ^site/
@@ -43,18 +43,18 @@ repos:
   #        exclude: ^site/node_modules/|^site/office/src/office/js/fontawesome/|^site/office/src/office/css/fontawesome/
   #        args: [ --fix --config=site/.eslintrc ]
   #        additional_dependencies:
-  #          - eslint@v9.28.0
-  #          - eslint-config-prettier@10.1.5
+  #          - eslint@v9.36.0
+  #          - eslint-config-prettier@10.1.8
   #          - "@babel/core@7.20.5"
   #          - "@babel/eslint-parser@7.27.5"
   #          - "@babel/preset-env@7.27.2"
   #          - "@babel/preset-typescript@7.27.1"
-  #          - eslint-plugin-prettier@5.4.1
-  #          - prettier@3.5.3 #  - repo: https://github.com/pre-commit/mirrors-eslint
+  #          - eslint-plugin-prettier@5.5.4
+  #          - prettier@3.6.2 #  - repo: https://github.com/pre-commit/mirrors-eslint
 
   #
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v9.28.0
+    rev: v9.36.0
     hooks:
       - id: eslint
         files: ^app/src/
@@ -62,19 +62,19 @@ repos:
         types_or: [ javascript, jsx, ts, tsx, vue ]
         args: [ --config=app/eslint.config.mjs, --fix ]
         additional_dependencies:
-          - eslint@v9.28.0
-          - eslint-config-prettier@10.1.5
-          - eslint-plugin-prettier@5.4.1
-          - prettier@3.5.3
-          - eslint-plugin-vue@^10.2.0
-          - vue-eslint-parser@^10.1.3
-          - "@typescript-eslint/eslint-plugin@^8.33.1"
-          - "@typescript-eslint/parser@^8.33.1"
+          - eslint@v9.36.0
+          - eslint-config-prettier@10.1.8
+          - eslint-plugin-prettier@5.5.4
+          - prettier@3.6.2
+          - eslint-plugin-vue@^10.5.0
+          - vue-eslint-parser@^10.2.0
+          - "@typescript-eslint/eslint-plugin@^8.45.0"
+          - "@typescript-eslint/parser@^8.45.0"
           - "@typescript-eslint/eslint-plugin-tslint@^7.0.2"
-          - "@typescript-eslint/utils@^8.33.1"
-          - "@typescript-eslint/typescript-estree@^8.33.1"
-          - "@vue/eslint-config-typescript@^14.5.0"
-          - "@typescript-eslint/scope-manager@^8.33.1"
+          - "@typescript-eslint/utils@^8.45.0"
+          - "@typescript-eslint/typescript-estree@^8.45.0"
+          - "@vue/eslint-config-typescript@^14.6.0"
+          - "@typescript-eslint/scope-manager@^8.45.0"
 
 #  - repo: https://github.com/awebdeveloper/pre-commit-stylelint
 #    rev: 0.0.2
