@@ -109,7 +109,7 @@ export default {
 
     try {
       data = await this.$http.get(
-        `${import.meta.env.VITE_API_URL}api/v1/psalms/topics`
+        `${import.meta.env.VITE_API_URL}api/v1/psalms/topics/`
       );
     } catch {
       this.error =
