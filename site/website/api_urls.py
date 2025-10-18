@@ -180,7 +180,6 @@ urlpatterns = [
     re_path(r"^api/openapi(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
     re_path(r"^api/$", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
     re_path(r"^api/redoc/$", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
-
     # RSS/Atom Feeds
-    path('', include('feeds.urls')),
+    path("", include("feeds.urls")),
 ]

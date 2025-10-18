@@ -20,22 +20,13 @@ class DailyOfficeRSSFeed(Feed):
     title = "Daily Office 2019 - Daily Scripture Readings"
     link = "https://www.dailyoffice2019.com/"
     description = (
-        "Daily scripture readings from Morning and"
-        "Evening Prayer according to the Book of Common Prayer (2019)"
+        "Daily scripture readings from Morning and" "Evening Prayer according to the Book of Common Prayer (2019)"
     )
     author_name = "Daily Office 2019"
-    categories = [
-        "Religion",
-        "Christianity",
-        "Daily Devotions",
-        "Scripture",
-        "Prayer Book",
-        "Anglican",
-        "ACNA"
-    ]
+    categories = ["Religion", "Christianity", "Daily Devotions", "Scripture", "Prayer Book", "Anglican", "ACNA"]
 
     # Office types to include in the feed
-    OFFICES = ['Morning Prayer', 'Evening Prayer'] 
+    OFFICES = ["Morning Prayer", "Evening Prayer"]
 
     def __init__(self, psalter_cycle=30):
         """Initialize feed with specified psalter cycle (30 or 60 days)"""
@@ -53,10 +44,12 @@ class DailyOfficeRSSFeed(Feed):
 
         # Create items for each office for today
         for office_name in self.OFFICES:
-            items_list.append({
-                'date': today,
-                'office': office_name,
-            })
+            items_list.append(
+                {
+                    "date": today,
+                    "office": office_name,
+                }
+            )
 
         return items_list
 
@@ -73,10 +66,11 @@ class DailyOfficeRSSFeed(Feed):
         This is the main content that appears in feed readers.
         """
         try:
-            return self._generate_office_content(item['date'], item['office'])
+            return self._generate_office_content(item["date"], item["office"])
         except Exception as e:
             # Graceful fallback if content generation fails
             import traceback
+
             error_details = traceback.format_exc()
             return f"<p>Readings for {item['office']} on {item['date'].strftime('%B %d, %Y')}</p><p>Error: {str(e)}</p><pre>{error_details}</pre>"
 
@@ -86,8 +80,8 @@ class DailyOfficeRSSFeed(Feed):
 
         Format: https://www.dailyoffice2019.com/pray/{office_slug}/{date}
         """
-        office_slug = item['office'].lower().replace(' ', '_')
-        date_str = item['date'].strftime('%Y-%m-%d')
+        office_slug = item["office"].lower().replace(" ", "_")
+        date_str = item["date"].strftime("%Y-%m-%d")
         return f"https://www.dailyoffice2019.com/pray/{office_slug}/{date_str}"
 
     def item_pubdate(self, item):
@@ -96,7 +90,7 @@ class DailyOfficeRSSFeed(Feed):
 
         Set to 6:00 AM on the reading date (approximate time offices are prayed)
         """
-        return datetime.combine(item['date'], datetime.min.time().replace(hour=6))
+        return datetime.combine(item["date"], datetime.min.time().replace(hour=6))
 
     def item_guid(self, item):
         """
@@ -105,8 +99,8 @@ class DailyOfficeRSSFeed(Feed):
         Format: dailyoffice2019:{office_slug}:{date}
         This ensures feed readers don't show duplicates.
         """
-        date_str = item['date'].strftime('%Y-%m-%d')
-        office_slug = item['office'].lower().replace(' ', '_')
+        date_str = item["date"].strftime("%Y-%m-%d")
+        office_slug = item["office"].lower().replace(" ", "_")
         return f"dailyoffice2019:{office_slug}:{date_str}"
 
     def _generate_office_content(self, date, office_name):
@@ -127,10 +121,7 @@ class DailyOfficeRSSFeed(Feed):
         from psalter.utils import get_psalms
 
         # Get the standard office day for this date
-        office_day = StandardOfficeDay.objects.select_related('officeday_ptr').get(
-            month=date.month,
-            day=date.day
-        )
+        office_day = StandardOfficeDay.objects.select_related("officeday_ptr").get(month=date.month, day=date.day)
 
         # Get psalter day based on cycle
         if self.psalter_cycle == 60:
@@ -151,18 +142,20 @@ class DailyOfficeRSSFeed(Feed):
         html_parts.append(f"<p><strong>{date.strftime('%A, %B %d, %Y')}</strong></p>")
 
         # Add readings based on office type
-        if office_name == 'Morning Prayer':
+        if office_name == "Morning Prayer":
             # Add psalms
             psalms_text = get_psalms(
                 psalter_day.mp_psalms,
                 simplified_citations=True,
-                language_style='contemporary',
-                headings='congregation'
+                language_style="contemporary",
+                headings="congregation",
             )
-            psalm_count = len(psalter_day.mp_psalms.split(','))
-            psalm_plural = 's' if psalm_count > 1 else ''
+            psalm_count = len(psalter_day.mp_psalms.split(","))
+            psalm_plural = "s" if psalm_count > 1 else ""
             html_parts.append(f"<h3>The Psalm{psalm_plural}</h3>")
-            html_parts.append(f"<p><strong>Psalm{psalm_plural} {psalter_day.mp_psalms.replace(',', ', ')}</strong></p>")
+            html_parts.append(
+                f"<p><strong>Psalm{psalm_plural} {psalter_day.mp_psalms.replace(',', ', ')}</strong></p>"
+            )
             html_parts.append(psalms_text)
 
             # Add readings
@@ -176,18 +169,17 @@ class DailyOfficeRSSFeed(Feed):
             if office_day.officeday_ptr.mp_reading_2_text:
                 html_parts.append(office_day.officeday_ptr.mp_reading_2_text)
 
-        elif office_name == 'Evening Prayer':
+        elif office_name == "Evening Prayer":
             # Add psalms
             psalms_text = get_psalms(
-                psalter_day.ep_psalms,
-                simplified_citations=True,
-                language_style='contemporary',
-                headings='whole_verse'
+                psalter_day.ep_psalms, simplified_citations=True, language_style="contemporary", headings="whole_verse"
             )
-            psalm_count = len(psalter_day.ep_psalms.split(','))
-            psalm_plural = 's' if psalm_count > 1 else ''
+            psalm_count = len(psalter_day.ep_psalms.split(","))
+            psalm_plural = "s" if psalm_count > 1 else ""
             html_parts.append(f"<h3>The Psalm{psalm_plural}</h3>")
-            html_parts.append(f"<p><strong>Psalm{psalm_plural} {psalter_day.ep_psalms.replace(',', ', ')}</strong></p>")
+            html_parts.append(
+                f"<p><strong>Psalm{psalm_plural} {psalter_day.ep_psalms.replace(',', ', ')}</strong></p>"
+            )
             html_parts.append(psalms_text)
 
             # Add readings
@@ -201,4 +193,4 @@ class DailyOfficeRSSFeed(Feed):
             if office_day.officeday_ptr.ep_reading_2_text:
                 html_parts.append(office_day.officeday_ptr.ep_reading_2_text)
 
-        return '\n'.join(html_parts)
+        return "\n".join(html_parts)
