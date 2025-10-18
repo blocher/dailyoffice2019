@@ -1,20 +1,19 @@
 """
-RSS and Atom feed generation for Daily Office 2019
+RSS feed generation for Daily Office 2019
 
-This module provides RSS 2.0 and Atom feeds of daily scripture readings
+This module provides RSS 2.0 feeds of daily scripture readings
 from Morning Prayer, Midday Prayer, Evening Prayer, and Compline.
 """
 
 from django.contrib.syndication.views import Feed
-from django.utils.feedgenerator import Atom1Feed
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
-class DailyOfficeFeedBase:
+class DailyOfficeRSSFeed(Feed):
     """
-    Base class for Daily Office feeds with shared logic
+    RSS 2.0 feed for Daily Office readings
 
-    Generates feed items for the past 7 days, with one item per office per day.
+    Generates feed items for today only, with one item per office.
     Each item contains the full text of all psalms and scripture readings.
     """
 
@@ -24,30 +23,40 @@ class DailyOfficeFeedBase:
         "Daily scripture readings from Morning Prayer, Midday Prayer, "
         "Evening Prayer, and Compline according to the Book of Common Prayer (2019)"
     )
+    author_name = "Daily Office 2019"
+    categories = [
+        "Religion",
+        "Christianity",
+        "Daily Devotions",
+        "Scripture",
+        "Prayer Book",
+        "Anglican",
+        "ACNA"
+    ]
 
     # Office types to include in the feed
     OFFICES = ['Morning Prayer', 'Evening Prayer']  # Start with these two, add Midday/Compline later
 
+    def __init__(self, psalter_cycle=30):
+        """Initialize feed with specified psalter cycle (30 or 60 days)"""
+        super().__init__()
+        self.psalter_cycle = psalter_cycle
+
     def items(self):
         """
-        Generate feed items for the past 7 days
+        Generate feed items for today only
 
         Returns a list of dicts with 'date' and 'office' keys.
-        Items are in reverse chronological order (newest first).
         """
         items_list = []
         today = datetime.now().date()
 
-        # Generate 7 days of readings (past week)
-        for i in range(7):
-            date = today - timedelta(days=i)
-
-            # Create items for each office
-            for office_name in self.OFFICES:
-                items_list.append({
-                    'date': date,
-                    'office': office_name,
-                })
+        # Create items for each office for today
+        for office_name in self.OFFICES:
+            items_list.append({
+                'date': today,
+                'office': office_name,
+            })
 
         return items_list
 
@@ -124,8 +133,14 @@ class DailyOfficeFeedBase:
             day=date.day
         )
 
-        # Get psalter day
-        psalter_day = ThirtyDayPsalterDay.objects.get(day=date.day)
+        # Get psalms based on cycle
+        if self.psalter_cycle == 60:
+            # For 60-day cycle, psalms come from office_day
+            # Use the appropriate fields from the office day
+            psalms_source = office_day.officeday_ptr
+        else:
+            # For 30-day cycle, psalms come from ThirtyDayPsalterDay
+            psalms_source = ThirtyDayPsalterDay.objects.get(day=date.day)
 
         # Build HTML content
         html_parts = []
@@ -138,15 +153,15 @@ class DailyOfficeFeedBase:
         if office_name == 'Morning Prayer':
             # Add psalms
             psalms_text = get_psalms(
-                psalter_day.mp_psalms,
+                psalms_source.mp_psalms,
                 simplified_citations=True,
                 language_style='contemporary',
                 headings='whole_verse'
             )
-            psalm_count = len(psalter_day.mp_psalms.split(','))
+            psalm_count = len(psalms_source.mp_psalms.split(','))
             psalm_plural = 's' if psalm_count > 1 else ''
             html_parts.append(f"<h3>The Psalm{psalm_plural}</h3>")
-            html_parts.append(f"<p><strong>Psalm{psalm_plural} {psalter_day.mp_psalms.replace(',', ', ')}</strong></p>")
+            html_parts.append(f"<p><strong>Psalm{psalm_plural} {psalms_source.mp_psalms.replace(',', ', ')}</strong></p>")
             html_parts.append(psalms_text)
 
             # Add readings
@@ -163,15 +178,15 @@ class DailyOfficeFeedBase:
         elif office_name == 'Evening Prayer':
             # Add psalms
             psalms_text = get_psalms(
-                psalter_day.ep_psalms,
+                psalms_source.ep_psalms,
                 simplified_citations=True,
                 language_style='contemporary',
                 headings='whole_verse'
             )
-            psalm_count = len(psalter_day.ep_psalms.split(','))
+            psalm_count = len(psalms_source.ep_psalms.split(','))
             psalm_plural = 's' if psalm_count > 1 else ''
             html_parts.append(f"<h3>The Psalm{psalm_plural}</h3>")
-            html_parts.append(f"<p><strong>Psalm{psalm_plural} {psalter_day.ep_psalms.replace(',', ', ')}</strong></p>")
+            html_parts.append(f"<p><strong>Psalm{psalm_plural} {psalms_source.ep_psalms.replace(',', ', ')}</strong></p>")
             html_parts.append(psalms_text)
 
             # Add readings
@@ -186,32 +201,3 @@ class DailyOfficeFeedBase:
                 html_parts.append(office_day.officeday_ptr.ep_reading_2_text)
 
         return '\n'.join(html_parts)
-
-class DailyOfficeRSSFeed(DailyOfficeFeedBase, Feed):
-    """
-    RSS 2.0 feed for Daily Office readings
-
-    Available at: /feed.rss or /feed/
-    """
-    feed_type = Feed.feed_type  # Uses default RSS 2.0 generator
-    author_name = "Daily Office 2019"
-    categories = [
-        "Religion",
-        "Christianity",
-        "Daily Devotions",
-        "Scripture",
-        "Prayer Book",
-        "Anglican",
-        "ACNA"
-    ]
-
-
-class DailyOfficeAtomFeed(DailyOfficeFeedBase, Feed):
-    """
-    Atom feed for Daily Office readings
-
-    Available at: /feed.atom
-    """
-    feed_type = Atom1Feed
-    subtitle = DailyOfficeFeedBase.description
-    author_name = "Daily Office 2019"

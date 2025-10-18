@@ -3,12 +3,11 @@ URL routing for RSS and Atom feeds
 """
 
 from django.urls import path
-from .feeds import DailyOfficeRSSFeed, DailyOfficeAtomFeed
+from .feeds import DailyOfficeRSSFeed
 
 app_name = 'feeds'
 
 urlpatterns = [
-    path('feed.rss', DailyOfficeRSSFeed(), name='rss'),
-    path('feed.atom', DailyOfficeAtomFeed(), name='atom'),
-    path('feed/', DailyOfficeRSSFeed(), name='default'),  # Default to RSS
+    path('feed/readings/30-day', DailyOfficeRSSFeed(psalter_cycle=30), name='readings_30_day'),
+    path('feed/readings/60-day', DailyOfficeRSSFeed(psalter_cycle=60), name='readings_60_day'),
 ]
