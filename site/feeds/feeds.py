@@ -2,7 +2,7 @@
 RSS feed generation for Daily Office 2019
 
 This module provides RSS 2.0 feeds of daily scripture readings
-from Morning Prayer, Midday Prayer, Evening Prayer, and Compline.
+from Morning and Evening Prayer.
 """
 
 from django.contrib.syndication.views import Feed
@@ -13,15 +13,15 @@ class DailyOfficeRSSFeed(Feed):
     """
     RSS 2.0 feed for Daily Office readings
 
-    Generates feed items for today only, with one item per office.
+    Generates feed items for today, with one item per office.
     Each item contains the full text of all psalms and scripture readings.
     """
 
     title = "Daily Office 2019 - Daily Scripture Readings"
     link = "https://www.dailyoffice2019.com/"
     description = (
-        "Daily scripture readings from Morning Prayer, Midday Prayer, "
-        "Evening Prayer, and Compline according to the Book of Common Prayer (2019)"
+        "Daily scripture readings from Morning and"
+        "Evening Prayer according to the Book of Common Prayer (2019)"
     )
     author_name = "Daily Office 2019"
     categories = [
@@ -35,7 +35,7 @@ class DailyOfficeRSSFeed(Feed):
     ]
 
     # Office types to include in the feed
-    OFFICES = ['Morning Prayer', 'Evening Prayer']  # Start with these two, add Midday/Compline later
+    OFFICES = ['Morning Prayer', 'Evening Prayer'] 
 
     def __init__(self, psalter_cycle=30):
         """Initialize feed with specified psalter cycle (30 or 60 days)"""
@@ -71,7 +71,6 @@ class DailyOfficeRSSFeed(Feed):
         Generate full HTML content with all readings for this office
 
         This is the main content that appears in feed readers.
-        Includes psalms, scripture readings, and calendar information.
         """
         try:
             return self._generate_office_content(item['date'], item['office'])
@@ -133,14 +132,16 @@ class DailyOfficeRSSFeed(Feed):
             day=date.day
         )
 
-        # Get psalms based on cycle
+        # Get psalter day based on cycle
         if self.psalter_cycle == 60:
-            # For 60-day cycle, psalms come from office_day
-            # Use the appropriate fields from the office day
-            psalms_source = office_day.officeday_ptr
+            # For 60-day cycle, use day of year modulo 60
+            day_of_year = date.timetuple().tm_yday
+            psalter_day_num = ((day_of_year - 1) % 60) + 1
         else:
-            # For 30-day cycle, psalms come from ThirtyDayPsalterDay
-            psalms_source = ThirtyDayPsalterDay.objects.get(day=date.day)
+            # For 30-day cycle, use day of month
+            psalter_day_num = date.day
+
+        psalter_day = ThirtyDayPsalterDay.objects.get(day=psalter_day_num)
 
         # Build HTML content
         html_parts = []
@@ -153,15 +154,15 @@ class DailyOfficeRSSFeed(Feed):
         if office_name == 'Morning Prayer':
             # Add psalms
             psalms_text = get_psalms(
-                psalms_source.mp_psalms,
+                psalter_day.mp_psalms,
                 simplified_citations=True,
                 language_style='contemporary',
-                headings='whole_verse'
+                headings='congregation'
             )
-            psalm_count = len(psalms_source.mp_psalms.split(','))
+            psalm_count = len(psalter_day.mp_psalms.split(','))
             psalm_plural = 's' if psalm_count > 1 else ''
             html_parts.append(f"<h3>The Psalm{psalm_plural}</h3>")
-            html_parts.append(f"<p><strong>Psalm{psalm_plural} {psalms_source.mp_psalms.replace(',', ', ')}</strong></p>")
+            html_parts.append(f"<p><strong>Psalm{psalm_plural} {psalter_day.mp_psalms.replace(',', ', ')}</strong></p>")
             html_parts.append(psalms_text)
 
             # Add readings
@@ -178,15 +179,15 @@ class DailyOfficeRSSFeed(Feed):
         elif office_name == 'Evening Prayer':
             # Add psalms
             psalms_text = get_psalms(
-                psalms_source.ep_psalms,
+                psalter_day.ep_psalms,
                 simplified_citations=True,
                 language_style='contemporary',
                 headings='whole_verse'
             )
-            psalm_count = len(psalms_source.ep_psalms.split(','))
+            psalm_count = len(psalter_day.ep_psalms.split(','))
             psalm_plural = 's' if psalm_count > 1 else ''
             html_parts.append(f"<h3>The Psalm{psalm_plural}</h3>")
-            html_parts.append(f"<p><strong>Psalm{psalm_plural} {psalms_source.ep_psalms.replace(',', ', ')}</strong></p>")
+            html_parts.append(f"<p><strong>Psalm{psalm_plural} {psalter_day.ep_psalms.replace(',', ', ')}</strong></p>")
             html_parts.append(psalms_text)
 
             # Add readings
