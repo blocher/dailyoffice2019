@@ -232,19 +232,33 @@ class CollectTag(BaseModel):
 class AbstractCollect(object):
     text = ""
     traditional_text = ""
+    spanish_text = ""
 
-    def __init__(self, text, traditional_text):
+    def __init__(self, text, traditional_text, spanish_text=""):
         self.text = text
         self.traditional_text = traditional_text
+        self.spanish_text = spanish_text
 
     @property
     def traditional_text_no_tags(self):
+        if not self.traditional_text:
+            return ""
         from office.management.commands.import_collects import do_strip_tags
 
         return do_strip_tags(self.traditional_text).replace(" Amen.", "")
 
     @property
+    def spanish_text_no_tags(self):
+        if not self.spanish_text:
+            return ""
+        from office.management.commands.import_collects import do_strip_tags
+
+        return do_strip_tags(self.spanish_text).replace(" Amen.", "")
+
+    @property
     def text_no_tags(self):
+        if not self.text:
+            return ""
         from office.management.commands.import_collects import do_strip_tags
 
         return do_strip_tags(self.text).replace(" Amen.", "")
@@ -264,6 +278,8 @@ class Collect(BaseModel):
     normalized_text = models.TextField(blank=True, null=True)
     traditional_text = CKEditor5Field(blank=True, null=True)
     normalized_traditional_text = models.TextField(blank=True, null=True)
+    spanish_text = CKEditor5Field(blank=True, null=True)
+    normalized_spanish_text = models.TextField(blank=True, null=True)
     collect_type = models.ForeignKey(CollectType, on_delete=models.SET_NULL, null=True, blank=True)
     order = models.PositiveSmallIntegerField(default=0)
     number = models.PositiveSmallIntegerField(null=True, blank=True)
@@ -279,12 +295,24 @@ class Collect(BaseModel):
 
     @property
     def traditional_text_no_tags(self):
+        if not self.traditional_text:
+            return ""
         from office.management.commands.import_collects import do_strip_tags
 
         return do_strip_tags(self.traditional_text).replace(" Amen.", "")
 
     @property
+    def spanish_text_no_tags(self):
+        if not self.spanish_text:
+            return ""
+        from office.management.commands.import_collects import do_strip_tags
+
+        return do_strip_tags(self.spanish_text).replace(" Amen.", "")
+
+    @property
     def text_no_tags(self):
+        if not self.text:
+            return ""
         from office.management.commands.import_collects import do_strip_tags
 
         return do_strip_tags(self.text).replace(" Amen.", "")

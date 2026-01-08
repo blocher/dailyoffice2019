@@ -10,6 +10,7 @@ class Canticle(object):
     gloria = True
     citation = None
     rubric = "The following Canticle is sung or said, all standing"
+    rubric_spanish = "El siguiente Canticle se canta o se dice, todos de pie"
 
     @property
     def content(self):

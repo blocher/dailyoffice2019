@@ -291,9 +291,16 @@ class MPOpeningSentence(Module):
     def get_lines(self):
         sentence = self.get_sentence()
         style = self.office.settings["language_style"]
+        if style == "traditional":
+            text = sentence["traditional"]
+        elif style == "spanish" and "spanish" in sentence:
+            text = sentence["spanish"]
+        else:
+            text = sentence["sentence"]
+
         return [
             Line("Opening Sentence", "heading"),
-            Line(sentence["traditional"] if style == "traditional" else sentence["sentence"], "leader"),
+            Line(text, "leader"),
             Line(sentence["citation"], "citation"),
         ]
 
@@ -342,53 +349,56 @@ class Confession(Module):
         fast = self.office.date.fast_day
         long = (setting == "long") or (setting == "long-on-fast" and fast)
         if long:
-            return (
-                file_to_lines("confession_intro_long_traditional") + [Line("", "spacer")]
-                if language_style == "traditional"
-                else file_to_lines("confession_intro_long") + [Line("", "spacer")]
-            )
+            if language_style == "traditional":
+                return file_to_lines("confession_intro_long_traditional") + [Line("", "spacer")]
+            elif language_style == "spanish":
+                return file_to_lines("confession_intro_long_spanish") + [Line("", "spacer")]
+            else:
+                return file_to_lines("confession_intro_long") + [Line("", "spacer")]
+
+        if language_style == "spanish":
+            return file_to_lines("confession_intro_short_spanish") + [Line("", "spacer")]
         return file_to_lines("confession_intro_short") + [Line("", "spacer")]
 
     def get_body_lines(self):
         language_style = self.office.settings["language_style"]
-        return (
-            file_to_lines("confession_body_traditional")
-            if language_style == "traditional"
-            else file_to_lines("confession_body")
-        )
+        if language_style == "traditional":
+            return file_to_lines("confession_body_traditional")
+        if language_style == "spanish":
+            return file_to_lines("confession_body_spanish")
+        return file_to_lines("confession_body")
 
     def get_absolution_lines(self):
         language_style = self.office.settings["language_style"]
         lay = self.office.settings["absolution"] == "lay"
         if lay:
-            return (
-                file_to_lines("confession_absolution_lay_traditional")
-                if language_style == "traditional"
-                else file_to_lines("confession_absolution_lay")
-            )
+            if language_style == "traditional":
+                return file_to_lines("confession_absolution_lay_traditional")
+            if language_style == "spanish":
+                return file_to_lines("confession_absolution_lay_spanish")
+            return file_to_lines("confession_absolution_lay")
         setting = self.office.settings["confession"]
         fast = self.office.date.fast_day
         long = (setting == "long") or (setting == "long-on-fast" and fast)
         if long:
-            return (
-                file_to_lines("confession_absolution_long_traditional")
-                if language_style == "traditional"
-                else file_to_lines("confession_absolution_long")
-            )
-        return (
-            file_to_lines("confession_absolution_short_traditional")
-            if language_style == "traditional"
-            else file_to_lines("confession_absolution_short")
-        )
+            if language_style == "traditional":
+                return file_to_lines("confession_absolution_long_traditional")
+            if language_style == "spanish":
+                return file_to_lines("confession_absolution_long_spanish")
+            return file_to_lines("confession_absolution_long")
+
+        if language_style == "traditional":
+            return file_to_lines("confession_absolution_short_traditional")
+        if language_style == "spanish":
+            return file_to_lines("confession_absolution_short_spanish")
+        return file_to_lines("confession_absolution_short")
 
     def get_lines(self):
-        return (
-            [Line("Confession of Sin", "heading")]
-            + [Line("The Officiant says to the People", "rubric")]
-            + self.get_intro_lines()
-            + self.get_body_lines()
-            + self.get_absolution_lines()
-        )
+        language_style = self.office.settings["language_style"]
+        intro = [Line("Confession of Sin", "heading")] + [Line("The Officiant says to the People", "rubric")]
+        if language_style == "spanish":
+            intro = [Line("Confesión de pecado", "heading")] + [Line("El Oficiante dice al Pueblo", "rubric")]
+        return intro + self.get_intro_lines() + self.get_body_lines() + self.get_absolution_lines()
 
 
 class Preces(Module):
@@ -396,7 +406,11 @@ class Preces(Module):
 
     def get_lines(self):
         language_style = self.office.settings["language_style"]
-        file = "preces_traditional" if language_style == "traditional" else "preces"
+        file = "preces"
+        if language_style == "traditional":
+            file = "preces_traditional"
+        elif language_style == "spanish":
+            file = "preces_spanish"
         return file_to_lines(file)
 
 
@@ -663,7 +677,10 @@ class MPInvitatory(Module):
         language_style = self.office.settings["language_style"]
         if language_style == "traditional":
             filename += "_traditional"
-        if filename != "pascha_nostrum":
+        elif language_style == "spanish":
+            filename += "_spanish"
+
+        if filename != "pascha_nostrum" and not filename.endswith("_spanish"):
             first_line_field = "first_line_traditional" if language_style == "traditional" else "first_line"
             second_line_field = "second_line_traditional" if language_style == "traditional" else "second_line"
             canticle = file_to_lines(filename)
@@ -683,7 +700,11 @@ class EPInvitatory(Module):
 
     def get_lines(self):
         language_style = self.office.settings["language_style"]
-        file = "phos_hilaron_traditional" if language_style == "traditional" else "phos_hilaron"
+        file = "phos_hilaron"
+        if language_style == "traditional":
+            file = "phos_hilaron_traditional"
+        elif language_style == "spanish":
+            file = "phos_hilaron_spanish"
         return file_to_lines(file)
 
 
@@ -925,14 +946,22 @@ class CanticleModule(Module):
         except KeyError:
             return None
 
-    def rubric(self):
-        return Line("The following Canticle is sung or said, all standing", line_type="rubric")
+    def rubric(self, data):
+        language_style = self.office.settings["language_style"]
+        rubric = data.rubric
+        if language_style == "spanish":
+            rubric = data.rubric_spanish
+        return Line(rubric, line_type="rubric")
 
     def gloria_lines(self, data, as_psalm=False):
         if as_psalm or not data.gloria:
             return []
         language_style = self.office.settings["language_style"]
-        file = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
+        file = "gloria_patri"
+        if language_style == "traditional":
+            file = "gloria_patri_traditional"
+        elif language_style == "spanish":
+            file = "gloria_patri_spanish"
         return file_to_lines(file)
 
     def get_canticle(self, data, antiphon=False, as_psalm=False):
@@ -947,6 +976,10 @@ class CanticleModule(Module):
         template = data.template.replace("html", "csv")
         if language_style == "traditional":
             template = template.replace(".csv", "_traditional.csv")
+        elif language_style == "spanish":
+            print(template)
+            template = template.replace(".csv", "_spanish.csv")
+            print(template)
 
         if antiphon:
             antiphon = self.get_antiphon()
@@ -955,7 +988,7 @@ class CanticleModule(Module):
                     [
                         Line(data.latin_name, "heading"),
                         Line(data.english_name, "subheading"),
-                        self.rubric(),
+                        self.rubric(data),
                     ]
                     + [Line(antiphon, "congregation")]
                     + [Line("", "spacer")]
@@ -972,7 +1005,7 @@ class CanticleModule(Module):
                 Line("The Psalms or Canticle Appointed", "heading") if as_psalm else Line(""),
                 Line(data.latin_name, "heading" if not as_psalm else "subheading"),
                 Line(data.english_name, "subheading"),
-                self.rubric(),
+                self.rubric(data),
             ]
             + file_to_lines(template)
             + [
@@ -1194,7 +1227,16 @@ class Creed(Module):
 
     def get_lines(self):
         language_style = self.office.settings["language_style"]
-        file = "creed_traditional" if language_style == "traditional" else "creed"
+        file = "creed"
+        if language_style == "traditional":
+            file = "creed_traditional"
+        elif language_style == "spanish":
+            file = "creed_spanish"
+        if language_style == "spanish":
+            return [
+                Line("El Credo de los Apóstoles", "heading"),
+                Line("Oficiante y pueblo juntos, todos de pie", "rubric"),
+            ] + file_to_lines(file)
         return [
             Line("The Apostles' Creed", "heading"),
             Line("Officiant and People together, all standing", "rubric"),
@@ -1226,7 +1268,12 @@ class Prayers(Module):
     def get_suffrages_file_name(self):
         language_style = self.office.settings["language_style"]
         if type(self.office) == MorningPrayer:
-            return "suffrages_a_traditional" if language_style == "traditional" else "suffrages_a"
+            if language_style == "traditional":
+                return "suffrages_a_traditional"
+            if language_style == "spanish":
+                return "suffrages_a_spanish"
+            return "suffrages_a"
+
         suffrages_style = self.office.settings["suffrages"]
         if suffrages_style == "traditional":
             suffrages_file = "suffrages_a.csv"
@@ -1237,29 +1284,62 @@ class Prayers(Module):
                 suffrages_file = "suffrages_b.csv"
             else:
                 suffrages_file = "suffrages_a.csv"
-        return f"{suffrages_file}_traditional" if language_style == "traditional" else suffrages_file
+
+        if language_style == "traditional":
+            return f"{suffrages_file}_traditional"
+        if language_style == "spanish":
+            return f"{suffrages_file}_spanish"
+
+        return suffrages_file
 
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         our_father_style = self.office.settings["language_style_for_our_father"]
-        if language_style == "traditional" or our_father_style == "traditional":
+        if language_style == "spanish" and our_father_style == "traditional":
+            kyrie_file = "kyrie_spanish_traditional.csv"
+            pater_file = "pater_spanish.csv"
+        elif language_style == "spanish":
+            kyrie_file = "kyrie_spanish.csv"
+            pater_file = "pater_spanish.csv"
+        elif language_style == "traditional" or our_father_style == "traditional":
             kyrie_file = "kyrie_traditional.csv"
             pater_file = "pater_traditional.csv"
         else:
             kyrie_file = "kyrie_contemporary.csv"
             pater_file = "pater_contemporary.csv"
 
-        pronoun = "thy" if language_style == "traditional" else "your"
+        pronoun = "your"
+        if language_style == "traditional":
+            pronoun = "thy"
+        elif language_style == "spanish":
+            pronoun = "tu"  # Or appropriate spanish pronoun/phrase contextually, though "tu" spirit sounds odd.
+
         suffrages = file_to_lines(self.get_suffrages_file_name())
         suffrages = self.add_names(suffrages)
-        return (
-            [
-                Line("The Prayers", "heading"),
-                Line("The Lord be with you.", "leader_dialogue", preface="Officiant"),
-                Line(f"And with {pronoun} spirit.", "congregation_dialogue", preface="People"),
-                Line("Let us pray.", "leader_dialogue", preface="Officiant"),
-                Line("The People kneel or stand.", "rubric"),
+
+        response = f"And with {pronoun} spirit."
+        if language_style == "spanish":
+            response = "Y con tu espíritu."
+
+        intro = [
+            Line("The Prayers", "heading"),
+            Line("The Lord be with you.", "leader_dialogue", preface="Officiant"),
+            Line(response, "congregation_dialogue", preface="People"),
+            Line("Let us pray.", "leader_dialogue", preface="Officiant"),
+            Line("The People kneel or stand.", "rubric"),
+        ]
+
+        if language_style == "spanish":
+            intro = [
+                Line("Las Oraciones", "heading"),
+                Line("El Señor esté con ustedes.", "leader_dialogue", preface="Officiant"),
+                Line(response, "congregation_dialogue", preface="People"),
+                Line("Oremos.", "leader_dialogue", preface="Officiant"),
+                Line("La gente se arrodilla o se pone de pie", "rubric"),
             ]
+
+        return (
+            intro
             + file_to_lines(kyrie_file)
             + [Line("Officiant and People", "rubric")]
             + file_to_lines(pater_file)
@@ -1275,7 +1355,14 @@ class MPCollectOfTheDay(Module):
     def get_collect(self, commemoration):
         style = self.office.settings["language_style"]
         collect = getattr(commemoration, self.attribute)
-        text = collect.traditional_text_no_tags if style == "traditional" else collect.text_no_tags
+        if style == "traditional":
+            text = collect.traditional_text_no_tags
+        elif style == "spanish":
+            text = collect.spanish_text_no_tags
+            if not text:
+                text = collect.text_no_tags
+        else:
+            text = collect.text_no_tags
         text = adapt_christmas_collect(text, commemoration)
         return text
 
@@ -1312,7 +1399,13 @@ class AdditionalCollects(Module):
         collects = (weekly_collect,) + (self.pick_mission_collect(),) + self.get_extra_collects()
         language_style = self.office.settings["language_style"]
         for collect in collects:
-            text = collect["traditional"] if language_style == "traditional" else collect["contemporary"]
+            if language_style == "traditional":
+                text = collect["traditional"]
+            elif language_style == "spanish" and "spanish" in collect:
+                text = collect["spanish"]
+            else:
+                text = collect["contemporary"]
+
             lines.append(Line(collect["title"], "heading"))
             if "weekly" in collect.keys() and collect["weekly"]:
                 lines.append(Line(self.office.date.date.strftime("%A"), "subheading"))
@@ -1325,7 +1418,12 @@ class AdditionalCollects(Module):
         language_style = self.office.settings["language_style"]
 
         for collect in self.pick_fixed_collects() + (self.pick_mission_collect(),) + self.get_extra_collects():
-            text = collect["traditional"] if language_style == "traditional" else collect["contemporary"]
+            if language_style == "traditional":
+                text = collect["traditional"]
+            elif language_style == "spanish" and "spanish" in collect:
+                text = collect["spanish"]
+            else:
+                text = collect["contemporary"]
             lines.append(Line(collect["title"], "heading"))
             lines.append(Line(text, "leader"))
             lines.append(Line("Amen.", "congregation"))
@@ -1349,6 +1447,7 @@ class AdditionalCollects(Module):
                 "title": collect.title,
                 "contemporary": collect.text_no_tags,
                 "traditional": collect.traditional_text_no_tags,
+                "spanish": collect.spanish_text_no_tags,
                 "created": collect.created,
             }
             if collect["title"] == "A Prayer for Mission":
@@ -1379,6 +1478,7 @@ class AdditionalCollects(Module):
                     "title": extra_collect.title,
                     "contemporary": extra_collect.text_no_tags,
                     "traditional": extra_collect.traditional_text_no_tags,
+                    "spanish": extra_collect.spanish_text_no_tags,
                 }
                 for extra_collect in extra_collects
             )
@@ -1457,11 +1557,19 @@ class Intercessions(Module):
     name = "Intercessions, Thanksgivings, and Praise"
 
     def get_lines(self):
-        return [
-            Line("Intercessions, Thanksgivings, and Praise", "heading"),
-            Line("The Officiant may invite the People to offer intercessions and thanksgivings.", "rubric"),
-            Line("A hymn or anthem may be sung.", "rubric"),
-        ]
+        language_style = self.office.settings["language_style"]
+        if language_style == "spanish":
+            return [
+                Line("Intercesiones, Bendiciones, y Alabanzas", "heading"),
+                Line("El Oficiante puede invitar a la gente a ofrecer intercesiones y bendiciones.", "rubric"),
+                Line("Se puede cantar un himno o un antífona.", "rubric"),
+            ]
+        else:
+            return [
+                Line("Intercessions, Thanksgivings, and Praise", "heading"),
+                Line("The Officiant may invite the People to offer intercessions and thanksgivings.", "rubric"),
+                Line("A hymn or anthem may be sung.", "rubric"),
+            ]
 
 
 class FinalPrayers(Module):
@@ -1474,26 +1582,40 @@ class FinalPrayers(Module):
         lines = []
 
         language_style = self.office.settings["language_style"]
-        file = "general_thanksgiving_traditional" if language_style == "traditional" else "general_thanksgiving"
+        file = "general_thanksgiving"
+        if language_style == "traditional":
+            file = "general_thanksgiving_traditional"
+        elif language_style == "spanish":
+            file = "general_thanksgiving_spanish"
 
         if general_thanksgiving == "on":
-            lines = (
-                lines
-                + [
+            if language_style == "spanish":
+                lines = lines + [
+                    Line("Acción de gracias en general", "heading"),
+                    Line("Oficiante y Pueblo", "rubric"),
+                ]
+            else:
+                lines = lines + [
                     Line("The General Thanksgiving", "heading"),
                     Line("Officiant and People", "rubric"),
                 ]
-                + file_to_lines(file)
-            )
+            lines = lines + file_to_lines(file)
 
-        language_style = self.office.settings["language_style"]
-        file = "chrysostom_traditional" if language_style == "traditional" else "chrysostom"
+        file = "chrysostom"
+        if language_style == "traditional":
+            file = "chrysostom_traditional"
+        elif language_style == "spanish":
+            file = "chrysostom_spanish"
 
         if chrysostom == "on":
+            if language_style == "spanish":
+                heading = "Una oración de San Juan Crisóstomo"
+            else:
+                heading = "A Prayer of St. John Chrysostom"
             lines = (
                 lines
                 + [
-                    Line("A Prayer of St. John Chrysostom", "heading"),
+                    Line(heading, "heading"),
                 ]
                 + file_to_lines(file)
             )
@@ -1508,8 +1630,10 @@ class Dismissal(Module):
         return {
             "officiant": "The grace of our Lord Jesus Christ, and the love of God, and the fellowship of the Holy Spirit, be with us all evermore.",
             "traditional": "The grace of our Lord Jesus Christ, and the love of God, and the fellowship of the Holy Ghost, be with us all evermore.",
+            "spanish": "Que la gracia del Señor Jesucristo, el amor de Dios y la comunión del Espíritu Santosean con todos ustedes.",
             "people": "Amen.",
             "citation": "2 CORINTHIANS 13:14",
+            "spanish_citation": "2 CORINTIOS 13:14 (NVI)",
         }
 
     def get_grace(self):
@@ -1517,58 +1641,85 @@ class Dismissal(Module):
             return {
                 "officiant": "The grace of our Lord Jesus Christ, and the love of God, and the fellowship of the Holy Spirit, be with us all evermore.",
                 "traditional": "The grace of our Lord Jesus Christ, and the love of God, and the fellowship of the Holy Ghost, be with us all evermore.",
+                "spanish": "Que la gracia del Señor Jesucristo, el amor de Dios y la comunión del Espíritu Santosean con todos ustedes.",
                 "people": "Amen.",
                 "citation": "2 CORINTHIANS 13:14",
+                "spanish_citation": "2 CORINTIOS 13:14 (NVI)",
             }
         if self.office.date.date.weekday() in (0, 3):
             return {
                 "officiant": "May the God of hope fill us with all joy and peace in believing through the power of the Holy Spirit. ",
                 "traditional": "May the God of hope fill us with all joy and peace in believing through the power of the Holy Ghost.",
+                "spanish": "Que la gracia del Señor Jesucristo, el amor de Dios y la comunión del Espíritu Santo sean con todos ustedes.",
                 "people": "Amen.",
                 "citation": "ROMANS 15:13",
+                "spanish_citation": "ROMANOS 15:13 (NVI)",
             }
 
         if self.office.date.date.weekday() in (1, 4):
             return {
                 "officiant": "Glory to God whose power, working in us, can do infinitely more than we can ask or imagine: Glory to him from generation to generation in the Church, and in Christ Jesus for ever and ever.",
                 "traditional": "Glory to God whose power, working in us, can do infinitely more than we can ask or imagine: Glory to him from generation to generation in the Church, and in Christ Jesus for ever and ever.",
+                "spanish": "Al que puede hacer muchísimo más que todo lo que podamos imaginarnos o pedir, por el poder que obra eficazmente en nosotros, ¡a él sea la gloria en la iglesia y en Cristo Jesús por todas las generaciones, por los siglos de los siglos!",
                 "people": "Amen.",
                 "citation": "EPHESIANS 3:20-21",
+                "spanish_citation": "EFESIOS 3:20-21 (NVI)",
             }
 
     def get_lines(self):
+
+        language_style = self.office.settings["language_style"]
         grace_rotation = self.office.settings["grace"]
 
         easter = self.office.date.season.name == "Eastertide"
 
         officiant = "Let us bless the Lord."
+        if language_style == "spanish":
+            officiant = "Bendigamos al Señor."
         people = "Thanks be to God."
+        if language_style == "spanish":
+            people = "Demos Gracias a Dios."
 
         if easter:
             officiant = "Alleluia, alleluia. {}".format(officiant)
             people = "Alleluia, alleluia. {} ".format(people)
 
-        lines = [
-            Line("Dismissal and Grace", "heading"),
-            Line(officiant, "leader_dialogue"),
-            Line(people, "congregation_dialogue"),
-        ]
+        if language_style == "spanish":
+            lines = [
+                Line("Despedida y Gracia", "heading"),
+                Line(officiant, "leader_dialogue"),
+                Line(people, "congregation_dialogue"),
+            ]
+        else:
+            lines = [
+                Line("Dismissal and Grace", "heading"),
+                Line(officiant, "leader_dialogue"),
+                Line(people, "congregation_dialogue"),
+            ]
 
         if grace_rotation == "fixed":
             grace = self.get_fixed_grace()
         else:
             grace = self.get_grace()
 
+        print(grace)
+
         language_style = self.office.settings["language_style"]
         part = "traditional" if language_style == "traditional" else "officiant"
+        if language_style == "spanish":
+            part = "spanish"
 
         return (
             lines
             + [Line("", "spacer")]
             + [
                 Line(grace[part], "leader"),
-                Line("Amen.", "congregation"),
-                Line(grace["citation"], "citation"),
+                Line("Amén.", "congregation") if language_style == "spanish" else Line("Amen.", "congregation"),
+                (
+                    Line(grace["spanish_citation"], "citation")
+                    if language_style == "spanish"
+                    else Line(grace["citation"], "citation")
+                ),
             ]
         )
 
@@ -1724,7 +1875,12 @@ class FamilyEarlyEveningHymn(Module):
 
     def get_lines(self):
         language_style = self.office.settings["language_style"]
-        filename = "phos_hilaron_traditional" if language_style == "traditional" else "phos_hilaron"
+        file = "phos_hilaron"
+        if language_style == "traditional":
+            file = "phos_hilaron_traditional"
+        elif language_style == "spanish":
+            file = "phos_hilaron_spanish"
+        filename = file
         return file_to_lines(filename)
 
 
@@ -2392,24 +2548,29 @@ class MiddayPrayers(Module):
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         pater_style = self.office.settings["language_style_for_our_father"]
-        kyrie_file = (
-            "kyrie_traditional"
-            if language_style == "traditional" or pater_style == "traditional"
-            else "kyrie_contemporary"
-        )
-        pater_file = (
-            "pater_traditional"
-            if language_style == "traditional" or pater_style == "traditional"
-            else "pater_contemporary"
-        )
+
+        if language_style == "traditional" or pater_style == "traditional":
+            kyrie_file = "kyrie_traditional"
+            pater_file = "pater_traditional"
+        elif language_style == "spanish":
+            kyrie_file = "kyrie_spanish"
+            pater_file = "pater_spanish"
+        else:
+            kyrie_file = "kyrie_contemporary"
+            pater_file = "pater_contemporary"
+
         kyrie = file_to_lines(kyrie_file)
         pater = file_to_lines(pater_file)
-        suffrages_1_file_name = (
-            "midday_suffrages_1_traditional" if language_style == "traditional" else "midday_suffrages_1"
-        )
-        suffrages_2_file_name = (
-            "midday_suffrages_2_traditional" if language_style == "traditional" else "midday_suffrages_2"
-        )
+
+        suffrages_1_file_name = "midday_suffrages_1"
+        suffrages_2_file_name = "midday_suffrages_2"
+        if language_style == "traditional":
+            suffrages_1_file_name = "midday_suffrages_1_traditional"
+            suffrages_2_file_name = "midday_suffrages_2_traditional"
+        elif language_style == "spanish":
+            suffrages_1_file_name = "midday_suffrages_1_spanish"
+            suffrages_2_file_name = "midday_suffrages_2_spanish"
+
         suffrages_1 = file_to_lines(suffrages_1_file_name)
         suffrages_2 = file_to_lines(suffrages_2_file_name)
         return (

@@ -283,6 +283,9 @@ class SanctoraleCommemoration(Commemoration):
         if not self.common:
             return None
 
+        if not text:
+            return None
+
         plural = "s" if self.saint_gender not in ["M", "F"] else ""
         if self.saint_type in ["MONASTIC", "MARTYR"]:
             return text.format(plural, self.saint_name)
@@ -313,7 +316,12 @@ class SanctoraleCommemoration(Commemoration):
 
         text = self.common.collect_format_string
         text_tle = self.common.collect_tle_format_string
-        return AbstractCollect(text=self.build_collect(text), traditional_text=self.build_collect(text_tle))
+        text_spanish = self.common.collect_spanish_format_string
+        return AbstractCollect(
+            text=self.build_collect(text),
+            traditional_text=self.build_collect(text_tle),
+            spanish_text=self.build_collect(text_spanish),
+        )
 
 
 class SanctoraleBasedCommemoration(Commemoration):
@@ -460,4 +468,5 @@ class Common(BaseModel):
     )
     collect_format_string = models.CharField(max_length=1024, blank=True, null=True)
     collect_tle_format_string = models.CharField(max_length=1024, blank=True, null=True)
+    collect_spanish_format_string = models.CharField(max_length=1024, blank=True, null=True)
     calendar = models.ForeignKey(Calendar, on_delete=models.CASCADE, null=False, blank=False)
