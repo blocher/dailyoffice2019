@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.sites",
     "django.contrib.messages",
+    "django.contrib.postgres",
     "django.contrib.sitemaps",
     "django.contrib.staticfiles",
     "django_ckeditor_5",
