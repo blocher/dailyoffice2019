@@ -10,6 +10,7 @@ from googleapiclient.errors import HttpError
 
 from churchcal.api.serializer import DaySerializer
 from churchcal.calculations import get_calendar_date
+from office.utils import title_case
 from standrew.utils import get_today
 from website.settings import GOOGLE_API_KEY, ZOOM_LINK
 
@@ -309,8 +310,12 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
         if tuesday_number in (1, 3):
             return ["Full group meeting (Tue)"]
         if tuesday_number == 2:
+            if tuesday.year == 2026 and tuesday.month == 1:
+                return ["Women's group (Tue) (swapped with Men's group)"]
             return ["Men's group (Tue)"]
         if tuesday_number == 4:
+            if tuesday.year == 2026 and tuesday.month == 1:
+                return ["Men's group (Tue) (swapped with Women's group)"]
             return ["Women's group (Tue)"]
 
         tuesday = self.get_tuesday()
@@ -394,15 +399,15 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                     "extra_fields": self.cell_meeting_data("ohara", self.get_tuesday()),
                 },
             ]
-            teusday_date = self.get_tuesday()
-            if teusday_date.month == 7 and teusday_date.year == 2021:
+            tuesday_date = self.get_tuesday()
+            if tuesday_date.month == 7 and tuesday_date.year == 2021:
                 return [results[1]]
             return results
         if tuesday_number == 4:
-            title = "Women's Discipleship Group"
             tuesday = self.get_tuesday()
-            if tuesday.year == 2021 and tuesday.month == 12 and tuesday.day == 28:
-                title = "CANCELED: Women's Discipleship Group"
+            title = "Women's Discipleship Group"
+            if tuesday.year == 2026 and tuesday.month == 1:
+                title = "Men's group (Tue) (Swapped with Women's group)"
             return [
                 {
                     "title": title,
@@ -411,20 +416,29 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                     "zoom_link": ZOOM_LINK,
                     "optional": False,
                     "notes": self.get_notes(),
-                    "to_addresses": ["community-of-st-andrew-women@googlegroups.com"],
+                    "to_addresses": [
+                        "community-of-st-andrew-women@googlegroups.com",
+                        "community-of-st-andrew-men@googlegroups.com",
+                    ],
                     "meeting": "women",
                 },
             ]
         if tuesday_number == 2:
+            title = "Men's Discipleship Group"
+            if tuesday.year == 2026 and tuesday.month == 1:
+                title = "Women's Discipleship Group (Swapped with Men's group)"
             return [
                 {
-                    "title": "Men's Discipleship Group",
+                    "title": title,
                     "date": self.get_tuesday(),
                     "time": "7 to 9 pm",
                     "zoom_link": ZOOM_LINK,
                     "optional": False,
                     "notes": self.get_notes(),
-                    "to_addresses": ["community-of-st-andrew-men@googlegroups.com"],
+                    "to_addresses": [
+                        "community-of-st-andrew-men@googlegroups.com",
+                        "community-of-st-andrew-women@googlegroups.com",
+                    ],
                     "meeting": "men",
                 },
             ]
