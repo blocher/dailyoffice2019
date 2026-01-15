@@ -274,6 +274,9 @@ class Collect(BaseModel):
     )
 
     title = models.CharField(max_length=255)
+    subtitle = models.CharField(max_length=255, blank=True, null=True)
+    spanish_title = models.CharField(max_length=255, blank=True, null=True)
+    spanish_subtitle = models.CharField(max_length=255, blank=True, null=True)
     text = CKEditor5Field()
     normalized_text = models.TextField(blank=True, null=True)
     traditional_text = CKEditor5Field(blank=True, null=True)
@@ -285,6 +288,7 @@ class Collect(BaseModel):
     number = models.PositiveSmallIntegerField(null=True, blank=True)
     tags = models.ManyToManyField(CollectTag)
     attribution = models.CharField(max_length=255, blank=True, null=True)
+    spanish_attribution = models.CharField(max_length=255, blank=True, null=True)
     metrical_collect = models.ForeignKey("office.MetricalCollect", null=True, blank=True, on_delete=models.SET_NULL)
     metrical_collect_2 = models.ForeignKey(
         "office.MetricalCollect", null=True, blank=True, on_delete=models.SET_NULL, related_name="metrical_collect_2"
