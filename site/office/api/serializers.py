@@ -94,7 +94,16 @@ class SourceSerializer(serializers.Serializer):
 class PsalmVerseSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = PsalmVerse
-        fields = ["id", "number", "first_half", "second_half", "first_half_tle", "second_half_tle"]
+        fields = [
+            "id",
+            "number",
+            "first_half",
+            "second_half",
+            "first_half_tle",
+            "second_half_tle",
+            "first_half_spanish",
+            "second_half_spanish",
+        ]
 
 
 class PsalmTopicSerializer(serializers.HyperlinkedModelSerializer):
@@ -126,4 +135,4 @@ class PsalmTopicSerializer(serializers.HyperlinkedModelSerializer):
 class ScriptureSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Scripture
-        fields = ["uuid", "passage", "esv", "kjv", "rsv"]
+        fields = ["uuid", "passage", "esv", "kjv", "rsv", "nvi"]

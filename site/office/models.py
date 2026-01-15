@@ -329,6 +329,7 @@ class Scripture(BaseModel):
     nrsvce = models.TextField(blank=True, null=True)
     nabre = models.TextField(blank=True, null=True)
     niv = models.TextField(blank=True, null=True)
+    nvi = models.TextField(blank=True, null=True)
     nasb = models.TextField(blank=True, null=True)
     coverdale = models.TextField(blank=True, null=True)
     renewed_coverdale = models.TextField(blank=True, null=True)

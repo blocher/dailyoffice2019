@@ -10,6 +10,7 @@ class BibleVersions(object):
         "nabre": {"name": "New American Bible - Revised Edition", "adapter": BibleGateway},
         "niv": {"name": "New International Version", "adapter": BibleGateway},
         "nasb": {"name": "New American Standard Bible", "adapter": BibleGateway},
+        "nvi": {"name": "Nueva Versión Internacional", "adapter": BibleGateway},
         "av": {"name": "King James Version", "adapter": OremusBibleBrowser},
         "coverdale": {"name": "Coverdale Psalter (1928)", "adapter": BCPPsalter},
         "renewed_coverdale": {"name": "Renewed Coverdale Psalter (2019)", "adapter": BCPPsalter},

@@ -84,6 +84,8 @@ def psalm_api_lines(citation, verses, heading=True, language_style="contemporary
         lines.append(Line(verses[0].psalm.latin_title, "subheading"))
     if language_style == "traditional":
         verses = [verse for verse in verses if verse.first_half_tle]
+    elif language_style == "spanish":
+        verses = [verse for verse in verses if verse.first_half_spanish]
     else:
         verses = [verse for verse in verses if verse.first_half]
     for i, verse in enumerate(verses):
@@ -96,10 +98,17 @@ def psalm_api_lines(citation, verses, heading=True, language_style="contemporary
                 style = "leader"
             else:
                 style = "congregation"
+
+        first_half = verse.first_half
+        if language_style == "traditional":
+            first_half = verse.first_half_tle
+        elif language_style == "spanish":
+            first_half = verse.first_half_spanish
+
         lines.append(
             Line(
                 "{} *".format(
-                    verse.first_half_tle if language_style == "traditional" else verse.first_half,
+                    first_half,
                 ),
                 style,
                 preface=verse.number,
@@ -115,9 +124,16 @@ def psalm_api_lines(citation, verses, heading=True, language_style="contemporary
                 style = "leader"
             else:
                 style = "congregation"
+
+        second_half = verse.second_half
+        if language_style == "traditional":
+            second_half = verse.second_half_tle
+        elif language_style == "spanish":
+            second_half = verse.second_half_spanish
+
         lines.append(
             Line(
-                verse.second_half_tle if language_style == "traditional" else verse.second_half,
+                second_half,
                 style,
                 indented="indent",
             )
@@ -135,47 +151,56 @@ def psalm_html(
         html = html + format_html("<h3>Psalm {}</h3>", citation)
         html = html + format_html("<h4>{}</h4>", verses[0].psalm.latin_title)
     for i, verse in enumerate(verses):
-        if verse.first_half and verse.second_half:
+        first_half = verse.first_half
+        second_half = verse.second_half
+        if language_style == "traditional":
+            first_half = verse.first_half_tle
+            second_half = verse.second_half_tle
+        elif language_style == "spanish":
+            first_half = verse.first_half_spanish
+            second_half = verse.second_half_spanish
+
+        if first_half and second_half:
             if headings == "half_verse":
                 html = html + format_html(
                     "<p class='hanging-indent'><sup class='versenum'>{}</sup> {} <span class='asterisk'>*</span> </p>",
                     verse.number,
-                    verse.first_half_tle if language_style == "traditional" else verse.first_half,
+                    first_half,
                 )
                 html = html + format_html(
                     "<p class='indent'><strong>{}</strong></p>",
-                    verse.second_half_tle if language_style == "traditional" else verse.second_half,
+                    second_half,
                 )
             elif headings in ["none", "unison"]:
                 html = html + format_html(
                     "<p class='hanging-indent'><sup class='versenum'>{}</sup> {} <span class='asterisk'>*</span> </p>",
                     verse.number,
-                    verse.first_half_tle if language_style == "traditional" else verse.first_half,
+                    first_half,
                 )
                 html = html + format_html(
                     "<p class='indent'>{}</p>",
-                    verse.second_half_tle if language_style == "traditional" else verse.second_half,
+                    second_half,
                 )
             else:  # whole_verse
                 if (i % 2) == 0:
                     html = html + format_html(
                         "<p class='hanging-indent'><sup class='versenum'>{}</sup> {} <span class='asterisk'>*</span> </p>",
                         verse.number,
-                        verse.first_half_tle if language_style == "traditional" else verse.first_half,
+                        first_half,
                     )
                     html = html + format_html(
                         "<p class='indent'>{}</p>",
-                        verse.second_half_tle if language_style == "traditional" else verse.second_half,
+                        second_half,
                     )
                 else:
                     html = html + format_html(
                         "<p class='hanging-indent'><sup class='versenum'>{}</sup> <strong>{}</strong> <span class='asterisk'>*</span> </p>",
                         verse.number,
-                        verse.first_half_tle if language_style == "traditional" else verse.first_half,
+                        first_half,
                     )
                     html = html + format_html(
                         "<p class='indent'><strong>{}</strong></p>",
-                        verse.second_half_tle if language_style == "traditional" else verse.second_half,
+                        second_half,
                     )
     html = html + "</div>"
     # html = html + format_html("<p  class='hanging-indent'>&nbsp;</p>")

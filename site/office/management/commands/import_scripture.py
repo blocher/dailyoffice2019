@@ -52,8 +52,6 @@ class Command(BaseCommand):
         return citations
 
     def get_passages(self, passage, translation="esv"):
-        if "Psalm" not in passage:
-            return
         final = []
         passages = self.break_apart_passages(passage)
         for passage in passages:
@@ -68,7 +66,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         days = OfficeDay.objects.all()
-        translations = ["esv", "rsv", "kjv", "nrsvce", "nabre", "niv", "nasb", "coverdale", "renewed_coverdale"]
+        translations = ["esv", "rsv", "kjv", "nrsvce", "nabre", "niv", "nasb", "coverdale", "renewed_coverdale", "nvi"]
+        translations = ["nvi"]
         texts = [
             "mp_reading_1",
             "mp_reading_2",
