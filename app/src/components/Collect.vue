@@ -1,40 +1,38 @@
 <template>
   <el-collapse-item :title="fullTitle(collect)" :name="collect.uuid">
-    <div class="collect-versions md:flex gap-8">
+    <div class="collect-versions md:flex gap-8 py-4">
       <div
         v-for="version in activeVersions"
         :key="version.key"
         class="collect-version flex-1"
       >
-        <h5 v-if="activeVersions.length > 1" class="mb-2 text-gray-500">
+        <h5 v-if="activeVersions.length > 1" class="mb-4 text-gray-500">
           {{ version.label }}
         </h5>
-        <span v-html="version.content" />
-        <h5 v-if="version.attribution">{{ version.attribution }}</h5>
+        <span class="collect-text" v-html="version.content" />
+        <h5 v-if="version.attribution" class="mt-4 text-sm text-gray-500">
+          {{ version.attribution }}
+        </h5>
       </div>
     </div>
     <!-- Fallback if no versions active (shouldn't happen but safe) -->
-    <div v-if="activeVersions.length === 0">
-      <span v-html="collect.text" />
-      <h5>{{ collect.attribution }}</h5>
+    <div v-if="activeVersions.length === 0" class="py-4">
+      <span class="collect-text" v-html="collect.text" />
+      <h5 class="mt-4 text-sm text-gray-500">{{ collect.attribution }}</h5>
     </div>
 
-    <el-card
-      class="box-card"
-      shadow="never"
-      style="margin: 15px 0"
-      body-style="padding:10px;"
-    >
-      <p>
-        <em>Add this prayer near the end of:</em>
-        <el-checkbox-group v-model="checkList" @change="handleCheckChange">
-          <el-checkbox
-            v-for="office in offices"
-            :key="office"
-            :label="office"
-          />
-        </el-checkbox-group>
+    <el-card class="box-card mt-6" shadow="never">
+      <p class="mb-2">
+        <em class="text-gray-600">Add this prayer near the end of:</em>
       </p>
+      <el-checkbox-group v-model="checkList" @change="handleCheckChange">
+        <el-checkbox
+          v-for="office in offices"
+          :key="office"
+          :label="office"
+          class="mr-4"
+        />
+      </el-checkbox-group>
     </el-card>
   </el-collapse-item>
 </template>
@@ -210,8 +208,19 @@ export default {
 .el-collapse-item__header.is-active {
   font-weight: 800 !important;
 }
+
+.collect-text {
+  line-height: 1.6;
+  display: block;
+  margin-bottom: 1rem;
+}
+
 .collect-version h5 {
   margin-top: 0;
-  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.box-card {
+  border: 1px solid #e5e7eb; /* Light gray border */
 }
 </style>

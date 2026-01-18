@@ -14,8 +14,12 @@
       >
     </span>
   </h4>
-  <el-collapse v-model="openedItems">
-    <div v-for="collect in subcategory.collects" :key="collect.uuid">
+  <el-collapse v-model="openedItems" class="collects-collapse">
+    <div
+      v-for="collect in subcategory.collects"
+      :key="collect.uuid"
+      class="mb-2"
+    >
       <Collect
         :key="collect.uuid"
         :collect="collect"
@@ -97,10 +101,13 @@ body h4 {
 }
 
 .el-collapse-item__header {
-  margin-top: 1.5rem !important;
+  margin-top: 0.5rem !important; /* Reduced from 1.5rem to be more balanced with new padding */
+  padding-bottom: 0.5rem;
+  font-size: 1.1rem;
 }
 
 .el-collapse {
   --el-collapse-header-height: auto !important;
+  border: none; /* Remove default border to rely on item separation */
 }
 </style>

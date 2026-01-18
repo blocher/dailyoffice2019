@@ -2,8 +2,8 @@
   <div class="small-container">
     <Loading v-if="loading" />
     <div>
-      <h1>Collects</h1>
-      <div class="flex justify-center">
+      <h1 class="mb-6">Collects</h1>
+      <div class="flex justify-center mb-6">
         <el-checkbox-group v-model="selectedCollectTypes" size="large">
           <el-checkbox
             v-for="collectType in collects"
@@ -15,17 +15,16 @@
           </el-checkbox>
         </el-checkbox-group>
       </div>
-      <div class="flex flex-wrap justify-center">
+      <div class="flex flex-wrap justify-center gap-2 mb-6">
         <el-button
           size="small"
-          class="mb-1"
           :disabled="buttonsDisabled"
           @click="expandAll()"
-          >{{ showAllText }}
+        >
+          {{ showAllText }}
         </el-button>
         <el-button
           size="small"
-          class="mb-1"
           :disabled="buttonsDisabled"
           @click="collapseAll()"
         >
@@ -33,16 +32,15 @@
         </el-button>
         <el-button
           size="small"
-          class="mb-1"
           :disabled="buttonsDisabled"
           @click="showOnlySelected"
-          >{{ showOnlyText }}
+        >
+          {{ showOnlyText }}
         </el-button>
       </div>
-      <div class="flex justify-center"></div>
       <FontSizer v-if="readyToSetFontSize" />
 
-      <div class="flex justify-center mt-4 full-width">
+      <div class="flex justify-center my-6 full-width">
         <el-checkbox-group v-model="selectedVersions" @change="setVersions">
           <el-checkbox-button
             v-for="version in versionOptions"
@@ -250,11 +248,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-body h4 {
-  text-align: left;
-  margin: 2em 0;
-}
-
 .upside-down span {
   transform: scale(-1, 1);
 }
@@ -267,11 +260,14 @@ body h4 {
   @media (max-width: 675px) {
     width: 100%;
     margin-bottom: 10px;
+    margin-left: 0 !important; /* Ensure no left margin on mobile wrap */
   }
 }
 
 .el-collapse-item__header {
   height: auto !important;
-  margin: 2px 0;
+  margin: 0;
+  padding: 10px 0;
+  line-height: 1.4;
 }
 </style>
