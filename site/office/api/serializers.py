@@ -67,6 +67,7 @@ class CollectSerializer(serializers.HyperlinkedModelSerializer):
             "spanish_attribution",
             "order",
             "number",
+            "page_number",
             "attribution",
             "tags",
             "title_and_tags",

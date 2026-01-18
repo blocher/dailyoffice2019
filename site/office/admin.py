@@ -87,7 +87,7 @@ class CollectAdmin(admin.ModelAdmin):
     ordering = ("order",)
     extra = 0
 
-    list_display = ("title", "order", "collect_type", "attribution", "created", "updated")
+    list_display = ("title", "order", "page_number", "collect_type", "attribution", "created", "updated")
     list_filter = ("collect_type", "tags")
     search_fields = ("title", "attribution", "text", "traditional_text")
 

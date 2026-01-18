@@ -286,6 +286,7 @@ class Collect(BaseModel):
     collect_type = models.ForeignKey(CollectType, on_delete=models.SET_NULL, null=True, blank=True)
     order = models.PositiveSmallIntegerField(default=0)
     number = models.PositiveSmallIntegerField(null=True, blank=True)
+    page_number = models.PositiveSmallIntegerField(null=True, blank=True)
     tags = models.ManyToManyField(CollectTag)
     attribution = models.CharField(max_length=255, blank=True, null=True)
     spanish_attribution = models.CharField(max_length=255, blank=True, null=True)

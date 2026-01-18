@@ -195,10 +195,12 @@ export default {
       }
 
       if (collect.number) {
-        return `${collect.number}. ${title}`;
-      } else {
-        return title;
+        title = `${collect.number}. ${title}`;
       }
+      if (collect.page_number) {
+        title = `${title} (p. ${collect.page_number})`;
+      }
+      return title;
     },
   },
 };
