@@ -19,6 +19,7 @@
       <Collect
         :key="collect.uuid"
         :collect="collect"
+        :selected-versions="selectedVersions"
         :traditional="traditional"
         :extra-collects="extraCollects"
         @extra-collects-changed="extraCollectsChanged"
@@ -37,9 +38,16 @@ export default {
       type: Object,
       required: true,
     },
+    // Deprecated but kept for compatibility if needed (though we updated parent)
     traditional: {
       type: Boolean,
       required: false,
+      default: false,
+    },
+    selectedVersions: {
+      type: Array,
+      required: false,
+      default: () => [],
     },
     extraCollects: {
       type: Object,
@@ -94,15 +102,5 @@ body h4 {
 
 .el-collapse {
   --el-collapse-header-height: auto !important;
-}
-</style>
-
-<style lang="scss">
-.el-collapse-item__header {
-  padding: 0.5rem 0 !important;
-}
-
-.el-collapse-item {
-  margin: 0 0 0.5rem !important;
 }
 </style>

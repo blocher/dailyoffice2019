@@ -15,7 +15,7 @@
           </el-checkbox>
         </el-checkbox-group>
       </div>
-      <div class="flex justify-center flex-wrap">
+      <div class="flex flex-wrap justify-center">
         <el-button
           size="small"
           class="mb-1"
@@ -42,36 +42,21 @@
       <div class="flex justify-center"></div>
       <FontSizer v-if="readyToSetFontSize" />
 
-      <!--      <div class="flex justify-center full-width">-->
-      <!--        <el-input-->
-      <!--            v-model="search" class="full-width m-2" placeholder="Filter by word or phrase">-->
-      <!--          <template #prefix>-->
-      <!--            <el-icon class="el-input__icon">-->
-      <!--              <font-awesome-icon :icon="['fad', 'search']"/>-->
-      <!--            </el-icon>-->
-      <!--          </template>-->
-      <!--        </el-input>-->
-      <!--      </div>-->
-
-      <div class="flex justify-center full-width">
-        <el-switch
-          v-model="traditional"
-          size="large"
-          active-text="Traditional"
-          inactive-text="Contemporary"
-          class="align-center mt-4"
-          @change="setTraditional"
-        />
+      <div class="flex justify-center mt-4 full-width">
+        <el-checkbox-group v-model="selectedVersions" @change="setVersions">
+          <el-checkbox-button
+            v-for="version in versionOptions"
+            :key="version.value"
+            :label="version.value"
+          >
+            {{ version.label }}
+          </el-checkbox-button>
+        </el-checkbox-group>
       </div>
       <el-alert v-if="error" :title="error" type="error" />
     </div>
   </div>
   <div v-if="!loading && !error" id="main">
-    <!--    <div v-if="displayedCollects.length < 1" class="h-96">-->
-    <!--      <h3>No results</h3>-->
-    <!--      <p class="text-center"><em>There are no collects that match your search terms and filters.</em></p>-->
-    <!--    </div>-->
-
     <div v-for="category in collectCategoriesToShow" :key="category.uuid">
       <h3>{{ category.name }}</h3>
       <div
@@ -80,7 +65,7 @@
       >
         <CollectsSubcategory
           ref="subcategories"
-          :traditional="traditional"
+          :selected-versions="selectedVersions"
           :subcategory="subcategory"
           :extra-collects="extraCollects"
           @extra-collects-changed="setExtraCollects"
@@ -107,7 +92,12 @@ export default {
       collects: null,
       loading: true,
       error: false,
-      traditional: false,
+      selectedVersions: ['contemporary'],
+      versionOptions: [
+        { label: 'Contemporary', value: 'contemporary' },
+        { label: 'Traditional', value: 'traditional' },
+        { label: 'Spanish', value: 'spanish' },
+      ],
       search: '',
       readyToSetFontSize: false,
       selectedCollectTypes: [],
@@ -139,6 +129,12 @@ export default {
     },
   },
   watch: {
+    selectedVersions() {
+      this.readyToSetFontSize = false;
+      this.$nextTick(() => {
+        this.readyToSetFontSize = true;
+      });
+    },
     selectedCollectTypes() {
       this.readyToSetFontSize = false;
       this.$nextTick(() => {
@@ -147,12 +143,26 @@ export default {
     },
   },
   async mounted() {
-    const traditional = await DynamicStorage.getItem(
-      'traditionalCollects',
-      false
-    );
-    this.traditional = traditional === 'true' || traditional === true;
-    this.setTraditional();
+    const storedVersions = await DynamicStorage.getItem('collectVersions');
+    if (storedVersions) {
+      try {
+        this.selectedVersions = JSON.parse(storedVersions);
+      } catch {
+        this.selectedVersions = ['contemporary'];
+      }
+    } else {
+      // Migrate legacy setting
+      const traditional = await DynamicStorage.getItem(
+        'traditionalCollects',
+        false
+      );
+      if (traditional === 'true' || traditional === true) {
+        this.selectedVersions = ['traditional'];
+      } else {
+        this.selectedVersions = ['contemporary'];
+      }
+    }
+
     let data = null;
 
     try {
@@ -185,8 +195,11 @@ export default {
         JSON.parse(await DynamicStorage.getItem('extraCollects')) ||
         this.defaultDict;
     },
-    async setTraditional() {
-      await DynamicStorage.setItem('traditionalCollects', this.traditional);
+    async setVersions() {
+      await DynamicStorage.setItem(
+        'collectVersions',
+        JSON.stringify(this.selectedVersions)
+      );
     },
     setDefaultFilter() {
       if (!this.selectedCollectTypes.length) {
