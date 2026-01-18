@@ -183,19 +183,16 @@ export default {
       });
     },
     fullTitle(collect) {
-      // Logic for title based on version?
-      // Usually titles are similar. Spanish title might be different.
-      // If only Spanish is selected, maybe show Spanish title?
-      // But `collect.title` is English. `collect.spanish_title` is available.
-
       const sv = this.selectedVersions;
       let title = collect.title;
-      if (
-        sv &&
-        sv.length === 1 &&
-        sv.includes('spanish') &&
-        collect.spanish_title
-      ) {
+
+      const hasEnglish =
+        sv && (sv.includes('contemporary') || sv.includes('traditional'));
+      const hasSpanish = sv && sv.includes('spanish');
+
+      if (hasEnglish && hasSpanish && collect.spanish_title) {
+        title = `${collect.title} / ${collect.spanish_title}`;
+      } else if (!hasEnglish && hasSpanish && collect.spanish_title) {
         title = collect.spanish_title;
       }
 

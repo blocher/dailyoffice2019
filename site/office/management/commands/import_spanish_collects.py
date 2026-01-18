@@ -12,6 +12,60 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("json_file", type=str, help="Path to the JSON file containing Spanish collects")
 
+    def normalize_spanish_title(self, title):
+        if not title:
+            return ""
+
+        # List of words to keep lowercase (unless they are the first word)
+        # Articles, prepositions, conjunctions
+        lowercase_words = {
+            "el",
+            "la",
+            "los",
+            "las",
+            "un",
+            "una",
+            "unos",
+            "unas",
+            "de",
+            "del",
+            "a",
+            "al",
+            "y",
+            "o",
+            "e",
+            "u",
+            "en",
+            "por",
+            "para",
+            "con",
+            "sin",
+            "sobre",
+            "tras",
+        }
+
+        # Words that should always be uppercase (Roman numerals, etc)
+        uppercase_words = {"ii", "iii", "iv", "vi", "vii", "viii", "ix", "xi", "xii", "xiii", "xiv", "xv", "xvi"}
+
+        words = title.strip().split()
+        normalized_words = []
+
+        for i, word in enumerate(words):
+            lower_word = word.lower()
+            # Clean punctuation for checking
+            # clean_word = re.sub(r"[^\w\s]", "", lower_word)
+
+            if i == 0 or lower_word not in lowercase_words:
+                # Capitalize first letter
+                if lower_word in uppercase_words:
+                    normalized_words.append(lower_word.upper())
+                else:
+                    normalized_words.append(word.capitalize())
+            else:
+                normalized_words.append(lower_word)
+
+        return " ".join(normalized_words)
+
     def handle(self, *args, **options):
         json_file_path = options["json_file"]
 
@@ -61,7 +115,7 @@ class Command(BaseCommand):
             "EPIFANÍA": "Epiphany",
             "CUARESMA": "Lent",
             "SEMANA": "Week",
-            "SANTA": "Holy",
+            "SANTA": "Saint Holy",
             "PASCUA": "Easter",
             "PENTECOSTÉS": "Pentecost",
             "TRINIDAD": "Trinity",
@@ -71,7 +125,7 @@ class Command(BaseCommand):
             "SANTO": "Holy",
             "NOMBRE": "Name",
             "TODOS": "All",
-            "SANTOS": "Saints",
+            "SANTOS": "Saints Holy",
             "CENIZA": "Ash",
             "RAMOS": "Palm",
             "ASCENSIÓN": "Ascension",
@@ -129,6 +183,13 @@ class Command(BaseCommand):
             "MISIONERO": "Missionary",
             "VIGILIA": "Vigil",
             "JERUSALÉN": "Jerusalem",
+            "CRISTO": "Christ",
+            "TEMPLO": "Temple",
+            "ESPÍRITU": "Spirit",
+            "TIEMPO": "Season",
+            "DESPUÉS": "After",
+            "MANIFESTACIÓN": "Manifestation",
+            "GENTILES": "Gentiles",
         }
 
         # Explicit Title Mappings for difficult cases
@@ -151,7 +212,7 @@ class Command(BaseCommand):
             "DOMINGO DE RAMOS": "Palm Sunday",
             "EL QUINTO DOMINGO DE CUARESMA": "The Fifth Sunday in Lent: Passion Sunday",
             "DOMINGO DESPUÉS DE LA ASCENSIÓN": "The Sunday after the Ascension",
-            "EL PENÚLTIMO DOMINGO DE EPIFANÍA": "World Mission Sunday",
+            "EL PENÚLTIMO DOMINGO DE EPIFANÍA": "The Second to Last Sunday of Epiphany: World Mission Sunday",
             "PARA UN MÁRTIR": "Of a Martyr",
             "PARA UN PASTOR": "Of a Pastor",
             "PARA UN MISIONERO O EVANGELISTA": "Of a Missionary or Evangelist",
@@ -171,6 +232,7 @@ class Command(BaseCommand):
 
         for item in data:
             match = None
+            title = item.get("title", "").strip().upper()
 
             # 1. Try matching by Number (Occasional)
             if item.get("number"):
@@ -180,8 +242,7 @@ class Command(BaseCommand):
                     pass
 
             # 2. Try matching by Title (Year/Other)
-            if not match and item.get("title"):
-                title = item["title"].upper().strip()
+            if not match and title:
 
                 # Handle Special Rogation Case (I and II)
                 if title == "DÍAS DE ROGACIÓN":
@@ -220,6 +281,44 @@ class Command(BaseCommand):
                         if c.title.lower() == mapped_title.lower():
                             match = c
                             break
+
+                # Handle Holy Saturday (I and II)
+                elif title == "SÁBADO SANTO":
+                    # Heuristic: Distinguish by body text
+                    body = item.get("body", "").lower()
+
+                    if "creador del cielo" in body:
+                        mapped_title = "Holy Saturday (I)"
+                    elif "dios de los vivos" in body:
+                        mapped_title = "Holy Saturday (II)"
+                    else:
+                        # Fallback
+                        mapped_title = "Holy Saturday (II)"
+
+                    for c in year_candidates:
+                        if c.title.lower() == mapped_title.lower():
+                            match = c
+                            break
+
+                # Handle Pentecost (I and II)
+                elif title == "DÍA DE PENTECOSTÉS":
+                    body = item.get("body", "").lower()
+                    # Collect I: "Almighty God, on this day..." -> "Dios Todopoderoso, que en este día..." (efusión del Espíritu Santo)
+                    # Collect II: "O God, who on this day taught..." -> "Oh Dios, que en este día enseñaste..."
+
+                    if "efusión del espíritu santo" in body:
+                        mapped_title = "Day of Pentecost: Whitsunday (I)"
+                    elif "enseñaste los corazones" in body:
+                        mapped_title = "Day of Pentecost: Whitsunday (II)"
+                    else:
+                        # Fallback or unknown
+                        mapped_title = None
+
+                    if mapped_title:
+                        for c in year_candidates:
+                            if c.title.lower() == mapped_title.lower():
+                                match = c
+                                break
 
                 # Handle Ember Days
                 elif title == "DÍAS DE TÉMPORAS":
@@ -284,26 +383,50 @@ class Command(BaseCommand):
                     best_candidate = None
                     max_score = 0
 
+                    STOP_WORDS = {"THE", "OF", "IN", "A", "AN", "AND", "OR", "FOR", "TO", "AT", "WITH", "BY", "OUR"}
+
+                    # Filter stop words from translated keywords
+                    filtered_keywords = {k for k in translated_keywords if k.upper() not in STOP_WORDS}
+
                     for candidate in year_candidates:
-                        cand_title = candidate.title
+                        # Use only the main title (before colon) to avoid noise from subtitles
+                        cand_title = candidate.title.split(":")[0]
                         cand_words = set(re.findall(r"\w+", cand_title))
 
-                        if not translated_keywords:
-                            continue
+                        # Filter stop words from candidate words
+                        filtered_cand_words = {w for w in cand_words if w.upper() not in STOP_WORDS}
 
-                        intersection = len(translated_keywords.intersection(cand_words))
-                        score = intersection / len(translated_keywords)
+                        if not filtered_keywords:
+                            # Fallback if all keywords were stop words?
+                            # Use original translated_keywords
+                            keywords_to_use = translated_keywords
+                            cand_words_to_use = cand_words
+                        else:
+                            keywords_to_use = filtered_keywords
+                            cand_words_to_use = filtered_cand_words
+
+                        intersection = len(keywords_to_use.intersection(cand_words_to_use))
+                        union = len(keywords_to_use.union(cand_words_to_use))
+
+                        if union == 0:
+                            score = 0
+                        else:
+                            # Use Jaccard similarity
+                            score = intersection / union
 
                         if score > max_score:
                             max_score = score
                             best_candidate = candidate
 
-                    if best_candidate and max_score >= 0.6:
+                    if best_candidate and max_score >= 0.5:
                         match = best_candidate
 
             if match:
                 # Update fields
-                match.spanish_title = item.get("title")
+                original_title = item.get("title", "")
+                normalized = self.normalize_spanish_title(original_title)
+
+                match.spanish_title = normalized
                 match.spanish_subtitle = item.get("subtitle")
                 match.spanish_attribution = item.get("attribution")
 
