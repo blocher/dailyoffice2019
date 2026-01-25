@@ -689,15 +689,19 @@ class ESVXMLAdapter(BibleSource):
                 html_parts.append("<i>Selah</i>")
             elif tag == "begin-line":
                 # Handle poetry line beginning with proper indentation
-                # Use actual HTML spaces for indentation since we can't rely on CSS
+                # Use HTML non-breaking spaces for indentation since we can't rely on CSS
                 in_line = True
                 class_attr = child.get("class", "")
                 if class_attr == "indent":
-                    # Single indent: 4 spaces
-                    html_parts.append('<span class="line indent-1"><span class="indent-1-breaks">    </span>')
+                    # Single indent: 4 non-breaking spaces
+                    html_parts.append(
+                        '<span class="line indent-1"><span class="indent-1-breaks">&nbsp;&nbsp;&nbsp;&nbsp;</span>'
+                    )
                 elif class_attr == "indent-2":
-                    # Double indent: 8 spaces
-                    html_parts.append('<span class="line indent-2"><span class="indent-2-breaks">        </span>')
+                    # Double indent: 8 non-breaking spaces
+                    html_parts.append(
+                        '<span class="line indent-2"><span class="indent-2-breaks">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>'
+                    )
                 else:
                     html_parts.append('<span class="line">')
             elif tag == "end-line":
