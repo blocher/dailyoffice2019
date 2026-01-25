@@ -179,7 +179,11 @@ The adapter includes comprehensive book name mapping to handle variations:
 ### Canonical Books (1-66)
 - Old Testament: Genesis through Malachi
 - New Testament: Matthew through Revelation
-- Variations handled: "Psalms" vs "Psalm", "Song of Solomon" vs "Song of Songs"
+- Variations handled: 
+  - "Psalms" vs "Psalm"
+  - "Song of Solomon" vs "Song of Songs"
+  - **Roman numerals**: "I Corinthians" → "1 Corinthians", "II Kings" → "2 Kings", etc.
+  - Books with numbers can use either Arabic (1, 2, 3) or Roman (I, II, III) numerals
 
 ### Apocrypha Books (70-87)
 All mapped with their numbered prefixes:
@@ -243,7 +247,10 @@ python manage.py reimport_esv_scripture --passage "Tobit 1:1" --dry-run
 The adapter uses the `scriptures` library to normalize citations before processing:
 - "Gen 1:1" → "Genesis 1:1"
 - "Jn 3:16" → "John 3:16"
+- **Roman numerals** → Arabic numerals: "I Corinthians" → "1 Corinthians", "II Kings" → "2 Kings"
 - Falls back to manual parsing for Apocrypha books not recognized by scriptures library
+
+The adapter automatically handles both Roman numeral (I, II, III, IV) and Arabic numeral (1, 2, 3, 4) prefixes in book names.
 
 ### Error Handling
 - `PassageNotFoundException` - Raised when book or passage cannot be found

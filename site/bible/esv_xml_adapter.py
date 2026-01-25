@@ -45,11 +45,17 @@ class ESVXMLAdapter(BibleSource):
         "Judges": "Judges.xml",
         "Ruth": "Ruth.xml",
         "1 Samuel": "1 Samuel.xml",
+        "I Samuel": "1 Samuel.xml",  # Roman numeral variant
         "2 Samuel": "2 Samuel.xml",
+        "II Samuel": "2 Samuel.xml",  # Roman numeral variant
         "1 Kings": "1 Kings.xml",
+        "I Kings": "1 Kings.xml",  # Roman numeral variant
         "2 Kings": "2 Kings.xml",
+        "II Kings": "2 Kings.xml",  # Roman numeral variant
         "1 Chronicles": "1 Chronicles.xml",
+        "I Chronicles": "1 Chronicles.xml",  # Roman numeral variant
         "2 Chronicles": "2 Chronicles.xml",
+        "II Chronicles": "2 Chronicles.xml",  # Roman numeral variant
         "Ezra": "Ezra.xml",
         "Nehemiah": "Nehemiah.xml",
         "Esther": "Esther.xml",
@@ -85,24 +91,35 @@ class ESVXMLAdapter(BibleSource):
         "Acts": "Acts.xml",
         "Romans": "Romans.xml",
         "1 Corinthians": "1 Corinthians.xml",
+        "I Corinthians": "1 Corinthians.xml",  # Roman numeral variant
         "2 Corinthians": "2 Corinthians.xml",
+        "II Corinthians": "2 Corinthians.xml",  # Roman numeral variant
         "Galatians": "Galatians.xml",
         "Ephesians": "Ephesians.xml",
         "Philippians": "Philippians.xml",
         "Colossians": "Colossians.xml",
         "1 Thessalonians": "1 Thessalonians.xml",
+        "I Thessalonians": "1 Thessalonians.xml",  # Roman numeral variant
         "2 Thessalonians": "2 Thessalonians.xml",
+        "II Thessalonians": "2 Thessalonians.xml",  # Roman numeral variant
         "1 Timothy": "1 Timothy.xml",
+        "I Timothy": "1 Timothy.xml",  # Roman numeral variant
         "2 Timothy": "2 Timothy.xml",
+        "II Timothy": "2 Timothy.xml",  # Roman numeral variant
         "Titus": "Titus.xml",
         "Philemon": "Philemon.xml",
         "Hebrews": "Hebrews.xml",
         "James": "James.xml",
         "1 Peter": "1 Peter.xml",
+        "I Peter": "1 Peter.xml",  # Roman numeral variant
         "2 Peter": "2 Peter.xml",
+        "II Peter": "2 Peter.xml",  # Roman numeral variant
         "1 John": "1 John.xml",
+        "I John": "1 John.xml",  # Roman numeral variant
         "2 John": "2 John.xml",
+        "II John": "2 John.xml",  # Roman numeral variant
         "3 John": "3 John.xml",
+        "III John": "3 John.xml",  # Roman numeral variant
         "Jude": "Jude.xml",
         "Revelation": "Revelation.xml",
         # Apocrypha (with numbered prefixes in filenames)
@@ -119,13 +136,19 @@ class ESVXMLAdapter(BibleSource):
         "Susanna": "78.Susanna.xml",
         "Bel and the Dragon": "79.Bel and the Dragon.xml",
         "1 Maccabees": "80.1 Maccabees.xml",
+        "I Maccabees": "80.1 Maccabees.xml",  # Roman numeral variant
         "2 Maccabees": "81.2 Maccabees.xml",
+        "II Maccabees": "81.2 Maccabees.xml",  # Roman numeral variant
         "1 Esdras": "82.1 Esdras.xml",
+        "I Esdras": "82.1 Esdras.xml",  # Roman numeral variant
         "Prayer of Manasseh": "83.Prayer of Manasseh.xml",
         "Psalm 151": "84.Psalm 151.xml",
         "3 Maccabees": "85.3 Maccabees.xml",
+        "III Maccabees": "85.3 Maccabees.xml",  # Roman numeral variant
         "2 Esdras": "86.2 Esdras.xml",
+        "II Esdras": "86.2 Esdras.xml",  # Roman numeral variant
         "4 Maccabees": "87.4 Maccabees.xml",
+        "IV Maccabees": "87.4 Maccabees.xml",  # Roman numeral variant
     }
 
     def __init__(self, passage: str, version: str = "esv", include_references: bool = False):
@@ -151,10 +174,38 @@ class ESVXMLAdapter(BibleSource):
             self.passage = passage
             self._parse_passage_manually()
 
+        # Normalize book name (convert Roman numerals to Arabic)
+        self.book = self._normalize_book_name(self.book)
+
         # Generate the HTML
         self.html = self._generate_html()
         self.text = self._generate_text()
         self.headings = self._extract_headings()
+
+    def _normalize_book_name(self, book_name: str) -> str:
+        """
+        Normalize book name by converting Roman numerals to Arabic numerals.
+
+        Args:
+            book_name: Book name that may contain Roman numerals (e.g., "I Corinthians", "II Kings")
+
+        Returns:
+            Normalized book name with Arabic numerals (e.g., "1 Corinthians", "2 Kings")
+        """
+        # Map of Roman numerals to Arabic numerals
+        roman_to_arabic = {
+            "I ": "1 ",
+            "II ": "2 ",
+            "III ": "3 ",
+            "IV ": "4 ",
+        }
+
+        # Check if book name starts with a Roman numeral
+        for roman, arabic in roman_to_arabic.items():
+            if book_name.startswith(roman):
+                return arabic + book_name[len(roman) :]
+
+        return book_name
 
     def _parse_passage_manually(self):
         """
