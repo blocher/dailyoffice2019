@@ -9,15 +9,15 @@ print(test_html)
 print()
 
 # Count nbsp entities
-nbsp_count = test_html.count('&nbsp;')
+nbsp_count = test_html.count("&nbsp;")
 print(f"Number of &nbsp; entities: {nbsp_count}")
 print(f"Expected: 4")
 print(f"Match: {nbsp_count == 4}")
 
 # Verify structure
-has_indent_breaks = 'indent-1-breaks' in test_html
-has_nbsp = '&nbsp;' in test_html
-has_no_regular_spaces_in_breaks = '    ' not in test_html  # Should not have 4 regular spaces
+has_indent_breaks = "indent-1-breaks" in test_html
+has_nbsp = "&nbsp;" in test_html
+has_no_regular_spaces_in_breaks = "    " not in test_html  # Should not have 4 regular spaces
 
 print(f"\n✓ Has indent-breaks span: {has_indent_breaks}")
 print(f"✓ Has &nbsp; entities: {has_nbsp}")

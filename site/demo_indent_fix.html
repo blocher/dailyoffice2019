@@ -17,12 +17,12 @@
 </head>
 <body>
     <h1>Poetry Indentation Fix - Isaiah 65:1-2</h1>
-    
+
     <div class="demo-section">
         <h2>❌ BEFORE (Regular Spaces - Attempt 2)</h2>
         <h3>HTML Code:</h3>
         <code>&lt;span class="indent-1-breaks"&gt;    &lt;/span&gt;</code> (4 regular spaces)
-        
+
         <h3>Rendered Output:</h3>
         <div class="output fail poetry">
             <span class="line"><sup>1</sup>I was ready to be sought by those who did not ask for me;</span><br/>
@@ -32,12 +32,12 @@
         </div>
         <p><strong>Problem:</strong> Regular spaces don't create visible indentation (collapsed by HTML)</p>
     </div>
-    
+
     <div class="demo-section">
         <h2>✅ AFTER (HTML &amp;nbsp; Entities - Attempt 3)</h2>
         <h3>HTML Code:</h3>
         <code>&lt;span class="indent-1-breaks"&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/span&gt;</code> (4 non-breaking spaces)
-        
+
         <h3>Rendered Output:</h3>
         <div class="output success poetry">
             <span class="line"><sup>1</sup>I was ready to be sought by those who did not ask for me;</span><br/>
@@ -62,7 +62,7 @@ html_parts.append('&lt;span class="indent-1-breaks"&gt;    &lt;/span&gt;')
 # AFTER (Attempt 3 - HTML entities)
 html_parts.append('&lt;span class="indent-1-breaks"&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/span&gt;')
         </pre>
-        
+
         <h3>Why This Works:</h3>
         <ul>
             <li>Regular spaces are collapsed by HTML rendering engines</li>
