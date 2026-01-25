@@ -314,6 +314,12 @@ class ESVXMLAdapter(BibleSource):
             # Build HTML from verses in the range
             html_parts = []
 
+            # Special handling for Sirach chapter 1: include the prologue
+            if self.book in ["Sirach", "Ecclesiasticus"] and self.start_chapter == 1 and self.start_verse == 1:
+                prologue_html = self._extract_sirach_prologue(root)
+                if prologue_html:
+                    html_parts.append(prologue_html)
+
             # Process each chapter in range
             for chapter_num in range(self.start_chapter, self.end_chapter + 1):
                 # Determine verse range for this chapter
@@ -331,6 +337,102 @@ class ESVXMLAdapter(BibleSource):
 
         except Exception as e:
             raise PassageNotFoundException(f"Error generating HTML: {str(e)}")
+
+    def _extract_sirach_prologue(self, root: ET.Element) -> str:
+        """
+        Extract the prologue from Sirach chapter 1 (the unversed text before verse 1).
+
+        Args:
+            root: XML root element
+
+        Returns:
+            HTML string of the prologue content
+        """
+        chapter = root.find(f".//cb:chapter[@num='1']", self.NAMESPACE)
+        if chapter is None:
+            return ""
+
+        html_parts = []
+        in_paragraph = False
+        paragraph_content = []
+
+        # Process elements until we hit the first verse
+        for elem in chapter:
+            tag = elem.tag.replace(f"{{{self.NAMESPACE['cb']}}}", "")
+
+            # Stop when we reach the first verse
+            if tag == "verse":
+                break
+
+            if tag == "heading":
+                # Close any open paragraph first
+                if in_paragraph and paragraph_content:
+                    html_parts.append("<p>" + "".join(paragraph_content) + "</p>")
+                    paragraph_content = []
+                    in_paragraph = False
+
+                # Process heading, removing footnote markers if needed
+                heading_text = self._get_text_content(elem)
+                html_parts.append(f'<h3 class="passage-heading">{heading_text}</h3>')
+
+            elif tag == "begin-paragraph":
+                in_paragraph = True
+                paragraph_content = []
+
+            elif tag == "end-paragraph":
+                if in_paragraph and paragraph_content:
+                    html_parts.append("<p>" + "".join(paragraph_content) + "</p>")
+                paragraph_content = []
+                in_paragraph = False
+
+            elif tag == "marker":
+                # Skip markers
+                pass
+            elif in_paragraph:
+                # Collect paragraph text content
+                text = self._get_text_content(elem)
+                if text:
+                    paragraph_content.append(text)
+
+        # Close any remaining open paragraph
+        if in_paragraph and paragraph_content:
+            html_parts.append("<p>" + "".join(paragraph_content) + "</p>")
+
+        if html_parts:
+            return "\n".join(html_parts)
+        return ""
+
+    def _get_text_content(self, elem: ET.Element) -> str:
+        """
+        Extract text content from an element, optionally excluding notes.
+
+        Args:
+            elem: XML element
+
+        Returns:
+            Text content as string
+        """
+        parts = []
+
+        if elem.text:
+            parts.append(elem.text)
+
+        for child in elem:
+            child_tag = child.tag.replace(f"{{{self.NAMESPACE['cb']}}}", "")
+
+            # Skip notes if include_references is False
+            if child_tag == "note" and not self.include_references:
+                if child.tail:
+                    parts.append(child.tail)
+                continue
+
+            # Recursively get text from child
+            parts.append(self._get_text_content(child))
+
+            if child.tail:
+                parts.append(child.tail)
+
+        return "".join(parts)
 
     def _extract_verse_number(self, verse_num_str: str) -> int:
         """
@@ -587,19 +689,23 @@ class ESVXMLAdapter(BibleSource):
                 html_parts.append("<i>Selah</i>")
             elif tag == "begin-line":
                 # Handle poetry line beginning with proper indentation
+                # Use actual HTML spaces for indentation since we can't rely on CSS
                 in_line = True
                 class_attr = child.get("class", "")
                 if class_attr == "indent":
-                    html_parts.append('<span class="line indent">')
+                    # Single indent: 4 spaces
+                    html_parts.append('<span class="line indent-1"><span class="indent-1-breaks">    </span>')
                 elif class_attr == "indent-2":
-                    html_parts.append('<span class="line indent-2">')
+                    # Double indent: 8 spaces
+                    html_parts.append('<span class="line indent-2"><span class="indent-2-breaks">        </span>')
                 else:
                     html_parts.append('<span class="line">')
             elif tag == "end-line":
                 # Handle poetry line ending with optional line break
                 in_line = False
-                html_parts.append("</span>")
+                # Close any indent spans first
                 class_attr = child.get("class", "")
+                html_parts.append("</span>")
                 if class_attr == "br":
                     html_parts.append("<br/>")
                 # Add newline for readability in output
