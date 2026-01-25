@@ -255,6 +255,8 @@ def main():
     tests = [
         "Genesis 1:1",
         "Genesis 1:1-3",
+        "Psalm 23:1",
+        "Psalm 23:1-3",
         "John 3:16",
         "Tobit 1:1",
         "Tobit 1:1-3",

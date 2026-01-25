@@ -21,17 +21,17 @@ from bible.sources import BibleSource, PassageNotFoundException
 class ESVXMLAdapter(BibleSource):
     """
     Adapter for reading ESV scripture passages from XML files.
-    
+
     The XML files are structured with namespaces and use specific elements
     for verses, headings, paragraphs, poetry, quotations, and more.
     """
 
     # XML namespace used in ESV files
     NAMESPACE = {"cb": "http://www.crosswaybibles.org"}
-    
+
     # Path to ESV XML files
     ESV_DIR = Path(__file__).parent / "esv"
-    
+
     # Mapping of normalized book names to XML file names
     # This handles variations in book naming
     BOOK_NAME_MAP = {
@@ -77,7 +77,6 @@ class ESVXMLAdapter(BibleSource):
         "Haggai": "Haggai.xml",
         "Zechariah": "Zechariah.xml",
         "Malachi": "Malachi.xml",
-        
         # New Testament
         "Matthew": "Matthew.xml",
         "Mark": "Mark.xml",
@@ -106,7 +105,6 @@ class ESVXMLAdapter(BibleSource):
         "3 John": "3 John.xml",
         "Jude": "Jude.xml",
         "Revelation": "Revelation.xml",
-        
         # Apocrypha (with numbered prefixes in filenames)
         "Tobit": "70.Tobit.xml",
         "Judith": "71.Judith.xml",
@@ -133,14 +131,14 @@ class ESVXMLAdapter(BibleSource):
     def __init__(self, passage: str, version: str = "esv"):
         """
         Initialize the adapter with a passage citation.
-        
+
         Args:
             passage: Scripture passage citation (e.g., "Genesis 1:1-5", "John 3:16")
             version: Translation version (should be "esv")
         """
         self.version = version.lower()
         self.original_passage = passage
-        
+
         # Normalize the passage using scriptures library
         try:
             self.reference = scriptures.extract(passage)[0]
@@ -150,7 +148,7 @@ class ESVXMLAdapter(BibleSource):
             # If scriptures library can't parse it, try manual parsing
             self.passage = passage
             self._parse_passage_manually()
-        
+
         # Generate the HTML
         self.html = self._generate_html()
         self.text = self._generate_text()
@@ -204,43 +202,44 @@ class ESVXMLAdapter(BibleSource):
     def _get_xml_filename(self) -> str:
         """
         Get the XML filename for the given book.
-        
+
         Returns:
             Filename of the XML file
-            
+
         Raises:
             PassageNotFoundException: If book is not found
         """
         # Try direct lookup
         if self.book in self.BOOK_NAME_MAP:
             return self.BOOK_NAME_MAP[self.book]
-        
+
         # Try case-insensitive lookup
         for key, value in self.BOOK_NAME_MAP.items():
             if key.lower() == self.book.lower():
                 return value
-        
+
         raise PassageNotFoundException(f"Book not found: {self.book}")
 
     def _load_xml_tree(self) -> ET.Element:
         """
         Load and parse the XML file for the book.
-        
+
         Returns:
             Root element of the parsed XML tree
-            
+
         Raises:
             PassageNotFoundException: If file cannot be loaded
         """
         filename = self._get_xml_filename()
         filepath = self.ESV_DIR / filename
-        
+
         if not filepath.exists():
             raise PassageNotFoundException(f"XML file not found: {filepath}")
-        
+
         try:
             # Parse with lxml to handle entities defined in DTD
             from lxml import etree
+
             parser = etree.XMLParser(load_dtd=True, resolve_entities=True)
             tree = etree.parse(str(filepath), parser)
             return tree.getroot()
@@ -252,45 +251,44 @@ class ESVXMLAdapter(BibleSource):
     def _generate_html(self) -> str:
         """
         Generate HTML from the XML file for the requested passage.
-        
+
         Returns:
             HTML string of the formatted passage
         """
         try:
             root = self._load_xml_tree()
-            
+
             # Build HTML from verses in the range
             html_parts = []
-            
+
             # Process each chapter in range
             for chapter_num in range(self.start_chapter, self.end_chapter + 1):
                 # Determine verse range for this chapter
                 verse_start = self.start_verse if chapter_num == self.start_chapter else 1
                 verse_end = self.end_verse if chapter_num == self.end_chapter else 999
-                
+
                 chapter_html = self._process_chapter(root, chapter_num, verse_start, verse_end)
                 if chapter_html:
                     html_parts.append(chapter_html)
-            
+
             if not html_parts:
                 raise PassageNotFoundException(f"No verses found for passage: {self.passage}")
-            
+
             return "\n".join(html_parts)
-            
+
         except Exception as e:
             raise PassageNotFoundException(f"Error generating HTML: {str(e)}")
 
-    def _process_chapter(self, root: ET.Element, chapter_num: int, 
-                        verse_start: int, verse_end: int) -> str:
+    def _process_chapter(self, root: ET.Element, chapter_num: int, verse_start: int, verse_end: int) -> str:
         """
         Process a chapter and extract verses in the specified range.
-        
+
         Args:
             root: XML root element
             chapter_num: Chapter number
             verse_start: Starting verse number
             verse_end: Ending verse number
-            
+
         Returns:
             HTML string for the chapter content
         """
@@ -298,69 +296,110 @@ class ESVXMLAdapter(BibleSource):
         chapter = root.find(f".//cb:chapter[@num='{chapter_num}']", self.NAMESPACE)
         if chapter is None:
             return ""
-        
+
         html_parts = []
-        in_paragraph = False
-        in_block_indent = False
-        in_line_group = False
-        current_line = []
-        
+
+        # Context tracking for proper nesting
+        context = {
+            "in_paragraph": False,
+            "in_poetry": False,
+            "in_block_indent": False,
+        }
+
         # Track verse numbers to include
         include_verses = set(range(verse_start, min(verse_end + 1, 1000)))
-        
+
+        # Track if we've seen any verses in the current structural block
+        verses_in_current_block = False
+        pending_opening_tags = []
+
         # Process all child elements of the chapter
         for elem in chapter:
             tag = elem.tag.replace(f"{{{self.NAMESPACE['cb']}}}", "")
-            
+
             if tag == "heading":
-                html_parts.append(self._format_heading(elem))
+                # Only include heading if followed by a verse in our range
+                if self._has_relevant_verse_after(elem, include_verses):
+                    html_parts.extend(pending_opening_tags)
+                    pending_opening_tags = []
+                    html_parts.append(self._format_heading(elem))
             elif tag == "subheading":
-                html_parts.append(self._format_subheading(elem))
+                if self._has_relevant_verse_after(elem, include_verses):
+                    html_parts.extend(pending_opening_tags)
+                    pending_opening_tags = []
+                    html_parts.append(self._format_subheading(elem))
             elif tag == "verse":
                 verse_num = int(elem.get("num", 0))
                 if verse_num in include_verses:
-                    verse_html = self._format_verse(elem, verse_num)
+                    # We have a verse to include, flush any pending opening tags
+                    html_parts.extend(pending_opening_tags)
+                    pending_opening_tags = []
+                    verses_in_current_block = True
+                    verse_html = self._format_verse(elem, verse_num, context)
                     html_parts.append(verse_html)
             elif tag == "begin-paragraph":
                 class_attr = elem.get("class", "")
                 if class_attr == "line-group":
-                    html_parts.append('<div class="poetry">')
-                    in_line_group = True
+                    pending_opening_tags.append('<div class="poetry">')
+                    context["in_poetry"] = True
                 else:
-                    html_parts.append("<p>")
-                in_paragraph = True
+                    pending_opening_tags.append("<p>")
+                    context["in_paragraph"] = True
+                verses_in_current_block = False
             elif tag == "end-paragraph":
-                if in_line_group:
-                    html_parts.append("</div>")
-                    in_line_group = False
-                elif in_paragraph:
-                    html_parts.append("</p>")
-                in_paragraph = False
-            elif tag == "begin-block-indent":
-                html_parts.append('<div class="block-indent">')
-                in_block_indent = True
-            elif tag == "end-block-indent":
-                if in_block_indent:
-                    html_parts.append("</div>")
-                in_block_indent = False
-            elif tag == "begin-line":
-                current_line = []
-                class_attr = elem.get("class", "")
-                if class_attr == "indent":
-                    current_line.append('<div class="line indent">')
-                elif class_attr == "indent-2":
-                    current_line.append('<div class="line indent-2">')
+                # Only add closing tag if we actually added verses in this block
+                if verses_in_current_block:
+                    if context["in_poetry"]:
+                        html_parts.append("</div>")
+                        context["in_poetry"] = False
+                    elif context["in_paragraph"]:
+                        html_parts.append("</p>")
+                        context["in_paragraph"] = False
                 else:
-                    current_line.append('<div class="line">')
-            elif tag == "end-line":
-                class_attr = elem.get("class", "")
-                current_line.append("</div>")
-                if class_attr == "br":
-                    current_line.append("<br/>")
-                html_parts.extend(current_line)
-                current_line = []
-        
+                    # Clear pending tags since we're closing without content
+                    if context["in_poetry"]:
+                        context["in_poetry"] = False
+                    elif context["in_paragraph"]:
+                        context["in_paragraph"] = False
+                    pending_opening_tags = []
+                verses_in_current_block = False
+            elif tag == "begin-block-indent":
+                # Only open if there will be relevant content
+                if self._has_relevant_verse_after(elem, include_verses):
+                    pending_opening_tags.append('<div class="block-indent">')
+                    context["in_block_indent"] = True
+            elif tag == "end-block-indent":
+                # Only close if we actually opened it and had content
+                if context["in_block_indent"] and verses_in_current_block:
+                    html_parts.append("</div>")
+                    context["in_block_indent"] = False
+                elif context["in_block_indent"]:
+                    # We opened it but no verses were added
+                    context["in_block_indent"] = False
+
         return "\n".join(html_parts)
+
+    def _has_relevant_verse_after(self, elem: ET.Element, include_verses: set) -> bool:
+        """
+        Check if there are any relevant verses after this element in the chapter.
+
+        Args:
+            elem: The element to check after
+            include_verses: Set of verse numbers to include
+
+        Returns:
+            True if there are relevant verses after this element
+        """
+        # Check following siblings
+        current = elem.getnext()
+        while current is not None:
+            tag = current.tag.replace(f"{{{self.NAMESPACE['cb']}}}", "")
+            if tag == "verse":
+                verse_num = int(current.get("num", 0))
+                if verse_num in include_verses:
+                    return True
+            current = current.getnext()
+        return False
 
     def _format_heading(self, elem: ET.Element) -> str:
         """Format a heading element."""
@@ -373,52 +412,64 @@ class ESVXMLAdapter(BibleSource):
         class_attr = elem.get("class", "")
         return f'<h4 class="passage-subheading {class_attr}">{text}</h4>'
 
-    def _format_verse(self, verse_elem: ET.Element, verse_num: int) -> str:
+    def _format_verse(self, verse_elem: ET.Element, verse_num: int, context: dict = None) -> str:
         """
         Format a verse element with all its inline content.
-        
+
         Args:
             verse_elem: The verse XML element
             verse_num: The verse number
-            
+            context: Dictionary tracking current formatting context (poetry, paragraph, etc.)
+
         Returns:
             HTML string for the verse
         """
+        if context is None:
+            context = {}
+
         html_parts = [f'<sup class="verse-num">{verse_num}</sup>']
-        
+
         # Process the verse content
-        verse_html = self._process_verse_content(verse_elem)
+        verse_html = self._process_verse_content(verse_elem, context)
         html_parts.append(verse_html)
-        
+
         return " ".join(html_parts)
 
-    def _process_verse_content(self, elem: ET.Element) -> str:
+    def _process_verse_content(self, elem: ET.Element, context: dict = None) -> str:
         """
-        Recursively process verse content including inline elements.
-        
+        Recursively process verse content including inline elements and poetry lines.
+
         Args:
             elem: XML element to process
-            
+            context: Dictionary tracking current formatting context (poetry, paragraph, etc.)
+
         Returns:
             HTML string of the content
         """
+        if context is None:
+            context = {}
+
         html_parts = []
-        
+        in_line = False
+
         # Add any text before child elements
         if elem.text:
-            html_parts.append(elem.text)
-        
+            # Strip only leading/trailing newlines and excessive indentation, preserve single spaces
+            text = elem.text.replace("\n", "").replace("\t", "")
+            if text.strip():  # If there's actual content
+                html_parts.append(text)
+
         # Process child elements
         for child in elem:
             tag = child.tag.replace(f"{{{self.NAMESPACE['cb']}}}", "")
-            
+
             if tag == "woc":
                 # Words of Christ - red text
-                woc_content = self._process_verse_content(child)
+                woc_content = self._process_verse_content(child, context)
                 html_parts.append(f'<span class="woc">{woc_content}</span>')
             elif tag == "span":
                 class_attr = child.get("class", "")
-                span_content = self._process_verse_content(child)
+                span_content = self._process_verse_content(child, context)
                 if class_attr == "divine-name":
                     html_parts.append(f'<span class="divine-name">{span_content}</span>')
                 elif class_attr == "small-caps":
@@ -449,29 +500,35 @@ class ESVXMLAdapter(BibleSource):
                 # Footnote marker (superscript number)
                 # Extract note number from nid (e.g., "n01001006.1" -> "1")
                 nid = child.get("nid", "")
-                match = re.search(r'\.(\d+)$', nid)
+                match = re.search(r"\.(\d+)$", nid)
                 if match:
                     note_num = match.group(1)
                     html_parts.append(f'<sup class="footnote">{note_num}</sup>')
             elif tag == "selah":
-                html_parts.append('<i>Selah</i>')
+                html_parts.append("<i>Selah</i>")
             elif tag == "begin-line":
+                # Handle poetry line beginning with proper indentation
+                in_line = True
                 class_attr = child.get("class", "")
                 if class_attr == "indent":
-                    html_parts.append('<div class="line indent">')
+                    html_parts.append('<span class="line indent">')
                 elif class_attr == "indent-2":
-                    html_parts.append('<div class="line indent-2">')
+                    html_parts.append('<span class="line indent-2">')
                 else:
-                    html_parts.append('<div class="line">')
+                    html_parts.append('<span class="line">')
             elif tag == "end-line":
+                # Handle poetry line ending with optional line break
+                in_line = False
+                html_parts.append("</span>")
                 class_attr = child.get("class", "")
-                html_parts.append("</div>")
                 if class_attr == "br":
                     html_parts.append("<br/>")
+                # Add newline for readability in output
+                html_parts.append("\n")
             elif tag == "i":
                 # Italics (usually in footnotes)
-                i_content = self._process_verse_content(child)
-                html_parts.append(f'<i>{i_content}</i>')
+                i_content = self._process_verse_content(child, context)
+                html_parts.append(f"<i>{i_content}</i>")
             elif tag == "marker":
                 # Skip markers - they're just for reference
                 pass
@@ -479,39 +536,50 @@ class ESVXMLAdapter(BibleSource):
                 class_attr = child.get("class", "")
                 if class_attr == "line-group":
                     html_parts.append('<div class="poetry">')
+                    context["in_poetry"] = True
                 else:
                     html_parts.append("<p>")
+                    context["in_paragraph"] = True
             elif tag == "end-paragraph":
-                # Close paragraph or poetry div
-                html_parts.append("</p>")  # Will be corrected by parent context
+                if context.get("in_poetry"):
+                    html_parts.append("</div>")
+                    context["in_poetry"] = False
+                elif context.get("in_paragraph"):
+                    html_parts.append("</p>")
+                    context["in_paragraph"] = False
             elif tag == "begin-block-indent":
                 html_parts.append('<div class="block-indent">')
+                context["in_block_indent"] = True
             elif tag == "end-block-indent":
                 html_parts.append("</div>")
+                context["in_block_indent"] = False
             else:
                 # For unknown tags, just process their content
-                child_content = self._process_verse_content(child)
+                child_content = self._process_verse_content(child, context)
                 html_parts.append(child_content)
-            
+
             # Add any text after child element
             if child.tail:
-                html_parts.append(child.tail)
-        
+                # Remove newlines and tabs but preserve actual spaces
+                tail = child.tail.replace("\n", "").replace("\t", "")
+                if tail.strip():  # If there's actual content
+                    html_parts.append(tail)
+
         return "".join(html_parts)
 
     def _generate_text(self) -> str:
         """
         Generate plain text version from HTML.
-        
+
         Returns:
             Plain text version of the passage
         """
         if not self.html:
             return ""
-        
+
         # Simple HTML to text conversion
         from html2text import html2text
-        
+
         try:
             text = html2text(self.html).replace("\n", " ").replace(r"/\s\s+/", " ").strip()
             text = re.sub(r" +", " ", text)
@@ -525,21 +593,21 @@ class ESVXMLAdapter(BibleSource):
     def _extract_headings(self) -> list:
         """
         Extract section headings from the passage.
-        
+
         Returns:
             List of tuples (passage_reference, heading_text)
         """
         headings = []
-        
+
         try:
             root = self._load_xml_tree()
-            
+
             # Find all headings in the chapter range
             for chapter_num in range(self.start_chapter, self.end_chapter + 1):
                 chapter = root.find(f".//cb:chapter[@num='{chapter_num}']", self.NAMESPACE)
                 if chapter is None:
                     continue
-                
+
                 for heading in chapter.findall(".//cb:heading", self.NAMESPACE):
                     text = "".join(heading.itertext()).strip()
                     if text:
@@ -552,8 +620,8 @@ class ESVXMLAdapter(BibleSource):
                                 headings.append((ref, text))
                                 break
                             next_verse = next_verse.getnext()
-        
+
         except Exception:
             pass
-        
+
         return headings
