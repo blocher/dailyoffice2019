@@ -15,9 +15,7 @@ import os
 # Add site directory to path
 sys.path.insert(0, os.path.dirname(__file__))
 
-# Import the adapter with minimal dependencies
-from lxml import etree
-import scriptures
+# Import the adapter
 from bible.esv_xml_adapter import ESVXMLAdapter
 
 

@@ -7,13 +7,13 @@ This module provides functionality to:
 3. Handle all book types including Apocrypha
 """
 
-import os
 import re
 from pathlib import Path
 from typing import Optional, Tuple
 from xml.etree import ElementTree as ET
 
 import scriptures
+from html2text import html2text
 
 from bible.sources import BibleSource, PassageNotFoundException
 
@@ -577,12 +577,9 @@ class ESVXMLAdapter(BibleSource):
         if not self.html:
             return ""
 
-        # Simple HTML to text conversion
-        from html2text import html2text
-
         try:
-            text = html2text(self.html).replace("\n", " ").replace(r"/\s\s+/", " ").strip()
-            text = re.sub(r" +", " ", text)
+            text = html2text(self.html).replace("\n", " ").strip()
+            text = re.sub(r"\s\s+", " ", text)
             return text
         except Exception:
             # Fallback: strip HTML tags
