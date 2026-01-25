@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Poetry Indentation Fix Demo</title>
+    <style>
+        body { font-family: Georgia, serif; padding: 20px; background: #1a1a1a; color: #e0e0e0; }
+        .demo-section { margin: 30px 0; padding: 20px; background: #2a2a2a; border-radius: 5px; }
+        h2 { color: #4a9eff; }
+        h3 { color: #7ab8ff; margin-top: 20px; }
+        .poetry { margin: 15px 0; }
+        .line { display: block; }
+        code { background: #3a3a3a; padding: 2px 5px; border-radius: 3px; font-size: 0.9em; }
+        .output { border-left: 3px solid #4a9eff; padding-left: 15px; margin: 10px 0; }
+        .fail { border-left-color: #ff4444; }
+        .success { border-left-color: #44ff44; }
+    </style>
+</head>
+<body>
+    <h1>Poetry Indentation Fix - Isaiah 65:1-2</h1>
+    
+    <div class="demo-section">
+        <h2>❌ BEFORE (Regular Spaces - Attempt 2)</h2>
+        <h3>HTML Code:</h3>
+        <code>&lt;span class="indent-1-breaks"&gt;    &lt;/span&gt;</code> (4 regular spaces)
+        
+        <h3>Rendered Output:</h3>
+        <div class="output fail poetry">
+            <span class="line"><sup>1</sup>I was ready to be sought by those who did not ask for me;</span><br/>
+            <span class="line indent-1"><span class="indent-1-breaks">    </span>I was ready to be found by those who did not seek me.</span><br/>
+            <span class="line">I said, "Here I am, here I am,"</span><br/>
+            <span class="line indent-1"><span class="indent-1-breaks">    </span>to a nation that was not called by my name.</span><br/>
+        </div>
+        <p><strong>Problem:</strong> Regular spaces don't create visible indentation (collapsed by HTML)</p>
+    </div>
+    
+    <div class="demo-section">
+        <h2>✅ AFTER (HTML &amp;nbsp; Entities - Attempt 3)</h2>
+        <h3>HTML Code:</h3>
+        <code>&lt;span class="indent-1-breaks"&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/span&gt;</code> (4 non-breaking spaces)
+        
+        <h3>Rendered Output:</h3>
+        <div class="output success poetry">
+            <span class="line"><sup>1</sup>I was ready to be sought by those who did not ask for me;</span><br/>
+            <span class="line indent-1"><span class="indent-1-breaks">&nbsp;&nbsp;&nbsp;&nbsp;</span>I was ready to be found by those who did not seek me.</span><br/>
+            <span class="line">I said, "Here I am, here I am,"</span><br/>
+            <span class="line indent-1"><span class="indent-1-breaks">&nbsp;&nbsp;&nbsp;&nbsp;</span>to a nation that was not called by my name.</span><br/>
+            <span class="line"><sup>2</sup>I spread out my hands all the day</span><br/>
+            <span class="line indent-1"><span class="indent-1-breaks">&nbsp;&nbsp;&nbsp;&nbsp;</span>to a rebellious people,</span><br/>
+            <span class="line">who walk in a way that is not good,</span><br/>
+            <span class="line indent-1"><span class="indent-1-breaks">&nbsp;&nbsp;&nbsp;&nbsp;</span>following their own devices;</span><br/>
+        </div>
+        <p><strong>Solution:</strong> &amp;nbsp; entities create actual visible indentation that renders correctly</p>
+    </div>
+
+    <div class="demo-section">
+        <h2>Technical Details</h2>
+        <h3>Code Change:</h3>
+        <pre style="background: #3a3a3a; padding: 15px; border-radius: 5px; overflow-x: auto;">
+# BEFORE (Attempt 2 - Regular spaces)
+html_parts.append('&lt;span class="indent-1-breaks"&gt;    &lt;/span&gt;')
+
+# AFTER (Attempt 3 - HTML entities)
+html_parts.append('&lt;span class="indent-1-breaks"&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/span&gt;')
+        </pre>
+        
+        <h3>Why This Works:</h3>
+        <ul>
+            <li>Regular spaces are collapsed by HTML rendering engines</li>
+            <li><code>&amp;nbsp;</code> (non-breaking space) entities are preserved and displayed</li>
+            <li>4× <code>&amp;nbsp;</code> = visible 4-space indentation</li>
+            <li>8× <code>&amp;nbsp;</code> = visible 8-space indentation (for deeper nesting)</li>
+            <li>Works without any CSS styling required</li>
+        </ul>
+    </div>
+</body>
+</html>
