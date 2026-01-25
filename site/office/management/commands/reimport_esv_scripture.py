@@ -10,6 +10,8 @@ This command:
 6. Does not touch other translation fields
 """
 
+import traceback
+
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
@@ -134,8 +136,6 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.ERROR("*" * 70))
 
                 # Print full traceback for debugging
-                import traceback
-
                 self.stdout.write(self.style.ERROR(traceback.format_exc()))
 
                 errors.append((passage, str(e)))

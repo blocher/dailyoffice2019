@@ -579,10 +579,12 @@ class ESVXMLAdapter(BibleSource):
 
         try:
             text = html2text(self.html).replace("\n", " ").strip()
-            text = re.sub(r"\s\s+", " ", text)
+            # Normalize whitespace
+            text = re.sub(r"\s+", " ", text)
             return text
         except Exception:
-            # Fallback: strip HTML tags
+            # Fallback: simple HTML tag stripping
+            # Note: This is a basic fallback and may not handle all HTML edge cases
             text = re.sub(r"<[^>]+>", "", self.html)
             text = re.sub(r"\s+", " ", text).strip()
             return text

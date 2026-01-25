@@ -10,10 +10,10 @@ Usage:
 """
 
 import sys
-import os
+from os.path import dirname
 
 # Add site directory to path
-sys.path.insert(0, os.path.dirname(__file__))
+sys.path.insert(0, dirname(__file__))
 
 # Import the adapter
 from bible.esv_xml_adapter import ESVXMLAdapter
