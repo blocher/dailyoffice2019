@@ -356,8 +356,8 @@ class ESVXMLAdapter(BibleSource):
         in_paragraph = False
         paragraph_content = []
 
-        # Process elements until we hit the first verse
-        for elem in chapter:
+        # Process elements and text nodes until we hit the first verse
+        for i, elem in enumerate(chapter):
             tag = elem.tag.replace(f"{{{self.NAMESPACE['cb']}}}", "")
 
             # Stop when we reach the first verse
@@ -378,6 +378,9 @@ class ESVXMLAdapter(BibleSource):
             elif tag == "begin-paragraph":
                 in_paragraph = True
                 paragraph_content = []
+                # Capture text after this tag (tail text)
+                if elem.tail and elem.tail.strip():
+                    paragraph_content.append(elem.tail)
 
             elif tag == "end-paragraph":
                 if in_paragraph and paragraph_content:
@@ -388,8 +391,19 @@ class ESVXMLAdapter(BibleSource):
             elif tag == "marker":
                 # Skip markers
                 pass
+            elif tag == "note":
+                # Handle note in prologue - skip if include_references is False
+                if self.include_references:
+                    nid = elem.get("nid", "")
+                    match = re.search(r"\.(\d+)$", nid)
+                    if match:
+                        note_num = match.group(1)
+                        paragraph_content.append(f'<sup class="footnote">{note_num}</sup>')
+                # Add tail text after note
+                if elem.tail and elem.tail.strip():
+                    paragraph_content.append(elem.tail)
             elif in_paragraph:
-                # Collect paragraph text content
+                # Collect paragraph text content from other elements
                 text = self._get_text_content(elem)
                 if text:
                     paragraph_content.append(text)
