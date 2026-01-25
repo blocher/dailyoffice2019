@@ -20,3 +20,4 @@ site/website/.env
 !.yarn/versions
 .pnp.*
 dailyofficelocalapi/
+site/env_test/
