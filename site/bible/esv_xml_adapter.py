@@ -332,6 +332,26 @@ class ESVXMLAdapter(BibleSource):
         except Exception as e:
             raise PassageNotFoundException(f"Error generating HTML: {str(e)}")
 
+    def _extract_verse_number(self, verse_num_str: str) -> int:
+        """
+        Extract the numeric part from a verse number string.
+
+        Handles verse numbers with letter suffixes (e.g., "24a" -> 24, "24b" -> 24).
+
+        Args:
+            verse_num_str: Verse number string (e.g., "24", "24a", "24b")
+
+        Returns:
+            Integer part of the verse number
+        """
+        if not verse_num_str:
+            return 0
+        # Extract numeric part (everything before any letters)
+        match = re.match(r"^(\d+)", str(verse_num_str))
+        if match:
+            return int(match.group(1))
+        return 0
+
     def _process_chapter(self, root: ET.Element, chapter_num: int, verse_start: int, verse_end: int) -> str:
         """
         Process a chapter and extract verses in the specified range.
@@ -382,13 +402,14 @@ class ESVXMLAdapter(BibleSource):
                     pending_opening_tags = []
                     html_parts.append(self._format_subheading(elem))
             elif tag == "verse":
-                verse_num = int(elem.get("num", 0))
+                verse_num_str = elem.get("num", "0")
+                verse_num = self._extract_verse_number(verse_num_str)
                 if verse_num in include_verses:
                     # We have a verse to include, flush any pending opening tags
                     html_parts.extend(pending_opening_tags)
                     pending_opening_tags = []
                     verses_in_current_block = True
-                    verse_html = self._format_verse(elem, verse_num, context)
+                    verse_html = self._format_verse(elem, verse_num_str, context)
                     html_parts.append(verse_html)
             elif tag == "begin-paragraph":
                 class_attr = elem.get("class", "")
@@ -448,7 +469,8 @@ class ESVXMLAdapter(BibleSource):
         while current is not None:
             tag = current.tag.replace(f"{{{self.NAMESPACE['cb']}}}", "")
             if tag == "verse":
-                verse_num = int(current.get("num", 0))
+                verse_num_str = current.get("num", "0")
+                verse_num = self._extract_verse_number(verse_num_str)
                 if verse_num in include_verses:
                     return True
             current = current.getnext()
@@ -465,13 +487,13 @@ class ESVXMLAdapter(BibleSource):
         class_attr = elem.get("class", "")
         return f'<h4 class="passage-subheading {class_attr}">{text}</h4>'
 
-    def _format_verse(self, verse_elem: ET.Element, verse_num: int, context: dict = None) -> str:
+    def _format_verse(self, verse_elem: ET.Element, verse_num: str, context: dict = None) -> str:
         """
         Format a verse element with all its inline content.
 
         Args:
             verse_elem: The verse XML element
-            verse_num: The verse number
+            verse_num: The verse number (as string, may include letter suffix like "24a")
             context: Dictionary tracking current formatting context (poetry, paragraph, etc.)
 
         Returns:
