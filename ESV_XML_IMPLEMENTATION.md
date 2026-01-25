@@ -30,8 +30,11 @@ The main utility class for reading and parsing ESV XML files.
 ```python
 from bible.esv_xml_adapter import ESVXMLAdapter
 
-# Load a passage
+# Load a passage (excludes cross-references and footnotes by default)
 adapter = ESVXMLAdapter('Genesis 1:1-3', 'esv')
+
+# Load a passage with cross-references and footnotes
+adapter_with_refs = ESVXMLAdapter('Genesis 1:1-3', 'esv', include_references=True)
 
 # Get HTML output
 html = adapter.get_html()
@@ -44,7 +47,10 @@ headings = adapter.get_headings()
 ```
 
 **Key Methods:**
-- `__init__(passage, version)` - Initialize with a passage citation
+- `__init__(passage, version, include_references)` - Initialize with a passage citation
+  - `passage`: Scripture citation (e.g., "Genesis 1:1-3")
+  - `version`: Translation version (default: "esv")
+  - `include_references`: Include cross-references and footnotes (default: False)
 - `get_html()` - Returns formatted HTML string
 - `get_text()` - Returns plain text version
 - `get_headings()` - Returns list of section headings
@@ -82,11 +88,15 @@ Django management command to reimport ESV scripture content for all Scripture mo
 - `--dry-run` - Run without saving changes (for testing)
 - `--limit N` - Process only first N scriptures (for testing)
 - `--passage "Citation"` - Process only a specific passage (for testing)
+- `--include-references` - Include cross-references and footnotes in output (default: excluded)
 
 **Usage:**
 ```bash
-# Test with dry run
+# Test with dry run (excludes references by default)
 python manage.py reimport_esv_scripture --dry-run --limit 10
+
+# Test with references included
+python manage.py reimport_esv_scripture --dry-run --limit 10 --include-references
 
 # Process a specific passage
 python manage.py reimport_esv_scripture --passage "Genesis 1:1" --dry-run

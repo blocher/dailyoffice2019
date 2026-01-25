@@ -39,11 +39,17 @@ class Command(BaseCommand):
             type=str,
             help="Process only a specific passage (for testing)",
         )
+        parser.add_argument(
+            "--include-references",
+            action="store_true",
+            help="Include cross-references and footnotes in output (default: False)",
+        )
 
     def handle(self, *args, **options):
         dry_run = options.get("dry_run", False)
         limit = options.get("limit")
         specific_passage = options.get("passage")
+        include_references = options.get("include_references", False)
 
         self.stdout.write(self.style.SUCCESS("=" * 70))
         self.stdout.write(self.style.SUCCESS("ESV Scripture Reimport from XML Files"))
@@ -51,6 +57,11 @@ class Command(BaseCommand):
 
         if dry_run:
             self.stdout.write(self.style.WARNING("DRY RUN MODE - No changes will be saved"))
+
+        if include_references:
+            self.stdout.write(self.style.WARNING("Including cross-references and footnotes"))
+        else:
+            self.stdout.write("Excluding cross-references and footnotes (default)")
 
         # Get all Scripture instances
         if specific_passage:
@@ -87,7 +98,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"[{total_count}] Processing: {passage}")
 
                 # Use ESV XML adapter to get the passage
-                adapter = ESVXMLAdapter(passage, "esv")
+                adapter = ESVXMLAdapter(passage, "esv", include_references=include_references)
                 html = adapter.get_html()
 
                 if not html or html.strip() == "":

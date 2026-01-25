@@ -128,16 +128,18 @@ class ESVXMLAdapter(BibleSource):
         "4 Maccabees": "87.4 Maccabees.xml",
     }
 
-    def __init__(self, passage: str, version: str = "esv"):
+    def __init__(self, passage: str, version: str = "esv", include_references: bool = False):
         """
         Initialize the adapter with a passage citation.
 
         Args:
             passage: Scripture passage citation (e.g., "Genesis 1:1-5", "John 3:16")
             version: Translation version (should be "esv")
+            include_references: Whether to include cross-references and footnotes in output (default: False)
         """
         self.version = version.lower()
         self.original_passage = passage
+        self.include_references = include_references
 
         # Normalize the passage using scriptures library
         try:
@@ -493,17 +495,21 @@ class ESVXMLAdapter(BibleSource):
                     html_parts.append("'")
             elif tag == "crossref":
                 # Cross-reference marker (superscript letter)
-                letter = child.get("let", "")
-                if letter:
-                    html_parts.append(f'<sup class="crossref">{letter}</sup>')
+                # Skip if include_references is False
+                if self.include_references:
+                    letter = child.get("let", "")
+                    if letter:
+                        html_parts.append(f'<sup class="crossref">{letter}</sup>')
             elif tag == "note":
                 # Footnote marker (superscript number)
-                # Extract note number from nid (e.g., "n01001006.1" -> "1")
-                nid = child.get("nid", "")
-                match = re.search(r"\.(\d+)$", nid)
-                if match:
-                    note_num = match.group(1)
-                    html_parts.append(f'<sup class="footnote">{note_num}</sup>')
+                # Skip if include_references is False
+                if self.include_references:
+                    # Extract note number from nid (e.g., "n01001006.1" -> "1")
+                    nid = child.get("nid", "")
+                    match = re.search(r"\.(\d+)$", nid)
+                    if match:
+                        note_num = match.group(1)
+                        html_parts.append(f'<sup class="footnote">{note_num}</sup>')
             elif tag == "selah":
                 html_parts.append("<i>Selah</i>")
             elif tag == "begin-line":
