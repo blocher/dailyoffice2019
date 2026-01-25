@@ -22,13 +22,13 @@ class Passage(object):
         source = source.lower()
         version = BibleVersions.VERSIONS.get(source, {"name": source, "adapter": BibleGateway})
         adapter = version["adapter"]
-        
+
         # Handle lazy-loaded adapters (like ESV XML)
         if callable(adapter):
             adapter_class = adapter()
         else:
             adapter_class = adapter
-        
+
         self.lookup = adapter_class(passage, source)
         self.version_abbreviation = source
         self.version_name = version["name"]

@@ -32,22 +32,22 @@ def demo_passage(passage_text, description=""):
     if description:
         print(f"({description})")
     print("-" * 80)
-    
+
     try:
-        adapter = ESVXMLAdapter(passage_text, 'esv')
+        adapter = ESVXMLAdapter(passage_text, "esv")
         html = adapter.get_html()
-        
+
         # Print the HTML with nice formatting
         print(html)
-        
+
         # Print statistics
         print("-" * 80)
         print(f"Length: {len(html)} characters")
         print(f"Has headings: {len(adapter.get_headings()) > 0}")
         print("✓ Success")
-        
+
         return True
-        
+
     except Exception as e:
         print(f"✗ Error: {e}")
         return False
@@ -58,29 +58,29 @@ def main():
     print_section("ESV XML Adapter Demonstration")
     print("\nThis demonstrates loading ESV scripture from XML files.")
     print("The adapter produces beautifully formatted HTML similar to esv.org.")
-    
+
     # Test cases organized by type
     print_section("1. Narrative Prose")
     demo_passage("Genesis 1:1-3", "Creation narrative with section heading")
-    
+
     print_section("2. Poetry - Psalms")
     demo_passage("Psalm 23:1-3", "Poetry with indentation and line breaks")
-    
+
     print_section("3. Words of Christ")
     demo_passage("John 3:16-17", "Prose with Words of Christ formatting")
-    
+
     print_section("4. Divine Name")
     demo_passage("Exodus 3:14-15", "Passage with divine name (LORD)")
-    
+
     print_section("5. Apocrypha")
     demo_passage("Tobit 1:1-3", "Apocrypha book with numbered filename prefix")
-    
+
     print_section("6. Wisdom Literature")
     demo_passage("Wisdom 1:1-2", "Wisdom of Solomon from Apocrypha")
-    
+
     print_section("7. Single Verse")
     demo_passage("Romans 8:28", "Single verse citation")
-    
+
     print("\n" + "=" * 80)
     print("  Demonstration Complete")
     print("=" * 80)

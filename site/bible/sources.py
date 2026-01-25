@@ -281,5 +281,6 @@ def get_esv_xml_adapter():
     global _ESVXMLAdapter
     if _ESVXMLAdapter is None:
         from bible.esv_xml_adapter import ESVXMLAdapter
+
         _ESVXMLAdapter = ESVXMLAdapter
     return _ESVXMLAdapter

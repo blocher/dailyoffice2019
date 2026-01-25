@@ -18,6 +18,7 @@ BOOK_NAME_MAP = {
     "I Maccabees": "80.1 Maccabees.xml",
 }
 
+
 def normalize_book_name(book_name):
     roman_to_arabic = {
         "I ": "1 ",
@@ -27,23 +28,25 @@ def normalize_book_name(book_name):
     }
     for roman, arabic in roman_to_arabic.items():
         if book_name.startswith(roman):
-            return arabic + book_name[len(roman):]
+            return arabic + book_name[len(roman) :]
     return book_name
+
 
 def get_xml_filename(book):
     # First normalize
     book = normalize_book_name(book)
-    
+
     # Try direct lookup
     if book in BOOK_NAME_MAP:
         return BOOK_NAME_MAP[book]
-    
+
     # Try case-insensitive
     for key, value in BOOK_NAME_MAP.items():
         if key.lower() == book.lower():
             return value
-    
+
     return None
+
 
 # Test cases
 test_cases = [

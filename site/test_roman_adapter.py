@@ -2,7 +2,8 @@
 """Test Roman numeral handling with actual adapter"""
 
 import sys
-sys.path.insert(0, '.')
+
+sys.path.insert(0, ".")
 
 from bible.esv_xml_adapter import ESVXMLAdapter
 
@@ -23,7 +24,7 @@ fail_count = 0
 
 for passage in test_cases:
     try:
-        adapter = ESVXMLAdapter(passage, 'esv')
+        adapter = ESVXMLAdapter(passage, "esv")
         html = adapter.get_html()
         if html and len(html) > 100:  # Check for substantive content
             print(f"✓ {passage} ({len(html)} chars)")
