@@ -1,0 +1,354 @@
+<?xml version='1.0' standalone='no'?>
+<!DOCTYPE crossway-bible SYSTEM "schema/crossway.bibles.dtd">
+<crossway-bible xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.crosswaybibles.org" translation="English Standard Version" revision="2018-3-26" xsi:schemaLocation="schema/crossway.bibles.xsd">
+  <book title="Baruch" num="75">
+    <marker class="begin-verse" mid="v75001001"/>
+    <chapter num="1">
+      <heading>Baruch and the Jews in Babylon</heading>
+      <begin-paragraph/>
+      <verse num="1">These are the words of the book that Baruch son of Neraiah, son of Mahseiah, son of Zedekiah, son of Hasadiah, son of Hilkiah, wrote in Babylon,</verse>
+      <marker class="begin-verse" mid="v75001002"/>
+      <verse num="2">in the fifth year, on the seventh day of the month, at the time when the Chaldeans took Jerusalem and burned it with fire.</verse>
+      <marker class="begin-verse" mid="v75001003"/>
+      <verse num="3">And Baruch read the words of this book in the hearing of Jeconiah son of King Jehoiakim of Judah and in the hearing of all the people who came to hear the book</verse>
+      <marker class="begin-verse" mid="v75001004"/>
+      <verse num="4">and in the hearing of the mighty men and the princes and in the hearing of the elders and in the hearing of all the people, small and great, all who dwelt in Babylon by the river Sud.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v75001005"/>
+      <begin-paragraph/>
+      <verse num="5">Then they wept and fasted and prayed before the Lord;</verse>
+      <marker class="begin-verse" mid="v75001006"/>
+      <verse num="6">and they collected money, each giving what he could;</verse>
+      <marker class="begin-verse" mid="v75001007"/>
+      <verse num="7">and they sent it to Jerusalem to Jehoiakim the high priest,<note nid="n75001007.1"/> son of Hilkiah, son of Shallum, and to the priests and to all the people who were present with him in Jerusalem.</verse>
+      <marker class="begin-verse" mid="v75001008"/>
+      <verse num="8">At the same time, on the tenth day of Sivan, Baruch<note nid="n75001008.1"/> took the vessels of the house of the Lord, which had been carried away from the temple, to return them to the land of Judah&emdash;the silver vessels that Zedekiah son of King Josiah of Judah had made,</verse>
+      <marker class="begin-verse" mid="v75001009"/>
+      <verse num="9">after King Nebuchadnezzar of Babylon had carried away from Jerusalem Jeconiah and the princes and the prisoners and the mighty men and the people of the land and brought them to Babylon.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v75001010"/>
+      <heading>Letter to Jerusalem</heading>
+      <begin-paragraph/>
+      <verse num="10">And they said: Look, we are sending you money; so buy with the money whole burnt offerings and sin offerings and incense and prepare a grain offering and offer them upon the altar of the Lord our God;</verse>
+      <marker class="begin-verse" mid="v75001011"/>
+      <verse num="11">and pray for the life of King Nebuchadnezzar of Babylon and for the life of Belshazzar his son, that their days on earth may be like the days of heaven.</verse>
+      <marker class="begin-verse" mid="v75001012"/>
+      <verse num="12">And the Lord will give us strength, and he will give light to our eyes, and we shall live under the protection<note nid="n75001012.1"/> of King Nebuchadnezzar of Babylon and under the protection<note nid="n75001012.2"/> of Belshazzar his son, and we shall serve them many days and find favor in their sight.</verse>
+      <marker class="begin-verse" mid="v75001013"/>
+      <verse num="13">And pray for us to the Lord our God, for we have sinned against the Lord our God, and to this day the anger of the Lord and his wrath have not turned away from us.</verse>
+      <marker class="begin-verse" mid="v75001014"/>
+      <verse num="14">And you shall read this book that we are sending you, to make a public declaration in the house of the Lord on the days of the feasts and at appointed seasons.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v75001015"/>
+      <heading>Confession of Sins</heading>
+      <begin-paragraph/>
+      <verse num="15">And you shall say: Righteousness belongs to the Lord our God, but shame, as at this day, to us, to the people of Judah, to the inhabitants of Jerusalem,</verse>
+      <marker class="begin-verse" mid="v75001016"/>
+      <verse num="16">and to our kings and our princes and our priests and our prophets and our fathers,</verse>
+      <marker class="begin-verse" mid="v75001017"/>
+      <verse num="17">because we have sinned before the Lord</verse>
+      <marker class="begin-verse" mid="v75001018"/>
+      <verse num="18">and have disobeyed him and have not heeded the voice of the Lord our God, to walk in the statutes of the Lord that he set before us.</verse>
+      <marker class="begin-verse" mid="v75001019"/>
+      <verse num="19">From the day when the Lord brought our fathers out of the land of Egypt until today, we have been disobedient to the Lord our God, and we have been negligent, in not heeding his voice.</verse>
+      <marker class="begin-verse" mid="v75001020"/>
+      <verse num="20">So to this day there have clung to us the calamities and the curse that the Lord declared through Moses his servant at the time when he brought our fathers out of the land of Egypt to give to us a land flowing with milk and honey.</verse>
+      <marker class="begin-verse" mid="v75001021"/>
+      <verse num="21">We did not heed the voice of the Lord our God in all the words of the prophets whom he sent to us,</verse>
+      <marker class="begin-verse" mid="v75001022"/>
+      <verse num="22">but we each followed the intent of his own wicked heart by serving other gods and doing what is evil in the sight of the Lord our God.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v75002001"/>
+    <chapter num="2">
+      <begin-paragraph/>
+      <verse num="1">So the Lord confirmed his word, which he spoke against us and against our judges who judged Israel and against our kings and against our princes and against the people of Israel and Judah.</verse>
+      <marker class="begin-verse" mid="v75002002"/>
+      <verse num="2">Under the whole heaven there has not been done the like of what he has done in Jerusalem, in accordance with what is written in the law of Moses,</verse>
+      <marker class="begin-verse" mid="v75002003"/>
+      <verse num="3">that we should eat, one the flesh of his son and another the flesh of his daughter.</verse>
+      <marker class="begin-verse" mid="v75002004"/>
+      <verse num="4">And he gave them into subjection to all the kingdoms around us, to be a reproach and a desolation among all the surrounding peoples, where the Lord has scattered them.</verse>
+      <marker class="begin-verse" mid="v75002005"/>
+      <verse num="5">They were brought low and not raised up, because we sinned against the Lord our God, in not heeding his voice.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v75002006"/>
+      <begin-paragraph/>
+      <verse num="6">Righteousness belongs to the Lord our God, but shame to us and our fathers, as at this day.</verse>
+      <marker class="begin-verse" mid="v75002007"/>
+      <verse num="7">All those calamities with which the Lord threatened us have come upon us.</verse>
+      <marker class="begin-verse" mid="v75002008"/>
+      <verse num="8">Yet we have not entreated the favor of the Lord by turning away, each of us, from the thoughts of his wicked heart.</verse>
+      <marker class="begin-verse" mid="v75002009"/>
+      <verse num="9">And the Lord has kept watch over the calamities, and the Lord has brought them upon us, for the Lord is righteous in all his works that he has commanded us,</verse>
+      <marker class="begin-verse" mid="v75002010"/>
+      <verse num="10">yet we have not obeyed his voice, to walk in the statutes of the Lord that he set before us.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v75002011"/>
+      <heading>Prayer for Deliverance</heading>
+      <begin-paragraph/>
+      <verse num="11">And now, O Lord God of Israel, you who brought your people out of the land of Egypt with a mighty hand and with signs and wonders and with great power and outstretched arm and have made for yourself a name, as at this day,</verse>
+      <marker class="begin-verse" mid="v75002012"/>
+      <verse num="12">we have sinned, we have been ungodly, we have done wrong, O Lord our God, against all your ordinances.</verse>
+      <marker class="begin-verse" mid="v75002013"/>
+      <verse num="13">Let your anger turn away from us, for few of us are left, among the nations where you have scattered us.</verse>
+      <marker class="begin-verse" mid="v75002014"/>
+      <verse num="14">Hear, O Lord, our prayer and our supplication, and for your own sake deliver us and grant us favor in the sight of those who have carried us into exile;</verse>
+      <marker class="begin-verse" mid="v75002015"/>
+      <verse num="15">that all the earth may know that you are the Lord our God, for Israel and his descendants are called by your name.</verse>
+      <marker class="begin-verse" mid="v75002016"/>
+      <verse num="16">O Lord, look down from your holy habitation and consider us. Incline your ear, O Lord, and hear;</verse>
+      <marker class="begin-verse" mid="v75002017"/>
+      <verse num="17">open your eyes, O Lord, and see; for the dead who are in Hades, whose spirit has been taken from their bodies, will not ascribe glory or justice to the Lord,</verse>
+      <marker class="begin-verse" mid="v75002018"/>
+      <verse num="18">but the person that is greatly distressed,<note nid="n75002018.1"/> that goes about bent over and feeble, and the eyes that are failing and the person that hungers will ascribe to you glory and righteousness, O Lord.</verse>
+      <marker class="begin-verse" mid="v75002019"/>
+      <verse num="19">For it is not because of any righteous deeds of our fathers or our kings that we bring before you our prayer for mercy, O Lord our God.</verse>
+      <marker class="begin-verse" mid="v75002020"/>
+      <verse num="20">For you have sent your anger and your wrath upon us, just as you declared by the hand of your servants the prophets, saying:</verse>
+      <marker class="begin-verse" mid="v75002021"/>
+      <verse num="21">Thus says the Lord: Bend your shoulders and serve the king of Babylon, and you will remain in the land that I gave to your fathers.</verse>
+      <marker class="begin-verse" mid="v75002022"/>
+      <verse num="22">But if you will not obey the voice of the Lord and will not serve the king of Babylon,</verse>
+      <marker class="begin-verse" mid="v75002023"/>
+      <verse num="23">I will make to cease from the cities of Judah and from the region about Jerusalem the voice of mirth and the voice of gladness, the voice of the bridegroom and the voice of the bride, and the whole land will be a desolation without inhabitants.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v75002024"/>
+      <begin-paragraph/>
+      <verse num="24">But we did not obey your voice, to serve the king of Babylon; and you have confirmed your words, which you spoke by the hands of your servants the prophets, that the bones of our kings and the bones of our fathers would be taken out of their place;</verse>
+      <marker class="begin-verse" mid="v75002025"/>
+      <verse num="25">and look, they have been cast out to the heat of day and the frost of night. They perished in great misery, by famine and sword and dispatch.</verse>
+      <marker class="begin-verse" mid="v75002026"/>
+      <verse num="26">And the house that is called by your name you have made as it is today, because of the wickedness of the house of Israel and the house of Judah.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v75002027"/>
+      <heading>God&apos;s Promise Recalled</heading>
+      <begin-paragraph/>
+      <verse num="27">Yet you have dealt with us, O Lord our God, in all your kindness and in all your great compassion,</verse>
+      <marker class="begin-verse" mid="v75002028"/>
+      <verse num="28">as you spoke by the hand of your servant Moses on the day when you commanded him to write your law in the presence of the people of Israel, saying,</verse>
+      <marker class="begin-verse" mid="v75002029"/>
+      <verse num="29"><q class="begin-double" qid="75002029.1" from="75002029.1" to="75002035.1"/>If you will not obey my voice, this very great multitude of voices will surely turn into a small one among the nations, where I will scatter them.</verse>
+      <marker class="begin-verse" mid="v75002030"/>
+      <verse num="30">For I know that they will not obey me, for they are a stiff-necked people. But in the land of their exile they will come to themselves,</verse>
+      <marker class="begin-verse" mid="v75002031"/>
+      <verse num="31">and they will know that I am the Lord their God. I will give them a heart that obeys and ears that hear;</verse>
+      <marker class="begin-verse" mid="v75002032"/>
+      <verse num="32">and they will praise me in the land of their exile and will remember my name</verse>
+      <marker class="begin-verse" mid="v75002033"/>
+      <verse num="33">and will turn from their stubbornness and their wicked deeds; for they will remember the way of their fathers, who sinned before the Lord.</verse>
+      <marker class="begin-verse" mid="v75002034"/>
+      <verse num="34">I will bring them again into the land that I swore to give to their fathers, to Abraham and to Isaac and to Jacob, and they will rule over it; and I will increase them, and they will not be diminished.</verse>
+      <marker class="begin-verse" mid="v75002035"/>
+      <verse num="35">I will make an everlasting covenant with them to be their God and they shall be my people; and I will never again remove my people Israel from the land that I have given them.<q class="end-double" qid="75002035.1" from="75002029.1" to="75002035.1"/></verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v75003001"/>
+    <chapter num="3">
+      <begin-paragraph/>
+      <verse num="1">O Lord Almighty, God of Israel, the soul in anguish and the wearied spirit cry out to you.</verse>
+      <marker class="begin-verse" mid="v75003002"/>
+      <verse num="2">Hear, O Lord, and have mercy, for we have sinned before you.</verse>
+      <marker class="begin-verse" mid="v75003003"/>
+      <verse num="3">For you are enthroned forever, and we are perishing forever.</verse>
+      <marker class="begin-verse" mid="v75003004"/>
+      <verse num="4">O Lord Almighty, God of Israel, hear now the prayer of those of Israel who have died and of the sons of those who sinned before you, who did not heed the voice of the Lord their God, so that calamities have clung to us.</verse>
+      <marker class="begin-verse" mid="v75003005"/>
+      <verse num="5">Remember not the iniquities of our fathers, but in this time remember your power and your name.</verse>
+      <marker class="begin-verse" mid="v75003006"/>
+      <verse num="6">For you are the Lord our God, and you, O Lord, will we praise.</verse>
+      <marker class="begin-verse" mid="v75003007"/>
+      <verse num="7">For you have put the fear of you in our hearts in order that we should call upon your name; and we will praise you in our exile, for we have put away from our hearts all the iniquity of our fathers who sinned before you.</verse>
+      <marker class="begin-verse" mid="v75003008"/>
+      <verse num="8">Behold, we are today in our exile where you have scattered us, to be reproached and cursed and punished for all the iniquities of our fathers who forsook the Lord our God.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v75003009"/>
+      <heading>In Praise of Wisdom</heading>
+      <begin-block-indent/>
+      <begin-paragraph class="line-group"/>
+      <verse num="9"><begin-line/>Hear the commandments of life, O Israel;<end-line class="br"/><begin-line class="indent"/>give ear and learn wisdom!<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003010"/>
+      <verse num="10"><begin-line/>Why is it, O Israel, why is it that you are in the land of your enemies,<end-line class="br"/><begin-line class="indent"/>that you are growing old in a foreign country,<end-line class="br"/><begin-line/>that you are defiled with the dead,<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003011"/>
+      <verse num="11"><begin-line class="indent"/>that you are counted among those in Hades?<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003012"/>
+      <verse num="12"><begin-line/>You have forsaken the fountain of wisdom.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003013"/>
+      <verse num="13"><begin-line/>If you had walked in the way of God,<end-line class="br"/><begin-line class="indent"/>you would be dwelling in peace forever.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003014"/>
+      <verse num="14"><begin-line/>Learn where there is wisdom,<end-line class="br"/><begin-line class="indent"/>where there is strength,<end-line class="br"/><begin-line class="indent"/>where there is understanding,<end-line class="br"/><begin-line/>that you may at the same time discern<end-line class="br"/><begin-line class="indent"/>where there is length of days and life,<end-line class="br"/><begin-line class="indent"/>where there is light for the eyes and peace.<end-line/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v75003015"/>
+      <begin-paragraph class="line-group"/>
+      <verse num="15"><begin-line/>Who has found her place?<end-line class="br"/><begin-line class="indent"/>And who has entered her storehouses?<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003016"/>
+      <verse num="16"><begin-line/>Where are the princes of the nations<end-line class="br"/><begin-line class="indent"/>and those who rule over the beasts on earth;<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003017"/>
+      <verse num="17"><begin-line/>those who have sport with the birds of the air<end-line class="br"/><begin-line class="indent"/>and who hoard up silver and gold,<end-line class="br"/><begin-line/>in which men trust,<end-line class="br"/><begin-line class="indent"/>and there is no end to their getting;<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003018"/>
+      <verse num="18"><begin-line/>those who scheme to get silver and are anxious,<end-line class="br"/><begin-line class="indent"/>whose labors are beyond measure?<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003019"/>
+      <verse num="19"><begin-line/>They have vanished and gone down to Hades,<end-line class="br"/><begin-line class="indent"/>and others have arisen in their place.<end-line/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v75003020"/>
+      <begin-paragraph class="line-group"/>
+      <verse num="20"><begin-line/>Young men have seen the light of day<end-line class="br"/><begin-line class="indent"/>and have dwelt upon the earth;<end-line class="br"/><begin-line/>but they have not learned the way to knowledge<end-line class="br"/><begin-line class="indent"/>or understood her paths<end-line class="br"/><begin-line class="indent"/>or laid hold of her.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003021"/>
+      <verse num="21"><begin-line/>Their sons have strayed far from their way.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003022"/>
+      <verse num="22"><begin-line/>She has not been heard of in Canaan<end-line class="br"/><begin-line class="indent"/>or seen in Teman;<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003023"/>
+      <verse num="23"><begin-line/>the sons of Hagar, who seek for understanding on the earth,<end-line class="br"/><begin-line class="indent"/>the merchants of Merran and Teman,<end-line class="br"/><begin-line class="indent"/>the storytellers and the seekers for understanding,<end-line class="br"/><begin-line/>have not learned the way to wisdom<end-line class="br"/><begin-line class="indent"/>or given thought to her paths.<end-line/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v75003024"/>
+      <begin-paragraph class="line-group"/>
+      <verse num="24"><begin-line/>O Israel, how great is the house of God!<end-line class="br"/><begin-line class="indent"/>And how vast its estate!<note nid="n75003024.1"/><end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003025"/>
+      <verse num="25"><begin-line/>It is great and has no bounds;<end-line class="br"/><begin-line class="indent"/>it is high and immeasurable.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003026"/>
+      <verse num="26"><begin-line/>The giants were born there, who were famous of old,<end-line class="br"/><begin-line class="indent"/>great in stature, expert in war.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003027"/>
+      <verse num="27"><begin-line/>God did not choose them<end-line class="br"/><begin-line class="indent"/>or give them the way to knowledge;<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003028"/>
+      <verse num="28"><begin-line/>so they perished because they had no wisdom,<end-line class="br"/><begin-line class="indent"/>they perished through their folly.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003029"/>
+      <verse num="29"><begin-line/>Who has gone up into heaven and taken her<end-line class="br"/><begin-line class="indent"/>and brought her down from the clouds?<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003030"/>
+      <verse num="30"><begin-line/>Who has gone over the sea and found her<end-line class="br"/><begin-line class="indent"/>and will buy her for pure gold?<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003031"/>
+      <verse num="31"><begin-line/>No one knows the way to her<end-line class="br"/><begin-line class="indent"/>or is concerned about the path to her.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003032"/>
+      <verse num="32"><begin-line/>But he who knows all things knows her,<end-line class="br"/><begin-line class="indent"/>he found her by his understanding.<end-line class="br"/><begin-line/>He who prepared the earth for all time<end-line class="br"/><begin-line class="indent"/>filled it with four-footed creatures;<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003033"/>
+      <verse num="33"><begin-line/>he who sends forth the light, and it goes,<end-line class="br"/><begin-line class="indent"/>called it, and it obeyed him in fear;<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003034"/>
+      <verse num="34"><begin-line/>the stars shone in their watches and were glad;<end-line class="br"/><begin-line class="indent"/>he called them, and they said, <q class="begin-double" qid="75003034.1" from="75003034.1" to="75003034.2"/>Here we are!<q class="end-double" qid="75003034.2" from="75003034.1" to="75003034.2"/><end-line class="br"/><begin-line class="indent"/>They shone with gladness for him who made them.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003035"/>
+      <verse num="35"><begin-line/>This is our God;<end-line class="br"/><begin-line class="indent"/>no other can be compared to him!<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003036"/>
+      <verse num="36"><begin-line/>He found the whole way to knowledge<end-line class="br"/><begin-line class="indent"/>and gave her to Jacob his servant<end-line class="br"/><begin-line class="indent"/>and to Israel whom he loved.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75003037"/>
+      <verse num="37"><begin-line/>Afterward she appeared upon earth<end-line class="br"/><begin-line class="indent"/>and lived among humans.<end-line/></verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v75004001"/>
+    <chapter num="4">
+      <begin-paragraph class="line-group"/>
+      <verse num="1"><begin-line/>This is the book of the commandments of God<end-line class="br"/><begin-line/>and the law that endures forever.<end-line class="br"/><begin-line/>All who hold her fast will live,<end-line class="br"/><begin-line class="indent"/>and those who forsake her will die.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004002"/>
+      <verse num="2"><begin-line/>Turn, O Jacob, and take her;<end-line class="br"/><begin-line class="indent"/>walk toward the shining of her light.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004003"/>
+      <verse num="3"><begin-line/>Do not give your glory to another<end-line class="br"/><begin-line class="indent"/>or your advantages to an alien people.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004004"/>
+      <verse num="4"><begin-line/>Happy are we, O Israel,<end-line class="br"/><begin-line class="indent"/>for we know what is pleasing to God.<end-line/></verse>
+      <end-paragraph/>
+      <end-block-indent/>
+      <marker class="begin-verse" mid="v75004005"/>
+      <heading>Encouragement for Israel</heading>
+      <begin-block-indent/>
+      <begin-paragraph class="line-group"/>
+      <verse num="5"><begin-line/>Take courage, my people,<end-line class="br"/><begin-line class="indent"/>O memorial of Israel!<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004006"/>
+      <verse num="6"><begin-line/>It was not for destruction<end-line class="br"/><begin-line class="indent"/>that you were sold to the nations,<end-line class="br"/><begin-line/>but you were handed over to your enemies<end-line class="br"/><begin-line class="indent"/>because you angered God.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004007"/>
+      <verse num="7"><begin-line/>For you provoked him who made you,<end-line class="br"/><begin-line class="indent"/>by sacrificing to demons and not to God.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004008"/>
+      <verse num="8"><begin-line/>You forgot the everlasting God, who brought you up,<end-line class="br"/><begin-line class="indent"/>and you grieved Jerusalem, who reared you.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004009"/>
+      <verse num="9"><begin-line/>For she saw the wrath that came upon you from God,<end-line class="br"/><begin-line class="indent"/>and she said:<end-line class="br"/><begin-line/><q class="begin-double" qid="75004009.1" from="75004009.1" to="75004029.1"/>Listen, you neighbors of Zion,<end-line class="br"/><begin-line class="indent"/>God has brought great sorrow upon me;<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004010"/>
+      <verse num="10"><begin-line/>for I have seen the captivity of my sons and daughters,<end-line class="br"/><begin-line class="indent"/>which the Everlasting brought upon them.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004011"/>
+      <verse num="11"><begin-line/>With joy I nurtured them,<end-line class="br"/><begin-line class="indent"/>but I sent them away with weeping and sorrow.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004012"/>
+      <verse num="12"><begin-line/>Let no one rejoice over me, a widow<end-line class="br"/><begin-line class="indent"/>and bereaved of many;<end-line class="br"/><begin-line/>I was left desolate because of the sins of my children,<end-line class="br"/><begin-line class="indent"/>because they turned away from the law of God.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004013"/>
+      <verse num="13"><begin-line/>They had no regard for his statutes;<end-line class="br"/><begin-line class="indent"/>they did not walk in the ways of God&apos;s commandments<end-line class="br"/><begin-line class="indent"/>or tread the paths of discipline in his righteousness.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004014"/>
+      <verse num="14"><begin-line/>Let the neighbors of Zion come;<end-line class="br"/><begin-line class="indent"/>remember the captivity of my sons and daughters,<end-line class="br"/><begin-line class="indent"/>which the Everlasting brought upon them.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004015"/>
+      <verse num="15"><begin-line/>For he brought against them a nation from afar,<end-line class="br"/><begin-line class="indent"/>a shameless nation, of a strange language,<end-line class="br"/><begin-line/>who had no respect for an old man<end-line class="br"/><begin-line class="indent"/>and had no pity for a child.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004016"/>
+      <verse num="16"><begin-line/>They led away the widow&apos;s beloved sons<end-line class="br"/><begin-line class="indent"/>and bereaved the lonely woman of her daughters.<end-line/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v75004017"/>
+      <begin-paragraph class="line-group"/>
+      <verse num="17"><begin-line/><q class="continue-double" qid="75004017.1" from="75004009.1" to="75004029.1"/>But I, how can I help you?<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004018"/>
+      <verse num="18"><begin-line/>For he who brought these calamities upon you<end-line class="br"/><begin-line class="indent"/>will deliver you from the hand of your enemies.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004019"/>
+      <verse num="19"><begin-line/>Go, my children, go;<end-line class="br"/><begin-line class="indent"/>for I have been left desolate.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004020"/>
+      <verse num="20"><begin-line/>I have taken off the robe of peace<end-line class="br"/><begin-line class="indent"/>and put on the sackcloth of my supplication;<end-line class="br"/><begin-line class="indent"/>I will cry to the Everlasting all my days.<end-line/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v75004021"/>
+      <begin-paragraph class="line-group"/>
+      <verse num="21"><begin-line/><q class="continue-double" qid="75004021.1" from="75004009.1" to="75004029.1"/>Take courage, my children, cry to God,<end-line class="br"/><begin-line class="indent"/>and he will deliver you from the power and hand of the enemy.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004022"/>
+      <verse num="22"><begin-line/>For I have put my hope in the Everlasting to save you,<end-line class="br"/><begin-line class="indent"/>and joy has come to me from the Holy One,<end-line class="br"/><begin-line/>because of the mercy that soon will come to you<end-line class="br"/><begin-line class="indent"/>from your everlasting Savior.<note nid="n75004022.1"/><end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004023"/>
+      <verse num="23"><begin-line/>For I sent you out with sorrow and weeping,<end-line class="br"/><begin-line class="indent"/>but God will give you back to me with joy and gladness forever.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004024"/>
+      <verse num="24"><begin-line/>For as the neighbors of Zion have now seen your capture,<end-line class="br"/><begin-line class="indent"/>so they soon will see your salvation by God,<end-line class="br"/><begin-line/>which will come to you with great glory<end-line class="br"/><begin-line class="indent"/>and with the splendor of the Everlasting.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004025"/>
+      <verse num="25"><begin-line/>My children, endure with patience the wrath that has come upon you from God.<end-line class="br"/><begin-line/>Your enemy has overtaken you,<end-line class="br"/><begin-line class="indent"/>but you will soon see their destruction<end-line class="br"/><begin-line class="indent"/>and will tread upon their necks.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004026"/>
+      <verse num="26"><begin-line/>My tender sons have traveled rough roads;<end-line class="br"/><begin-line class="indent"/>they were taken away like a flock carried off by the enemy.<end-line/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v75004027"/>
+      <begin-paragraph class="line-group"/>
+      <verse num="27"><begin-line/><q class="continue-double" qid="75004027.1" from="75004009.1" to="75004029.1"/>Take courage, my children, and cry to God,<end-line class="br"/><begin-line class="indent"/>for you will be remembered by him who brought this upon you.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004028"/>
+      <verse num="28"><begin-line/>For just as you purposed to go astray from God,<end-line class="br"/><begin-line class="indent"/>return with tenfold zeal to seek him.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004029"/>
+      <verse num="29"><begin-line/>For he who brought these calamities upon you<end-line class="br"/><begin-line class="indent"/>will bring you everlasting joy with your salvation.<q class="end-double" qid="75004029.1" from="75004009.1" to="75004029.1"/><end-line/></verse>
+      <end-paragraph/>
+      <end-block-indent/>
+      <marker class="begin-verse" mid="v75004030"/>
+      <heading>Jerusalem Is Assured of Help</heading>
+      <begin-block-indent/>
+      <begin-paragraph class="line-group"/>
+      <verse num="30"><begin-line/>Take courage, O Jerusalem,<end-line class="br"/><begin-line class="indent"/>for he who named you will comfort you.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004031"/>
+      <verse num="31"><begin-line/>Wretched will be those who afflicted you<end-line class="br"/><begin-line class="indent"/>and rejoiced at your fall.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004032"/>
+      <verse num="32"><begin-line/>Wretched will be the cities that your children served as slaves;<end-line class="br"/><begin-line class="indent"/>wretched will be the city that received your sons.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004033"/>
+      <verse num="33"><begin-line/>For just as she rejoiced at your fall<end-line class="br"/><begin-line class="indent"/>and was glad for your ruin,<end-line class="br"/><begin-line class="indent"/>so she will be grieved at her own desolation.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004034"/>
+      <verse num="34"><begin-line/>And I will take away her pride in her great population,<end-line class="br"/><begin-line class="indent"/>and her insolence will be turned to grief.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004035"/>
+      <verse num="35"><begin-line/>For fire will come upon her from the Everlasting for many days,<end-line class="br"/><begin-line class="indent"/>and for a long time she will be inhabited by demons.<end-line/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v75004036"/>
+      <begin-paragraph class="line-group"/>
+      <verse num="36"><begin-line/>Look toward the east, O Jerusalem,<end-line class="br"/><begin-line class="indent"/>and see the joy that is coming to you from God!<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75004037"/>
+      <verse num="37"><begin-line/>Behold, your sons are coming, whom you sent away;<end-line class="br"/><begin-line class="indent"/>they are coming, gathered from east and west,<end-line class="br"/><begin-line/>at the word of the Holy One,<end-line class="br"/><begin-line class="indent"/>rejoicing in the glory of God.<end-line/></verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v75005001"/>
+    <chapter num="5">
+      <begin-paragraph class="line-group"/>
+      <verse num="1"><begin-line/>Take off the garment of your sorrow and affliction, O Jerusalem,<end-line class="br"/><begin-line class="indent"/>and put on forever the beauty of the glory from God.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75005002"/>
+      <verse num="2"><begin-line/>Put on the robe of the righteousness from God;<end-line class="br"/><begin-line class="indent"/>put on your head the crown of the glory of the Everlasting.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75005003"/>
+      <verse num="3"><begin-line/>For God will show your splendor everywhere under heaven.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75005004"/>
+      <verse num="4"><begin-line/>For your name will forever be called by God:<end-line class="br"/><begin-line class="indent"/><q class="begin-double" qid="75005004.1" from="75005004.1" to="75005004.2"/>Peace of righteousness and glory of godliness.<q class="end-double" qid="75005004.2" from="75005004.1" to="75005004.2"/><end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75005005"/>
+      <verse num="5"><begin-line/>Arise, O Jerusalem, stand upon the height<end-line class="br"/><begin-line class="indent"/>and look toward the east<end-line class="br"/><begin-line/>and see your children gathered from west and east,<end-line class="br"/><begin-line class="indent"/>at the word of the Holy One,<end-line class="br"/><begin-line class="indent"/>rejoicing that God has remembered them.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75005006"/>
+      <verse num="6"><begin-line/>For they went forth from you on foot,<end-line class="br"/><begin-line class="indent"/>led away by their enemies;<end-line class="br"/><begin-line/>but God will bring them back to you,<end-line class="br"/><begin-line class="indent"/>carried in glory, as on a royal throne.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75005007"/>
+      <verse num="7"><begin-line/>For God has ordered that every high mountain and the everlasting hills be made low<end-line class="br"/><begin-line class="indent"/>and the valleys filled up to make level ground,<end-line class="br"/><begin-line class="indent"/>so that Israel may walk safely in the glory of God.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75005008"/>
+      <verse num="8"><begin-line/>The woods and every fragrant tree<end-line class="br"/><begin-line class="indent"/>have shaded Israel at God&apos;s command.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v75005009"/>
+      <verse num="9"><begin-line/>For God will lead Israel with joy,<end-line class="br"/><begin-line class="indent"/>in the light of his glory,<end-line class="br"/><begin-line class="indent"/>with the mercy and righteousness that come from him.<end-line/></verse>
+      <end-paragraph/>
+      <end-block-indent/>
+    </chapter>
+  </book>
+</crossway-bible>

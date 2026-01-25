@@ -11,7 +11,8 @@ repos:
         files: ^site/
       - id: check-added-large-files
         args: [ '--maxkb=5000' ]
-        files: ^site/
+        files: ^/
+        exclude: ^(api/newsfeed/sample_data/|site/esv/)
       - id: check-case-conflict
         files: ^site/
       - id: check-merge-conflict

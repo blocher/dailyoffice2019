@@ -1,0 +1,50 @@
+<!--
+match="..." is an XPath expression indicating which elements in the Bible text
+  XML files the notes correspond to
+  -->
+<!ELEMENT crossway-notes (book)+>
+<!ATTLIST crossway-notes  translation CDATA #REQUIRED
+                          match CDATA #REQUIRED
+                          revision CDATA #REQUIRED
+                          xmlns:xsi CDATA #IMPLIED
+                          xmlns CDATA #IMPLIED
+                          xsi:schemaLocation CDATA #IMPLIED>
+
+<!ELEMENT book (note)+>
+<!ATTLIST book  title CDATA #REQUIRED
+                num  CDATA #REQUIRED>
+
+<!ELEMENT note (#PCDATA|i|span|a|note-verse)*>
+<!ATTLIST note  id ID #REQUIRED
+                class CDATA #IMPLIED
+                sub-class CDATA #IMPLIED>
+
+<!--
+<i> indicates italic text
+-->
+<!ELEMENT i (#PCDATA|span|note-verse)*>
+<!ATTLIST i  class CDATA #IMPLIED
+             language CDATA #IMPLIED>
+
+<!--
+<span>s with class="divine-name|us-time|small-caps" should be converted
+  to small caps; other <span>s don't need transformation
+-->
+<!ELEMENT span (#PCDATA|span)*>
+<!ATTLIST span  class CDATA #IMPLIED
+                language CDATA #IMPLIED>
+
+<!ELEMENT a (#PCDATA)*>
+<!ATTLIST a href CDATA #REQUIRED>
+
+<!ELEMENT note-verse (#PCDATA)*>
+
+<!ENTITY ldblquot  "&#8220;">
+<!ENTITY rdblquot  "&#8221;">
+<!ENTITY lquot     "&#8216;">
+<!ENTITY rquot     "&#8217;">
+<!ENTITY emdash    "&#8212;">
+<!ENTITY endash    "&#8211;">
+<!ENTITY ellipsis  "&#160;.&#160;.&#160;.">
+<!ENTITY ellipsis4 ".&#160;.&#160;.&#160;.">
+<!ENTITY emacron   "&#275;">

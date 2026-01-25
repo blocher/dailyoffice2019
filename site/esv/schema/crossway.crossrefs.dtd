@@ -1,0 +1,146 @@
+<!--
+match="..." is an XPath expression indicating which elements in the Bible text
+XML files the crossrefs correspond to
+-->
+<!ELEMENT crossway-crossrefs (book)+>
+<!ATTLIST crossway-crossrefs  translation CDATA #REQUIRED
+                              edition CDATA #REQUIRED
+                              match CDATA #REQUIRED
+                              revision CDATA #REQUIRED>
+
+<!--
+title="..." is the friendly name of the book
+-->
+<!ELEMENT book (chapter)+>
+<!ATTLIST book  num CDATA #REQUIRED
+                title CDATA #IMPLIED>
+
+<!--
+id="..." is unique in a given document; not ID because it starts with a number;
+title="..." is what to print to recreate the text as it appears in the printed Bibles
+-->
+<!ELEMENT chapter (verse)+>
+<!ATTLIST chapter  id CDATA #REQUIRED
+                   title CDATA #IMPLIED>
+
+<!--
+id="..." is not unique; Psalm titles share an id with the first verse in the Psalm;
+title="..." is what to print to recreate the text as it appears in printed Bibles
+-->
+<!ELEMENT verse (letter)+>
+<!ATTLIST verse  id CDATA #REQUIRED
+                 title CDATA #IMPLIED>
+
+<!--
+id="..." is unique in a given document; CDATA, not ID, because it starts with a number;
+title="..." is what to print to recreate the text as it appears in printed Bibles
+-->
+<!ELEMENT letter (text,cids,refs)>
+<!ATTLIST letter  id CDATA #REQUIRED
+                  title CDATA #IMPLIED>
+
+<!--
+contains only one or more <cid> elements
+-->
+<!ELEMENT cids (cid)+>
+
+<!--
+"cid" is an attribute used in the text of the Bible to uniquely identify a crossref
+letter; the same letter can appear more than once in the text, but it only has
+one entry in the crossref; each <cid> contains the cid of exactly one letter;
+there can be any number of <cid>s for a given <letter>
+-->
+<!ELEMENT cid (#PCDATA)>
+
+<!--
+contains the plain text of the crossref; use if you're just doing print typesetting
+-->
+<!ELEMENT text (#PCDATA)>
+
+<!--
+cite="..." refers to a <letter> id; you can always substitute the content of the current
+letter with that of the cited letter; it's CDATA, not IDREF, because the <letter> id
+starts with a number; the <ref>s inside a <refs> with "cite" always just say something
+like, "[See ver. 13 above]"; printed Bibles use this construction to save space
+
+you can recreate the text in the <text> element by stripping out all the whitespace
+between the tags and then stripping out the tags themselves
+-->
+<!ELEMENT refs (ref|meta)+>
+<!ATTLIST refs  cite CDATA #IMPLIED>
+
+<!--
+<ref> can contain <meta>s only with class="separator-weak|same-book|same-chapter"
+
+for="..." is usually an 8-digit number: the first 2 digits are the book (01-66),
+the next three digits are the chapter (001-150), and the final three digits are
+the verse (001-176); for example, "43003016" is "John 3:16"; sometimes there will
+only be a 5-digit number, signifying the book and chapter: this happens when the
+passage referred to is a complete chapter; for example, "01003" is "Genesis 3";
+sometimes there's a range of verses indicated, so there will be two 8- or 5-digit
+numbers separated by a hyphen; in the case of a 5-digit number, the range goes
+from the beginning of the first verse in the first indicated chapter to the last
+verse in the second indicated chapter; for example, "02010015-02012016" is
+"Exodus 10:15-Exodus 12:16"; "40005-40007" is "Matthew 5:1-Matthew 7:29"
+or "Matthew 5-Matthew 7"
+
+consecutive verses (eg, "Col. 1:16, 17" in Gen 1:1 in the Cross Reference db)
+are contained inside one <ref> with a range in the "for" attribute; printed
+Bibles follow this style; a <meta class="separator-weak"> always appears in
+such a case; you could replace the <meta> element with a hyphen if you prefer
+to use that style
+-->
+<!ELEMENT ref (#PCDATA|meta)*>
+<!ATTLIST ref  for CDATA #REQUIRED>
+
+<!--
+class="see-parallel|see-parallels" only appear in the text-only crossrefs;
+"for|or|gk" appear in both
+
+above: coupled with "see" to point to the text of another crossref;
+begin-theme: the beginning of a thematic crossref, signified with "[" in
+	printed Bibles;
+cited: this verse is cited somewhere else (given in the following <ref>s);
+cited-from: this verse contains a quotation of another verse (given in
+	the following <ref>s);
+end-theme: the end of a thematic crossref, signified with "]" in printed
+	Bibles;
+for: coupled with "see" to indicate that the <ref>s following "see" apply
+	to a range of nearby verses, not just the current verse; the <ref>s
+	following "for" but before "see" indicate the nearby verses;
+gk|heb|heb-gk: the crossref is clearer in the original language; appears
+	following the indicated verses;
+or: only occurs once (John 15:25); indicates that the quotation could be
+	from either of the verses (one before the "or" and one after);
+same-book: appears as "ch. " in printed Bibles to save room;
+same-chapter: appears as "ver. " in printed Bibles to save room;
+see: appears either on its own to indicate a less-direct reference or
+	coupled with "for"; the PCDATA can start with a comma in the latter case;
+see-parallel: only in the text-only crossrefs; indicates a parallel Gospel
+	passage;
+see-parallels: only in the text-only crossrefs; like "see-parallel", but
+	it means <ref>s from different books follow;
+separator: "; " in printed Bibles; has several uses; appears only outside
+	<ref>s; separates <ref>s of different chapters or books; separates
+	elements in <refs>: eg, when there have been normal <ref>s and now there
+	are going to be thematic refs, this separator appears
+	(eg, "Matt. 1:1; [Matt. 2:6]");
+separator-weak: ", " in printed Bibles; separates <ref>s of the same chapter;
+	can appear inside a <ref> if it separates consecutive verses, eg:
+		<ref for="...">Col. 1:16<meta class="separator-weak">, </meta>17</ref>
+	Commas can appear outside this element, eg, as part of the
+	PCDATA of other <meta>s; commas are also used to indicate the title of
+	a Psalm: "Ps. 3, title"; in this case nothing surrounds the comma
+	because it's integral to the <ref>;
+with: the <ref>s before the "with" make more sense when coupled with
+	the <ref>s after the "with"
+-->
+<!ELEMENT meta (#PCDATA)>
+<!ATTLIST meta  class (above|begin-theme|cited|cited-from|end-theme|for|gk|heb|heb-gk|or|same-book|same-chapter|see|see-parallel|see-parallels|separator|separator-weak|with) #REQUIRED>
+
+<!--
+"endash" is used when a citation crosses a chapter boundary: "John 3:16-18" vs.
+"John 3:16&endash;4:1"; you can substitute a hyphen for an endash if it isn't
+important in your application to be typographically correct
+-->
+<!ENTITY  endash "&#8211;">

@@ -1,0 +1,9 @@
+<!ENTITY ldblquot  "&#8220;">
+<!ENTITY rdblquot  "&#8221;">
+<!ENTITY lquot     "&#8216;">
+<!ENTITY rquot     "&#8217;">
+<!ENTITY emdash    "&#8212;">
+<!ENTITY endash    "&#8211;">
+<!ENTITY ellipsis  "&#160;.&#160;.&#160;.">
+<!ENTITY ellipsis4 ".&#160;.&#160;.&#160;.">
+<!ENTITY emacron   "&#275;">

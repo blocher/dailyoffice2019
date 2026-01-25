@@ -1,0 +1,5761 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE crossway-crossrefs SYSTEM "schema/crossway.crossrefs.dtd">
+<crossway-crossrefs translation="English Standard Version" edition="Text Only" match="//crossref[(starts-with(@cid, 't')]" revision="2025-02-02">
+<book num="40">
+	<chapter id="40001">
+		<verse id="40001023">
+			<letter id="40001023.1">
+				<text>Isa. 7:14</text>
+				<cids><cid>t40001023.1</cid></cids>
+				<refs>
+					<ref for="23007014">Isa. 7:14</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40002">
+		<verse id="40002006">
+			<letter id="40002006.1">
+				<text>Mic. 5:2</text>
+				<cids><cid>t40002006.1</cid></cids>
+				<refs>
+					<ref for="33005002">Mic. 5:2</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40002015">
+			<letter id="40002015.1">
+				<text>Hos. 11:1</text>
+				<cids><cid>t40002015.1</cid></cids>
+				<refs>
+					<ref for="28011001">Hos. 11:1</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40002018">
+			<letter id="40002018.1">
+				<text>Jer. 31:15</text>
+				<cids><cid>t40002018.1</cid></cids>
+				<refs>
+					<ref for="24031015">Jer. 31:15</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40003">
+		<verse id="40003001">
+			<letter id="40003001.1">
+				<text>For 3:1-12 see parallels Mark 1:2-8; Luke 3:1-17</text>
+				<cids><cid>t40003001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40003001-40003012">3:1-12</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41001002-41001008">Mark 1:2-8</ref>
+					<meta class="separator">; </meta>
+					<ref for="42003001-42003017">Luke 3:1-17</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40003003">
+			<letter id="40003003.1">
+				<text>Isa. 40:3</text>
+				<cids><cid>t40003003.1</cid></cids>
+				<refs>
+					<ref for="23040003">Isa. 40:3</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40003013">
+			<letter id="40003013.1">
+				<text>For 3:13-17 see parallels Mark 1:9-11; Luke 3:21, 22</text>
+				<cids><cid>t40003013.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40003013-40003017">3:13-17</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41001009-41001011">Mark 1:9-11</ref>
+					<meta class="separator">; </meta>
+					<ref for="42003021-42003022">Luke 3:21<meta class="separator-weak">, </meta>22</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40004">
+		<verse id="40004001">
+			<letter id="40004001.1">
+				<text>For 4:1-11 see parallels Mark 1:12, 13; Luke 4:1-13</text>
+				<cids><cid>t40004001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40004001-40004011">4:1-11</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41001012-41001013">Mark 1:12<meta class="separator-weak">, </meta>13</ref>
+					<meta class="separator">; </meta>
+					<ref for="42004001-42004013">Luke 4:1-13</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40004004">
+			<letter id="40004004.1">
+				<text>Deut. 8:3</text>
+				<cids><cid>t40004004.1</cid></cids>
+				<refs>
+					<ref for="05008003">Deut. 8:3</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40004006">
+			<letter id="40004006.1">
+				<text>Ps. 91:11, 12</text>
+				<cids><cid>t40004006.1</cid></cids>
+				<refs>
+					<ref for="19091011-19091012">Ps. 91:11<meta class="separator-weak">, </meta>12</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40004007">
+			<letter id="40004007.1">
+				<text>Deut. 6:16</text>
+				<cids><cid>t40004007.1</cid></cids>
+				<refs>
+					<ref for="05006016">Deut. 6:16</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40004010">
+			<letter id="40004010.1">
+				<text>Deut. 6:13</text>
+				<cids><cid>t40004010.1</cid></cids>
+				<refs>
+					<ref for="05006013">Deut. 6:13</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40004015">
+			<letter id="40004015.1">
+				<text>Isa. 9:1, 2</text>
+				<cids><cid>t40004015.1</cid></cids>
+				<refs>
+					<ref for="23009001-23009002">Isa. 9:1<meta class="separator-weak">, </meta>2</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40004018">
+			<letter id="40004018.1">
+				<text>For 4:18-22 see parallel Mark 1:16-20</text>
+				<cids><cid>t40004018.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40004018-40004022">4:18-22</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="41001016-41001020">Mark 1:16-20</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40005">
+		<verse id="40005021">
+			<letter id="40005021.1">
+				<text>Ex. 20:13; Deut. 5:17</text>
+				<cids><cid>t40005021.1</cid></cids>
+				<refs>
+					<ref for="02020013">Ex. 20:13</ref>
+					<meta class="separator">; </meta>
+					<ref for="05005017">Deut. 5:17</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40005027">
+			<letter id="40005027.1">
+				<text>Ex. 20:14; Deut. 5:18</text>
+				<cids><cid>t40005027.1</cid></cids>
+				<refs>
+					<ref for="02020014">Ex. 20:14</ref>
+					<meta class="separator">; </meta>
+					<ref for="05005018">Deut. 5:18</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40005031">
+			<letter id="40005031.1">
+				<text>Deut. 24:1</text>
+				<cids><cid>t40005031.1</cid></cids>
+				<refs>
+					<ref for="05024001">Deut. 24:1</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40005038">
+			<letter id="40005038.1">
+				<text>Ex. 21:24; Lev. 24:20; Deut. 19:21</text>
+				<cids><cid>t40005038.1</cid></cids>
+				<refs>
+					<ref for="02021024">Ex. 21:24</ref>
+					<meta class="separator">; </meta>
+					<ref for="03024020">Lev. 24:20</ref>
+					<meta class="separator">; </meta>
+					<ref for="05019021">Deut. 19:21</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40005039">
+			<letter id="40005039.1">
+				<text>For 5:39-42 see parallel Luke 6:29, 30</text>
+				<cids><cid>t40005039.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40005039-40005042">5:39-42</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="42006029-42006030">Luke 6:29<meta class="separator-weak">, </meta>30</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40005043">
+			<letter id="40005043.1">
+				<text>Lev. 19:18</text>
+				<cids><cid>t40005043.1</cid></cids>
+				<refs>
+					<ref for="03019018">Lev. 19:18</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40006">
+		<verse id="40006025">
+			<letter id="40006025.1">
+				<text>For 6:25-33 see parallel Luke 12:22-31</text>
+				<cids><cid>t40006025.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40006025-40006033">6:25-33</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="42012022-42012031">Luke 12:22-31</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40007">
+		<verse id="40007001">
+			<letter id="40007001.1">
+				<text>For 7:1-5 see parallel Luke 6:37, 38, 41, 42</text>
+				<cids><cid>t40007001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40007001-40007005">7:1-5</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="42006037-42006038">Luke 6:37<meta class="separator-weak">, </meta>38</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="42006041-42006042">41<meta class="separator-weak">, </meta>42</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40007007">
+			<letter id="40007007.1">
+				<text>For 7:7-11 see parallel Luke 11:9-13</text>
+				<cids><cid>t40007007.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40007007-40007011">7:7-11</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="42011009-42011013">Luke 11:9-13</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40007024">
+			<letter id="40007024.1">
+				<text>For 7:24-27 see parallel Luke 6:47-49</text>
+				<cids><cid>t40007024.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40007024-40007027">7:24-27</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="42006047-42006049">Luke 6:47-49</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40008">
+		<verse id="40008002">
+			<letter id="40008002.1">
+				<text>For 8:2-4 see parallels Mark 1:40-44; Luke 5:12-14</text>
+				<cids><cid>t40008002.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40008002-40008004">8:2-4</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41001040-41001044">Mark 1:40-44</ref>
+					<meta class="separator">; </meta>
+					<ref for="42005012-42005014">Luke 5:12-14</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40008005">
+			<letter id="40008005.1">
+				<text>For 8:5-13 see parallel Luke 7:1-10</text>
+				<cids><cid>t40008005.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40008005-40008013">8:5-13</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="42007001-42007010">Luke 7:1-10</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40008014">
+			<letter id="40008014.1">
+				<text>For 8:14-17 see parallels Mark 1:29-34; Luke 4:38-41</text>
+				<cids><cid>t40008014.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40008014-40008017">8:14-17</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41001029-41001034">Mark 1:29-34</ref>
+					<meta class="separator">; </meta>
+					<ref for="42004038-42004041">Luke 4:38-41</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40008017">
+			<letter id="40008017.1">
+				<text>Isa. 53:4</text>
+				<cids><cid>t40008017.1</cid></cids>
+				<refs>
+					<ref for="23053004">Isa. 53:4</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40008019">
+			<letter id="40008019.1">
+				<text>For 8:19-22 see parallel Luke 9:57-62</text>
+				<cids><cid>t40008019.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40008019-40008022">8:19-22</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="42009057-42009062">Luke 9:57-62</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40008023">
+			<letter id="40008023.1">
+				<text>For 8:23-27 see parallels Mark 4:35-41; Luke 8:22-25</text>
+				<cids><cid>t40008023.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40008023-40008027">8:23-27</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41004035-41004041">Mark 4:35-41</ref>
+					<meta class="separator">; </meta>
+					<ref for="42008022-42008025">Luke 8:22-25</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40008028">
+			<letter id="40008028.1">
+				<text>For 8:28-34 see parallels Mark 5:1-21; Luke 8:26-39</text>
+				<cids><cid>t40008028.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40008028-40008034">8:28-34</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41005001-41005021">Mark 5:1-21</ref>
+					<meta class="separator">; </meta>
+					<ref for="42008026-42008039">Luke 8:26-39</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40009">
+		<verse id="40009002">
+			<letter id="40009002.1">
+				<text>For 9:2-8 see parallels Mark 2:1-12; Luke 5:17-26</text>
+				<cids><cid>t40009002.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40009002-40009008">9:2-8</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41002001-41002012">Mark 2:1-12</ref>
+					<meta class="separator">; </meta>
+					<ref for="42005017-42005026">Luke 5:17-26</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40009009">
+			<letter id="40009009.1">
+				<text>For 9:9-17 see parallels Mark 2:13-22; Luke 5:27-39</text>
+				<cids><cid>t40009009.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40009009-40009017">9:9-17</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41002013-41002022">Mark 2:13-22</ref>
+					<meta class="separator">; </meta>
+					<ref for="42005027-42005039">Luke 5:27-39</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40009013">
+			<letter id="40009013.1">
+				<text>Hos. 6:6</text>
+				<cids><cid>t40009013.1</cid></cids>
+				<refs>
+					<ref for="28006006">Hos. 6:6</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40009018">
+			<letter id="40009018.1">
+				<text>For 9:18-26 see parallels Mark 5:21-43; Luke 8:40-56</text>
+				<cids><cid>t40009018.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40009018-40009026">9:18-26</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41005021-41005043">Mark 5:21-43</ref>
+					<meta class="separator">; </meta>
+					<ref for="42008040-42008056">Luke 8:40-56</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40010">
+		<verse id="40010002">
+			<letter id="40010002.1">
+				<text>For 10:2-4 see parallels Mark 3:16-19; Luke 6:13-16</text>
+				<cids><cid>t40010002.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40010002-40010004">10:2-4</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41003016-41003019">Mark 3:16-19</ref>
+					<meta class="separator">; </meta>
+					<ref for="42006013-42006016">Luke 6:13-16</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40010009">
+			<letter id="40010009.1">
+				<text>For 10:9-15 see parallels Mark 6:8-11; Luke 9:3-5</text>
+				<cids><cid>t40010009.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40010009-40010015">10:9-15</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41006008-41006011">Mark 6:8-11</ref>
+					<meta class="separator">; </meta>
+					<ref for="42009003-42009005">Luke 9:3-5</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40010026">
+			<letter id="40010026.1">
+				<text>For 10:26-33 see parallel Luke 12:2-9</text>
+				<cids><cid>t40010026.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40010026-40010033">10:26-33</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="42012002-42012009">Luke 12:2-9</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40010034">
+			<letter id="40010034.1">
+				<text>For 10:34, 35 see parallel Luke 12:51-53</text>
+				<cids><cid>t40010034.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40010034-40010035">10:34<meta class="separator-weak">, </meta>35</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="42012051-42012053">Luke 12:51-53</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40011">
+		<verse id="40011002">
+			<letter id="40011002.1">
+				<text>For 11:2-19 see parallel Luke 7:18-35</text>
+				<cids><cid>t40011002.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40011002-40011019">11:2-19</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="42007018-42007035">Luke 7:18-35</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40011010">
+			<letter id="40011010.1">
+				<text>Mal. 3:1</text>
+				<cids><cid>t40011010.1</cid></cids>
+				<refs>
+					<ref for="39003001">Mal. 3:1</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40011021">
+			<letter id="40011021.1">
+				<text>For 11:21-24 see parallel Luke 10:13-15</text>
+				<cids><cid>t40011021.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40011021-40011024">11:21-24</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="42010013-42010015">Luke 10:13-15</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40011025">
+			<letter id="40011025.1">
+				<text>For 11:25-27 see parallel Luke 10:21, 22</text>
+				<cids><cid>t40011025.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40011025-40011027">11:25-27</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="42010021-42010022">Luke 10:21<meta class="separator-weak">, </meta>22</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40012">
+		<verse id="40012001">
+			<letter id="40012001.1">
+				<text>For 12:1-8 see parallels Mark 2:23-28; Luke 6:1-5</text>
+				<cids><cid>t40012001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40012001-40012008">12:1-8</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41002023-41002028">Mark 2:23-28</ref>
+					<meta class="separator">; </meta>
+					<ref for="42006001-42006005">Luke 6:1-5</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40012007">
+			<letter id="40012007.1">
+				<text>Hos. 6:6</text>
+				<cids><cid>t40012007.1</cid></cids>
+				<refs>
+					<ref for="28006006">Hos. 6:6</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40012009">
+			<letter id="40012009.1">
+				<text>For 12:9-14 see parallels Mark 3:1-6; Luke 6:6-11</text>
+				<cids><cid>t40012009.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40012009-40012014">12:9-14</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41003001-41003006">Mark 3:1-6</ref>
+					<meta class="separator">; </meta>
+					<ref for="42006006-42006011">Luke 6:6-11</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40012018">
+			<letter id="40012018.1">
+				<text>Isa. 42:1-3</text>
+				<cids><cid>t40012018.1</cid></cids>
+				<refs>
+					<ref for="23042001-23042003">Isa. 42:1-3</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40012022">
+			<letter id="40012022.1">
+				<text>For 12:22-24 see parallel Luke 11:14, 15</text>
+				<cids><cid>t40012022.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40012022-40012024">12:22-24</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="42011014-42011015">Luke 11:14<meta class="separator-weak">, </meta>15</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40012025">
+			<letter id="40012025.1">
+				<text>For 12:25-29 see parallels Mark 3:23-27; Luke 11:17-22</text>
+				<cids><cid>t40012025.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40012025-40012029">12:25-29</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41003023-41003027">Mark 3:23-27</ref>
+					<meta class="separator">; </meta>
+					<ref for="42011017-42011022">Luke 11:17-22</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40012031">
+			<letter id="40012031.1">
+				<text>For 12:31, 32 see parallel Mark 3:28-30</text>
+				<cids><cid>t40012031.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40012031-40012032">12:31<meta class="separator-weak">, </meta>32</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="41003028-41003030">Mark 3:28-30</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40012039">
+			<letter id="40012039.1">
+				<text>For 12:39-42 see parallel Luke 11:29-32</text>
+				<cids><cid>t40012039.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40012039-40012042">12:39-42</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="42011029-42011032">Luke 11:29-32</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40012043">
+			<letter id="40012043.1">
+				<text>For 12:43-45 see parallel Luke 11:24-26</text>
+				<cids><cid>t40012043.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40012043-40012045">12:43-45</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="42011024-42011026">Luke 11:24-26</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40012046">
+			<letter id="40012046.1">
+				<text>For 12:46-50 see parallels Mark 3:31-35; Luke 8:19-21</text>
+				<cids><cid>t40012046.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40012046-40012050">12:46-50</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41003031-41003035">Mark 3:31-35</ref>
+					<meta class="separator">; </meta>
+					<ref for="42008019-42008021">Luke 8:19-21</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40013">
+		<verse id="40013001">
+			<letter id="40013001.1">
+				<text>For 13:1-15 see parallels Mark 4:1-12; Luke 8:4-10</text>
+				<cids><cid>t40013001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40013001-40013015">13:1-15</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41004001-41004012">Mark 4:1-12</ref>
+					<meta class="separator">; </meta>
+					<ref for="42008004-42008010">Luke 8:4-10</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40013014">
+			<letter id="40013014.1">
+				<text>Isa. 6:9, 10</text>
+				<cids><cid>t40013014.1</cid></cids>
+				<refs>
+					<ref for="23006009-23006010">Isa. 6:9<meta class="separator-weak">, </meta>10</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40013018">
+			<letter id="40013018.1">
+				<text>For 13:18-23 see parallels Mark 4:13-20; Luke 8:11-15</text>
+				<cids><cid>t40013018.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40013018-40013023">13:18-23</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41004013-41004020">Mark 4:13-20</ref>
+					<meta class="separator">; </meta>
+					<ref for="42008011-42008015">Luke 8:11-15</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40013031">
+			<letter id="40013031.1">
+				<text>For 13:31, 32 see parallels Mark 4:30-32; Luke 13:18, 19</text>
+				<cids><cid>t40013031.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40013031-40013032">13:31<meta class="separator-weak">, </meta>32</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41004030-41004032">Mark 4:30-32</ref>
+					<meta class="separator">; </meta>
+					<ref for="42013018-42013019">Luke 13:18<meta class="separator-weak">, </meta>19</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40013035">
+			<letter id="40013035.1">
+				<text>Ps. 78:2</text>
+				<cids><cid>t40013035.1</cid></cids>
+				<refs>
+					<ref for="19078002">Ps. 78:2</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40013054">
+			<letter id="40013054.1">
+				<text>For 13:54-58 see parallel Mark 6:1-6</text>
+				<cids><cid>t40013054.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40013054-40013058">13:54-58</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="41006001-41006006">Mark 6:1-6</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40014">
+		<verse id="40014001">
+			<letter id="40014001.1">
+				<text>For 14:1-12 see parallels Mark 6:14-29; Luke 9:7-9</text>
+				<cids><cid>t40014001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40014001-40014012">14:1-12</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41006014-41006029">Mark 6:14-29</ref>
+					<meta class="separator">; </meta>
+					<ref for="42009007-42009009">Luke 9:7-9</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40014013">
+			<letter id="40014013.1">
+				<text>For 14:13-21 see parallels Mark 6:32-44; Luke 9:10-17; John 6:1-13</text>
+				<cids><cid>t40014013.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40014013-40014021">14:13-21</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41006032-41006044">Mark 6:32-44</ref>
+					<meta class="separator">; </meta>
+					<ref for="42009010-42009017">Luke 9:10-17</ref>
+					<meta class="separator">; </meta>
+					<ref for="43006001-43006013">John 6:1-13</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40014022">
+			<letter id="40014022.1">
+				<text>For 14:22-33 see parallels Mark 6:45-52; John 6:16-21</text>
+				<cids><cid>t40014022.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40014022-40014033">14:22-33</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41006045-41006052">Mark 6:45-52</ref>
+					<meta class="separator">; </meta>
+					<ref for="43006016-43006021">John 6:16-21</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40014034">
+			<letter id="40014034.1">
+				<text>For 14:34-36 see parallel Mark 6:53-56</text>
+				<cids><cid>t40014034.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40014034-40014036">14:34-36</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="41006053-41006056">Mark 6:53-56</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40015">
+		<verse id="40015001">
+			<letter id="40015001.1">
+				<text>For 15:1-20 see parallel Mark 7:1-23</text>
+				<cids><cid>t40015001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40015001-40015020">15:1-20</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="41007001-41007023">Mark 7:1-23</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40015004">
+			<letter id="40015004.1">
+				<text>Ex. 20:12</text>
+				<cids><cid>t40015004.1</cid></cids>
+				<refs>
+					<ref for="02020012">Ex. 20:12</ref>
+				</refs>
+			</letter>
+			<letter id="40015004.2">
+				<text>Ex. 21:17</text>
+				<cids><cid>t40015004.2</cid></cids>
+				<refs>
+					<ref for="02021017">Ex. 21:17</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40015008">
+			<letter id="40015008.1">
+				<text>Isa. 29:13</text>
+				<cids><cid>t40015008.1</cid></cids>
+				<refs>
+					<ref for="23029013">Isa. 29:13</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40015021">
+			<letter id="40015021.1">
+				<text>For 15:21-28 see parallel Mark 7:24-30</text>
+				<cids><cid>t40015021.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40015021-40015028">15:21-28</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="41007024-41007030">Mark 7:24-30</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40015032">
+			<letter id="40015032.1">
+				<text>For 15:32-39 see parallel Mark 8:1-10</text>
+				<cids><cid>t40015032.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40015032-40015039">15:32-39</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="41008001-41008010">Mark 8:1-10</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40016">
+		<verse id="40016001">
+			<letter id="40016001.1">
+				<text>For 16:1-12 see parallel Mark 8:11-21</text>
+				<cids><cid>t40016001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40016001-40016012">16:1-12</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="41008011-41008021">Mark 8:11-21</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40016013">
+			<letter id="40016013.1">
+				<text>For 16:13-16 see parallels Mark 8:27-29; Luke 9:18-20</text>
+				<cids><cid>t40016013.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40016013-40016016">16:13-16</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41008027-41008029">Mark 8:27-29</ref>
+					<meta class="separator">; </meta>
+					<ref for="42009018-42009020">Luke 9:18-20</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40016021">
+			<letter id="40016021.1">
+				<text>For 16:21-28 see parallels Mark 8:31&endash;9:1; Luke 9:22-27</text>
+				<cids><cid>t40016021.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40016021-40016028">16:21-28</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41008031-41009001">Mark 8:31&endash;9:1</ref>
+					<meta class="separator">; </meta>
+					<ref for="42009022-42009027">Luke 9:22-27</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40017">
+		<verse id="40017001">
+			<letter id="40017001.1">
+				<text>For 17:1-8 see parallels Mark 9:2-8; Luke 9:28-36</text>
+				<cids><cid>t40017001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40017001-40017008">17:1-8</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41009002-41009008">Mark 9:2-8</ref>
+					<meta class="separator">; </meta>
+					<ref for="42009028-42009036">Luke 9:28-36</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40017009">
+			<letter id="40017009.1">
+				<text>For 17:9-13 see parallel Mark 9:9-13</text>
+				<cids><cid>t40017009.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40017009-40017013">17:9-13</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="41009009-41009013">Mark 9:9-13</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40017014">
+			<letter id="40017014.1">
+				<text>For 17:14-19 see parallels Mark 9:14-28; Luke 9:37-42</text>
+				<cids><cid>t40017014.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40017014-40017019">17:14-19</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41009014-41009028">Mark 9:14-28</ref>
+					<meta class="separator">; </meta>
+					<ref for="42009037-42009042">Luke 9:37-42</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40017022">
+			<letter id="40017022.1">
+				<text>For 17:22, 23 see parallels Mark 9:30-32; Luke 9:43-45</text>
+				<cids><cid>t40017022.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40017022-40017023">17:22<meta class="separator-weak">, </meta>23</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41009030-41009032">Mark 9:30-32</ref>
+					<meta class="separator">; </meta>
+					<ref for="42009043-42009045">Luke 9:43-45</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40018">
+		<verse id="40018001">
+			<letter id="40018001.1">
+				<text>For 18:1-5 see parallels Mark 9:33-37; Luke 9:46-48</text>
+				<cids><cid>t40018001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40018001-40018005">18:1-5</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41009033-41009037">Mark 9:33-37</ref>
+					<meta class="separator">; </meta>
+					<ref for="42009046-42009048">Luke 9:46-48</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40019">
+		<verse id="40019001">
+			<letter id="40019001.1">
+				<text>For 19:1-9 see parallel Mark 10:1-12</text>
+				<cids><cid>t40019001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40019001-40019009">19:1-9</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="41010001-41010012">Mark 10:1-12</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40019005">
+			<letter id="40019005.1">
+				<text>Gen. 2:24</text>
+				<cids><cid>t40019005.1</cid></cids>
+				<refs>
+					<ref for="01002024">Gen. 2:24</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40019013">
+			<letter id="40019013.1">
+				<text>For 19:13-15 see parallels Mark 10:13-16; Luke 18:15-17</text>
+				<cids><cid>t40019013.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40019013-40019015">19:13-15</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41010013-41010016">Mark 10:13-16</ref>
+					<meta class="separator">; </meta>
+					<ref for="42018015-42018017">Luke 18:15-17</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40019016">
+			<letter id="40019016.1">
+				<text>For 19:16-30 see parallels Mark 10:17-31; Luke 18:18-30</text>
+				<cids><cid>t40019016.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40019016-40019030">19:16-30</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41010017-41010031">Mark 10:17-31</ref>
+					<meta class="separator">; </meta>
+					<ref for="42018018-42018030">Luke 18:18-30</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40019018">
+			<letter id="40019018.1">
+				<text>Ex. 20:12-16; Deut. 5:16-20</text>
+				<cids><cid>t40019018.1</cid></cids>
+				<refs>
+					<ref for="02020012-02020016">Ex. 20:12-16</ref>
+					<meta class="separator">; </meta>
+					<ref for="05005016-05005020">Deut. 5:16-20</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40019019">
+			<letter id="40019019.1">
+				<text>Lev. 19:18</text>
+				<cids><cid>t40019019.1</cid></cids>
+				<refs>
+					<ref for="03019018">Lev. 19:18</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40020">
+		<verse id="40020017">
+			<letter id="40020017.1">
+				<text>For 20:17-19 see parallels Mark 10:32-34; Luke 18:31-33</text>
+				<cids><cid>t40020017.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40020017-40020019">20:17-19</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41010032-41010034">Mark 10:32-34</ref>
+					<meta class="separator">; </meta>
+					<ref for="42018031-42018033">Luke 18:31-33</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40020020">
+			<letter id="40020020.1">
+				<text>For 20:20-28 see parallel Mark 10:35-45</text>
+				<cids><cid>t40020020.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40020020-40020028">20:20-28</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="41010035-41010045">Mark 10:35-45</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40020029">
+			<letter id="40020029.1">
+				<text>For 20:29-34 see parallels Mark 10:46-52; Luke 18:35-43</text>
+				<cids><cid>t40020029.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40020029-40020034">20:29-34</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41010046-41010052">Mark 10:46-52</ref>
+					<meta class="separator">; </meta>
+					<ref for="42018035-42018043">Luke 18:35-43</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40021">
+		<verse id="40021001">
+			<letter id="40021001.1">
+				<text>For 21:1-9 see parallels Mark 11:1-10; Luke 19:28-38; John 12:12-15</text>
+				<cids><cid>t40021001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40021001-40021009">21:1-9</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41011001-41011010">Mark 11:1-10</ref>
+					<meta class="separator">; </meta>
+					<ref for="42019028-42019038">Luke 19:28-38</ref>
+					<meta class="separator">; </meta>
+					<ref for="43012012-43012015">John 12:12-15</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40021005">
+			<letter id="40021005.1">
+				<text>Zech. 9:9</text>
+				<cids><cid>t40021005.1</cid></cids>
+				<refs>
+					<ref for="38009009">Zech. 9:9</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40021012">
+			<letter id="40021012.1">
+				<text>For 21:12-16 see parallels Mark 11:15-18; Luke 19:45-47</text>
+				<cids><cid>t40021012.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40021012-40021016">21:12-16</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41011015-41011018">Mark 11:15-18</ref>
+					<meta class="separator">; </meta>
+					<ref for="42019045-42019047">Luke 19:45-47</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40021013">
+			<letter id="40021013.1">
+				<text>Isa. 56:7</text>
+				<cids><cid>t40021013.1</cid></cids>
+				<refs>
+					<ref for="23056007">Isa. 56:7</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40021016">
+			<letter id="40021016.1">
+				<text>Ps. 8:2 (Gk.)</text>
+				<cids><cid>t40021016.1</cid></cids>
+				<refs>
+					<ref for="19008002">Ps. 8:2</ref>
+					<meta class="gk"> (Gk.)</meta>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40021018">
+			<letter id="40021018.1">
+				<text>For 21:18-22 see parallel Mark 11:12-14, 20-24</text>
+				<cids><cid>t40021018.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40021018-40021022">21:18-22</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="41011012-41011014">Mark 11:12-14</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="41011020-41011024">20-24</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40021023">
+			<letter id="40021023.1">
+				<text>For 21:23-27 see parallels Mark 11:27-33; Luke 20:1-8</text>
+				<cids><cid>t40021023.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40021023-40021027">21:23-27</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41011027-41011033">Mark 11:27-33</ref>
+					<meta class="separator">; </meta>
+					<ref for="42020001-42020008">Luke 20:1-8</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40021033">
+			<letter id="40021033.1">
+				<text>For 21:33-46 see parallels Mark 12:1-12; Luke 20:9-18</text>
+				<cids><cid>t40021033.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40021033-40021046">21:33-46</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41012001-41012012">Mark 12:1-12</ref>
+					<meta class="separator">; </meta>
+					<ref for="42020009-42020018">Luke 20:9-18</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40021042">
+			<letter id="40021042.1">
+				<text>Ps. 118:22, 23</text>
+				<cids><cid>t40021042.1</cid></cids>
+				<refs>
+					<ref for="19118022-19118023">Ps. 118:22<meta class="separator-weak">, </meta>23</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40022">
+		<verse id="40022015">
+			<letter id="40022015.1">
+				<text>For 22:15-32 see parallels Mark 12:13-27; Luke 20:20-38</text>
+				<cids><cid>t40022015.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40022015-40022032">22:15-32</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41012013-41012027">Mark 12:13-27</ref>
+					<meta class="separator">; </meta>
+					<ref for="42020020-42020038">Luke 20:20-38</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40022032">
+			<letter id="40022032.1">
+				<text>Ex. 3:6</text>
+				<cids><cid>t40022032.1</cid></cids>
+				<refs>
+					<ref for="02003006">Ex. 3:6</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40022034">
+			<letter id="40022034.1">
+				<text>For 22:34-40 see parallel Mark 12:28-33</text>
+				<cids><cid>t40022034.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40022034-40022040">22:34-40</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="41012028-41012033">Mark 12:28-33</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40022041">
+			<letter id="40022041.1">
+				<text>For 22:41-45 see parallels Mark 12:35-37; Luke 20:41-44</text>
+				<cids><cid>t40022041.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40022041-40022045">22:41-45</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41012035-41012037">Mark 12:35-37</ref>
+					<meta class="separator">; </meta>
+					<ref for="42020041-42020044">Luke 20:41-44</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40022044">
+			<letter id="40022044.1">
+				<text>Ps. 110:1</text>
+				<cids><cid>t40022044.1</cid></cids>
+				<refs>
+					<ref for="19110001">Ps. 110:1</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40023">
+		<verse id="40023001">
+			<letter id="40023001.1">
+				<text>For 23:1, 2, 5-7 see parallels Mark 12:38-40; Luke 20:45, 46</text>
+				<cids><cid>t40023001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40023001-40023002">23:1<meta class="separator-weak">, </meta>2</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="40023005-40023007">5-7</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41012038-41012040">Mark 12:38-40</ref>
+					<meta class="separator">; </meta>
+					<ref for="42020045-42020046">Luke 20:45<meta class="separator-weak">, </meta>46</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40023037">
+			<letter id="40023037.1">
+				<text>For 23:37-39 see parallel Luke 13:34, 35</text>
+				<cids><cid>t40023037.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40023037-40023039">23:37-39</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="42013034-42013035">Luke 13:34<meta class="separator-weak">, </meta>35</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40023039">
+			<letter id="40023039.1">
+				<text>Ps. 118:26</text>
+				<cids><cid>t40023039.1</cid></cids>
+				<refs>
+					<ref for="19118026">Ps. 118:26</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40024">
+		<verse id="40024001">
+			<letter id="40024001.1">
+				<text>For 24:1-51 see parallels Mark 13:1-37; Luke 21:5-36</text>
+				<cids><cid>t40024001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40024001-40024051">24:1-51</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41013001-41013037">Mark 13:1-37</ref>
+					<meta class="separator">; </meta>
+					<ref for="42021005-42021036">Luke 21:5-36</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40026">
+		<verse id="40026002">
+			<letter id="40026002.1">
+				<text>For 26:2-5 see parallels Mark 14:1, 2; Luke 22:1, 2</text>
+				<cids><cid>t40026002.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40026002-40026005">26:2-5</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41014001-41014002">Mark 14:1<meta class="separator-weak">, </meta>2</ref>
+					<meta class="separator">; </meta>
+					<ref for="42022001-42022002">Luke 22:1<meta class="separator-weak">, </meta>2</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40026006">
+			<letter id="40026006.1">
+				<text>For 26:6-13 see parallels Mark 14:3-9; John 12:1-8</text>
+				<cids><cid>t40026006.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40026006-40026013">26:6-13</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41014003-41014009">Mark 14:3-9</ref>
+					<meta class="separator">; </meta>
+					<ref for="43012001-43012008">John 12:1-8</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40026014">
+			<letter id="40026014.1">
+				<text>For 26:14-16 see parallels Mark 14:10, 11; Luke 22:3-6</text>
+				<cids><cid>t40026014.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40026014-40026016">26:14-16</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41014010-41014011">Mark 14:10<meta class="separator-weak">, </meta>11</ref>
+					<meta class="separator">; </meta>
+					<ref for="42022003-42022006">Luke 22:3-6</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40026017">
+			<letter id="40026017.1">
+				<text>For 26:17-19 see parallels Mark 14:12-16; Luke 22:7-13</text>
+				<cids><cid>t40026017.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40026017-40026019">26:17-19</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41014012-41014016">Mark 14:12-16</ref>
+					<meta class="separator">; </meta>
+					<ref for="42022007-42022013">Luke 22:7-13</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40026020">
+			<letter id="40026020.1">
+				<text>For 26:20-24 see parallel Mark 14:17-21</text>
+				<cids><cid>t40026020.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40026020-40026024">26:20-24</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="41014017-41014021">Mark 14:17-21</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40026026">
+			<letter id="40026026.1">
+				<text>For 26:26-29 see parallels Mark 14:22-25; Luke 22:18-20</text>
+				<cids><cid>t40026026.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40026026-40026029">26:26-29</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41014022-41014025">Mark 14:22-25</ref>
+					<meta class="separator">; </meta>
+					<ref for="42022018-42022020">Luke 22:18-20</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40026030">
+			<letter id="40026030.1">
+				<text>For 26:30-35 see parallel Mark 14:26-31</text>
+				<cids><cid>t40026030.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40026030-40026035">26:30-35</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="41014026-41014031">Mark 14:26-31</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40026031">
+			<letter id="40026031.1">
+				<text>Zech. 13:7</text>
+				<cids><cid>t40026031.1</cid></cids>
+				<refs>
+					<ref for="38013007">Zech. 13:7</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40026036">
+			<letter id="40026036.1">
+				<text>For 26:36-46 see parallels Mark 14:32-42; Luke 22:39-46</text>
+				<cids><cid>t40026036.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40026036-40026046">26:36-46</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41014032-41014042">Mark 14:32-42</ref>
+					<meta class="separator">; </meta>
+					<ref for="42022039-42022046">Luke 22:39-46</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40026047">
+			<letter id="40026047.1">
+				<text>For 26:47-56 see parallels Mark 14:43-50; Luke 22:47-53; John 18:3-11</text>
+				<cids><cid>t40026047.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40026047-40026056">26:47-56</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41014043-41014050">Mark 14:43-50</ref>
+					<meta class="separator">; </meta>
+					<ref for="42022047-42022053">Luke 22:47-53</ref>
+					<meta class="separator">; </meta>
+					<ref for="43018003-43018011">John 18:3-11</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40026057">
+			<letter id="40026057.1">
+				<text>For 26:57-68 see parallel Mark 14:53-65</text>
+				<cids><cid>t40026057.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40026057-40026068">26:57-68</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="41014053-41014065">Mark 14:53-65</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40026069">
+			<letter id="40026069.1">
+				<text>For 26:69-75 see parallels Mark 14:66-72; Luke 22:55-62; John 18:16-18, 25-27</text>
+				<cids><cid>t40026069.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40026069-40026075">26:69-75</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41014066-41014072">Mark 14:66-72</ref>
+					<meta class="separator">; </meta>
+					<ref for="42022055-42022062">Luke 22:55-62</ref>
+					<meta class="separator">; </meta>
+					<ref for="43018016-43018018">John 18:16-18</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="43018025-43018027">25-27</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40027">
+		<verse id="40027009">
+			<letter id="40027009.1">
+				<text>Zech. 11:13</text>
+				<cids><cid>t40027009.1</cid></cids>
+				<refs>
+					<ref for="38011013">Zech. 11:13</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40027011">
+			<letter id="40027011.1">
+				<text>For 27:11-14 see parallels Mark 15:1-5; Luke 23:1-3; John 18:28-38</text>
+				<cids><cid>t40027011.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40027011-40027014">27:11-14</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41015001-41015005">Mark 15:1-5</ref>
+					<meta class="separator">; </meta>
+					<ref for="42023001-42023003">Luke 23:1-3</ref>
+					<meta class="separator">; </meta>
+					<ref for="43018028-43018038">John 18:28-38</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40027015">
+			<letter id="40027015.1">
+				<text>For 27:15-26 see parallels Mark 15:6-15; Luke 23:18-25; John 18:39, 40; 19:16</text>
+				<cids><cid>t40027015.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40027015-40027026">27:15-26</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41015006-41015015">Mark 15:6-15</ref>
+					<meta class="separator">; </meta>
+					<ref for="42023018-42023025">Luke 23:18-25</ref>
+					<meta class="separator">; </meta>
+					<ref for="43018039-43018040">John 18:39<meta class="separator-weak">, </meta>40</ref>
+					<meta class="separator">; </meta>
+					<ref for="43019016">19:16</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40027027">
+			<letter id="40027027.1">
+				<text>For 27:27-31 see parallels Mark 15:16-20; John 19:2, 3</text>
+				<cids><cid>t40027027.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40027027-40027031">27:27-31</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41015016-41015020">Mark 15:16-20</ref>
+					<meta class="separator">; </meta>
+					<ref for="43019002-43019003">John 19:2<meta class="separator-weak">, </meta>3</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40027033">
+			<letter id="40027033.1">
+				<text>For 27:33-51 see parallels Mark 15:22-38; Luke 23:32-38, 44-46; John 19:17-19, 23, 24, 28-30</text>
+				<cids><cid>t40027033.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40027033-40027051">27:33-51</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41015022-41015038">Mark 15:22-38</ref>
+					<meta class="separator">; </meta>
+					<ref for="42023032-42023038">Luke 23:32-38</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="42023044-42023046">44-46</ref>
+					<meta class="separator">; </meta>
+					<ref for="43019017-43019019">John 19:17-19</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="43019023-43019024">23<meta class="separator-weak">, </meta>24</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="43019028-43019030">28-30</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40027046">
+			<letter id="40027046.1">
+				<text>Ps. 22:1</text>
+				<cids><cid>t40027046.1</cid></cids>
+				<refs>
+					<ref for="19022001">Ps. 22:1</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40027054">
+			<letter id="40027054.1">
+				<text>For 27:54-56 see parallels Mark 15:39-41; Luke 23:47, 49</text>
+				<cids><cid>t40027054.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40027054-40027056">27:54-56</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41015039-41015041">Mark 15:39-41</ref>
+					<meta class="separator">; </meta>
+					<ref for="42023047">Luke 23:47</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="42023049">49</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="40027057">
+			<letter id="40027057.1">
+				<text>For 27:57-61 see parallels Mark 15:42-47; Luke 23:50-56; John 19:38-42</text>
+				<cids><cid>t40027057.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40027057-40027061">27:57-61</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41015042-41015047">Mark 15:42-47</ref>
+					<meta class="separator">; </meta>
+					<ref for="42023050-42023056">Luke 23:50-56</ref>
+					<meta class="separator">; </meta>
+					<ref for="43019038-43019042">John 19:38-42</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="40028">
+		<verse id="40028001">
+			<letter id="40028001.1">
+				<text>For 28:1-8 see parallels Mark 16:1-8; Luke 24:1-10; John 20:1</text>
+				<cids><cid>t40028001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="40028001-40028008">28:1-8</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="41016001-41016008">Mark 16:1-8</ref>
+					<meta class="separator">; </meta>
+					<ref for="42024001-42024010">Luke 24:1-10</ref>
+					<meta class="separator">; </meta>
+					<ref for="43020001">John 20:1</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+</book>
+<book num="41">
+	<chapter id="41001">
+		<verse id="41001002">
+			<letter id="41001002.1">
+				<text>For 1:2-8 see parallels Matt. 3:1-12; Luke 3:2-17</text>
+				<cids><cid>t41001002.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41001002-41001008">1:2-8</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40003001-40003012">Matt. 3:1-12</ref>
+					<meta class="separator">; </meta>
+					<ref for="42003002-42003017">Luke 3:2-17</ref>
+				</refs>
+			</letter>
+			<letter id="41001002.2">
+				<text>Mal. 3:1</text>
+				<cids><cid>t41001002.2</cid></cids>
+				<refs>
+					<ref for="39003001">Mal. 3:1</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41001003">
+			<letter id="41001003.1">
+				<text>Isa. 40:3</text>
+				<cids><cid>t41001003.1</cid></cids>
+				<refs>
+					<ref for="23040003">Isa. 40:3</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41001009">
+			<letter id="41001009.1">
+				<text>For 1:9-11 see parallels Matt. 3:13-17; Luke 3:21, 22</text>
+				<cids><cid>t41001009.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41001009-41001011">1:9-11</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40003013-40003017">Matt. 3:13-17</ref>
+					<meta class="separator">; </meta>
+					<ref for="42003021-42003022">Luke 3:21<meta class="separator-weak">, </meta>22</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41001016">
+			<letter id="41001016.1">
+				<text>For 1:16-20 see parallel Matt. 4:18-22</text>
+				<cids><cid>t41001016.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41001016-41001020">1:16-20</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40004018-40004022">Matt. 4:18-22</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41001021">
+			<letter id="41001021.1">
+				<text>For 1:21-28 see parallel Luke 4:31-37</text>
+				<cids><cid>t41001021.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41001021-41001028">1:21-28</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="42004031-42004037">Luke 4:31-37</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41001029">
+			<letter id="41001029.1">
+				<text>For 1:29-34 see parallels Matt. 8:14-16; Luke 4:38-41</text>
+				<cids><cid>t41001029.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41001029-41001034">1:29-34</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40008014-40008016">Matt. 8:14-16</ref>
+					<meta class="separator">; </meta>
+					<ref for="42004038-42004041">Luke 4:38-41</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41001035">
+			<letter id="41001035.1">
+				<text>For 1:35-38 see parallel Luke 4:42, 43</text>
+				<cids><cid>t41001035.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41001035-41001038">1:35-38</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="42004042-42004043">Luke 4:42<meta class="separator-weak">, </meta>43</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41001040">
+			<letter id="41001040.1">
+				<text>For 1:40-44 see parallels Matt. 8:2-4; Luke 5:12-14</text>
+				<cids><cid>t41001040.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41001040-41001044">1:40-44</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40008002-40008004">Matt. 8:2-4</ref>
+					<meta class="separator">; </meta>
+					<ref for="42005012-42005014">Luke 5:12-14</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="41002">
+		<verse id="41002003">
+			<letter id="41002003.1">
+				<text>For 2:3-12 see parallels Matt. 9:2-8; Luke 5:17-26</text>
+				<cids><cid>t41002003.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41002003-41002012">2:3-12</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40009002-40009008">Matt. 9:2-8</ref>
+					<meta class="separator">; </meta>
+					<ref for="42005017-42005026">Luke 5:17-26</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41002014">
+			<letter id="41002014.1">
+				<text>For 2:14-22 see parallels Matt. 9:9-17; Luke 5:27-39</text>
+				<cids><cid>t41002014.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41002014-41002022">2:14-22</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40009009-40009017">Matt. 9:9-17</ref>
+					<meta class="separator">; </meta>
+					<ref for="42005027-42005039">Luke 5:27-39</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41002023">
+			<letter id="41002023.1">
+				<text>For 2:23-28 see parallels Matt. 12:1-8; Luke 6:1-5</text>
+				<cids><cid>t41002023.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41002023-41002028">2:23-28</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40012001-40012008">Matt. 12:1-8</ref>
+					<meta class="separator">; </meta>
+					<ref for="42006001-42006005">Luke 6:1-5</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="41003">
+		<verse id="41003001">
+			<letter id="41003001.1">
+				<text>For 3:1-6 see parallels Matt. 12:9-14; Luke 6:6-11</text>
+				<cids><cid>t41003001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41003001-41003006">3:1-6</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40012009-40012014">Matt. 12:9-14</ref>
+					<meta class="separator">; </meta>
+					<ref for="42006006-42006011">Luke 6:6-11</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41003016">
+			<letter id="41003016.1">
+				<text>For 3:16-19 see parallels Matt. 10:2-4; Luke 6:13-16</text>
+				<cids><cid>t41003016.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41003016-41003019">3:16-19</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40010002-40010004">Matt. 10:2-4</ref>
+					<meta class="separator">; </meta>
+					<ref for="42006013-42006016">Luke 6:13-16</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41003023">
+			<letter id="41003023.1">
+				<text>For 3:23-27 see parallels Matt. 12:25-29; Luke 11:17-22</text>
+				<cids><cid>t41003023.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41003023-41003027">3:23-27</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40012025-40012029">Matt. 12:25-29</ref>
+					<meta class="separator">; </meta>
+					<ref for="42011017-42011022">Luke 11:17-22</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41003028">
+			<letter id="41003028.1">
+				<text>For 3:28-30 see parallel Matt. 12:31, 32</text>
+				<cids><cid>t41003028.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41003028-41003030">3:28-30</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40012031-40012032">Matt. 12:31<meta class="separator-weak">, </meta>32</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41003031">
+			<letter id="41003031.1">
+				<text>For 3:31-35 see parallels Matt. 12:46-50; Luke 8:19-21</text>
+				<cids><cid>t41003031.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41003031-41003035">3:31-35</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40012046-40012050">Matt. 12:46-50</ref>
+					<meta class="separator">; </meta>
+					<ref for="42008019-42008021">Luke 8:19-21</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="41004">
+		<verse id="41004001">
+			<letter id="41004001.1">
+				<text>For 4:1-12 see parallels Matt. 13:1-15; Luke 8:4-10</text>
+				<cids><cid>t41004001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41004001-41004012">4:1-12</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40013001-40013015">Matt. 13:1-15</ref>
+					<meta class="separator">; </meta>
+					<ref for="42008004-42008010">Luke 8:4-10</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41004013">
+			<letter id="41004013.1">
+				<text>For 4:13-20 see parallels Matt. 13:18-23; Luke 8:11-15</text>
+				<cids><cid>t41004013.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41004013-41004020">4:13-20</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40013018-40013023">Matt. 13:18-23</ref>
+					<meta class="separator">; </meta>
+					<ref for="42008011-42008015">Luke 8:11-15</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41004021">
+			<letter id="41004021.1">
+				<text>For 4:21-25 see parallel Luke 8:16-18</text>
+				<cids><cid>t41004021.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41004021-41004025">4:21-25</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="42008016-42008018">Luke 8:16-18</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41004030">
+			<letter id="41004030.1">
+				<text>For 4:30-32 see parallels Matt. 13:31, 32; Luke 13:18, 19</text>
+				<cids><cid>t41004030.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41004030-41004032">4:30-32</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40013031-40013032">Matt. 13:31<meta class="separator-weak">, </meta>32</ref>
+					<meta class="separator">; </meta>
+					<ref for="42013018-42013019">Luke 13:18<meta class="separator-weak">, </meta>19</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41004035">
+			<letter id="41004035.1">
+				<text>For 4:35-41 see parallels Matt. 8:18, 23-27; Luke 8:22-25</text>
+				<cids><cid>t41004035.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41004035-41004041">4:35-41</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40008018">Matt. 8:18</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="40008023-40008027">23-27</ref>
+					<meta class="separator">; </meta>
+					<ref for="42008022-42008025">Luke 8:22-25</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="41005">
+		<verse id="41005001">
+			<letter id="41005001.1">
+				<text>For 5:1-20 see parallels Matt. 8:28-34; Luke 8:26-39</text>
+				<cids><cid>t41005001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41005001-41005020">5:1-20</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40008028-40008034">Matt. 8:28-34</ref>
+					<meta class="separator">; </meta>
+					<ref for="42008026-42008039">Luke 8:26-39</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41005022">
+			<letter id="41005022.1">
+				<text>For 5:22-43 see parallels Matt. 9:18-26; Luke 8:40-56</text>
+				<cids><cid>t41005022.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41005022-41005043">5:22-43</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40009018-40009026">Matt. 9:18-26</ref>
+					<meta class="separator">; </meta>
+					<ref for="42008040-42008056">Luke 8:40-56</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="41006">
+		<verse id="41006001">
+			<letter id="41006001.1">
+				<text>For 6:1-6 see parallel Matt. 13:54-58</text>
+				<cids><cid>t41006001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41006001-41006006">6:1-6</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40013054-40013058">Matt. 13:54-58</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41006007">
+			<letter id="41006007.1">
+				<text>For 6:7-11 see parallels Matt. 10:1, 5, 9-14; Luke 9:1, 3-5</text>
+				<cids><cid>t41006007.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41006007-41006011">6:7-11</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40010001">Matt. 10:1</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="40010005">5</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="40010009-40010014">9-14</ref>
+					<meta class="separator">; </meta>
+					<ref for="42009001">Luke 9:1</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="42009003-42009005">3-5</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41006014">
+			<letter id="41006014.1">
+				<text>For 6:14-29 see parallels Matt. 14:1-12; Luke 9:7-9</text>
+				<cids><cid>t41006014.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41006014-41006029">6:14-29</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40014001-40014012">Matt. 14:1-12</ref>
+					<meta class="separator">; </meta>
+					<ref for="42009007-42009009">Luke 9:7-9</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41006032">
+			<letter id="41006032.1">
+				<text>For 6:32-44 see parallels Matt. 14:13-21; Luke 9:10-17; John 6:1-13</text>
+				<cids><cid>t41006032.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41006032-41006044">6:32-44</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40014013-40014021">Matt. 14:13-21</ref>
+					<meta class="separator">; </meta>
+					<ref for="42009010-42009017">Luke 9:10-17</ref>
+					<meta class="separator">; </meta>
+					<ref for="43006001-43006013">John 6:1-13</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41006045">
+			<letter id="41006045.1">
+				<text>For 6:45-52 see parallels Matt. 14:22-33; John 6:16-21</text>
+				<cids><cid>t41006045.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41006045-41006052">6:45-52</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40014022-40014033">Matt. 14:22-33</ref>
+					<meta class="separator">; </meta>
+					<ref for="43006016-43006021">John 6:16-21</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41006053">
+			<letter id="41006053.1">
+				<text>For 6:53-56 see parallel Matt. 14:34-36</text>
+				<cids><cid>t41006053.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41006053-41006056">6:53-56</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40014034-40014036">Matt. 14:34-36</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="41007">
+		<verse id="41007001">
+			<letter id="41007001.1">
+				<text>For 7:1-30 see parallel Matt. 15:1-28</text>
+				<cids><cid>t41007001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41007001-41007030">7:1-30</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40015001-40015028">Matt. 15:1-28</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41007006">
+			<letter id="41007006.1">
+				<text>Isa. 29:13</text>
+				<cids><cid>t41007006.1</cid></cids>
+				<refs>
+					<ref for="23029013">Isa. 29:13</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41007010">
+			<letter id="41007010.1">
+				<text>Ex. 20:12</text>
+				<cids><cid>t41007010.1</cid></cids>
+				<refs>
+					<ref for="02020012">Ex. 20:12</ref>
+				</refs>
+			</letter>
+			<letter id="41007010.2">
+				<text>Ex. 21:17</text>
+				<cids><cid>t41007010.2</cid></cids>
+				<refs>
+					<ref for="02021017">Ex. 21:17</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="41008">
+		<verse id="41008001">
+			<letter id="41008001.1">
+				<text>For 8:1-10 see parallel Matt. 15:32-39</text>
+				<cids><cid>t41008001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41008001-41008010">8:1-10</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40015032-40015039">Matt. 15:32-39</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41008011">
+			<letter id="41008011.1">
+				<text>For 8:11-21 see parallel Matt. 16:1-12</text>
+				<cids><cid>t41008011.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41008011-41008021">8:11-21</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40016001-40016012">Matt. 16:1-12</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41008027">
+			<letter id="41008027.1">
+				<text>For 8:27-29 see parallels Matt. 16:13-16; Luke 9:18-20</text>
+				<cids><cid>t41008027.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41008027-41008029">8:27-29</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40016013-40016016">Matt. 16:13-16</ref>
+					<meta class="separator">; </meta>
+					<ref for="42009018-42009020">Luke 9:18-20</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41008031">
+			<letter id="41008031.1">
+				<text>For 8:31&endash;9:1 see parallels Matt. 16:21-28; Luke 9:22-27</text>
+				<cids><cid>t41008031.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41008031-41009001">8:31&endash;9:1</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40016021-40016028">Matt. 16:21-28</ref>
+					<meta class="separator">; </meta>
+					<ref for="42009022-42009027">Luke 9:22-27</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="41009">
+		<verse id="41009002">
+			<letter id="41009002.1">
+				<text>For 9:2-8 see parallels Matt. 17:1-8; Luke 9:28-36</text>
+				<cids><cid>t41009002.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41009002-41009008">9:2-8</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40017001-40017008">Matt. 17:1-8</ref>
+					<meta class="separator">; </meta>
+					<ref for="42009028-42009036">Luke 9:28-36</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41009009">
+			<letter id="41009009.1">
+				<text>For 9:9-13 see parallel Matt. 17:9-13</text>
+				<cids><cid>t41009009.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41009009-41009013">9:9-13</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40017009-40017013">Matt. 17:9-13</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41009014">
+			<letter id="41009014.1">
+				<text>For 9:14-28 see parallels Matt. 17:14-19; Luke 9:37-42</text>
+				<cids><cid>t41009014.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41009014-41009028">9:14-28</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40017014-40017019">Matt. 17:14-19</ref>
+					<meta class="separator">; </meta>
+					<ref for="42009037-42009042">Luke 9:37-42</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41009030">
+			<letter id="41009030.1">
+				<text>For 9:30-32 see parallels Matt. 17:22, 23; Luke 9:43-45</text>
+				<cids><cid>t41009030.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41009030-41009032">9:30-32</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40017022-40017023">Matt. 17:22<meta class="separator-weak">, </meta>23</ref>
+					<meta class="separator">; </meta>
+					<ref for="42009043-42009045">Luke 9:43-45</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41009033">
+			<letter id="41009033.1">
+				<text>For 9:33-37 see parallels Matt. 18:1-5; Luke 9:46-48</text>
+				<cids><cid>t41009033.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41009033-41009037">9:33-37</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40018001-40018005">Matt. 18:1-5</ref>
+					<meta class="separator">; </meta>
+					<ref for="42009046-42009048">Luke 9:46-48</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41009038">
+			<letter id="41009038.1">
+				<text>For 9:38-40 see parallel Luke 9:49, 50</text>
+				<cids><cid>t41009038.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41009038-41009040">9:38-40</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="42009049-42009050">Luke 9:49<meta class="separator-weak">, </meta>50</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="41010">
+		<verse id="41010001">
+			<letter id="41010001.1">
+				<text>For 10:1-12 see parallel Matt. 19:1-9</text>
+				<cids><cid>t41010001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41010001-41010012">10:1-12</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40019001-40019009">Matt. 19:1-9</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41010006">
+			<letter id="41010006.1">
+				<text>Gen. 1:27; 5:2</text>
+				<cids><cid>t41010006.1</cid></cids>
+				<refs>
+					<ref for="01001027">Gen. 1:27</ref>
+					<meta class="separator">; </meta>
+					<ref for="01005002">5:2</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41010007">
+			<letter id="41010007.1">
+				<text>Gen. 2:24</text>
+				<cids><cid>t41010007.1</cid></cids>
+				<refs>
+					<ref for="01002024">Gen. 2:24</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41010013">
+			<letter id="41010013.1">
+				<text>For 10:13-16 see parallels Matt. 19:13-15; Luke 18:15-17</text>
+				<cids><cid>t41010013.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41010013-41010016">10:13-16</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40019013-40019015">Matt. 19:13-15</ref>
+					<meta class="separator">; </meta>
+					<ref for="42018015-42018017">Luke 18:15-17</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41010017">
+			<letter id="41010017.1">
+				<text>For 10:17-31 see parallels Matt. 19:16-30; Luke 18:18-30</text>
+				<cids><cid>t41010017.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41010017-41010031">10:17-31</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40019016-40019030">Matt. 19:16-30</ref>
+					<meta class="separator">; </meta>
+					<ref for="42018018-42018030">Luke 18:18-30</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41010019">
+			<letter id="41010019.1">
+				<text>Ex. 20:12-16; Deut. 5:16-20</text>
+				<cids><cid>t41010019.1</cid></cids>
+				<refs>
+					<ref for="02020012-02020016">Ex. 20:12-16</ref>
+					<meta class="separator">; </meta>
+					<ref for="05005016-05005020">Deut. 5:16-20</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41010032">
+			<letter id="41010032.1">
+				<text>For 10:32-34 see parallels Matt. 20:17-19; Luke 18:31-33</text>
+				<cids><cid>t41010032.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41010032-41010034">10:32-34</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40020017-40020019">Matt. 20:17-19</ref>
+					<meta class="separator">; </meta>
+					<ref for="42018031-42018033">Luke 18:31-33</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41010035">
+			<letter id="41010035.1">
+				<text>For 10:35-45 see parallel Matt. 20:20-28</text>
+				<cids><cid>t41010035.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41010035-41010045">10:35-45</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40020020-40020028">Matt. 20:20-28</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41010046">
+			<letter id="41010046.1">
+				<text>For 10:46-52 see parallels Matt. 20:29-34; Luke 18:35-43</text>
+				<cids><cid>t41010046.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41010046-41010052">10:46-52</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40020029-40020034">Matt. 20:29-34</ref>
+					<meta class="separator">; </meta>
+					<ref for="42018035-42018043">Luke 18:35-43</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="41011">
+		<verse id="41011001">
+			<letter id="41011001.1">
+				<text>For 11:1-10 see parallels Matt. 21:1-9; Luke 19:28-38; John 12:12-15</text>
+				<cids><cid>t41011001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41011001-41011010">11:1-10</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40021001-40021009">Matt. 21:1-9</ref>
+					<meta class="separator">; </meta>
+					<ref for="42019028-42019038">Luke 19:28-38</ref>
+					<meta class="separator">; </meta>
+					<ref for="43012012-43012015">John 12:12-15</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41011015">
+			<letter id="41011015.1">
+				<text>For 11:15-18 see parallels Matt. 21:12-16; Luke 19:45-47</text>
+				<cids><cid>t41011015.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41011015-41011018">11:15-18</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40021012-40021016">Matt. 21:12-16</ref>
+					<meta class="separator">; </meta>
+					<ref for="42019045-42019047">Luke 19:45-47</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41011017">
+			<letter id="41011017.1">
+				<text>Isa. 56:7</text>
+				<cids><cid>t41011017.1</cid></cids>
+				<refs>
+					<ref for="23056007">Isa. 56:7</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41011020">
+			<letter id="41011020.1">
+				<text>For 11:20-24 see parallel Matt. 21:19-22</text>
+				<cids><cid>t41011020.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41011020-41011024">11:20-24</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40021019-40021022">Matt. 21:19-22</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41011027">
+			<letter id="41011027.1">
+				<text>For 11:27-33 see parallels Matt. 21:23-27; Luke 20:1-8</text>
+				<cids><cid>t41011027.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41011027-41011033">11:27-33</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40021023-40021027">Matt. 21:23-27</ref>
+					<meta class="separator">; </meta>
+					<ref for="42020001-42020008">Luke 20:1-8</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="41012">
+		<verse id="41012001">
+			<letter id="41012001.1">
+				<text>For 12:1-12 see parallels Matt. 21:33-46; Luke 20:9-18</text>
+				<cids><cid>t41012001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41012001-41012012">12:1-12</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40021033-40021046">Matt. 21:33-46</ref>
+					<meta class="separator">; </meta>
+					<ref for="42020009-42020018">Luke 20:9-18</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41012010">
+			<letter id="41012010.1">
+				<text>Ps. 118:22, 23</text>
+				<cids><cid>t41012010.1</cid></cids>
+				<refs>
+					<ref for="19118022-19118023">Ps. 118:22<meta class="separator-weak">, </meta>23</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41012013">
+			<letter id="41012013.1">
+				<text>For 12:13-27 see parallels Matt. 22:15-32; Luke 20:20-38</text>
+				<cids><cid>t41012013.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41012013-41012027">12:13-27</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40022015-40022032">Matt. 22:15-32</ref>
+					<meta class="separator">; </meta>
+					<ref for="42020020-42020038">Luke 20:20-38</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41012026">
+			<letter id="41012026.1">
+				<text>Ex. 3:6</text>
+				<cids><cid>t41012026.1</cid></cids>
+				<refs>
+					<ref for="02003006">Ex. 3:6</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41012028">
+			<letter id="41012028.1">
+				<text>For 12:28-34 see parallel Matt. 22:34-40, 46</text>
+				<cids><cid>t41012028.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41012028-41012034">12:28-34</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40022034-40022040">Matt. 22:34-40</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="40022046">46</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41012029">
+			<letter id="41012029.1">
+				<text>Deut. 6:4, 5</text>
+				<cids><cid>t41012029.1</cid></cids>
+				<refs>
+					<ref for="05006004-05006005">Deut. 6:4<meta class="separator-weak">, </meta>5</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41012031">
+			<letter id="41012031.1">
+				<text>Lev. 19:18</text>
+				<cids><cid>t41012031.1</cid></cids>
+				<refs>
+					<ref for="03019018">Lev. 19:18</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41012035">
+			<letter id="41012035.1">
+				<text>For 12:35-37 see parallels Matt. 22:41-45; Luke 20:41-44</text>
+				<cids><cid>t41012035.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41012035-41012037">12:35-37</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40022041-40022045">Matt. 22:41-45</ref>
+					<meta class="separator">; </meta>
+					<ref for="42020041-42020044">Luke 20:41-44</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41012036">
+			<letter id="41012036.1">
+				<text>Ps. 110:1</text>
+				<cids><cid>t41012036.1</cid></cids>
+				<refs>
+					<ref for="19110001">Ps. 110:1</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41012038">
+			<letter id="41012038.1">
+				<text>For 12:38-40 see parallels Matt. 23:1, 2, 5-7; Luke 20:45, 46</text>
+				<cids><cid>t41012038.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41012038-41012040">12:38-40</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40023001-40023002">Matt. 23:1<meta class="separator-weak">, </meta>2</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="40023005-40023007">5-7</ref>
+					<meta class="separator">; </meta>
+					<ref for="42020045-42020046">Luke 20:45<meta class="separator-weak">, </meta>46</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41012041">
+			<letter id="41012041.1">
+				<text>For 12:41-44 see parallel Luke 21:1-4</text>
+				<cids><cid>t41012041.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41012041-41012044">12:41-44</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="42021001-42021004">Luke 21:1-4</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="41013">
+		<verse id="41013001">
+			<letter id="41013001.1">
+				<text>For 13:1-37 see parallels Matt. 24:1-51; Luke 21:5-36</text>
+				<cids><cid>t41013001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41013001-41013037">13:1-37</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40024001-40024051">Matt. 24:1-51</ref>
+					<meta class="separator">; </meta>
+					<ref for="42021005-42021036">Luke 21:5-36</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="41014">
+		<verse id="41014001">
+			<letter id="41014001.1">
+				<text>For 14:1, 2 see parallels Matt. 26:2-5; Luke 22:1, 2</text>
+				<cids><cid>t41014001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41014001-41014002">14:1<meta class="separator-weak">, </meta>2</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40026002-40026005">Matt. 26:2-5</ref>
+					<meta class="separator">; </meta>
+					<ref for="42022001-42022002">Luke 22:1<meta class="separator-weak">, </meta>2</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41014003">
+			<letter id="41014003.1">
+				<text>For 14:3-9 see parallels Matt. 26:6-13; John 12:1-8</text>
+				<cids><cid>t41014003.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41014003-41014009">14:3-9</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40026006-40026013">Matt. 26:6-13</ref>
+					<meta class="separator">; </meta>
+					<ref for="43012001-43012008">John 12:1-8</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41014010">
+			<letter id="41014010.1">
+				<text>For 14:10, 11 see parallels Matt. 26:14-16; Luke 22:3-6</text>
+				<cids><cid>t41014010.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41014010-41014011">14:10<meta class="separator-weak">, </meta>11</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40026014-40026016">Matt. 26:14-16</ref>
+					<meta class="separator">; </meta>
+					<ref for="42022003-42022006">Luke 22:3-6</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41014012">
+			<letter id="41014012.1">
+				<text>For 14:12-16 see parallels Matt. 26:17-19; Luke 22:7-13</text>
+				<cids><cid>t41014012.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41014012-41014016">14:12-16</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40026017-40026019">Matt. 26:17-19</ref>
+					<meta class="separator">; </meta>
+					<ref for="42022007-42022013">Luke 22:7-13</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41014017">
+			<letter id="41014017.1">
+				<text>For 14:17-21 see parallel Matt. 26:20-24</text>
+				<cids><cid>t41014017.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41014017-41014021">14:17-21</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40026020-40026024">Matt. 26:20-24</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41014022">
+			<letter id="41014022.1">
+				<text>For 14:22-25 see parallels Matt. 26:26-29; Luke 22:18-20</text>
+				<cids><cid>t41014022.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41014022-41014025">14:22-25</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40026026-40026029">Matt. 26:26-29</ref>
+					<meta class="separator">; </meta>
+					<ref for="42022018-42022020">Luke 22:18-20</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41014026">
+			<letter id="41014026.1">
+				<text>For 14:26-31 see parallel Matt. 26:30-35</text>
+				<cids><cid>t41014026.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41014026-41014031">14:26-31</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40026030-40026035">Matt. 26:30-35</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41014027">
+			<letter id="41014027.1">
+				<text>Zech. 13:7</text>
+				<cids><cid>t41014027.1</cid></cids>
+				<refs>
+					<ref for="38013007">Zech. 13:7</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41014032">
+			<letter id="41014032.1">
+				<text>For 14:32-42 see parallels Matt. 26:36-46; Luke 22:39-46</text>
+				<cids><cid>t41014032.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41014032-41014042">14:32-42</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40026036-40026046">Matt. 26:36-46</ref>
+					<meta class="separator">; </meta>
+					<ref for="42022039-42022046">Luke 22:39-46</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41014043">
+			<letter id="41014043.1">
+				<text>For 14:43-50 see parallels Matt. 26:47-56; Luke 22:47-53; John 18:3-11</text>
+				<cids><cid>t41014043.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41014043-41014050">14:43-50</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40026047-40026056">Matt. 26:47-56</ref>
+					<meta class="separator">; </meta>
+					<ref for="42022047-42022053">Luke 22:47-53</ref>
+					<meta class="separator">; </meta>
+					<ref for="43018003-43018011">John 18:3-11</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41014053">
+			<letter id="41014053.1">
+				<text>For 14:53-65 see parallel Matt. 26:57-68</text>
+				<cids><cid>t41014053.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41014053-41014065">14:53-65</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40026057-40026068">Matt. 26:57-68</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41014066">
+			<letter id="41014066.1">
+				<text>For 14:66-72 see parallels Matt. 26:69-75; Luke 22:55-62; John 18:16-18, 25-27</text>
+				<cids><cid>t41014066.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41014066-41014072">14:66-72</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40026069-40026075">Matt. 26:69-75</ref>
+					<meta class="separator">; </meta>
+					<ref for="42022055-42022062">Luke 22:55-62</ref>
+					<meta class="separator">; </meta>
+					<ref for="43018016-43018018">John 18:16-18</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="43018025-43018027">25-27</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="41015">
+		<verse id="41015002">
+			<letter id="41015002.1">
+				<text>For 15:2-5 see parallels Matt. 27:11-14; Luke 23:1-3; John 18:28-38</text>
+				<cids><cid>t41015002.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41015002-41015005">15:2-5</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40027011-40027014">Matt. 27:11-14</ref>
+					<meta class="separator">; </meta>
+					<ref for="42023001-42023003">Luke 23:1-3</ref>
+					<meta class="separator">; </meta>
+					<ref for="43018028-43018038">John 18:28-38</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41015006">
+			<letter id="41015006.1">
+				<text>For 15:6-15 see parallels Matt. 27:15-26; Luke 23:18-25; John 18:39, 40; 19:16</text>
+				<cids><cid>t41015006.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41015006-41015015">15:6-15</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40027015-40027026">Matt. 27:15-26</ref>
+					<meta class="separator">; </meta>
+					<ref for="42023018-42023025">Luke 23:18-25</ref>
+					<meta class="separator">; </meta>
+					<ref for="43018039-43018040">John 18:39<meta class="separator-weak">, </meta>40</ref>
+					<meta class="separator">; </meta>
+					<ref for="43019016">19:16</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41015016">
+			<letter id="41015016.1">
+				<text>For 15:16-20 see parallels Matt. 27:27-31; John 19:2, 3</text>
+				<cids><cid>t41015016.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41015016-41015020">15:16-20</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40027027-40027031">Matt. 27:27-31</ref>
+					<meta class="separator">; </meta>
+					<ref for="43019002-43019003">John 19:2<meta class="separator-weak">, </meta>3</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41015022">
+			<letter id="41015022.1">
+				<text>For 15:22-38 see parallels Matt. 27:33-51; Luke 23:32-38, 44-46; John 19:17-19, 23, 24, 28-30</text>
+				<cids><cid>t41015022.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41015022-41015038">15:22-38</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40027033-40027051">Matt. 27:33-51</ref>
+					<meta class="separator">; </meta>
+					<ref for="42023032-42023038">Luke 23:32-38</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="42023044-42023046">44-46</ref>
+					<meta class="separator">; </meta>
+					<ref for="43019017-43019019">John 19:17-19</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="43019023-43019024">23<meta class="separator-weak">, </meta>24</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="43019028-43019030">28-30</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41015034">
+			<letter id="41015034.1">
+				<text>Ps. 22:1</text>
+				<cids><cid>t41015034.1</cid></cids>
+				<refs>
+					<ref for="19022001">Ps. 22:1</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41015039">
+			<letter id="41015039.1">
+				<text>For 15:39-41 see parallels Matt. 27:54-56; Luke 23:47, 49</text>
+				<cids><cid>t41015039.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41015039-41015041">15:39-41</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40027054-40027056">Matt. 27:54-56</ref>
+					<meta class="separator">; </meta>
+					<ref for="42023047">Luke 23:47</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="42023049">49</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="41015042">
+			<letter id="41015042.1">
+				<text>For 15:42-47 see parallels Matt. 27:57-61; Luke 23:50-56; John 19:38-42</text>
+				<cids><cid>t41015042.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41015042-41015047">15:42-47</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40027057-40027061">Matt. 27:57-61</ref>
+					<meta class="separator">; </meta>
+					<ref for="42023050-42023056">Luke 23:50-56</ref>
+					<meta class="separator">; </meta>
+					<ref for="43019038-43019042">John 19:38-42</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="41016">
+		<verse id="41016001">
+			<letter id="41016001.1">
+				<text>For 16:1-8 see parallels Matt. 28:1-8; Luke 24:1-10; John 20:1</text>
+				<cids><cid>t41016001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="41016001-41016008">16:1-8</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40028001-40028008">Matt. 28:1-8</ref>
+					<meta class="separator">; </meta>
+					<ref for="42024001-42024010">Luke 24:1-10</ref>
+					<meta class="separator">; </meta>
+					<ref for="43020001">John 20:1</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+</book>
+<book num="42">
+	<chapter id="42002">
+		<verse id="42002023">
+			<letter id="42002023.1">
+				<text>Ex. 13:2, 12</text>
+				<cids><cid>t42002023.1</cid></cids>
+				<refs>
+					<ref for="02013002">Ex. 13:2</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="02013012">12</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42002024">
+			<letter id="42002024.1">
+				<text>Lev. 12:8</text>
+				<cids><cid>t42002024.1</cid></cids>
+				<refs>
+					<ref for="03012008">Lev. 12:8</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="42003">
+		<verse id="42003002">
+			<letter id="42003002.1">
+				<text>For 3:2-17 see parallels Matt. 3:1-12; Mark 1:2-8</text>
+				<cids><cid>t42003002.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42003002-42003017">3:2-17</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40003001-40003012">Matt. 3:1-12</ref>
+					<meta class="separator">; </meta>
+					<ref for="41001002-41001008">Mark 1:2-8</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42003004">
+			<letter id="42003004.1">
+				<text>Isa. 40:3-5</text>
+				<cids><cid>t42003004.1</cid></cids>
+				<refs>
+					<ref for="23040003-23040005">Isa. 40:3-5</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42003021">
+			<letter id="42003021.1">
+				<text>For 3:21, 22 see parallels Matt. 3:13-17; Mark 1:9-11</text>
+				<cids><cid>t42003021.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42003021-42003022">3:21<meta class="separator-weak">, </meta>22</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40003013-40003017">Matt. 3:13-17</ref>
+					<meta class="separator">; </meta>
+					<ref for="41001009-41001011">Mark 1:9-11</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="42004">
+		<verse id="42004001">
+			<letter id="42004001.1">
+				<text>For 4:1-13 see parallels Matt. 4:1-11; Mark 1:12, 13</text>
+				<cids><cid>t42004001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42004001-42004013">4:1-13</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40004001-40004011">Matt. 4:1-11</ref>
+					<meta class="separator">; </meta>
+					<ref for="41001012-41001013">Mark 1:12<meta class="separator-weak">, </meta>13</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42004004">
+			<letter id="42004004.1">
+				<text>Deut. 8:3</text>
+				<cids><cid>t42004004.1</cid></cids>
+				<refs>
+					<ref for="05008003">Deut. 8:3</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42004008">
+			<letter id="42004008.1">
+				<text>Deut. 6:13</text>
+				<cids><cid>t42004008.1</cid></cids>
+				<refs>
+					<ref for="05006013">Deut. 6:13</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42004010">
+			<letter id="42004010.1">
+				<text>Ps. 91:11</text>
+				<cids><cid>t42004010.1</cid></cids>
+				<refs>
+					<ref for="19091011">Ps. 91:11</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42004011">
+			<letter id="42004011.1">
+				<text>Ps. 91:12</text>
+				<cids><cid>t42004011.1</cid></cids>
+				<refs>
+					<ref for="19091012">Ps. 91:12</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42004012">
+			<letter id="42004012.1">
+				<text>Deut. 6:16</text>
+				<cids><cid>t42004012.1</cid></cids>
+				<refs>
+					<ref for="05006016">Deut. 6:16</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42004018">
+			<letter id="42004018.1">
+				<text>Isa. 61:1, 2</text>
+				<cids><cid>t42004018.1</cid></cids>
+				<refs>
+					<ref for="23061001-23061002">Isa. 61:1<meta class="separator-weak">, </meta>2</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42004031">
+			<letter id="42004031.1">
+				<text>For 4:31-37 see parallel Mark 1:21-28</text>
+				<cids><cid>t42004031.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42004031-42004037">4:31-37</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="41001021-41001028">Mark 1:21-28</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42004038">
+			<letter id="42004038.1">
+				<text>For 4:38-41 see parallels Matt. 8:14-17; Mark 1:29-34</text>
+				<cids><cid>t42004038.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42004038-42004041">4:38-41</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40008014-40008017">Matt. 8:14-17</ref>
+					<meta class="separator">; </meta>
+					<ref for="41001029-41001034">Mark 1:29-34</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42004042">
+			<letter id="42004042.1">
+				<text>For 4:42, 43 see parallel Mark 1:35-38</text>
+				<cids><cid>t42004042.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42004042-42004043">4:42<meta class="separator-weak">, </meta>43</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="41001035-41001038">Mark 1:35-38</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="42005">
+		<verse id="42005012">
+			<letter id="42005012.1">
+				<text>For 5:12-14 see parallels Matt. 8:2-4; Mark 1:40-44</text>
+				<cids><cid>t42005012.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42005012-42005014">5:12-14</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40008002-40008004">Matt. 8:2-4</ref>
+					<meta class="separator">; </meta>
+					<ref for="41001040-41001044">Mark 1:40-44</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42005018">
+			<letter id="42005018.1">
+				<text>For 5:18-26 see parallels Matt. 9:2-8; Mark 2:1-12</text>
+				<cids><cid>t42005018.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42005018-42005026">5:18-26</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40009002-40009008">Matt. 9:2-8</ref>
+					<meta class="separator">; </meta>
+					<ref for="41002001-41002012">Mark 2:1-12</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42005027">
+			<letter id="42005027.1">
+				<text>For 5:27-38 see parallels Matt. 9:9-17; Mark 2:13-22</text>
+				<cids><cid>t42005027.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42005027-42005038">5:27-38</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40009009-40009017">Matt. 9:9-17</ref>
+					<meta class="separator">; </meta>
+					<ref for="41002013-41002022">Mark 2:13-22</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="42006">
+		<verse id="42006001">
+			<letter id="42006001.1">
+				<text>For 6:1-5 see parallels Matt. 12:1-8; Mark 2:23-28</text>
+				<cids><cid>t42006001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42006001-42006005">6:1-5</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40012001-40012008">Matt. 12:1-8</ref>
+					<meta class="separator">; </meta>
+					<ref for="41002023-41002028">Mark 2:23-28</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42006006">
+			<letter id="42006006.1">
+				<text>For 6:6-11 see parallels Matt. 12:9-14; Mark 3:1-6</text>
+				<cids><cid>t42006006.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42006006-42006011">6:6-11</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40012009-40012014">Matt. 12:9-14</ref>
+					<meta class="separator">; </meta>
+					<ref for="41003001-41003006">Mark 3:1-6</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42006013">
+			<letter id="42006013.1">
+				<text>For 6:13-16 see parallels Matt. 10:2-4; Mark 3:16-19</text>
+				<cids><cid>t42006013.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42006013-42006016">6:13-16</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40010002-40010004">Matt. 10:2-4</ref>
+					<meta class="separator">; </meta>
+					<ref for="41003016-41003019">Mark 3:16-19</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42006029">
+			<letter id="42006029.1">
+				<text>For 6:29, 30 see parallel Matt. 5:39-42</text>
+				<cids><cid>t42006029.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42006029-42006030">6:29<meta class="separator-weak">, </meta>30</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40005039-40005042">Matt. 5:39-42</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42006037">
+			<letter id="42006037.1">
+				<text>For 6:37, 38, 41, 42 see parallel Matt. 7:1-5</text>
+				<cids><cid>t42006037.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42006037-42006038">6:37<meta class="separator-weak">, </meta>38</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="42006041-42006042">41<meta class="separator-weak">, </meta>42</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40007001-40007005">Matt. 7:1-5</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42006043">
+			<letter id="42006043.1">
+				<text>For 6:43, 44 see parallel Matt. 7:16, 20</text>
+				<cids><cid>t42006043.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42006043-42006044">6:43<meta class="separator-weak">, </meta>44</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40007016">Matt. 7:16</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="40007020">20</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42006047">
+			<letter id="42006047.1">
+				<text>For 6:47-49 see parallel Matt. 7:24-27</text>
+				<cids><cid>t42006047.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42006047-42006049">6:47-49</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40007024-40007027">Matt. 7:24-27</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="42007">
+		<verse id="42007001">
+			<letter id="42007001.1">
+				<text>For 7:1-10 see parallel Matt. 8:5-13</text>
+				<cids><cid>t42007001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42007001-42007010">7:1-10</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40008005-40008013">Matt. 8:5-13</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42007018">
+			<letter id="42007018.1">
+				<text>For 7:18-35 see parallel Matt. 11:2-19</text>
+				<cids><cid>t42007018.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42007018-42007035">7:18-35</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40011002-40011019">Matt. 11:2-19</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42007027">
+			<letter id="42007027.1">
+				<text>Mal. 3:1</text>
+				<cids><cid>t42007027.1</cid></cids>
+				<refs>
+					<ref for="39003001">Mal. 3:1</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="42008">
+		<verse id="42008004">
+			<letter id="42008004.1">
+				<text>For 8:4-10 see parallels Matt. 13:1-15; Mark 4:1-12</text>
+				<cids><cid>t42008004.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42008004-42008010">8:4-10</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40013001-40013015">Matt. 13:1-15</ref>
+					<meta class="separator">; </meta>
+					<ref for="41004001-41004012">Mark 4:1-12</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42008010">
+			<letter id="42008010.1">
+				<text>Isa. 6:9, 10</text>
+				<cids><cid>t42008010.1</cid></cids>
+				<refs>
+					<ref for="23006009-23006010">Isa. 6:9<meta class="separator-weak">, </meta>10</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42008011">
+			<letter id="42008011.1">
+				<text>For 8:11-15 see parallels Matt. 13:18-23; Mark 4:13-20</text>
+				<cids><cid>t42008011.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42008011-42008015">8:11-15</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40013018-40013023">Matt. 13:18-23</ref>
+					<meta class="separator">; </meta>
+					<ref for="41004013-41004020">Mark 4:13-20</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42008016">
+			<letter id="42008016.1">
+				<text>For 8:16-18 see parallel Mark 4:21-25</text>
+				<cids><cid>t42008016.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42008016-42008018">8:16-18</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="41004021-41004025">Mark 4:21-25</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42008019">
+			<letter id="42008019.1">
+				<text>For 8:19-21 see parallels Matt. 12:46-50; Mark 3:31-35</text>
+				<cids><cid>t42008019.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42008019-42008021">8:19-21</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40012046-40012050">Matt. 12:46-50</ref>
+					<meta class="separator">; </meta>
+					<ref for="41003031-41003035">Mark 3:31-35</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42008022">
+			<letter id="42008022.1">
+				<text>For 8:22-25 see parallels Matt. 8:23-27; Mark 4:35-41</text>
+				<cids><cid>t42008022.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42008022-42008025">8:22-25</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40008023-40008027">Matt. 8:23-27</ref>
+					<meta class="separator">; </meta>
+					<ref for="41004035-41004041">Mark 4:35-41</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42008026">
+			<letter id="42008026.1">
+				<text>For 8:26-39 see parallels Matt. 8:28-34; Mark 5:1-20</text>
+				<cids><cid>t42008026.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42008026-42008039">8:26-39</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40008028-40008034">Matt. 8:28-34</ref>
+					<meta class="separator">; </meta>
+					<ref for="41005001-41005020">Mark 5:1-20</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42008041">
+			<letter id="42008041.1">
+				<text>For 8:41-56 see parallels Matt. 9:18-26; Mark 5:21-43</text>
+				<cids><cid>t42008041.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42008041-42008056">8:41-56</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40009018-40009026">Matt. 9:18-26</ref>
+					<meta class="separator">; </meta>
+					<ref for="41005021-41005043">Mark 5:21-43</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="42009">
+		<verse id="42009003">
+			<letter id="42009003.1">
+				<text>For 9:3-5 see parallels Matt. 10:9-15; Mark 6:8-11</text>
+				<cids><cid>t42009003.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42009003-42009005">9:3-5</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40010009-40010015">Matt. 10:9-15</ref>
+					<meta class="separator">; </meta>
+					<ref for="41006008-41006011">Mark 6:8-11</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42009007">
+			<letter id="42009007.1">
+				<text>For 9:7-9 see parallels Matt. 14:1-12; Mark 6:14-29</text>
+				<cids><cid>t42009007.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42009007-42009009">9:7-9</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40014001-40014012">Matt. 14:1-12</ref>
+					<meta class="separator">; </meta>
+					<ref for="41006014-41006029">Mark 6:14-29</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42009010">
+			<letter id="42009010.1">
+				<text>For 9:10-17 see parallels Matt. 14:13-21; Mark 6:32-44; John 6:1-13</text>
+				<cids><cid>t42009010.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42009010-42009017">9:10-17</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40014013-40014021">Matt. 14:13-21</ref>
+					<meta class="separator">; </meta>
+					<ref for="41006032-41006044">Mark 6:32-44</ref>
+					<meta class="separator">; </meta>
+					<ref for="43006001-43006013">John 6:1-13</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42009018">
+			<letter id="42009018.1">
+				<text>For 9:18-20 see parallels Matt. 16:13-16; Mark 8:27-29</text>
+				<cids><cid>t42009018.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42009018-42009020">9:18-20</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40016013-40016016">Matt. 16:13-16</ref>
+					<meta class="separator">; </meta>
+					<ref for="41008027-41008029">Mark 8:27-29</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42009022">
+			<letter id="42009022.1">
+				<text>For 9:22-27 see parallels Matt. 16:21-28; Mark 8:31&endash;9:1</text>
+				<cids><cid>t42009022.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42009022-42009027">9:22-27</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40016021-40016028">Matt. 16:21-28</ref>
+					<meta class="separator">; </meta>
+					<ref for="41008031-41009001">Mark 8:31&endash;9:1</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42009057">
+			<letter id="42009057.1">
+				<text>For 9:57-62 see parallel Matt. 8:19-22</text>
+				<cids><cid>t42009057.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42009057-42009062">9:57-62</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40008019-40008022">Matt. 8:19-22</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="42010">
+		<verse id="42010013">
+			<letter id="42010013.1">
+				<text>For 10:13-15 see parallel Matt. 11:21-24</text>
+				<cids><cid>t42010013.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42010013-42010015">10:13-15</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40011021-40011024">Matt. 11:21-24</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42010021">
+			<letter id="42010021.1">
+				<text>For 10:21, 22 see parallel Matt. 11:25-27</text>
+				<cids><cid>t42010021.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42010021-42010022">10:21<meta class="separator-weak">, </meta>22</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40011025-40011027">Matt. 11:25-27</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42010027">
+			<letter id="42010027.1">
+				<text>Deut. 6:5</text>
+				<cids><cid>t42010027.1</cid></cids>
+				<refs>
+					<ref for="05006005">Deut. 6:5</ref>
+				</refs>
+			</letter>
+			<letter id="42010027.2">
+				<text>Lev. 19:18</text>
+				<cids><cid>t42010027.2</cid></cids>
+				<refs>
+					<ref for="03019018">Lev. 19:18</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="42011">
+		<verse id="42011009">
+			<letter id="42011009.1">
+				<text>For 11:9-13 see parallel Matt. 7:7-11</text>
+				<cids><cid>t42011009.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42011009-42011013">11:9-13</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40007007-40007011">Matt. 7:7-11</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42011014">
+			<letter id="42011014.1">
+				<text>For 11:14, 15 see parallel Matt. 12:22-24</text>
+				<cids><cid>t42011014.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42011014-42011015">11:14<meta class="separator-weak">, </meta>15</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40012022-40012024">Matt. 12:22-24</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42011017">
+			<letter id="42011017.1">
+				<text>For 11:17-22 see parallels Matt. 12:25-29; Mark 3:23-27</text>
+				<cids><cid>t42011017.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42011017-42011022">11:17-22</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40012025-40012029">Matt. 12:25-29</ref>
+					<meta class="separator">; </meta>
+					<ref for="41003023-41003027">Mark 3:23-27</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42011024">
+			<letter id="42011024.1">
+				<text>For 11:24-26 see parallel Matt. 12:43-45</text>
+				<cids><cid>t42011024.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42011024-42011026">11:24-26</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40012043-40012045">Matt. 12:43-45</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42011029">
+			<letter id="42011029.1">
+				<text>For 11:29-32 see parallel Matt. 12:39-42</text>
+				<cids><cid>t42011029.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42011029-42011032">11:29-32</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40012039-40012042">Matt. 12:39-42</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="42012">
+		<verse id="42012002">
+			<letter id="42012002.1">
+				<text>For 12:2-9 see parallel Matt. 10:26-33</text>
+				<cids><cid>t42012002.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42012002-42012009">12:2-9</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40010026-40010033">Matt. 10:26-33</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42012022">
+			<letter id="42012022.1">
+				<text>For 12:22-31 see parallel Matt. 6:25-33</text>
+				<cids><cid>t42012022.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42012022-42012031">12:22-31</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40006025-40006033">Matt. 6:25-33</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42012051">
+			<letter id="42012051.1">
+				<text>For 12:51-53 see parallel Matt. 10:34, 35</text>
+				<cids><cid>t42012051.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42012051-42012053">12:51-53</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40010034-40010035">Matt. 10:34<meta class="separator-weak">, </meta>35</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="42013">
+		<verse id="42013018">
+			<letter id="42013018.1">
+				<text>For 13:18, 19 see parallels Matt. 13:31, 32; Mark 4:30-32</text>
+				<cids><cid>t42013018.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42013018-42013019">13:18<meta class="separator-weak">, </meta>19</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40013031-40013032">Matt. 13:31<meta class="separator-weak">, </meta>32</ref>
+					<meta class="separator">; </meta>
+					<ref for="41004030-41004032">Mark 4:30-32</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42013034">
+			<letter id="42013034.1">
+				<text>For 13:34, 35 see parallel Matt. 23:37-39</text>
+				<cids><cid>t42013034.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42013034-42013035">13:34<meta class="separator-weak">, </meta>35</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="40023037-40023039">Matt. 23:37-39</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42013035">
+			<letter id="42013035.1">
+				<text>Ps. 118:26</text>
+				<cids><cid>t42013035.1</cid></cids>
+				<refs>
+					<ref for="19118026">Ps. 118:26</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="42018">
+		<verse id="42018015">
+			<letter id="42018015.1">
+				<text>For 18:15-17 see parallels Matt. 19:13-15; Mark 10:13-16</text>
+				<cids><cid>t42018015.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42018015-42018017">18:15-17</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40019013-40019015">Matt. 19:13-15</ref>
+					<meta class="separator">; </meta>
+					<ref for="41010013-41010016">Mark 10:13-16</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42018018">
+			<letter id="42018018.1">
+				<text>For 18:18-30 see parallels Matt. 19:16-30; Mark 10:17-31</text>
+				<cids><cid>t42018018.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42018018-42018030">18:18-30</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40019016-40019030">Matt. 19:16-30</ref>
+					<meta class="separator">; </meta>
+					<ref for="41010017-41010031">Mark 10:17-31</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42018020">
+			<letter id="42018020.1">
+				<text>Ex. 20:12-16; Deut. 5:16-20</text>
+				<cids><cid>t42018020.1</cid></cids>
+				<refs>
+					<ref for="02020012-02020016">Ex. 20:12-16</ref>
+					<meta class="separator">; </meta>
+					<ref for="05005016-05005020">Deut. 5:16-20</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42018031">
+			<letter id="42018031.1">
+				<text>For 18:31-33 see parallels Matt. 20:17-19; Mark 10:32-34</text>
+				<cids><cid>t42018031.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42018031-42018033">18:31-33</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40020017-40020019">Matt. 20:17-19</ref>
+					<meta class="separator">; </meta>
+					<ref for="41010032-41010034">Mark 10:32-34</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42018035">
+			<letter id="42018035.1">
+				<text>For 18:35-43 see parallels Matt. 20:29-34; Mark 10:46-52</text>
+				<cids><cid>t42018035.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42018035-42018043">18:35-43</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40020029-40020034">Matt. 20:29-34</ref>
+					<meta class="separator">; </meta>
+					<ref for="41010046-41010052">Mark 10:46-52</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="42019">
+		<verse id="42019029">
+			<letter id="42019029.1">
+				<text>For 19:29-38 see parallels Matt. 21:1-9; Mark 11:1-10; John 12:12-15</text>
+				<cids><cid>t42019029.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42019029-42019038">19:29-38</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40021001-40021009">Matt. 21:1-9</ref>
+					<meta class="separator">; </meta>
+					<ref for="41011001-41011010">Mark 11:1-10</ref>
+					<meta class="separator">; </meta>
+					<ref for="43012012-43012015">John 12:12-15</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42019045">
+			<letter id="42019045.1">
+				<text>For 19:45-47 see parallels Matt. 21:12-16; Mark 11:15-18</text>
+				<cids><cid>t42019045.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42019045-42019047">19:45-47</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40021012-40021016">Matt. 21:12-16</ref>
+					<meta class="separator">; </meta>
+					<ref for="41011015-41011018">Mark 11:15-18</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42019046">
+			<letter id="42019046.1">
+				<text>Isa. 56:7</text>
+				<cids><cid>t42019046.1</cid></cids>
+				<refs>
+					<ref for="23056007">Isa. 56:7</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="42020">
+		<verse id="42020001">
+			<letter id="42020001.1">
+				<text>For 20:1-8 see parallels Matt. 21:23-27; Mark 11:27-33</text>
+				<cids><cid>t42020001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42020001-42020008">20:1-8</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40021023-40021027">Matt. 21:23-27</ref>
+					<meta class="separator">; </meta>
+					<ref for="41011027-41011033">Mark 11:27-33</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42020009">
+			<letter id="42020009.1">
+				<text>For 20:9-18 see parallels Matt. 21:33-46; Mark 12:1-12</text>
+				<cids><cid>t42020009.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42020009-42020018">20:9-18</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40021033-40021046">Matt. 21:33-46</ref>
+					<meta class="separator">; </meta>
+					<ref for="41012001-41012012">Mark 12:1-12</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42020017">
+			<letter id="42020017.1">
+				<text>Ps. 118:22</text>
+				<cids><cid>t42020017.1</cid></cids>
+				<refs>
+					<ref for="19118022">Ps. 118:22</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42020020">
+			<letter id="42020020.1">
+				<text>For 20:20-38 see parallels Matt. 22:15-32; Mark 12:13-27</text>
+				<cids><cid>t42020020.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42020020-42020038">20:20-38</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40022015-40022032">Matt. 22:15-32</ref>
+					<meta class="separator">; </meta>
+					<ref for="41012013-41012027">Mark 12:13-27</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42020041">
+			<letter id="42020041.1">
+				<text>For 20:41-44 see parallels Matt. 22:41-45; Mark 12:35-37</text>
+				<cids><cid>t42020041.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42020041-42020044">20:41-44</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40022041-40022045">Matt. 22:41-45</ref>
+					<meta class="separator">; </meta>
+					<ref for="41012035-41012037">Mark 12:35-37</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42020042">
+			<letter id="42020042.1">
+				<text>Ps. 110:1</text>
+				<cids><cid>t42020042.1</cid></cids>
+				<refs>
+					<ref for="19110001">Ps. 110:1</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42020045">
+			<letter id="42020045.1">
+				<text>For 20:45, 46 see parallels Matt. 23:1, 2, 5-7; Mark 12:38-40</text>
+				<cids><cid>t42020045.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42020045-42020046">20:45<meta class="separator-weak">, </meta>46</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40023001-40023002">Matt. 23:1<meta class="separator-weak">, </meta>2</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="40023005-40023007">5-7</ref>
+					<meta class="separator">; </meta>
+					<ref for="41012038-41012040">Mark 12:38-40</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="42021">
+		<verse id="42021001">
+			<letter id="42021001.1">
+				<text>For 21:1-4 see parallel Mark 12:41-44</text>
+				<cids><cid>t42021001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42021001-42021004">21:1-4</ref>
+					<meta class="see-parallel"> see parallel </meta>
+					<ref for="41012041-41012044">Mark 12:41-44</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42021005">
+			<letter id="42021005.1">
+				<text>For 21:5-36 see parallels Matt. 24:1-51; Mark 13:1-37</text>
+				<cids><cid>t42021005.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42021005-42021036">21:5-36</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40024001-40024051">Matt. 24:1-51</ref>
+					<meta class="separator">; </meta>
+					<ref for="41013001-41013037">Mark 13:1-37</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="42022">
+		<verse id="42022003">
+			<letter id="42022003.1">
+				<text>For 22:3-6 see parallels Matt. 26:14-16; Mark 14:10, 11</text>
+				<cids><cid>t42022003.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42022003-42022006">22:3-6</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40026014-40026016">Matt. 26:14-16</ref>
+					<meta class="separator">; </meta>
+					<ref for="41014010-41014011">Mark 14:10<meta class="separator-weak">, </meta>11</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42022007">
+			<letter id="42022007.1">
+				<text>For 22:7-13 see parallels Matt. 26:17-19; Mark 14:12-16</text>
+				<cids><cid>t42022007.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42022007-42022013">22:7-13</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40026017-40026019">Matt. 26:17-19</ref>
+					<meta class="separator">; </meta>
+					<ref for="41014012-41014016">Mark 14:12-16</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42022019">
+			<letter id="42022019.1">
+				<text>For 22:19, 20 see parallels Matt. 26:26-28; Mark 14:22-24</text>
+				<cids><cid>t42022019.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42022019-42022020">22:19<meta class="separator-weak">, </meta>20</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40026026-40026028">Matt. 26:26-28</ref>
+					<meta class="separator">; </meta>
+					<ref for="41014022-41014024">Mark 14:22-24</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42022021">
+			<letter id="42022021.1">
+				<text>For 22:21-23 see parallels Matt. 26:21-24; Mark 14:18-21</text>
+				<cids><cid>t42022021.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42022021-42022023">22:21-23</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40026021-40026024">Matt. 26:21-24</ref>
+					<meta class="separator">; </meta>
+					<ref for="41014018-41014021">Mark 14:18-21</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42022037">
+			<letter id="42022037.1">
+				<text>Isa. 53:12</text>
+				<cids><cid>t42022037.1</cid></cids>
+				<refs>
+					<ref for="23053012">Isa. 53:12</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42022040">
+			<letter id="42022040.1">
+				<text>For 22:40-46 see parallels Matt. 26:36-46; Mark 14:32-42</text>
+				<cids><cid>t42022040.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42022040-42022046">22:40-46</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40026036-40026046">Matt. 26:36-46</ref>
+					<meta class="separator">; </meta>
+					<ref for="41014032-41014042">Mark 14:32-42</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42022047">
+			<letter id="42022047.1">
+				<text>For 22:47-53 see parallels Matt. 26:47-56; Mark 14:43-50; John 18:3-11</text>
+				<cids><cid>t42022047.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42022047-42022053">22:47-53</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40026047-40026056">Matt. 26:47-56</ref>
+					<meta class="separator">; </meta>
+					<ref for="41014043-41014050">Mark 14:43-50</ref>
+					<meta class="separator">; </meta>
+					<ref for="43018003-43018011">John 18:3-11</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42022055">
+			<letter id="42022055.1">
+				<text>For 22:55-62 see parallels Matt. 26:69-75; Mark 14:66-72; John 18:16-18, 25-27</text>
+				<cids><cid>t42022055.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42022055-42022062">22:55-62</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40026069-40026075">Matt. 26:69-75</ref>
+					<meta class="separator">; </meta>
+					<ref for="41014066-41014072">Mark 14:66-72</ref>
+					<meta class="separator">; </meta>
+					<ref for="43018016-43018018">John 18:16-18</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="43018025-43018027">25-27</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="42023">
+		<verse id="42023018">
+			<letter id="42023018.1">
+				<text>For 23:18-25 see parallels Matt. 27:15-26; Mark 15:6-15; John 18:39, 40; 19:16</text>
+				<cids><cid>t42023018.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42023018-42023025">23:18-25</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40027015-40027026">Matt. 27:15-26</ref>
+					<meta class="separator">; </meta>
+					<ref for="41015006-41015015">Mark 15:6-15</ref>
+					<meta class="separator">; </meta>
+					<ref for="43018039-43018040">John 18:39<meta class="separator-weak">, </meta>40</ref>
+					<meta class="separator">; </meta>
+					<ref for="43019016">19:16</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="42023050">
+			<letter id="42023050.1">
+				<text>For 23:50-56 see parallels Matt. 27:57-61; Mark 15:42-47; John 19:38-42</text>
+				<cids><cid>t42023050.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42023050-42023056">23:50-56</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40027057-40027061">Matt. 27:57-61</ref>
+					<meta class="separator">; </meta>
+					<ref for="41015042-41015047">Mark 15:42-47</ref>
+					<meta class="separator">; </meta>
+					<ref for="43019038-43019042">John 19:38-42</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="42024">
+		<verse id="42024001">
+			<letter id="42024001.1">
+				<text>For 24:1-10 see parallels Matt. 28:1-8; Mark 16:1-8; John 20:1</text>
+				<cids><cid>t42024001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="42024001-42024010">24:1-10</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40028001-40028008">Matt. 28:1-8</ref>
+					<meta class="separator">; </meta>
+					<ref for="41016001-41016008">Mark 16:1-8</ref>
+					<meta class="separator">; </meta>
+					<ref for="43020001">John 20:1</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+</book>
+<book num="43">
+	<chapter id="43001">
+		<verse id="43001023">
+			<letter id="43001023.1">
+				<text>Isa. 40:3</text>
+				<cids><cid>t43001023.1</cid></cids>
+				<refs>
+					<ref for="23040003">Isa. 40:3</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="43002">
+		<verse id="43002017">
+			<letter id="43002017.1">
+				<text>Ps. 69:9</text>
+				<cids><cid>t43002017.1</cid></cids>
+				<refs>
+					<ref for="19069009">Ps. 69:9</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="43006">
+		<verse id="43006001">
+			<letter id="43006001.1">
+				<text>For 6:1-13 see parallels Matt. 14:13-21; Mark 6:32-44; Luke 9:10-17</text>
+				<cids><cid>t43006001.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="43006001-43006013">6:1-13</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40014013-40014021">Matt. 14:13-21</ref>
+					<meta class="separator">; </meta>
+					<ref for="41006032-41006044">Mark 6:32-44</ref>
+					<meta class="separator">; </meta>
+					<ref for="42009010-42009017">Luke 9:10-17</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="43006015">
+			<letter id="43006015.1">
+				<text>For 6:15-21 see parallels Matt. 14:22-33; Mark 6:45-52</text>
+				<cids><cid>t43006015.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="43006015-43006021">6:15-21</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40014022-40014033">Matt. 14:22-33</ref>
+					<meta class="separator">; </meta>
+					<ref for="41006045-41006052">Mark 6:45-52</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="43006031">
+			<letter id="43006031.1">
+				<text>Neh. 9:15</text>
+				<cids><cid>t43006031.1</cid></cids>
+				<refs>
+					<ref for="16009015">Neh. 9:15</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="43006045">
+			<letter id="43006045.1">
+				<text>Isa. 54:13</text>
+				<cids><cid>t43006045.1</cid></cids>
+				<refs>
+					<ref for="23054013">Isa. 54:13</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="43010">
+		<verse id="43010034">
+			<letter id="43010034.1">
+				<text>Ps. 82:6</text>
+				<cids><cid>t43010034.1</cid></cids>
+				<refs>
+					<ref for="19082006">Ps. 82:6</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="43012">
+		<verse id="43012012">
+			<letter id="43012012.1">
+				<text>For 12:12-15 see parallels Matt. 21:4-9; Mark 11:7-10; Luke 19:35-38</text>
+				<cids><cid>t43012012.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="43012012-43012015">12:12-15</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40021004-40021009">Matt. 21:4-9</ref>
+					<meta class="separator">; </meta>
+					<ref for="41011007-41011010">Mark 11:7-10</ref>
+					<meta class="separator">; </meta>
+					<ref for="42019035-42019038">Luke 19:35-38</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="43012015">
+			<letter id="43012015.1">
+				<text>Zech. 9:9</text>
+				<cids><cid>t43012015.1</cid></cids>
+				<refs>
+					<ref for="38009009">Zech. 9:9</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="43012038">
+			<letter id="43012038.1">
+				<text>Isa. 53:1</text>
+				<cids><cid>t43012038.1</cid></cids>
+				<refs>
+					<ref for="23053001">Isa. 53:1</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="43012040">
+			<letter id="43012040.1">
+				<text>Isa. 6:10</text>
+				<cids><cid>t43012040.1</cid></cids>
+				<refs>
+					<ref for="23006010">Isa. 6:10</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="43013">
+		<verse id="43013018">
+			<letter id="43013018.1">
+				<text>Ps. 41:9</text>
+				<cids><cid>t43013018.1</cid></cids>
+				<refs>
+					<ref for="19041009">Ps. 41:9</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="43015">
+		<verse id="43015025">
+			<letter id="43015025.1">
+				<text>Ps. 35:19 or 69:4</text>
+				<cids><cid>t43015025.1</cid></cids>
+				<refs>
+					<ref for="19035019">Ps. 35:19</ref>
+					<meta class="or"> or </meta>
+					<ref for="19069004">69:4</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="43018">
+		<verse id="43018003">
+			<letter id="43018003.1">
+				<text>For 18:3-11 see parallels Matt. 26:47-56; Mark 14:43-50; Luke 22:47-53</text>
+				<cids><cid>t43018003.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="43018003-43018011">18:3-11</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40026047-40026056">Matt. 26:47-56</ref>
+					<meta class="separator">; </meta>
+					<ref for="41014043-41014050">Mark 14:43-50</ref>
+					<meta class="separator">; </meta>
+					<ref for="42022047-42022053">Luke 22:47-53</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="43018016">
+			<letter id="43018016.1">
+				<text>For 18:16-18 see parallels Matt. 26:69, 70; Mark 14:66-68; Luke 22:55-57</text>
+				<cids><cid>t43018016.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="43018016-43018018">18:16-18</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40026069-40026070">Matt. 26:69<meta class="separator-weak">, </meta>70</ref>
+					<meta class="separator">; </meta>
+					<ref for="41014066-41014068">Mark 14:66-68</ref>
+					<meta class="separator">; </meta>
+					<ref for="42022055-42022057">Luke 22:55-57</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="43018025">
+			<letter id="43018025.1">
+				<text>For 18:25-27 see parallels Matt. 26:71-75; Mark 14:69-72; Luke 22:58-62</text>
+				<cids><cid>t43018025.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="43018025-43018027">18:25-27</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40026071-40026075">Matt. 26:71-75</ref>
+					<meta class="separator">; </meta>
+					<ref for="41014069-41014072">Mark 14:69-72</ref>
+					<meta class="separator">; </meta>
+					<ref for="42022058-42022062">Luke 22:58-62</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="43018029">
+			<letter id="43018029.1">
+				<text>For 18:29-38 see parallels Matt. 27:11-14; Mark 15:1-5; Luke 23:1-3</text>
+				<cids><cid>t43018029.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="43018029-43018038">18:29-38</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40027011-40027014">Matt. 27:11-14</ref>
+					<meta class="separator">; </meta>
+					<ref for="41015001-41015005">Mark 15:1-5</ref>
+					<meta class="separator">; </meta>
+					<ref for="42023001-42023003">Luke 23:1-3</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="43018039">
+			<letter id="43018039.1">
+				<text>For 18:39, 40 see parallels Matt. 27:15-18, 20-23; Mark 15:6-14; Luke 23:18-23</text>
+				<cids><cid>t43018039.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="43018039-43018040">18:39<meta class="separator-weak">, </meta>40</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40027015-40027018">Matt. 27:15-18</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="40027020-40027023">20-23</ref>
+					<meta class="separator">; </meta>
+					<ref for="41015006-41015014">Mark 15:6-14</ref>
+					<meta class="separator">; </meta>
+					<ref for="42023018-42023023">Luke 23:18-23</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="43019">
+		<verse id="43019024">
+			<letter id="43019024.1">
+				<text>Ps. 22:18</text>
+				<cids><cid>t43019024.1</cid></cids>
+				<refs>
+					<ref for="19022018">Ps. 22:18</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="43019036">
+			<letter id="43019036.1">
+				<text>Ex. 12:46; Num. 9:12</text>
+				<cids><cid>t43019036.1</cid></cids>
+				<refs>
+					<ref for="02012046">Ex. 12:46</ref>
+					<meta class="separator">; </meta>
+					<ref for="04009012">Num. 9:12</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="43019037">
+			<letter id="43019037.1">
+				<text>Zech. 12:10</text>
+				<cids><cid>t43019037.1</cid></cids>
+				<refs>
+					<ref for="38012010">Zech. 12:10</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="43019038">
+			<letter id="43019038.1">
+				<text>For 19:38-42 see parallels Matt. 27:57-61; Mark 15:42-47; Luke 23:50-56</text>
+				<cids><cid>t43019038.1</cid></cids>
+				<refs>
+					<meta class="for">For </meta>
+					<ref for="43019038-43019042">19:38-42</ref>
+					<meta class="see-parallels"> see parallels </meta>
+					<ref for="40027057-40027061">Matt. 27:57-61</ref>
+					<meta class="separator">; </meta>
+					<ref for="41015042-41015047">Mark 15:42-47</ref>
+					<meta class="separator">; </meta>
+					<ref for="42023050-42023056">Luke 23:50-56</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+</book>
+<book num="44">
+	<chapter id="44001">
+		<verse id="44001020">
+			<letter id="44001020.1">
+				<text>Ps. 69:25</text>
+				<cids><cid>t44001020.1</cid></cids>
+				<refs>
+					<ref for="19069025">Ps. 69:25</ref>
+				</refs>
+			</letter>
+			<letter id="44001020.2">
+				<text>Ps. 109:8</text>
+				<cids><cid>t44001020.2</cid></cids>
+				<refs>
+					<ref for="19109008">Ps. 109:8</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="44002">
+		<verse id="44002017">
+			<letter id="44002017.1">
+				<text>Joel 2:28-32</text>
+				<cids><cid>t44002017.1</cid></cids>
+				<refs>
+					<ref for="29002028-29002032">Joel 2:28-32</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="44002025">
+			<letter id="44002025.1">
+				<text>Ps. 16:8-11</text>
+				<cids><cid>t44002025.1</cid></cids>
+				<refs>
+					<ref for="19016008-19016011">Ps. 16:8-11</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="44002034">
+			<letter id="44002034.1">
+				<text>Ps. 110:1</text>
+				<cids><cid>t44002034.1</cid></cids>
+				<refs>
+					<ref for="19110001">Ps. 110:1</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="44003">
+		<verse id="44003022">
+			<letter id="44003022.1">
+				<text>Deut. 18:15, 18, 19</text>
+				<cids><cid>t44003022.1</cid></cids>
+				<refs>
+					<ref for="05018015">Deut. 18:15</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="05018018">18</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="05018019">19</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="44003025">
+			<letter id="44003025.1">
+				<text>Gen. 22:18</text>
+				<cids><cid>t44003025.1</cid></cids>
+				<refs>
+					<ref for="01022018">Gen. 22:18</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="44004">
+		<verse id="44004025">
+			<letter id="44004025.1">
+				<text>Ps. 2:1, 2</text>
+				<cids><cid>t44004025.1</cid></cids>
+				<refs>
+					<ref for="19002001-19002002">Ps. 2:1<meta class="separator-weak">, </meta>2</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="44007">
+		<verse id="44007003">
+			<letter id="44007003.1">
+				<text>Gen. 12:1</text>
+				<cids><cid>t44007003.1</cid></cids>
+				<refs>
+					<ref for="01012001">Gen. 12:1</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="44007006">
+			<letter id="44007006.1">
+				<text>Gen. 15:13, 14</text>
+				<cids><cid>t44007006.1</cid></cids>
+				<refs>
+					<ref for="01015013-01015014">Gen. 15:13<meta class="separator-weak">, </meta>14</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="44007032">
+			<letter id="44007032.1">
+				<text>Ex. 3:6</text>
+				<cids><cid>t44007032.1</cid></cids>
+				<refs>
+					<ref for="02003006">Ex. 3:6</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="44007037">
+			<letter id="44007037.1">
+				<text>Deut. 18:15</text>
+				<cids><cid>t44007037.1</cid></cids>
+				<refs>
+					<ref for="05018015">Deut. 18:15</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="44007040">
+			<letter id="44007040.1">
+				<text>Ex. 32:1, 23</text>
+				<cids><cid>t44007040.1</cid></cids>
+				<refs>
+					<ref for="02032001">Ex. 32:1</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="02032023">23</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="44007042">
+			<letter id="44007042.1">
+				<text>Amos 5:25-27</text>
+				<cids><cid>t44007042.1</cid></cids>
+				<refs>
+					<ref for="30005025-30005027">Amos 5:25-27</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="44007049">
+			<letter id="44007049.1">
+				<text>Isa. 66:1, 2</text>
+				<cids><cid>t44007049.1</cid></cids>
+				<refs>
+					<ref for="23066001-23066002">Isa. 66:1<meta class="separator-weak">, </meta>2</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="44008">
+		<verse id="44008032">
+			<letter id="44008032.1">
+				<text>Isa. 53:7, 8</text>
+				<cids><cid>t44008032.1</cid></cids>
+				<refs>
+					<ref for="23053007-23053008">Isa. 53:7<meta class="separator-weak">, </meta>8</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="44013">
+		<verse id="44013022">
+			<letter id="44013022.1">
+				<text>Ps. 89:20</text>
+				<cids><cid>t44013022.1</cid></cids>
+				<refs>
+					<ref for="19089020">Ps. 89:20</ref>
+				</refs>
+			</letter>
+			<letter id="44013022.2">
+				<text>1 Sam. 13:14</text>
+				<cids><cid>t44013022.2</cid></cids>
+				<refs>
+					<ref for="09013014">1 Sam. 13:14</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="44013033">
+			<letter id="44013033.1">
+				<text>Ps. 2:7</text>
+				<cids><cid>t44013033.1</cid></cids>
+				<refs>
+					<ref for="19002007">Ps. 2:7</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="44013034">
+			<letter id="44013034.1">
+				<text>Isa. 55:3</text>
+				<cids><cid>t44013034.1</cid></cids>
+				<refs>
+					<ref for="23055003">Isa. 55:3</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="44013035">
+			<letter id="44013035.1">
+				<text>Ps. 16:10</text>
+				<cids><cid>t44013035.1</cid></cids>
+				<refs>
+					<ref for="19016010">Ps. 16:10</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="44013041">
+			<letter id="44013041.1">
+				<text>Hab. 1:5</text>
+				<cids><cid>t44013041.1</cid></cids>
+				<refs>
+					<ref for="35001005">Hab. 1:5</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="44013047">
+			<letter id="44013047.1">
+				<text>Isa. 49:6</text>
+				<cids><cid>t44013047.1</cid></cids>
+				<refs>
+					<ref for="23049006">Isa. 49:6</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="44015">
+		<verse id="44015016">
+			<letter id="44015016.1">
+				<text>Amos 9:11, 12</text>
+				<cids><cid>t44015016.1</cid></cids>
+				<refs>
+					<ref for="30009011-30009012">Amos 9:11<meta class="separator-weak">, </meta>12</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="44023">
+		<verse id="44023005">
+			<letter id="44023005.1">
+				<text>Ex. 22:28</text>
+				<cids><cid>t44023005.1</cid></cids>
+				<refs>
+					<ref for="02022028">Ex. 22:28</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="44028">
+		<verse id="44028026">
+			<letter id="44028026.1">
+				<text>Isa. 6:9, 10</text>
+				<cids><cid>t44028026.1</cid></cids>
+				<refs>
+					<ref for="23006009-23006010">Isa. 6:9<meta class="separator-weak">, </meta>10</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+</book>
+<book num="45">
+	<chapter id="45001">
+		<verse id="45001017">
+			<letter id="45001017.1">
+				<text>Hab. 2:4</text>
+				<cids><cid>t45001017.1</cid></cids>
+				<refs>
+					<ref for="35002004">Hab. 2:4</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="45002">
+		<verse id="45002024">
+			<letter id="45002024.1">
+				<text>Isa. 52:5</text>
+				<cids><cid>t45002024.1</cid></cids>
+				<refs>
+					<ref for="23052005">Isa. 52:5</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="45003">
+		<verse id="45003004">
+			<letter id="45003004.1">
+				<text>Ps. 51:4 (Gk.)</text>
+				<cids><cid>t45003004.1</cid></cids>
+				<refs>
+					<ref for="19051004">Ps. 51:4</ref>
+					<meta class="gk"> (Gk.)</meta>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45003010">
+			<letter id="45003010.1">
+				<text>Ps. 14:1-3; 53:1-3</text>
+				<cids><cid>t45003010.1</cid></cids>
+				<refs>
+					<ref for="19014001-19014003">Ps. 14:1-3</ref>
+					<meta class="separator">; </meta>
+					<ref for="19053001-19053003">53:1-3</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45003013">
+			<letter id="45003013.1">
+				<text>Ps. 5:9</text>
+				<cids><cid>t45003013.1</cid></cids>
+				<refs>
+					<ref for="19005009">Ps. 5:9</ref>
+				</refs>
+			</letter>
+			<letter id="45003013.2">
+				<text>Ps. 140:3</text>
+				<cids><cid>t45003013.2</cid></cids>
+				<refs>
+					<ref for="19140003">Ps. 140:3</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45003014">
+			<letter id="45003014.1">
+				<text>Ps. 10:7 (Gk.)</text>
+				<cids><cid>t45003014.1</cid></cids>
+				<refs>
+					<ref for="19010007">Ps. 10:7</ref>
+					<meta class="gk"> (Gk.)</meta>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45003015">
+			<letter id="45003015.1">
+				<text>Prov. 1:16; 3:15-17; Isa. 59:7, 8</text>
+				<cids><cid>t45003015.1</cid></cids>
+				<refs>
+					<ref for="20001016">Prov. 1:16</ref>
+					<meta class="separator">; </meta>
+					<ref for="20003015-20003017">3:15-17</ref>
+					<meta class="separator">; </meta>
+					<ref for="23059007-23059008">Isa. 59:7<meta class="separator-weak">, </meta>8</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45003018">
+			<letter id="45003018.1">
+				<text>Ps. 36:1</text>
+				<cids><cid>t45003018.1</cid></cids>
+				<refs>
+					<ref for="19036001">Ps. 36:1</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="45004">
+		<verse id="45004003">
+			<letter id="45004003.1">
+				<text>Gen. 15:6 (Gk.)</text>
+				<cids><cid>t45004003.1</cid></cids>
+				<refs>
+					<ref for="01015006">Gen. 15:6</ref>
+					<meta class="gk"> (Gk.)</meta>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45004007">
+			<letter id="45004007.1">
+				<text>Ps. 32:1, 2</text>
+				<cids><cid>t45004007.1</cid></cids>
+				<refs>
+					<ref for="19032001-19032002">Ps. 32:1<meta class="separator-weak">, </meta>2</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45004017">
+			<letter id="45004017.1">
+				<text>Gen. 17:5</text>
+				<cids><cid>t45004017.1</cid></cids>
+				<refs>
+					<ref for="01017005">Gen. 17:5</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45004018">
+			<letter id="45004018.1">
+				<text>Gen. 15:5</text>
+				<cids><cid>t45004018.1</cid></cids>
+				<refs>
+					<ref for="01015005">Gen. 15:5</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="45007">
+		<verse id="45007007">
+			<letter id="45007007.1">
+				<text>Ex. 20:17; Deut. 5:21</text>
+				<cids><cid>t45007007.1</cid></cids>
+				<refs>
+					<ref for="02020017">Ex. 20:17</ref>
+					<meta class="separator">; </meta>
+					<ref for="05005021">Deut. 5:21</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="45008">
+		<verse id="45008036">
+			<letter id="45008036.1">
+				<text>Ps. 44:22</text>
+				<cids><cid>t45008036.1</cid></cids>
+				<refs>
+					<ref for="19044022">Ps. 44:22</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="45009">
+		<verse id="45009007">
+			<letter id="45009007.1">
+				<text>Gen. 21:12</text>
+				<cids><cid>t45009007.1</cid></cids>
+				<refs>
+					<ref for="01021012">Gen. 21:12</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45009009">
+			<letter id="45009009.1">
+				<text>Gen. 18:10, 14</text>
+				<cids><cid>t45009009.1</cid></cids>
+				<refs>
+					<ref for="01018010">Gen. 18:10</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="01018014">14</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45009012">
+			<letter id="45009012.1">
+				<text>Gen. 25:23</text>
+				<cids><cid>t45009012.1</cid></cids>
+				<refs>
+					<ref for="01025023">Gen. 25:23</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45009013">
+			<letter id="45009013.1">
+				<text>Mal. 1:2, 3</text>
+				<cids><cid>t45009013.1</cid></cids>
+				<refs>
+					<ref for="39001002-39001003">Mal. 1:2<meta class="separator-weak">, </meta>3</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45009015">
+			<letter id="45009015.1">
+				<text>Ex. 33:19</text>
+				<cids><cid>t45009015.1</cid></cids>
+				<refs>
+					<ref for="02033019">Ex. 33:19</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45009017">
+			<letter id="45009017.1">
+				<text>Ex. 9:16</text>
+				<cids><cid>t45009017.1</cid></cids>
+				<refs>
+					<ref for="02009016">Ex. 9:16</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45009025">
+			<letter id="45009025.1">
+				<text>Hos. 2:23</text>
+				<cids><cid>t45009025.1</cid></cids>
+				<refs>
+					<ref for="28002023">Hos. 2:23</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45009026">
+			<letter id="45009026.1">
+				<text>Hos. 1:10</text>
+				<cids><cid>t45009026.1</cid></cids>
+				<refs>
+					<ref for="28001010">Hos. 1:10</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45009027">
+			<letter id="45009027.1">
+				<text>Isa. 10:22, 23</text>
+				<cids><cid>t45009027.1</cid></cids>
+				<refs>
+					<ref for="23010022-23010023">Isa. 10:22<meta class="separator-weak">, </meta>23</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45009029">
+			<letter id="45009029.1">
+				<text>Isa. 1:9</text>
+				<cids><cid>t45009029.1</cid></cids>
+				<refs>
+					<ref for="23001009">Isa. 1:9</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45009033">
+			<letter id="45009033.1">
+				<text>Isa. 28:16</text>
+				<cids><cid>t45009033.1</cid></cids>
+				<refs>
+					<ref for="23028016">Isa. 28:16</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="45010">
+		<verse id="45010008">
+			<letter id="45010008.1">
+				<text>Deut. 30:14</text>
+				<cids><cid>t45010008.1</cid></cids>
+				<refs>
+					<ref for="05030014">Deut. 30:14</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45010013">
+			<letter id="45010013.1">
+				<text>Joel 2:32</text>
+				<cids><cid>t45010013.1</cid></cids>
+				<refs>
+					<ref for="29002032">Joel 2:32</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45010015">
+			<letter id="45010015.1">
+				<text>Isa. 52:7</text>
+				<cids><cid>t45010015.1</cid></cids>
+				<refs>
+					<ref for="23052007">Isa. 52:7</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45010016">
+			<letter id="45010016.1">
+				<text>Isa. 53:1</text>
+				<cids><cid>t45010016.1</cid></cids>
+				<refs>
+					<ref for="23053001">Isa. 53:1</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45010018">
+			<letter id="45010018.1">
+				<text>Ps. 19:4</text>
+				<cids><cid>t45010018.1</cid></cids>
+				<refs>
+					<ref for="19019004">Ps. 19:4</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45010019">
+			<letter id="45010019.1">
+				<text>Deut. 32:21</text>
+				<cids><cid>t45010019.1</cid></cids>
+				<refs>
+					<ref for="05032021">Deut. 32:21</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45010020">
+			<letter id="45010020.1">
+				<text>Isa. 65:1</text>
+				<cids><cid>t45010020.1</cid></cids>
+				<refs>
+					<ref for="23065001">Isa. 65:1</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45010021">
+			<letter id="45010021.1">
+				<text>Isa. 65:2</text>
+				<cids><cid>t45010021.1</cid></cids>
+				<refs>
+					<ref for="23065002">Isa. 65:2</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="45011">
+		<verse id="45011003">
+			<letter id="45011003.1">
+				<text>1 Kgs. 19:10, 14</text>
+				<cids><cid>t45011003.1</cid></cids>
+				<refs>
+					<ref for="11019010">1 Kgs. 19:10</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="11019014">14</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45011004">
+			<letter id="45011004.1">
+				<text>1 Kgs. 19:18</text>
+				<cids><cid>t45011004.1</cid></cids>
+				<refs>
+					<ref for="11019018">1 Kgs. 19:18</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45011009">
+			<letter id="45011009.1">
+				<text>Ps. 69:22, 23</text>
+				<cids><cid>t45011009.1</cid></cids>
+				<refs>
+					<ref for="19069022-19069023">Ps. 69:22<meta class="separator-weak">, </meta>23</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45011026">
+			<letter id="45011026.1">
+				<text>Isa. 59:20, 21</text>
+				<cids><cid>t45011026.1</cid></cids>
+				<refs>
+					<ref for="23059020-23059021">Isa. 59:20<meta class="separator-weak">, </meta>21</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="45012">
+		<verse id="45012019">
+			<letter id="45012019.1">
+				<text>Deut. 32:35</text>
+				<cids><cid>t45012019.1</cid></cids>
+				<refs>
+					<ref for="05032035">Deut. 32:35</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45012020">
+			<letter id="45012020.1">
+				<text>Prov. 25:21, 22</text>
+				<cids><cid>t45012020.1</cid></cids>
+				<refs>
+					<ref for="20025021-20025022">Prov. 25:21<meta class="separator-weak">, </meta>22</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="45013">
+		<verse id="45013009">
+			<letter id="45013009.1">
+				<text>Ex. 20:13-17; Deut. 5:17-21</text>
+				<cids><cid>t45013009.1</cid></cids>
+				<refs>
+					<ref for="02020013-02020017">Ex. 20:13-17</ref>
+					<meta class="separator">; </meta>
+					<ref for="05005017-05005021">Deut. 5:17-21</ref>
+				</refs>
+			</letter>
+			<letter id="45013009.2">
+				<text>Lev. 19:18</text>
+				<cids><cid>t45013009.2</cid></cids>
+				<refs>
+					<ref for="03019018">Lev. 19:18</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="45014">
+		<verse id="45014011">
+			<letter id="45014011.1">
+				<text>Isa. 45:23</text>
+				<cids><cid>t45014011.1</cid></cids>
+				<refs>
+					<ref for="23045023">Isa. 45:23</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="45015">
+		<verse id="45015003">
+			<letter id="45015003.1">
+				<text>Ps. 69:9</text>
+				<cids><cid>t45015003.1</cid></cids>
+				<refs>
+					<ref for="19069009">Ps. 69:9</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45015009">
+			<letter id="45015009.1">
+				<text>2 Sam. 22:50; Ps. 18:49</text>
+				<cids><cid>t45015009.1</cid></cids>
+				<refs>
+					<ref for="10022050">2 Sam. 22:50</ref>
+					<meta class="separator">; </meta>
+					<ref for="19018049">Ps. 18:49</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45015010">
+			<letter id="45015010.1">
+				<text>Deut. 32:43</text>
+				<cids><cid>t45015010.1</cid></cids>
+				<refs>
+					<ref for="05032043">Deut. 32:43</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45015011">
+			<letter id="45015011.1">
+				<text>Ps. 117:1</text>
+				<cids><cid>t45015011.1</cid></cids>
+				<refs>
+					<ref for="19117001">Ps. 117:1</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45015012">
+			<letter id="45015012.1">
+				<text>Isa. 11:10</text>
+				<cids><cid>t45015012.1</cid></cids>
+				<refs>
+					<ref for="23011010">Isa. 11:10</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="45015021">
+			<letter id="45015021.1">
+				<text>Isa. 52:15</text>
+				<cids><cid>t45015021.1</cid></cids>
+				<refs>
+					<ref for="23052015">Isa. 52:15</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+</book>
+<book num="46">
+	<chapter id="46001">
+		<verse id="46001019">
+			<letter id="46001019.1">
+				<text>Isa. 29:14</text>
+				<cids><cid>t46001019.1</cid></cids>
+				<refs>
+					<ref for="23029014">Isa. 29:14</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="46002">
+		<verse id="46002016">
+			<letter id="46002016.1">
+				<text>Isa. 40:13</text>
+				<cids><cid>t46002016.1</cid></cids>
+				<refs>
+					<ref for="23040013">Isa. 40:13</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="46003">
+		<verse id="46003019">
+			<letter id="46003019.1">
+				<text>Job 5:13</text>
+				<cids><cid>t46003019.1</cid></cids>
+				<refs>
+					<ref for="18005013">Job 5:13</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="46003020">
+			<letter id="46003020.1">
+				<text>Ps. 94:11</text>
+				<cids><cid>t46003020.1</cid></cids>
+				<refs>
+					<ref for="19094011">Ps. 94:11</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="46006">
+		<verse id="46006016">
+			<letter id="46006016.1">
+				<text>Gen. 2:24</text>
+				<cids><cid>t46006016.1</cid></cids>
+				<refs>
+					<ref for="01002024">Gen. 2:24</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="46009">
+		<verse id="46009009">
+			<letter id="46009009.1">
+				<text>Deut. 25:4</text>
+				<cids><cid>t46009009.1</cid></cids>
+				<refs>
+					<ref for="05025004">Deut. 25:4</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="46010">
+		<verse id="46010007">
+			<letter id="46010007.1">
+				<text>Ex. 32:6</text>
+				<cids><cid>t46010007.1</cid></cids>
+				<refs>
+					<ref for="02032006">Ex. 32:6</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="46010026">
+			<letter id="46010026.1">
+				<text>Ps. 24:1</text>
+				<cids><cid>t46010026.1</cid></cids>
+				<refs>
+					<ref for="19024001">Ps. 24:1</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="46014">
+		<verse id="46014021">
+			<letter id="46014021.1">
+				<text>Isa. 28:11, 12</text>
+				<cids><cid>t46014021.1</cid></cids>
+				<refs>
+					<ref for="23028011-23028012">Isa. 28:11<meta class="separator-weak">, </meta>12</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="46015">
+		<verse id="46015027">
+			<letter id="46015027.1">
+				<text>Ps. 8:6</text>
+				<cids><cid>t46015027.1</cid></cids>
+				<refs>
+					<ref for="19008006">Ps. 8:6</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="46015032">
+			<letter id="46015032.1">
+				<text>Isa. 22:13</text>
+				<cids><cid>t46015032.1</cid></cids>
+				<refs>
+					<ref for="23022013">Isa. 22:13</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="46015045">
+			<letter id="46015045.1">
+				<text>Gen. 2:7</text>
+				<cids><cid>t46015045.1</cid></cids>
+				<refs>
+					<ref for="01002007">Gen. 2:7</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="46015054">
+			<letter id="46015054.1">
+				<text>Isa. 25:8</text>
+				<cids><cid>t46015054.1</cid></cids>
+				<refs>
+					<ref for="23025008">Isa. 25:8</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+</book>
+<book num="47">
+	<chapter id="47004">
+		<verse id="47004013">
+			<letter id="47004013.1">
+				<text>Ps. 116:10</text>
+				<cids><cid>t47004013.1</cid></cids>
+				<refs>
+					<ref for="19116010">Ps. 116:10</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="47006">
+		<verse id="47006002">
+			<letter id="47006002.1">
+				<text>Isa. 49:8</text>
+				<cids><cid>t47006002.1</cid></cids>
+				<refs>
+					<ref for="23049008">Isa. 49:8</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="47006016">
+			<letter id="47006016.1">
+				<text>Lev. 26:12</text>
+				<cids><cid>t47006016.1</cid></cids>
+				<refs>
+					<ref for="03026012">Lev. 26:12</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="47006017">
+			<letter id="47006017.1">
+				<text>Isa. 52:11</text>
+				<cids><cid>t47006017.1</cid></cids>
+				<refs>
+					<ref for="23052011">Isa. 52:11</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="47008">
+		<verse id="47008015">
+			<letter id="47008015.1">
+				<text>Ex. 16:18</text>
+				<cids><cid>t47008015.1</cid></cids>
+				<refs>
+					<ref for="02016018">Ex. 16:18</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="47009">
+		<verse id="47009009">
+			<letter id="47009009.1">
+				<text>Ps. 112:9</text>
+				<cids><cid>t47009009.1</cid></cids>
+				<refs>
+					<ref for="19112009">Ps. 112:9</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+</book>
+<book num="48">
+	<chapter id="48003">
+		<verse id="48003006">
+			<letter id="48003006.1">
+				<text>Gen. 15:6</text>
+				<cids><cid>t48003006.1</cid></cids>
+				<refs>
+					<ref for="01015006">Gen. 15:6</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="48003008">
+			<letter id="48003008.1">
+				<text>Gen. 12:3</text>
+				<cids><cid>t48003008.1</cid></cids>
+				<refs>
+					<ref for="01012003">Gen. 12:3</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="48003010">
+			<letter id="48003010.1">
+				<text>Deut. 27:26</text>
+				<cids><cid>t48003010.1</cid></cids>
+				<refs>
+					<ref for="05027026">Deut. 27:26</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="48003011">
+			<letter id="48003011.1">
+				<text>Hab. 2:4</text>
+				<cids><cid>t48003011.1</cid></cids>
+				<refs>
+					<ref for="35002004">Hab. 2:4</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="48003012">
+			<letter id="48003012.1">
+				<text>Lev. 18:5</text>
+				<cids><cid>t48003012.1</cid></cids>
+				<refs>
+					<ref for="03018005">Lev. 18:5</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="48003013">
+			<letter id="48003013.1">
+				<text>Deut. 21:23</text>
+				<cids><cid>t48003013.1</cid></cids>
+				<refs>
+					<ref for="05021023">Deut. 21:23</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="48004">
+		<verse id="48004027">
+			<letter id="48004027.1">
+				<text>Isa. 54:1</text>
+				<cids><cid>t48004027.1</cid></cids>
+				<refs>
+					<ref for="23054001">Isa. 54:1</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="48004030">
+			<letter id="48004030.1">
+				<text>Gen. 21:10</text>
+				<cids><cid>t48004030.1</cid></cids>
+				<refs>
+					<ref for="01021010">Gen. 21:10</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="48005">
+		<verse id="48005014">
+			<letter id="48005014.1">
+				<text>Lev. 19:18</text>
+				<cids><cid>t48005014.1</cid></cids>
+				<refs>
+					<ref for="03019018">Lev. 19:18</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+</book>
+<book num="49">
+	<chapter id="49004">
+		<verse id="49004008">
+			<letter id="49004008.1">
+				<text>Ps. 68:18</text>
+				<cids><cid>t49004008.1</cid></cids>
+				<refs>
+					<ref for="19068018">Ps. 68:18</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="49005">
+		<verse id="49005031">
+			<letter id="49005031.1">
+				<text>Gen. 2:24</text>
+				<cids><cid>t49005031.1</cid></cids>
+				<refs>
+					<ref for="01002024">Gen. 2:24</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="49006">
+		<verse id="49006002">
+			<letter id="49006002.1">
+				<text>Ex. 20:12</text>
+				<cids><cid>t49006002.1</cid></cids>
+				<refs>
+					<ref for="02020012">Ex. 20:12</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+</book>
+<book num="54">
+	<chapter id="54005">
+		<verse id="54005018">
+			<letter id="54005018.1">
+				<text>Deut. 25:4</text>
+				<cids><cid>t54005018.1</cid></cids>
+				<refs>
+					<ref for="05025004">Deut. 25:4</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+</book>
+<book num="58">
+	<chapter id="58001">
+		<verse id="58001005">
+			<letter id="58001005.1">
+				<text>Ps. 2:7</text>
+				<cids><cid>t58001005.1</cid></cids>
+				<refs>
+					<ref for="19002007">Ps. 2:7</ref>
+				</refs>
+			</letter>
+			<letter id="58001005.2">
+				<text>2 Sam. 7:14</text>
+				<cids><cid>t58001005.2</cid></cids>
+				<refs>
+					<ref for="10007014">2 Sam. 7:14</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="58001006">
+			<letter id="58001006.1">
+				<text>Deut. 32:43 (Gk.)</text>
+				<cids><cid>t58001006.1</cid></cids>
+				<refs>
+					<ref for="05032043">Deut. 32:43</ref>
+					<meta class="gk"> (Gk.)</meta>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="58001007">
+			<letter id="58001007.1">
+				<text>Ps. 104:4</text>
+				<cids><cid>t58001007.1</cid></cids>
+				<refs>
+					<ref for="19104004">Ps. 104:4</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="58001008">
+			<letter id="58001008.1">
+				<text>Ps. 45:6, 7</text>
+				<cids><cid>t58001008.1</cid></cids>
+				<refs>
+					<ref for="19045006-19045007">Ps. 45:6<meta class="separator-weak">, </meta>7</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="58001010">
+			<letter id="58001010.1">
+				<text>Ps. 102:25-27</text>
+				<cids><cid>t58001010.1</cid></cids>
+				<refs>
+					<ref for="19102025-19102027">Ps. 102:25-27</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="58001013">
+			<letter id="58001013.1">
+				<text>Ps. 110:1</text>
+				<cids><cid>t58001013.1</cid></cids>
+				<refs>
+					<ref for="19110001">Ps. 110:1</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="58002">
+		<verse id="58002006">
+			<letter id="58002006.1">
+				<text>Ps. 8:4-6</text>
+				<cids><cid>t58002006.1</cid></cids>
+				<refs>
+					<ref for="19008004-19008006">Ps. 8:4-6</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="58002012">
+			<letter id="58002012.1">
+				<text>Ps. 22:22</text>
+				<cids><cid>t58002012.1</cid></cids>
+				<refs>
+					<ref for="19022022">Ps. 22:22</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="58002013">
+			<letter id="58002013.1">
+				<text>Isa. 8:18</text>
+				<cids><cid>t58002013.1</cid></cids>
+				<refs>
+					<ref for="23008018">Isa. 8:18</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="58003">
+		<verse id="58003007">
+			<letter id="58003007.1">
+				<text>Ps. 95:7-11</text>
+				<cids><cid>t58003007.1</cid></cids>
+				<refs>
+					<ref for="19095007-19095011">Ps. 95:7-11</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="58003015">
+			<letter id="58003015.1">
+				<text>Ps. 95:7, 8</text>
+				<cids><cid>t58003015.1</cid></cids>
+				<refs>
+					<ref for="19095007-19095008">Ps. 95:7<meta class="separator-weak">, </meta>8</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="58004">
+		<verse id="58004003">
+			<letter id="58004003.1">
+				<text>Ps. 95:11</text>
+				<cids><cid>t58004003.1</cid></cids>
+				<refs>
+					<ref for="19095011">Ps. 95:11</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="58004004">
+			<letter id="58004004.1">
+				<text>Gen. 2:2</text>
+				<cids><cid>t58004004.1</cid></cids>
+				<refs>
+					<ref for="01002002">Gen. 2:2</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="58004005">
+			<letter id="58004005.1">
+				<text>Ps. 95:11</text>
+				<cids><cid>t58004005.1</cid></cids>
+				<refs>
+					<ref for="19095011">Ps. 95:11</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="58004007">
+			<letter id="58004007.1">
+				<text>Ps. 95:7, 8</text>
+				<cids><cid>t58004007.1</cid></cids>
+				<refs>
+					<ref for="19095007-19095008">Ps. 95:7<meta class="separator-weak">, </meta>8</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="58005">
+		<verse id="58005005">
+			<letter id="58005005.1">
+				<text>Ps. 2:7</text>
+				<cids><cid>t58005005.1</cid></cids>
+				<refs>
+					<ref for="19002007">Ps. 2:7</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="58005006">
+			<letter id="58005006.1">
+				<text>Ps. 110:4</text>
+				<cids><cid>t58005006.1</cid></cids>
+				<refs>
+					<ref for="19110004">Ps. 110:4</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="58006">
+		<verse id="58006014">
+			<letter id="58006014.1">
+				<text>Gen. 22:17</text>
+				<cids><cid>t58006014.1</cid></cids>
+				<refs>
+					<ref for="01022017">Gen. 22:17</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="58007">
+		<verse id="58007017">
+			<letter id="58007017.1">
+				<text>Ps. 110:4</text>
+				<cids><cid>t58007017.1</cid></cids>
+				<refs>
+					<ref for="19110004">Ps. 110:4</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="58007021">
+			<letter id="58007021.1">
+				<text>Ps. 110:4</text>
+				<cids><cid>t58007021.1</cid></cids>
+				<refs>
+					<ref for="19110004">Ps. 110:4</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="58008">
+		<verse id="58008005">
+			<letter id="58008005.1">
+				<text>Ex. 25:40</text>
+				<cids><cid>t58008005.1</cid></cids>
+				<refs>
+					<ref for="02025040">Ex. 25:40</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="58008008">
+			<letter id="58008008.1">
+				<text>Jer. 31:31-34</text>
+				<cids><cid>t58008008.1</cid></cids>
+				<refs>
+					<ref for="24031031-24031034">Jer. 31:31-34</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="58009">
+		<verse id="58009020">
+			<letter id="58009020.1">
+				<text>Ex. 24:8</text>
+				<cids><cid>t58009020.1</cid></cids>
+				<refs>
+					<ref for="02024008">Ex. 24:8</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="58010">
+		<verse id="58010005">
+			<letter id="58010005.1">
+				<text>Ps. 40:6-8</text>
+				<cids><cid>t58010005.1</cid></cids>
+				<refs>
+					<ref for="19040006-19040008">Ps. 40:6-8</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="58010016">
+			<letter id="58010016.1">
+				<text>Jer. 31:33</text>
+				<cids><cid>t58010016.1</cid></cids>
+				<refs>
+					<ref for="24031033">Jer. 31:33</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="58010017">
+			<letter id="58010017.1">
+				<text>Jer. 31:34</text>
+				<cids><cid>t58010017.1</cid></cids>
+				<refs>
+					<ref for="24031034">Jer. 31:34</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="58010030">
+			<letter id="58010030.1">
+				<text>Deut. 32:35</text>
+				<cids><cid>t58010030.1</cid></cids>
+				<refs>
+					<ref for="05032035">Deut. 32:35</ref>
+				</refs>
+			</letter>
+			<letter id="58010030.2">
+				<text>Deut. 32:36</text>
+				<cids><cid>t58010030.2</cid></cids>
+				<refs>
+					<ref for="05032036">Deut. 32:36</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="58010037">
+			<letter id="58010037.1">
+				<text>Hab. 2:3, 4</text>
+				<cids><cid>t58010037.1</cid></cids>
+				<refs>
+					<ref for="35002003-35002004">Hab. 2:3<meta class="separator-weak">, </meta>4</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="58011">
+		<verse id="58011018">
+			<letter id="58011018.1">
+				<text>Gen. 21:12</text>
+				<cids><cid>t58011018.1</cid></cids>
+				<refs>
+					<ref for="01021012">Gen. 21:12</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="58012">
+		<verse id="58012005">
+			<letter id="58012005.1">
+				<text>Prov. 3:11, 12</text>
+				<cids><cid>t58012005.1</cid></cids>
+				<refs>
+					<ref for="20003011-20003012">Prov. 3:11<meta class="separator-weak">, </meta>12</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="58012020">
+			<letter id="58012020.1">
+				<text>Ex. 19:12, 13</text>
+				<cids><cid>t58012020.1</cid></cids>
+				<refs>
+					<ref for="02019012-02019013">Ex. 19:12<meta class="separator-weak">, </meta>13</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="58012026">
+			<letter id="58012026.1">
+				<text>Hag. 2:6</text>
+				<cids><cid>t58012026.1</cid></cids>
+				<refs>
+					<ref for="37002006">Hag. 2:6</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="58013">
+		<verse id="58013005">
+			<letter id="58013005.1">
+				<text>Josh. 1:5</text>
+				<cids><cid>t58013005.1</cid></cids>
+				<refs>
+					<ref for="06001005">Josh. 1:5</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="58013006">
+			<letter id="58013006.1">
+				<text>Ps. 118:6</text>
+				<cids><cid>t58013006.1</cid></cids>
+				<refs>
+					<ref for="19118006">Ps. 118:6</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+</book>
+<book num="59">
+	<chapter id="59002">
+		<verse id="59002008">
+			<letter id="59002008.1">
+				<text>Lev. 19:18</text>
+				<cids><cid>t59002008.1</cid></cids>
+				<refs>
+					<ref for="03019018">Lev. 19:18</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="59002011">
+			<letter id="59002011.1">
+				<text>Ex. 20:14</text>
+				<cids><cid>t59002011.1</cid></cids>
+				<refs>
+					<ref for="02020014">Ex. 20:14</ref>
+				</refs>
+			</letter>
+			<letter id="59002011.2">
+				<text>Ex. 20:13</text>
+				<cids><cid>t59002011.2</cid></cids>
+				<refs>
+					<ref for="02020013">Ex. 20:13</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="59002023">
+			<letter id="59002023.1">
+				<text>Gen. 15:6</text>
+				<cids><cid>t59002023.1</cid></cids>
+				<refs>
+					<ref for="01015006">Gen. 15:6</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="59004">
+		<verse id="59004006">
+			<letter id="59004006.1">
+				<text>Prov. 3:34</text>
+				<cids><cid>t59004006.1</cid></cids>
+				<refs>
+					<ref for="20003034">Prov. 3:34</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+</book>
+<book num="60">
+	<chapter id="60001">
+		<verse id="60001016">
+			<letter id="60001016.1">
+				<text>Lev. 11:44</text>
+				<cids><cid>t60001016.1</cid></cids>
+				<refs>
+					<ref for="03011044">Lev. 11:44</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="60001024">
+			<letter id="60001024.1">
+				<text>Isa. 40:6, 8</text>
+				<cids><cid>t60001024.1</cid></cids>
+				<refs>
+					<ref for="23040006">Isa. 40:6</ref>
+					<meta class="separator-weak">, </meta>
+					<ref for="23040008">8</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="60002">
+		<verse id="60002006">
+			<letter id="60002006.1">
+				<text>Isa. 28:16</text>
+				<cids><cid>t60002006.1</cid></cids>
+				<refs>
+					<ref for="23028016">Isa. 28:16</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="60002007">
+			<letter id="60002007.1">
+				<text>Ps. 118:22</text>
+				<cids><cid>t60002007.1</cid></cids>
+				<refs>
+					<ref for="19118022">Ps. 118:22</ref>
+				</refs>
+			</letter>
+		</verse>
+		<verse id="60002008">
+			<letter id="60002008.1">
+				<text>Isa. 8:14</text>
+				<cids><cid>t60002008.1</cid></cids>
+				<refs>
+					<ref for="23008014">Isa. 8:14</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+	<chapter id="60003">
+		<verse id="60003010">
+			<letter id="60003010.1">
+				<text>Ps. 34:12-16</text>
+				<cids><cid>t60003010.1</cid></cids>
+				<refs>
+					<ref for="19034012-19034016">Ps. 34:12-16</ref>
+				</refs>
+			</letter>
+		</verse>
+	</chapter>
+</book>
+</crossway-crossrefs>

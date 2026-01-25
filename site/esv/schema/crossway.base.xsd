@@ -1,0 +1,251 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.crosswaybibles.org"
+	xmlns="http://www.crosswaybibles.org"
+	>
+
+	<xsd:complexType name="aElement" mixed="true">
+		<!-- only in footnotes; refers to the preface -->
+		<xsd:attribute name="href" type="xsd:string" use="required"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="beginLineElement">
+		<xsd:attribute name="class" use="optional">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<!-- e.g., Lam 3:3; for poetry -->
+					<xsd:enumeration value="indent"/>
+					<!-- e.g., Acts 7:43; only in NT -->
+					<xsd:enumeration value="indent-2"/>
+					<!-- e.g., Amos 1:5; for formulaic "declares the LORD" -->
+					<xsd:enumeration value="declares"/>
+					<!-- e.g., Ps 41:13; at the end of some of the Psalm books -->
+					<xsd:enumeration value="psalm-doxology"/>
+					<!-- appears only if looking at a document fragment and it was added automatically -->
+					<xsd:enumeration value="virtual"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="beginParagraphElement">
+		<xsd:attribute name="class" use="optional">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<!-- e.g., Rev 19:4; no indentation -->
+					<xsd:enumeration value="same-paragraph"/>
+					<!-- e.g., Jer 50:6; skip an extra line -->
+					<xsd:enumeration value="extra-space"/>
+					<!-- for poetry -->
+					<xsd:enumeration value="line-group"/>
+					<!-- these two appear only if looking at a document fragment and they were added automatically -->
+					<xsd:enumeration value="virtual"/>
+					<xsd:enumeration value="line-group-virtual"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:group name="blockElements">
+		<xsd:choice>
+			<xsd:element name="begin-block-indent" type="emptyElement"          minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="begin-paragraph"    type="beginParagraphElement" minOccurs="0" maxOccurs="unbounded"/>
+			<!-- can have a class="virtual" if looking at a document fragment and it was added automatically -->
+			<xsd:element name="end-paragraph"      type="emptyElement"          minOccurs="0" maxOccurs="unbounded"/>
+			<!-- can have a class="virtual" if looking at a document fragment and it was added automatically -->
+			<xsd:element name="end-block-indent"   type="emptyElement"          minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="heading"            type="headingElement"        minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="marker"             type="markerElement"         minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="subheading"         type="subheadingElement"     minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:choice>
+	</xsd:group>
+
+	<xsd:complexType name="crossrefsElement">
+		<xsd:sequence>
+			<xsd:element name="crossref" type="crossrefElement" minOccurs="2" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="crossrefElement">
+		<xsd:attribute name="let"   type="xsd:string" use="optional"/>
+		<xsd:attribute name="cid"   type="xsd:string" use="required"/>
+		<!-- the next attribute isn't currently used -->
+		<xsd:attribute name="class" type="xsd:string" use="optional"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="emptyElement">
+		<xsd:attribute name="class" type="xsd:string" use="optional"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="endLineElement">
+		<xsd:attribute name="class" use="optional">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<!-- e.g., Lam 3:3; indicates a line break for easy transformation to HTML; doesn't occur at end of pars -->
+					<xsd:enumeration value="br"/>
+					<!-- appears only if looking at a document fragment and it was added automatically -->
+					<xsd:enumeration value="virtual"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="footnoteElement" mixed="true">
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:element name="span" type="spanElement" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="verse-num" type="xsd:positiveInteger" minOccurs="0" maxOccurs="unbounded"/>
+			<!-- italics -->
+			<xsd:element name="i" type="iElement" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="a" type="aElement" minOccurs="0" maxOccurs="unbounded">
+
+			</xsd:element>
+		</xsd:choice>
+		<!-- this attribute is not used at the moment -->
+		<xsd:attribute name="class" type="xsd:string" use="optional"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="headingElement" mixed="true">
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:element name="span" type="spanElement" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:choice>
+		<xsd:attribute name="class" use="optional">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<!-- beginnings of psalm books, e.g., Ps 1: "Book One" -->
+					<xsd:enumeration value="psalm-book"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="iElement" mixed="true">
+		<!-- italic text for footnotes -->
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:element name="span" type="spanElement" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:choice>
+	</xsd:complexType>
+
+	<xsd:complexType name="markerElement">
+		<!-- markers indicating a reference to an external entity or to aid processing -->
+		<xsd:attribute name="class" type="xsd:string" use="optional"/>
+		<xsd:attribute name="cid"   type="xsd:string" use="required"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="qElement">
+		<xsd:attribute name="class" use="required">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<!-- outermost quotation level; in US, " -->
+					<xsd:enumeration value="begin-double"/>
+					<!-- when a quote is continued from a previous paragraph, a " appears at the beginning of the new par -->
+					<xsd:enumeration value="continue-double"/>
+					<xsd:enumeration value="end-double"/>
+					<!-- second-level quotation; in US, " '  -->
+					<xsd:enumeration value="begin-single"/>
+					<xsd:enumeration value="continue-single"/>
+					<xsd:enumeration value="end-single"/>
+					<!-- third-level quotation; in US, " ' " -->
+					<xsd:enumeration value="begin-inner-double"/>
+					<xsd:enumeration value="continue-inner-double"/>
+					<xsd:enumeration value="end-inner-double"/>
+					<!-- fourth-level quotation; in US, " ' " ' -->
+					<xsd:enumeration value="begin-inner-single"/>
+					<!-- doesn't appear in the ESV; included here for consistency -->
+					<xsd:enumeration value="continue-inner-single"/>
+					<xsd:enumeration value="end-inner-single"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<!-- uniquely identifies the quotation mark; either "from" or "to" can be used to uniquely identify an entire
+		     quote; all the same-level quotation marks involved in the quote have identical "from"s and "to"s
+		-->
+		<xsd:attribute name="qid"  type="quoteIdAttribute" use="required"/>
+		<!-- where the quote begins; if it's the beginning quotation mark, same as the qid -->
+		<xsd:attribute name="from" type="quoteIdAttribute" use="required"/>
+		<!-- to what qid the quote continues; if it's the ending quotation mark, same as the qid -->
+		<xsd:attribute name="to"   type="quoteIdAttribute" use="required"/>
+	</xsd:complexType>
+
+	<xsd:simpleType name="quoteIdAttribute">
+		<!-- the first 8 digits are the verse's unit id; after the period is an incremented number within each verse;
+		     e.g., 12003045.1 is followed by 12003045.2, and in the next verse 12003046.1; the highest increment at the moment is 9
+		-->
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value="[0-9]{8}\.[0-9]{1,2}"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:complexType name="selahElement" mixed="true">
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:element name="footnote"  type="footnoteElement" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="crossrefs" type="crossrefsElement" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="crossref"  type="crossrefElement" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:choice>
+	</xsd:complexType>
+
+	<xsd:complexType name="spanElement" mixed="true">
+		<xsd:attribute name="class" use="optional">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<!-- declares the "LORD" -->
+					<xsd:enumeration value="divine-name"/>
+					<!-- e.g., "9 a.m." -->
+					<xsd:enumeration value="us-time"/>
+					<!-- for MENE TEKEL PERES in Daniel 5:24-28 and related footnotes -->
+					<xsd:enumeration value="small-caps"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:group name="standardTextElements"> <!-- woc, selah aren't here because they can't nest -->
+		<xsd:choice>
+			<xsd:element name="span"       type="spanElement"      minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="footnote"   type="footnoteElement"  minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="crossrefs"  type="crossrefsElement" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="crossref"   type="crossrefElement"  minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="begin-line" type="beginLineElement" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="end-line"   type="endLineElement"   minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:choice>
+	</xsd:group>
+
+	<xsd:complexType name="subheadingElement" mixed="true">
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:element name="span"      type="spanElement" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="footnote"  type="footnoteElement"  minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="crossrefs" type="crossrefsElement" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="crossref"  type="crossrefElement" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:choice>
+		<xsd:attribute name="class" use="optional">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<!-- only in Ps 119; the Hebrew letter headings -->
+					<xsd:enumeration value="psalm-acrostic-title"/>
+					<!-- eg, Ps 3 -->
+					<xsd:enumeration value="psalm-title"/>
+					<!-- only in Song of Solomon; speakers inferred by the translators -->
+					<xsd:enumeration value="speaker"/>
+					<!-- In John 7 and Mark 16; when some manuscripts don't have a block of text -->
+					<xsd:enumeration value="textual-note"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="verseNumElement" mixed="true">
+		<xsd:attribute name="class" use="optional">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="woc"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="begin-chapter" type="xsd:positiveInteger" use="optional">
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="wocElement" mixed="true">
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:group ref="standardTextElements" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:choice>
+	</xsd:complexType>
+</xsd:schema>

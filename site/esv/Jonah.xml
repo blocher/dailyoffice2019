@@ -1,0 +1,183 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE crossway-bible SYSTEM "schema/crossway.bibles.dtd">
+<crossway-bible translation="English Standard Version" revision="2025-02-02" xmlns="http://www.crosswaybibles.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="schema/crossway.bibles.xsd">
+<book title="Jonah" num="32">
+  <marker class="begin-verse" mid="v32001001"/>
+  <chapter num="1">
+    <heading>Jonah Flees the Presence of the <span class="divine-name">Lord</span></heading>
+    <begin-paragraph/>
+    <verse num="1">Now the word of the <span class="divine-name">Lord</span> came to <crossref let="a" cid="c32001001.1"/>Jonah the son of Amittai, saying,</verse>
+    <marker class="begin-verse" mid="v32001002"/>
+    <verse num="2"><q class="begin-double" qid="32001002.1" from="32001002.1" to="32001002.2"/>Arise, go to <crossref let="b" cid="c32001002.1"/>Nineveh, that <crossref let="c" cid="c32001002.2"/>great city, and call out against it, <crossref let="d" cid="c32001002.3"/>for their evil<note nid="n32001002.1"/> has come up before me.<q class="end-double" qid="32001002.2" from="32001002.1" to="32001002.2"/></verse>
+    <marker class="begin-verse" mid="v32001003"/>
+    <verse num="3">But Jonah <crossref let="e" cid="c32001003.1"/>rose to flee to <crossref let="f" cid="c32001003.2"/>Tarshish from the presence of the <span class="divine-name">Lord</span>. He went down to <crossref let="g" cid="c32001003.3"/>Joppa and found a ship going to <crossref let="f" cid="c32001003.4"/>Tarshish. So he paid the fare and went down into it, to go with them to <crossref let="f" cid="c32001003.5"/>Tarshish, <crossref let="h" cid="c32001003.6"/>away from the presence of the <span class="divine-name">Lord</span>.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v32001004"/>
+    <begin-paragraph/>
+    <verse num="4">But <crossref let="i" cid="c32001004.1"/>the <span class="divine-name">Lord</span> hurled a great wind upon the sea, and there was a mighty tempest on the sea, so that the ship threatened <crossref let="j" cid="c32001004.2"/>to break up.</verse>
+    <marker class="begin-verse" mid="v32001005"/>
+    <verse num="5">Then the mariners were afraid, and <crossref let="k" cid="c32001005.1"/>each cried out to his god. And <crossref let="l" cid="c32001005.2"/>they hurled the cargo that was in the ship into the sea to lighten it for them. But Jonah had gone down into the inner part of the ship and had lain down and was fast asleep.</verse>
+    <marker class="begin-verse" mid="v32001006"/>
+    <verse num="6">So the captain came and said to him, <q class="begin-double" qid="32001006.1" from="32001006.1" to="32001006.2"/>What do you mean, you sleeper? Arise, <crossref let="k" cid="c32001006.1"/>call out to your god! <crossref let="m" cid="c32001006.2"/>Perhaps the god will give a thought to us, that we may not perish.<q class="end-double" qid="32001006.2" from="32001006.1" to="32001006.2"/></verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v32001007"/>
+    <heading>Jonah Is Thrown into the Sea</heading>
+    <begin-paragraph/>
+    <verse num="7">And they said to one another, <q class="begin-double" qid="32001007.1" from="32001007.1" to="32001007.2"/>Come, let us <crossref let="n" cid="c32001007.1"/>cast lots, that we may know on whose account this evil has come upon us.<q class="end-double" qid="32001007.2" from="32001007.1" to="32001007.2"/> So they cast lots, and the lot fell on Jonah.</verse>
+    <marker class="begin-verse" mid="v32001008"/>
+    <verse num="8">Then they said to him, <q class="begin-double" qid="32001008.1" from="32001008.1" to="32001008.2"/>Tell us on whose account this evil has come upon us. What is your occupation? And where do you come from? What is your country? And of what people are you?<q class="end-double" qid="32001008.2" from="32001008.1" to="32001008.2"/></verse>
+    <marker class="begin-verse" mid="v32001009"/>
+    <verse num="9">And he said to them, <q class="begin-double" qid="32001009.1" from="32001009.1" to="32001009.2"/>I am a Hebrew, and I fear <crossref let="o" cid="c32001009.1"/>the <span class="divine-name">Lord</span>, the God of heaven, <crossref let="p" cid="c32001009.2"/>who made the sea and the dry land.<q class="end-double" qid="32001009.2" from="32001009.1" to="32001009.2"/></verse>
+    <marker class="begin-verse" mid="v32001010"/>
+    <verse num="10">Then the men were exceedingly afraid and said to him, <q class="begin-double" qid="32001010.1" from="32001010.1" to="32001010.2"/>What is this that you have done!<q class="end-double" qid="32001010.2" from="32001010.1" to="32001010.2"/> For the men knew that <crossref let="h" cid="c32001010.1"/>he was fleeing from the presence of the <span class="divine-name">Lord</span>, because he had told them.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v32001011"/>
+    <begin-paragraph/>
+    <verse num="11">Then they said to him, <q class="begin-double" qid="32001011.1" from="32001011.1" to="32001011.2"/>What shall we do to you, that the sea may quiet down for us?<q class="end-double" qid="32001011.2" from="32001011.1" to="32001011.2"/> For the sea grew more and more tempestuous.</verse>
+    <marker class="begin-verse" mid="v32001012"/>
+    <verse num="12">He said to them, <q class="begin-double" qid="32001012.1" from="32001012.1" to="32001012.2"/>Pick me up and hurl me into the sea; then the sea will quiet down for you, <crossref let="q" cid="c32001012.1"/>for I know it is because of me that this great tempest has come upon you.<q class="end-double" qid="32001012.2" from="32001012.1" to="32001012.2"/></verse>
+    <marker class="begin-verse" mid="v32001013"/>
+    <verse num="13">Nevertheless, the men rowed hard<note nid="n32001013.1"/> to get back to dry land, but they could not, for the sea grew more and more tempestuous against them.</verse>
+    <marker class="begin-verse" mid="v32001014"/>
+    <verse num="14">Therefore they called out to the <span class="divine-name">Lord</span>, <q class="begin-double" qid="32001014.1" from="32001014.1" to="32001014.2"/>O <span class="divine-name">Lord</span>, let us not perish for this man&apos;s life, and <crossref let="r" cid="c32001014.1"/>lay not on us innocent blood, <crossref let="s" cid="c32001014.2"/>for you, O <span class="divine-name">Lord</span>, have done as it pleased you.<q class="end-double" qid="32001014.2" from="32001014.1" to="32001014.2"/></verse>
+    <marker class="begin-verse" mid="v32001015"/>
+    <verse num="15">So they picked up Jonah and hurled him into the sea, <crossref let="t" cid="c32001015.1"/>and the sea ceased from its raging.</verse>
+    <marker class="begin-verse" mid="v32001016"/>
+    <verse num="16">Then the men feared the <span class="divine-name">Lord</span> exceedingly, <crossref let="u" cid="c32001016.1"/>and they offered a sacrifice to the <span class="divine-name">Lord</span> <crossref let="v" cid="c32001016.2"/>and made vows.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v32001017"/>
+    <heading>A Great Fish Swallows Jonah</heading>
+    <begin-paragraph/>
+    <verse num="17"><note nid="n32001017.1"/> And the <span class="divine-name">Lord</span> appointed<note nid="n32001017.2"/> a great fish to swallow up Jonah. <crossref let="w" cid="c32001017.1"/>And Jonah was in the belly of the fish three days and three nights.</verse>
+    <end-paragraph/>
+  </chapter>
+  <marker class="begin-verse" mid="v32002001"/>
+  <chapter num="2">
+    <heading>Jonah&apos;s Prayer</heading>
+    <begin-paragraph/>
+    <verse num="1">Then Jonah prayed to the <span class="divine-name">Lord</span> his God from the belly of the fish,</verse>
+    <marker class="begin-verse" mid="v32002002"/>
+    <verse num="2">saying,
+      <end-paragraph/>
+      <begin-block-indent/>
+      <begin-paragraph class="line-group"/>
+        <begin-line/><crossref let="x" cid="c32002002.1"/><q class="begin-double" qid="32002002.1" from="32002002.1" to="32002009.1"/>I called out to the <span class="divine-name">Lord</span>, out of my distress,<end-line class="br"/>
+        <begin-line class="indent"/>and he answered me;<end-line class="br"/>
+        <begin-line/><crossref let="y" cid="c32002002.2"/>out of the belly of Sheol I cried,<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="z" cid="c32002002.3"/>and you heard my voice.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v32002003"/>
+    <verse num="3">
+        <begin-line/><crossref let="a" cid="c32002003.1"/>For you cast me into the deep,<end-line class="br"/>
+        <begin-line class="indent"/>into the heart of the seas,<end-line class="br"/>
+        <begin-line class="indent"/>and the flood surrounded me;<end-line class="br"/>
+        <begin-line/><crossref let="b" cid="c32002003.2"/>all your breakers and your waves<end-line class="br"/>
+        <begin-line class="indent"/>passed over me.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v32002004"/>
+    <verse num="4">
+        <begin-line/><crossref let="c" cid="c32002004.1"/>Then I said, <q class="begin-single" qid="32002004.1" from="32002004.1" to="32002004.2"/>I am driven away<end-line class="br"/>
+        <begin-line class="indent"/>from your sight;<end-line class="br"/>
+        <begin-line/><crossref let="d" cid="c32002004.2"/>yet I shall again look<end-line class="br"/>
+        <begin-line class="indent"/>upon your holy temple.<q class="end-single" qid="32002004.2" from="32002004.1" to="32002004.2"/><end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v32002005"/>
+    <verse num="5">
+        <begin-line/><crossref let="e" cid="c32002005.1"/>The waters closed in over me <crossref let="f" cid="c32002005.2"/>to take my life;<end-line class="br"/>
+        <begin-line class="indent"/>the deep surrounded me;<end-line class="br"/>
+        <begin-line/>weeds were wrapped about my head.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v32002006"/>
+    <verse num="6">
+        <begin-line/>To the roots of the mountains I went down,<end-line class="br"/>
+        <begin-line class="indent"/>to the land whose bars closed upon me forever.<end-line class="br"/>
+        <begin-line/>Yet you brought up my life from the pit,<end-line class="br"/>
+        <begin-line class="indent"/>O <span class="divine-name">Lord</span> my God.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v32002007"/>
+    <verse num="7">
+        <begin-line/>When my life was fainting away,<end-line class="br"/>
+        <begin-line class="indent"/>I remembered the <span class="divine-name">Lord</span>,<end-line class="br"/>
+        <begin-line/><crossref let="g" cid="c32002007.1"/>and my prayer came to you,<end-line class="br"/>
+        <begin-line class="indent"/>into your holy temple.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v32002008"/>
+    <verse num="8">
+        <begin-line/><crossref let="h" cid="c32002008.1"/>Those who pay regard to vain idols<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="i" cid="c32002008.2"/>forsake their hope of steadfast love.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v32002009"/>
+    <verse num="9">
+        <begin-line/><crossref let="j" cid="c32002009.1"/>But I with the voice of thanksgiving<end-line class="br"/>
+        <begin-line class="indent"/>will sacrifice to you;<end-line class="br"/>
+        <begin-line/>what I have vowed I will pay.<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="k" cid="c32002009.2"/>Salvation belongs to the <span class="divine-name">Lord</span>!<q class="end-double" qid="32002009.1" from="32002002.1" to="32002009.1"/><end-line/>
+    </verse>
+    <end-paragraph/>
+    <end-block-indent/>
+    <marker class="begin-verse" mid="v32002010"/>
+    <begin-paragraph class="same-paragraph"/>
+    <verse num="10">And the <span class="divine-name">Lord</span> spoke to the fish, and it vomited Jonah out upon the dry land.</verse>
+    <end-paragraph/>
+  </chapter>
+  <marker class="begin-verse" mid="v32003001"/>
+  <chapter num="3">
+    <heading>Jonah Goes to Nineveh</heading>
+    <begin-paragraph/>
+    <verse num="1">Then the word of the <span class="divine-name">Lord</span> came to Jonah the second time, saying,</verse>
+    <marker class="begin-verse" mid="v32003002"/>
+    <verse num="2"><q class="begin-double" qid="32003002.1" from="32003002.1" to="32003002.2"/>Arise, go to <crossref let="l" cid="c32003002.1"/>Nineveh, that great city, and call out against it the message that I tell you.<q class="end-double" qid="32003002.2" from="32003002.1" to="32003002.2"/></verse>
+    <marker class="begin-verse" mid="v32003003"/>
+    <verse num="3">So Jonah arose and went to Nineveh, according to the word of the <span class="divine-name">Lord</span>. Now <crossref let="l" cid="c32003003.1"/>Nineveh was an exceedingly great city,<note nid="n32003003.1"/> three days&apos; journey in breadth.<note nid="n32003003.2"/></verse>
+    <marker class="begin-verse" mid="v32003004"/>
+    <verse num="4">Jonah began to go into the city, going a day&apos;s journey. And he called out, <q class="begin-double" qid="32003004.1" from="32003004.1" to="32003004.2"/>Yet forty days, and Nineveh shall be overthrown!<q class="end-double" qid="32003004.2" from="32003004.1" to="32003004.2"/></verse>
+    <marker class="begin-verse" mid="v32003005"/>
+    <verse num="5"><crossref let="m" cid="c32003005.1"/>And the people of Nineveh believed God. <crossref let="n" cid="c32003005.2"/>They called for a fast and <crossref let="o" cid="c32003005.3"/>put on sackcloth, from the greatest of them to the least of them.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v32003006"/>
+    <heading>The People of Nineveh Repent</heading>
+    <begin-paragraph/>
+    <verse num="6">The word reached<note nid="n32003006.1"/> the king of Nineveh, and <crossref let="p" cid="c32003006.1"/>he arose from his throne, removed his robe, covered himself with sackcloth, <crossref let="q" cid="c32003006.2"/>and sat in ashes.</verse>
+    <marker class="begin-verse" mid="v32003007"/>
+    <verse num="7">And he issued a proclamation and published through Nineveh, <crossref let="r" cid="c32003007.1"/><q class="begin-double" qid="32003007.1" from="32003007.1" to="32003009.1"/>By the decree of the king and his nobles: Let neither man nor <crossref let="s" cid="c32003007.2"/>beast, herd nor flock, taste anything. Let them not feed or drink water,</verse>
+    <marker class="begin-verse" mid="v32003008"/>
+    <verse num="8">but let man and <crossref let="s" cid="c32003008.1"/>beast be covered with sackcloth, and let them call out mightily to God. <crossref let="t" cid="c32003008.2"/>Let everyone turn from his evil way and from <crossref let="u" cid="c32003008.3"/>the violence that is in his hands.</verse>
+    <marker class="begin-verse" mid="v32003009"/>
+    <verse num="9"><crossref let="v" cid="c32003009.1"/>Who knows? God may turn and relent <crossref let="w" cid="c32003009.2"/>and turn from his fierce anger, so that we may not perish.<q class="end-double" qid="32003009.1" from="32003007.1" to="32003009.1"/></verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v32003010"/>
+    <begin-paragraph/>
+    <verse num="10">When God saw what they did, <crossref let="x" cid="c32003010.1"/>how they turned from their evil way, <crossref let="x" cid="c32003010.2"/>God relented of the disaster that he had said he would do to them, and he did not do it.</verse>
+    <end-paragraph/>
+  </chapter>
+  <marker class="begin-verse" mid="v32004001"/>
+  <chapter num="4">
+    <heading>Jonah&apos;s Anger and the <span class="divine-name">Lord</span>&apos;s Compassion</heading>
+    <begin-paragraph/>
+    <verse num="1">But it displeased Jonah exceedingly,<note nid="n32004001.1"/> and <crossref let="y" cid="c32004001.1"/>he was angry.</verse>
+    <marker class="begin-verse" mid="v32004002"/>
+    <verse num="2">And he prayed to the <span class="divine-name">Lord</span> and said, <q class="begin-double" qid="32004002.1" from="32004002.1" to="32004003.1"/>O <span class="divine-name">Lord</span>, is not this what I said when I was yet in my country? <crossref let="z" cid="c32004002.1"/>That is why I made haste to flee to Tarshish; for I knew that you are a <crossref let="a" cid="c32004002.2"/>gracious God and merciful, slow to anger and abounding in steadfast love, and <crossref let="a" cid="c32004002.3"/>relenting from disaster.</verse>
+    <marker class="begin-verse" mid="v32004003"/>
+    <verse num="3"><crossref let="b" cid="c32004003.1"/>Therefore now, O <span class="divine-name">Lord</span>, please take my life from me, <crossref let="c" cid="c32004003.2"/>for it is better for me to die than to live.<q class="end-double" qid="32004003.1" from="32004002.1" to="32004003.1"/></verse>
+    <marker class="begin-verse" mid="v32004004"/>
+    <verse num="4">And the <span class="divine-name">Lord</span> said, <crossref let="d" cid="c32004004.1"/><q class="begin-double" qid="32004004.1" from="32004004.1" to="32004004.2"/>Do you do well to be angry?<q class="end-double" qid="32004004.2" from="32004004.1" to="32004004.2"/></verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v32004005"/>
+    <begin-paragraph/>
+    <verse num="5">Jonah went out of the city and sat to the east of the city and <crossref let="e" cid="c32004005.1"/>made a booth for himself there. He sat under it in the shade, till he should see what would become of the city.</verse>
+    <marker class="begin-verse" mid="v32004006"/>
+    <verse num="6">Now the <span class="divine-name">Lord</span> God appointed a plant<note nid="n32004006.1"/> and made it come up over Jonah, that it might be a shade over his head, to save him from his discomfort.<note nid="n32004006.2"/> So Jonah was exceedingly glad because of the plant.</verse>
+    <marker class="begin-verse" mid="v32004007"/>
+    <verse num="7">But when dawn came up the next day, God appointed a worm that attacked the plant, so that it withered.</verse>
+    <marker class="begin-verse" mid="v32004008"/>
+    <verse num="8">When the sun rose, God appointed a scorching <crossref let="f" cid="c32004008.1"/>east wind, <crossref let="g" cid="c32004008.2"/>and the sun beat down on the head of Jonah so that he <crossref let="h" cid="c32004008.3"/>was faint. And he asked that he might die and said, <crossref let="c" cid="c32004008.4"/><q class="begin-double" qid="32004008.1" from="32004008.1" to="32004008.2"/>It is better for me to die than to live.<q class="end-double" qid="32004008.2" from="32004008.1" to="32004008.2"/></verse>
+    <marker class="begin-verse" mid="v32004009"/>
+    <verse num="9">But God said to Jonah, <crossref let="i" cid="c32004009.1"/><q class="begin-double" qid="32004009.1" from="32004009.1" to="32004009.2"/>Do you do well to be angry for the plant?<q class="end-double" qid="32004009.2" from="32004009.1" to="32004009.2"/> And he said, <q class="begin-double" qid="32004009.3" from="32004009.3" to="32004009.4"/>Yes, I do well to be angry, angry enough to die.<q class="end-double" qid="32004009.4" from="32004009.3" to="32004009.4"/></verse>
+    <marker class="begin-verse" mid="v32004010"/>
+    <verse num="10">And the <span class="divine-name">Lord</span> said, <q class="begin-double" qid="32004010.1" from="32004010.1" to="32004011.1"/>You pity the plant, for which you did not labor, nor did you make it grow, which came into being in a night and perished in a night.</verse>
+    <marker class="begin-verse" mid="v32004011"/>
+    <verse num="11">And should not I pity <crossref let="j" cid="c32004011.1"/>Nineveh, that great city, in which there are more than 120,000 persons who do not know their right hand from their left, and also much <crossref let="k" cid="c32004011.2"/>cattle?<q class="end-double" qid="32004011.1" from="32004010.1" to="32004011.1"/></verse>
+    <end-paragraph/>
+  </chapter>
+</book>
+</crossway-bible>
