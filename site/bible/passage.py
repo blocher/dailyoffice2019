@@ -1,10 +1,11 @@
-from bible.sources import BibleGateway, OremusBibleBrowser, BCPPsalter
+from bible.sources import BibleGateway, OremusBibleBrowser, BCPPsalter, get_esv_xml_adapter
 
 
 class BibleVersions(object):
     VERSIONS = {
         "nrsvce": {"name": "New Revised Standard Version", "adapter": BibleGateway},
         "esv": {"name": "English Standard Version", "adapter": BibleGateway},
+        "esv_xml": {"name": "English Standard Version (XML)", "adapter": get_esv_xml_adapter},
         "rsv": {"name": "Revised Standard Version", "adapter": BibleGateway},
         "kjv": {"name": "King James Version", "adapter": BibleGateway},
         "nabre": {"name": "New American Bible - Revised Edition", "adapter": BibleGateway},
@@ -22,7 +23,14 @@ class Passage(object):
         source = source.lower()
         version = BibleVersions.VERSIONS.get(source, {"name": source, "adapter": BibleGateway})
         adapter = version["adapter"]
-        self.lookup = adapter(passage, source)
+
+        # Handle lazy-loaded adapters (like ESV XML)
+        if callable(adapter):
+            adapter_class = adapter()
+        else:
+            adapter_class = adapter
+
+        self.lookup = adapter_class(passage, source)
         self.version_abbreviation = source
         self.version_name = version["name"]
 

@@ -8,6 +8,9 @@ from html2text import html2text
 
 from psalter.utils import get_psalms
 
+# Import ESV XML adapter (avoid circular import by lazy loading)
+_ESVXMLAdapter = None
+
 
 class BibleSource(ABC):
     @abstractmethod
@@ -271,3 +274,13 @@ class BCPPsalter(BibleSource):
         except Exception as e:
             print(e)
             return None
+
+
+def get_esv_xml_adapter():
+    """Lazy loader for ESVXMLAdapter to avoid circular imports."""
+    global _ESVXMLAdapter
+    if _ESVXMLAdapter is None:
+        from bible.esv_xml_adapter import ESVXMLAdapter
+
+        _ESVXMLAdapter = ESVXMLAdapter
+    return _ESVXMLAdapter

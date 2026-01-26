@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes'?>
+<!DOCTYPE crossway-bible SYSTEM "schema/crossway.bibles.dtd">
+<crossway-bible xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" translation="English Standard Version" revision="2018-3-26" xmlns="http://www.crosswaybibles.org" xsi:schemaLocation="schema/crossway.bibles.xsd">
+  <book title="Prayer of Manasseh" num="83">
+    <marker class="begin-verse" mid="v83001001"/>
+    <chapter num="1">
+      <heading>Ascription of Praise</heading>
+      <begin-block-indent/>
+      <begin-paragraph class="line-group"/>
+      <verse num="1"><begin-line/>O Lord Almighty,<end-line class="br"/><begin-line class="indent"/>the God of our fathers,<end-line class="br"/><begin-line/>of Abraham and Isaac and Jacob,<end-line class="br"/><begin-line class="indent"/>and of their righteous descendants;<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v83001002"/>
+      <verse num="2"><begin-line/>you who made heaven and earth<end-line class="br"/><begin-line class="indent"/>with all their order;<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v83001003"/>
+      <verse num="3"><begin-line/>who shackled the sea by your word of command,<end-line class="br"/><begin-line class="indent"/>who closed up the deep<end-line class="br"/><begin-line class="indent"/>and sealed it with your terrible and glorious name;<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v83001004"/>
+      <verse num="4"><begin-line/>at whom all things shudder<end-line class="br"/><begin-line class="indent"/>and tremble before your power,<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v83001005"/>
+      <verse num="5"><begin-line/>for your glorious splendor is unendurable,<end-line class="br"/><begin-line class="indent"/>and the wrath of your threat to sinners is overpowering;<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v83001006"/>
+      <verse num="6"><begin-line/>yet immeasurable and unsearchable is your promised mercy,<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v83001007"/>
+      <verse num="7"><begin-line class="indent"/>for you are the Lord Most High,<end-line class="br"/><begin-line/>of great compassion, patient, and very merciful,<end-line class="br"/><begin-line class="indent"/>repenting over the evils of human beings.<note nid="n83001007.1"/><end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v83001008"/>
+      <verse num="8"><begin-line/>Therefore you, O Lord, God of the righteous,<end-line class="br"/><begin-line class="indent"/>did not appoint repentance for the righteous,<end-line class="br"/><begin-line/>for Abraham and Isaac and Jacob, who did not sin against you,<end-line class="br"/><begin-line class="indent"/>but you have appointed repentance for me, the sinner.<end-line/></verse>
+      <end-paragraph/>
+      <end-block-indent/>
+      <marker class="begin-verse" mid="v83001009"/>
+      <heading>Confession of Sins</heading>
+      <begin-block-indent/>
+      <begin-paragraph class="line-group"/>
+      <verse num="9"><begin-line/>For the sins I committed are more in number than the sand of the sea;<end-line class="br"/><begin-line class="indent"/>my transgressions are multiplied, O Lord, they are multiplied!<end-line class="br"/><begin-line/>I am unworthy to look up and see the height of heaven<end-line class="br"/><begin-line class="indent"/>because of the multitude of my iniquities.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v83001010"/>
+      <verse num="10"><begin-line/>I am weighted down with many an iron fetter,<end-line class="br"/><begin-line class="indent"/>so that I am rejected because of my sins,<end-line class="br"/><begin-line class="indent"/>and I have no relief;<end-line class="br"/><begin-line/>for I provoked your wrath<end-line class="br"/><begin-line class="indent"/>and did what is evil in your sight,<end-line class="br"/><begin-line class="indent"/>setting up abominations and multiplying offenses.<end-line/></verse>
+      <end-paragraph/>
+      <end-block-indent/>
+      <marker class="begin-verse" mid="v83001011"/>
+      <heading>Supplication for Pardon</heading>
+      <begin-block-indent/>
+      <begin-paragraph class="line-group"/>
+      <verse num="11"><begin-line/>And now I bend the knee of my heart,<end-line class="br"/><begin-line class="indent"/>imploring you for your kindness.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v83001012"/>
+      <verse num="12"><begin-line/>I have sinned, O Lord, I have sinned,<end-line class="br"/><begin-line class="indent"/>and I know my transgressions.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v83001013"/>
+      <verse num="13"><begin-line/>I earnestly implore you,<end-line class="br"/><begin-line class="indent"/>forgive me, O Lord, forgive me!<end-line class="br"/><begin-line class="indent"/>Do not destroy me with my transgressions!<end-line class="br"/><begin-line/>Do not be angry with me forever or lay up evil for me;<end-line class="br"/><begin-line class="indent"/>do not condemn me to the depths of the earth.<end-line class="br"/><begin-line/>For you, O Lord, are the God of those who repent,<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v83001014"/>
+      <verse num="14"><begin-line class="indent"/>and in me you will show forth your goodness;<end-line class="br"/><begin-line/>for, unworthy as I am, you will save me in your great mercy,<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v83001015"/>
+      <verse num="15"><begin-line class="indent"/>and I will praise you continually all the days of my life.<end-line class="br"/><begin-line/>For all the might of heaven sings your praise,<end-line class="br"/><begin-line class="indent"/>and yours is the glory forever. Amen.<end-line/></verse>
+      <end-paragraph/>
+      <end-block-indent/>
+    </chapter>
+  </book>
+</crossway-bible>

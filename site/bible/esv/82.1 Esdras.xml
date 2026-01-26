@@ -1,0 +1,1111 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes'?>
+<!DOCTYPE crossway-bible SYSTEM "schema/crossway.bibles.dtd">
+<crossway-bible xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" translation="English Standard Version" revision="2018-3-26" xmlns="http://www.crosswaybibles.org" xsi:schemaLocation="schema/crossway.bibles.xsd">
+  <book title="1 Esdras" num="82">
+    <marker class="begin-verse" mid="v82001001"/>
+    <chapter num="1">
+      <heading>Josiah Celebrates the Passover</heading>
+      <begin-paragraph/>
+      <verse num="1">Josiah kept the Passover to his Lord in Jerusalem; he killed the Passover lamb on the fourteenth day of the first month,</verse>
+      <marker class="begin-verse" mid="v82001002"/>
+      <verse num="2">having placed the priests according to their divisions, arrayed in their garments, in the temple of the Lord.</verse>
+      <marker class="begin-verse" mid="v82001003"/>
+      <verse num="3">And he told the Levites, the temple servants of Israel, that they should sanctify themselves to the Lord and put the holy ark of the Lord in the house that King Solomon son of David had built;</verse>
+      <marker class="begin-verse" mid="v82001004"/>
+      <verse num="4">and he said, <q class="begin-double" qid="82001004.1" from="82001004.1" to="82001006.1"/>You need no longer carry it upon your shoulders. Now worship the Lord your God and serve his people Israel and prepare yourselves by your families and tribes,</verse>
+      <marker class="begin-verse" mid="v82001005"/>
+      <verse num="5">in accordance with the directions of King David of Israel and the magnificence of Solomon his son. Stand in order in the temple according to the groupings of the fathers<q class="end-single" qid="82001005.1"/> houses of you Levites, who minister before your brothers the people of Israel,</verse>
+      <marker class="begin-verse" mid="v82001006"/>
+      <verse num="6">and kill the Passover lamb and prepare the sacrifices for your brothers and keep the Passover according to the commandment of the Lord that was given to Moses.<q class="end-double" qid="82001006.1" from="82001004.1" to="82001006.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82001007"/>
+      <begin-paragraph/>
+      <verse num="7">And Josiah gave to the people who were present 30,000 lambs and kids and 3,000 calves; these were given from the king<q class="end-single" qid="82001007.1"/>s possessions, as he promised, to the people and the priests and Levites.</verse>
+      <marker class="begin-verse" mid="v82001008"/>
+      <verse num="8">And Hilkiah, Zechariah, and Jehiel, the chief officers of the temple, gave to the priests for the Passover 2,600 sheep and 300 calves.</verse>
+      <marker class="begin-verse" mid="v82001009"/>
+      <verse num="9">And Jeconiah and Shemaiah and Nethanel his brother and Hashabiah and Ochiel and Joram, captains over thousands, gave the Levites for the Passover 5,000 sheep and 700 calves.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82001010"/>
+      <begin-paragraph/>
+      <verse num="10">And this is what took place. The priests and the Levites, properly arrayed and having the unleavened bread, stood according to</verse>
+      <marker class="begin-verse" mid="v82001011"/>
+      <verse num="11">their tribes and the grouping of the fathers<q class="end-single" qid="82001011.1"/> houses, before the people, to make the offering to the Lord as it is written in the book of Moses; this they did in the morning.</verse>
+      <marker class="begin-verse" mid="v82001012"/>
+      <verse num="12">They roasted the Passover lamb with fire, as required; and they boiled the sacrifices in bronze pots and caldrons, with a pleasing odor,</verse>
+      <marker class="begin-verse" mid="v82001013"/>
+      <verse num="13">and carried them to all the people. Afterward they prepared the Passover for themselves and for their brothers the priests, the sons of Aaron,</verse>
+      <marker class="begin-verse" mid="v82001014"/>
+      <verse num="14">because the priests were offering the fat until night; so the Levites prepared it for themselves and for their brothers the priests, the sons of Aaron.</verse>
+      <marker class="begin-verse" mid="v82001015"/>
+      <verse num="15">And the temple musicians, the sons of Asaph, were in their place according to the arrangement made by David, and also Asaph, Zechariah, and Eddinus, who represented the king.</verse>
+      <marker class="begin-verse" mid="v82001016"/>
+      <verse num="16">The gatekeepers were at each gate; no one needed to depart from his duties, for their brothers the Levites prepared the Passover for them.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82001017"/>
+      <begin-paragraph/>
+      <verse num="17">So the things that had to do with the sacrifices to the Lord were accomplished that day: the Passover was kept</verse>
+      <marker class="begin-verse" mid="v82001018"/>
+      <verse num="18">and the sacrifices were offered on the altar of the Lord, according to the command of King Josiah.</verse>
+      <marker class="begin-verse" mid="v82001019"/>
+      <verse num="19">And the sons of Israel who were present at that time kept the Passover and the Feast of Unleavened Bread seven days.</verse>
+      <marker class="begin-verse" mid="v82001020"/>
+      <verse num="20">No Passover like it had been kept in Israel since the times of Samuel the prophet;</verse>
+      <marker class="begin-verse" mid="v82001021"/>
+      <verse num="21">none of the kings of Israel had kept such a Passover as was kept by Josiah and the priests and Levites and the people of Judah and all of Israel who were dwelling in Jerusalem.</verse>
+      <marker class="begin-verse" mid="v82001022"/>
+      <verse num="22">In the eighteenth year of the reign of Josiah this Passover was kept.</verse>
+      <marker class="begin-verse" mid="v82001023"/>
+      <verse num="23">And the deeds of Josiah were upright in the sight of the Lord, for his heart was full of godliness.</verse>
+      <marker class="begin-verse" mid="v82001024"/>
+      <verse num="24">The events of his reign have been recorded in the past, concerning those who sinned and acted wickedly toward the Lord beyond any other people or kingdom and how they perceptibly grieved the Lord,<note nid="n82001024.1"/> so that the words of the Lord rose up against Israel.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82001025"/>
+      <heading>End of Josiah’s Reign</heading>
+      <begin-paragraph/>
+      <verse num="25">After all these acts of Josiah, it happened that Pharaoh, king of Egypt, went to make war at Carchemish on the Euphrates, and Josiah went out against him.</verse>
+      <marker class="begin-verse" mid="v82001026"/>
+      <verse num="26">And the king of Egypt sent word to him saying, <q class="begin-double" qid="82001026.1" from="82001026.1" to="82001027.1"/>What have we to do with each other, king of Judea?</verse>
+      <marker class="begin-verse" mid="v82001027"/>
+      <verse num="27">I was not sent against you by the Lord God, for my war is at the Euphrates. And now the Lord is with me! The Lord is with me, urging me on! Stand aside and do not oppose the Lord.<q class="end-double" qid="82001027.1" from="82001026.1" to="82001027.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82001028"/>
+      <begin-paragraph/>
+      <verse num="28">But Josiah did not turn back to his chariot, but tried to fight with him and did not heed the words of Jeremiah the prophet from the mouth of the Lord.</verse>
+      <marker class="begin-verse" mid="v82001029"/>
+      <verse num="29">He joined battle with him in the plain of Megiddo, and the commanders came down against King Josiah.</verse>
+      <marker class="begin-verse" mid="v82001030"/>
+      <verse num="30">And the king said to his servants, <q class="begin-double" qid="82001030.1" from="82001030.1" to="82001030.2"/>Take me away from the battle, for I am very weak.<q class="end-double" qid="82001030.2" from="82001030.1" to="82001030.2"/> And immediately his servants took him out of the line of battle.</verse>
+      <marker class="begin-verse" mid="v82001031"/>
+      <verse num="31">And he got into his second chariot; and after he was brought back to Jerusalem he died and was buried in the tomb of his fathers.</verse>
+      <marker class="begin-verse" mid="v82001032"/>
+      <verse num="32">And in all Judea they mourned for Josiah. Jeremiah the prophet lamented for Josiah, and the principal men, with the women,<note nid="n82001032.1"/> have made lamentation for him to this day; it was ordained that this should always be done throughout the whole nation of Israel.</verse>
+      <marker class="begin-verse" mid="v82001033"/>
+      <verse num="33">These things are written in the book of the histories of the kings of Judea; and every one of the acts of Josiah and his splendor and his understanding of the law of the Lord and the things that he had done before and these that are now told are recorded in the book of the kings of Israel and Judah.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82001034"/>
+      <heading>Last Kings of Judah</heading>
+      <begin-paragraph/>
+      <verse num="34">And the men of the nation took Jeconiah<note nid="n82001034.1"/> son of Josiah, who was twenty-three years old, and made him king in succession to Josiah his father.</verse>
+      <marker class="begin-verse" mid="v82001035"/>
+      <verse num="35">And he reigned three months in Judah and Jerusalem. Then the king of Egypt deposed him from reigning in Jerusalem</verse>
+      <marker class="begin-verse" mid="v82001036"/>
+      <verse num="36">and fined the nation 100 talents of silver and a talent of gold.</verse>
+      <marker class="begin-verse" mid="v82001037"/>
+      <verse num="37">And the king of Egypt made Jehoiakim his brother king of Judea and Jerusalem.</verse>
+      <marker class="begin-verse" mid="v82001038"/>
+      <verse num="38">Jehoiakim put the nobles in prison and seized his brother Zarius and brought him up out of Egypt.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82001039"/>
+      <begin-paragraph/>
+      <verse num="39">Jehoiakim was twenty-five years old when he began to reign in Judea and Jerusalem, and he did what was evil in the sight of the Lord.</verse>
+      <marker class="begin-verse" mid="v82001040"/>
+      <verse num="40">And King Nebuchadnezzar of Babylon came up against him and bound him with a chain of bronze and took him away to Babylon.</verse>
+      <marker class="begin-verse" mid="v82001041"/>
+      <verse num="41">Nebuchadnezzar also took some holy vessels of the Lord and carried them away and stored them in his temple in Babylon.</verse>
+      <marker class="begin-verse" mid="v82001042"/>
+      <verse num="42">But the things that are reported about Jehoiakim<note nid="n82001042.1"/> and his uncleanness and impiety are written in the chronicles of the kings.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82001043"/>
+      <begin-paragraph/>
+      <verse num="43">Jehoiachin his son became king in his stead; when he was made king he was eighteen years old,</verse>
+      <marker class="begin-verse" mid="v82001044"/>
+      <verse num="44">and he reigned three months and ten days in Jerusalem. He did what was evil in the sight of the Lord.</verse>
+      <marker class="begin-verse" mid="v82001045"/>
+      <verse num="45">And after a year Nebuchadnezzar sent and removed him to Babylon, with the holy vessels of the Lord,</verse>
+      <marker class="begin-verse" mid="v82001046"/>
+      <verse num="46">and made Zedekiah king of Judea and Jerusalem.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82001047"/>
+      <heading>Fall of Jerusalem<begin-paragraph/>Zedekiah was twenty-one years old, and he reigned eleven years.</heading>
+      <verse num="47">He also did what was evil in the sight of the Lord and did not listen to the words that were spoken by Jeremiah the prophet from the mouth of the Lord.</verse>
+      <marker class="begin-verse" mid="v82001048"/>
+      <verse num="48">And though King Nebuchadnezzar had made him swear by the name of the Lord, he broke his oath and rebelled; and he stiffened his neck and hardened his heart and transgressed the laws of the Lord, the God of Israel.</verse>
+      <marker class="begin-verse" mid="v82001049"/>
+      <verse num="49">Also the leaders of the people and of the priests committed many acts of sacrilege and lawlessness beyond all the unclean deeds of all the nations and polluted the temple of the Lord that had been sanctified in Jerusalem.</verse>
+      <marker class="begin-verse" mid="v82001050"/>
+      <verse num="50">So the God of their fathers sent by his messenger to call them back, because he would have spared them and his dwelling place.</verse>
+      <marker class="begin-verse" mid="v82001051"/>
+      <verse num="51">But they mocked his messengers, and whenever the Lord spoke, they scoffed at his prophets,</verse>
+      <marker class="begin-verse" mid="v82001052"/>
+      <verse num="52">until in his anger against his people because of their ungodly acts he gave command to bring against them the kings of the Chaldeans.</verse>
+      <marker class="begin-verse" mid="v82001053"/>
+      <verse num="53">These killed their young men with the sword around their holy temple and did not spare young man or maiden, old man or youngster, for he gave them all into their hands.</verse>
+      <marker class="begin-verse" mid="v82001054"/>
+      <verse num="54">And all the holy vessels of the Lord, great and small, and the treasure chests of the Lord and the royal stores, they took and carried away to Babylon.</verse>
+      <marker class="begin-verse" mid="v82001055"/>
+      <verse num="55">And they burned the house of the Lord and broke down the walls of Jerusalem and burned their towers with fire</verse>
+      <marker class="begin-verse" mid="v82001056"/>
+      <verse num="56">and utterly destroyed all its glorious things. The survivors he led away to Babylon with the sword,</verse>
+      <marker class="begin-verse" mid="v82001057"/>
+      <verse num="57">and they were servants to him and to his sons until the Persians began to reign, in fulfillment of the word of the Lord by the mouth of Jeremiah:</verse>
+      <marker class="begin-verse" mid="v82001058"/>
+      <verse num="58"><q class="begin-double" qid="82001058.1" from="82001058.1" to="82001058.2"/>Until the land has enjoyed its Sabbaths, it shall keep Sabbath all the time of its desolation until the completion of seventy years.<q class="end-double" qid="82001058.2" from="82001058.1" to="82001058.2"/></verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v82002001"/>
+    <chapter num="2">
+      <heading>Cyrus Permits the Exiles to Return</heading>
+      <begin-paragraph/>
+      <verse num="1">In the first year of Cyrus as king of the Persians, so that the word of the Lord by the mouth of Jeremiah might be accomplished,</verse>
+      <marker class="begin-verse" mid="v82002002"/>
+      <verse num="2">the Lord stirred up the spirit of King Cyrus of the Persians, and he made a proclamation throughout all his kingdom and also put it in writing:</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82002003"/>
+      <begin-paragraph/>
+      <verse num="3"><q class="begin-double" qid="82002003.1" from="82002003.1" to="82002007.1"/>Thus says King Cyrus of the Persians: The Lord of Israel, the Lord Most High, has made me king of the world,</verse>
+      <marker class="begin-verse" mid="v82002004"/>
+      <verse num="4">and he has commanded me to build him a house at Jerusalem, which is in Judea.</verse>
+      <marker class="begin-verse" mid="v82002005"/>
+      <verse num="5">If any one of you, therefore, is of his people, may his Lord be with him and let him go up to Jerusalem, which is in Judea, and build the house of the Lord of Israel—he is the Lord who dwells in Jerusalem,</verse>
+      <marker class="begin-verse" mid="v82002006"/>
+      <verse num="6">and let all, wherever they may live, be helped by the men of his place with gold and silver—</verse>
+      <marker class="begin-verse" mid="v82002007"/>
+      <verse num="7">with gifts and with horses and cattle, besides the other things added as votive offerings for the temple of the Lord that is in Jerusalem.<q class="end-double" qid="82002007.1" from="82002003.1" to="82002007.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82002008"/>
+      <begin-paragraph/>
+      <verse num="8">Then arose the heads of families of the tribes of Judah and Benjamin and the priests and the Levites and all whose spirit the Lord had stirred to go up to build the house in Jerusalem for the Lord;</verse>
+      <marker class="begin-verse" mid="v82002009"/>
+      <verse num="9">and their neighbors helped them with everything, with silver and gold, with horses and cattle, and with a very great number of votive offerings from many whose hearts were stirred.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82002010"/>
+      <begin-paragraph/>
+      <verse num="10">King Cyrus also brought out the holy vessels of the Lord that Nebuchadnezzar had carried away from Jerusalem and stored in his temple of idols.</verse>
+      <marker class="begin-verse" mid="v82002011"/>
+      <verse num="11">When King Cyrus of the Persians brought these out, he gave them to Mithridates his treasurer,</verse>
+      <marker class="begin-verse" mid="v82002012"/>
+      <verse num="12">and by him they were given to Sheshbazzar the governor of Judea.</verse>
+      <marker class="begin-verse" mid="v82002013"/>
+      <verse num="13">The number of these was 1,000 gold cups, 1,000 silver cups, 29 silver censers, 30 gold bowls, 2,410 silver bowls, and 1,000 other vessels.</verse>
+      <marker class="begin-verse" mid="v82002014"/>
+      <verse num="14">All the vessels were handed over, gold and silver, 5,469,</verse>
+      <marker class="begin-verse" mid="v82002015"/>
+      <verse num="15">and they were carried back by Sheshbazzar with the returning exiles from Babylon to Jerusalem.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82002016"/>
+      <heading>Opposition to Rebuilding Jerusalem</heading>
+      <begin-paragraph/>
+      <verse num="16">But in the time of King Artaxerxes of the Persians, Bishlam, Mithridates, Tabeel, Rehum, Beltethmus, Shimshai the scribe, and the rest of their associates living in Samaria and other places wrote him the following letter, against those who were living in Judea and Jerusalem:</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82002017"/>
+      <begin-paragraph/>
+      <verse num="17"><q class="begin-double" qid="82002017.1" from="82002017.1" to="82002024.1"/>To King Artaxerxes our lord, your servants Rehum the recorder and Shimshai the scribe and the other judges of their council in Coelesyria and Phoenicia:</verse>
+      <marker class="begin-verse" mid="v82002018"/>
+      <verse num="18">Now be it known to our lord the king that the Jews who came up from you to us have gone to Jerusalem and are building that rebellious and wicked city, repairing its marketplaces and walls, and laying the foundations for a temple.</verse>
+      <marker class="begin-verse" mid="v82002019"/>
+      <verse num="19">Now if this city is built and the walls finished, they will not only refuse to pay tribute but will even resist kings.</verse>
+      <marker class="begin-verse" mid="v82002020"/>
+      <verse num="20">And since the building of the temple is now going on, we think it best not to neglect such a matter,</verse>
+      <marker class="begin-verse" mid="v82002021"/>
+      <verse num="21">but to speak to our lord the king, in order that, if it seems good to you, search may be made in the records of your fathers.</verse>
+      <marker class="begin-verse" mid="v82002022"/>
+      <verse num="22">You will find in the chronicles what has been written about them and will learn that this city was rebellious, troubling both kings and other cities,</verse>
+      <marker class="begin-verse" mid="v82002023"/>
+      <verse num="23">and that the Jews were rebels and kept setting up blockades in it from of old. That is why this city was laid waste.</verse>
+      <marker class="begin-verse" mid="v82002024"/>
+      <verse num="24">Therefore we now make known to you, O lord and king, that if this city is built and its walls finished, you will no longer have access to Coelesyria and Phoenicia.<q class="end-double" qid="82002024.1" from="82002017.1" to="82002024.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82002025"/>
+      <begin-paragraph/>
+      <verse num="25">Then the king, in reply to Rehum the recorder and Beltethmus and Shimshai the scribe and the others associated with them and living in Samaria and Syria and Phoenicia, wrote as follows:</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82002026"/>
+      <begin-paragraph/>
+      <verse num="26"><q class="begin-double" qid="82002026.1" from="82002026.1" to="82002029.1"/>I have read the letter you sent me. So I ordered search to be made, and it has been found that this city from of old has fought against kings</verse>
+      <marker class="begin-verse" mid="v82002027"/>
+      <verse num="27">and that the men in it were given to rebellion and war and that mighty and cruel kings ruled in Jerusalem and exacted tribute from Coelesyria and Phoenicia.</verse>
+      <marker class="begin-verse" mid="v82002028"/>
+      <verse num="28">Therefore I have now issued orders to prevent these men from building the city and to take care that nothing more be done</verse>
+      <marker class="begin-verse" mid="v82002029"/>
+      <verse num="29">and that such wicked proceedings go no further to the annoyance of kings.<q class="end-double" qid="82002029.1" from="82002026.1" to="82002029.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82002030"/>
+      <begin-paragraph/>
+      <verse num="30">Then, when the letter from King Artaxerxes was read, Rehum and Shimshai the scribe and their associates went in haste to Jerusalem, with horsemen and a multitude in battle array, and began to hinder the builders. And the building of the temple in Jerusalem ceased until the second year of the reign of King Darius of the Persians.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v82003001"/>
+    <chapter num="3">
+      <heading>Debate of the Three Bodyguards</heading>
+      <begin-paragraph/>
+      <verse num="1">Now King Darius gave a great banquet for all that were under him and all that were born in his house and all the nobles of Media and Persia</verse>
+      <marker class="begin-verse" mid="v82003002"/>
+      <verse num="2">and all the satraps and generals and governors that were under him in the 127 satrapies from India to Ethiopia.</verse>
+      <marker class="begin-verse" mid="v82003003"/>
+      <verse num="3">They ate and drank, and when they were satisfied they departed; and King Darius went to his bedroom and went to sleep and then awoke.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82003004"/>
+      <begin-paragraph/>
+      <verse num="4">Then the three young men of the bodyguard, who kept guard over the person of the king, said to one another,</verse>
+      <marker class="begin-verse" mid="v82003005"/>
+      <verse num="5"><q class="begin-double" qid="82003005.1" from="82003005.1" to="82003007.1"/>Let each of us state what one thing is strongest; and to him whose statement seems wisest, King Darius will give rich gifts and great honors of victory.</verse>
+      <marker class="begin-verse" mid="v82003006"/>
+      <verse num="6">He shall be clothed in purple and drink from gold cups and sleep on a gold bed and have a chariot with gold bridles and a turban of fine linen and a necklace around his neck;</verse>
+      <marker class="begin-verse" mid="v82003007"/>
+      <verse num="7">and because of his wisdom he shall sit next to Darius and shall be called kinsman of Darius.<q class="end-double" qid="82003007.1" from="82003005.1" to="82003007.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82003008"/>
+      <begin-paragraph/>
+      <verse num="8">Then each wrote his own statement, and they sealed them and put them under the pillow of King Darius</verse>
+      <marker class="begin-verse" mid="v82003009"/>
+      <verse num="9">and said, <q class="begin-double" qid="82003009.1" from="82003009.1" to="82003009.2"/>When the king wakes, they will give him the writing; and to the one whose statement the king and the three nobles of Persia judge to be wisest the victory shall be given according to what is written.<q class="end-double" qid="82003009.2" from="82003009.1" to="82003009.2"/></verse>
+      <marker class="begin-verse" mid="v82003010"/>
+      <verse num="10">The first wrote, <q class="begin-double" qid="82003010.1" from="82003010.1" to="82003010.2"/>Wine is strongest.<q class="end-double" qid="82003010.2" from="82003010.1" to="82003010.2"/></verse>
+      <marker class="begin-verse" mid="v82003011"/>
+      <verse num="11">The second wrote, <q class="begin-double" qid="82003011.1" from="82003011.1" to="82003011.2"/>The king is strongest.<q class="end-double" qid="82003011.2" from="82003011.1" to="82003011.2"/></verse>
+      <marker class="begin-verse" mid="v82003012"/>
+      <verse num="12">The third wrote, <q class="begin-double" qid="82003012.1" from="82003012.1" to="82003012.2"/>Women are strongest, but truth is victor over all things.<q class="end-double" qid="82003012.2" from="82003012.1" to="82003012.2"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82003013"/>
+      <begin-paragraph/>
+      <verse num="13">When the king awoke, they took the writing and gave it to him, and he read it.</verse>
+      <marker class="begin-verse" mid="v82003014"/>
+      <verse num="14">Then he sent and summoned all the nobles of Persia and Media and the satraps and generals and governors and prefects,</verse>
+      <marker class="begin-verse" mid="v82003015"/>
+      <verse num="15">and he took his seat in the council chamber, and the writing was read in their presence.</verse>
+      <marker class="begin-verse" mid="v82003016"/>
+      <verse num="16">And he said, <q class="begin-double" qid="82003016.1" from="82003016.1" to="82003016.2"/>Call the young men, and they shall explain their statements.<q class="end-double" qid="82003016.2" from="82003016.1" to="82003016.2"/> So they were summoned and came in.</verse>
+      <marker class="begin-verse" mid="v82003017"/>
+      <verse num="17">And they said to them, <q class="begin-double" qid="82003017.1" from="82003017.1" to="82003017.2"/>Explain to us what you have written.<q class="end-double" qid="82003017.2" from="82003017.1" to="82003017.2"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82003018"/>
+      <heading>Speech about Wine<begin-paragraph/>Then the first, who had spoken of the strength of wine, began and said:</heading>
+      <verse num="18"><q class="begin-double" qid="82003018.1" from="82003018.1" to="82003024.1"/>Gentlemen, how is wine the strongest? It leads astray the minds of all who drink it.</verse>
+      <marker class="begin-verse" mid="v82003019"/>
+      <verse num="19">It makes equal the mind of the king and the orphan, of the slave and the free, of the poor and the rich.</verse>
+      <marker class="begin-verse" mid="v82003020"/>
+      <verse num="20">It turns every thought to feasting and mirth and forgets all sorrow and debt.</verse>
+      <marker class="begin-verse" mid="v82003021"/>
+      <verse num="21">It makes all hearts feel rich, forgets kings and satraps, and makes everyone talk in vast sums.<note nid="n82003021.1"/></verse>
+      <marker class="begin-verse" mid="v82003022"/>
+      <verse num="22">When men drink they forget to be friendly with friends and brothers, and before long they draw their swords.</verse>
+      <marker class="begin-verse" mid="v82003023"/>
+      <verse num="23">And when they recover from the wine, they do not remember what they have done.</verse>
+      <marker class="begin-verse" mid="v82003024"/>
+      <verse num="24">Gentlemen, is not wine the strongest, since it forces men to do these things?<q class="end-double" qid="82003024.1" from="82003018.1" to="82003024.1"/> When he had said this, he stopped speaking.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v82004001"/>
+    <chapter num="4">
+      <heading>Speech about the King</heading>
+      <begin-paragraph/>
+      <verse num="1">Then the second, who had spoken of the strength of the king, began to speak:</verse>
+      <marker class="begin-verse" mid="v82004002"/>
+      <verse num="2"><q class="begin-double" qid="82004002.1" from="82004002.1" to="82004012.1"/>Gentlemen, are not men strongest, who rule over land and sea and all that is in them?</verse>
+      <marker class="begin-verse" mid="v82004003"/>
+      <verse num="3">But the king is stronger; he is their lord and master, and whatever he says to them they obey.</verse>
+      <marker class="begin-verse" mid="v82004004"/>
+      <verse num="4">If he tells them to make war on one another, they do it; and if he sends them out against the enemy, they go and conquer mountains, walls, and towers.</verse>
+      <marker class="begin-verse" mid="v82004005"/>
+      <verse num="5">They kill and are killed and do not disobey the king<q class="end-single" qid="82004005.1"/>s command; if they win the victory, they bring everything to the king—whatever spoil they take and everything else.</verse>
+      <marker class="begin-verse" mid="v82004006"/>
+      <verse num="6">Likewise those who do not serve in the army or make war but till the soil, whenever they sow, reap the harvest and bring some to the king; and they compel one another to pay taxes to the king.</verse>
+      <marker class="begin-verse" mid="v82004007"/>
+      <verse num="7">And yet he is only one man! If he tells them to kill, they kill; if he tells them to release, they release;</verse>
+      <marker class="begin-verse" mid="v82004008"/>
+      <verse num="8">if he tells them to attack, they attack; if he tells them to lay waste, they lay waste; if he tells them to build, they build;</verse>
+      <marker class="begin-verse" mid="v82004009"/>
+      <verse num="9">if he tells them to cut down, they cut down; if he tells them to plant, they plant.</verse>
+      <marker class="begin-verse" mid="v82004010"/>
+      <verse num="10">All his people and his armies obey him. Moreover, he reclines, he eats and drinks and sleeps,</verse>
+      <marker class="begin-verse" mid="v82004011"/>
+      <verse num="11">but they keep watch around him and no one may go away to attend to his own affairs, nor do they disobey him.</verse>
+      <marker class="begin-verse" mid="v82004012"/>
+      <verse num="12">Gentlemen, why is not the king the strongest, since he is to be obeyed in this fashion?<q class="end-double" qid="82004012.1" from="82004002.1" to="82004012.1"/> And he stopped speaking.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82004013"/>
+      <heading>Speech about Women</heading>
+      <begin-paragraph/>
+      <verse num="13">Then the third, who had spoken of women and truth—this was Zerubbabel—began to speak:</verse>
+      <marker class="begin-verse" mid="v82004014"/>
+      <verse num="14"><q class="begin-double" qid="82004014.1" from="82004014.1" to="82004032.1"/>Gentlemen, is not the king great, and are not men many, and is not wine strong? Who then is their master, or who is their lord? Is it not women?</verse>
+      <marker class="begin-verse" mid="v82004015"/>
+      <verse num="15">Women gave birth to the king and to every people that rules over sea and land.</verse>
+      <marker class="begin-verse" mid="v82004016"/>
+      <verse num="16">From women they came; and women brought up the very men who plant the vineyards from which comes wine.</verse>
+      <marker class="begin-verse" mid="v82004017"/>
+      <verse num="17">Women make men<q class="end-single" qid="82004017.1"/>s clothes; they bring men glory; men cannot exist without women.</verse>
+      <marker class="begin-verse" mid="v82004018"/>
+      <verse num="18">If men gather gold and silver or any other beautiful thing and then see a woman lovely in appearance and beauty,</verse>
+      <marker class="begin-verse" mid="v82004019"/>
+      <verse num="19">they let all those things go and gape at her and with open mouths stare at her, and all prefer her to gold or silver or any other beautiful thing.</verse>
+      <marker class="begin-verse" mid="v82004020"/>
+      <verse num="20">A man leaves his own father, who brought him up, and his own country and holds fast to his wife.</verse>
+      <marker class="begin-verse" mid="v82004021"/>
+      <verse num="21">With his wife he ends his days, with no thought of his father or his mother or his country.</verse>
+      <marker class="begin-verse" mid="v82004022"/>
+      <verse num="22">Hence you must realize that women rule over you!<end-paragraph/><begin-paragraph/><q class="continue-double" qid="82004022.1" from="82004014.1" to="82004032.1"/>Do you not labor and toil and bring everything and give it to women?</verse>
+      <marker class="begin-verse" mid="v82004023"/>
+      <verse num="23">A man takes his sword and goes out to travel and rob and steal and to sail the sea and rivers;</verse>
+      <marker class="begin-verse" mid="v82004024"/>
+      <verse num="24">he faces lions, and he walks in darkness, and when he steals and robs and plunders, he brings it back to the woman he loves.</verse>
+      <marker class="begin-verse" mid="v82004025"/>
+      <verse num="25">A man loves his wife more than his father or his mother.</verse>
+      <marker class="begin-verse" mid="v82004026"/>
+      <verse num="26">Many men have lost their minds because of women and have become slaves because of them.</verse>
+      <marker class="begin-verse" mid="v82004027"/>
+      <verse num="27">Many have perished or stumbled or sinned, because of women.</verse>
+      <marker class="begin-verse" mid="v82004028"/>
+      <verse num="28">And now do you not believe me?<end-paragraph/><begin-paragraph/><q class="continue-double" qid="82004028.1" from="82004014.1" to="82004032.1"/>Is not the king great in his power? Do not all lands fear to touch him?</verse>
+      <marker class="begin-verse" mid="v82004029"/>
+      <verse num="29">Yet I have seen him with Apame, the king<q class="end-single" qid="82004029.1"/>s concubine, the daughter of the illustrious Bartacus; she would sit at the king<q class="end-single" qid="82004029.2"/>s right hand</verse>
+      <marker class="begin-verse" mid="v82004030"/>
+      <verse num="30">and take the crown from the king<q class="end-single" qid="82004030.1"/>s head and put it on her own and slap the king with her left hand.</verse>
+      <marker class="begin-verse" mid="v82004031"/>
+      <verse num="31">At this the king would gaze at her with mouth agape. If she smiles at him, he laughs; if she loses her temper with him, he flatters her, that she may be reconciled to him.</verse>
+      <marker class="begin-verse" mid="v82004032"/>
+      <verse num="32">Gentlemen, why are not women strong, since they do such things?<q class="end-double" qid="82004032.1" from="82004014.1" to="82004032.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82004033"/>
+      <heading>Speech about Truth</heading>
+      <begin-paragraph/>
+      <verse num="33">Then the king and the nobles looked at one another; and he began to speak about truth:</verse>
+      <marker class="begin-verse" mid="v82004034"/>
+      <verse num="34"><q class="begin-double" qid="82004034.1" from="82004034.1" to="82004040.1"/>Gentlemen, are not women strong? The earth is vast, and heaven is high, and the sun is swift in its course, for it makes the circuit of the heavens and returns to its place in one day.</verse>
+      <marker class="begin-verse" mid="v82004035"/>
+      <verse num="35">Is he not great who does these things? But truth is great and stronger than all things.</verse>
+      <marker class="begin-verse" mid="v82004036"/>
+      <verse num="36">The whole earth calls upon truth, and heaven blesses her. All God<q class="end-single" qid="82004036.1"/>s<note nid="n82004036.1"/> works quake and tremble, and with him there is nothing unrighteous.</verse>
+      <marker class="begin-verse" mid="v82004037"/>
+      <verse num="37">Wine is unrighteous, the king is unrighteous, women are unrighteous, all the sons of men are unrighteous, all their works are unrighteous, and all such things. There is no truth in them, and in their unrighteousness they will perish.</verse>
+      <marker class="begin-verse" mid="v82004038"/>
+      <verse num="38">But truth endures and is strong forever and lives and prevails forever and ever.</verse>
+      <marker class="begin-verse" mid="v82004039"/>
+      <verse num="39">With it there is no partiality or preference, but it does what is righteous instead of anything that is unrighteous or wicked. All men approve its deeds,</verse>
+      <marker class="begin-verse" mid="v82004040"/>
+      <verse num="40">and there is nothing unrighteous in its judgment. To it belongs the strength and the kingship and the power and the majesty of all the ages. Blessed be the God of truth!<q class="end-double" qid="82004040.1" from="82004034.1" to="82004040.1"/></verse>
+      <marker class="begin-verse" mid="v82004041"/>
+      <verse num="41">He ceased speaking; then all the people shouted and said, <q class="begin-double" qid="82004041.1" from="82004041.1" to="82004041.2"/>Great is truth and strongest of all!<q class="end-double" qid="82004041.2" from="82004041.1" to="82004041.2"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82004042"/>
+      <heading>Zerubbabel’s Reward</heading>
+      <begin-paragraph/>
+      <verse num="42">Then the king said to him, <q class="begin-double" qid="82004042.1" from="82004042.1" to="82004042.2"/>Ask what you wish, even beyond what is written, and we will give it to you, for you have been found to be the wisest. And you shall sit next to me and be called my kinsman.<q class="end-double" qid="82004042.2" from="82004042.1" to="82004042.2"/></verse>
+      <marker class="begin-verse" mid="v82004043"/>
+      <verse num="43">Then he said to the king, <q class="begin-double" qid="82004043.1" from="82004043.1" to="82004046.1"/>Remember the vow that you made to build Jerusalem, in the day when you became king,</verse>
+      <marker class="begin-verse" mid="v82004044"/>
+      <verse num="44">and to send back all the vessels that were taken from Jerusalem, which Cyrus set apart when he vowed to destroy Babylon and vowed to send them back there.</verse>
+      <marker class="begin-verse" mid="v82004045"/>
+      <verse num="45">You also vowed to build the temple, which the Edomites burned when Judea was laid waste by the Chaldeans.</verse>
+      <marker class="begin-verse" mid="v82004046"/>
+      <verse num="46">And now, O lord the king, this is what I ask and request of you, and this suits your greatness. I pray therefore that you fulfill the vow whose fulfillment you vowed to the King of heaven with your own lips.<q class="end-double" qid="82004046.1" from="82004043.1" to="82004046.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82004047"/>
+      <begin-paragraph/>
+      <verse num="47">Then King Darius rose and kissed him and wrote letters for him to all the treasurers and governors and generals and satraps, that they should give escort to him and all who were going up with him to build Jerusalem.</verse>
+      <marker class="begin-verse" mid="v82004048"/>
+      <verse num="48">And he wrote letters to all the governors in Coelesyria and Phoenicia and to those in Lebanon, to bring cedar timber from Lebanon to Jerusalem and to help him build the city.</verse>
+      <marker class="begin-verse" mid="v82004049"/>
+      <verse num="49">And he wrote for all the Jews who were going up from his kingdom to Judea, in the interest of their freedom, that no officer or satrap or governor or treasurer should forcibly enter their doors;</verse>
+      <marker class="begin-verse" mid="v82004050"/>
+      <verse num="50">that all the country that they would occupy should be theirs without tribute; that the Idumeans should give up the villages of the Jews that they held;</verse>
+      <marker class="begin-verse" mid="v82004051"/>
+      <verse num="51">that twenty talents a year should be given for the building of the temple until it was completed</verse>
+      <marker class="begin-verse" mid="v82004052"/>
+      <verse num="52">and an additional ten talents a year for whole burnt offerings to be offered on the altar every day, in accordance with the commandment to make seventeen offerings;</verse>
+      <marker class="begin-verse" mid="v82004053"/>
+      <verse num="53">and that all who came from Babylonia to build the city should have their freedom, they and their children and all the priests who came.</verse>
+      <marker class="begin-verse" mid="v82004054"/>
+      <verse num="54">He wrote also concerning their support and the priests<q class="end-single" qid="82004054.1"/> garments in which<note nid="n82004054.1"/> they were to minister.</verse>
+      <marker class="begin-verse" mid="v82004055"/>
+      <verse num="55">He wrote that the support for the Levites should be provided until the day when the temple should be finished and Jerusalem built.</verse>
+      <marker class="begin-verse" mid="v82004056"/>
+      <verse num="56">He wrote that land and wages should be provided for all who guarded the city.</verse>
+      <marker class="begin-verse" mid="v82004057"/>
+      <verse num="57">And he sent back from Babylon all the vessels that Cyrus had set apart; everything that Cyrus had ordered to be done, he also commanded to be done and to be sent to Jerusalem.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82004058"/>
+      <heading>Zerubbabel’s Prayer</heading>
+      <begin-paragraph/>
+      <verse num="58">When the young man went out, he lifted up his face to heaven toward Jerusalem and praised the King of heaven, saying,</verse>
+      <marker class="begin-verse" mid="v82004059"/>
+      <verse num="59"><q class="begin-double" qid="82004059.1" from="82004059.1" to="82004060.1"/>From you is the victory; from you is wisdom, and yours is the glory. I am your servant.</verse>
+      <marker class="begin-verse" mid="v82004060"/>
+      <verse num="60">Blessed are you, who has given me wisdom; I give you thanks, O Lord of our fathers.<q class="end-double" qid="82004060.1" from="82004059.1" to="82004060.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82004061"/>
+      <begin-paragraph/>
+      <verse num="61">So he took the letters and went to Babylon and told this to all his kinsmen.</verse>
+      <marker class="begin-verse" mid="v82004062"/>
+      <verse num="62">And they praised the God of their fathers, because he had given them release and permission</verse>
+      <marker class="begin-verse" mid="v82004063"/>
+      <verse num="63">to go up and build Jerusalem and the temple that is called by his name; and they feasted, with music and rejoicing, for seven days.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v82005001"/>
+    <chapter num="5">
+      <heading>List of Returning Exiles</heading>
+      <begin-paragraph/>
+      <verse num="1">After this the heads of fathers<q class="end-single" qid="82005001.1"/> houses were chosen to go up, according to their tribes, with their wives and sons and daughters and their menservants and maidservants and their livestock.</verse>
+      <marker class="begin-verse" mid="v82005002"/>
+      <verse num="2">And Darius sent with them 1,000 horsemen to take them back to Jerusalem in safety, with the music of drums and flutes;</verse>
+      <marker class="begin-verse" mid="v82005003"/>
+      <verse num="3">and all their brothers were making merry. And he made them go up with them.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82005004"/>
+      <begin-paragraph/>
+      <verse num="4">These are the names of the men who went up, according to their fathers<q class="end-single" qid="82005004.1"/> houses in the tribes, over their groups:</verse>
+      <marker class="begin-verse" mid="v82005005"/>
+      <verse num="5">the priests, the sons of Phinehas son of Aaron; Jeshua son of Jozadak, son of Seraiah, and Joakim son of Zerubbabel, son of Shealtiel, of the house of David, of the lineage of Phares, of the tribe of Judah,</verse>
+      <marker class="begin-verse" mid="v82005006"/>
+      <verse num="6">who spoke wise words before King Darius of the Persians in the second year of his reign, in the month of Nisan, the first month.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82005007"/>
+      <begin-paragraph/>
+      <verse num="7">These are the Judeans who came up out of their sojourn in captivity, whom King Nebuchadnezzar of Babylon had carried away to Babylon</verse>
+      <marker class="begin-verse" mid="v82005008"/>
+      <verse num="8">and who returned to Jerusalem and the rest of Judea, each to his own town. They came with Zerubbabel and Jeshua, Nehemiah, Seraiah, Resaiah, Enenius, Mordecai, Beelsarus, Aspharasus, Reeliah, Rehum, and Baanah, their leaders.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82005009"/>
+      <begin-paragraph/>
+      <verse num="9">The number of those from the nation and their leaders: the sons of Parosh: 2,172. The sons of Shephatiah: 472.</verse>
+      <marker class="begin-verse" mid="v82005010"/>
+      <verse num="10">The sons of Arah: 756.</verse>
+      <marker class="begin-verse" mid="v82005011"/>
+      <verse num="11">The sons of Pahathmoab, of the sons of Jeshua and Joab: 2,812.</verse>
+      <marker class="begin-verse" mid="v82005012"/>
+      <verse num="12">The sons of Elam: 1,254. The sons of Zattu: 945. The sons of Chorbe: 705. The sons of Bani: 648.</verse>
+      <marker class="begin-verse" mid="v82005013"/>
+      <verse num="13">The sons of Bebai: 623. The sons of Azgad: 1,322.</verse>
+      <marker class="begin-verse" mid="v82005014"/>
+      <verse num="14">The sons of Adonikam: 667. The sons of Bigvai: 2,066. The sons of Adin: 454.</verse>
+      <marker class="begin-verse" mid="v82005015"/>
+      <verse num="15">The sons of Ater, namely of Hezekiah: 92. The sons of Kilan and Azetas: 67. The sons of Azaru: 432.</verse>
+      <marker class="begin-verse" mid="v82005016"/>
+      <verse num="16">The sons of Annias: 101. The sons of Arom. The sons of Bezai: 323. The sons of Arsiphurith: 112.</verse>
+      <marker class="begin-verse" mid="v82005017"/>
+      <verse num="17">The sons of Baiterus: 3,005. The sons of Bethlomon: 123.</verse>
+      <marker class="begin-verse" mid="v82005018"/>
+      <verse num="18">The men of Netophah: 55. The men of Anathoth: 158. The men of Bethasmoth: 42.</verse>
+      <marker class="begin-verse" mid="v82005019"/>
+      <verse num="19">The men of Kiriatharim: 25. The men of Chephirah and Beeroth: 743.</verse>
+      <marker class="begin-verse" mid="v82005020"/>
+      <verse num="20">The Chadiasans and Ammidians: 422. The men of Kirama and Geba: 621.</verse>
+      <marker class="begin-verse" mid="v82005021"/>
+      <verse num="21">The men of Macalon: 122. The men of Betolio: 52. The sons of Niphish: 156.</verse>
+      <marker class="begin-verse" mid="v82005022"/>
+      <verse num="22">The sons of the other Calamolalus and Ono: 725. The sons of Jerechus: 345.</verse>
+      <marker class="begin-verse" mid="v82005023"/>
+      <verse num="23">The sons of Senaah: 3,330.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82005024"/>
+      <begin-paragraph/>
+      <verse num="24">The priests: the sons of Jedaiah son of Jeshua, of the sons of Anasib: 972. The sons of Immer: 1,052.</verse>
+      <marker class="begin-verse" mid="v82005025"/>
+      <verse num="25">The sons of Pashhur: 1,247. The sons of Charme: 1,017.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82005026"/>
+      <begin-paragraph/>
+      <verse num="26">The Levites: the sons of Jeshua and Kadmiel and Bannas and Sudias: 74.</verse>
+      <marker class="begin-verse" mid="v82005027"/>
+      <verse num="27">The temple musicians: the sons of Asaph: 128.</verse>
+      <marker class="begin-verse" mid="v82005028"/>
+      <verse num="28">The gatekeepers: the sons of Shallum, the sons of Ater, the sons of Talmon, the sons of Akkub, the sons of Hatita, the sons of Shobai, in all 139.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82005029"/>
+      <begin-paragraph/>
+      <verse num="29">The temple servants: the sons of Esau, the sons of Hasupha, the sons of Tabbaoth, the sons of Keros, the sons of Sua, the sons of Padon, the sons of Lebanah, the sons of Hagabah,</verse>
+      <marker class="begin-verse" mid="v82005030"/>
+      <verse num="30">the sons of Akkub, the sons of Uthai, the sons of Ketab, the sons of Hagab, the sons of Subai, the sons of Hana, the sons of Cathua, the sons of Geddur,</verse>
+      <marker class="begin-verse" mid="v82005031"/>
+      <verse num="31">the sons of Jairus, the sons of Daisan, the sons of Noeba, the sons of Chezib, the sons of Gazera, the sons of Uzza, the sons of Phinoe, the sons of Hasrah, the sons of Basthai, the sons of Asnah, the sons of the Maani, the sons of Nephisim, the sons of Acuph, the sons of Hakupha, the sons of Asur, the sons of Pharakim, the sons of Bazluth,</verse>
+      <marker class="begin-verse" mid="v82005032"/>
+      <verse num="32">the sons of Mehida, the sons of Cutha, the sons of Charea, the sons of Barkos, the sons of Serar, the sons of Temah, the sons of Neziah, the sons of Hatipha.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82005033"/>
+      <begin-paragraph/>
+      <verse num="33">The sons of Solomon<q class="end-single" qid="82005033.1"/>s servants: the sons of Assaphioth, the sons of Peruda, the sons of Jaalah, the sons of Lozon, the sons of Isdael, the sons of Shephatiah,</verse>
+      <marker class="begin-verse" mid="v82005034"/>
+      <verse num="34">the sons of Agia, the sons of Pochereth-hazzebaim, the sons of Sarothie, the sons of Masiah, the sons of Gas, the sons of Addus, the sons of Subas, the sons of Apherra, the sons of Barodis, the sons of Shaphat, the sons of Allon.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82005035"/>
+      <begin-paragraph/>
+      <verse num="35">All the temple servants and the sons of Solomon<q class="end-single" qid="82005035.1"/>s servants were 372.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82005036"/>
+      <begin-paragraph/>
+      <verse num="36">The following are those who came up from Tel-melah and Tel-harsha, under the leadership of Cherub, Addan, and Immer,</verse>
+      <marker class="begin-verse" mid="v82005037"/>
+      <verse num="37">though they could not prove by their fathers<q class="end-single" qid="82005037.1"/> houses or lineage that they belonged to Israel: the sons of Delaiah son of Tobiah, the sons of Nekoda: 652.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82005038"/>
+      <begin-paragraph/>
+      <verse num="38">Of the priests the following had assumed the priesthood but were not found registered: the sons of Habaiah, the sons of Hakkoz, the sons of Jaddus who had married Agia, one of the daughters of Barzillai, and was called by his name.</verse>
+      <marker class="begin-verse" mid="v82005039"/>
+      <verse num="39">And when the genealogy of these men was sought in the register and was not found, they were excluded from serving as priests.</verse>
+      <marker class="begin-verse" mid="v82005040"/>
+      <verse num="40">And Nehemiah and Attharias<note nid="n82005040.1"/> told them not to share in the holy things until a high priest should appear wearing Urim and Thummim.<note nid="n82005040.2"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82005041"/>
+      <begin-paragraph/>
+      <verse num="41">All those of Israel, twelve or more years of age, besides menservants and maidservants, were 42,360;</verse>
+      <marker class="begin-verse" mid="v82005042"/>
+      <verse num="42">their menservants and maidservants were 7,337; there were 245 musicians and singers.</verse>
+      <marker class="begin-verse" mid="v82005043"/>
+      <verse num="43">There were 435 camels and 7,036 horses, 245 mules, and 5,525 donkeys.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82005044"/>
+      <begin-paragraph/>
+      <verse num="44">Some of the heads of families, when they came to the temple of God that is in Jerusalem, vowed that they would erect the house on its site, to the best of their ability</verse>
+      <marker class="begin-verse" mid="v82005045"/>
+      <verse num="45">and that they would give to the sacred treasury for the work 1,000 minas of gold, 5,000 minas of silver, and 100 priests<q class="end-single" qid="82005045.1"/> garments.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82005046"/>
+      <begin-paragraph/>
+      <verse num="46">The priests, the Levites, and some others of God<q class="end-single" qid="82005046.1"/>s people<note nid="n82005046.1"/> settled in Jerusalem and its vicinity; and the temple musicians, the gatekeepers, and all Israel in their towns.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82005047"/>
+      <heading>Worship Begins Again</heading>
+      <begin-paragraph/>
+      <verse num="47">When the seventh month came and the sons of Israel were each in his own home, they gathered as of one mind in the square before the first gate toward the east.</verse>
+      <marker class="begin-verse" mid="v82005048"/>
+      <verse num="48">Then Jeshua son of Jozadak, with his fellow priests, and Zerubbabel son of Shealtiel, with his kinsmen, took their places and prepared the altar of the God of Israel,</verse>
+      <marker class="begin-verse" mid="v82005049"/>
+      <verse num="49">to offer whole burnt offerings upon it, in accordance with the directions in the book of Moses the man of God.</verse>
+      <marker class="begin-verse" mid="v82005050"/>
+      <verse num="50">And some joined them from the other peoples of the land. And they erected the altar in its place, for all the peoples of the land were hostile to them and were stronger than they; and they offered sacrifices at the proper times and whole burnt offerings to the Lord morning and evening.</verse>
+      <marker class="begin-verse" mid="v82005051"/>
+      <verse num="51">They kept the Feast of Booths, as it is commanded in the law, and offered the proper sacrifices every day</verse>
+      <marker class="begin-verse" mid="v82005052"/>
+      <verse num="52">and thereafter the continual offerings and sacrifices on Sabbaths and at new moons and at all the consecrated feasts.</verse>
+      <marker class="begin-verse" mid="v82005053"/>
+      <verse num="53">And all who had made any vow to God began to offer sacrifices to God, from the new moon of the seventh month, though the temple of God was not yet built.</verse>
+      <marker class="begin-verse" mid="v82005054"/>
+      <verse num="54">And they gave money to the masons and the carpenters and food and drink</verse>
+      <marker class="begin-verse" mid="v82005055"/>
+      <verse num="55">and carts<note nid="n82005055.1"/> to the Sidonians and the Tyrians, to bring cedar logs from Lebanon and convey them in rafts to the harbor of Joppa, according to the decree that they had in writing from King Cyrus of the Persians.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82005056"/>
+      <heading>Foundations of the Temple Laid</heading>
+      <begin-paragraph/>
+      <verse num="56">In the second year after their coming to the temple of God in Jerusalem, in the second month, Zerubbabel son of Shealtiel and Jeshua son of Jozadak made a beginning, together with their brothers and the Levitical priests and all who had come to Jerusalem from the captivity;</verse>
+      <marker class="begin-verse" mid="v82005057"/>
+      <verse num="57">and they laid the foundation of the temple of God on the new moon of the second month in the second year after they came to Judea and Jerusalem.</verse>
+      <marker class="begin-verse" mid="v82005058"/>
+      <verse num="58">And they appointed the Levites who were twenty or more years of age to have charge of the work of the Lord. And Jeshua arose, and his sons and brothers and Kadmiel his brother and the sons of Jeshua Emadabun and the sons of Joda son of Iliadun, with their sons and brothers, all the Levites, as one man pressing forward the work on the house of God.<end-paragraph/><begin-paragraph/>So the builders built the temple of the Lord.</verse>
+      <marker class="begin-verse" mid="v82005059"/>
+      <verse num="59">And the priests stood arrayed in their garments, with musical instruments and trumpets, and the Levites, the sons of Asaph, with cymbals,</verse>
+      <marker class="begin-verse" mid="v82005060"/>
+      <verse num="60">praising the Lord and blessing him, according to the directions of King David of Israel;</verse>
+      <marker class="begin-verse" mid="v82005061"/>
+      <verse num="61">and they sang hymns, giving thanks to the Lord, because his goodness and his glory are forever upon all Israel.</verse>
+      <marker class="begin-verse" mid="v82005062"/>
+      <verse num="62">And all the people sounded trumpets and shouted with a great shout, praising the Lord for the erection of the house of the Lord.</verse>
+      <marker class="begin-verse" mid="v82005063"/>
+      <verse num="63">Some of the Levitical priests and heads of fathers<q class="end-single" qid="82005063.1"/> houses, old men who had seen the former house, came to the building of this one with outcries and loud weeping,</verse>
+      <marker class="begin-verse" mid="v82005064"/>
+      <verse num="64">while many came with trumpets and a joyful noise,</verse>
+      <marker class="begin-verse" mid="v82005065"/>
+      <verse num="65">so that the people could not hear the trumpets because of the weeping of the people.<end-paragraph/><begin-paragraph/>For the multitude sounded the trumpets loudly, so that the sound was heard from a great distance;</verse>
+      <marker class="begin-verse" mid="v82005066"/>
+      <verse num="66">and when the enemies of the tribe of Judah and Benjamin heard it, they came to find out what the sound of the trumpets meant.</verse>
+      <marker class="begin-verse" mid="v82005067"/>
+      <verse num="67">And they learned that those who had returned from captivity were building the temple for the Lord God of Israel.</verse>
+      <marker class="begin-verse" mid="v82005068"/>
+      <verse num="68">So they approached Zerubbabel and Jeshua and the heads of the fathers<q class="end-single" qid="82005068.1"/> houses and said to them, <q class="begin-double" qid="82005068.2" from="82005068.2" to="82005069.1"/>We will build with you.</verse>
+      <marker class="begin-verse" mid="v82005069"/>
+      <verse num="69">For we obey your Lord just as you do, and we have been sacrificing to him ever since the days of King Esarhaddon of the Assyrians, who brought us here.<q class="end-double" qid="82005069.1" from="82005068.2" to="82005069.1"/></verse>
+      <marker class="begin-verse" mid="v82005070"/>
+      <verse num="70">But Zerubbabel and Jeshua and the heads of the fathers<q class="end-single" qid="82005070.1"/> houses in Israel said to them, <q class="begin-double" qid="82005070.2" from="82005070.2" to="82005071.1"/>You have nothing to do with us in building the house for the Lord our God,</verse>
+      <marker class="begin-verse" mid="v82005071"/>
+      <verse num="71">for we alone will build it for the Lord of Israel, as King Cyrus of the Persians has commanded us.<q class="end-double" qid="82005071.1" from="82005070.2" to="82005071.1"/></verse>
+      <marker class="begin-verse" mid="v82005072"/>
+      <verse num="72">But the peoples of the land pressed hard<note nid="n82005072.1"/> upon those in Judea, cut off their supplies, and hindered their building;</verse>
+      <marker class="begin-verse" mid="v82005073"/>
+      <verse num="73">and by plots and demagoguery and uprisings they prevented the completion of the building as long as King Cyrus lived. And they were kept from building for two years, until the reign of Darius.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v82006001"/>
+    <chapter num="6">
+      <heading>Work on the Temple Begins Again</heading>
+      <begin-paragraph/>
+      <verse num="1">Now in the second year of the reign of Darius, the prophets Haggai and Zechariah son of Iddo prophesied to the Jews who were in Judea and Jerusalem; they prophesied to them in the name of the Lord God of Israel.</verse>
+      <marker class="begin-verse" mid="v82006002"/>
+      <verse num="2">Then Zerubbabel son of Shealtiel and Jeshua son of Jozadak arose and began to build the house of the Lord that is in Jerusalem, with the help of the prophets of the Lord who were with them.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82006003"/>
+      <begin-paragraph/>
+      <verse num="3">At the same time Sisinnes the governor of Syria and Phoenicia and Sathrabuzanes and their associates came to them and said,</verse>
+      <marker class="begin-verse" mid="v82006004"/>
+      <verse num="4"><q class="begin-double" qid="82006004.1" from="82006004.1" to="82006004.2"/>By whose order are you building this house and this roof and finishing all the other things? And who are the builders that are finishing these things?<q class="end-double" qid="82006004.2" from="82006004.1" to="82006004.2"/></verse>
+      <marker class="begin-verse" mid="v82006005"/>
+      <verse num="5">Yet the elders of the Jews were dealt with kindly, for the providence of the Lord was over the captives;</verse>
+      <marker class="begin-verse" mid="v82006006"/>
+      <verse num="6">and they were not prevented from building until word could be sent to Darius concerning them and a report made.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82006007"/>
+      <begin-paragraph/>
+      <verse num="7">A copy of the letter that Sisinnes the governor of Syria and Phoenicia, and Sathrabuzanes, and their associates the local rulers in Syria and Phoenicia wrote and sent to Darius:</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82006008"/>
+      <begin-paragraph/>
+      <verse num="8"><q class="begin-double" qid="82006008.1" from="82006008.1" to="82006022.1"/>To King Darius, greeting. Let it be fully known to our lord the king that, when we went to the country of Judea and entered the city of Jerusalem, we found the elders of the Jews, who had been in captivity,</verse>
+      <marker class="begin-verse" mid="v82006009"/>
+      <verse num="9">building in the city of Jerusalem a great new house for the Lord, of hewn stone, with costly timber laid in the walls.</verse>
+      <marker class="begin-verse" mid="v82006010"/>
+      <verse num="10">These operations are going on rapidly, and the work is prospering in their hands and being completed with all splendor and care.</verse>
+      <marker class="begin-verse" mid="v82006011"/>
+      <verse num="11">Then we asked these elders, <q class="begin-single" qid="82006011.1" from="82006011.1" to="82006011.2"/>At whose command are you building this house and laying the foundations of this structure?<q class="end-single" qid="82006011.2" from="82006011.1" to="82006011.2"/></verse>
+      <marker class="begin-verse" mid="v82006012"/>
+      <verse num="12">And in order that we might inform you in writing who the leaders are, we questioned them and asked them for a list of the names of those who are at their head.</verse>
+      <marker class="begin-verse" mid="v82006013"/>
+      <verse num="13">They answered us, <q class="begin-single" qid="82006013.1" from="82006013.1" to="82006020.1"/>We are the servants of the Lord who created the heaven and the earth.</verse>
+      <marker class="begin-verse" mid="v82006014"/>
+      <verse num="14">And the house was built many years ago by a king of Israel who was great and strong, and it was finished.</verse>
+      <marker class="begin-verse" mid="v82006015"/>
+      <verse num="15">But when our fathers sinned against the Lord of Israel who is in heaven and provoked him, he gave them over into the hands of King Nebuchadnezzar of Babylon and the Chaldeans;</verse>
+      <marker class="begin-verse" mid="v82006016"/>
+      <verse num="16">and they pulled down the house and burned it and carried the people away captive to Babylon.</verse>
+      <marker class="begin-verse" mid="v82006017"/>
+      <verse num="17">But in the first year that Cyrus reigned over the country of Babylonia, King Cyrus wrote that this house should be rebuilt.</verse>
+      <marker class="begin-verse" mid="v82006018"/>
+      <verse num="18">And the holy vessels of gold and of silver, which Nebuchadnezzar had taken out of the house in Jerusalem and stored in his own temple, these King Cyrus took out again from the temple in Babylon, and they were delivered to Zerubbabel and Sheshbazzar the governor</verse>
+      <marker class="begin-verse" mid="v82006019"/>
+      <verse num="19">with the command that he should take all these vessels back and put them in the temple at Jerusalem and that this temple of the Lord should be rebuilt on its site.</verse>
+      <marker class="begin-verse" mid="v82006020"/>
+      <verse num="20">Then this Sheshbazzar, after coming here, laid the foundations of the house of the Lord that is in Jerusalem, and although it has been in process of construction from that time until now, it has not yet reached completion.<q class="end-single" qid="82006020.1" from="82006013.1" to="82006020.1"/></verse>
+      <marker class="begin-verse" mid="v82006021"/>
+      <verse num="21">Now therefore, if it seems wise, O king, let search be made in the royal archives of our lord<note nid="n82006021.1"/> the king that are in Babylon;</verse>
+      <marker class="begin-verse" mid="v82006022"/>
+      <verse num="22">and if it is found that the building of the house of the Lord in Jerusalem was done with the consent of King Cyrus and if it is approved by our lord the king, let him send us directions concerning these things.<q class="end-double" qid="82006022.1" from="82006008.1" to="82006022.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82006023"/>
+      <heading>Official Permission Granted</heading>
+      <begin-paragraph/>
+      <verse num="23">Then Darius commanded that search be made in the royal archives that were deposited in Babylon. And in Ecbatana, the fortress that is in the country of Media, a scroll<note nid="n82006023.1"/> was found in which this was recorded:</verse>
+      <marker class="begin-verse" mid="v82006024"/>
+      <verse num="24"><q class="begin-double" qid="82006024.1" from="82006024.1" to="82006026.1"/>In the first year of the reign of Cyrus, King Cyrus ordered the building of the house of the Lord in Jerusalem, where they sacrifice with perpetual fire;</verse>
+      <marker class="begin-verse" mid="v82006025"/>
+      <verse num="25">its height to be sixty cubits and its width sixty cubits, with three courses of hewn stone and one course of new native timber; the cost to be paid from the treasury of King Cyrus;</verse>
+      <marker class="begin-verse" mid="v82006026"/>
+      <verse num="26">and that the holy vessels of the house of the Lord, both of gold and of silver, which Nebuchadnezzar took out of the house in Jerusalem and carried away to Babylon, should be restored to the house in Jerusalem, to be placed where they had been.<q class="end-double" qid="82006026.1" from="82006024.1" to="82006026.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82006027"/>
+      <begin-paragraph/>
+      <verse num="27">So Darius<note nid="n82006027.1"/> commanded Sisinnes the governor of Syria and Phoenicia and Sathrabuzanes and their associates and those who were appointed as local rulers in Syria and Phoenicia to keep away from the place and to permit Zerubbabel, the servant of the Lord and governor of Judea, and the elders of the Jews to build this house of the Lord on its site.</verse>
+      <marker class="begin-verse" mid="v82006028"/>
+      <verse num="28"><q class="begin-double" qid="82006028.1" from="82006028.1" to="82006031.1"/>And I command that it be built completely and that full effort be made to help those who have returned from the captivity of Judea, until the house of the Lord is finished;</verse>
+      <marker class="begin-verse" mid="v82006029"/>
+      <verse num="29">and that out of the tribute of Coelesyria and Phoenicia a portion be scrupulously given to these men, that is, to Zerubbabel the governor, for sacrifices to the Lord, for bulls and rams and lambs,</verse>
+      <marker class="begin-verse" mid="v82006030"/>
+      <verse num="30">and likewise wheat and salt and wine and oil, regularly every year, without quibbling, for daily use as the priests in Jerusalem may indicate,</verse>
+      <marker class="begin-verse" mid="v82006031"/>
+      <verse num="31">in order that libations may be made to the Most High God for the king and his children and that prayers be offered for their life.<q class="end-double" qid="82006031.1" from="82006028.1" to="82006031.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82006032"/>
+      <begin-paragraph/>
+      <verse num="32">And he commanded that if any should transgress or nullify any of the things stated and written above,<note nid="n82006032.1"/> a beam should be taken out of his house and he should be hanged upon it, and his property should be forfeited to the king.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82006033"/>
+      <begin-paragraph/>
+      <verse num="33"><q class="begin-double" qid="82006033.1" from="82006033.1" to="82006034.2"/>Therefore may the Lord, whose name is there called upon, destroy every king and nation that shall stretch out their hands to hinder or damage that house of the Lord in Jerusalem.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82006034"/>
+      <begin-paragraph/>
+      <verse num="34"><q class="continue-double" qid="82006034.1" from="82006033.1" to="82006034.2"/>I, King Darius, have decreed that it be done with all diligence as here prescribed.<q class="end-double" qid="82006034.2" from="82006033.1" to="82006034.2"/></verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v82007001"/>
+    <chapter num="7">
+      <heading>The Temple Is Dedicated</heading>
+      <begin-paragraph/>
+      <verse num="1">Then Sisinnes the governor of Coelesyria and Phoenicia and Sathrabuzanes and their associates following the orders of King Darius,</verse>
+      <marker class="begin-verse" mid="v82007002"/>
+      <verse num="2">supervised the holy work with very great care, assisting the elders of the Jews and the chief officers of the temple.</verse>
+      <marker class="begin-verse" mid="v82007003"/>
+      <verse num="3">And the holy work prospered while the prophets Haggai and Zechariah prophesied;</verse>
+      <marker class="begin-verse" mid="v82007004"/>
+      <verse num="4">and they completed it by the command of the Lord God of Israel. So with the consent of Cyrus and Darius and Artaxerxes, kings of the Persians,</verse>
+      <marker class="begin-verse" mid="v82007005"/>
+      <verse num="5">the holy house was finished by the twenty-third day of the month of Adar, in the sixth year of King Darius.</verse>
+      <marker class="begin-verse" mid="v82007006"/>
+      <verse num="6">And the sons of Israel, the priests, the Levites, and the rest of those from the captivity who joined them did according to what was written in the book of Moses.</verse>
+      <marker class="begin-verse" mid="v82007007"/>
+      <verse num="7">They offered at the dedication of the temple of the Lord 100 bulls, 200 rams, 400 lambs,</verse>
+      <marker class="begin-verse" mid="v82007008"/>
+      <verse num="8">and 12 male goats for the sin of all Israel, according to the number of the twelve leaders of the tribes of Israel;</verse>
+      <marker class="begin-verse" mid="v82007009"/>
+      <verse num="9">and the priests and the Levites stood arrayed in their garments, according to kindred, for the services of the Lord God of Israel in accordance with the book of Moses; and the gatekeepers were at each gate.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82007010"/>
+      <heading>Passover</heading>
+      <begin-paragraph/>
+      <verse num="10">The sons of Israel who came from the captivity kept the Passover on the fourteenth day of the first month, after the priests and the Levites were purified together.</verse>
+      <marker class="begin-verse" mid="v82007011"/>
+      <verse num="11">Not all of the returned captives were purified, but the Levites were all purified together,<note nid="n82007011.1"/></verse>
+      <marker class="begin-verse" mid="v82007012"/>
+      <verse num="12">and they sacrificed the Passover lamb for all the returned captives and for their brothers the priests and for themselves.</verse>
+      <marker class="begin-verse" mid="v82007013"/>
+      <verse num="13">And the sons of Israel who had come from the captivity ate it, all those who had separated themselves from the abominations of the peoples of the land and sought the Lord.</verse>
+      <marker class="begin-verse" mid="v82007014"/>
+      <verse num="14">And they kept the Feast of Unleavened Bread seven days, rejoicing before the Lord,</verse>
+      <marker class="begin-verse" mid="v82007015"/>
+      <verse num="15">Because he had changed the will of the king of the Assyrians concerning them, to strengthen their hands for the service of the Lord God of Israel.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v82008001"/>
+    <chapter num="8">
+      <heading>Ezra Arrives in Jerusalem</heading>
+      <begin-paragraph/>
+      <verse num="1">After these things, when King Artaxerxes of the Persians was reigning, Ezra came, son of Seraiah, son of Azariah, son of Hilkiah, son of Shallum,</verse>
+      <marker class="begin-verse" mid="v82008002"/>
+      <verse num="2">son of Zadok, son of Ahitub, son of Amariah, son of Uzzi, son of Bukki, son of Abishua, son of Phineas, son of Eleazar, son of Aaron the chief priest.</verse>
+      <marker class="begin-verse" mid="v82008003"/>
+      <verse num="3">This Ezra came up from Babylon as a scribe skilled in the law of Moses, which was given by the God of Israel;</verse>
+      <marker class="begin-verse" mid="v82008004"/>
+      <verse num="4">and the king showed him honor, for he found favor before the king<note nid="n82008004.1"/> in all his requests.</verse>
+      <marker class="begin-verse" mid="v82008005"/>
+      <verse num="5">There came up with him to Jerusalem some of the sons of Israel and some of the priests and Levites and temple musicians and gatekeepers and temple servants,</verse>
+      <marker class="begin-verse" mid="v82008006"/>
+      <verse num="6">in the seventh year of the reign of Artaxerxes, in the fifth month (this was the king<q class="end-single" qid="82008006.1"/>s seventh year); for they left Babylon on the new moon of the first month and arrived in Jerusalem on the new moon of the fifth month, by the prosperous journey that the Lord gave them.<note nid="n82008006.1"/></verse>
+      <marker class="begin-verse" mid="v82008007"/>
+      <verse num="7">For Ezra possessed great knowledge, so that he omitted nothing from the law of the Lord or the commandments, but taught all Israel all the ordinances and judgments.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82008008"/>
+      <heading>The King’s Mandate</heading>
+      <begin-paragraph/>
+      <verse num="8">The following is a copy of the written commission from King Artaxerxes that was delivered to Ezra the priest and reader of the law of the Lord:</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82008009"/>
+      <begin-paragraph/>
+      <verse num="9"><q class="begin-double" qid="82008009.1" from="82008009.1" to="82008024.1"/>King Artaxerxes to Ezra the priest and reader of the law of the Lord, greeting.</verse>
+      <marker class="begin-verse" mid="v82008010"/>
+      <verse num="10">In accordance with my gracious decision, I have given orders that those of the Jewish nation and of the priests and Levites and others in our realm, who freely choose to do so, may go with you to Jerusalem.</verse>
+      <marker class="begin-verse" mid="v82008011"/>
+      <verse num="11">Let as many as are so disposed, therefore, depart with you as I and the seven friends who are my counselors have decided,</verse>
+      <marker class="begin-verse" mid="v82008012"/>
+      <verse num="12">in order to look into matters in Judea and Jerusalem, in accordance with what is in the law of the Lord,</verse>
+      <marker class="begin-verse" mid="v82008013"/>
+      <verse num="13">and to carry to Jerusalem the gifts for the Lord of Israel that I and my friends have vowed and to collect for the Lord in Jerusalem all the gold and silver that may be found in the country of Babylonia,</verse>
+      <marker class="begin-verse" mid="v82008014"/>
+      <verse num="14">together with what is given by the nation for the temple of their Lord that is in Jerusalem, both gold and silver for bulls and rams and lambs and what goes with them,</verse>
+      <marker class="begin-verse" mid="v82008015"/>
+      <verse num="15">so as to offer sacrifices upon the altar of their Lord that is in Jerusalem.</verse>
+      <marker class="begin-verse" mid="v82008016"/>
+      <verse num="16">And whatever you and your brothers are minded to do with the gold and silver, perform it in accordance with the will of your God;</verse>
+      <marker class="begin-verse" mid="v82008017"/>
+      <verse num="17">and deliver the holy vessels of the Lord that are given you for the use of the temple of your God that is in Jerusalem.</verse>
+      <marker class="begin-verse" mid="v82008018"/>
+      <verse num="18">And whatever else occurs to you as necessary for the temple of your God, you may provide out of the royal treasury.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82008019"/>
+      <begin-paragraph/>
+      <verse num="19"><q class="continue-double" qid="82008019.1" from="82008009.1" to="82008024.1"/>And I, King Artaxerxes, have commanded the treasurers of Syria and Phoenicia that whatever Ezra the priest and reader of the law of the Most High God sends for, they shall take care to give him,</verse>
+      <marker class="begin-verse" mid="v82008020"/>
+      <verse num="20">up to 100 talents of silver and likewise up to 100 cors of wheat, 100 baths of wine, and salt in abundance.</verse>
+      <marker class="begin-verse" mid="v82008021"/>
+      <verse num="21">Let all things prescribed in the law of God be scrupulously fulfilled for the Most High God, so that wrath may not come upon the kingdom of the king and his sons.</verse>
+      <marker class="begin-verse" mid="v82008022"/>
+      <verse num="22">You are also informed that no tribute or any other tax is to be laid on any of the priests or Levites or temple musicians or gatekeepers or temple servants or persons employed in this temple and that no one has authority to impose any tax upon them.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82008023"/>
+      <begin-paragraph/>
+      <verse num="23"><q class="continue-double" qid="82008023.1" from="82008009.1" to="82008024.1"/>And you, Ezra, according to the wisdom of God, appoint judges and justices to judge all those who know the law of your God, throughout all Syria and Phoenicia; and those who do not know it you shall teach.</verse>
+      <marker class="begin-verse" mid="v82008024"/>
+      <verse num="24">And all who transgress the law of your God or the law of the kingdom shall be strictly punished, whether by death or some other punishment, either fine or imprisonment.<q class="end-double" qid="82008024.1" from="82008009.1" to="82008024.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82008025"/>
+      <heading>Ezra Praises God</heading>
+      <begin-paragraph/>
+      <verse num="25">Blessed be the Lord alone, who put this into the heart of the king, to glorify his house that is in Jerusalem,</verse>
+      <marker class="begin-verse" mid="v82008026"/>
+      <verse num="26">and who honored me in the sight of the king and his counselors and all his friends and nobles.</verse>
+      <marker class="begin-verse" mid="v82008027"/>
+      <verse num="27">I was encouraged by the help of the Lord my God, and I gathered men from Israel to go up with me.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82008028"/>
+      <heading>Leaders Who Returned</heading>
+      <begin-paragraph/>
+      <verse num="28">These are the principal men, according to their fathers<q class="end-single" qid="82008028.1"/> houses and their groups, who went up with me from Babylon, in the reign of King Artaxerxes:</verse>
+      <marker class="begin-verse" mid="v82008029"/>
+      <verse num="29">Of the sons of Phineas: Gershom. Of the sons of Ithamar: Gamael. Of the sons of David: Hattush son of Shecaniah.</verse>
+      <marker class="begin-verse" mid="v82008030"/>
+      <verse num="30">Of the sons of Parosh: Zechariah, and with him 150 men enrolled.</verse>
+      <marker class="begin-verse" mid="v82008031"/>
+      <verse num="31">Of the sons of Pahathmoab: Eliehoenai son of Zerahiah, and with him 200 men.</verse>
+      <marker class="begin-verse" mid="v82008032"/>
+      <verse num="32">Of the sons of Zattu: Shecaniah son of Jahaziel, and with him 300 men. Of the sons of Adin: Obed son of Jonathan, and with him 250 men.</verse>
+      <marker class="begin-verse" mid="v82008033"/>
+      <verse num="33">Of the sons of Elam: Jeshaiah son of Gotholiah, and with him 70 men.</verse>
+      <marker class="begin-verse" mid="v82008034"/>
+      <verse num="34">Of the sons of Shephatiah: Zeraiah son of Michael, and with him 70 men.</verse>
+      <marker class="begin-verse" mid="v82008035"/>
+      <verse num="35">Of the sons of Joab: Obadiah son of Jehiel, and with him 212 men.</verse>
+      <marker class="begin-verse" mid="v82008036"/>
+      <verse num="36">Of the sons of Bani: Shelomith son of Josiphiah, and with him 160 men.</verse>
+      <marker class="begin-verse" mid="v82008037"/>
+      <verse num="37">Of the sons of Bebai: Zechariah son of Bebai, and with him 28 men.</verse>
+      <marker class="begin-verse" mid="v82008038"/>
+      <verse num="38">Of the sons of Azgad: Johanan son of Hakkatan, and with him 110 men.</verse>
+      <marker class="begin-verse" mid="v82008039"/>
+      <verse num="39">Of the sons of Adonikam: the last ones, their names being Eliphelet, Jeuel, and Shemaiah, and with them 70 men.</verse>
+      <marker class="begin-verse" mid="v82008040"/>
+      <verse num="40">Of the sons of Bigvai: Uthai son of Istalcurus, and with him 70 men.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82008041"/>
+      <begin-paragraph/>
+      <verse num="41">I assembled them at the river called Theras, and we encamped there three days, and I inspected them.</verse>
+      <marker class="begin-verse" mid="v82008042"/>
+      <verse num="42">When I found there none of the sons of the priests or of the Levites,</verse>
+      <marker class="begin-verse" mid="v82008043"/>
+      <verse num="43">I sent word to Eliezar, Iduel, Maasmas,</verse>
+      <marker class="begin-verse" mid="v82008044"/>
+      <verse num="44">Elnathan, Shemaiah, Jarib, Nathan, Elnathan, Zechariah, and Meshullam, who were leaders and men of understanding;</verse>
+      <marker class="begin-verse" mid="v82008045"/>
+      <verse num="45">and I told them to go to Iddo, who was the leading man at the place of the treasury,</verse>
+      <marker class="begin-verse" mid="v82008046"/>
+      <verse num="46">and ordered them to tell Iddo and his brothers and the treasurers at that place to send us men to serve as priests in the house of our Lord.</verse>
+      <marker class="begin-verse" mid="v82008047"/>
+      <verse num="47">And by the mighty hand of our Lord they brought us competent men of the sons of Mahli son of Levi, son of Israel, namely Sherebiah with his sons and kinsmen: 18;</verse>
+      <marker class="begin-verse" mid="v82008048"/>
+      <verse num="48">also Hashabiah and Annunus and Jeshaiah his brother, of the sons of Hananiah, and their sons: 20 men;</verse>
+      <marker class="begin-verse" mid="v82008049"/>
+      <verse num="49">and of the temple servants, whom David and the leaders had given for the service of the Levites: 220 temple servants; the list of all their names was reported.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82008050"/>
+      <heading>Ezra Proclaims a Fast</heading>
+      <begin-paragraph/>
+      <verse num="50">There I proclaimed a fast for the young men before our Lord, to seek from him a prosperous journey for ourselves and for our children and the livestock that were with us.</verse>
+      <marker class="begin-verse" mid="v82008051"/>
+      <verse num="51">For I was ashamed to ask the king for foot soldiers and horsemen and an escort to keep us safe from our adversaries;</verse>
+      <marker class="begin-verse" mid="v82008052"/>
+      <verse num="52">for we had said to the king, <q class="begin-double" qid="82008052.1" from="82008052.1" to="82008052.2"/>The power of our Lord will be with those who seek him and will support them in every way.<q class="end-double" qid="82008052.2" from="82008052.1" to="82008052.2"/></verse>
+      <marker class="begin-verse" mid="v82008053"/>
+      <verse num="53">And again we prayed to our Lord about these things, and we found him very merciful.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82008054"/>
+      <heading>Gifts for the Temple</heading>
+      <begin-paragraph/>
+      <verse num="54">Then I set apart twelve of the leaders of the priests, Sherebiah and Hashabiah and ten of their kinsmen with them;</verse>
+      <marker class="begin-verse" mid="v82008055"/>
+      <verse num="55">and I weighed out to them the silver and the gold and the holy vessels of the house of our Lord, which the king himself and his counselors and the nobles and all Israel had given.</verse>
+      <marker class="begin-verse" mid="v82008056"/>
+      <verse num="56">I weighed and gave to them 650 talents of silver and silver vessels worth 100 talents and 100 talents of gold</verse>
+      <marker class="begin-verse" mid="v82008057"/>
+      <verse num="57">and 20 golden bowls and 12 bronze vessels of fine bronze that glittered like gold.</verse>
+      <marker class="begin-verse" mid="v82008058"/>
+      <verse num="58">And I said to them, <q class="begin-double" qid="82008058.1" from="82008058.1" to="82008059.2"/>You are holy to the Lord, and the vessels are holy, and the silver and the gold are vowed to the Lord, the Lord of our fathers.</verse>
+      <marker class="begin-verse" mid="v82008059"/>
+      <verse num="59">Be watchful and on guard until you deliver them to the leaders of the priests and the Levites and to the heads of the fathers<q class="end-single" qid="82008059.1"/> houses of Israel, in Jerusalem, in the chambers of the house of our Lord.<q class="end-double" qid="82008059.2" from="82008058.1" to="82008059.2"/></verse>
+      <marker class="begin-verse" mid="v82008060"/>
+      <verse num="60">So the priests and the Levites who took the silver and the gold and the vessels that had been in Jerusalem carried them to the temple of the Lord.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82008061"/>
+      <heading>Return to Jerusalem</heading>
+      <begin-paragraph/>
+      <verse num="61">We departed from the river Theras on the twelfth day of the first month; and we arrived in Jerusalem by the mighty hand of our Lord that was upon us; he delivered us from every enemy on the way, and so we came to Jerusalem.</verse>
+      <marker class="begin-verse" mid="v82008062"/>
+      <verse num="62">When we had been there three days, the silver and the gold were weighed and delivered in the house of our Lord to Meremoth the priest, son of Uriah;</verse>
+      <marker class="begin-verse" mid="v82008063"/>
+      <verse num="63">and with him was Eleazar son of Phinehas, and with them were Jozabad son of Jeshua and Moeth son of Binnui, the Levites.</verse>
+      <marker class="begin-verse" mid="v82008064"/>
+      <verse num="64">The whole was counted and weighed, and the weight of everything was recorded at that very time.</verse>
+      <marker class="begin-verse" mid="v82008065"/>
+      <verse num="65">And those who had come back from captivity offered sacrifices to the Lord, the God of Israel, 12 bulls for all Israel, 96 rams,</verse>
+      <marker class="begin-verse" mid="v82008066"/>
+      <verse num="66">72 lambs, and as a thank offering 12 male goats—all as a sacrifice to the Lord.</verse>
+      <marker class="begin-verse" mid="v82008067"/>
+      <verse num="67">And they delivered the king<q class="end-single" qid="82008067.1"/>s orders to the royal stewards and to the governors of Coelesyria and Phoenicia; and these officials<note nid="n82008067.1"/> honored the people and the temple of the Lord.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82008068"/>
+      <heading>Ezra’s Prayer</heading>
+      <begin-paragraph/>
+      <verse num="68">After these things had been done, the leaders came to me and said,</verse>
+      <marker class="begin-verse" mid="v82008069"/>
+      <verse num="69"><q class="begin-double" qid="82008069.1" from="82008069.1" to="82008070.1"/>The people of Israel and the leaders and the priests and the Levites have not put away from themselves the alien peoples of the land and their pollutions, the Canaanites, the Hittites, the Perizzites, the Jebusites, the Moabites, the Egyptians, and the Edomites.</verse>
+      <marker class="begin-verse" mid="v82008070"/>
+      <verse num="70">For they and their sons have married the daughters of these people,<note nid="n82008070.1"/> and the holy race has been mixed with the alien peoples of the land; and from the beginning of this matter the leaders and the nobles have been sharing in this iniquity.<q class="end-double" qid="82008070.1" from="82008069.1" to="82008070.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82008071"/>
+      <begin-paragraph/>
+      <verse num="71">As soon as I heard these things I rent my garments and my holy mantle and pulled out hair from my head and beard and sat down in anxiety and grief.</verse>
+      <marker class="begin-verse" mid="v82008072"/>
+      <verse num="72">And all who were ever moved at<note nid="n82008072.1"/> the word of the Lord of Israel gathered round me, as I mourned over this iniquity, and I sat grief-stricken until the evening sacrifice.</verse>
+      <marker class="begin-verse" mid="v82008073"/>
+      <verse num="73">Then I rose from my fast, with my garments and my holy mantle rent, and kneeling down and stretching forth my hands to the Lord</verse>
+      <marker class="begin-verse" mid="v82008074"/>
+      <verse num="74">I said:<end-paragraph/><begin-paragraph/><q class="begin-double" qid="82008074.1" from="82008074.1" to="82008090.1"/>O Lord, I am ashamed and confounded before your face.</verse>
+      <marker class="begin-verse" mid="v82008075"/>
+      <verse num="75">For our sins have risen higher than our heads, and our mistakes have mounted up to heaven</verse>
+      <marker class="begin-verse" mid="v82008076"/>
+      <verse num="76">from the times of our fathers, and we are in great sin to this day.</verse>
+      <marker class="begin-verse" mid="v82008077"/>
+      <verse num="77">And because of our sins and the sins of our fathers, we with our brothers and our kings and our priests were given over to the kings of the earth, to the sword and captivity and plundering, in shame until this day.</verse>
+      <marker class="begin-verse" mid="v82008078"/>
+      <verse num="78">And now in some measure mercy has come to us from you, O Lord, to leave to us a root and a name in your Holy Place</verse>
+      <marker class="begin-verse" mid="v82008079"/>
+      <verse num="79">and to uncover a light for us in the house of the Lord our God and to give us food in the time of our servitude.</verse>
+      <marker class="begin-verse" mid="v82008080"/>
+      <verse num="80">Even in our bondage we were not forsaken by our Lord, but he brought us into favor with the kings of the Persians, so that they have given us food</verse>
+      <marker class="begin-verse" mid="v82008081"/>
+      <verse num="81">and glorified the temple of our Lord and raised Zion from desolation, to give us a stronghold in Judea and Jerusalem.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82008082"/>
+      <begin-paragraph/>
+      <verse num="82"><q class="continue-double" qid="82008082.1" from="82008074.1" to="82008090.1"/>And now, O Lord, what shall we say, when we have these things? For we have transgressed your commandments, which you gave by your servants the prophets, saying,</verse>
+      <marker class="begin-verse" mid="v82008083"/>
+      <verse num="83"><q class="begin-single" qid="82008083.1" from="82008083.1" to="82008085.1"/>The land into which you are entering to take possession of it is a land polluted with the pollution of the aliens of the land, and they have filled it with their uncleanness.</verse>
+      <marker class="begin-verse" mid="v82008084"/>
+      <verse num="84">Therefore do not take their daughters in marriage to your sons and do not give your daughters to their sons;</verse>
+      <marker class="begin-verse" mid="v82008085"/>
+      <verse num="85">and do not seek ever to have peace with them, in order that you may be strong and eat the good things of the land and leave it for an inheritance to your children forever.<q class="end-single" qid="82008085.1" from="82008083.1" to="82008085.1"/></verse>
+      <marker class="begin-verse" mid="v82008086"/>
+      <verse num="86">And all that has happened to us has come about because of our evil deeds and our great sins. For you, O Lord, lifted the burden of our sins</verse>
+      <marker class="begin-verse" mid="v82008087"/>
+      <verse num="87">and gave us such a root as this; but we turned back again to transgress your law by mixing with the uncleanness of the peoples of the land.</verse>
+      <marker class="begin-verse" mid="v82008088"/>
+      <verse num="88">Were you not angry enough with us to destroy us without leaving a root or seed or name?</verse>
+      <marker class="begin-verse" mid="v82008089"/>
+      <verse num="89">O Lord of Israel, you are true; for we are left as a root to this day.</verse>
+      <marker class="begin-verse" mid="v82008090"/>
+      <verse num="90">Behold, we are now before you in our iniquities; for we can no longer stand in your presence because of these things.<q class="end-double" qid="82008090.1" from="82008074.1" to="82008090.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82008091"/>
+      <heading>Plan for Ending Mixed Marriages</heading>
+      <begin-paragraph/>
+      <verse num="91">While Ezra was praying and making his confession, weeping and lying upon the ground before the temple, there gathered about him a very great crowd from Jerusalem, men and women and youths; for there was great weeping among the multitude.</verse>
+      <marker class="begin-verse" mid="v82008092"/>
+      <verse num="92">Then Jeconiah<note nid="n82008092.1"/> son of Jehiel, one of the Israelites, called out and said to Ezra, <q class="begin-double" qid="82008092.1" from="82008092.1" to="82008095.1"/>We have sinned against the Lord and have married foreign women from the peoples of the land; but even now there is hope for Israel.</verse>
+      <marker class="begin-verse" mid="v82008093"/>
+      <verse num="93">Let us take an oath to the Lord about this, that we will put away all our foreign wives, with their children,</verse>
+      <marker class="begin-verse" mid="v82008094"/>
+      <verse num="94">as seems good to you and to all who obey the law of the Lord.</verse>
+      <marker class="begin-verse" mid="v82008095"/>
+      <verse num="95">Arise<note nid="n82008095.1"/> and take action, for it is your task, and we are with you to take strong measures.<q class="end-double" qid="82008095.1" from="82008092.1" to="82008095.1"/></verse>
+      <marker class="begin-verse" mid="v82008096"/>
+      <verse num="96">Then Ezra arose and had the leaders of the priests and Levites of all Israel take oath that they would do this. And they took the oath.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v82009001"/>
+    <chapter num="9">
+      <heading>Expulsion of Foreign Wives</heading>
+      <begin-paragraph/>
+      <verse num="1">Then Ezra rose and went from the court of the temple to the chamber of Jehohanan son of Eliashib</verse>
+      <marker class="begin-verse" mid="v82009002"/>
+      <verse num="2">and spent the night there; and he did not eat bread or drink water, for he was mourning over the great iniquities of the multitude.</verse>
+      <marker class="begin-verse" mid="v82009003"/>
+      <verse num="3">And a proclamation was made throughout Judea and Jerusalem to all who had returned from the captivity that they should assemble at Jerusalem,</verse>
+      <marker class="begin-verse" mid="v82009004"/>
+      <verse num="4">and that if any did not meet there within two or three days, in accordance with the decision of the ruling elders, their livestock should be seized for sacrifice and the men themselves<note nid="n82009004.1"/> expelled from the multitude of those who had returned from the captivity.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82009005"/>
+      <begin-paragraph/>
+      <verse num="5">Then the men of the tribe of Judah and Benjamin assembled at Jerusalem within three days; this was the ninth month, on the twentieth day of the month.</verse>
+      <marker class="begin-verse" mid="v82009006"/>
+      <verse num="6">And all the multitude sat in the open square before the temple, shivering because of the bad weather that prevailed.</verse>
+      <marker class="begin-verse" mid="v82009007"/>
+      <verse num="7">Then Ezra rose and said to them, <q class="begin-double" qid="82009007.1" from="82009007.1" to="82009009.1"/>You have broken the law and married foreign women and so have increased the sin of Israel.</verse>
+      <marker class="begin-verse" mid="v82009008"/>
+      <verse num="8">Now then make confession and give glory to the Lord the God of our fathers</verse>
+      <marker class="begin-verse" mid="v82009009"/>
+      <verse num="9">and do his will; separate yourselves from the peoples of the land and from your foreign wives.<q class="end-double" qid="82009009.1" from="82009007.1" to="82009009.1"/></verse>
+      <marker class="begin-verse" mid="v82009010"/>
+      <verse num="10">Then all the multitude shouted and said with a loud voice, <q class="begin-double" qid="82009010.1" from="82009010.1" to="82009013.1"/>We will do as you have said.</verse>
+      <marker class="begin-verse" mid="v82009011"/>
+      <verse num="11">But the multitude is great and it is winter, and we are unable to stand in the open air. This is not a work we can do in one day or two, for we have sinned too much in these things.</verse>
+      <marker class="begin-verse" mid="v82009012"/>
+      <verse num="12">so let the leaders of the multitude stay, and let all those in our settlements who have foreign wives come at the time appointed,</verse>
+      <marker class="begin-verse" mid="v82009013"/>
+      <verse num="13">with the elders and judges of each place, until we are freed from the wrath of the Lord over this matter.<q class="end-double" qid="82009013.1" from="82009010.1" to="82009013.1"/></verse>
+      <marker class="begin-verse" mid="v82009014"/>
+      <verse num="14">Jonathan son of Asahel and Jahzeiah son of Tikvah undertook the matter on these terms, and Meshullam and Levi and Shabbethai served with them as judges.</verse>
+      <marker class="begin-verse" mid="v82009015"/>
+      <verse num="15">And those who had returned from the captivity acted in accordance with all this.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82009016"/>
+      <begin-paragraph/>
+      <verse num="16">Ezra the priest chose for himself the leading men of their fathers<q class="end-single" qid="82009016.1"/> houses, all of them by name; and on the new moon of the tenth month they began their sessions to investigate the matter.</verse>
+      <marker class="begin-verse" mid="v82009017"/>
+      <verse num="17">And the cases of the men who had foreign wives were brought to an end by the new moon of the first month.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82009018"/>
+      <begin-paragraph/>
+      <verse num="18">Of the priests those who were brought in and found to have foreign wives were</verse>
+      <marker class="begin-verse" mid="v82009019"/>
+      <verse num="19">of the sons of Jeshua son of Jozadak and his brothers: Maaseiah, Eliezar, Jarib, and Jodan.</verse>
+      <marker class="begin-verse" mid="v82009020"/>
+      <verse num="20">They pledged themselves to put away their wives and to give rams in propitiation of their error.</verse>
+      <marker class="begin-verse" mid="v82009021"/>
+      <verse num="21">Of the sons of Immer: Hanani and Zebadiah and Maaseiah and Shemaiah and Jehiel and Azariah.</verse>
+      <marker class="begin-verse" mid="v82009022"/>
+      <verse num="22">Of the sons of Pashhur: Elioenai, Maaseiah, Ishmael and Nathanael and Gedaliah and Salthas.<note nid="n82009022.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82009023"/>
+      <begin-paragraph/>
+      <verse num="23">And of the Levites: Jozabad and Shimei and Kelaiah, who was Kelita, and Pethahiah and Judah and Jonah.</verse>
+      <marker class="begin-verse" mid="v82009024"/>
+      <verse num="24">Of the temple musicians: Eliashib and Bacchurus</verse>
+      <marker class="begin-verse" mid="v82009025"/>
+      <verse num="25">Of the gatekeepers: Shallum and Tolbanus.<note nid="n82009025.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82009026"/>
+      <begin-paragraph/>
+      <verse num="26">Of Israel: of the sons of Parosh: Ramiah, Izziah, Malchijah, Mijamin and Eleazar and Asibias and Benaiah.</verse>
+      <marker class="begin-verse" mid="v82009027"/>
+      <verse num="27">Of the sons of Elam: Mattaniah and Zechariah, Jezrielus and Abdi, and Jeremoth and Elijah.</verse>
+      <marker class="begin-verse" mid="v82009028"/>
+      <verse num="28">Of the sons of Zamoth: Eliadas, Eliashib, Othoniah, Jeremoth, and Zabad and Zerdaiah.</verse>
+      <marker class="begin-verse" mid="v82009029"/>
+      <verse num="29">Of the sons of Bebai: Jehohanan and Hananiah and Zabbai and Emathis.</verse>
+      <marker class="begin-verse" mid="v82009030"/>
+      <verse num="30">Of the sons of Mani: Olamos, Malluch, Jedaiah, Jashub, and Sheal and Jeremoth.</verse>
+      <marker class="begin-verse" mid="v82009031"/>
+      <verse num="31">Of the sons of Addi: Naathus and Moossias, Laccunus and Naidus, and Matthanias and Sesthel, and Belnuus and Manasseas.</verse>
+      <marker class="begin-verse" mid="v82009032"/>
+      <verse num="32">Of the sons of Annan: Elionas and Asaias and Melchias and Sabbaias and Simon Chosamaeus.</verse>
+      <marker class="begin-verse" mid="v82009033"/>
+      <verse num="33">Of the sons of Hashum: Mattenai and Mattattah and Zabad and Eliphelet and Manasseh and Shimei.</verse>
+      <marker class="begin-verse" mid="v82009034"/>
+      <verse num="34">Of the sons of Bani: Jeremai, Moadios, Maeros, Joel, Mamdai and Bedeiah and Anos, Carabasion and Eliashib and Mamnitanaimos, Eliasis, Binnui, Elialis, Shimei, Shelemiah, Nethaniah. Of the sons of Ezora: Shashai, Azarel, Azael, Samatos, Zambris, Joseph.</verse>
+      <marker class="begin-verse" mid="v82009035"/>
+      <verse num="35">Of the sons of Nooma: Mazitiah, Zabad, Iddo, Joel, Benaiah.</verse>
+      <marker class="begin-verse" mid="v82009036"/>
+      <verse num="36">All these had married foreign women, and they put them away with their children.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82009037"/>
+      <heading>Ezra Reads the Law to the People</heading>
+      <begin-paragraph/>
+      <verse num="37">The priests and the Levites and the people of Israel settled in Jerusalem and in the country. On the new moon of the seventh month, when the sons of Israel were in their settlements,</verse>
+      <marker class="begin-verse" mid="v82009038"/>
+      <verse num="38">the whole multitude gathered with one accord into the open square before the east gate of the temple;</verse>
+      <marker class="begin-verse" mid="v82009039"/>
+      <verse num="39">and they told Ezra the chief priest and reader to bring the law of Moses that had been given by the Lord God of Israel.</verse>
+      <marker class="begin-verse" mid="v82009040"/>
+      <verse num="40">So Ezra the chief priest brought the law, for all the multitude, men and women, and all the priests to hear the law, on the new moon of the seventh month.</verse>
+      <marker class="begin-verse" mid="v82009041"/>
+      <verse num="41">And he read aloud in the open square before the gate of the temple from early morning until midday, in the presence of both men and women; and all the multitude gave attention to the law.</verse>
+      <marker class="begin-verse" mid="v82009042"/>
+      <verse num="42">Ezra the priest and reader of the law stood on the wooden platform that had been prepared;</verse>
+      <marker class="begin-verse" mid="v82009043"/>
+      <verse num="43">and beside him stood Mattathiah, Shema, Ananiah, Azariah, Uriah, Hezekiah, and Baalsamus on his right hand,</verse>
+      <marker class="begin-verse" mid="v82009044"/>
+      <verse num="44">and on his left Pedaiah, Mishael, Malchijah, Lothasubus, Nabariah, and Zechariah.</verse>
+      <marker class="begin-verse" mid="v82009045"/>
+      <verse num="45">Then Ezra took up the book of the law in the sight of the multitude, for he had the place of honor in the presence of all.</verse>
+      <marker class="begin-verse" mid="v82009046"/>
+      <verse num="46">And when he opened the law, they all stood erect. And Ezra blessed the Lord God Most High, the God of hosts, the Almighty;</verse>
+      <marker class="begin-verse" mid="v82009047"/>
+      <verse num="47">and all the multitude answered, <q class="begin-double" qid="82009047.1" from="82009047.1" to="82009047.2"/>Amen.<q class="end-double" qid="82009047.2" from="82009047.1" to="82009047.2"/> And they lifted up their hands and fell to the ground and worshiped the Lord.</verse>
+      <marker class="begin-verse" mid="v82009048"/>
+      <verse num="48">Jeshua and Anniuth and Sherebiah, Jadin, Jacob, Shabbethai, Hodiah, Maiannas and Kelita, Azariah and Jozabad, Hanan, Pelaiah, the Levites, taught the law of the Lord and read the law of the Lord to the multitude,<note nid="n82009048.1"/> at the same time explaining what was read.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v82009049"/>
+      <begin-paragraph/>
+      <verse num="49">Then Attharates<note nid="n82009049.1"/> said to Ezra the chief priest and reader and to the Levites who were teaching the multitude and to all,</verse>
+      <marker class="begin-verse" mid="v82009050"/>
+      <verse num="50"><q class="begin-double" qid="82009050.1" from="82009050.1" to="82009050.2"/>This day is holy to the Lord<q class="end-double" qid="82009050.2" from="82009050.1" to="82009050.2"/>—now they were all weeping as they heard the law—</verse>
+      <marker class="begin-verse" mid="v82009051"/>
+      <verse num="51"><q class="begin-double" qid="82009051.1" from="82009051.1" to="82009052.1"/>so go your way, eat the fat and drink the sweet, and send portions to those who have none;</verse>
+      <marker class="begin-verse" mid="v82009052"/>
+      <verse num="52">for the day is holy to the Lord; and do not be sorrowful, for the Lord will exalt you.<q class="end-double" qid="82009052.1" from="82009051.1" to="82009052.1"/></verse>
+      <marker class="begin-verse" mid="v82009053"/>
+      <verse num="53">And the Levites commanded all the people, saying, <q class="begin-double" qid="82009053.1" from="82009053.1" to="82009053.2"/>This day is holy; do not be sorrowful.<q class="end-double" qid="82009053.2" from="82009053.1" to="82009053.2"/></verse>
+      <marker class="begin-verse" mid="v82009054"/>
+      <verse num="54">Then they all went their way, to eat and drink and enjoy themselves and to give portions to those who had none and to make great rejoicing;</verse>
+      <marker class="begin-verse" mid="v82009055"/>
+      <verse num="55">because they were inspired by the words that they had been taught. And they came together.<note nid="n82009055.1"/></verse>
+      <end-paragraph/>
+    </chapter>
+  </book>
+</crossway-bible>
