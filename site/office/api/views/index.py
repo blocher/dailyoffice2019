@@ -324,7 +324,10 @@ class MPOpeningSentence(Module):
                 else Line("Oraciones al Incio de la Escritura", "heading")
             ),
             Line(text, "leader"),
-            Line(sentence["citation"], "citation"),
+            Line(
+                passage_reference_to_spanish(sentence["citation"]) if style == "spanish" else sentence["citation"],
+                "citation",
+            ),
         ]
 
 
@@ -805,7 +808,9 @@ class ReadingModule(Module):
         if text in ["-", "<html><head></head><body>-</body></html>", ""]:
             text = getattr(text_obj, "nrsvce")
         closing = self.closing(getattr(self.office.office_readings, "{}_testament".format(field)), language_style)
-        closing_response = self.closing_response(getattr(self.office.office_readings, "{}_testament".format(field)))
+        closing_response = self.closing_response(
+            getattr(self.office.office_readings, "{}_testament".format(field)), language_style
+        )
         testament = getattr(self.office.office_readings, "{}_testament".format(field), language_style)
 
         if abbreviated:
@@ -1012,9 +1017,7 @@ class CanticleModule(Module):
         if language_style == "traditional":
             template = template.replace(".csv", "_traditional.csv")
         elif language_style == "spanish":
-            print(template)
             template = template.replace(".csv", "_spanish.csv")
-            print(template)
 
         if antiphon:
             antiphon = self.get_antiphon()
@@ -1044,7 +1047,10 @@ class CanticleModule(Module):
             ]
             + file_to_lines(template)
             + [
-                Line(data.citation, "citation"),
+                Line(
+                    passage_reference_to_spanish(data.citation) if language_style == "spanish" else data.citation,
+                    "citation",
+                ),
             ]
             + self.gloria_lines(data, as_psalm=as_psalm)
         )

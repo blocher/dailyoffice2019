@@ -440,12 +440,21 @@ def passage_reference_to_spanish(passage: str) -> str:
         return passage
 
     leading_ws, core, trailing_ws = match.groups()
+    core_lower = core.lower()
+
+    def is_all_caps_letters(value: str) -> bool:
+        letters = [char for char in value if char.isalpha()]
+        return bool(letters) and all(char.isupper() for char in letters)
 
     for book_name in sorted(english_to_spanish, key=len, reverse=True):
-        if core.startswith(book_name):
+        book_name_lower = book_name.lower()
+        if core_lower.startswith(book_name_lower):
             next_index = len(book_name)
             if next_index == len(core) or not core[next_index].isalnum():
                 translated = english_to_spanish[book_name]
+                original_segment = core[:next_index]
+                if is_all_caps_letters(original_segment):
+                    translated = translated.upper()
                 return f"{leading_ws}{translated}{core[next_index:]}{trailing_ws}"
 
     return passage
