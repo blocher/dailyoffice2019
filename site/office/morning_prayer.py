@@ -518,7 +518,7 @@ class MPFirstReading(Reading):
 
     def get_main_reading(self):
         return {
-            "intro": passage_to_citation(self.office_readings.mp_reading_1),
+            "intro": passage_to_citation(self.office_readings.mp_reading_1, language_style="contemporary"),
             "passage": self.office_readings.mp_reading_1,
             "reading": self.office_readings.mp_reading_1_text,
             "closing": self.closing(self.office_readings.mp_reading_1_testament),
@@ -530,7 +530,7 @@ class MPFirstReading(Reading):
         if not self.has_abbreviated_reading:
             return None
         return {
-            "intro": passage_to_citation(self.office_readings.mp_reading_1_abbreviated),
+            "intro": passage_to_citation(self.office_readings.mp_reading_1_abbreviated, language_style="contemporary"),
             "passage": self.office_readings.mp_reading_1_abbreviated,
             "reading": self.office_readings.mp_reading_1_abbreviated_text,
             "closing": self.closing(self.office_readings.mp_reading_1_testament),
@@ -542,7 +542,7 @@ class MPFirstReading(Reading):
         if not self.has_alternate_reading:
             return None
         return {
-            "intro": passage_to_citation(self.office_readings.ep_reading_1),
+            "intro": passage_to_citation(self.office_readings.ep_reading_1, language_style="contemporary"),
             "passage": self.office_readings.ep_reading_1,
             "reading": self.office_readings.ep_reading_1_text,
             "closing": self.closing(self.office_readings.ep_reading_1_testament),
@@ -554,7 +554,7 @@ class MPFirstReading(Reading):
         if not self.has_alternate_abbreviated_reading:
             return None
         return {
-            "intro": passage_to_citation(self.office_readings.ep_reading_1_abbreviated),
+            "intro": passage_to_citation(self.office_readings.ep_reading_1_abbreviated, language_style="contemporary"),
             "passage": self.office_readings.ep_reading_1_abbreviated,
             "reading": self.office_readings.ep_reading_1_abbreviated_text,
             "closing": self.closing(self.office_readings.ep_reading_1_testament),
@@ -568,7 +568,7 @@ class MPFirstReading(Reading):
         for reading in self.date.mass_readings:
             if reading.reading_number == 1:
                 return {
-                    "intro": passage_to_citation(reading.long_citation),
+                    "intro": passage_to_citation(reading.long_citation, language_style="contemporary"),
                     "passage": reading.long_citation,
                     "reading": reading.long_text,
                     "closing": self.closing(reading.testament),
@@ -584,7 +584,7 @@ class MPFirstReading(Reading):
         for reading in self.date.mass_readings:
             if reading.reading_number == 1 and reading.short_citation:
                 return {
-                    "intro": passage_to_citation(reading.short_citation),
+                    "intro": passage_to_citation(reading.short_citation, language_style="contemporary"),
                     "passage": reading.short_citation,
                     "reading": reading.short_text,
                     "closing": self.closing(reading.testament),
@@ -648,7 +648,7 @@ class MPSecondReading(Reading):
 
     def get_main_reading(self):
         return {
-            "intro": passage_to_citation(self.office_readings.mp_reading_2),
+            "intro": passage_to_citation(self.office_readings.mp_reading_2, language_style="contemporary"),
             "passage": self.office_readings.mp_reading_2,
             "reading": self.office_readings.mp_reading_2_text,
             "closing": self.closing(self.office_readings.mp_reading_2_testament),
@@ -663,7 +663,7 @@ class MPSecondReading(Reading):
         if not self.has_alternate_reading:
             return None
         return {
-            "intro": passage_to_citation(self.office_readings.ep_reading_2),
+            "intro": passage_to_citation(self.office_readings.ep_reading_2, language_style="contemporary"),
             "passage": self.office_readings.ep_reading_2,
             "reading": self.office_readings.ep_reading_2_text,
             "closing": self.closing(self.office_readings.ep_reading_2_testament),
@@ -680,7 +680,7 @@ class MPSecondReading(Reading):
         for reading in self.date.mass_readings:
             if reading.reading_number == 3:
                 return {
-                    "intro": passage_to_citation(reading.long_citation),
+                    "intro": passage_to_citation(reading.long_citation, language_style="contemporary"),
                     "passage": reading.long_citation,
                     "reading": reading.long_text,
                     "closing": self.closing(reading.testament),
@@ -696,7 +696,7 @@ class MPSecondReading(Reading):
         for reading in self.date.mass_readings:
             if reading.reading_number == 3 and reading.short_citation:
                 return {
-                    "intro": passage_to_citation(reading.short_citation),
+                    "intro": passage_to_citation(reading.short_citation, language_style="contemporary"),
                     "passage": reading.short_citation,
                     "reading": reading.short_text,
                     "closing": self.closing(reading.testament),

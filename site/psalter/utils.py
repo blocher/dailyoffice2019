@@ -45,7 +45,12 @@ def normalize_citations(citations):
 
 
 def get_psalms(
-    citations, api=False, simplified_citations=False, language_style="contemporary", headings="whole_verse"
+    citations,
+    api=False,
+    simplified_citations=False,
+    language_style="contemporary",
+    headings="whole_verse",
+    overall_language_style="contemporary",
 ):
     citations = normalize_citations(citations)
     html = ""
@@ -69,18 +74,32 @@ def get_psalms(
             language_style=language_style,
             headings=headings,
         )
-        lines = lines + psalm_api_lines(citation, verses, language_style=language_style, headings=headings)
+        lines = lines + psalm_api_lines(
+            citation,
+            verses,
+            language_style=language_style,
+            headings=headings,
+            overall_language_style=overall_language_style,
+        )
     if api:
         return lines
     return html
 
 
-def psalm_api_lines(citation, verses, heading=True, language_style="contemporary", headings="whole_verse"):
+def psalm_api_lines(
+    citation,
+    verses,
+    heading=True,
+    language_style="contemporary",
+    headings="whole_verse",
+    overall_language_style="contemporary",
+):
     from office.api.views import Line
 
     lines = []
+    overall_title = "Psalm" if overall_language_style == "spanish" else "Salmo"
     if heading:
-        lines.append(Line("Psalm {}".format(citation), "heading"))
+        lines.append(Line("{} {}".format(overall_title, citation), "heading"))
         lines.append(Line(verses[0].psalm.latin_title, "subheading"))
     if language_style == "traditional":
         verses = [verse for verse in verses if verse.first_half_tle]

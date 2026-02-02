@@ -45,7 +45,7 @@ from office.models import (
     Collect,
     Scripture,
 )
-from office.utils import passage_to_citation, get_client_ip, generate_uuid_from_string
+from office.utils import passage_to_citation, get_client_ip, generate_uuid_from_string, passage_reference_to_spanish
 from psalter.utils import get_psalms
 
 
@@ -151,6 +151,7 @@ class MPOpeningSentence(Module):
             return {
                 "sentence": "Honor the Lord with your wealth and with the firstfruits of all your produce; then your barns will be filled with plenty, and your vats will be bursting with wine.",
                 "traditional": "Honor the Lord with thy substance, and with the firstfruits of all thine increase: So shall thy barns be filled with plenty, and thy presses shall burst out with new wine.",
+                "spanish": "Honra al Señor con tus riquezas y con los primeros frutos de tus cosechas; Así tus graneros se llenarán a reventar y tus bodegas rebosarán de vino nuevo. ",
                 "citation": "PROVERBS 3:9-10",
             }
 
@@ -158,6 +159,7 @@ class MPOpeningSentence(Module):
             return {
                 "sentence": "Is it nothing to you, all you who pass by? Look and see if there is any sorrow like my sorrow, which was brought upon me, which the Lord inflicted on the day of his fierce anger.",
                 "traditional": "Is it nothing to you, all ye that pass by? Behold, and see if there be any sorrow like unto my sorrow, which is done unto me, wherewith the Lord hath afflicted me in the day of his fierce anger.",
+                "spanish": "«Fíjense ustedes, los que pasan por el camino: ¿Acaso no les importa? ¿Dónde hay sufrimiento como el mío, como el que el Señor me ha hecho padecer, como el que el Señor lanzó sobre mí en el día de su furor? »",
                 "citation": "LAMENTATIONS 1:12",
             }
 
@@ -170,6 +172,7 @@ class MPOpeningSentence(Module):
                 return {
                     "sentence": "Repent, for the kingdom of heaven is at hand.",
                     "traditional": "Repent ye: for the kingdom of heaven is at hand.",
+                    "spanish": "Y decía «Arrepiéntanse, porque el reino de los cielos está cerca»",
                     "citation": "MATTHEW 3:2",
                 }
 
@@ -177,12 +180,14 @@ class MPOpeningSentence(Module):
                 return {
                     "sentence": "Turn your face from my sins, and blot out all my misdeeds.",
                     "traditional": "Turn thy face from my sins, and put out all my misdeeds.",
+                    "spanish": "Aparta tu rostro de mis pecados y borra toda mi maldad.",
                     "citation": "PSALM 51:9",
                 }
 
             return {
                 "sentence": "If anyone would come after me, let him deny himself and take up his cross and follow me.",
                 "traditional": "Whosoever will come after me, let him deny himself, and take up his cross, and follow me.",
+                "spanish": "Entonces llamó a la multitud y a sus discípulos. ―Si alguien quiere ser mi discípulo —les dijo—, que se niegue a sí mismo, lleve su cruz y me siga.",
                 "citation": "MARK 8:34",
             }
 
@@ -190,6 +195,7 @@ class MPOpeningSentence(Module):
             return {
                 "sentence": "In the wilderness prepare the way of the Lord; make straight in the desert a highway for our God.",
                 "traditional": "Prepare ye the way of the Lord, make straight in the desert a highway for our God.",
+                "spanish": "Una voz proclama: «Preparen en el desierto un camino para el Señor; enderecen en la estepa un sendero para nuestro Dios.»",
                 "citation": "ISAIAH 40:3",
             }
 
@@ -197,6 +203,7 @@ class MPOpeningSentence(Module):
             return {
                 "sentence": "Fear not, for behold, I bring you good news of great joy that will be for all the people. For unto you is born this day in the city of David a Savior, who is Christ the Lord.",
                 "traditional": "Fear not: for, behold, I bring you good tidings of great joy, which shall be to all people. For unto you is born this day in the city of David a Savior, which is Christ the Lord.",
+                "spanish": "Pero el ángel les dijo: «No tengan miedo. Miren que les traigo buenas noticias que serán motivo de mucha alegría para todo el pueblo. Hoy les ha nacido en la Ciudad de David un Salvador, que es Cristo el Señor.»",
                 "citation": "LUKE 2:10-11",
             }
 
@@ -204,6 +211,7 @@ class MPOpeningSentence(Module):
             return {
                 "sentence": "From the rising of the sun to its setting my name will be great among the nations, and in every place incense will be offered to my name, and a pure offering. For my name will be great among the nations, says the Lord of hosts.",
                 "traditional": "For from the rising of the sun even unto the going down of the same my name shall be great among the Gentiles; and in every place incense shall be offered unto my name, and a pure offering: for my name shall be great among the heathen, saith the Lord of hosts.",
+                "spanish": "Porque, desde donde nace el sol hasta donde se pone, grande es mi nombre entre las naciones. En todo lugar se ofrece incienso y ofrendas puras a mi nombre, porque grande es mi nombre entre las naciones —dice el Señor Todopoderoso—.",
                 "citation": "MALACHI 1:11",
             }
 
@@ -215,6 +223,7 @@ class MPOpeningSentence(Module):
             return {
                 "sentence": "Since then we have a great high priest who has passed through the heavens, Jesus, the Son of God, let us hold fast our confession. Let us then with confidence draw near to the throne of grace, that we may receive mercy and find grace to help in time of need.",
                 "traditional": "Seeing then that we have a great high priest, that is passed into the heavens, Jesus the Son of God, let us hold fast our profession. Let us therefore come boldly unto the throne of grace, that we may obtain mercy, and find grace to help in time of need.",
+                "spanish": "Por lo tanto, ya que, en Jesús, el Hijo de Dios, tenemos un gran Sumo Sacerdote que ha atravesado los cielos, aferrémonos a la fe que profesamos. Así que acerquémonos confiadamente al trono de la gracia para recibir misericordia y hallar la gracia que nos ayude en el momento que más la necesitemos.",
                 "citation": "HEBREWS 4:14, 16",
             }
 
@@ -222,6 +231,7 @@ class MPOpeningSentence(Module):
             return {
                 "sentence": "You will receive power when the Holy Spirit has come upon you, and you will be my witnesses in Jerusalem and in all Judea and Samaria, and to the end of the earth.",
                 "traditional": "Ye shall receive power, after that the Holy Ghost is come upon you: and ye shall be witnesses unto me both in Jerusalem, and in all Judaea, and in Samaria, and unto the uttermost part of the earth.",
+                "spanish": "Pero, cuando venga el Espíritu Santo sobre ustedes, recibirán poder y serán mis testigos tanto en Jerusalén como en toda Judea y Samaria, y hasta los confines de la tierra. ",
                 "citation": "ACTS 1:8",
             }
 
@@ -229,6 +239,7 @@ class MPOpeningSentence(Module):
             return {
                 "sentence": "Holy, holy, holy, is the Lord God Almighty, who was and is and is to come!",
                 "traditional": "Holy, holy, holy, is the Lord God Almighty, which was, and is, and is to come.",
+                "spanish": "¡Santo, santo, santo, es el Señor Dios Todopoderoso, el que era, y que es y que ha de venir!",
                 "citation": "REVELATION 4:8",
             }
 
@@ -236,6 +247,7 @@ class MPOpeningSentence(Module):
             return {
                 "sentence": "If then you have been raised with Christ, seek the things that are above, where Christ is, seated at the right hand of God.",
                 "traditional": "If ye then be risen with Christ, seek those things which are above, where Christ sitteth on the right hand of God.",
+                "spanish": "Ya que han resucitado con Cristo, busquen las cosas de arriba, donde está Cristo sentado a la derecha de Dios.",
                 "citation": "COLOSSIANS 3:1",
             }
 
@@ -243,6 +255,7 @@ class MPOpeningSentence(Module):
             return {
                 "sentence": "Grace to you and peace from God our Father and the Lord Jesus Christ.",
                 "traditional": "Grace be unto you and peace, from God our Father, and from the Lord Jesus Christ.",
+                "spanish": "Que Dios nuestro Padre y el Señor Jesucristo les concedan gracia y paz.",
                 "citation": "PHILIPPIANS 1:2",
             }
 
@@ -250,6 +263,7 @@ class MPOpeningSentence(Module):
             return {
                 "sentence": "I was glad when they said unto me, “We will go into the house of the Lord.",
                 "traditional": "I was glad when they said unto me, We will go into the house ofthe Lord.",
+                "spanish": "Yo me alegro cuando me dicen: “Vamos a la casa del Señor.”",
                 "citation": "PSALM 122:1",
             }
 
@@ -257,6 +271,7 @@ class MPOpeningSentence(Module):
             return {
                 "sentence": "Let the words of my mouth and the meditation of my heart be always acceptable in your sight, O Lord, my rock and my redeemer.",
                 "traditional": "Let the words of my mouth, and the meditation of my heart, be alway acceptable in your sight, O Lord, my strength and my redeemer.",
+                "spanish": "Sean, pues, aceptables ante ti mis palabras y mis pensamientos, oh Señor, roca mía y redentor mío.",
                 "citation": "PSALM 19:14",
             }
 
@@ -264,6 +279,7 @@ class MPOpeningSentence(Module):
             return {
                 "sentence": "The Lord is in his holy temple; let all the earth keep silence before him.",
                 "traditional": "The Lord is in his holy temple: let all the earth keep silence before him.",
+                "spanish": "En cambio, el Señor está en su santo templo; ¡guarde toda la tierra silencio en su presencia!",
                 "citation": "HABAKKUK 2:20",
             }
 
@@ -271,6 +287,7 @@ class MPOpeningSentence(Module):
             return {
                 "sentence": "O send out your light and your truth, that they may lead me, and bring me to your holy hill, and to your dwelling.",
                 "traditional": "O send out thy light and thy truth, that they may lead me, and bring me unto thy holy hill, and to thy dwelling",
+                "spanish": "Envía tu luz y tu verdad, que ellas me guíen hasta tu monte santo, que me lleven al lugar donde tú habitas.",
                 "citation": "PSALM 43:3",
             }
 
@@ -278,6 +295,7 @@ class MPOpeningSentence(Module):
             return {
                 "sentence": "Thus says the One who is high and lifted up, who inhabits eternity, whose name is Holy: “I dwell in the high and holy place, and also with him who is of a contrite and lowly spirit, to revive the spirit of the lowly, and to revive the heart of the contrite.”",
                 "traditional": "Thus saith the high and lofty One that inhabiteth eternity, whose name is Holy; I dwell in the high and holy place, with him also that is of a contrite and humble spirit, to revive the spirit of the humble, and to revive the heart of the contrite ones.",
+                "spanish": "Porque lo dice el excelso y sublime, el que vive para siempre, cuyo nombre es santo: «Yo habito en un lugar santo y sublime, pero también con el contrito y humilde de espíritu, para reanimar el espíritu de los humildes y alentar el corazón de los quebrantados».",
                 "citation": "ISAIAH 57:15",
             }
 
@@ -285,6 +303,7 @@ class MPOpeningSentence(Module):
             return {
                 "sentence": "The hour is coming, and is now here, when the true worshipers will worship the Father in spirit and truth, for the Father is seeking such people to worship him.",
                 "traditional": "The hour cometh, and now is, when the true worshipers shall worship the Father in spirit and in truth: for the Father seeketh such to worship him.",
+                "spanish": "Pero se acerca la hora, y ha llegado ya, en que los verdaderos adoradores rendirán culto al Padre en espíritu y en verdad, porque así quiere el Padre que sean los que le adoren verdad, porque el Padre busca a esos que le adoren.",
                 "citation": "JOHN 4:23",
             }
 
@@ -299,7 +318,11 @@ class MPOpeningSentence(Module):
             text = sentence["sentence"]
 
         return [
-            Line("Opening Sentence", "heading"),
+            (
+                Line("Opening Sentence", "heading")
+                if style != "spanish"
+                else Line("Oraciones al Incio de la Escritura", "heading")
+            ),
             Line(text, "leader"),
             Line(sentence["citation"], "citation"),
         ]
@@ -728,11 +751,15 @@ class ReadingModule(Module):
         )
 
     @staticmethod
-    def closing(testament):
+    def closing(testament, language_style="contemporary"):
+        if language_style == "spanish":
+            return "Palabra del Señor." if testament != "DC" else "Aquí termina la lectura."
         return "The Word of the Lord." if testament != "DC" else "Here ends the Reading."
 
     @staticmethod
-    def closing_response(testament):
+    def closing_response(testament, language_style="contemporary"):
+        if language_style == "spanish":
+            return "Demos gracias a Dios." if testament != "DC" else None
         return "Thanks be to God." if testament != "DC" else None
 
     @cached_property
@@ -742,6 +769,7 @@ class ReadingModule(Module):
     def get_mass_reading_lines(self, reading):
         translation = self.office.settings["bible_translation"]
         abbreviated = self.office.settings["reading_length"] == "abbreviated"
+        language_style = self.office.settings["language_style"]
         if abbreviated or not reading.short_text:
             text = Scripture.objects.get(passage=reading.long_citation)
             citation = reading.long_citation
@@ -756,26 +784,29 @@ class ReadingModule(Module):
         lines = [
             Line(citation, "subheading"),
             Line(self.audio(citation, reading.testament), "html"),
-            Line(passage_to_citation(citation), "leader"),
+            Line(passage_to_citation(citation, language_style=language_style), "leader"),
             Line("", "spacer"),
             Line(text, "html", "leader"),
             Line("", "spacer"),
-            Line(self.closing(reading.testament), "leader"),
-            Line(self.closing_response(reading.testament), "congregation"),
+            Line(self.closing(reading.testament, language_style), "leader"),
+            Line(self.closing_response(reading.testament, language_style), "congregation"),
         ]
         return [line for line in lines if line and (line["content"] or line["line_type"] == "spacer")]
 
     def get_reading(self, field, abbreviated=False, translation="esv", text_only=False):
+        language_style = self.office.settings["language_style"]
         subheading = getattr(self.office.office_readings, field)
+        if language_style == "spanish":
+            subheading = passage_reference_to_spanish(subheading)
         passage = getattr(self.office.office_readings, field)
-        citation = passage_to_citation(getattr(self.office.office_readings, field))
+        citation = passage_to_citation(getattr(self.office.office_readings, field), language_style=language_style)
         text_obj = self.office.readings[passage]
         text = getattr(text_obj, translation)
         if text in ["-", "<html><head></head><body>-</body></html>", ""]:
             text = getattr(text_obj, "nrsvce")
-        closing = self.closing(getattr(self.office.office_readings, "{}_testament".format(field)))
+        closing = self.closing(getattr(self.office.office_readings, "{}_testament".format(field)), language_style)
         closing_response = self.closing_response(getattr(self.office.office_readings, "{}_testament".format(field)))
-        testament = getattr(self.office.office_readings, "{}_testament".format(field))
+        testament = getattr(self.office.office_readings, "{}_testament".format(field), language_style)
 
         if abbreviated:
             has_abbreviated = (
@@ -787,7 +818,9 @@ class ReadingModule(Module):
             if has_abbreviated:
                 subheading = getattr(self.office.office_readings, "{}_abbreviated".format(field))
                 passage = getattr(self.office.office_readings, "{}_abbreviated".format(field))
-                citation = passage_to_citation(getattr(self.office.office_readings, "{}_abbreviated".format(field)))
+                citation = passage_to_citation(
+                    getattr(self.office.office_readings, "{}_abbreviated".format(field)), language_style=language_style
+                )
                 text = self.office.readings[passage]
                 text = getattr(text, translation)
                 if text in ["-", "<html><head></head><body>-</body></html>"]:
@@ -864,7 +897,8 @@ class MPFirstReading(ReadingModule):
     name = "First Reading"
 
     def get_lines(self):
-        reading_heading = [Line("The First Lesson", line_type="heading")]
+        name = "The First Lesson" if self.office.settings["language_style"] != "spanish" else "La Primera Lectura"
+        reading_heading = [Line(name, line_type="heading")]
         return reading_heading + self.get_lines_for_reading("mp", 1)
 
 
@@ -872,7 +906,8 @@ class EPFirstReading(ReadingModule):
     name = "First Reading"
 
     def get_lines(self):
-        reading_heading = [Line("The First Lesson", line_type="heading")]
+        name = "The First Lesson" if self.office.settings["language_style"] != "spanish" else "La Primera Lectura"
+        reading_heading = [Line(name, line_type="heading")]
         return reading_heading + self.get_lines_for_reading("ep", 1)
 
 
@@ -1035,7 +1070,9 @@ class MPPsalms(CanticleModule, ReadingModule):
     attribute = "mp_psalms"
 
     @staticmethod
-    def heading(citations):
+    def heading(citations, language_style="contemporary"):
+        if language_style == "spanish":
+            return "El Salmo{} Designados".format("s" if len(citations) > 1 else "")
         return "The Psalm{} Appointed".format("s" if len(citations) > 1 else "")
 
     def mass(self):
@@ -1046,11 +1083,12 @@ class MPPsalms(CanticleModule, ReadingModule):
 
         psalms = getattr(self.office.thirty_day_psalter_day, self.attribute)
         citations = psalms.split(",")
-        heading = self.heading(citations)
         language_style = self.office.settings["psalm_translation"]
+        heading = self.heading(citations, language_style=self.office.settings["language_style"])
         psalm_style = self.office.settings["psalm_style"]
         psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style)
 
+        subheading = "Thirty Day Cycle" if language_style != "spanish" else "Ciclo de Treinta Días"
         return [Line(heading, "heading"), Line("Thirty Day Cycle", "subheading")] + psalms
 
     def sixty_days(self):
@@ -1068,12 +1106,13 @@ class MPPsalms(CanticleModule, ReadingModule):
             psalms = psalms[0]
 
         citations = psalms.split(",")
-        heading = self.heading(citations)
+        heading = self.heading(citations, language_style=self.office.settings["language_style"])
         language_style = self.office.settings["psalm_translation"]
         psalm_style = self.office.settings["psalm_style"]
         psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style)
 
-        return [Line(heading, "heading"), Line("Sixty Day Cycle", "subheading")] + psalms
+        subheading = "Sixty Day Cycle" if language_style != "spanish" else "Ciclo de Sesenta Días"
+        return [Line(heading, "heading"), Line(subheading, "subheading")] + psalms
 
     def mass_psalms(self):
         from psalter.utils import get_psalms
@@ -1095,7 +1134,13 @@ class MPPsalms(CanticleModule, ReadingModule):
         heading = self.heading(mass_psalm)
         language_style = self.office.settings["psalm_translation"]
         psalm_style = self.office.settings["psalm_style"]
-        psalms = get_psalms(mass_psalm, api=True, language_style=language_style, headings=psalm_style)
+        psalms = get_psalms(
+            mass_psalm,
+            api=True,
+            language_style=language_style,
+            headings=psalm_style,
+            overall_language_style=self.office.settings["language_style"],
+        )
         return [Line(heading, "heading"), Line("Sunday & Holy Day Psalms", "subheading")] + psalms
 
     def get_psalm_lines(self):
@@ -1113,6 +1158,8 @@ class MPPsalms(CanticleModule, ReadingModule):
     def gloria_patri(self):
         language_style = self.office.settings["language_style"]
         file = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
+        if language_style == "spanish":
+            file = "gloria_patri_spanish"
         return [Line("", "spacer")] + file_to_lines(file)
 
     def get_lines(self):
@@ -1182,7 +1229,8 @@ class MPSecondReading(ReadingModule):
     name = "Second Reading"
 
     def get_lines(self):
-        reading_heading = [Line("The Second Lesson", line_type="heading")]
+        name = "The Second Lesson" if self.office.settings["language_style"] != "spanish" else "La Segunda Lectura"
+        reading_heading = [Line(name, line_type="heading")]
         return reading_heading + self.get_lines_for_reading("mp", 2)
 
 
@@ -1190,7 +1238,8 @@ class EPSecondReading(ReadingModule):
     name = "Second Reading"
 
     def get_lines(self):
-        reading_heading = [Line("The Second Lesson", line_type="heading")]
+        name = "The Second Lesson" if self.office.settings["language_style"] != "spanish" else "La Segunda Lectura"
+        reading_heading = [Line(name, line_type="heading")]
         return reading_heading + self.get_lines_for_reading("ep", 2)
 
 
@@ -1200,8 +1249,8 @@ class MPThirdReading(ReadingModule):
     def get_lines(self):
         if not self.has_mass_reading:
             return None
-
-        reading_heading = [Line("The Third Lesson", line_type="heading")]
+        name = "The Third Lesson" if self.office.settings["language_style"] != "spanish" else "La Tercera Lectura"
+        reading_heading = [Line(name, line_type="heading")]
         lines = self.get_lines_for_reading("mp", 3)
         if lines:
             return reading_heading + lines
@@ -1215,7 +1264,8 @@ class EPThirdReading(ReadingModule):
         if not self.has_mass_reading:
             return None
 
-        reading_heading = [Line("The Third Lesson", line_type="heading")]
+        name = "The Third Lesson" if self.office.settings["language_style"] != "spanish" else "La Tercera Lectura"
+        reading_heading = [Line(name, line_type="heading")]
         lines = self.get_lines_for_reading("ep", 3)
         if lines:
             return reading_heading + lines

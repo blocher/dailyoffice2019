@@ -420,7 +420,7 @@ class Scripture(BaseModel):
         try:
             if "Psalm" in self.passage:
                 return ""
-            return passage_to_citation(self.passage, mass=True)
+            return passage_to_citation(self.passage, mass=True, language_style="contemporary")
         except Exception as e:
             print(e)
             return "Error"

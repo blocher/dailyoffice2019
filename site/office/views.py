@@ -601,10 +601,10 @@ def readings_data(testament=""):
             day.show_mp = day.show_mp_1 or day.show_mp_2
             day.show_ep = day.show_ep_1 or day.show_ep_2
 
-        day.mp_reading_1_passage = passage_to_citation(day.mp_reading_1)
-        day.mp_reading_2_passage = passage_to_citation(day.mp_reading_2)
-        day.ep_reading_1_passage = passage_to_citation(day.ep_reading_1)
-        day.ep_reading_2_passage = passage_to_citation(day.ep_reading_2)
+        day.mp_reading_1_passage = passage_to_citation(day.mp_reading_1, language_style="contemporary")
+        day.mp_reading_2_passage = passage_to_citation(day.mp_reading_2, language_style="contemporary")
+        day.ep_reading_1_passage = passage_to_citation(day.ep_reading_1, language_style="contemporary")
+        day.ep_reading_2_passage = passage_to_citation(day.ep_reading_2, language_style="contemporary")
 
         day.mp_reading_1_closing = testament_to_closing(day.mp_reading_1_testament)
         day.mp_reading_1_closing_response = testament_to_closing_response(day.mp_reading_1_testament)

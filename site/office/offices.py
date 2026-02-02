@@ -175,7 +175,7 @@ class ThirdReading(Reading):
         for reading in self.date.mass_readings:
             if reading.reading_number == 4:
                 return {
-                    "intro": passage_to_citation(reading.long_citation),
+                    "intro": passage_to_citation(reading.long_citation, language_style="contemporary"),
                     "passage": reading.long_citation,
                     "reading": reading.long_text,
                     "closing": self.closing(reading.testament),
@@ -191,7 +191,7 @@ class ThirdReading(Reading):
         for reading in self.date.mass_readings:
             if reading.reading_number == 4 and reading.short_citation:
                 return {
-                    "intro": passage_to_citation(reading.short_citation),
+                    "intro": passage_to_citation(reading.short_citation, language_style="contemporary"),
                     "passage": reading.short_citation,
                     "reading": reading.short_text,
                     "closing": self.closing(reading.testament),
