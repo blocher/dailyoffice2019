@@ -37,7 +37,7 @@
     "split-html": "^1.1.0",
     "style-loader": "^4.0.0",
     "webfontloader": "^1.6.28",
-    "webpack": "^5.97.1",
+    "webpack": "^5.105.0",
     "webpack-bundle-tracker": "^3.1.1",
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.0",
