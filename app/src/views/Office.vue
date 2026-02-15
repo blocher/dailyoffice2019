@@ -86,6 +86,7 @@
         </div>
       </div>
     </div>
+    <DonationPrompt variant="long" />
   </div>
   <AudioPlayer
     v-if="
@@ -138,15 +139,15 @@ import PageNotFound from '@/views/PageNotFound.vue';
 import FontSizer from '@/components/FontSizer.vue';
 import { DynamicStorage } from '@/helpers/storage';
 import AudioPlayer from '@/components/AudioPlayer.vue';
-import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue'; // import AudioPlayer from '@/components/AudioPlayer.vue';
-// import AudioPlayer from '@/components/AudioPlayer.vue';
+import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue';
+import DonationPrompt from '@/components/DonationPrompt.vue';
 
 export default {
   name: 'Office',
   components: {
+    DonationPrompt,
     AudioPlayerMessage,
     AudioPlayer,
-    // AudioPlayer,
     OfficeHeading,
     OfficeSubheading,
     OfficeCitation,

@@ -13,6 +13,8 @@
       />
       <OfficeNav :calendar-date="calendarDate" selected-office="readings" />
 
+      <DonationPrompt variant="short" />
+
       <h1>Readings</h1>
 
       <el-divider />
@@ -186,34 +188,37 @@
       @cycle-60="setCycle60"
       @cycle-30="setCycle30"
     />
+    <p class="text-center mt-6">
+      <a href="https://www.esv.org/">
+        Scripture quotations are from the ESV® Bible (The Holy Bible, English
+        Standard Version®), copyright © 2001 by Crossway, a publishing ministry
+        of Good News Publishers. Used by permission. All rights reserved.
+      </a>
+    </p>
+
+    <DonationPrompt variant="long" />
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import { nextTick } from 'vue';
+import OfficeNav from '@/components/OfficeNav.vue';
+import CalendarCard from '@/components/CalendarCard.vue';
+import PageNotFound from '@/views/PageNotFound.vue';
 import Loading from '@/components/Loading.vue';
 import setCalendarDate from '@/helpers/setCalendarDate';
-import CalendarCard from '@/components/CalendarCard.vue';
-import OfficeNav from '@/components/OfficeNav.vue';
-import Reading from '@/components/Reading.vue';
-import Collects from '@/components/Collects.vue';
-import CitationGroup from '@/components/CitationGroup.vue';
-import FontSizer from '@/components/FontSizer.vue';
-import PageNotFound from '@/views/PageNotFound.vue';
+import DonationPrompt from '@/components/DonationPrompt.vue';
 import { DynamicStorage } from '@/helpers/storage';
+import { nextTick } from 'vue';
 
 export default {
   name: 'Readings',
   components: {
-    Loading,
-    CalendarCard,
     OfficeNav,
-    Reading,
-    Collects,
-    CitationGroup,
+    CalendarCard,
     PageNotFound,
-    FontSizer,
+    Loading,
+    DonationPrompt,
   },
   props: {},
   data() {

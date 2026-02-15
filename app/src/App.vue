@@ -1,7 +1,8 @@
 <template>
   <div id="notch" class="notch"></div>
-  <div class="m-4">
+  <div class="m-4 flex items-center gap-3">
     <ThemeSwitcher />
+    <DonationPrompt variant="short" />
   </div>
   <!--  <TopMenu v-if="!loading"/>-->
   <div
@@ -52,6 +53,11 @@
               <el-dropdown-item>Readings</el-dropdown-item>
             </a>
             <el-dropdown-item disabled>--More--</el-dropdown-item>
+            <el-dropdown-item>
+              <a href="#" @click.prevent="openDonation"
+                >Support the Daily Office</a
+              >
+            </el-dropdown-item>
             <el-dropdown-item
               @click="
                 $refs.additionalLinks.$refs.shareSettings.toggleSharePanel()
@@ -97,7 +103,9 @@ import { useRoute } from 'vue-router';
 import AdditionalLinks from '@/components/AdditionalLinks.vue';
 import { ArrowDown } from '@element-plus/icons-vue';
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue';
+import DonationPrompt from '@/components/DonationPrompt.vue';
 import { DynamicStorage } from '@/helpers/storage.js';
+import { Browser } from '@capacitor/browser';
 
 export default {
   components: {
@@ -106,6 +114,7 @@ export default {
     AdditionalLinks,
     ArrowDown,
     ThemeSwitcher,
+    DonationPrompt,
   },
   setup() {
     const route = useRoute();
@@ -127,6 +136,12 @@ export default {
       showLinks: false,
       audioEnabled: false,
     };
+  },
+
+  methods: {
+    async openDonation() {
+      await Browser.open({ url: 'https://ko-fi.com/dailyoffice' });
+    },
   },
 
   computed: {

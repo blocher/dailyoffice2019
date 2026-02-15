@@ -30,6 +30,7 @@
           />
         </el-tab-pane>
       </el-tabs>
+      <DonationPrompt variant="long" />
     </main>
   </div>
   <el-drawer
@@ -91,17 +92,17 @@
 
 <script>
 // @ is an alias to /src
-
-// @ is an alias to /src
-import Loading from '@/components/Loading.vue';
 import SettingsPanel from '@/components/SettingsPanel.vue';
+import Loading from '@/components/Loading.vue';
 import { DynamicStorage } from '@/helpers/storage';
+import DonationPrompt from '@/components/DonationPrompt.vue';
 
 export default {
   name: 'Settings',
   components: {
-    Loading,
     SettingsPanel,
+    Loading,
+    DonationPrompt,
   },
   data() {
     return {
