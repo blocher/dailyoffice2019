@@ -52,6 +52,17 @@
             <a href="/readings">
               <el-dropdown-item>Readings</el-dropdown-item>
             </a>
+            <template v-if="isWeb">
+              <el-dropdown-item disabled>--Apps--</el-dropdown-item>
+              <el-dropdown-item @click="openAppStore('ios')">
+                <font-awesome-icon :icon="['fab', 'fa-apple']" />
+                iOS App
+              </el-dropdown-item>
+              <el-dropdown-item @click="openAppStore('android')">
+                <font-awesome-icon :icon="['fab', 'fa-android']" />
+                Android App
+              </el-dropdown-item>
+            </template>
             <el-dropdown-item disabled>--More--</el-dropdown-item>
             <el-dropdown-item>
               <a href="#" @click.prevent="openDonation"
@@ -106,6 +117,7 @@ import ThemeSwitcher from '@/components/ThemeSwitcher.vue';
 import DonationPrompt from '@/components/DonationPrompt.vue';
 import { DynamicStorage } from '@/helpers/storage.js';
 import { Browser } from '@capacitor/browser';
+import { Capacitor } from '@capacitor/core';
 
 export default {
   components: {
@@ -135,12 +147,21 @@ export default {
       error: false,
       showLinks: false,
       audioEnabled: false,
+      isWeb: false,
     };
   },
 
   methods: {
     async openDonation() {
       await Browser.open({ url: 'https://ko-fi.com/dailyoffice' });
+    },
+    async openAppStore(platform) {
+      const urls = {
+        ios: 'https://apps.apple.com/us/app/the-daily-office/id1513851259',
+        android:
+          'https://play.google.com/store/apps/details?id=com.dailyoffice2019.app&hl=en_US',
+      };
+      await Browser.open({ url: urls[platform] });
     },
   },
 
@@ -176,6 +197,10 @@ export default {
         ? true
         : false;
     this.audioEnabled = audioEnabled;
+
+    // Check if we're on web platform
+    const platform = Capacitor.getPlatform();
+    this.isWeb = platform === 'web';
   },
   async created() {
     try {
