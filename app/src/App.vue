@@ -1,81 +1,18 @@
 <template>
-  <div id="notch" class="notch"></div>
-  <div class="m-4">
-    <ThemeSwitcher />
-  </div>
-  <!--  <TopMenu v-if="!loading"/>-->
-  <div
-    class="w-full mt-10 mx-auto content-center flex items-center justify-center gap-2"
-  >
-    <h2>The Daily Office</h2>
-  </div>
-  <div
-    class="w-full mt-4 mx-auto content-center flex items-center justify-center gap-2"
-  >
-    <a href="/">
-      <el-button :type="isPray" round>Pray</el-button>
-    </a>
-    <a href="/settings">
-      <el-button :type="isSettings" round>Settings</el-button>
-    </a>
-    <a href="/calendar">
-      <el-button :type="isCalendar" round>Calendar</el-button>
-    </a>
-  </div>
-  <div
-    class="w-full mt-4 mx-auto content-center flex items-center justify-center gap-2"
-  >
-    <el-button v-if="showLinks" :type="isOther">
-      <el-dropdown :hide-on-click="true" trigger="click">
-        <span class="el-dropdown-link">
-          More Resources
-          <el-icon class="el-icon--right">
-            <arrow-down />
-          </el-icon>
-        </span>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <a href="/about">
-              <el-dropdown-item>About</el-dropdown-item>
-            </a>
-            <el-dropdown-item disabled>--Prayer Resources--</el-dropdown-item>
-            <a href="/collects">
-              <el-dropdown-item>Collects</el-dropdown-item>
-            </a>
-            <a href="/psalms">
-              <el-dropdown-item>Psalms</el-dropdown-item>
-            </a>
-            <a href="/litany">
-              <el-dropdown-item>Great Litany</el-dropdown-item>
-            </a>
-            <a href="/readings">
-              <el-dropdown-item>Readings</el-dropdown-item>
-            </a>
-            <el-dropdown-item disabled>--More--</el-dropdown-item>
-            <el-dropdown-item
-              @click="
-                $refs.additionalLinks.$refs.shareSettings.toggleSharePanel()
-              "
-              >Share Settings
-            </el-dropdown-item>
-            <el-dropdown-item
-              @click="
-                $refs.additionalLinks.$refs.submitFeedback.showFeedbackPanel()
-              "
-              >Submit Feedback
-            </el-dropdown-item>
-            <el-dropdown-item
-              @click="$refs.additionalLinks.$refs.emailSignup.showEmailPanel()"
-              >Get Email Updates
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-    </el-button>
-  </div>
+  <DailyOfficeHeader 
+    :show-links="showLinks"
+    :is-pray="isPray"
+    :is-settings="isSettings"
+    :is-calendar="isCalendar"
+    :is-other="isOther"
+    :seasonal-color="currentSeasonalColor"
+    @share-settings="$refs.additionalLinks.$refs.shareSettings.toggleSharePanel()"
+    @submit-feedback="$refs.additionalLinks.$refs.submitFeedback.showFeedbackPanel()"
+    @email-signup="$refs.additionalLinks.$refs.emailSignup.showEmailPanel()"
+  />
+  
   <div class="main-body">
     <Loading v-if="loading" />
-    <!--    <BetaNote/>-->
     <el-alert v-if="error" :title="error" type="error" />
     <router-view v-if="!loading" :key="$route.fullPath" />
     <AdditionalLinks v-if="showLinks" ref="additionalLinks" />
@@ -95,8 +32,7 @@ import AHPLogo from '@/components/AHPLogo.vue';
 import { useActiveMeta, useMeta } from 'vue-meta';
 import { useRoute } from 'vue-router';
 import AdditionalLinks from '@/components/AdditionalLinks.vue';
-import { ArrowDown } from '@element-plus/icons-vue';
-import ThemeSwitcher from '@/components/ThemeSwitcher.vue';
+import DailyOfficeHeader from '@/components/DailyOfficeHeader.vue';
 import { DynamicStorage } from '@/helpers/storage.js';
 
 export default {
@@ -104,8 +40,7 @@ export default {
     AHPLogo,
     Loading,
     AdditionalLinks,
-    ArrowDown,
-    ThemeSwitcher,
+    DailyOfficeHeader,
   },
   setup() {
     const route = useRoute();
@@ -153,6 +88,11 @@ export default {
     backtopBottom() {
       return 80;
       //return this.audioEnabled ? 80 : 40;
+    },
+    currentSeasonalColor() {
+      // This could be enhanced to get seasonal color from Vuex store or route data
+      // For now, return null and let individual pages set it
+      return null;
     },
   },
   async mounted() {
@@ -339,19 +279,6 @@ select:focus {
 body {
   color: var(--font-color);
   background-color: var(--color-bg);
-  margin-top: calc(env(safe-area-inset-top) + 1.4rem) !important;
-
-  #notch {
-    display: block;
-    position: fixed;
-    height: env(safe-area-inset-top);
-    width: 100%;
-    margin: 0;
-    top: 0;
-    left: 0;
-    z-index: 9999;
-    background-color: #26282a;
-  }
 
   .el-input__inner,
   el-select-dropdown__item {
@@ -365,17 +292,26 @@ body {
   .main-body {
     display: block;
     text-align: left;
-    padding: 2.2em;
+    padding: 1rem 2rem 2rem;
     margin: 0 auto;
     clear: both;
     overflow-y: scroll;
+    max-width: 1200px;
+    
+    @media (max-width: 768px) {
+      padding: 1rem 1.5rem 2rem;
+    }
+    
+    @media (max-width: 480px) {
+      padding: 1rem 1rem 2rem;
+    }
   }
 
   .small-container {
     max-width: 700px;
     display: block;
     text-align: left;
-    padding: 2rem 0;
+    padding: 1rem 0;
     margin: 0 auto;
     clear: both;
     overflow: visible;
@@ -384,6 +320,48 @@ body {
   #main {
     max-width: 65ch;
     margin: 0 auto 5rem;
+    line-height: 1.6;
+    
+    // Book-like text spacing
+    p {
+      margin-bottom: 1rem;
+      text-align: justify;
+      hyphens: auto;
+      
+      @media (max-width: 480px) {
+        text-align: left;
+        hyphens: none;
+      }
+    }
+    
+    // Better spacing for headings
+    h1, h2, h3, h4 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      
+      &:first-child {
+        margin-top: 0;
+      }
+    }
+    
+    // Book-like indentation for certain elements
+    .indent {
+      padding-left: 2rem;
+      
+      @media (max-width: 480px) {
+        padding-left: 1rem;
+      }
+    }
+    
+    .hangingIndent {
+      text-indent: -2rem;
+      padding-left: 2rem;
+      
+      @media (max-width: 480px) {
+        text-indent: -1rem;
+        padding-left: 1rem;
+      }
+    }
   }
 
   h1,
@@ -457,25 +435,43 @@ body {
   p {
     font-family: 'Adobe Caslon Pro', serif;
     font-display: swap;
-    font-weight: 300;
+    font-weight: 400;
     font-style: normal;
+    line-height: 1.6;
+    margin-bottom: 1rem;
 
     &.rubric {
-      line-height: 0.9em;
-      margin: 10px 0;
+      line-height: 1.2;
+      margin: 0.75rem 0;
+      font-style: italic;
+      opacity: 0.9;
     }
 
     &.indent {
-      margin: 0 0 0 1em;
+      margin: 0 0 1rem 2rem;
+      
+      @media (max-width: 480px) {
+        margin-left: 1rem;
+      }
     }
 
     &.hangingIndent {
-      text-indent: -1em;
-      margin-left: 1em;
+      text-indent: -2rem;
+      margin-left: 2rem;
+      margin-bottom: 1rem;
+      
+      @media (max-width: 480px) {
+        text-indent: -1rem;
+        margin-left: 1rem;
+      }
     }
 
     strong {
       font-weight: 700;
+    }
+    
+    em {
+      font-style: italic;
     }
   }
 
@@ -518,5 +514,140 @@ body {
 
 .el-drawer {
   padding-top: env(safe-area-inset-top);
+  font-family: 'Adobe Caslon Pro', serif;
+  
+  .el-drawer__header {
+    padding: 1.5rem 1.5rem 0.75rem;
+    border-bottom: 1px solid var(--el-border-color-lighter);
+    margin-bottom: 0;
+    
+    .el-drawer__title {
+      font-family: 'Adobe Caslon Pro', serif;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: var(--font-color);
+    }
+  }
+  
+  .el-drawer__body {
+    padding: 1.5rem;
+    
+    h2, h3, h4 {
+      font-family: 'Adobe Caslon Pro', serif;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: var(--font-color);
+      margin-bottom: 1rem;
+    }
+    
+    p {
+      font-family: 'Adobe Caslon Pro', serif;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+      color: var(--el-text-color-regular);
+    }
+    
+    a {
+      color: var(--link-color);
+      text-decoration: underline;
+      
+      &:hover {
+        text-decoration: none;
+      }
+    }
+    
+    .el-input {
+      font-family: 'Adobe Caslon Pro', serif;
+    }
+    
+    .el-button {
+      font-family: 'Adobe Caslon Pro', serif;
+      font-weight: 600;
+      letter-spacing: 0.025em;
+    }
+  }
+  
+  // Book-like styling
+  background: var(--color-bg);
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(
+      180deg,
+      var(--el-border-color) 0%,
+      var(--el-border-color-lighter) 50%,
+      var(--el-border-color) 100%
+    );
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  // Page texture effect
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(
+      circle at 30% 20%,
+      rgba(0, 0, 0, 0.01) 0%,
+      transparent 50%
+    );
+    pointer-events: none;
+  }
+}
+
+// Sub-menu item styling for consistent footer/menu appearance
+.sub-menu-item {
+  display: inline-block;
+  text-align: center;
+  transition: all 0.2s ease;
+  
+  a {
+    display: block;
+    color: var(--font-color);
+    text-decoration: none;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background-color: var(--el-fill-color-light);
+      transform: translateY(-1px);
+      color: var(--link-color);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+  }
+  
+  .text-xs {
+    font-family: 'Adobe Caslon Pro', serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    opacity: 0.9;
+    line-height: 1.2;
+  }
+  
+  // FontAwesome icon styling
+  svg {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+  }
+  
+  &:hover svg {
+    opacity: 1;
+  }
 }
 </style>

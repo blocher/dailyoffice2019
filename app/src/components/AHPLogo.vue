@@ -33,5 +33,78 @@ export default {
 .logoDiv {
   max-width: 500px;
   margin: 25px auto 100px;
+  font-family: 'Adobe Caslon Pro', serif;
+  border-color: var(--el-border-color);
+  background-color: var(--color-bg);
+  transition: all 0.2s ease;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  p {
+    font-family: 'Adobe Caslon Pro', serif;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--font-color);
+    
+    strong {
+      font-weight: 600;
+      color: var(--font-color);
+    }
+    
+    small {
+      opacity: 0.8;
+      font-style: italic;
+    }
+  }
+  
+  // Book-like styling
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 0.5rem;
+    background: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.01) 0%,
+      transparent 50%,
+      rgba(0, 0, 0, 0.01) 100%
+    );
+    pointer-events: none;
+  }
+  
+  @media (max-width: 768px) {
+    margin: 20px auto 80px;
+    max-width: 90%;
+  }
+  
+  @media (max-width: 480px) {
+    margin: 15px auto 60px;
+    padding: 1rem !important;
+  }
+}
+
+// Dark mode adjustments
+:root.dark .logoDiv {
+  border-color: var(--el-border-color);
+  background-color: var(--color-bg);
+  
+  &::before {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.01) 0%,
+      transparent 50%,
+      rgba(255, 255, 255, 0.01) 100%
+    );
+  }
 }
 </style>

@@ -34,12 +34,14 @@ export default {
   width: 100%;
   margin: auto;
   text-align: center;
+  padding: 2rem 0;
 }
 
 .lds-ellipsis-wrapper.size-small {
   width: 15px;
   margin: inherit;
   text-align: center;
+  padding: 0.5rem 0;
 }
 
 .lds-ellipsis {
@@ -62,8 +64,9 @@ export default {
   width: 13px;
   height: 13px;
   border-radius: 50%;
-  background: #2c3e50;
+  background: var(--font-color);
   animation-timing-function: cubic-bezier(0, 1, 1, 0);
+  opacity: 0.8;
 }
 
 .lds-ellipsis.size-small div {
@@ -72,8 +75,9 @@ export default {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #2c3e50;
+  background: var(--font-color);
   animation-timing-function: cubic-bezier(0, 1, 1, 0);
+  opacity: 0.8;
 }
 
 .lds-ellipsis div:nth-child(1) {
@@ -94,6 +98,23 @@ export default {
 .lds-ellipsis div:nth-child(4) {
   left: 56px;
   animation: lds-ellipsis3 0.6s infinite;
+}
+
+// Size-specific positioning for small loading indicator
+.lds-ellipsis.size-small div:nth-child(1) {
+  left: 2px;
+}
+
+.lds-ellipsis.size-small div:nth-child(2) {
+  left: 2px;
+}
+
+.lds-ellipsis.size-small div:nth-child(3) {
+  left: 8px;
+}
+
+.lds-ellipsis.size-small div:nth-child(4) {
+  left: 14px;
 }
 
 @keyframes lds-ellipsis1 {
@@ -120,6 +141,21 @@ export default {
   }
   100% {
     transform: translate(24px, 0);
+  }
+}
+
+// Small size animation adjustment
+.lds-ellipsis.size-small div:nth-child(2),
+.lds-ellipsis.size-small div:nth-child(3) {
+  animation: lds-ellipsis2-small 0.6s infinite;
+}
+
+@keyframes lds-ellipsis2-small {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(6px, 0);
   }
 }
 </style>
