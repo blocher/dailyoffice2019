@@ -155,7 +155,7 @@
       <FontSizer />
     </div>
   </div>
-  <div id="main" class="readingsPanel" :v-if="!readingsLoading">
+  <div id="main" class="readingsPanel" v-if="!readingsLoading">
     <div class="mt-6">
       <h2 mt-2 pt-0>{{ service }}</h2>
       <CitationGroup
@@ -208,6 +208,10 @@ import PageNotFound from '@/views/PageNotFound.vue';
 import Loading from '@/components/Loading.vue';
 import setCalendarDate from '@/helpers/setCalendarDate';
 import DonationPrompt from '@/components/DonationPrompt.vue';
+import CitationGroup from '@/components/CitationGroup.vue';
+import Reading from '@/components/Reading.vue';
+import Collects from '@/components/Collects.vue';
+import FontSizer from '@/components/FontSizer.vue';
 import { DynamicStorage } from '@/helpers/storage';
 import { nextTick } from 'vue';
 
@@ -219,6 +223,10 @@ export default {
     PageNotFound,
     Loading,
     DonationPrompt,
+    CitationGroup,
+    Reading,
+    Collects,
+    FontSizer,
   },
   props: {},
   data() {
