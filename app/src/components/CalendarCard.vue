@@ -1,69 +1,51 @@
 <template>
-  <div class="main-card" :class="{ hideBody: hideBody }">
-    <el-card class="box-card" :class="cardColor">
-      <template #header>
-        <div class="card-header">
-          <h1 v-if="officeName">
-            {{ officeName }}
-          </h1>
-          <h3>{{ formattedDate }}</h3>
-          <div class="card-info" :v-if="card">
+  <div class="main-card font-sans my-6 max-w-xl mx-auto">
+    <div
+      class="bg-white rounded-xl shadow-sm border-t-8 overflow-hidden transition-all duration-300 hover:shadow-md"
+      :class="[cardColorClass]"
+    >
+      <div class="p-6 text-center">
+        <h1
+          v-if="officeName"
+          class="text-xl font-bold text-gray-900 uppercase tracking-wide mb-2"
+        >
+          {{ officeName }}
+        </h1>
+        <h3
+          class="text-3xl font-serif text-gray-800 mb-6 font-medium border-b border-gray-100 pb-4"
+        >
+          {{ formattedDate }}
+        </h3>
+
+        <div class="card-info space-y-4">
+          <div
+            v-if="card && office !== 'evening_prayer' && office !== 'compline'"
+          >
             <h4
-              v-if="card && office != 'evening_prayer' && office != 'compline'"
-              class="primary-feast-heading"
+              class="text-lg font-semibold text-gray-800 leading-tight"
               v-html="card.primary_feast"
             ></h4>
-            <div
-              v-if="
-                card &&
-                office != 'evening_prayer' &&
-                office != 'compline' &&
-                card.commemorations[0].links.length > 0
-              "
-              class="flex items-center justify-center"
-            >
-              <!--              <a-->
-              <!--                v-for="link in card.commemorations[0].links"-->
-              <!--                :key="link"-->
-              <!--                :href="link"-->
-              <!--                target="_blank"-->
-              <!--                class="link align-center bio_link"-->
-              <!--                ><small>Biography</small></a-->
-              <!--              >&nbsp;-->
-            </div>
+          </div>
+
+          <div
+            v-if="card && (office == 'evening_prayer' || office == 'compline')"
+          >
             <h4
-              v-if="
-                card && (office == 'evening_prayer' || office == 'compline')
-              "
+              class="text-lg font-semibold text-gray-800 leading-tight"
               v-html="card.primary_evening_feast"
             ></h4>
-            <div
-              v-if="
-                card &&
-                (office == 'evening_prayer' || office == 'compline') &&
-                card.evening_commemorations[0].links.length > 0
-              "
-              class="flex items-center justify-center"
-            >
-              <!--              <a-->
-              <!--                v-for="link in card.commemorations[0].links"-->
-              <!--                :key="link"-->
-              <!--                :href="link"-->
-              <!--                target="_blank"-->
-              <!--                class="link align-center bio_link"-->
-              <!--                ><small>Biography</small></a-->
-              <!--              >&nbsp;-->
-            </div>
-
-            <h5
-              v-if="card && card.fast && card.fast.fast_day"
-              class="text-center"
-            >
-              Fast Day
-            </h5>
           </div>
+
+          <h5
+            v-if="card && card.fast && card.fast.fast_day"
+            class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-gray-100 text-gray-600 mt-2"
+          >
+            Fast Day
+          </h5>
         </div>
-      </template>
+      </div>
+
+      <!-- Commemorations Section -->
       <div
         v-if="
           card &&
@@ -71,49 +53,38 @@
           office != 'evening_prayer' &&
           office != 'compline'
         "
+        class="bg-gray-50 border-t border-gray-100 p-4"
       >
         <div
           v-for="commemoration in card.commemorations"
           :key="commemoration.name"
+          class="text-sm text-gray-600 py-1 text-center"
         >
           <Commemoration :commemoration="commemoration" />
         </div>
       </div>
+
       <div
         v-if="
           card &&
           card.evening_commemorations.length > 1 &&
           (office == 'evening_prayer' || office == 'compline')
         "
+        class="bg-gray-50 border-t border-gray-100 p-4"
       >
         <div
           v-for="commemoration in card.evening_commemorations"
           :key="commemoration.name"
+          class="text-sm text-gray-600 py-1 text-center"
         >
           <Commemoration :commemoration="commemoration" />
         </div>
       </div>
-      <!--    <div-->
-      <!--        v-if="card && card.season" class="width:10"-->
-      <!--    >-->
-      <!--      <div-->
-      <!--          class="card-footer mt-2" :class="card.season.colors[0]"-->
-      <!--      >-->
-      <!--        <h4>{{ card.season.name }}</h4>-->
-      <!--      </div>-->
-      <!--    </div>-->
-    </el-card>
+    </div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-
-// @ is an alias to /src
-// @ is an alias to /src
-// @ is an alias to /src
-// @ is an alias to /src
-// @ is an alias to /src
 // @ is an alias to /src
 import Commemoration from '@/components/Commemoration.vue';
 
@@ -130,12 +101,32 @@ export default {
   },
   computed: {
     cardColor: function () {
-      if (!this.card) return true;
+      if (!this.card) return 'white'; // default
       if (this.office !== 'evening_prayer' && this.office !== 'compline') {
-        return this.card.primary_color;
+        return this.card.primary_color || 'green';
       } else {
-        return this.card.primary_evening_color;
+        return this.card.primary_evening_color || 'green';
       }
+    },
+    // Map liturgical colors to Tailwind border classes
+    cardColorClass() {
+      const colorMap = {
+        red: 'border-red-700',
+        green: 'border-green-700',
+        white: 'border-yellow-400', // Gold/Yellow often used for white/gold feasts, or just gray-200 if strict white
+        purple: 'border-purple-800',
+        black: 'border-gray-900',
+        rose: 'border-pink-400',
+        blue: 'border-blue-600',
+      };
+
+      // Handle the 'white' case specially if we want it to be distinct from background
+      // Liturgical white is often represented with Gold or just White.
+      // If we use white border on white bg it's invisible.
+      // Let's use a Gold-ish color for White feasts as is common.
+
+      const color = this.cardColor ? this.cardColor.toLowerCase() : 'green';
+      return colorMap[color] || 'border-green-700';
     },
     hideBody: function () {
       if (!this.card) return true;
@@ -189,144 +180,23 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped="scoped">
-h1,
-h2,
-h3 {
-  margin: 0;
-  padding-top: 0;
-  padding-bottom: 0;
+<style scoped>
+/* Scoped overrides if necessary, but relying mostly on Tailwind */
+/* Custom colors that might not be in default Tailwind palette if strict adherence is needed */
+.border-red-700 {
+  border-color: #c21c13;
 }
-
-h1 {
-  margin: 2rem 0 3rem;
+.border-green-700 {
+  border-color: #077339;
 }
-
-h3 {
-  margin-bottom: 20px;
+.border-purple-800 {
+  border-color: #64147d;
 }
-
-h4 {
-  margin-bottom: 0;
-}
-</style>
-
-<style lang="scss">
-.primary-feast-heading {
-  margin-bottom: 0;
-}
-
-.card-footer {
-  border-radius: var(--el-card-border-radius);
-  border: 1px solid var(--el-card-border-color);
-  background-color: var(--el-card-bg-color);
-  overflow: hidden;
-  color: var(--el-text-color-primary);
-  transition: var(--el-transition-duration);
-  padding: 1em;
-  width: 100%;
-}
-
-a:link.link {
-  color: blue;
-}
-
-a:visited.link {
-  color: purple;
-}
-
-a:focus.link,
-a:hover.link {
-  border-bottom: 1px solid;
-}
-
-a:active.link {
-  color: red;
-}
-
-.box {
-  width: 0.8em;
-  height: 0.8em;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  display: inline-block;
-}
-
-.red {
-  .el-card__header {
-    background-color: #c21c13;
-    color: white;
-  }
-}
-
-.green {
-  .el-card__header {
-    background-color: #077339;
-    color: white;
-  }
-}
-
-.white {
-  .el-card__header {
-    background-color: white;
-    color: black;
-  }
-}
-
-.purple {
-  .el-card__header {
-    background-color: #64147d;
-    color: white;
-  }
-}
-
-.black {
-  .el-card__header {
-    background-color: black;
-    color: white;
-  }
-}
-
-.rose {
-  .el-card__header {
-    background-color: pink;
-    color: black;
-  }
-}
-
-.box,
-.card-footer {
-  &.red {
-    background-color: #c21c13;
-    color: white;
-  }
-
-  &.green {
-    background-color: #077339;
-    color: white;
-  }
-
-  &.white {
-    background-color: white;
-    color: black;
-  }
-
-  &.purple {
-    background-color: #64147d;
-    color: white;
-  }
-
-  &.black {
-    background-color: black;
-    color: white;
-  }
-
-  &.rose {
-    background-color: pink;
-    color: black;
-  }
-}
-
-.hideBody .el-card__body {
-  display: none;
-}
+/* For white, let's use a border that shows up - maybe a gold or silver?
+   The original CSS used: background-color: white; color: black;
+   If I want a visual indicator, gold is good for "White" feasts.
+*/
+.border-yellow-400 {
+  border-color: #d4af37;
+} /* Metallic Gold */
 </style>

@@ -2,55 +2,70 @@
   <div class="home office">
     <div class="small-container">
       <PageNotFound v-if="notFound" />
-      <div v-if="!notFound">
+      <div v-if="!notFound" class="space-y-6">
         <Loading v-if="loading" />
-        <CalendarCard
-          :office="office"
-          :calendar-date="calendarDate"
-          :card="card"
-          :service-type="serviceType"
-        />
-        <el-alert v-if="error" :title="error" type="error" />
-        <OfficeNav
-          :calendar-date="calendarDate"
-          :selected-office="office"
-          :service-type="serviceType"
-        />
-        <FontSizer v-if="readyToSetFontSize" />
-        <p style="text-align: center">
-          <el-tag type="warning">New!</el-tag>&nbsp;
-          <el-switch
-            v-model="audioEnabled"
-            size="large"
-            active-text="Show Audio Controls"
-            inactive-text="Hide Audio Controls"
+
+        <!-- Header Section -->
+        <header class="office-header mb-8">
+          <CalendarCard
+            :office="office"
+            :calendar-date="calendarDate"
+            :card="card"
+            :service-type="serviceType"
           />
-        </p>
+          <el-alert
+            v-if="error"
+            :title="error"
+            type="error"
+            show-icon
+            class="my-4"
+          />
+          <OfficeNav
+            :calendar-date="calendarDate"
+            :selected-office="office"
+            :service-type="serviceType"
+          />
+
+          <!-- Controls Area -->
+          <div
+            class="max-w-md mx-auto bg-white rounded-xl border border-gray-100 shadow-xs p-4 space-y-4"
+          >
+            <div
+              class="flex items-center justify-between border-b border-gray-100 pb-3 mb-2"
+            >
+              <span
+                class="text-sm font-semibold text-gray-500 uppercase tracking-wide"
+                >Display Settings</span
+              >
+            </div>
+
+            <FontSizer v-if="readyToSetFontSize" />
+
+            <div class="flex items-center justify-between pt-2">
+              <div class="flex items-center gap-2">
+                <el-tag type="warning" effect="plain" size="small" round
+                  >New</el-tag
+                >
+                <span class="text-sm text-gray-700">Audio Controls</span>
+              </div>
+              <el-switch
+                v-model="audioEnabled"
+                size="default"
+                active-text=""
+                inactive-text=""
+                inline-prompt
+                :active-icon="checkIcon"
+                :inactive-icon="closeIcon"
+                style="--el-switch-on-color: #4f46e5"
+              />
+            </div>
+          </div>
+        </header>
       </div>
     </div>
 
-    <!--    <div style="max-width: 65ch; margin: 0 auto 5rem">-->
-    <!--      <el-alert type="info" :closable="false">-->
-    <!--        <h3>New! Audio Player</h3>-->
-    <!--        <p style="text-align: center">-->
-    <!--          Try the new audio experience to listen to the Daily Office out loud.-->
-    <!--        </p>-->
-
-    <!--        <p v-if="audioEnabled" style="color: red; text-align: center">-->
-    <!--          Audio controls are visible at the bottom of the page.-->
-    <!--        </p>-->
-    <!--        <p>-->
-    <!--          <br />-->
-    <!--          ⚠-->
-    <!--          <small-->
-    <!--            >This is an experimental feature and may not always work perfectly.-->
-    <!--            Please report any issues or feedback to-->
-    <!--            feedback@dailyoffice2019.com.</small-->
-    <!--          >-->
-    <!--        </p>-->
-    <!--      </el-alert>-->
-    <!--    </div>-->
-    <div id="main">
+    <!-- Main Content (Book Style) -->
+    <div id="main" class="book-content">
       <div v-for="module in modules" :key="module.name">
         <div v-for="line in module.lines" :key="line.content">
           <OfficeHeading v-if="line.line_type === 'heading'" :line="line" />
@@ -86,8 +101,17 @@
         </div>
       </div>
     </div>
-    <DonationPrompt variant="long" />
+
+    <!-- Footer Section -->
+    <footer class="office-footer mt-12 pb-24">
+      <DonationPrompt variant="long" />
+
+      <div class="text-center text-gray-400 text-xs mt-8 mb-4">
+        <p>&copy; The Daily Office 2019</p>
+      </div>
+    </footer>
   </div>
+
   <AudioPlayer
     v-if="
       !loading &&
@@ -141,6 +165,7 @@ import { DynamicStorage } from '@/helpers/storage';
 import AudioPlayer from '@/components/AudioPlayer.vue';
 import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue';
 import DonationPrompt from '@/components/DonationPrompt.vue';
+import { Check, Close } from '@element-plus/icons-vue'; // Import icons for switch
 
 export default {
   name: 'Office',
@@ -189,6 +214,8 @@ export default {
       audioReady: false,
       audioEnabled: true,
       isEsvOrKjv: false,
+      checkIcon: Check,
+      closeIcon: Close,
     };
   },
   computed: {
@@ -385,7 +412,16 @@ export default {
 </script>
 
 <style scoped>
-.el-alert {
-  margin-top: 2em;
+.office-header {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Ensure main content is centered and readable on large screens */
+#main {
+  max-width: 65ch;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 </style>

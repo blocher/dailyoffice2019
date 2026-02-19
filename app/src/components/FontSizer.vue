@@ -1,20 +1,24 @@
 <template>
-  <div class="font-size-block my-2 p-3">
-    <div class="w-1/6 inline-block">
-      <font-awesome-icon :icon="['fad', 'font-case']" size="sm" />
-    </div>
-    <div class="w-2/3 inline-block">
-      <el-slider
-        v-model="fontSize"
-        class="w-3/4"
-        :min="sliderMin"
-        :max="sliderMax"
-        :format-tooltip="displayFontSize"
-        @input="setFontSize"
-      />
-    </div>
-    <div class="w-1/6 inline-block text-right">
-      <font-awesome-icon :icon="['fad', 'font-case']" size="lg" />
+  <div
+    class="font-size-block my-4 p-4 bg-gray-50 border border-gray-100 rounded-lg shadow-inner max-w-md mx-auto"
+  >
+    <div class="flex items-center justify-between gap-4">
+      <div class="text-gray-400">
+        <font-awesome-icon :icon="['fad', 'font-case']" size="sm" />
+      </div>
+      <div class="grow">
+        <el-slider
+          v-model="fontSize"
+          :min="sliderMin"
+          :max="sliderMax"
+          :format-tooltip="displayFontSize"
+          @input="setFontSize"
+          size="small"
+        />
+      </div>
+      <div class="text-gray-600">
+        <font-awesome-icon :icon="['fad', 'font-case']" size="lg" />
+      </div>
     </div>
   </div>
 </template>

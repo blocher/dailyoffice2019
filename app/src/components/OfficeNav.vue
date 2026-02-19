@@ -1,81 +1,95 @@
 <template>
-  <el-row
-    v-if="currentServiceType == 'office'"
-    :gutter="5"
-    class="mt-6 text-xs mx-auto"
-  >
-    <el-col :span="12" class="text-left"> Full Daily Office mode </el-col>
-    <el-col :span="12" class="text-right">
-      <a href="" @click.stop.prevent="toggleServiceType"
-        >Switch to Family Prayer</a
+  <div class="office-nav max-w-xl mx-auto space-y-4 mb-8">
+    <!-- Mode Switcher -->
+    <div
+      class="flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-100 shadow-sm"
+    >
+      <div class="text-sm font-medium text-gray-700">
+        <span v-if="currentServiceType === 'office'">Daily Office Mode</span>
+        <span v-else>Family Prayer Mode</span>
+      </div>
+      <button
+        @click.stop.prevent="toggleServiceType"
+        class="text-xs text-indigo-600 font-semibold hover:text-indigo-800 transition-colors uppercase tracking-wide border border-indigo-200 rounded px-2 py-1 hover:bg-indigo-50"
       >
-    </el-col>
-  </el-row>
-  <el-row v-else :gutter="5" class="mt-6 text-xs mx-auto">
-    <el-col :span="12" class="text-left"> Shorter Family Prayer mode </el-col>
-    <el-col :span="12" class="text-right">
-      <a href="" @click.stop.prevent="toggleServiceType"
-        >Switch to full Daily Office</a
+        Switch Mode
+      </button>
+    </div>
+
+    <!-- Main Office Links Grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+      <router-link
+        v-for="link in links"
+        :key="link.name"
+        :to="link.to"
+        class="group"
       >
-    </el-col>
-  </el-row>
-  <el-row :gutter="5" class="mt-2 text-center text-xs sm:text-sm mx-auto">
-    <el-col v-for="link in links" :key="link.name" :span="6">
-      <div class="grid-content bg-purple">
-        <router-link :to="link.to">
-          <el-card
-            :class="selectedClass(link.name)"
-            :shadow="hoverClass(link.name)"
+        <div
+          class="h-full bg-white border rounded-xl p-3 flex flex-col items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md hover:border-indigo-300"
+          :class="selectedClass(link.name)"
+        >
+          <div
+            class="text-xl mb-2 text-gray-500 group-hover:text-indigo-600 transition-colors"
           >
-            <p class="text-xs sm:text-sm">
-              <font-awesome-icon :icon="link.icon" />
-            </p>
-            <p class="text-xs sm:text-sm" v-html="link.text" />
-          </el-card>
-        </router-link>
-      </div>
-    </el-col>
-  </el-row>
-  <el-row :gutter="5" class="mt-2 text-center">
-    <el-col :span="24">
-      <div class="grid-content bg-purple">
-        <router-link :to="readingsLink.to">
-          <el-card
-            :class="selectedClass(readingsLink.name)"
-            :shadow="hoverClass(readingsLink.name)"
-          >
-            <p class="text-xs sm:text-sm">
-              <font-awesome-icon :icon="readingsLink.icon" />&nbsp;
-              <span v-html="readingsLink.text" />
-            </p>
-          </el-card>
-        </router-link>
-      </div>
-    </el-col>
-  </el-row>
-  <el-row :gutter="5" class="mt-2 text-center">
-    <el-col v-for="link in dayLinks" :key="link.text" :span="8">
-      <div class="grid-content bg-purple">
-        <router-link :to="link.to" :v-on:click="scrollToTop">
-          <el-card
-            :class="link.selected ? 'selected' : ''"
-            shadow="hover"
-            class="text-xs sm:text-sm"
-          >
-            <font-awesome-icon
-              v-if="link.icon == 'left'"
-              :icon="['fad', 'left']"
-            />
-            {{ link.text }}
-            <font-awesome-icon
-              v-if="link.icon == 'right'"
-              :icon="['fad', 'right']"
-            />
-          </el-card>
-        </router-link>
-      </div>
-    </el-col>
-  </el-row>
+            <font-awesome-icon :icon="link.icon" />
+          </div>
+          <p
+            class="text-xs font-semibold text-gray-700 leading-tight"
+            v-html="link.text"
+          ></p>
+        </div>
+      </router-link>
+    </div>
+
+    <!-- Readings Link -->
+    <div v-if="readingsLink">
+      <router-link :to="readingsLink.to" class="block group">
+        <div
+          class="bg-white border rounded-xl p-3 flex items-center justify-center gap-3 transition-all duration-200 shadow-sm hover:shadow-md hover:border-indigo-300"
+          :class="selectedClass(readingsLink.name)"
+        >
+          <font-awesome-icon
+            :icon="readingsLink.icon"
+            class="text-indigo-500"
+          />
+          <span
+            class="text-sm font-semibold text-gray-700"
+            v-html="readingsLink.text"
+          ></span>
+        </div>
+      </router-link>
+    </div>
+
+    <!-- Day Navigation -->
+    <div class="grid grid-cols-3 gap-3 pt-2">
+      <router-link
+        v-for="link in dayLinks"
+        :key="link.text"
+        :to="link.to"
+        :v-on:click="scrollToTop"
+        class="block"
+      >
+        <div
+          class="h-full bg-white border border-gray-200 rounded-lg p-2 flex flex-col sm:flex-row items-center justify-center text-center gap-2 hover:bg-gray-50 transition-colors"
+          :class="{
+            'bg-indigo-50 border-indigo-200 text-indigo-700': link.selected,
+          }"
+        >
+          <font-awesome-icon
+            v-if="link.icon === 'left'"
+            :icon="['fad', 'left']"
+            class="text-gray-400"
+          />
+          <span class="text-xs font-medium">{{ link.text }}</span>
+          <font-awesome-icon
+            v-if="link.icon === 'right'"
+            :icon="['fad', 'right']"
+            class="text-gray-400"
+          />
+        </div>
+      </router-link>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -102,6 +116,10 @@ export default {
     return {
       links: null,
       dayLink: null,
+      readingsLink: null, // Add to data to prevent reactivity issues
+      dailyLinks: [], // Store options
+      familyLinks: [], // Store options
+      dayLinks: [], // Add to data
       currentServiceType: this.serviceType,
     };
   },
@@ -115,7 +133,7 @@ export default {
         to: `/morning_prayer/${this.calendarDate.getFullYear()}/${
           this.calendarDate.getMonth() + 1
         }/${this.calendarDate.getDate()}`,
-        text: 'Morning<br>Prayer',
+        text: 'Morning',
         name: 'morning_prayer',
         icon: ['fad', 'sunrise'],
       },
@@ -123,7 +141,7 @@ export default {
         to: `/midday_prayer/${this.calendarDate.getFullYear()}/${
           this.calendarDate.getMonth() + 1
         }/${this.calendarDate.getDate()}`,
-        text: 'Midday<br>Prayer',
+        text: 'Midday',
         name: 'midday_prayer',
         icon: ['fad', 'sun'],
       },
@@ -131,7 +149,7 @@ export default {
         to: `/evening_prayer/${this.calendarDate.getFullYear()}/${
           this.calendarDate.getMonth() + 1
         }/${this.calendarDate.getDate()}`,
-        text: 'Evening<br>Prayer',
+        text: 'Evening',
         name: 'evening_prayer',
         icon: ['fad', 'sunset'],
       },
@@ -139,95 +157,100 @@ export default {
         to: `/compline/${this.calendarDate.getFullYear()}/${
           this.calendarDate.getMonth() + 1
         }/${this.calendarDate.getDate()}`,
-        text: 'Compline<br>(Bedtime)',
+        text: 'Compline',
         name: 'compline',
         icon: ['fad', 'moon-stars'],
       },
     ];
-    ((this.readingsLink = {
+    this.readingsLink = {
       to: `/readings/${this.calendarDate.getFullYear()}/${
         this.calendarDate.getMonth() + 1
       }/${this.calendarDate.getDate()}`,
       text: "Day's Readings",
       name: 'readings',
       icon: ['fad', 'book-bible'],
-    }),
-      (this.familyLinks = [
-        {
-          to: `/family/morning_prayer/${this.calendarDate.getFullYear()}/${
-            this.calendarDate.getMonth() + 1
-          }/${this.calendarDate.getDate()}`,
-          text: 'Morning',
-          name: 'morning_prayer',
-          icon: ['fad', 'sunrise'],
-        },
-        {
-          to: `/family/midday_prayer/${this.calendarDate.getFullYear()}/${
-            this.calendarDate.getMonth() + 1
-          }/${this.calendarDate.getDate()}`,
-          text: 'Midday',
-          name: 'midday_prayer',
-          icon: ['fad', 'sun'],
-        },
-        {
-          to: `/family/early_evening_prayer/${this.calendarDate.getFullYear()}/${
-            this.calendarDate.getMonth() + 1
-          }/${this.calendarDate.getDate()}`,
-          text: 'Early Evening',
-          name: 'early_evening_prayer',
-          icon: ['fad', 'sunset'],
-        },
-        {
-          to: `/family/close_of_day_prayer/${this.calendarDate.getFullYear()}/${
-            this.calendarDate.getMonth() + 1
-          }/${this.calendarDate.getDate()}`,
-          text: 'Close of Day',
-          name: 'close_of_day_prayer',
-          icon: ['fad', 'moon-stars'],
-        },
-      ]));
-    if (this.currentServiceType == 'family') {
+    };
+    this.familyLinks = [
+      {
+        to: `/family/morning_prayer/${this.calendarDate.getFullYear()}/${
+          this.calendarDate.getMonth() + 1
+        }/${this.calendarDate.getDate()}`,
+        text: 'Morning',
+        name: 'morning_prayer',
+        icon: ['fad', 'sunrise'],
+      },
+      {
+        to: `/family/midday_prayer/${this.calendarDate.getFullYear()}/${
+          this.calendarDate.getMonth() + 1
+        }/${this.calendarDate.getDate()}`,
+        text: 'Midday',
+        name: 'midday_prayer',
+        icon: ['fad', 'sun'],
+      },
+      {
+        to: `/family/early_evening_prayer/${this.calendarDate.getFullYear()}/${
+          this.calendarDate.getMonth() + 1
+        }/${this.calendarDate.getDate()}`,
+        text: 'Early Evening',
+        name: 'early_evening_prayer',
+        icon: ['fad', 'sunset'],
+      },
+      {
+        to: `/family/close_of_day_prayer/${this.calendarDate.getFullYear()}/${
+          this.calendarDate.getMonth() + 1
+        }/${this.calendarDate.getDate()}`,
+        text: 'Close of Day',
+        name: 'close_of_day_prayer',
+        icon: ['fad', 'moon-stars'],
+      },
+    ];
+    if (this.currentServiceType === 'family') {
       this.links = this.familyLinks;
     } else {
       this.links = this.dailyLinks;
     }
     const servicePart =
-      this.currentServiceType == 'family' ? `/${this.currentServiceType}` : '';
+      this.currentServiceType === 'family' ? `/${this.currentServiceType}` : '';
     this.dayLinks = [
       {
         to: `${servicePart}/${this.selectedOffice}/${yesterday.getFullYear()}/${
           yesterday.getMonth() + 1
         }/${yesterday.getDate()}`,
+        text: 'Yesterday',
         icon: 'left',
-        text: yesterday.toLocaleDateString('en-us', { weekday: 'long' }),
+        selected: false,
       },
       {
         to: `${servicePart}/${this.selectedOffice}/${this.calendarDate.getFullYear()}/${
           this.calendarDate.getMonth() + 1
         }/${this.calendarDate.getDate()}`,
-        text: this.calendarDate.toLocaleDateString('en-us', {
-          weekday: 'long',
-        }),
+        text: 'Today',
+        icon: '',
         selected: true,
       },
       {
         to: `${servicePart}/${this.selectedOffice}/${tomorrow.getFullYear()}/${
           tomorrow.getMonth() + 1
         }/${tomorrow.getDate()}`,
+        text: 'Tomorrow',
         icon: 'right',
-        text: tomorrow.toLocaleDateString('en-us', { weekday: 'long' }),
+        selected: false,
       },
     ];
   },
   methods: {
-    scrollToTop() {
-      window.scrollTo(0, 0);
+    selectedClass(name) {
+      if (this.selectedOffice === name) {
+        return 'border-indigo-500 bg-indigo-50 ring-2 ring-indigo-200';
+      }
+      return 'border-gray-200 hover:border-indigo-300';
     },
     hoverClass(name) {
-      return name == this.selectedOffice ? 'always' : 'hover';
-    },
-    selectedClass(name) {
-      return name == this.selectedOffice ? 'selected' : '';
+      // Not used with new tailwind classes, but kept for compatibility if needed
+      if (this.selectedOffice === name) {
+        return 'always';
+      }
+      return 'hover';
     },
     redirectToDaily() {
       if (this.selectedOffice) {
@@ -266,7 +289,7 @@ export default {
       }
     },
     async toggleServiceType() {
-      if (this.currentServiceType == 'family') {
+      if (this.currentServiceType === 'family') {
         this.currentServiceType = 'office';
         this.links = this.dailyLinks;
         await DynamicStorage.setItem('serviceType', 'office');
@@ -278,23 +301,13 @@ export default {
         this.redirectToFamily();
       }
     },
+    scrollToTop() {
+      window.scrollTo(0, 0);
+    },
   },
 };
 </script>
 
 <style scoped>
-.selected {
-  background-color: rgb(229, 231, 235);
-  border-color: rgb(44, 62, 80);
-  color: var(--font-on-white-background);
-}
-
-.el-card {
-  --el-card-padding: 10px;
-  height: 100%;
-}
-
-.el-card__body {
-  padding: 5px !important;
-}
+/* Scoped styles replaced by Tailwind classes */
 </style>
