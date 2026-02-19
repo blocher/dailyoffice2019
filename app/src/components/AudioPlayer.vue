@@ -19,64 +19,108 @@
       </div>
 
       <div v-if="isEsvOrKjv" class="menu-and-buttons">
-        <div class="button-row">
-          <el-button-group v-if="audioReady" class="playback-buttons">
-            <el-button
-              size="large"
-              type="primary"
-              :disabled="isPlaying && !isPaused"
-              @click="startAudio"
-              class="play-button"
-            >
-              <span class="button-icon">▶</span>
-              <span class="button-text">Play</span>
-            </el-button>
-            <el-button
-              size="large"
-              type="primary"
-              :disabled="!isPlaying"
-              @click="pauseAudio"
-              class="pause-button"
-            >
-              <span class="button-icon">⏸</span>
-              <span class="button-text">Pause</span>
-            </el-button>
-          </el-button-group>
-          <Loading v-if="loading" :small="true" />
+        <!-- Mini Player View (Mobile Only - Collapsed) -->
+        <div
+          v-if="isMobile && !isExpanded"
+          class="mini-player"
+          @click="toggleExpanded"
+        >
+          <div class="mini-player-content">
+            <span class="mini-player-icon">
+              {{ isPlaying && !isPaused ? '⏸' : '▶' }}
+            </span>
+            <span class="mini-player-text">
+              <template v-if="isPlaying && !isPaused">
+                Now Playing
+                <span class="mini-player-time">
+                  {{ formattedCurrentTime }} / {{ formattedDuration }}
+                </span>
+              </template>
+              <template v-else> Audio Available </template>
+            </span>
+            <span class="mini-player-expand">⌃</span>
+          </div>
+          <!-- Progress bar when playing -->
+          <div v-if="isPlaying && !isPaused" class="mini-player-progress">
+            <div
+              class="mini-player-progress-bar"
+              :style="{ width: progressPercentage + '%' }"
+            ></div>
+          </div>
         </div>
 
-        <div class="controls-row" v-if="audioReady && trackSegments.length">
-          <el-select
-            v-model="playbackSpeed"
-            class="speed-selector"
-            placeholder="Speed"
-            @change="handleSpeedChange"
-          >
-            <el-option v-for="speed in speeds" :key="speed" :value="speed">
-              {{ speed }}
-            </el-option>
-          </el-select>
-          <el-select
-            v-model="currentTrackSegment"
-            class="segment-selector"
-            placeholder="Jump to..."
-            @change="handleTrackSegmentChange"
-          >
-            <el-option
-              v-for="segment in trackSegments"
-              :key="segment.start_time"
-              :value="segment.start_time"
+        <!-- Full Player View (Always on Desktop, Expandable on Mobile) -->
+        <template v-else>
+          <div v-if="isMobile" class="player-header">
+            <span class="player-title">Audio Player</span>
+            <button
+              class="collapse-button"
+              @click="toggleExpanded"
+              title="Minimize"
             >
-              {{ segment.name }}
-            </el-option>
-          </el-select>
-          <el-switch
-            v-model="enableScrolling"
-            active-text="Scroll"
-            inactive-text="No Scroll"
-            class="scroll-toggle"
-          ></el-switch>
-        </div>
+              ⌄
+            </button>
+          </div>
+
+          <div class="button-row">
+            <el-button-group v-if="audioReady" class="playback-buttons">
+              <el-button
+                size="large"
+                type="primary"
+                :disabled="isPlaying && !isPaused"
+                @click="startAudio"
+                class="play-button"
+              >
+                <span class="button-icon">▶</span>
+                <span class="button-text">Play</span>
+              </el-button>
+              <el-button
+                size="large"
+                type="primary"
+                :disabled="!isPlaying"
+                @click="pauseAudio"
+                class="pause-button"
+              >
+                <span class="button-icon">⏸</span>
+                <span class="button-text">Pause</span>
+              </el-button>
+            </el-button-group>
+            <Loading v-if="loading" :small="true" />
+          </div>
+
+          <div class="controls-row" v-if="audioReady && trackSegments.length">
+            <el-select
+              v-model="playbackSpeed"
+              class="speed-selector"
+              placeholder="Speed"
+              @change="handleSpeedChange"
+            >
+              <el-option v-for="speed in speeds" :key="speed" :value="speed">
+                {{ speed }}
+              </el-option>
+            </el-select>
+            <el-select
+              v-model="currentTrackSegment"
+              class="segment-selector"
+              placeholder="Jump to..."
+              @change="handleTrackSegmentChange"
+            >
+              <el-option
+                v-for="segment in trackSegments"
+                :key="segment.start_time"
+                :value="segment.start_time"
+              >
+                {{ segment.name }}
+              </el-option>
+            </el-select>
+            <el-switch
+              v-model="enableScrolling"
+              active-text="Scroll"
+              inactive-text="No Scroll"
+              class="scroll-toggle"
+            ></el-switch>
+          </div>
+        </template>
       </div>
     </div>
   </div>
@@ -123,6 +167,10 @@ export default {
       audioElement: null,
       playbackSpeed: '1.0x',
       enableScrolling: true,
+      isExpanded: false, // Track if player is expanded or minimized (mobile only)
+      currentTime: 0, // Current playback time
+      duration: 0, // Total duration
+      isMobile: false, // Track if we're on mobile
       speeds: [
         '0.5x',
         '0.6x',
@@ -144,6 +192,10 @@ export default {
     };
   },
   mounted() {
+    // Check if mobile on mount
+    this.checkMobile();
+    window.addEventListener('resize', this.checkMobile);
+
     if (
       this.audio &&
       Array.isArray(this.audio[2]) &&
@@ -159,6 +211,9 @@ export default {
       });
       this.audioElement.addEventListener('timeupdate', this.handleTimeUpdate);
       this.audioElement.addEventListener('ended', this.stopAudio);
+      this.audioElement.addEventListener('loadedmetadata', () => {
+        this.duration = this.audioElement.duration;
+      });
 
       this.trackSegments = this.audio[2];
       this.detailedSegments = this.audio[3];
@@ -166,6 +221,7 @@ export default {
   },
   beforeUnmount() {
     this.stopAudio();
+    window.removeEventListener('resize', this.checkMobile);
     if (this.audioElement) {
       this.audioElement.removeEventListener(
         'timeupdate',
@@ -211,7 +267,12 @@ export default {
       }
     },
     handleTimeUpdate() {
+      if (!this.audioElement) return;
+
+      this.currentTime = this.audioElement.currentTime;
+
       if (!this.isPlaying || !this.enableScrolling) return;
+
       const currentTime = this.audioElement.currentTime;
       for (const segment of this.detailedSegments) {
         if (Math.abs(currentTime - segment.start_time) < 0.5) {
@@ -225,6 +286,42 @@ export default {
       const element = document.querySelector(`[data-line-id='${segmentId}']`);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    },
+    toggleExpanded() {
+      this.isExpanded = !this.isExpanded;
+    },
+    checkMobile() {
+      this.isMobile = window.innerWidth <= 768;
+      // Always show full player on desktop
+      if (!this.isMobile) {
+        this.isExpanded = true;
+      }
+    },
+    formatTime(seconds) {
+      if (!seconds || isNaN(seconds)) return '0:00';
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    },
+  },
+  computed: {
+    formattedCurrentTime() {
+      return this.formatTime(this.currentTime);
+    },
+    formattedDuration() {
+      return this.formatTime(this.duration);
+    },
+    progressPercentage() {
+      if (!this.duration) return 0;
+      return (this.currentTime / this.duration) * 100;
+    },
+  },
+  watch: {
+    isPlaying(newVal) {
+      // Auto-expand when audio starts playing (mobile only)
+      if (newVal && !this.isExpanded && this.isMobile) {
+        this.isExpanded = true;
       }
     },
   },
@@ -270,7 +367,15 @@ button,
 }
 
 .audio-list {
-  margin-bottom: 120px; /* Increased to account for larger controls */
+  margin-bottom: 120px; /* Default for desktop (always full) */
+  transition: margin-bottom 0.3s ease;
+}
+
+/* Mobile gets smaller margin when collapsed */
+@media (max-width: 768px) {
+  .audio-list {
+    margin-bottom: 60px; /* Smaller for mini player on mobile */
+  }
 }
 
 .controls.fixed-controls {
@@ -291,6 +396,7 @@ button,
   z-index: 100;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
   touch-action: manipulation;
+  transition: all 0.3s ease; /* Smooth transition for expand/collapse */
 }
 
 .menu-and-buttons {
@@ -299,6 +405,139 @@ button,
   gap: 10px;
   width: 100%;
   touch-action: manipulation;
+}
+
+/* Mini Player Styles (Collapsed State) */
+.mini-player {
+  cursor: pointer;
+  padding: 8px 12px;
+  background: var(--color-bg);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mini-player:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.mini-player:active {
+  transform: scale(0.99);
+}
+
+.mini-player-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+}
+
+.mini-player-icon {
+  font-size: 20px;
+  min-width: 24px;
+  text-align: center;
+}
+
+.mini-player-text {
+  flex: 1;
+  font-weight: 500;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mini-player-chapters {
+  font-weight: 400;
+  opacity: 0.7;
+  font-size: 14px;
+}
+
+.mini-player-time {
+  font-weight: 400;
+  opacity: 0.7;
+  font-size: 13px;
+  margin-left: 4px;
+}
+
+.mini-player-expand {
+  font-size: 20px;
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+
+.mini-player:hover .mini-player-expand {
+  opacity: 1;
+}
+
+/* Mini Player Progress Bar */
+.mini-player-progress {
+  margin-top: 8px;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.mini-player-progress-bar {
+  height: 100%;
+  background: var(--el-color-primary, #409eff);
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+/* Player Header (Expanded State - Mobile Only) */
+.player-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+
+/* Hide player header on desktop */
+@media (min-width: 769px) {
+  .player-header {
+    display: none;
+  }
+}
+
+.player-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.collapse-button {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--color-text);
+  opacity: 0.6;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.collapse-button:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.collapse-button:active {
+  transform: scale(0.95);
 }
 
 .button-row {
