@@ -1,1 +1,36 @@
 @import 'tailwindcss';
+
+/* Global zoom prevention for iOS, Android, and Capacitor apps */
+@layer base {
+    /* Prevent zoom on all input types - CRITICAL for mobile */
+    input,
+    select,
+    textarea,
+    button {
+        font-size: 16px !important; /* iOS/Android won't zoom if >= 16px */
+        touch-action: manipulation; /* Prevent double-tap zoom */
+    }
+
+    /* Prevent zoom on all interactive elements */
+    * {
+        -webkit-tap-highlight-color: transparent; /* Remove tap highlight */
+        -webkit-touch-callout: none; /* Disable callout on iOS */
+    }
+
+    /* Allow text selection for content areas only */
+    p, h1, h2, h3, h4, h5, h6, span, div {
+        -webkit-user-select: text;
+        user-select: text;
+    }
+
+    /* Prevent selection on interactive elements */
+    button,
+    input,
+    select,
+    textarea,
+    a {
+        -webkit-user-select: none;
+        user-select: none;
+    }
+}
+
