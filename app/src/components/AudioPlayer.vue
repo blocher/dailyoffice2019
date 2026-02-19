@@ -27,7 +27,9 @@
         >
           <div class="mini-player-content">
             <span class="mini-player-icon">
-              {{ isPlaying && !isPaused ? '⏸' : '▶' }}
+              <font-awesome-icon
+                :icon="isPlaying && !isPaused ? faPause : faPlay"
+              />
             </span>
             <span class="mini-player-text">
               <template v-if="isPlaying && !isPaused">
@@ -38,7 +40,9 @@
               </template>
               <template v-else> Audio Available </template>
             </span>
-            <span class="mini-player-expand">⌃</span>
+            <span class="mini-player-expand">
+              <font-awesome-icon :icon="faChevronUp" />
+            </span>
           </div>
           <!-- Progress bar when playing -->
           <div v-if="isPlaying && !isPaused" class="mini-player-progress">
@@ -58,7 +62,7 @@
               @click="toggleExpanded"
               title="Minimize"
             >
-              ⌄
+              <font-awesome-icon :icon="faChevronDown" />
             </button>
           </div>
 
@@ -71,7 +75,9 @@
                 @click="startAudio"
                 class="play-button"
               >
-                <span class="button-icon">▶</span>
+                <span class="button-icon">
+                  <font-awesome-icon :icon="faPlay" />
+                </span>
                 <span class="button-text">Play</span>
               </el-button>
               <el-button
@@ -81,7 +87,9 @@
                 @click="pauseAudio"
                 class="pause-button"
               >
-                <span class="button-icon">⏸</span>
+                <span class="button-icon">
+                  <font-awesome-icon :icon="faPause" />
+                </span>
                 <span class="button-text">Pause</span>
               </el-button>
             </el-button-group>
@@ -128,10 +136,20 @@
 
 <script>
 import Loading from '@/components/Loading.vue';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import {
+  faChevronDown,
+  faChevronUp,
+  faPause,
+  faPlay,
+} from '@fortawesome/pro-regular-svg-icons';
 
 export default {
   name: 'AudioPlayer',
-  components: { Loading },
+  components: {
+    Loading,
+    FontAwesomeIcon,
+  },
   props: {
     audio: {
       type: Object,
@@ -315,6 +333,19 @@ export default {
     progressPercentage() {
       if (!this.duration) return 0;
       return (this.currentTime / this.duration) * 100;
+    },
+    // FontAwesome icons
+    faPlay() {
+      return faPlay;
+    },
+    faPause() {
+      return faPause;
+    },
+    faChevronUp() {
+      return faChevronUp;
+    },
+    faChevronDown() {
+      return faChevronDown;
     },
   },
   watch: {
