@@ -826,6 +826,6 @@ export default {
 #main {
   max-width: 65ch;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 var(--main-content-gutter);
 }
 </style>

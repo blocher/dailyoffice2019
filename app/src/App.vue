@@ -514,6 +514,7 @@ select:focus {
   --accent-contrast: #ffffff;
   --link-color: var(--accent-color);
   --el-color-primary: var(--accent-color);
+  --main-content-gutter: 1.75rem;
 
   --el-text-color-primary: #111827;
   --el-text-color-secondary: #6b7280;
@@ -797,6 +798,7 @@ body {
   #main {
     max-width: 65ch;
     margin: 0 auto 5rem;
+    padding: 0 var(--main-content-gutter);
   }
 
   h1,
