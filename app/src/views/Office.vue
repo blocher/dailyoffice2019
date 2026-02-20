@@ -434,6 +434,7 @@ export default {
     this.loading = false;
     await this.$nextTick();
     this.readyToSetFontSize = true;
+    await this.applyStoredFontSize();
     if (this.isEsvOrKjv) {
       this.audioLinks = await this.setAudioLinks(office_url);
     }
@@ -494,6 +495,30 @@ export default {
       }
       const normalized = Math.min(max, Math.max(min, value));
       return Math.round(((normalized - min) / (max - min)) * 100);
+    },
+    async applyStoredFontSize() {
+      const storedFontSize = parseInt(
+        (await DynamicStorage.getItem('fontSize')) || '24',
+        10
+      );
+      const fontSize = Number.isNaN(storedFontSize) ? 24 : storedFontSize;
+      this.applyFontSizeToMain(fontSize);
+      this.displayFontSize = fontSize;
+    },
+    applyFontSizeToMain(value) {
+      const main = document.getElementById('main');
+      if (!main) {
+        return;
+      }
+      main.style['font-size'] = `${value}px`;
+      document
+        .querySelectorAll(
+          '#main h2, #main h3, #main p, .el-collapse-item__header, .el-collapse-item p'
+        )
+        .forEach((p) => {
+          p.style['font-size'] = `${value}px`;
+          p.style['line-height'] = `${value * 1.6}px`;
+        });
     },
     applySeasonAccentFromCard(card) {
       const liturgicalColor = resolveColorFromCard(card, this.office);
