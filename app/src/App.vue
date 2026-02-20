@@ -111,6 +111,19 @@
                 >Get Email Updates</el-dropdown-item
               >
 
+              <el-dropdown-item divided disabled
+                >--Contribute--</el-dropdown-item
+              >
+              <el-dropdown-item @click="openDonation"
+                >Support Financially</el-dropdown-item
+              >
+              <a
+                href="https://github.com/blocher/dailyoffice2019"
+                target="_blank"
+                rel="noopener noreferrer"
+                ><el-dropdown-item>GitHub Code</el-dropdown-item></a
+              >
+
               <template v-if="isWeb">
                 <el-dropdown-item divided disabled>--Apps--</el-dropdown-item>
                 <el-dropdown-item @click="openAppStore('ios')"

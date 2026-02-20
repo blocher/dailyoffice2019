@@ -729,6 +729,8 @@ button,
 .scroll-toggle {
   flex-shrink: 0;
   touch-action: manipulation !important;
+  --el-switch-on-color: var(--accent-color);
+  --el-switch-border-color: var(--accent-color);
 }
 
 .scroll-toggle :deep(.el-switch__label),
@@ -736,6 +738,16 @@ button,
   font-size: 14px !important;
   touch-action: manipulation !important;
   user-select: none;
+}
+
+.scroll-toggle :deep(.el-switch__label) {
+  color: var(--el-text-color-regular);
+  transition: color 0.2s ease;
+}
+
+.scroll-toggle :deep(.el-switch__label.is-active) {
+  color: var(--accent-color);
+  font-weight: 600;
 }
 
 .scroll-toggle :deep(.el-switch__core) {

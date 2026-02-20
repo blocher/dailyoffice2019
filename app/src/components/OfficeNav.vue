@@ -143,14 +143,14 @@ export default {
   computed: {
     currentModeLabel() {
       return this.currentServiceType === 'family'
-        ? 'Family Prayer'
+        ? 'Short Family Prayer'
         : 'Full Daily Office';
     },
     switchModeLabel() {
       const targetMode =
         this.currentServiceType === 'family'
           ? 'Full Daily Office'
-          : 'Family Prayer';
+          : 'Short Family Prayer';
       return `Switch to ${targetMode}`;
     },
   },
