@@ -17,7 +17,7 @@
       >
       <span
         class="hidden sm:inline text-[11px] text-gray-500 dark:text-gray-400 tracking-wide"
-        >Book of Common Prayer, 2019</span
+        >Book of Common Prayer, 2019 Edition</span
       >
     </div>
 
@@ -129,7 +129,7 @@
     </nav>
   </div>
 
-  <div class="main-body pt-24">
+  <div class="main-body pt-24" :style="mainBodyStyle">
     <Loading v-if="loading" />
     <!--    <BetaNote/>-->
     <el-alert v-if="error" :title="error" type="error" />
@@ -224,12 +224,39 @@ export default {
       isHeaderVisible: true,
       lastScrollPosition: 0,
       isAudioPlayerVisible: false, // Track if player is actually showing
+      audioBarHeight: 0,
+      settingsBarHeight: 0,
     };
   },
 
   methods: {
-    handleAudioVisibility(isVisible) {
+    handleAudioVisibility(payload) {
+      if (payload && typeof payload === 'object') {
+        const isVisible = Boolean(payload.visible);
+        const height = Number(payload.height) || 0;
+        this.isAudioPlayerVisible = isVisible;
+        this.audioBarHeight = isVisible ? height : 0;
+        return;
+      }
+      const isVisible = Boolean(payload);
       this.isAudioPlayerVisible = isVisible;
+      this.audioBarHeight = isVisible ? 132 : 0;
+    },
+    handleSettingsBarVisibility(payload) {
+      if (payload && typeof payload === 'object') {
+        const isVisible = Boolean(payload.visible);
+        const height = Number(payload.height) || 0;
+        this.settingsBarHeight = isVisible ? height : 0;
+        return;
+      }
+      const isVisible = Boolean(payload);
+      this.settingsBarHeight = isVisible ? 140 : 0;
+    },
+    onAudioVisibilityEvent(event) {
+      this.handleAudioVisibility(event.detail);
+    },
+    onSettingsBarVisibilityEvent(event) {
+      this.handleSettingsBarVisibility(event.detail);
     },
     handleScroll() {
       // Don't hide for negative scroll (bounce effect) or very top
@@ -285,15 +312,32 @@ export default {
         ? 'primary'
         : '';
     },
+    bottomFixedOffset() {
+      const tallestBar = Math.max(
+        this.audioBarHeight,
+        this.settingsBarHeight,
+        0
+      );
+      return tallestBar > 0 ? tallestBar + 16 : 0;
+    },
+    mainBodyStyle() {
+      return {
+        paddingBottom: `calc(${this.bottomFixedOffset}px + env(safe-area-inset-bottom))`,
+      };
+    },
     backtopBottom() {
-      // 10px if no audio, ~100px if audio layer is present (approx height of player + spacing)
-      return this.isAudioPlayerVisible ? 100 : 20;
+      return this.bottomFixedOffset > 0 ? this.bottomFixedOffset + 20 : 20;
     },
   },
   async mounted() {
     window.addEventListener('scroll', this.handleScroll);
-    document.addEventListener('audio-player-visibility', (e) =>
-      this.handleAudioVisibility(e.detail)
+    document.addEventListener(
+      'audio-player-visibility',
+      this.onAudioVisibilityEvent
+    );
+    document.addEventListener(
+      'settings-bottom-bar-visibility',
+      this.onSettingsBarVisibilityEvent
     );
 
     const audioEnabled =
@@ -308,8 +352,13 @@ export default {
   },
   unmounted() {
     window.removeEventListener('scroll', this.handleScroll);
-    document.removeEventListener('audio-player-visibility', (e) =>
-      this.handleAudioVisibility(e.detail)
+    document.removeEventListener(
+      'audio-player-visibility',
+      this.onAudioVisibilityEvent
+    );
+    document.removeEventListener(
+      'settings-bottom-bar-visibility',
+      this.onSettingsBarVisibilityEvent
     );
   },
   async created() {
@@ -614,6 +663,7 @@ select:focus {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  font-family: inherit;
   gap: 0.3rem;
   min-height: 2rem;
   width: 6.5rem;
@@ -622,7 +672,7 @@ select:focus {
   border-width: 1px;
   border-style: solid;
   border-radius: 0.375rem;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 600;
   line-height: 1;
   white-space: nowrap;
@@ -631,6 +681,11 @@ select:focus {
     border-color 0.2s ease,
     color 0.2s ease,
     filter 0.2s ease;
+}
+
+a.nav-chip,
+button.nav-chip {
+  font-size: 0.72rem;
 }
 
 .nav-chip--inactive {

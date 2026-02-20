@@ -50,6 +50,26 @@ export default {
       default: false,
     },
   },
+  mounted() {
+    this.$nextTick(() => this.emitVisibility());
+  },
+  beforeUnmount() {
+    this.emitVisibility(false);
+  },
+  methods: {
+    emitVisibility(forceState) {
+      const isVisible = forceState !== undefined ? forceState : true;
+      const controls = this.$el?.querySelector('.controls.fixed-controls');
+      const height =
+        isVisible && controls
+          ? Math.ceil(controls.getBoundingClientRect().height)
+          : 0;
+      const event = new window.CustomEvent('audio-player-visibility', {
+        detail: { visible: isVisible, height },
+      });
+      document.dispatchEvent(event);
+    },
+  },
 };
 </script>
 

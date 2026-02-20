@@ -4,15 +4,16 @@
     <div
       class="flex items-center justify-between bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm"
     >
-      <div class="text-sm font-medium text-gray-700 dark:text-gray-200">
-        <span v-if="currentServiceType === 'office'">Daily Office Mode</span>
-        <span v-else>Family Prayer Mode</span>
+      <div class="mode-switch-meta">
+        <span class="mode-switch-label">Mode</span>
+        <span class="mode-switch-current">{{ currentModeLabel }}</span>
       </div>
       <button
         @click.stop.prevent="toggleServiceType"
-        class="mode-switch-button text-xs font-semibold uppercase tracking-wide rounded px-2 py-1 transition-colors"
+        class="mode-switch-button font-medium rounded px-2 py-0.5 transition-colors"
+        :aria-label="switchModeLabel"
       >
-        Switch Mode
+        {{ switchModeLabel }}
       </button>
     </div>
 
@@ -138,6 +139,20 @@ export default {
       dayLinks: [], // Add to data
       currentServiceType: this.serviceType,
     };
+  },
+  computed: {
+    currentModeLabel() {
+      return this.currentServiceType === 'family'
+        ? 'Family Prayer'
+        : 'Full Daily Office';
+    },
+    switchModeLabel() {
+      const targetMode =
+        this.currentServiceType === 'family'
+          ? 'Full Daily Office'
+          : 'Family Prayer';
+      return `Switch to ${targetMode}`;
+    },
   },
   async created() {
     const tomorrow = new Date(this.calendarDate);
@@ -355,11 +370,37 @@ export default {
 .mode-switch-button {
   color: var(--accent-color);
   border: 1px solid var(--accent-color);
+  background-color: transparent;
+  line-height: 1.1;
+  font-size: 0.75rem;
+  padding: 0.4rem;
+  white-space: nowrap;
 }
 
 .mode-switch-button:hover {
   color: var(--accent-color);
   background-color: var(--el-fill-color-light);
+}
+
+:root.dark .mode-switch-meta {
+  color: var(--el-text-color-primary);
+}
+
+.mode-switch-label {
+  display: block;
+  font-size: 0.7rem;
+  line-height: 1;
+  color: var(--el-text-color-secondary);
+  margin-bottom: 0.3rem;
+  letter-spacing: 0.02em;
+}
+
+.mode-switch-current {
+  display: block;
+  font-size: 0.88rem;
+  line-height: 1.1;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
 }
 
 :root.dark .mode-switch-button {

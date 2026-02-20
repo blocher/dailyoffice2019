@@ -1,15 +1,20 @@
 @import 'tailwindcss';
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* Global zoom prevention for iOS, Android, and Capacitor apps */
 @layer base {
-    /* Prevent zoom on all input types - CRITICAL for mobile */
+    /* Prevent zoom on input types - iOS/Android won't zoom if >= 16px */
     input,
     select,
-    textarea,
-    button {
-        font-size: 16px !important; /* iOS/Android won't zoom if >= 16px */
+    textarea {
+        font-size: 16px !important;
         touch-action: manipulation; /* Prevent double-tap zoom */
+    }
+
+    /* Buttons don't trigger iOS zoom, so only set touch-action */
+    button {
+        touch-action: manipulation;
     }
 
     /* Prevent zoom on all interactive elements */

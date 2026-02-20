@@ -239,7 +239,7 @@ export default {
       this.detailedSegments = this.audio[3];
     }
 
-    this.emitVisibility();
+    this.$nextTick(() => this.emitVisibility());
   },
   beforeUnmount() {
     this.stopAudio();
@@ -255,11 +255,13 @@ export default {
   methods: {
     emitVisibility(forceState) {
       const isVisible = forceState !== undefined ? forceState : true;
-      // On mobile: visible if it fits the criteria (basically always visible if mounted, but height varies)
-      // Actually, we just need to tell App.vue that the player is present.
-      // If it's mounted, it's visible.
+      const controls = this.$el?.querySelector('.controls.fixed-controls');
+      const height =
+        isVisible && controls
+          ? Math.ceil(controls.getBoundingClientRect().height)
+          : 0;
       const event = new window.CustomEvent('audio-player-visibility', {
-        detail: isVisible,
+        detail: { visible: isVisible, height },
       });
       document.dispatchEvent(event);
     },
@@ -323,6 +325,7 @@ export default {
     },
     toggleExpanded() {
       this.isExpanded = !this.isExpanded;
+      this.$nextTick(() => this.emitVisibility());
     },
     checkMobile() {
       this.isMobile = window.innerWidth <= 768;
@@ -330,6 +333,7 @@ export default {
       if (!this.isMobile) {
         this.isExpanded = true;
       }
+      this.$nextTick(() => this.emitVisibility());
     },
     formatTime(seconds) {
       if (!seconds || isNaN(seconds)) return '0:00';

@@ -35,6 +35,7 @@
   </div>
   <el-drawer
     v-model="drawerOpen"
+    class="settings-bottom-drawer"
     modal-class="pointer-events-none"
     direction="btt"
     :close-on-click-modal="false"
@@ -126,20 +127,39 @@ export default {
     },
   },
   async mounted() {
+    window.addEventListener('resize', this.handleWindowResize);
     await this.initialize();
+    this.$nextTick(() => this.emitBottomBarVisibility());
   },
   unmounted() {
-    window.removeEventListener('resize', () => {
-      this.windowWidth = window.innerWidth;
-    });
+    window.removeEventListener('resize', this.handleWindowResize);
+    this.emitBottomBarVisibility(false);
   },
   methods: {
+    handleWindowResize() {
+      this.windowWidth = window.innerWidth;
+      this.$nextTick(() => this.emitBottomBarVisibility());
+    },
+    emitBottomBarVisibility(forceState) {
+      const isVisible = forceState !== undefined ? forceState : this.drawerOpen;
+      let height = 0;
+      if (isVisible) {
+        const drawer = document.querySelector('.settings-bottom-drawer');
+        if (drawer) {
+          height = Math.ceil(drawer.getBoundingClientRect().height);
+        }
+        if (!height) {
+          height = this.bottomPanelExpanded ? 164 : 56;
+        }
+      }
+      const event = new window.CustomEvent('settings-bottom-bar-visibility', {
+        detail: { visible: isVisible, height },
+      });
+      document.dispatchEvent(event);
+    },
     async initialize() {
       this.loading = true;
       this.windowWidth = window.innerWidth;
-      window.addEventListener('resize', () => {
-        this.windowWidth = window.innerWidth;
-      });
       this.availableSettings = await this.$store.state.availableSettings;
       await this.$store.dispatch('initializeSettings');
       const settings = await this.$store.state.settings;
@@ -171,6 +191,7 @@ export default {
         }
       }
       this.loading = false;
+      this.$nextTick(() => this.emitBottomBarVisibility());
     },
     async toggleAdvanced(value) {
       await DynamicStorage.setItem('advancedSettings', value);
@@ -181,6 +202,7 @@ export default {
     },
     toggleBottomPanel() {
       this.bottomPanelExpanded = !this.bottomPanelExpanded;
+      this.$nextTick(() => this.emitBottomBarVisibility());
     },
   },
 };
