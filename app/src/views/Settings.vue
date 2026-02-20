@@ -66,8 +66,8 @@
           <el-switch
             v-model="openTab"
             class="ml-2"
-            active-color="#e5e7eb"
-            inactive-color="#e5e7eb"
+            active-color="var(--link-color)"
+            inactive-color="var(--el-border-color)"
             active-value="family"
             inactive-value="office"
             @change="toggleOffice"
@@ -79,8 +79,8 @@
           <el-switch
             v-model="advanced"
             class="ml-2"
-            active-color="#e5e7eb"
-            inactive-color="#e5e7eb"
+            active-color="var(--link-color)"
+            inactive-color="var(--el-border-color)"
             @change="toggleAdvanced"
           />
         </div>

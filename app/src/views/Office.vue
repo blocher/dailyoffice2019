@@ -28,15 +28,25 @@
 
           <!-- Controls Area -->
           <div
-            class="max-w-md mx-auto bg-white rounded-xl border border-gray-100 shadow-xs p-4 space-y-4"
+            class="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-xs p-4 space-y-4"
           >
             <div
-              class="flex items-center justify-between border-b border-gray-100 pb-3 mb-2"
+              class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-3 mb-2"
             >
               <span
-                class="text-sm font-semibold text-gray-500 uppercase tracking-wide"
+                class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide"
                 >Display Settings</span
               >
+            </div>
+
+            <div
+              class="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-700"
+            >
+              <span
+                class="text-sm text-gray-700 dark:text-gray-200 font-medium pb-2"
+                >Appearance</span
+              >
+              <ThemeSwitcher />
             </div>
 
             <FontSizer v-if="readyToSetFontSize" />
@@ -46,7 +56,9 @@
                 <el-tag type="warning" effect="plain" size="small" round
                   >New</el-tag
                 >
-                <span class="text-sm text-gray-700">Audio Controls</span>
+                <span class="text-sm text-gray-700 dark:text-gray-200"
+                  >Audio Controls</span
+                >
               </div>
               <el-switch
                 v-model="audioEnabled"
@@ -56,7 +68,7 @@
                 inline-prompt
                 :active-icon="checkIcon"
                 :inactive-icon="closeIcon"
-                style="--el-switch-on-color: #4f46e5"
+                style="--el-switch-on-color: var(--accent-color)"
               />
             </div>
           </div>
@@ -104,11 +116,7 @@
 
     <!-- Footer Section -->
     <footer class="office-footer mt-12 pb-24">
-      <DonationPrompt variant="long" />
-
-      <div class="text-center text-gray-400 text-xs mt-8 mb-4">
-        <p>&copy; The Daily Office 2019</p>
-      </div>
+      <!-- DonationPrompt removed to avoid duplication with App.vue footer -->
     </footer>
   </div>
 
@@ -164,13 +172,13 @@ import FontSizer from '@/components/FontSizer.vue';
 import { DynamicStorage } from '@/helpers/storage';
 import AudioPlayer from '@/components/AudioPlayer.vue';
 import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue';
-import DonationPrompt from '@/components/DonationPrompt.vue';
+import ThemeSwitcher from '@/components/ThemeSwitcher.vue'; // Add import
 import { Check, Close } from '@element-plus/icons-vue'; // Import icons for switch
+import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
 
 export default {
   name: 'Office',
   components: {
-    DonationPrompt,
     AudioPlayerMessage,
     AudioPlayer,
     OfficeHeading,
@@ -188,6 +196,7 @@ export default {
     OfficeNav,
     PageNotFound,
     FontSizer,
+    ThemeSwitcher, // Register component
   },
   props: {
     office: {
@@ -306,6 +315,7 @@ export default {
     }
     this.modules = data.data.modules;
     this.card = data.data.calendar_day;
+    this.applySeasonAccentFromCard(this.card);
     this.error = false;
     this.loading = false;
     await this.$nextTick();
@@ -317,6 +327,12 @@ export default {
   },
 
   methods: {
+    applySeasonAccentFromCard(card) {
+      const liturgicalColor = resolveColorFromCard(card, this.office);
+      if (liturgicalColor) {
+        setSeasonAccent(liturgicalColor);
+      }
+    },
     async setAudioLinks(url) {
       url = `${url}&include_audio_links=true`;
       try {

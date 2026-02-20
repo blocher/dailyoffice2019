@@ -1,11 +1,19 @@
 <template>
-  <span class="sub-menu-item">
-    <a href="" @click.prevent="toggleSharePanel">
-      <font-awesome-icon :icon="['fad', 'share-nodes']" />&nbsp;<br />
-      <span class="text-xs">Share Your Settings&nbsp;</span>
-    </a>
-  </span>
-  <!--  <el-dropdown-item @click.prevent="toggleSharePanel">Share Your Settings</el-dropdown-item>-->
+  <button @click.prevent="toggleSharePanel" class="w-full h-full">
+    <div
+      class="flex flex-col items-center justify-center p-3 h-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 transition-colors group cursor-pointer text-center"
+    >
+      <font-awesome-icon
+        :icon="['fad', 'share-nodes']"
+        class="text-lg text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200 mb-2 transition-colors"
+      />
+      <span
+        class="text-xs font-semibold text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 leading-tight"
+        >Share Settings</span
+      >
+    </div>
+  </button>
+
   <el-drawer v-model="showSharePanel" direction="rtl" :size="panelSize">
     <div class="mt-4">
       <h2 class="text-left pt-0">
@@ -51,7 +59,7 @@
       </p>
     </div>
     <div v-if="canShare" class="mt-4">
-      <h2 class="text-left pt-0 pt-4">
+      <h2 class="text-left pt-4">
         <font-awesome-icon :icon="['fad', 'share-nodes']" />&nbsp; Share using
         an app
       </h2>

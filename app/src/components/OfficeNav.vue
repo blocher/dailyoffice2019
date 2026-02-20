@@ -2,15 +2,15 @@
   <div class="office-nav max-w-xl mx-auto space-y-4 mb-8">
     <!-- Mode Switcher -->
     <div
-      class="flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-100 shadow-sm"
+      class="flex items-center justify-between bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm"
     >
-      <div class="text-sm font-medium text-gray-700">
+      <div class="text-sm font-medium text-gray-700 dark:text-gray-200">
         <span v-if="currentServiceType === 'office'">Daily Office Mode</span>
         <span v-else>Family Prayer Mode</span>
       </div>
       <button
         @click.stop.prevent="toggleServiceType"
-        class="text-xs text-indigo-600 font-semibold hover:text-indigo-800 transition-colors uppercase tracking-wide border border-indigo-200 rounded px-2 py-1 hover:bg-indigo-50"
+        class="mode-switch-button text-xs font-semibold uppercase tracking-wide rounded px-2 py-1 transition-colors"
       >
         Switch Mode
       </button>
@@ -25,16 +25,18 @@
         class="group"
       >
         <div
-          class="h-full bg-white border rounded-xl p-3 flex flex-col items-center justify-center transition-all duration-200 shadow-sm hover:shadow-md hover:border-indigo-300"
+          class="h-full rounded-xl p-3 flex flex-col items-center justify-center transition-all duration-200 border"
           :class="selectedClass(link.name)"
         >
           <div
-            class="text-xl mb-2 text-gray-500 group-hover:text-indigo-600 transition-colors"
+            class="text-xl mb-2 transition-colors"
+            :class="iconClass(link.name)"
           >
             <font-awesome-icon :icon="link.icon" />
           </div>
           <p
-            class="text-xs font-semibold text-gray-700 leading-tight"
+            class="text-xs font-semibold leading-tight"
+            :class="textClass(link.name)"
             v-html="link.text"
           ></p>
         </div>
@@ -45,15 +47,17 @@
     <div v-if="readingsLink">
       <router-link :to="readingsLink.to" class="block group">
         <div
-          class="bg-white border rounded-xl p-3 flex items-center justify-center gap-3 transition-all duration-200 shadow-sm hover:shadow-md hover:border-indigo-300"
+          class="rounded-xl p-3 flex items-center justify-center gap-3 transition-all duration-200 border"
           :class="selectedClass(readingsLink.name)"
         >
           <font-awesome-icon
             :icon="readingsLink.icon"
-            class="text-indigo-500"
+            class="transition-colors"
+            :class="iconClass(readingsLink.name)"
           />
           <span
-            class="text-sm font-semibold text-gray-700"
+            class="text-sm font-semibold"
+            :class="textClass(readingsLink.name)"
             v-html="readingsLink.text"
           ></span>
         </div>
@@ -70,21 +74,31 @@
         class="block"
       >
         <div
-          class="h-full bg-white border border-gray-200 rounded-lg p-2 flex flex-col sm:flex-row items-center justify-center text-center gap-2 hover:bg-gray-50 transition-colors"
+          class="h-full rounded-lg p-2 flex flex-col sm:flex-row items-center justify-center text-center gap-2 transition-colors border"
           :class="{
-            'bg-indigo-50 border-indigo-200 text-indigo-700': link.selected,
+            'office-nav-selected': link.selected,
+            'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700':
+              !link.selected,
           }"
         >
           <font-awesome-icon
             v-if="link.icon === 'left'"
             :icon="['fad', 'left']"
-            class="text-gray-400"
+            :class="
+              link.selected
+                ? 'office-nav-selected-icon'
+                : 'text-gray-500 dark:text-gray-400'
+            "
           />
           <span class="text-xs font-medium">{{ link.text }}</span>
           <font-awesome-icon
             v-if="link.icon === 'right'"
             :icon="['fad', 'right']"
-            class="text-gray-400"
+            :class="
+              link.selected
+                ? 'office-nav-selected-icon'
+                : 'text-gray-500 dark:text-gray-400'
+            "
           />
         </div>
       </router-link>
@@ -95,6 +109,8 @@
 <script>
 // @ is an alias to /src
 
+// @ is an alias to /src
+// @ is an alias to /src
 import { DynamicStorage } from '@/helpers/storage';
 
 export default {
@@ -241,9 +257,9 @@ export default {
   methods: {
     selectedClass(name) {
       if (this.selectedOffice === name) {
-        return 'border-indigo-500 bg-indigo-50 ring-2 ring-indigo-200';
+        return 'office-nav-selected';
       }
-      return 'border-gray-200 hover:border-indigo-300';
+      return 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:border-gray-500';
     },
     hoverClass(name) {
       // Not used with new tailwind classes, but kept for compatibility if needed
@@ -304,10 +320,53 @@ export default {
     scrollToTop() {
       window.scrollTo(0, 0);
     },
+    iconClass(name) {
+      if (this.selectedOffice === name) {
+        return 'office-nav-selected-icon';
+      }
+      return 'text-gray-500 dark:text-gray-400';
+    },
+    textClass(name) {
+      if (this.selectedOffice === name) {
+        return 'office-nav-selected-text';
+      }
+      return 'text-gray-700 dark:text-gray-300';
+    },
   },
 };
 </script>
 
 <style scoped>
-/* Scoped styles replaced by Tailwind classes */
+.office-nav-selected {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  color: var(--accent-contrast);
+}
+
+.office-nav-selected:hover {
+  filter: brightness(0.95);
+}
+
+.office-nav-selected-text,
+.office-nav-selected-icon {
+  color: var(--accent-contrast);
+}
+
+.mode-switch-button {
+  color: var(--accent-color);
+  border: 1px solid var(--accent-color);
+}
+
+.mode-switch-button:hover {
+  color: var(--accent-color);
+  background-color: var(--el-fill-color-light);
+}
+
+:root.dark .mode-switch-button {
+  border-color: var(--accent-color);
+}
+
+:root.dark .mode-switch-button:hover {
+  background-color: var(--el-fill-color-light);
+}
 </style>

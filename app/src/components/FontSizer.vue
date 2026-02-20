@@ -1,9 +1,9 @@
 <template>
   <div
-    class="font-size-block my-4 p-4 bg-gray-50 border border-gray-100 rounded-lg shadow-inner max-w-md mx-auto"
+    class="font-size-block my-4 p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600 rounded-lg shadow-inner max-w-md mx-auto"
   >
     <div class="flex items-center justify-between gap-4">
-      <div class="text-gray-400">
+      <div class="text-gray-400 dark:text-gray-500">
         <font-awesome-icon :icon="['fad', 'font-case']" size="sm" />
       </div>
       <div class="grow">
@@ -16,7 +16,7 @@
           size="small"
         />
       </div>
-      <div class="text-gray-600">
+      <div class="text-gray-600 dark:text-gray-300">
         <font-awesome-icon :icon="['fad', 'font-case']" size="lg" />
       </div>
     </div>

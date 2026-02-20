@@ -1,24 +1,62 @@
 <template>
-  <span v-if="isNative" class="sub-menu-item">
-    <a :href="webLink" @click="openLink($event, webLink)">
-      <font-awesome-icon :icon="['fad', 'fa-globe']" /><br />
-      <span class="text-xs">Web Version&nbsp;</span>
+  <div v-if="isNative" class="w-full h-full">
+    <a
+      :href="webLink"
+      @click="openLink($event, webLink)"
+      class="block w-full h-full"
+    >
+      <div
+        class="flex flex-col items-center justify-center p-3 h-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 transition-colors group cursor-pointer text-center"
+      >
+        <font-awesome-icon
+          :icon="['fad', 'fa-globe']"
+          class="text-lg text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200 mb-2 transition-colors"
+        />
+        <span
+          class="text-xs font-semibold text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 leading-tight"
+          >Web Version</span
+        >
+      </div>
     </a>
-  </span>
-  <span v-else class="sub-menu-item-group">
-    <span class="sub-menu-item">
-      <a :href="iosLink" @click="openLink($event, iosLink)">
-        <font-awesome-icon :icon="['fab', 'fa-apple']" /><br />
-        <span class="text-xs">iOS App&nbsp;</span>
-      </a>
-    </span>
-    <span class="sub-menu-item">
-      <a :href="androidLink" @click="openLink($event, androidLink)">
-        <font-awesome-icon :icon="['fab', 'fa-android']" /><br />
-        <span class="text-xs">Android App&nbsp;</span>
-      </a>
-    </span>
-  </span>
+  </div>
+  <div v-else class="flex gap-4 w-full h-full justify-center">
+    <a
+      :href="iosLink"
+      @click="openLink($event, iosLink)"
+      class="block w-full h-full"
+    >
+      <div
+        class="flex flex-col items-center justify-center p-3 h-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 transition-colors group cursor-pointer text-center"
+      >
+        <font-awesome-icon
+          :icon="['fab', 'fa-apple']"
+          class="text-lg text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200 mb-2 transition-colors"
+        />
+        <span
+          class="text-xs font-semibold text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 leading-tight"
+          >iOS App</span
+        >
+      </div>
+    </a>
+    <a
+      :href="androidLink"
+      @click="openLink($event, androidLink)"
+      class="block w-full h-full"
+    >
+      <div
+        class="flex flex-col items-center justify-center p-3 h-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 transition-colors group cursor-pointer text-center"
+      >
+        <font-awesome-icon
+          :icon="['fab', 'fa-android']"
+          class="text-lg text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200 mb-2 transition-colors"
+        />
+        <span
+          class="text-xs font-semibold text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 leading-tight"
+          >Android App</span
+        >
+      </div>
+    </a>
+  </div>
 </template>
 
 <script>

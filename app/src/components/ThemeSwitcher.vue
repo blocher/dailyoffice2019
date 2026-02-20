@@ -20,6 +20,7 @@
 
 <script>
 import { DynamicStorage } from '@/helpers/storage';
+import { refreshSeasonAccent } from '@/helpers/seasonAccent';
 
 export default {
   data() {
@@ -42,6 +43,7 @@ export default {
       }
       this.userTheme = theme;
       document.documentElement.className = this.getUserThemeClass();
+      refreshSeasonAccent();
     },
     getUserThemeClass() {
       return this.userTheme;

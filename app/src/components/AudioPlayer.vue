@@ -136,19 +136,21 @@
 
 <script>
 import Loading from '@/components/Loading.vue';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import {
+  faBackwardStep,
   faChevronDown,
   faChevronUp,
+  faForwardStep,
   faPause,
   faPlay,
-} from '@fortawesome/pro-regular-svg-icons';
+  faVolumeHigh,
+  faVolumeMute,
+} from '@fortawesome/free-solid-svg-icons';
 
 export default {
   name: 'AudioPlayer',
   components: {
     Loading,
-    FontAwesomeIcon,
   },
   props: {
     audio: {
@@ -236,6 +238,8 @@ export default {
       this.trackSegments = this.audio[2];
       this.detailedSegments = this.audio[3];
     }
+
+    this.emitVisibility();
   },
   beforeUnmount() {
     this.stopAudio();
@@ -246,8 +250,19 @@ export default {
         this.handleTimeUpdate
       );
     }
+    this.emitVisibility(false);
   },
   methods: {
+    emitVisibility(forceState) {
+      const isVisible = forceState !== undefined ? forceState : true;
+      // On mobile: visible if it fits the criteria (basically always visible if mounted, but height varies)
+      // Actually, we just need to tell App.vue that the player is present.
+      // If it's mounted, it's visible.
+      const event = new window.CustomEvent('audio-player-visibility', {
+        detail: isVisible,
+      });
+      document.dispatchEvent(event);
+    },
     startAudio() {
       if (this.audioElement) {
         this.audioElement.play();
@@ -346,6 +361,18 @@ export default {
     },
     faChevronDown() {
       return faChevronDown;
+    },
+    faBackwardStep() {
+      return faBackwardStep;
+    },
+    faForwardStep() {
+      return faForwardStep;
+    },
+    faVolumeHigh() {
+      return faVolumeHigh;
+    },
+    faVolumeMute() {
+      return faVolumeMute;
     },
   },
   watch: {
@@ -468,6 +495,7 @@ button,
   font-size: 20px;
   min-width: 24px;
   text-align: center;
+  color: var(--accent-color);
 }
 
 .mini-player-text {
@@ -513,7 +541,7 @@ button,
 
 .mini-player-progress-bar {
   height: 100%;
-  background: var(--el-color-primary, #409eff);
+  background: var(--accent-color);
   transition: width 0.3s ease;
   border-radius: 2px;
 }
@@ -611,6 +639,39 @@ button,
   transition: all 0.2s ease;
   touch-action: manipulation !important;
   -webkit-tap-highlight-color: transparent;
+}
+
+.play-button,
+.pause-button {
+  --el-button-bg-color: var(--accent-color);
+  --el-button-border-color: var(--accent-color);
+  --el-button-text-color: var(--accent-contrast);
+  --el-button-hover-bg-color: var(--accent-color);
+  --el-button-hover-border-color: var(--accent-color);
+  --el-button-hover-text-color: var(--accent-contrast);
+  --el-button-active-bg-color: var(--accent-color);
+  --el-button-active-border-color: var(--accent-color);
+  --el-button-active-text-color: var(--accent-contrast);
+  --el-button-disabled-bg-color: var(--accent-color);
+  --el-button-disabled-border-color: var(--accent-color);
+  --el-button-disabled-text-color: var(--accent-contrast);
+}
+
+.play-button:not(.is-disabled):hover,
+.pause-button:not(.is-disabled):hover {
+  filter: brightness(0.95);
+}
+
+.play-button.is-disabled,
+.pause-button.is-disabled {
+  opacity: 0.55;
+}
+
+.play-button :deep(.button-icon),
+.play-button :deep(.button-text),
+.pause-button :deep(.button-icon),
+.pause-button :deep(.button-text) {
+  color: var(--accent-contrast);
 }
 
 .button-icon {

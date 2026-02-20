@@ -28,6 +28,7 @@ import setCalendarDate from '@/helpers/setCalendarDate';
 import OfficeNav from '@/components/OfficeNav.vue';
 import PageNotFound from '@/views/PageNotFound.vue';
 import { DynamicStorage } from '@/helpers/storage';
+import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
 import CalendarCard from '@/components/CalendarCard.vue';
 import Loading from '@/components/Loading.vue';
 
@@ -107,9 +108,16 @@ export default {
         return;
       }
       this.card = data.data;
+      this.applySeasonAccentFromCard(this.card);
 
       this.scrollToTop();
       this.loading = false;
+    },
+    applySeasonAccentFromCard(card) {
+      const liturgicalColor = resolveColorFromCard(card, 'day');
+      if (liturgicalColor) {
+        setSeasonAccent(liturgicalColor);
+      }
     },
   },
 };

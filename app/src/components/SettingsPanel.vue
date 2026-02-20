@@ -31,7 +31,9 @@
                 optionIdx === availableSettings.length - 1
                   ? 'rounded-bl-md rounded-br-md'
                   : '',
-                checked ? 'bg-sky-50 border-sky-200 z-10' : 'border-gray-200',
+                checked
+                  ? 'bg-sky-50 dark:bg-sky-900/30 border-sky-200 dark:border-sky-500/50 z-10'
+                  : 'border-gray-200 dark:border-gray-600',
                 'relative border p-4 flex cursor-pointer focus:outline-none',
               ]"
             >
@@ -39,8 +41,10 @@
                 :class="[
                   checked
                     ? 'bg-sky-600 border-transparent'
-                    : 'bg-white border-gray-300',
-                  active ? 'ring-2 ring-offset-2 ring-sky-500' : '',
+                    : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-500',
+                  active
+                    ? 'ring-2 ring-offset-2 ring-sky-500 dark:ring-offset-gray-800'
+                    : '',
                   'h-4 w-4 mt-0.5 cursor-pointer rounded-full border flex items-center justify-center',
                 ]"
                 aria-hidden="true"
@@ -74,6 +78,7 @@
 <script>
 // @ is an alias to /src
 
+// @ is an alias to /src
 import {
   RadioGroup,
   RadioGroupDescription,

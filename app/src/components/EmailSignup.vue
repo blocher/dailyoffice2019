@@ -1,11 +1,19 @@
 <template>
-  <span class="sub-menu-item">
-    <a href="" @click.prevent="showEmailPanel()">
-      <font-awesome-icon :icon="['fad', 'envelopes']" /><br />
-      <span class="ml-1 text-xs">Get Email Updates&nbsp;</span>
-    </a>
-  </span>
-  <!--  <el-dropdown-item @click.prevent="emailPanel = true">Get Email Updates</el-dropdown-item>-->
+  <button @click.prevent="showEmailPanel()" class="w-full h-full">
+    <div
+      class="flex flex-col items-center justify-center p-3 h-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 transition-colors group cursor-pointer text-center"
+    >
+      <font-awesome-icon
+        :icon="['fad', 'envelopes']"
+        class="text-lg text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200 mb-2 transition-colors"
+      />
+      <span
+        class="text-xs font-semibold text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 leading-tight"
+        >Get Email Updates</span
+      >
+    </div>
+  </button>
+
   <el-drawer v-model="emailPanel" :size="panelSize" direction="rtl">
     <div class="mt-4">
       <h3>Get Occasional Email Updates</h3>

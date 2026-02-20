@@ -3,74 +3,102 @@
   <div v-if="variant === 'short'" class="flex items-center justify-center my-2">
     <button
       @click="openLink"
-      class="group relative inline-flex items-center gap-2 px-4 py-2 bg-white border border-indigo-100 rounded-full shadow-sm hover:shadow-md hover:border-indigo-200 transition-all duration-300 transform hover:-translate-y-0.5"
+      class="group donation-short-button relative inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border rounded-full shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5"
     >
       <div
-        class="flex items-center justify-center w-6 h-6 rounded-full bg-red-50 text-red-500 group-hover:scale-110 transition-transform duration-300"
+        class="flex items-center justify-center w-6 h-6 rounded-full bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 group-hover:scale-110 transition-transform duration-300"
       >
         <font-awesome-icon :icon="['fad', 'fa-heart']" />
       </div>
       <span
-        class="text-xs font-semibold text-gray-700 group-hover:text-indigo-600"
+        class="donation-short-label text-xs font-semibold text-gray-700 dark:text-gray-200"
         >Support the Daily Office</span
       >
     </button>
   </div>
 
   <!-- Long Variant: Full feature card for detailed pages -->
-  <div v-else class="max-w-4xl mx-auto my-12 px-4 font-sans">
+  <div
+    v-else
+    class="mx-auto font-sans"
+    :class="compact ? 'max-w-none my-0 px-0' : 'max-w-4xl my-12 px-4'"
+  >
     <div
-      class="bg-white rounded-2xl shadow-xl border border-indigo-50 overflow-hidden"
+      class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden h-full flex flex-col"
+      :class="{
+        'rounded-2xl shadow-xl donation-surface-accent': !compact,
+      }"
     >
       <!-- Hero Header -->
       <div
-        class="p-8 sm:p-10 text-center relative overflow-hidden border-b border-gray-100"
+        class="text-center relative overflow-hidden border-b border-gray-100 dark:border-gray-700"
+        :class="compact ? 'p-6' : 'p-8 sm:p-10'"
       >
         <div
           class="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none"
         >
           <font-awesome-icon
             :icon="['fad', 'fa-books']"
-            class="text-9xl absolute -top-10 -left-10 transform rotate-12 text-indigo-900"
+            class="donation-bg-glyph text-9xl absolute -top-10 -left-10 transform rotate-12"
           />
           <font-awesome-icon
             :icon="['fad', 'fa-book-bible']"
-            class="text-9xl absolute -bottom-10 -right-10 transform -rotate-12 text-indigo-900"
+            class="donation-bg-glyph text-9xl absolute -bottom-10 -right-10 transform -rotate-12"
           />
         </div>
 
-        <div class="relative z-10 max-w-2xl mx-auto">
+        <div
+          class="relative z-10 mx-auto"
+          :class="compact ? 'max-w-full' : 'max-w-2xl'"
+        >
           <div
-            class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-50 mb-6 shadow-sm ring-4 ring-white"
+            class="donation-gift-badge inline-flex items-center justify-center rounded-full mb-4 shadow-sm ring-4 ring-white dark:ring-gray-800"
+            :class="compact ? 'w-12 h-12' : 'w-16 h-16 mb-6'"
           >
             <font-awesome-icon
               :icon="['fad', 'fa-gift']"
-              class="text-3xl text-indigo-600"
+              class="donation-accent-text"
+              :class="compact ? 'text-xl' : 'text-3xl'"
             />
           </div>
-          <h3 class="text-3xl font-extrabold tracking-tight mb-4 text-gray-900">
+          <h3
+            class="font-bold tracking-tight text-gray-900 dark:text-gray-100"
+            :class="compact ? 'text-xl mb-2' : 'text-3xl font-extrabold mb-4'"
+          >
             Support the Daily Office
           </h3>
-          <p class="text-gray-600 text-lg sm:text-x leading-relaxed">
+          <p
+            class="text-gray-600 dark:text-gray-300 leading-relaxed"
+            :class="compact ? 'text-sm' : 'text-lg sm:text-x'"
+          >
             Your generosity helps us sustain this ministry, generate audio
             daily, and keep these resources free for everyone.
           </p>
         </div>
       </div>
 
-      <div class="p-8 sm:p-10">
-        <div class="grid md:grid-cols-2 gap-10 items-center">
+      <div
+        :class="
+          compact ? 'p-6 flex-grow flex flex-col justify-end' : 'p-8 sm:p-10'
+        "
+      >
+        <div
+          :class="
+            compact ? 'space-y-6' : 'grid md:grid-cols-2 gap-10 items-center'
+          "
+        >
           <!-- Left Column: Impact List -->
-          <div class="space-y-6">
+          <div :class="compact ? 'space-y-4' : 'space-y-6'" v-if="!compact">
+            <!-- Hide impact list on compact mode to save space, or simplify it -->
             <h4
-              class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2"
+              class="text-lg font-bold text-gray-900 dark:text-gray-100 border-b border-gray-100 dark:border-gray-700 pb-2"
             >
               Your support makes this possible:
             </h4>
             <ul class="space-y-4">
               <li class="flex items-start gap-4">
                 <div
-                  class="shrink-0 w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600"
+                  class="donation-icon-tile shrink-0 w-10 h-10 rounded-lg flex items-center justify-center"
                 >
                   <font-awesome-icon
                     :icon="['fad', 'fa-server']"
@@ -78,17 +106,18 @@
                   />
                 </div>
                 <div>
-                  <span class="block font-semibold text-gray-900"
-                    >Infrastructure & Licensing</span
+                  <span
+                    class="block font-semibold text-gray-900 dark:text-gray-100"
+                    >Hosting & Bibe Licensing</span
                   >
-                  <span class="text-sm text-gray-500"
+                  <span class="text-sm text-gray-500 dark:text-gray-400"
                     >Servers, app store fees, and Bible text royalties.</span
                   >
                 </div>
               </li>
               <li class="flex items-start gap-4">
                 <div
-                  class="shrink-0 w-10 h-10 rounded-lg bg-pink-50 flex items-center justify-center text-pink-600"
+                  class="shrink-0 w-10 h-10 rounded-lg bg-pink-50 dark:bg-pink-900/30 flex items-center justify-center text-pink-600 dark:text-pink-400"
                 >
                   <font-awesome-icon
                     :icon="['fad', 'fa-microphone']"
@@ -96,10 +125,11 @@
                   />
                 </div>
                 <div>
-                  <span class="block font-semibold text-gray-900"
+                  <span
+                    class="block font-semibold text-gray-900 dark:text-gray-100"
                     >Audio Production</span
                   >
-                  <span class="text-sm text-gray-500"
+                  <span class="text-sm text-gray-500 dark:text-gray-400"
                     >Daily audio generation, hosting, and podcast
                     distribution.</span
                   >
@@ -107,7 +137,7 @@
               </li>
               <li class="flex items-start gap-4">
                 <div
-                  class="shrink-0 w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600"
+                  class="shrink-0 w-10 h-10 rounded-lg bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400"
                 >
                   <font-awesome-icon
                     :icon="['fad', 'fa-book-bible']"
@@ -115,10 +145,11 @@
                   />
                 </div>
                 <div>
-                  <span class="block font-semibold text-gray-900"
+                  <span
+                    class="block font-semibold text-gray-900 dark:text-gray-100"
                     >Content Creation</span
                   >
-                  <span class="text-sm text-gray-500"
+                  <span class="text-sm text-gray-500 dark:text-gray-400"
                     >Saint hagiographies and the upcoming Podcast and Spanish
                     editions</span
                   >
@@ -127,28 +158,73 @@
             </ul>
           </div>
 
+          <!-- Simplified Impact List for Compact Mode -->
+          <div
+            v-if="compact"
+            class="text-sm text-gray-600 dark:text-gray-300 space-y-3"
+          >
+            <p class="font-medium text-gray-800 dark:text-gray-200">
+              Your support funds:
+            </p>
+            <ul class="space-y-2">
+              <li
+                class="flex items-center gap-2 text-gray-600 dark:text-gray-300"
+              >
+                <font-awesome-icon
+                  :icon="['fad', 'fa-server']"
+                  class="donation-accent-text"
+                />
+                <span>Infrastructure & bible licensing</span>
+              </li>
+              <li
+                class="flex items-center gap-2 text-gray-600 dark:text-gray-300"
+              >
+                <font-awesome-icon
+                  :icon="['fad', 'fa-microphone']"
+                  class="text-pink-400"
+                />
+                <span>Audio and hagiography production & hosting</span>
+              </li>
+              <li
+                class="flex items-center gap-2 text-gray-600 dark:text-gray-300"
+              >
+                <font-awesome-icon
+                  :icon="['fad', 'fa-book-bible']"
+                  class="text-amber-400"
+                />
+                <span>Coming soon: Spanish and podcasts</span>
+              </li>
+            </ul>
+          </div>
+
           <!-- Right Column: CTA & Info -->
           <div
-            class="bg-gray-50 rounded-xl p-8 text-center border border-gray-100 shadow-inner"
+            class="bg-gray-50 dark:bg-gray-700/50 rounded-xl text-center border border-gray-100 dark:border-gray-600 shadow-inner"
+            :class="compact ? 'p-4 mt-auto' : 'p-8'"
           >
-            <p class="text-gray-600 mb-6 italic">
+            <p
+              class="text-gray-600 dark:text-gray-300 italic"
+              :class="compact ? 'text-xs mb-4' : 'mb-6'"
+            >
               "This site will always be 100% free. There is no paywall, no
               obligation, and no guilt."
             </p>
 
             <button
               @click="openLink"
-              class="w-full inline-flex items-center justify-center px-6 py-4 border border-transparent text-lg font-bold rounded-xl shadow-lg text-white bg-linear-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 transform hover:-translate-y-1 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              class="donation-cta w-full inline-flex items-center justify-center border font-bold rounded-xl shadow-lg transform hover:-translate-y-1 transition-all duration-200 focus-visible:outline-none"
+              :class="compact ? 'px-4 py-3 text-sm' : 'px-6 py-4 text-lg'"
             >
               <font-awesome-icon
                 :icon="['fad', 'fa-mug-hot']"
-                class="mr-3 text-xl"
+                class="mr-3"
+                :class="compact ? 'text-lg' : 'text-xl'"
               />
               Support on Ko-fi
             </button>
 
             <p
-              class="mt-4 text-xs text-gray-400 flex items-center justify-center gap-1.5"
+              class="mt-4 text-xs text-gray-400 dark:text-gray-500 flex items-center justify-center gap-1.5"
             >
               <font-awesome-icon
                 :icon="['fad', 'fa-octagon-check']"
@@ -156,12 +232,14 @@
               />
               Secure payments processed via Ko-fi
             </p>
-            <div class="mt-6 pt-6 border-t border-gray-200">
-              <p class="text-xs text-gray-500">
+            <div
+              class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-600"
+            >
+              <p class="text-xs text-gray-500 dark:text-gray-400">
                 Questions?
                 <a
                   href="mailto:feedback@dailyoffice2019.com"
-                  class="text-indigo-600 hover:underline font-medium"
+                  class="donation-accent-link hover:underline font-medium"
                   >Contact us</a
                 >
               </p>
@@ -184,6 +262,10 @@ export default {
       default: 'short', // 'short' or 'long'
       validator: (value) => ['short', 'long'].includes(value),
     },
+    compact: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup() {
     const openLink = async () => {
@@ -198,5 +280,55 @@ export default {
 </script>
 
 <style scoped>
-/* Scoped styles if needed, mainly relying on Tailwind */
+.donation-short-button {
+  border-color: var(--el-border-color-light);
+}
+
+.donation-short-button:hover {
+  border-color: var(--accent-color);
+}
+
+.group:hover .donation-short-label {
+  color: var(--accent-color);
+}
+
+.donation-surface-accent {
+  border-color: var(--accent-color);
+}
+
+.donation-bg-glyph {
+  color: var(--accent-color);
+  opacity: 0.28;
+}
+
+.donation-gift-badge {
+  background-color: var(--el-fill-color-light);
+}
+
+.donation-icon-tile {
+  background-color: var(--el-fill-color-light);
+  color: var(--accent-color);
+}
+
+.donation-accent-text {
+  color: var(--accent-color);
+}
+
+.donation-cta {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  color: var(--accent-contrast);
+}
+
+.donation-cta:hover {
+  filter: brightness(0.95);
+}
+
+.donation-cta:focus-visible {
+  box-shadow: 0 0 0 2px var(--accent-color);
+}
+
+.donation-accent-link {
+  color: var(--accent-color);
+}
 </style>

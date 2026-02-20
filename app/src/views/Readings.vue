@@ -213,6 +213,7 @@ import Reading from '@/components/Reading.vue';
 import Collects from '@/components/Collects.vue';
 import FontSizer from '@/components/FontSizer.vue';
 import { DynamicStorage } from '@/helpers/storage';
+import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
 import { nextTick } from 'vue';
 
 export default {
@@ -388,6 +389,12 @@ export default {
     await this.initialize();
   },
   methods: {
+    applySeasonAccentFromCard(card) {
+      const liturgicalColor = resolveColorFromCard(card, 'readings');
+      if (liturgicalColor) {
+        setSeasonAccent(liturgicalColor);
+      }
+    },
     initialize: async function () {
       this.readingsLoading = true;
       let data = null;
@@ -417,6 +424,7 @@ export default {
         return;
       }
       this.card = data.data.calendarDate;
+      this.applySeasonAccentFromCard(this.card);
       this.services = data.data.services;
       // iterate through keys and values of this.services
       this.morning_prayer = [];
