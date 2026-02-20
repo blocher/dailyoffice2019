@@ -64,8 +64,21 @@ export default {
       await DynamicStorage.setItem('fontSize', this.fontSize);
       await DynamicStorage.getItem('fontSize');
     },
+    fontSizeToPercent(value) {
+      if (this.sliderMax === this.sliderMin) {
+        return 0;
+      }
+      const normalized = Math.min(
+        this.sliderMax,
+        Math.max(this.sliderMin, value)
+      );
+      return Math.round(
+        ((normalized - this.sliderMin) / (this.sliderMax - this.sliderMin)) *
+          100
+      );
+    },
     displayFontSize(value) {
-      return `${value}px`;
+      return `${this.fontSizeToPercent(value)}%`;
     },
   },
 };
