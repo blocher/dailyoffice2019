@@ -14,6 +14,7 @@ import 'element-plus/theme-chalk/dark/css-vars.css';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { createMetaManager } from 'vue-meta';
+import { DynamicStorage } from './helpers/storage';
 
 // import { faTwitter } from "@fortawesome/free-brands-svg-icons";
 // import { faUserSecret } from "@fortawesome/free-solid-svg-icons";
@@ -97,6 +98,30 @@ library.add(
   faSquareCaretDown,
   faOctagonCheck
 );
+
+async function applyInitialThemePreference() {
+  let activeTheme = await DynamicStorage.getItem('user-theme');
+  if (activeTheme !== 'dark' && activeTheme !== 'light') {
+    activeTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light';
+  }
+  document.documentElement.className = activeTheme;
+
+  const storedFontSize = parseInt(
+    (await DynamicStorage.getItem('fontSize')) || '24',
+    10
+  );
+  const fontSize = Number.isNaN(storedFontSize) ? 24 : storedFontSize;
+  document.documentElement.style.setProperty(
+    '--main-font-size',
+    `${fontSize}px`
+  );
+  document.documentElement.style.setProperty(
+    '--main-line-height',
+    `${fontSize * 1.6}px`
+  );
+}
 
 router.beforeEach((to, from, next) => {
   // This goes through the matched routes from last to first, finding the closest route with a title.
@@ -253,6 +278,10 @@ const app = createApp(App)
 
 app.config.globalProperties.$gtag = { event };
 
-router.isReady().then(() => {
+const bootstrap = async () => {
+  await applyInitialThemePreference();
+  await router.isReady();
   app.mount('#app');
-});
+};
+
+bootstrap();

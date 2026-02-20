@@ -49,20 +49,20 @@ export default {
       await this.setFontSize(this.fontSize);
     },
     async setFontSize(value) {
-      const main = document.getElementById('main');
-      if (main) {
-        main.style['font-size'] = `${value}px`;
-        document
-          .querySelectorAll(
-            '#main h2, #main h3, #main p, .el-collapse-item__header, .el-collapse-item p'
-          )
-          .forEach((p) => {
-            p.style['font-size'] = `${value}px`;
-            p.style['line-height'] = `${value * 1.6}px`;
-          });
+      const fontSize = Number(value);
+      if (Number.isNaN(fontSize)) {
+        return;
       }
-      await DynamicStorage.setItem('fontSize', this.fontSize);
-      await DynamicStorage.getItem('fontSize');
+      this.fontSize = fontSize;
+      document.documentElement.style.setProperty(
+        '--main-font-size',
+        `${fontSize}px`
+      );
+      document.documentElement.style.setProperty(
+        '--main-line-height',
+        `${fontSize * 1.6}px`
+      );
+      await DynamicStorage.setItem('fontSize', fontSize.toString());
     },
     fontSizeToPercent(value) {
       if (this.sliderMax === this.sliderMin) {

@@ -40,7 +40,6 @@
         </el-button>
       </div>
       <div class="flex justify-center"></div>
-      <FontSizer v-if="readyToSetFontSize" />
 
       <!--      <div class="flex justify-center full-width">-->
       <!--        <el-input-->
@@ -66,6 +65,7 @@
       <el-alert v-if="error" :title="error" type="error" />
     </div>
   </div>
+  <DisplaySettingsModule v-if="!loading && !error" />
   <div v-if="!loading && !error" id="main">
     <!--    <div v-if="displayedCollects.length < 1" class="h-96">-->
     <!--      <h3>No results</h3>-->
@@ -92,14 +92,14 @@
 
 <script>
 import Loading from '@/components/Loading.vue';
-import FontSizer from '@/components/FontSizer.vue';
+import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
 import CollectsSubcategory from '@/components/CollectsSubcategory.vue';
 import { DynamicStorage } from '@/helpers/storage';
 
 export default {
   components: {
     Loading,
-    FontSizer,
+    DisplaySettingsModule,
     CollectsSubcategory,
   },
   data() {
@@ -109,7 +109,6 @@ export default {
       error: false,
       traditional: false,
       search: '',
-      readyToSetFontSize: false,
       selectedCollectTypes: [],
       allCollects: [],
       openedItems: [],
@@ -135,14 +134,6 @@ export default {
     collectCategoriesToShow() {
       return this.collects.filter((category) => {
         return this.selectedCollectTypes.includes(category.uuid);
-      });
-    },
-  },
-  watch: {
-    selectedCollectTypes() {
-      this.readyToSetFontSize = false;
-      this.$nextTick(() => {
-        this.readyToSetFontSize = true;
       });
     },
   },
@@ -177,7 +168,6 @@ export default {
     await this.setExtraCollects();
     this.error = false;
     this.loading = false;
-    this.readyToSetFontSize = true;
   },
   methods: {
     async setExtraCollects() {

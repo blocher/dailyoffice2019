@@ -57,9 +57,9 @@
       <el-divider />
 
       <Loading v-if="loading" />
-      <FontSizer />
     </div>
   </div>
+  <DisplaySettingsModule v-if="!loading && !error && !notFound" />
   <div v-if="!loading && !error" id="main" class="main litany">
     <div v-for="(line, index) in selected.lines" :key="index">
       <OfficeHeading v-if="line.line_type == 'heading'" :line="line" />
@@ -77,7 +77,7 @@
 <script>
 // @ is an alias to /src
 import Loading from '@/components/Loading.vue';
-import FontSizer from '@/components/FontSizer.vue';
+import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
 import PageNotFound from '@/views/PageNotFound.vue';
 import OfficeHeading from '@/components/OfficeHeading.vue';
 import OfficeCongregation from '@/components/OfficeCongregation.vue';
@@ -89,8 +89,8 @@ export default {
   name: 'Readings',
   components: {
     Loading,
+    DisplaySettingsModule,
     PageNotFound,
-    FontSizer,
     OfficeHeading,
     OfficeCongregation,
     OfficeLeader,

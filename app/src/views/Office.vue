@@ -506,19 +506,14 @@ export default {
       this.displayFontSize = fontSize;
     },
     applyFontSizeToMain(value) {
-      const main = document.getElementById('main');
-      if (!main) {
-        return;
-      }
-      main.style['font-size'] = `${value}px`;
-      document
-        .querySelectorAll(
-          '#main h2, #main h3, #main p, .el-collapse-item__header, .el-collapse-item p'
-        )
-        .forEach((p) => {
-          p.style['font-size'] = `${value}px`;
-          p.style['line-height'] = `${value * 1.6}px`;
-        });
+      document.documentElement.style.setProperty(
+        '--main-font-size',
+        `${value}px`
+      );
+      document.documentElement.style.setProperty(
+        '--main-line-height',
+        `${value * 1.6}px`
+      );
     },
     applySeasonAccentFromCard(card) {
       const liturgicalColor = resolveColorFromCard(card, this.office);

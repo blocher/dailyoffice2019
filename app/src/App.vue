@@ -302,6 +302,40 @@ export default {
       };
       await Browser.open({ url: urls[platform] });
     },
+    getSystemThemePreference() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light';
+    },
+    async applyStoredThemePreference() {
+      let storedTheme = await DynamicStorage.getItem('user-theme');
+      if (storedTheme !== 'dark' && storedTheme !== 'light') {
+        storedTheme = this.getSystemThemePreference();
+      }
+      document.documentElement.className = storedTheme;
+    },
+    applyFontSizeToMain(value) {
+      document.documentElement.style.setProperty(
+        '--main-font-size',
+        `${value}px`
+      );
+      document.documentElement.style.setProperty(
+        '--main-line-height',
+        `${value * 1.6}px`
+      );
+    },
+    async applyStoredFontSize() {
+      const storedFontSize = parseInt(
+        (await DynamicStorage.getItem('fontSize')) || '24',
+        10
+      );
+      const fontSize = Number.isNaN(storedFontSize) ? 24 : storedFontSize;
+      this.applyFontSizeToMain(fontSize);
+    },
+    async applyDisplaySettings() {
+      await this.applyStoredThemePreference();
+      await this.applyStoredFontSize();
+    },
   },
 
   computed: {
@@ -342,6 +376,12 @@ export default {
       return this.bottomFixedOffset > 0 ? this.bottomFixedOffset + 20 : 20;
     },
   },
+  watch: {
+    async '$route.fullPath'() {
+      await this.$nextTick();
+      await this.applyDisplaySettings();
+    },
+  },
   async mounted() {
     window.addEventListener('scroll', this.handleScroll);
     document.addEventListener(
@@ -362,6 +402,9 @@ export default {
     // Check if we're on web platform
     const platform = Capacitor.getPlatform();
     this.isWeb = platform === 'web';
+
+    await this.$nextTick();
+    await this.applyDisplaySettings();
   },
   unmounted() {
     window.removeEventListener('scroll', this.handleScroll);
@@ -390,11 +433,13 @@ export default {
       this.loading = false;
       await this.$nextTick();
       this.showLinks = true;
+      await this.applyDisplaySettings();
       return;
     }
     this.loading = false;
     await this.$nextTick();
     this.showLinks = true;
+    await this.applyDisplaySettings();
   },
 };
 </script>
@@ -515,6 +560,8 @@ select:focus {
   --link-color: var(--accent-color);
   --el-color-primary: var(--accent-color);
   --main-content-gutter: 1.75rem;
+  --main-font-size: 24px;
+  --main-line-height: 38.4px;
 
   --el-text-color-primary: #111827;
   --el-text-color-secondary: #6b7280;
@@ -799,6 +846,16 @@ body {
     max-width: 65ch;
     margin: 0 auto 5rem;
     padding: 0 var(--main-content-gutter);
+    font-size: var(--main-font-size);
+  }
+
+  #main h2,
+  #main h3,
+  #main p,
+  .el-collapse-item__header,
+  .el-collapse-item p {
+    font-size: var(--main-font-size);
+    line-height: var(--main-line-height);
   }
 
   h1,

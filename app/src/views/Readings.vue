@@ -152,9 +152,9 @@
         <!--        </div>-->
       </div>
       <Loading v-if="readingsLoading" />
-      <FontSizer />
     </div>
   </div>
+  <DisplaySettingsModule v-if="!loading && !notFound && !error" />
   <div id="main" class="readingsPanel" v-if="!readingsLoading">
     <div class="mt-6">
       <h2 mt-2 pt-0>{{ service }}</h2>
@@ -211,7 +211,7 @@ import DonationPrompt from '@/components/DonationPrompt.vue';
 import CitationGroup from '@/components/CitationGroup.vue';
 import Reading from '@/components/Reading.vue';
 import Collects from '@/components/Collects.vue';
-import FontSizer from '@/components/FontSizer.vue';
+import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
 import { DynamicStorage } from '@/helpers/storage';
 import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
 import { nextTick } from 'vue';
@@ -227,7 +227,7 @@ export default {
     CitationGroup,
     Reading,
     Collects,
-    FontSizer,
+    DisplaySettingsModule,
   },
   props: {},
   data() {

@@ -2,11 +2,11 @@
   <div class="small-container">
     <div class="about">
       <h1>About this site</h1>
-      <FontSizer v-if="readyToSetFontSize" />
       <Loading v-if="loading" />
       <el-alert v-if="error" :title="error" type="error" />
     </div>
   </div>
+  <DisplaySettingsModule v-if="!loading && !error" />
   <div v-if="!loading && !error" id="main">
     <div v-if="mode == 'web'">
       <div v-for="item in aboutItems" :key="item.uuid">
@@ -25,18 +25,17 @@
 
 <script>
 import Loading from '@/components/Loading.vue';
-import FontSizer from '@/components/FontSizer.vue';
+import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
 import { Capacitor } from '@capacitor/core';
 
 export default {
-  components: { Loading, FontSizer },
+  components: { Loading, DisplaySettingsModule },
   data() {
     return {
       aboutItems: null,
       mode: Capacitor.getPlatform() != 'web' ? 'app' : 'web',
       error: null,
       loading: true,
-      readyToSetFontSize: false,
     };
   },
   async created() {
@@ -54,7 +53,6 @@ export default {
     this.aboutItems = data.data;
     this.error = false;
     this.loading = false;
-    this.readyToSetFontSize = true;
   },
 };
 </script>

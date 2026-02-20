@@ -3,7 +3,6 @@
     <div v-if="!loading && !error">
       <h1>Psalm {{ psalm.number }}</h1>
       <h4>{{ psalm.latin_title }}</h4>
-      <FontSizer />
       <div class="flex justify-center full-width">
         <el-switch
           v-model="traditional"
@@ -21,6 +20,7 @@
     <Loading v-if="loading" />
     <el-alert v-if="error" :title="error" type="error" />
   </div>
+  <DisplaySettingsModule v-if="!loading && !error" />
   <div v-if="!loading && !error" id="main">
     <div v-if="!traditional">
       <span v-for="verse in psalm.verses" :key="verse.number">
@@ -80,11 +80,11 @@
 
 <script>
 import Loading from '@/components/Loading.vue';
-import FontSizer from '@/components/FontSizer.vue';
+import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
 import { DynamicStorage } from '@/helpers/storage';
 
 export default {
-  components: { Loading, FontSizer },
+  components: { Loading, DisplaySettingsModule },
   data() {
     return {
       psalm: null,
