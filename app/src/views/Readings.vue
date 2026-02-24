@@ -3,161 +3,135 @@
     <Loading v-if="loading && !notFound" />
     <PageNotFound v-if="notFound" />
     <el-alert v-if="error" :title="error" type="error" />
-    <div v-if="!loading && !notFound" id="readings">
-      <CalendarCard
-        v-if="!error"
-        :calendar-date="calendarDate"
-        :card="card"
-        service-type="readings"
-        office="readings"
-      />
-      <OfficeNav :calendar-date="calendarDate" selected-office="readings" />
 
-      <DonationPrompt variant="short" />
+    <div v-if="!loading && !notFound" class="space-y-6">
+      <!-- Header Section -->
+      <header class="office-header mb-8">
+        <CalendarCard
+          v-if="!error"
+          :calendar-date="calendarDate"
+          :card="card"
+          service-type="readings"
+          office="readings"
+        />
 
-      <h1>Readings</h1>
+        <OfficeNav :calendar-date="calendarDate" selected-office="readings" />
 
-      <el-divider />
-
-      <el-row class="mt-2 content-stretch">
-        <el-col :span="24">
-          <h4 class="text-left mt-4">Daily Offices</h4>
-          <div v-for="service in dailyOfficeData" :key="service.name">
-            <div class="grid grid-cols-12 gap-3 even:bg-grey mb-5">
-              <div class="m-auto">
-                <font-awesome-icon
-                  v-if="service.active"
-                  :icon="['fad', 'fa-octagon-check']"
+        <div
+          class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-100 dark:border-gray-700 shadow-sm mt-6"
+        >
+          <!-- Service Selection -->
+          <div class="mb-4">
+            <h4
+              class="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-2"
+            >
+              Service
+            </h4>
+            <el-select
+              v-model="service"
+              class="w-full"
+              size="large"
+              @change="changeService"
+            >
+              <el-option-group label="Daily Offices">
+                <el-option
+                  v-for="item in daily_office"
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item.name"
                 />
-              </div>
-              <div class="col-span-11">
-                <span v-if="service.active" v-html="service.name"></span>
-                <span v-if="!service.active"
-                  ><a
-                    :href="serviceLink(service.name)"
-                    @click.prevent="changeService(service.name)"
-                    v-html="service.name"
-                  ></a
-                ></span>
-              </div>
-            </div>
+              </el-option-group>
+              <el-option-group label="Holy Eucharist">
+                <el-option
+                  v-for="item in holy_eucharist"
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item.name"
+                />
+              </el-option-group>
+            </el-select>
           </div>
 
-          <h4 class="text-left mt-4">Holy Eucharist</h4>
-          <div v-for="service in eucharistData" :key="service.name">
-            <div class="grid grid-cols-12 gap-3 even:bg-grey mb-5">
-              <div class="m-auto">
-                <font-awesome-icon
-                  v-if="service.active"
-                  :icon="['fad', 'fa-octagon-check']"
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Psalter Version -->
+            <div>
+              <h4
+                class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2"
+              >
+                Psalter
+              </h4>
+              <el-select
+                v-model="psalmsTranslation"
+                class="w-full"
+                size="large"
+                @change="changeTranslation"
+              >
+                <el-option
+                  v-for="item in psalmsTranslations"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
                 />
-              </div>
-              <div class="col-span-11">
-                <span v-if="service.active" v-html="service.name"></span>
-                <span v-if="!service.active"
-                  ><a
-                    :href="serviceLink(service.name)"
-                    @click.prevent="changeService(service.name)"
-                    v-html="service.name"
-                  ></a
-                ></span>
-              </div>
+              </el-select>
+            </div>
+
+            <!-- Translation -->
+            <div>
+              <h4
+                class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2"
+              >
+                Translation
+              </h4>
+              <el-select
+                v-model="translation"
+                class="w-full"
+                size="large"
+                @change="changeTranslation"
+              >
+                <el-option
+                  v-for="item in translations"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </div>
+
+            <!-- Psalm Style -->
+            <div>
+              <h4
+                class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2"
+              >
+                Style
+              </h4>
+              <el-select
+                v-model="psalmStyle"
+                class="w-full"
+                size="large"
+                @change="changeStyle"
+              >
+                <el-option
+                  v-for="item in psalmStyles"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
             </div>
           </div>
-        </el-col>
-      </el-row>
+        </div>
 
-      <el-divider />
-
-      <el-row>
-        <el-col :span="24">
-          <h4>Psalter Version</h4>
-          <el-select
-            v-model="psalmsTranslation"
-            class="mx-1 mb-4 full-width"
-            placeholder="Select"
-            size="large"
-            @change="changeTranslation()"
-          >
-            <el-option
-              v-for="item in psalmsTranslations"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="24">
-          <h4>Translation</h4>
-          <el-select
-            v-model="translation"
-            class="mx-1 mb-4 full-width"
-            placeholder="Select"
-            size="large"
-            @change="changeTranslation()"
-          >
-            <el-option
-              v-for="item in translations"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="24">
-          <h4>Psalm Recitation Style</h4>
-          <el-select
-            v-model="psalmStyle"
-            class="mx-1 mb-4 full-width"
-            placeholder="Select"
-            size="large"
-            @change="changeStyle()"
-          >
-            <el-option
-              v-for="item in psalmStyles"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-col>
-      </el-row>
-
-      <div class="flow-root">
-        <!--        <div class="mt-1 sm:float-left">-->
-        <!--          <el-radio-group-->
-        <!--              v-model="psalmsTranslation" size="small"-->
-        <!--              @change="changeTranslation()">-->
-        <!--            <el-radio-button size="small" name="psalmsTranslation" label="contemporary">Contemporary Psalms-->
-        <!--            </el-radio-button>-->
-        <!--            <el-radio-button size="small" name="psalmsTranslation" label="traditional">Traditional Psalms-->
-        <!--            </el-radio-button>-->
-        <!--          </el-radio-group>-->
-        <!--        </div>-->
-        <!--        <div class="mt-1 sm:float-right">-->
-        <!--          <el-radio-group v-model="translation" size="small" @change="changeTranslation()">-->
-        <!--            <el-radio-button size="small" name="translation" label="esv">ESV</el-radio-button>-->
-        <!--            <el-radio-button size="small" name="translation" label="kjv">KJV</el-radio-button>-->
-        <!--            <el-radio-button size="small" name="translation" label="rsv">RSV</el-radio-button>-->
-
-        <!--            <el-radio-button size="small" name="translation" label="nasb">NASB</el-radio-button>-->
-        <!--            <el-radio-button size="small" name="translation" label="niv">NIV</el-radio-button>-->
-        <!--            <el-radio-button size="small" name="translation" label="nrsvce">NRSV</el-radio-button>-->
-        <!--            <el-radio-button size="small" name="translation" label="nabre">NAB-RE</el-radio-button>-->
-        <!--          </el-radio-group>-->
-        <!--        </div>-->
-      </div>
-      <Loading v-if="readingsLoading" />
+        <DisplaySettingsModule
+          v-if="!loading && !notFound && !error"
+          class="mt-6"
+        />
+      </header>
     </div>
   </div>
-  <DisplaySettingsModule v-if="!loading && !notFound && !error" />
-  <div id="main" class="readingsPanel" v-if="!readingsLoading">
+
+  <div id="main" class="readingsPanel book-content" v-if="!readingsLoading">
     <div class="mt-6">
-      <h2 mt-2 pt-0>{{ service }}</h2>
+      <h2 class="mt-2 pt-0 text-center">{{ service }}</h2>
       <CitationGroup
         v-for="(readings, number) in groupedReadings"
         :key="number"
@@ -195,8 +169,6 @@
         of Good News Publishers. Used by permission. All rights reserved.
       </a>
     </p>
-
-    <DonationPrompt variant="long" />
   </div>
 </template>
 
@@ -207,7 +179,6 @@ import CalendarCard from '@/components/CalendarCard.vue';
 import PageNotFound from '@/views/PageNotFound.vue';
 import Loading from '@/components/Loading.vue';
 import setCalendarDate from '@/helpers/setCalendarDate';
-import DonationPrompt from '@/components/DonationPrompt.vue';
 import CitationGroup from '@/components/CitationGroup.vue';
 import Reading from '@/components/Reading.vue';
 import Collects from '@/components/Collects.vue';
@@ -223,7 +194,6 @@ export default {
     CalendarCard,
     PageNotFound,
     Loading,
-    DonationPrompt,
     CitationGroup,
     Reading,
     Collects,
@@ -290,22 +260,6 @@ export default {
     };
   },
   computed: {
-    dailyOfficeData: function () {
-      return this.daily_office.map((service) => {
-        return {
-          active: service.name === this.service,
-          name: service.name,
-        };
-      });
-    },
-    eucharistData: function () {
-      return this.holy_eucharist.map((service) => {
-        return {
-          active: service.name === this.service,
-          name: service.name,
-        };
-      });
-    },
     groupedReadings: function () {
       const groups = {};
       this.readingsToShow.forEach((reading) => {
