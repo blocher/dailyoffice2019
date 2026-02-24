@@ -7,6 +7,7 @@
       v-cloak
       class="max-w-6xl mx-auto pt-10 pb-12 px-4 lg:pb-16"
     >
+      <DisplaySettingsModule />
       <el-tabs
         v-model="openTab"
         :tab-position="tabPosition"
@@ -97,6 +98,7 @@ import SettingsPanel from '@/components/SettingsPanel.vue';
 import Loading from '@/components/Loading.vue';
 import { DynamicStorage } from '@/helpers/storage';
 import DonationPrompt from '@/components/DonationPrompt.vue';
+import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
 
 export default {
   name: 'Settings',
@@ -104,6 +106,7 @@ export default {
     SettingsPanel,
     Loading,
     DonationPrompt,
+    DisplaySettingsModule,
   },
   data() {
     return {

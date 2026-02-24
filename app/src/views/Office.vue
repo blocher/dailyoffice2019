@@ -26,67 +26,11 @@
             :service-type="serviceType"
           />
 
-          <div
-            class="display-settings-summary mx-auto bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-xs p-3"
-            role="button"
-            tabindex="0"
-            @click="openSettings"
-            @keydown.enter.prevent="openSettings"
-            @keydown.space.prevent="openSettings"
-          >
-            <div class="display-settings-summary__header">
-              <div class="display-settings-summary__heading-row">
-                <span class="display-settings-summary__heading"
-                  >Display Settings</span
-                >
-                <el-tag
-                  v-if="hasCustomDisplaySettings"
-                  type="warning"
-                  effect="plain"
-                  size="small"
-                  round
-                  >Custom</el-tag
-                >
-              </div>
-              <span class="display-settings-summary__open">
-                <font-awesome-icon :icon="['fad', 'right']" />
-              </span>
-            </div>
-            <div class="display-settings-summary__text">
-              <span class="display-settings-summary__item">
-                <font-awesome-icon
-                  :icon="[
-                    'fad',
-                    displayTheme === 'Dark' ? 'moon-stars' : 'sun',
-                  ]"
-                />
-                <span class="display-settings-summary__item-text">
-                  <span class="display-settings-summary__title">Theme</span>
-                  <span class="display-settings-summary__value">{{
-                    displayTheme
-                  }}</span>
-                </span>
-              </span>
-              <span class="display-settings-summary__item">
-                <font-awesome-icon :icon="['fad', 'font-case']" />
-                <span class="display-settings-summary__item-text">
-                  <span class="display-settings-summary__title">Text</span>
-                  <span class="display-settings-summary__value"
-                    >{{ displayFontSizePercent }}%</span
-                  >
-                </span>
-              </span>
-              <span class="display-settings-summary__item">
-                <font-awesome-icon :icon="['fad', 'microphone']" />
-                <span class="display-settings-summary__item-text">
-                  <span class="display-settings-summary__title">Audio</span>
-                  <span class="display-settings-summary__value">{{
-                    audioEnabled ? 'On' : 'Off'
-                  }}</span>
-                </span>
-              </span>
-            </div>
-          </div>
+          <DisplaySettingsModule
+            v-if="!loading"
+            :show-audio-controls="true"
+            v-model:audio-enabled="audioEnabled"
+          />
         </header>
       </div>
     </div>
@@ -134,73 +78,6 @@
       <!-- DonationPrompt removed to avoid duplication with App.vue footer -->
     </footer>
   </div>
-
-  <el-drawer
-    v-model="displaySettingsDrawerOpen"
-    :direction="displaySettingsDrawerDirection"
-    :size="displaySettingsDrawerSize"
-    :with-header="false"
-    :lock-scroll="false"
-    class="display-settings-drawer"
-  >
-    <div class="display-settings-drawer__content">
-      <div
-        class="display-settings-drawer__row display-settings-drawer__header-row"
-      >
-        <div>
-          <h3 class="display-settings-drawer__title">Display Settings</h3>
-          <p class="display-settings-drawer__subtitle">
-            Adjust appearance without leaving this page.
-          </p>
-        </div>
-        <el-tag
-          v-if="hasCustomDisplaySettings"
-          type="warning"
-          effect="plain"
-          size="small"
-          round
-          >Custom</el-tag
-        >
-      </div>
-
-      <div class="display-settings-drawer__row">
-        <span class="display-settings-drawer__label">Appearance</span>
-        <ThemeSwitcher />
-      </div>
-
-      <div class="display-settings-drawer__font">
-        <span class="display-settings-drawer__label">Text Size</span>
-        <FontSizer v-if="readyToSetFontSize" />
-        <p v-else class="display-settings-drawer__loading">
-          Loading text size control...
-        </p>
-      </div>
-
-      <div class="display-settings-drawer__row">
-        <span class="display-settings-drawer__label"
-          >Display Audio Controls</span
-        >
-        <el-switch
-          v-model="audioEnabled"
-          size="default"
-          active-text=""
-          inactive-text=""
-          inline-prompt
-          :active-icon="checkIcon"
-          :inactive-icon="closeIcon"
-          style="--el-switch-on-color: var(--accent-color)"
-        />
-      </div>
-
-      <el-button
-        type="primary"
-        class="display-settings-drawer__done"
-        @click="closeSettings"
-      >
-        Done
-      </el-button>
-    </div>
-  </el-drawer>
 
   <AudioPlayer
     v-if="
@@ -253,12 +130,10 @@ import Loading from '@/components/Loading.vue';
 import CalendarCard from '@/components/CalendarCard.vue';
 import OfficeNav from '@/components/OfficeNav.vue';
 import PageNotFound from '@/views/PageNotFound.vue';
-import FontSizer from '@/components/FontSizer.vue';
 import { DynamicStorage } from '@/helpers/storage';
 import AudioPlayer from '@/components/AudioPlayer.vue';
 import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue';
-import ThemeSwitcher from '@/components/ThemeSwitcher.vue';
-import { Check, Close } from '@element-plus/icons-vue';
+import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
 import { ElMessageBox } from 'element-plus';
 import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
 
@@ -267,6 +142,7 @@ export default {
   components: {
     AudioPlayerMessage,
     AudioPlayer,
+    DisplaySettingsModule,
     OfficeHeading,
     OfficeSubheading,
     OfficeCitation,
@@ -281,8 +157,6 @@ export default {
     CalendarCard,
     OfficeNav,
     PageNotFound,
-    FontSizer,
-    ThemeSwitcher,
   },
   props: {
     office: {
@@ -301,7 +175,6 @@ export default {
       counter: 0,
       modules: null,
       loading: true,
-      readyToSetFontSize: false,
       error: false,
       card: '',
       notFound: false,
@@ -309,13 +182,6 @@ export default {
       audioReady: false,
       audioEnabled: true,
       isEsvOrKjv: false,
-      checkIcon: Check,
-      closeIcon: Close,
-      displaySettingsDrawerOpen: false,
-      displayTheme: 'Light',
-      displayFontSize: 24,
-      hasStoredThemePreference: false,
-      windowWidth: 0,
     };
   },
   computed: {
@@ -330,53 +196,23 @@ export default {
         this.calendarDate >= yesterday && this.calendarDate <= sevenDaysFromNow
       );
     },
-    hasCustomDisplaySettings() {
-      return (
-        this.hasStoredThemePreference ||
-        this.displayFontSize !== 24 ||
-        !this.audioEnabled
-      );
-    },
-    displayFontSizePercent() {
-      return this.getFontSizePercent(this.displayFontSize);
-    },
-    displaySettingsDrawerDirection() {
-      return this.windowWidth < 768 ? 'btt' : 'rtl';
-    },
-    displaySettingsDrawerSize() {
-      return this.windowWidth < 768 ? '72%' : '420px';
-    },
   },
   watch: {
     async audioEnabled(newVal) {
       await DynamicStorage.setItem('audioEnabled', newVal ? 'true' : 'false');
     },
-    async displaySettingsDrawerOpen(newVal) {
-      if (!newVal) {
-        await this.refreshDisplaySettingsSummary();
-      }
-    },
   },
   async mounted() {
-    this.handleWindowResize();
-    window.addEventListener('resize', this.handleWindowResize);
     await DynamicStorage.setItem('serviceType', 'office');
     const audioEnabledString = await DynamicStorage.getItem(
       'audioEnabled',
       'true'
     );
-    const audioEnabled =
+    this.audioEnabled =
       audioEnabledString === 'true' ||
       audioEnabledString === true ||
       audioEnabledString === null ||
       audioEnabledString === undefined;
-    this.audioEnabled = audioEnabled;
-    await this.initializeThemePreference();
-    await this.initializeSettingsDrawer();
-    await this.refreshDisplaySettingsSummary();
-  },
-  unmounted() {
-    window.removeEventListener('resize', this.handleWindowResize);
   },
 
   async created() {
@@ -439,7 +275,6 @@ export default {
     this.error = false;
     this.loading = false;
     await this.$nextTick();
-    this.readyToSetFontSize = true;
     await this.applyStoredFontSize();
     if (this.isEsvOrKjv) {
       this.audioLinks = await this.setAudioLinks(office_url);
@@ -448,12 +283,6 @@ export default {
   },
 
   methods: {
-    openSettings() {
-      this.displaySettingsDrawerOpen = true;
-    },
-    closeSettings() {
-      this.displaySettingsDrawerOpen = false;
-    },
     async confirmDismissAudio() {
       try {
         await ElMessageBox.confirm(
@@ -470,54 +299,6 @@ export default {
         // user cancelled — do nothing
       }
     },
-    handleWindowResize() {
-      this.windowWidth = window.innerWidth;
-    },
-    async initializeSettingsDrawer() {
-      this.displaySettingsDrawerOpen = false;
-      await DynamicStorage.deleteItem('displaySettingsDrawerSeen');
-      await DynamicStorage.setItem('displaySettingsDrawerOpen', 'false');
-    },
-    async initializeThemePreference() {
-      let activeTheme = await DynamicStorage.getItem('user-theme');
-      if (!activeTheme) {
-        const hasDarkPreference = window.matchMedia(
-          '(prefers-color-scheme: dark)'
-        ).matches;
-        activeTheme = hasDarkPreference ? 'dark' : 'light';
-      }
-      document.documentElement.className = activeTheme;
-    },
-    async refreshDisplaySettingsSummary() {
-      const storedTheme = await DynamicStorage.getItem('user-theme');
-      this.hasStoredThemePreference =
-        storedTheme === 'light' || storedTheme === 'dark';
-      this.displayTheme = this.getThemeLabel(storedTheme);
-
-      const storedFontSize = parseInt(
-        (await DynamicStorage.getItem('fontSize')) || '24',
-        10
-      );
-      this.displayFontSize = Number.isNaN(storedFontSize) ? 24 : storedFontSize;
-    },
-    getThemeLabel(storedTheme) {
-      const normalizedTheme =
-        storedTheme === 'dark' || storedTheme === 'light'
-          ? storedTheme
-          : document.documentElement.classList.contains('dark')
-            ? 'dark'
-            : 'light';
-      return normalizedTheme === 'dark' ? 'Dark' : 'Light';
-    },
-    getFontSizePercent(value) {
-      const min = 10;
-      const max = 40;
-      if (max === min) {
-        return 0;
-      }
-      const normalized = Math.min(max, Math.max(min, value));
-      return Math.round(((normalized - min) / (max - min)) * 100);
-    },
     async applyStoredFontSize() {
       const storedFontSize = parseInt(
         (await DynamicStorage.getItem('fontSize')) || '24',
@@ -525,7 +306,6 @@ export default {
       );
       const fontSize = Number.isNaN(storedFontSize) ? 24 : storedFontSize;
       this.applyFontSizeToMain(fontSize);
-      this.displayFontSize = fontSize;
     },
     applyFontSizeToMain(value) {
       document.documentElement.style.setProperty(
@@ -642,201 +422,6 @@ export default {
   max-width: 800px;
   margin-left: auto;
   margin-right: auto;
-}
-
-.display-settings-summary {
-  width: 100%;
-  max-width: 65ch;
-  cursor: pointer;
-  color: var(--el-text-color-primary);
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.display-settings-summary:hover {
-  border-color: var(--accent-color);
-  box-shadow: 0 2px 12px rgb(15 23 42 / 0.14);
-}
-
-.display-settings-summary:focus-visible {
-  outline: 2px solid var(--accent-color);
-  outline-offset: 2px;
-}
-
-.display-settings-summary__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-
-.display-settings-summary__heading-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-width: 0;
-}
-
-.display-settings-summary__heading {
-  color: var(--el-text-color-regular);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.display-settings-summary__open {
-  color: var(--el-text-color-regular);
-  font-size: 0.85rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.display-settings-summary__text {
-  margin-top: 0.45rem;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.35rem;
-  width: 100%;
-}
-
-.display-settings-summary__item {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  width: 100%;
-  min-width: 0;
-}
-
-.display-settings-summary__item :deep(svg) {
-  flex-shrink: 0;
-  color: var(--el-text-color-regular);
-  font-size: 0.92rem;
-}
-
-.display-settings-summary__item-text {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.06rem;
-  min-width: 0;
-  text-align: center;
-}
-
-.display-settings-summary__title {
-  color: var(--el-text-color-regular);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.display-settings-summary__value {
-  color: var(--el-text-color-primary);
-  font-size: 0.88rem;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.display-settings-drawer__content {
-  padding: 0.25rem 0.25rem 1rem;
-  color: var(--el-text-color-primary);
-}
-
-.display-settings-drawer__row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid var(--el-border-color-light);
-}
-
-.display-settings-drawer__header-row {
-  align-items: flex-start;
-  padding-top: 0;
-}
-
-.display-settings-drawer__title {
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0;
-}
-
-.display-settings-drawer__subtitle {
-  font-size: 0.85rem;
-  color: var(--el-text-color-secondary);
-  margin: 0.25rem 0 0;
-}
-
-.display-settings-drawer__label {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--el-text-color-primary);
-}
-
-.display-settings-drawer__font {
-  padding: 0.75rem 0;
-  border-bottom: 1px solid var(--el-border-color-light);
-}
-
-.display-settings-drawer__loading {
-  font-size: 0.85rem;
-  color: var(--el-text-color-secondary);
-  margin-top: 0.5rem;
-}
-
-.display-settings-drawer__done {
-  width: 100%;
-  margin-top: 1rem;
-}
-
-:deep(.display-settings-drawer .sub-menu-item),
-:deep(.display-settings-drawer .sub-menu-item .text-xs) {
-  color: var(--el-text-color-primary);
-  font-weight: 500;
-}
-
-:deep(.dark) .display-settings-drawer__content {
-  color: var(--el-text-color-primary);
-}
-
-:deep(.dark) .display-settings-drawer .sub-menu-item,
-:deep(.dark) .display-settings-drawer .sub-menu-item .text-xs {
-  color: var(--el-text-color-primary);
-}
-
-:deep(.display-settings-drawer .el-drawer__body) {
-  color: var(--el-text-color-primary);
-}
-
-:deep(.display-settings-drawer .font-size-block) {
-  background-color: var(--el-fill-color) !important;
-  border-color: var(--el-border-color-light) !important;
-  box-shadow: none;
-}
-
-:deep(.display-settings-drawer .font-size-block .text-gray-400),
-:deep(.display-settings-drawer .font-size-block .text-gray-500) {
-  color: var(--el-text-color-secondary) !important;
-}
-
-:deep(.display-settings-drawer .font-size-block .text-gray-600),
-:deep(.display-settings-drawer .font-size-block .text-gray-300) {
-  color: var(--el-text-color-primary) !important;
-}
-
-:deep(.display-settings-drawer .el-slider__button) {
-  border-color: var(--accent-color);
-}
-
-:deep(.display-settings-drawer .el-slider__bar) {
-  background-color: var(--accent-color);
 }
 
 /* Ensure main content is centered and readable on large screens */

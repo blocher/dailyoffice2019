@@ -93,16 +93,6 @@
               </button>
             </div>
           </div>
-          <!-- Desktop dismiss button -->
-          <button
-            v-if="!isMobile && !isPlaying"
-            class="dismiss-button dismiss-button--desktop"
-            title="Hide audio controls"
-            @click.stop="$emit('dismiss-audio')"
-          >
-            <font-awesome-icon :icon="faXmark" />
-          </button>
-
           <div class="button-row">
             <el-button-group v-if="audioReady" class="playback-buttons">
               <el-button
@@ -131,6 +121,16 @@
               </el-button>
             </el-button-group>
             <Loading v-if="loading" :small="true" />
+
+            <!-- Desktop dismiss button (inline in button row) -->
+            <button
+              v-if="!isMobile && !isPlaying"
+              class="dismiss-button dismiss-button--desktop"
+              title="Hide audio controls"
+              @click.stop="$emit('dismiss-audio')"
+            >
+              <font-awesome-icon :icon="faXmark" />
+            </button>
           </div>
 
           <div class="controls-row" v-if="audioReady && trackSegments.length">
@@ -946,14 +946,25 @@ button,
 
 /* Mini-player variant sits inline after the expand chevron */
 .dismiss-button--mini {
-  margin-left: 4px;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0;
+  height: 24px;
 }
 
-/* Desktop variant floats top-right inside the fixed controls bar */
+:deep(.dark) .dismiss-button--mini {
+  border-left-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Desktop variant — push to far right flex-end, ensure it doesn't overlap content */
 .dismiss-button--desktop {
-  position: absolute;
-  top: 6px;
-  right: 10px;
+  margin-left: auto; /* Push to right in flex container */
+  position: relative; /* Remove absolute positioning */
+  top: auto;
+  right: auto;
+  transform: none;
+  order: 10; /* Ensure it's last visually if needed */
 }
 
 .player-header-actions {

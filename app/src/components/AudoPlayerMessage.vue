@@ -138,19 +138,19 @@ export default {
   align-items: center;
   width: 100%;
   flex-wrap: nowrap;
-  gap: 8px;
+  gap: 16px;
 }
 
 .dismiss-button {
   background: transparent;
   border: none;
   font-size: 18px;
-  padding: 0;
-  width: 32px;
+  padding: 0 0 0 16px;
+  width: auto;
   height: 32px;
   min-width: 32px;
   flex-shrink: 0;
-  border-radius: 6px;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
   cursor: pointer;
   color: var(--color-text, #333);
   opacity: 0.5;
@@ -160,6 +160,10 @@ export default {
   justify-content: center;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+}
+
+:deep(.dark) .dismiss-button {
+  border-left-color: rgba(255, 255, 255, 0.1);
 }
 
 .dismiss-button:hover {

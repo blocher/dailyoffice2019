@@ -27,7 +27,9 @@
             <font-awesome-icon :icon="['fad', 'right']" />
           </span>
         </div>
-        <div class="display-settings-summary__text">
+        <div
+          class="display-settings-summary__text display-settings-summary__text--three-col"
+        >
           <span class="display-settings-summary__item">
             <font-awesome-icon
               :icon="['fad', displayTheme === 'Dark' ? 'moon-stars' : 'sun']"
@@ -46,6 +48,17 @@
               <span class="display-settings-summary__value"
                 >{{ displayFontSizePercent }}%</span
               >
+            </span>
+          </span>
+          <span class="display-settings-summary__item">
+            <font-awesome-icon :icon="['fad', 'microphone']" />
+            <span class="display-settings-summary__item-text">
+              <span class="display-settings-summary__title"
+                >Show Audio Controls</span
+              >
+              <span class="display-settings-summary__value">{{
+                audioEnabledLocal ? 'On' : 'Off'
+              }}</span>
             </span>
           </span>
         </div>
@@ -91,6 +104,22 @@
         <FontSizer />
       </div>
 
+      <div class="display-settings-drawer__row">
+        <span class="display-settings-drawer__label"
+          >Display Audio Controls</span
+        >
+        <el-switch
+          v-model="audioEnabledLocal"
+          size="default"
+          active-text=""
+          inactive-text=""
+          inline-prompt
+          :active-icon="checkIcon"
+          :inactive-icon="closeIcon"
+          style="--el-switch-on-color: var(--accent-color)"
+        />
+      </div>
+
       <el-button
         type="primary"
         class="display-settings-drawer__done"
@@ -106,6 +135,7 @@
 import FontSizer from '@/components/FontSizer.vue';
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue';
 import { DynamicStorage } from '@/helpers/storage';
+import { Check, Close } from '@element-plus/icons-vue';
 
 export default {
   name: 'DisplaySettingsModule',
@@ -113,6 +143,7 @@ export default {
     FontSizer,
     ThemeSwitcher,
   },
+  emits: ['update:audioEnabled'],
   data() {
     return {
       displaySettingsDrawerOpen: false,
@@ -120,11 +151,18 @@ export default {
       displayFontSize: 24,
       hasStoredThemePreference: false,
       windowWidth: 0,
+      checkIcon: Check,
+      closeIcon: Close,
+      audioEnabledLocal: true,
     };
   },
   computed: {
     hasCustomDisplaySettings() {
-      return this.hasStoredThemePreference || this.displayFontSize !== 24;
+      return (
+        this.hasStoredThemePreference ||
+        this.displayFontSize !== 24 ||
+        !this.audioEnabledLocal
+      );
     },
     displayFontSizePercent() {
       return this.getFontSizePercent(this.displayFontSize);
@@ -142,11 +180,27 @@ export default {
         await this.refreshDisplaySettingsSummary();
       }
     },
+    async audioEnabledLocal(newVal) {
+      await DynamicStorage.setItem('audioEnabled', newVal ? 'true' : 'false');
+      this.$emit('update:audioEnabled', newVal);
+    },
   },
   async mounted() {
     this.handleWindowResize();
     window.addEventListener('resize', this.handleWindowResize);
     await this.refreshDisplaySettingsSummary();
+    const audioEnabledString = await DynamicStorage.getItem(
+      'audioEnabled',
+      'true'
+    );
+    this.audioEnabledLocal =
+      audioEnabledString === 'true' ||
+      audioEnabledString === true ||
+      audioEnabledString === null ||
+      audioEnabledString === undefined;
+
+    // Emit initial value so parents sync up
+    this.$emit('update:audioEnabled', this.audioEnabledLocal);
   },
   unmounted() {
     window.removeEventListener('resize', this.handleWindowResize);
@@ -254,7 +308,7 @@ export default {
 .display-settings-summary__text {
   margin-top: 0.45rem;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.35rem;
   width: 100%;
 }
@@ -346,22 +400,7 @@ export default {
   margin-top: 1rem;
 }
 
-:deep(.display-settings-drawer .sub-menu-item),
-:deep(.display-settings-drawer .sub-menu-item .text-xs) {
-  color: var(--el-text-color-primary);
-  font-weight: 500;
-}
-
 :deep(.dark) .display-settings-drawer__content {
-  color: var(--el-text-color-primary);
-}
-
-:deep(.dark) .display-settings-drawer .sub-menu-item,
-:deep(.dark) .display-settings-drawer .sub-menu-item .text-xs {
-  color: var(--el-text-color-primary);
-}
-
-:deep(.display-settings-drawer .el-drawer__body) {
   color: var(--el-text-color-primary);
 }
 
@@ -369,16 +408,6 @@ export default {
   background-color: var(--el-fill-color) !important;
   border-color: var(--el-border-color-light) !important;
   box-shadow: none;
-}
-
-:deep(.display-settings-drawer .font-size-block .text-gray-400),
-:deep(.display-settings-drawer .font-size-block .text-gray-500) {
-  color: var(--el-text-color-secondary) !important;
-}
-
-:deep(.display-settings-drawer .font-size-block .text-gray-600),
-:deep(.display-settings-drawer .font-size-block .text-gray-300) {
-  color: var(--el-text-color-primary) !important;
 }
 
 :deep(.display-settings-drawer .el-slider__button) {
