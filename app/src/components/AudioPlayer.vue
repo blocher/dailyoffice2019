@@ -484,7 +484,7 @@ button,
 
 .controls.fixed-controls {
   position: fixed;
-  bottom: env(safe-area-inset-bottom);
+  bottom: 0;
   left: 0;
   right: 0;
   width: 100%;

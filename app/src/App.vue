@@ -399,7 +399,7 @@ export default {
     },
     mainBodyStyle() {
       return {
-        paddingBottom: `calc(${this.bottomFixedOffset}px + env(safe-area-inset-bottom))`,
+        paddingBottom: `${this.bottomFixedOffset}px`,
       };
     },
     backtopBottom() {
