@@ -39,3 +39,43 @@
         user-select: none;
     }
 }
+
+/*
+  Mobile viewport stabilization
+  -----------------------------
+  iOS browsers (especially Chrome on iOS) can mis-handle fixed elements when the
+  top/bottom browser UI expands/collapses.
+  We set CSS vars from VisualViewport in JS (helpers/viewport.ts).
+*/
+
+:root {
+    /* Fallback values if JS hasn't run yet */
+    --vvh: 100vh;
+    --vvh-unit: 1vh;
+}
+
+@supports (height: 100dvh) {
+    :root {
+        /* Prefer modern dynamic viewport units when available */
+        --vvh: 100dvh;
+        --vvh-unit: 1dvh;
+    }
+}
+
+/* Utility-ish classes (usable alongside Tailwind) */
+.min-h-vv {
+    min-height: var(--vvh);
+}
+
+.h-vv {
+    height: var(--vvh);
+}
+
+.pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.bottom-safe {
+    bottom: env(safe-area-inset-bottom);
+}
+

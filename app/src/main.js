@@ -15,6 +15,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { createMetaManager } from 'vue-meta';
 import { DynamicStorage } from './helpers/storage';
+import { installViewportCssVars } from './helpers/viewport';
 
 // import { faTwitter } from "@fortawesome/free-brands-svg-icons";
 // import { faUserSecret } from "@fortawesome/free-solid-svg-icons";
@@ -124,6 +125,10 @@ async function applyInitialThemePreference() {
     `${fontSize * 1.6}px`
   );
 }
+
+// Stabilize viewport units on mobile browsers (notably iOS Chrome) where
+// the browser toolbars collapsing/expanding can cause fixed footers to “float”.
+installViewportCssVars();
 
 router.beforeEach((to, from, next) => {
   // This goes through the matched routes from last to first, finding the closest route with a title.
