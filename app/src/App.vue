@@ -181,7 +181,20 @@
     </footer>
   </div>
 
-  <el-backtop :bottom="backtopBottom" />
+  <el-backtop :bottom="backtopBottom" :right="25" />
+
+  <!-- Floating menu toggle button — appears when header is hidden -->
+  <Transition name="fab-fade">
+    <button
+      v-if="showMenuFab"
+      class="menu-fab"
+      :style="menuFabStyle"
+      aria-label="Show navigation menu"
+      @click="revealHeader"
+    >
+      <font-awesome-icon :icon="['fad', 'bars']" class="menu-fab__icon" />
+    </button>
+  </Transition>
 </template>
 
 <script>
@@ -235,6 +248,7 @@ export default {
         ],
       },
       isHeaderVisible: true,
+      headerRevealedByFab: false,
       lastScrollPosition: 0,
       isAudioPlayerVisible: false, // Track if player is actually showing
       audioBarHeight: 0,
@@ -272,7 +286,6 @@ export default {
       this.handleSettingsBarVisibility(event.detail);
     },
     handleScroll() {
-      // Don't hide for negative scroll (bounce effect) or very top
       const currentScrollPosition =
         window.pageYOffset || document.documentElement.scrollTop;
 
@@ -280,16 +293,33 @@ export default {
         return;
       }
 
-      // Always show if near top
+      // Always show header when near the top of the page
       if (currentScrollPosition < 60) {
         this.isHeaderVisible = true;
+        this.headerRevealedByFab = false;
         this.lastScrollPosition = currentScrollPosition;
         return;
       }
 
-      // Show if scrolling up, hide if scrolling down
-      this.isHeaderVisible = currentScrollPosition < this.lastScrollPosition;
+      // If the user manually revealed the header via the FAB,
+      // keep it visible until they scroll down again
+      if (this.headerRevealedByFab) {
+        if (currentScrollPosition > this.lastScrollPosition) {
+          // Scrolling down — hide again
+          this.isHeaderVisible = false;
+          this.headerRevealedByFab = false;
+        }
+        this.lastScrollPosition = currentScrollPosition;
+        return;
+      }
+
+      // Otherwise, hide when scrolled past the top (no auto-reveal on scroll up)
+      this.isHeaderVisible = false;
       this.lastScrollPosition = currentScrollPosition;
+    },
+    revealHeader() {
+      this.isHeaderVisible = true;
+      this.headerRevealedByFab = true;
     },
     async openDonation() {
       await Browser.open({ url: 'https://ko-fi.com/dailyoffice' });
@@ -374,6 +404,16 @@ export default {
     },
     backtopBottom() {
       return this.bottomFixedOffset > 0 ? this.bottomFixedOffset + 20 : 20;
+    },
+    showMenuFab() {
+      return !this.isHeaderVisible && this.lastScrollPosition >= 60;
+    },
+    menuFabStyle() {
+      const bottom = this.backtopBottom;
+      return {
+        bottom: `calc(${bottom}px + env(safe-area-inset-bottom))`,
+        right: '85px',
+      };
     },
   },
   watch: {
@@ -994,5 +1034,46 @@ body {
 
 .pt-safe-top {
   padding-top: env(safe-area-inset-top);
+}
+
+/* ── Floating menu button (matches el-backtop aesthetic) ── */
+.menu-fab {
+  position: fixed;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  background-color: var(--el-bg-color-overlay, #ffffff);
+  color: var(--el-text-color-regular, #606266);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.menu-fab:hover {
+  background-color: var(--accent-color);
+  color: var(--accent-contrast, #ffffff);
+}
+
+.menu-fab__icon {
+  font-size: 16px;
+}
+
+/* Fade-in / fade-out transition for the FAB */
+.fab-fade-enter-active,
+.fab-fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.fab-fade-enter-from,
+.fab-fade-leave-to {
+  opacity: 0;
 }
 </style>

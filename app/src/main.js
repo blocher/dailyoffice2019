@@ -27,6 +27,7 @@ import { DynamicStorage } from './helpers/storage';
 // import { faCoffee } from "@fortawesome/pro-light-svg-icons";
 // import { faFeather } from "@fortawesome/pro-thin-svg-icons";
 import {
+  faBars,
   faBookBible,
   faBooks,
   faCircle1,
@@ -66,6 +67,7 @@ import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
 import { Capacitor } from '@capacitor/core';
 
 library.add(
+  faBars,
   faSun,
   faSunrise,
   faSunset,
