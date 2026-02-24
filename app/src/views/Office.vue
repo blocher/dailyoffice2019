@@ -177,7 +177,9 @@
       </div>
 
       <div class="display-settings-drawer__row">
-        <span class="display-settings-drawer__label">Audio Controls</span>
+        <span class="display-settings-drawer__label"
+          >Display Audio Controls</span
+        >
         <el-switch
           v-model="audioEnabled"
           size="default"
@@ -215,6 +217,7 @@
     :office="office"
     :isEsvOrKjv="isEsvOrKjv"
     :isWithinSevenDays="isWithinSevenDays"
+    @dismiss-audio="confirmDismissAudio"
   />
   <AudioPlayerMessage
     v-if="
@@ -229,6 +232,8 @@
     :isEsvOrKjv="isEsvOrKjv"
     :isWithinSevenDays="isWithinSevenDays"
     :audioReady="audioReady"
+    :hasAudioLinks="!!(audioLinks && audioLinks.length)"
+    @dismiss-audio="confirmDismissAudio"
   />
 </template>
 
@@ -254,6 +259,7 @@ import AudioPlayer from '@/components/AudioPlayer.vue';
 import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue';
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue';
 import { Check, Close } from '@element-plus/icons-vue';
+import { ElMessageBox } from 'element-plus';
 import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
 
 export default {
@@ -447,6 +453,22 @@ export default {
     },
     closeSettings() {
       this.displaySettingsDrawerOpen = false;
+    },
+    async confirmDismissAudio() {
+      try {
+        await ElMessageBox.confirm(
+          'You can re-enable audio controls at any time from Display Settings at the top of this page.',
+          'Hide Audio Controls?',
+          {
+            confirmButtonText: 'Hide',
+            cancelButtonText: 'Cancel',
+            type: 'info',
+          }
+        );
+        this.audioEnabled = false;
+      } catch {
+        // user cancelled — do nothing
+      }
     },
     handleWindowResize() {
       this.windowWidth = window.innerWidth;

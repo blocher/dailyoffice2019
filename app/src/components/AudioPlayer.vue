@@ -16,6 +16,15 @@
             <a href="/"> Go to Today >>> </a>
           </small>
         </span>
+        <!-- Dismiss button (not-playing state only) -->
+        <button
+          v-if="!isPlaying"
+          class="dismiss-button"
+          title="Hide audio controls"
+          @click.stop="$emit('dismiss-audio')"
+        >
+          <font-awesome-icon :icon="faXmark" />
+        </button>
       </div>
 
       <div v-if="isEsvOrKjv" class="menu-and-buttons">
@@ -43,6 +52,15 @@
             <span class="mini-player-expand">
               <font-awesome-icon :icon="faChevronUp" />
             </span>
+            <!-- Dismiss X on mini player (only when not playing) -->
+            <button
+              v-if="!isPlaying"
+              class="dismiss-button dismiss-button--mini"
+              title="Hide audio controls"
+              @click.stop="$emit('dismiss-audio')"
+            >
+              <font-awesome-icon :icon="faXmark" />
+            </button>
           </div>
           <!-- Progress bar when playing -->
           <div v-if="isPlaying && !isPaused" class="mini-player-progress">
@@ -57,14 +75,33 @@
         <template v-else>
           <div v-if="isMobile" class="player-header">
             <span class="player-title">Audio Player</span>
-            <button
-              class="collapse-button"
-              @click="toggleExpanded"
-              title="Minimize"
-            >
-              <font-awesome-icon :icon="faChevronDown" />
-            </button>
+            <div class="player-header-actions">
+              <button
+                v-if="!isPlaying"
+                class="dismiss-button"
+                title="Hide audio controls"
+                @click.stop="$emit('dismiss-audio')"
+              >
+                <font-awesome-icon :icon="faXmark" />
+              </button>
+              <button
+                class="collapse-button"
+                @click="toggleExpanded"
+                title="Minimize"
+              >
+                <font-awesome-icon :icon="faChevronDown" />
+              </button>
+            </div>
           </div>
+          <!-- Desktop dismiss button -->
+          <button
+            v-if="!isMobile && !isPlaying"
+            class="dismiss-button dismiss-button--desktop"
+            title="Hide audio controls"
+            @click.stop="$emit('dismiss-audio')"
+          >
+            <font-awesome-icon :icon="faXmark" />
+          </button>
 
           <div class="button-row">
             <el-button-group v-if="audioReady" class="playback-buttons">
@@ -145,6 +182,7 @@ import {
   faPlay,
   faVolumeHigh,
   faVolumeMute,
+  faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 
 export default {
@@ -152,6 +190,7 @@ export default {
   components: {
     Loading,
   },
+  emits: ['dismiss-audio'],
   props: {
     audio: {
       type: Object,
@@ -377,6 +416,9 @@ export default {
     },
     faVolumeMute() {
       return faVolumeMute;
+    },
+    faXmark() {
+      return faXmark;
     },
   },
   watch: {
@@ -870,5 +912,53 @@ button,
   .scroll-toggle :deep(.el-switch__label) {
     display: none; /* Simplified switch on small screens */
   }
+}
+
+/* ── Dismiss (X) button ── */
+.dismiss-button {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--color-text);
+  opacity: 0.5;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dismiss-button:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.dismiss-button:active {
+  transform: scale(0.92);
+}
+
+/* Mini-player variant sits inline after the expand chevron */
+.dismiss-button--mini {
+  margin-left: 4px;
+}
+
+/* Desktop variant floats top-right inside the fixed controls bar */
+.dismiss-button--desktop {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+}
+
+.player-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 </style>

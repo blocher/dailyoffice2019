@@ -1,10 +1,7 @@
 <template>
   <div class="audio-player">
     <div class="controls fixed-controls" style="width: 100%">
-      <div
-        v-if="!isEsvOrKjv || !isWithinSevenDays || !audioReady"
-        class="menu-and-buttons"
-      >
+      <div class="menu-and-buttons">
         <span v-if="!isEsvOrKjv">
           <small>
             &nbsp;&nbsp;Audio is only available if the selected bible
@@ -13,27 +10,42 @@
             <a href="/settings"> Change Settings >>> </a>
           </small>
         </span>
-        <span v-if="!isWithinSevenDays">
+        <span v-else-if="!isWithinSevenDays">
           <small>
             &nbsp;&nbsp;Audio is available for today and the next seven days
             only.&nbsp;&nbsp;
             <a href="/"> Go to Today >>> </a>
           </small>
         </span>
-        <span v-if="!audioReady && isEsvOrKjv && isWithinSevenDays">
+        <span v-else-if="!audioReady">
           <small>
             &nbsp;&nbsp;Audio is loading...it may take a few
             moments.&nbsp;&nbsp;
           </small>
         </span>
+        <span v-else-if="!hasAudioLinks">
+          <small>
+            &nbsp;&nbsp;Audio is not available for this office.&nbsp;&nbsp;
+          </small>
+        </span>
+        <button
+          class="dismiss-button"
+          title="Hide audio controls"
+          @click.stop="$emit('dismiss-audio')"
+        >
+          <font-awesome-icon :icon="faXmark" />
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
+
 export default {
   name: 'AudioPlayerMessage',
+  emits: ['dismiss-audio'],
   props: {
     audioReady: {
       type: Boolean,
@@ -48,6 +60,16 @@ export default {
       type: Boolean,
       required: true,
       default: false,
+    },
+    hasAudioLinks: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
+  computed: {
+    faXmark() {
+      return faXmark;
     },
   },
   mounted() {
@@ -116,6 +138,37 @@ export default {
   align-items: center;
   width: 100%;
   flex-wrap: nowrap;
+  gap: 8px;
+}
+
+.dismiss-button {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--color-text, #333);
+  opacity: 0.5;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dismiss-button:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.dismiss-button:active {
+  transform: scale(0.92);
 }
 
 button {

@@ -42,7 +42,7 @@
           <span class="display-settings-summary__item">
             <font-awesome-icon :icon="['fad', 'font-case']" />
             <span class="display-settings-summary__item-text">
-              <span class="display-settings-summary__title">Text</span>
+              <span class="display-settings-summary__title">Text Size</span>
               <span class="display-settings-summary__value"
                 >{{ displayFontSizePercent }}%</span
               >
