@@ -411,7 +411,7 @@ export default {
     menuFabStyle() {
       const bottom = this.backtopBottom;
       return {
-        bottom: `calc(${bottom}px + env(safe-area-inset-bottom))`,
+        bottom: `${bottom}px`,
         right: '85px',
       };
     },

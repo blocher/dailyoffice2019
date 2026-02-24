@@ -254,6 +254,8 @@ export default {
     // Check if mobile on mount
     this.checkMobile();
     window.addEventListener('resize', this.checkMobile);
+    window.visualViewport?.addEventListener('resize', this.emitVisibility);
+    window.visualViewport?.addEventListener('scroll', this.emitVisibility);
 
     if (
       this.audio &&
@@ -283,6 +285,8 @@ export default {
   beforeUnmount() {
     this.stopAudio();
     window.removeEventListener('resize', this.checkMobile);
+    window.visualViewport?.removeEventListener('resize', this.emitVisibility);
+    window.visualViewport?.removeEventListener('scroll', this.emitVisibility);
     if (this.audioElement) {
       this.audioElement.removeEventListener(
         'timeupdate',
@@ -296,9 +300,7 @@ export default {
       const isVisible = forceState !== undefined ? forceState : true;
       const controls = this.$el?.querySelector('.controls.fixed-controls');
       const height =
-        isVisible && controls
-          ? Math.ceil(controls.getBoundingClientRect().height)
-          : 0;
+        isVisible && controls ? Math.ceil(controls.offsetHeight) : 0;
       const event = new window.CustomEvent('audio-player-visibility', {
         detail: { visible: isVisible, height },
       });
