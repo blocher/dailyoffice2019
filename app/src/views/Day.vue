@@ -17,6 +17,7 @@
           :service-type="currentServiceType"
           :selected-office="'day'"
         />
+        <DisplaySettingsModule />
       </div>
     </div>
   </div>
@@ -31,10 +32,17 @@ import { DynamicStorage } from '@/helpers/storage';
 import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
 import CalendarCard from '@/components/CalendarCard.vue';
 import Loading from '@/components/Loading.vue';
+import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
 
 export default {
   name: 'Calendar',
-  components: { OfficeNav, PageNotFound, CalendarCard, Loading },
+  components: {
+    OfficeNav,
+    PageNotFound,
+    CalendarCard,
+    Loading,
+    DisplaySettingsModule,
+  },
   properties: {
     office: null,
     serviceType: {

@@ -677,13 +677,13 @@ select:focus {
   --el-mask-color: rgba(0, 0, 0, 0.6);
   --el-overlay-color-lighter: rgba(0, 0, 0, 0.4);
 
-  --season-red: #f87171;
-  --season-green: #34d399;
-  --season-purple: #c084fc;
-  --season-white: #facc15;
-  --season-black: #9ca3af;
-  --season-rose: #f472b6;
-  --season-blue: #60a5fa;
+  --season-red: #ef4444;
+  --season-green: #10b981;
+  --season-purple: #a855f7;
+  --season-white: #eab308;
+  --season-black: #6b7280;
+  --season-rose: #ec4899;
+  --season-blue: #3b82f6;
 
   .el-calendar {
     --el-calendar-border: 1px solid #475569 !important;
