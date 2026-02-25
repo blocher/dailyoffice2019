@@ -28,6 +28,7 @@ import { DynamicStorage } from '@/helpers/storage';
 
 export default {
   name: 'FontSizer',
+  emits: ['font-size-change'],
   components: {},
   props: {},
   data() {
@@ -54,6 +55,7 @@ export default {
         return;
       }
       this.fontSize = fontSize;
+      this.$emit('font-size-change', fontSize);
       document.documentElement.style.setProperty(
         '--main-font-size',
         `${fontSize}px`

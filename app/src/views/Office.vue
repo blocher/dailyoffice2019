@@ -26,11 +26,12 @@
             :service-type="serviceType"
           />
 
-          <DisplaySettingsModule
-            v-if="!loading"
-            :show-audio-controls="true"
-            v-model:audio-enabled="audioEnabled"
-          />
+          <div v-if="!loading" class="office-display-settings">
+            <DisplaySettingsModule
+              :show-audio-controls="true"
+              v-model:audio-enabled="audioEnabled"
+            />
+          </div>
         </header>
       </div>
     </div>
@@ -424,10 +425,22 @@ export default {
   margin-right: auto;
 }
 
+.office-display-settings {
+  width: min(100%, 34rem);
+  margin: 0.75rem auto 0;
+}
+
 /* Ensure main content is centered and readable on large screens */
 #main {
   max-width: 65ch;
   margin: 0 auto;
   padding: 0 var(--main-content-gutter);
+}
+
+@media (max-width: 768px) {
+  .office-display-settings {
+    width: 100%;
+    margin-top: 0.65rem;
+  }
 }
 </style>

@@ -1,141 +1,79 @@
 <template>
-  <div class="display-settings-shell">
-    <div class="small-container">
-      <div
-        class="display-settings-summary mx-auto bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 shadow-xs p-3"
-        role="button"
-        tabindex="0"
-        @click="openSettings"
-        @keydown.enter.prevent="openSettings"
-        @keydown.space.prevent="openSettings"
-      >
-        <div class="display-settings-summary__header">
-          <div class="display-settings-summary__heading-row">
-            <span class="display-settings-summary__heading"
-              >Display Settings</span
-            >
-            <el-tag
-              v-if="hasCustomDisplaySettings"
-              type="warning"
-              effect="plain"
-              size="small"
-              round
-              >Custom</el-tag
-            >
-          </div>
-          <span class="display-settings-summary__open">
-            <font-awesome-icon :icon="['fad', 'right']" />
-          </span>
-        </div>
-        <div
-          class="display-settings-summary__text display-settings-summary__text--three-col"
-        >
-          <span class="display-settings-summary__item">
-            <font-awesome-icon
-              :icon="['fad', displayTheme === 'Dark' ? 'moon-stars' : 'sun']"
-            />
-            <span class="display-settings-summary__item-text">
-              <span class="display-settings-summary__title">Theme</span>
-              <span class="display-settings-summary__value">{{
-                displayTheme
-              }}</span>
-            </span>
-          </span>
-          <span class="display-settings-summary__item">
-            <font-awesome-icon :icon="['fad', 'font-case']" />
-            <span class="display-settings-summary__item-text">
-              <span class="display-settings-summary__title">Text Size</span>
-              <span class="display-settings-summary__value"
-                >{{ displayFontSizePercent }}%</span
-              >
-            </span>
-          </span>
-          <span class="display-settings-summary__item">
-            <font-awesome-icon :icon="['fad', 'microphone']" />
-            <span class="display-settings-summary__item-text">
-              <span class="display-settings-summary__title"
-                >Show Audio Controls</span
-              >
-              <span class="display-settings-summary__value">{{
-                audioEnabledLocal ? 'On' : 'Off'
-              }}</span>
-            </span>
-          </span>
-        </div>
+  <section class="display-settings-surface">
+    <header class="display-settings-surface__header">
+      <div class="display-settings-surface__title-shell">
+        <p class="display-settings-surface__eyebrow">Display</p>
+        <div class="display-settings-surface__title">Display Settings</div>
       </div>
+      <el-tag
+        v-if="hasCustomDisplaySettings"
+        type="warning"
+        effect="plain"
+        size="small"
+      >
+        Custom
+      </el-tag>
+    </header>
+
+    <p
+      v-if="normalizedSearchQuery && !hasMatchingCards"
+      class="display-settings-empty"
+    >
+      No display settings match your search.
+    </p>
+
+    <div v-else class="display-settings-grid">
+      <article v-if="showAppearanceCard" class="display-setting-card">
+        <header class="display-setting-card__header">
+          <div class="display-setting-card__label">Appearance</div>
+          <span>{{ displayTheme }}</span>
+        </header>
+        <div @change="scheduleSummaryRefresh" @click="scheduleSummaryRefresh">
+          <ThemeSwitcher />
+        </div>
+      </article>
+
+      <article v-if="showTextSizeCard" class="display-setting-card">
+        <header class="display-setting-card__header">
+          <div class="display-setting-card__label">Text Size</div>
+          <span>{{ displayFontSizePercent }}%</span>
+        </header>
+        <FontSizer @font-size-change="handleFontSizeChange" />
+      </article>
+
+      <article v-if="showAudioControlsCard" class="display-setting-card">
+        <header class="display-setting-card__header">
+          <div class="display-setting-card__label">Show Audio Controls</div>
+          <span>{{ audioEnabledLocal ? 'On' : 'Off' }}</span>
+        </header>
+        <div class="display-setting-card__switch-row">
+          <el-switch
+            v-model="audioEnabledLocal"
+            size="default"
+            style="--el-switch-on-color: var(--accent-color)"
+          />
+        </div>
+        <!--        <p-->
+        <!--          v-if="contentAudioEnabled"-->
+        <!--          class="display-setting-card__dependency display-setting-card__dependency&#45;&#45;ok"-->
+        <!--        >-->
+        <!--          Reading audio is enabled for {{ contextLabel }}.-->
+        <!--        </p>-->
+        <!--        <p-->
+        <!--          v-else-->
+        <!--          class="display-setting-card__dependency display-setting-card__dependency&#45;&#45;warning"-->
+        <!--        >-->
+        <!--          Reading audio is off for {{ contextLabel }}.-->
+        <!--        </p>-->
+      </article>
     </div>
-  </div>
-
-  <el-drawer
-    v-model="displaySettingsDrawerOpen"
-    :direction="displaySettingsDrawerDirection"
-    :size="displaySettingsDrawerSize"
-    :with-header="false"
-    :lock-scroll="false"
-    class="display-settings-drawer"
-  >
-    <div class="display-settings-drawer__content">
-      <div
-        class="display-settings-drawer__row display-settings-drawer__header-row"
-      >
-        <div>
-          <h3 class="display-settings-drawer__title">Display Settings</h3>
-          <p class="display-settings-drawer__subtitle">
-            Adjust appearance without leaving this page.
-          </p>
-        </div>
-        <el-tag
-          v-if="hasCustomDisplaySettings"
-          type="warning"
-          effect="plain"
-          size="small"
-          round
-          >Custom</el-tag
-        >
-      </div>
-
-      <div class="display-settings-drawer__row">
-        <span class="display-settings-drawer__label">Appearance</span>
-        <ThemeSwitcher />
-      </div>
-
-      <div class="display-settings-drawer__font">
-        <span class="display-settings-drawer__label">Text Size</span>
-        <FontSizer />
-      </div>
-
-      <div class="display-settings-drawer__row">
-        <span class="display-settings-drawer__label"
-          >Display Audio Controls</span
-        >
-        <el-switch
-          v-model="audioEnabledLocal"
-          size="default"
-          active-text=""
-          inactive-text=""
-          inline-prompt
-          :active-icon="checkIcon"
-          :inactive-icon="closeIcon"
-          style="--el-switch-on-color: var(--accent-color)"
-        />
-      </div>
-
-      <el-button
-        type="primary"
-        class="display-settings-drawer__done"
-        @click="closeSettings"
-      >
-        Done
-      </el-button>
-    </div>
-  </el-drawer>
+  </section>
 </template>
 
 <script>
 import FontSizer from '@/components/FontSizer.vue';
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue';
 import { DynamicStorage } from '@/helpers/storage';
-import { Check, Close } from '@element-plus/icons-vue';
 
 export default {
   name: 'DisplaySettingsModule',
@@ -144,19 +82,32 @@ export default {
     ThemeSwitcher,
   },
   emits: ['update:audioEnabled'],
+  props: {
+    contextLabel: {
+      type: String,
+      default: 'this service',
+    },
+    contentAudioEnabled: {
+      type: Boolean,
+      default: true,
+    },
+    searchQuery: {
+      type: String,
+      default: '',
+    },
+  },
   data() {
     return {
-      displaySettingsDrawerOpen: false,
       displayTheme: 'Light',
       displayFontSize: 24,
       hasStoredThemePreference: false,
-      windowWidth: 0,
-      checkIcon: Check,
-      closeIcon: Close,
       audioEnabledLocal: true,
     };
   },
   computed: {
+    normalizedSearchQuery() {
+      return this.searchQuery.trim().toLowerCase();
+    },
     hasCustomDisplaySettings() {
       return (
         this.hasStoredThemePreference ||
@@ -167,27 +118,48 @@ export default {
     displayFontSizePercent() {
       return this.getFontSizePercent(this.displayFontSize);
     },
-    displaySettingsDrawerDirection() {
-      return this.windowWidth < 768 ? 'btt' : 'rtl';
+    showAppearanceCard() {
+      return this.matchesDisplayCard([
+        'display',
+        'appearance',
+        'theme',
+        'light',
+        'dark',
+      ]);
     },
-    displaySettingsDrawerSize() {
-      return this.windowWidth < 768 ? '72%' : '420px';
+    showTextSizeCard() {
+      return this.matchesDisplayCard([
+        'display',
+        'text',
+        'size',
+        'font',
+        String(this.displayFontSizePercent),
+      ]);
+    },
+    showAudioControlsCard() {
+      return this.matchesDisplayCard([
+        'display',
+        'audio',
+        'controls',
+        this.contextLabel,
+        this.contentAudioEnabled ? 'enabled' : 'disabled',
+      ]);
+    },
+    hasMatchingCards() {
+      return (
+        this.showAppearanceCard ||
+        this.showTextSizeCard ||
+        this.showAudioControlsCard
+      );
     },
   },
   watch: {
-    async displaySettingsDrawerOpen(newVal) {
-      if (!newVal) {
-        await this.refreshDisplaySettingsSummary();
-      }
-    },
     async audioEnabledLocal(newVal) {
       await DynamicStorage.setItem('audioEnabled', newVal ? 'true' : 'false');
       this.$emit('update:audioEnabled', newVal);
     },
   },
   async mounted() {
-    this.handleWindowResize();
-    window.addEventListener('resize', this.handleWindowResize);
     await this.refreshDisplaySettingsSummary();
     const audioEnabledString = await DynamicStorage.getItem(
       'audioEnabled',
@@ -198,22 +170,17 @@ export default {
       audioEnabledString === true ||
       audioEnabledString === null ||
       audioEnabledString === undefined;
-
-    // Emit initial value so parents sync up
     this.$emit('update:audioEnabled', this.audioEnabledLocal);
   },
-  unmounted() {
-    window.removeEventListener('resize', this.handleWindowResize);
-  },
   methods: {
-    openSettings() {
-      this.displaySettingsDrawerOpen = true;
-    },
-    closeSettings() {
-      this.displaySettingsDrawerOpen = false;
-    },
-    handleWindowResize() {
-      this.windowWidth = window.innerWidth;
+    matchesDisplayCard(tokens) {
+      if (!this.normalizedSearchQuery) {
+        return true;
+      }
+      return tokens
+        .join(' ')
+        .toLowerCase()
+        .includes(this.normalizedSearchQuery);
     },
     async refreshDisplaySettingsSummary() {
       const storedTheme = await DynamicStorage.getItem('user-theme');
@@ -245,176 +212,130 @@ export default {
       const normalized = Math.min(max, Math.max(min, value));
       return Math.round(((normalized - min) / (max - min)) * 100);
     },
+    handleFontSizeChange(value) {
+      const fontSize = Number(value);
+      if (Number.isNaN(fontSize)) {
+        return;
+      }
+      this.displayFontSize = fontSize;
+    },
+    scheduleSummaryRefresh() {
+      window.setTimeout(async () => {
+        await this.refreshDisplaySettingsSummary();
+      }, 0);
+    },
   },
 };
 </script>
 
 <style scoped>
-.display-settings-shell {
-  margin-bottom: 1rem;
+.display-settings-surface {
+  border: 1px solid var(--el-border-color-light);
+  border-radius: 0.56rem;
+  background-color: var(--el-fill-color-blank);
+  padding: 0.72rem;
+  width: min(100%, 52rem);
+  margin-inline: auto;
 }
 
-.display-settings-summary {
-  width: 100%;
-  max-width: 65ch;
-  cursor: pointer;
-  color: var(--el-text-color-primary);
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.display-settings-summary:hover {
-  border-color: var(--accent-color);
-  box-shadow: 0 2px 12px rgb(15 23 42 / 0.14);
-}
-
-.display-settings-summary:focus-visible {
-  outline: 2px solid var(--accent-color);
-  outline-offset: 2px;
-}
-
-.display-settings-summary__header {
+.display-settings-surface__header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-
-.display-settings-summary__heading-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-width: 0;
-}
-
-.display-settings-summary__heading {
-  color: var(--el-text-color-regular);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.display-settings-summary__open {
-  color: var(--el-text-color-regular);
-  font-size: 0.85rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.display-settings-summary__text {
-  margin-top: 0.45rem;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.35rem;
-  width: 100%;
-}
-
-.display-settings-summary__item {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  width: 100%;
-  min-width: 0;
-}
-
-.display-settings-summary__item :deep(svg) {
-  flex-shrink: 0;
-  color: var(--el-text-color-regular);
-  font-size: 0.92rem;
-}
-
-.display-settings-summary__item-text {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.06rem;
-  min-width: 0;
-  text-align: center;
-}
-
-.display-settings-summary__title {
-  color: var(--el-text-color-regular);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.display-settings-summary__value {
-  color: var(--el-text-color-primary);
-  font-size: 0.88rem;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.display-settings-drawer__content {
-  padding: 0.25rem 0.25rem 1rem;
-  color: var(--el-text-color-primary);
-}
-
-.display-settings-drawer__row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid var(--el-border-color-light);
-}
-
-.display-settings-drawer__header-row {
   align-items: flex-start;
-  padding-top: 0;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.58rem;
 }
 
-.display-settings-drawer__title {
-  font-size: 1rem;
-  font-weight: 600;
+.display-settings-surface__title-shell {
+  min-width: 0;
+}
+
+.display-settings-surface__eyebrow {
   margin: 0;
-}
-
-.display-settings-drawer__subtitle {
-  font-size: 0.85rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   color: var(--el-text-color-secondary);
-  margin: 0.25rem 0 0;
 }
 
-.display-settings-drawer__label {
-  font-size: 0.9rem;
-  font-weight: 500;
+.display-settings-surface__title {
+  margin: 0.13rem 0 0;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
   color: var(--el-text-color-primary);
 }
 
-.display-settings-drawer__font {
-  padding: 0.75rem 0;
-  border-bottom: 1px solid var(--el-border-color-light);
+.display-settings-empty {
+  margin: 0.3rem 0 0;
+  font-size: 0.82rem;
+  color: var(--el-text-color-secondary);
 }
 
-.display-settings-drawer__done {
-  width: 100%;
-  margin-top: 1rem;
+.display-settings-grid {
+  display: grid;
+  gap: 0.6rem;
 }
 
-:deep(.dark) .display-settings-drawer__content {
+.display-setting-card {
+  border: 1px solid var(--el-border-color-light);
+  background-color: var(--el-fill-color-blank);
+  border-radius: 0.46rem;
+  padding: 0.58rem 0.62rem;
+}
+
+.display-setting-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.56rem;
+}
+
+.display-setting-card__label {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.2;
   color: var(--el-text-color-primary);
 }
 
-:deep(.display-settings-drawer .font-size-block) {
-  background-color: var(--el-fill-color) !important;
-  border-color: var(--el-border-color-light) !important;
-  box-shadow: none;
+.display-setting-card__header span {
+  color: var(--el-text-color-secondary);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-:deep(.display-settings-drawer .el-slider__button) {
-  border-color: var(--accent-color);
+.display-setting-card__switch-row {
+  margin-top: 0.42rem;
 }
 
-:deep(.display-settings-drawer .el-slider__bar) {
-  background-color: var(--accent-color);
+.display-setting-card__dependency {
+  margin: 0.48rem 0 0;
+  font-size: 0.75rem;
+}
+
+.display-setting-card__dependency--ok {
+  color: rgb(5 150 105);
+}
+
+.display-setting-card__dependency--warning {
+  color: rgb(180 83 9);
+}
+
+:deep(.dark) .display-setting-card__dependency--ok {
+  color: rgb(52 211 153);
+}
+
+:deep(.dark) .display-setting-card__dependency--warning {
+  color: rgb(251 191 36);
+}
+
+@media (min-width: 768px) {
+  .display-settings-surface {
+    width: min(calc(100% - 1.25rem), 52rem);
+  }
 }
 </style>

@@ -3830,6 +3830,142 @@ class GreatLitanyView(OfficeAPIView):
         return Response(serializer.data)
 
 
+SETTING_UI_METADATA = {
+    "psalter": {
+        "ui_category": "Readings",
+        "ui_priority": 10,
+        "ui_keywords": ["psalms", "cycle", "morning prayer", "evening prayer"],
+    },
+    "reading_cycle": {
+        "ui_category": "Readings",
+        "ui_priority": 20,
+        "ui_keywords": ["lectionary", "one year", "two year"],
+    },
+    "reading_length": {
+        "ui_category": "Readings",
+        "ui_priority": 30,
+        "ui_keywords": ["abbreviated", "full readings"],
+    },
+    "reading_audio": {
+        "ui_category": "Audio",
+        "ui_priority": 40,
+        "ui_keywords": ["esv", "scripture audio", "player"],
+        "ui_help_short": "Controls whether scripture content audio is included.",
+    },
+    "canticle_rotation": {
+        "ui_category": "Prayer",
+        "ui_priority": 50,
+        "ui_keywords": ["canticles", "seasonal", "traditional"],
+    },
+    "lectionary": {
+        "ui_category": "Calendar",
+        "ui_priority": 180,
+        "ui_keywords": ["sunday", "holy day", "eucharistic readings"],
+    },
+    "confession": {
+        "ui_category": "Prayer",
+        "ui_priority": 190,
+        "ui_keywords": ["intro", "exhortation"],
+    },
+    "absolution": {
+        "ui_category": "Prayer",
+        "ui_priority": 200,
+        "ui_keywords": ["priest", "lay", "deacon"],
+    },
+    "morning_prayer_invitatory": {
+        "ui_category": "Prayer",
+        "ui_priority": 210,
+        "ui_keywords": ["venite", "jubilate", "pascha nostrum"],
+    },
+    "reading_headings": {
+        "ui_category": "Readings",
+        "ui_priority": 220,
+        "ui_keywords": ["esv headings", "headings"],
+    },
+    "language_style": {
+        "ui_category": "Language",
+        "ui_priority": 230,
+        "ui_keywords": ["traditional", "contemporary", "our father", "kyrie"],
+    },
+    "national_holidays": {
+        "ui_category": "Calendar",
+        "ui_priority": 240,
+        "ui_keywords": ["us", "canada", "holiday collects"],
+    },
+    "suffrages": {
+        "ui_category": "Prayer",
+        "ui_priority": 250,
+        "ui_keywords": ["evening prayer", "set a", "set b"],
+    },
+    "collects": {
+        "ui_category": "Prayer",
+        "ui_priority": 260,
+        "ui_keywords": ["additional collects", "fixed", "rotating"],
+    },
+    "pandemic_prayers": {
+        "ui_category": "Prayer",
+        "ui_priority": 270,
+        "ui_keywords": ["pandemic", "special collects"],
+    },
+    "mp_great_litany": {
+        "ui_category": "Litany",
+        "ui_priority": 280,
+        "ui_keywords": ["morning prayer litany", "wednesday", "friday", "sunday"],
+    },
+    "ep_great_litany": {
+        "ui_category": "Litany",
+        "ui_priority": 290,
+        "ui_keywords": ["evening prayer litany", "wednesday", "friday", "sunday"],
+    },
+    "general_thanksgiving": {
+        "ui_category": "Conclusion",
+        "ui_priority": 300,
+        "ui_keywords": ["thanksgiving"],
+    },
+    "chrysostom": {
+        "ui_category": "Conclusion",
+        "ui_priority": 310,
+        "ui_keywords": ["group prayer", "st john chrysostom"],
+    },
+    "grace": {
+        "ui_category": "Conclusion",
+        "ui_priority": 320,
+        "ui_keywords": ["conclusion", "rotating grace"],
+    },
+    "o_antiphons": {
+        "ui_category": "Calendar",
+        "ui_priority": 330,
+        "ui_keywords": ["advent", "seasonal", "o come o come emmanuel"],
+    },
+    "family_readings": {
+        "ui_category": "Readings",
+        "ui_priority": 10,
+        "ui_keywords": ["family prayer", "brief", "long"],
+    },
+    "family_reading_audio": {
+        "ui_category": "Audio",
+        "ui_priority": 40,
+        "ui_keywords": ["family prayer audio", "esv"],
+        "ui_help_short": "Controls whether scripture content audio is included.",
+    },
+    "family_collect": {
+        "ui_category": "Prayer",
+        "ui_priority": 50,
+        "ui_keywords": ["collect", "time of day", "day of week", "day of year"],
+    },
+    "family-opening-sentence": {
+        "ui_category": "Prayer",
+        "ui_priority": 190,
+        "ui_keywords": ["opening sentence", "seasonal"],
+    },
+    "family-creed": {
+        "ui_category": "Prayer",
+        "ui_priority": 200,
+        "ui_keywords": ["apostles creed"],
+    },
+}
+
+
 class SettingOptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = SettingOption
@@ -3847,6 +3983,10 @@ class SettingSerializer(serializers.ModelSerializer):
     options = SettingOptionSerializer(many=True, source="settingoption_set")
     site_name = serializers.SerializerMethodField()
     setting_type_name = serializers.SerializerMethodField()
+    ui_category = serializers.SerializerMethodField()
+    ui_priority = serializers.SerializerMethodField()
+    ui_keywords = serializers.SerializerMethodField()
+    ui_help_short = serializers.SerializerMethodField()
 
     def get_site_name(self, obj):
         sites = dict(Setting.SETTING_SITES)
@@ -3855,6 +3995,21 @@ class SettingSerializer(serializers.ModelSerializer):
     def get_setting_type_name(self, obj):
         setting_types = dict(Setting.SETTING_TYPES)
         return setting_types[obj.setting_type]
+
+    def _get_ui_metadata(self, obj):
+        return SETTING_UI_METADATA.get(obj.name, {})
+
+    def get_ui_category(self, obj):
+        return self._get_ui_metadata(obj).get("ui_category")
+
+    def get_ui_priority(self, obj):
+        return self._get_ui_metadata(obj).get("ui_priority")
+
+    def get_ui_keywords(self, obj):
+        return self._get_ui_metadata(obj).get("ui_keywords")
+
+    def get_ui_help_short(self, obj):
+        return self._get_ui_metadata(obj).get("ui_help_short")
 
     class Meta:
         model = Setting
@@ -3869,6 +4024,10 @@ class SettingSerializer(serializers.ModelSerializer):
             "setting_type_name",
             "order",
             "setting_string_order",
+            "ui_category",
+            "ui_priority",
+            "ui_keywords",
+            "ui_help_short",
             "options",
         )
 

@@ -1,104 +1,99 @@
 <template>
-  <div class="home">
-    <h1>Settings</h1>
+  <div class="settings-view">
     <Loading v-if="loading" />
+
     <main
       v-if="!loading"
       v-cloak
-      class="max-w-6xl mx-auto pt-10 pb-12 px-4 lg:pb-16"
+      class="max-w-6xl mx-auto pt-8 pb-12 px-4 lg:pb-16"
     >
-      <DisplaySettingsModule />
+      <header class="settings-hero">
+        <h1 class="settings-hero__title">Settings</h1>
+        <p class="settings-hero__description">
+          Personalize prayer, readings, and display preferences in one place.
+        </p>
+      </header>
+
+      <div class="settings-search-top">
+        <label for="settings-global-search" class="settings-search-top__label">
+          Search settings
+        </label>
+        <el-input
+          id="settings-global-search"
+          v-model="searchQuery"
+          clearable
+          class="settings-search-top__input"
+          :placeholder="`Search display and ${openTabLabel} settings`"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+        </el-input>
+      </div>
+      <div v-if="isFiltering" class="settings-filter-banner" role="status">
+        <span class="settings-filter-banner__text">
+          Filter active: “{{ searchQuery.trim() }}”
+        </span>
+        <button
+          type="button"
+          class="settings-filter-banner__clear"
+          @click="clearSearch"
+        >
+          Clear
+        </button>
+      </div>
+
       <el-tabs
         v-model="openTab"
         :tab-position="tabPosition"
-        class="h-full"
+        class="settings-tabs"
         @tab-change="toggleOffice"
       >
         <el-tab-pane label="Daily Office" name="office">
-          <SettingsPanel
-            :available-settings="availableSettings"
-            site="Daily Office"
-            name="Daily Office Settings"
-            :advanced="advanced"
-          />
+          <section class="settings-tab-stack">
+            <div class="settings-display-narrow">
+              <DisplaySettingsModule
+                :search-query="searchQuery"
+                context-label="Daily Office"
+                :content-audio-enabled="dailyOfficeContentAudioEnabled"
+              />
+            </div>
+            <SettingsPanel
+              :available-settings="availableSettings"
+              :search-query="searchQuery"
+              site="Daily Office"
+            />
+          </section>
         </el-tab-pane>
         <el-tab-pane label="Family Prayer" name="family">
-          <SettingsPanel
-            :available-settings="availableSettings"
-            site="Family Prayer"
-            name="Family Prayer Settings"
-            :advanced="advanced"
-          />
+          <section class="settings-tab-stack">
+            <div class="settings-display-narrow">
+              <DisplaySettingsModule
+                :search-query="searchQuery"
+                context-label="Family Prayer"
+                :content-audio-enabled="familyPrayerContentAudioEnabled"
+              />
+            </div>
+            <SettingsPanel
+              :available-settings="availableSettings"
+              :search-query="searchQuery"
+              site="Family Prayer"
+            />
+          </section>
         </el-tab-pane>
       </el-tabs>
       <DonationPrompt variant="long" />
     </main>
   </div>
-  <el-drawer
-    v-model="drawerOpen"
-    class="settings-bottom-drawer"
-    modal-class="pointer-events-none"
-    direction="btt"
-    :close-on-click-modal="false"
-    :lock-scroll="false"
-    :close-on-press-escape="false"
-    :show-close="false"
-    :with-header="false"
-    size="auto"
-    :modal="false"
-    :z-index="100"
-  >
-    <h4 @click="toggleBottomPanel">
-      Show/Hide Settings
-      <span class="float-right"
-        ><font-awesome-icon
-          v-if="!bottomPanelExpanded"
-          :icon="['fad', 'fa-square-caret-up']"
-      /></span>
-      <span class="float-right"
-        ><font-awesome-icon
-          v-if="bottomPanelExpanded"
-          :icon="['fad', 'fa-square-caret-down']"
-      /></span>
-    </h4>
-    <div v-if="bottomPanelExpanded" class="w-full">
-      <div class="wrapper w-full">
-        <div class="text-right"><small>Daily Office</small></div>
-        <div class="text-center">
-          <el-switch
-            v-model="openTab"
-            class="ml-2"
-            active-color="var(--link-color)"
-            inactive-color="var(--el-border-color)"
-            active-value="family"
-            inactive-value="office"
-            @change="toggleOffice"
-          />
-        </div>
-        <div class="text-left"><small>Family Prayer</small></div>
-        <div class="text-right"><small>Frequently Used</small></div>
-        <div class="text-center">
-          <el-switch
-            v-model="advanced"
-            class="ml-2"
-            active-color="var(--link-color)"
-            inactive-color="var(--el-border-color)"
-            @change="toggleAdvanced"
-          />
-        </div>
-        <div class="text-left"><small>All Settings</small></div>
-      </div>
-    </div>
-  </el-drawer>
 </template>
 
 <script>
-// @ is an alias to /src
 import SettingsPanel from '@/components/SettingsPanel.vue';
 import Loading from '@/components/Loading.vue';
 import { DynamicStorage } from '@/helpers/storage';
 import DonationPrompt from '@/components/DonationPrompt.vue';
 import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
+import { Search } from '@element-plus/icons-vue';
 
 export default {
   name: 'Settings',
@@ -107,126 +102,189 @@ export default {
     Loading,
     DonationPrompt,
     DisplaySettingsModule,
+    Search,
   },
   data() {
     return {
-      counter: 0,
       availableSettings: null,
-      familyPrayerSettings: null,
-      dailyOfficeSettings: null,
       loading: true,
-      windowWidth: 0,
-      drawerOpen: true,
-      advanced: false,
       openTab: 'office',
-      bottomPanelExpanded: true,
+      searchQuery: '',
+      lastTrackedSearchTerm: '',
     };
   },
   computed: {
-    // a computed getter
-    tabPosition: function () {
+    tabPosition() {
       return 'top';
-      // return this.windowWidth > 780 ? "left" : "top";
+    },
+    openTabLabel() {
+      return this.openTab === 'family' ? 'Family Prayer' : 'Daily Office';
+    },
+    isFiltering() {
+      return this.searchQuery.trim().length > 0;
+    },
+    dailyOfficeContentAudioEnabled() {
+      return this.getSettingValue('reading_audio') === 'on';
+    },
+    familyPrayerContentAudioEnabled() {
+      return this.getSettingValue('family_reading_audio') === 'on';
+    },
+  },
+  watch: {
+    searchQuery(value) {
+      const normalized = value.trim().toLowerCase();
+      if (normalized.length < 2 || normalized === this.lastTrackedSearchTerm) {
+        return;
+      }
+      this.lastTrackedSearchTerm = normalized;
+      this.trackSearch(normalized);
     },
   },
   async mounted() {
-    window.addEventListener('resize', this.handleWindowResize);
     await this.initialize();
-    this.$nextTick(() => this.emitBottomBarVisibility());
-  },
-  unmounted() {
-    window.removeEventListener('resize', this.handleWindowResize);
-    this.emitBottomBarVisibility(false);
   },
   methods: {
-    handleWindowResize() {
-      this.windowWidth = window.innerWidth;
-      this.$nextTick(() => this.emitBottomBarVisibility());
-    },
-    emitBottomBarVisibility(forceState) {
-      const isVisible = forceState !== undefined ? forceState : this.drawerOpen;
-      let height = 0;
-      if (isVisible) {
-        const drawer = document.querySelector('.settings-bottom-drawer');
-        if (drawer) {
-          height = Math.ceil(drawer.getBoundingClientRect().height);
-        }
-        if (!height) {
-          height = this.bottomPanelExpanded ? 164 : 56;
-        }
-      }
-      const event = new window.CustomEvent('settings-bottom-bar-visibility', {
-        detail: { visible: isVisible, height },
-      });
-      document.dispatchEvent(event);
+    getSettingValue(settingName) {
+      const setting = this.availableSettings?.find(
+        (item) => item.name === settingName
+      );
+      return setting?.active;
     },
     async initialize() {
       this.loading = true;
-      this.windowWidth = window.innerWidth;
-      this.availableSettings = await this.$store.state.availableSettings;
+      this.availableSettings = this.$store.state.availableSettings || [];
       await this.$store.dispatch('initializeSettings');
-      const settings = await this.$store.state.settings;
+      const settings = this.$store.state.settings || {};
+
       if (this.availableSettings) {
         this.availableSettings.forEach((setting, i) => {
-          const name = setting.name;
-          this.availableSettings[i].active = settings[name];
+          this.availableSettings[i].active = settings[setting.name];
         });
+      }
 
-        this.dailyOfficeSettings = this.availableSettings.filter(
-          (setting) => setting.site_name == 'Daily Office'
-        );
-        this.familyPrayerSettings = this.availableSettings.filter(
-          (setting) => setting.site_name == 'Family Prayer'
-        );
-      }
-      if (await DynamicStorage.getItem('advancedSettings')) {
-        const stored = await DynamicStorage.getItem('advancedSettings');
-        this.advanced = stored == 'true' ? true : false;
+      const storedPane = await DynamicStorage.getItem('settingsPane');
+      if (storedPane) {
+        this.openTab = storedPane;
       } else {
-        await DynamicStorage.setItem('advancedSettings', false);
+        await DynamicStorage.setItem('settingsPane', 'office');
       }
-      if (await DynamicStorage.getItem('settingsPane')) {
-        const stored = await DynamicStorage.getItem('settingsPane');
-        if (stored) {
-          this.openTab = stored;
-        } else {
-          await DynamicStorage.setItem('settingsPane', 'office');
-        }
-      }
+
       this.loading = false;
-      this.$nextTick(() => this.emitBottomBarVisibility());
-    },
-    async toggleAdvanced(value) {
-      await DynamicStorage.setItem('advancedSettings', value);
     },
     async toggleOffice(value) {
       this.openTab = value;
       await DynamicStorage.setItem('settingsPane', value);
     },
-    toggleBottomPanel() {
-      this.bottomPanelExpanded = !this.bottomPanelExpanded;
-      this.$nextTick(() => this.emitBottomBarVisibility());
+    clearSearch() {
+      this.searchQuery = '';
+    },
+    trackSearch(query) {
+      if (!this.$gtag?.event) {
+        return;
+      }
+      this.$gtag.event('settings_search_used', {
+        site: this.openTabLabel,
+        query_length: query.length,
+      });
     },
   },
 };
 </script>
 
-<style>
+<style scoped>
 [v-cloak] {
   display: none;
 }
 
-.pointer-events-none {
-  pointer-events: none;
+.settings-hero {
+  margin-bottom: 1rem;
 }
 
-.el-drawer {
-  pointer-events: auto;
+.settings-hero__title {
+  margin: 0;
+  font-size: clamp(1.85rem, 3.4vw, 2.45rem);
+  line-height: 1.18;
+  color: var(--el-text-color-primary);
 }
 
-.wrapper {
+.settings-hero__description {
+  margin: 0.55rem 0 0;
+  max-width: 62ch;
+  color: var(--el-text-color-secondary);
+  font-size: 0.97rem;
+}
+
+.settings-tabs {
+  margin-bottom: 1rem;
+}
+
+.settings-tab-stack {
+  padding-top: 0.25rem;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  grid-gap: 1rem;
+  gap: 1rem;
+}
+
+.settings-display-narrow {
+  width: min(100%, 58rem);
+}
+
+.settings-search-top {
+  border: 1px solid var(--el-border-color-light);
+  border-radius: 0.55rem;
+  background-color: var(--el-fill-color-blank);
+  padding: 0.58rem 0.66rem 0.66rem;
+  margin-bottom: 0.7rem;
+}
+
+.settings-search-top__label {
+  display: block;
+  margin-bottom: 0.26rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--el-text-color-secondary);
+}
+
+.settings-filter-banner {
+  margin-bottom: 0.9rem;
+  border: 1px solid var(--accent-color);
+  background-color: rgb(191 219 254 / 0.35);
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.settings-filter-banner__text {
+  color: var(--el-text-color-primary);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.settings-filter-banner__clear {
+  border: 1px solid var(--accent-color);
+  background-color: var(--el-fill-color-blank);
+  color: var(--accent-color);
+  border-radius: 0.4rem;
+  padding: 0.12rem 0.38rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .settings-hero__description {
+    font-size: 0.92rem;
+  }
+
+  .settings-tab-stack {
+    gap: 0.85rem;
+  }
+
+  .settings-display-narrow {
+    width: 100%;
+  }
 }
 </style>

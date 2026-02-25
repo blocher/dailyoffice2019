@@ -252,7 +252,6 @@ export default {
       lastScrollPosition: 0,
       isAudioPlayerVisible: false, // Track if player is actually showing
       audioBarHeight: 0,
-      settingsBarHeight: 0,
     };
   },
 
@@ -269,21 +268,8 @@ export default {
       this.isAudioPlayerVisible = isVisible;
       this.audioBarHeight = isVisible ? 132 : 0;
     },
-    handleSettingsBarVisibility(payload) {
-      if (payload && typeof payload === 'object') {
-        const isVisible = Boolean(payload.visible);
-        const height = Number(payload.height) || 0;
-        this.settingsBarHeight = isVisible ? height : 0;
-        return;
-      }
-      const isVisible = Boolean(payload);
-      this.settingsBarHeight = isVisible ? 140 : 0;
-    },
     onAudioVisibilityEvent(event) {
       this.handleAudioVisibility(event.detail);
-    },
-    onSettingsBarVisibilityEvent(event) {
-      this.handleSettingsBarVisibility(event.detail);
     },
     handleScroll() {
       const currentScrollPosition =
@@ -390,11 +376,7 @@ export default {
         : '';
     },
     bottomFixedOffset() {
-      const tallestBar = Math.max(
-        this.audioBarHeight,
-        this.settingsBarHeight,
-        0
-      );
+      const tallestBar = Math.max(this.audioBarHeight, 0);
       return tallestBar > 0 ? tallestBar + 16 : 0;
     },
     mainBodyStyle() {
@@ -428,10 +410,6 @@ export default {
       'audio-player-visibility',
       this.onAudioVisibilityEvent
     );
-    document.addEventListener(
-      'settings-bottom-bar-visibility',
-      this.onSettingsBarVisibilityEvent
-    );
 
     const audioEnabled =
       (await DynamicStorage.getItem('audioEnabled', 'false')) === 'true'
@@ -451,10 +429,6 @@ export default {
     document.removeEventListener(
       'audio-player-visibility',
       this.onAudioVisibilityEvent
-    );
-    document.removeEventListener(
-      'settings-bottom-bar-visibility',
-      this.onSettingsBarVisibilityEvent
     );
   },
   async created() {
