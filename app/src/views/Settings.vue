@@ -56,6 +56,7 @@
                 :search-query="searchQuery"
                 context-label="Daily Office"
                 :content-audio-enabled="dailyOfficeContentAudioEnabled"
+                :collapsible="false"
               />
             </div>
             <SettingsPanel
@@ -72,6 +73,7 @@
                 :search-query="searchQuery"
                 context-label="Family Prayer"
                 :content-audio-enabled="familyPrayerContentAudioEnabled"
+                :collapsible="false"
               />
             </div>
             <SettingsPanel

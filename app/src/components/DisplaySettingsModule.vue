@@ -1,78 +1,82 @@
 <template>
-  <section class="display-settings-surface">
-    <header class="display-settings-surface__header">
+  <component
+    :is="collapsible ? 'details' : 'section'"
+    class="display-settings-surface"
+    :open="collapsible ? !startCollapsed : null"
+  >
+    <component
+      :is="collapsible ? 'summary' : 'header'"
+      class="display-settings-surface__header"
+      :class="{ 'cursor-pointer': collapsible }"
+    >
       <div class="display-settings-surface__title-shell">
         <p class="display-settings-surface__eyebrow">Display</p>
         <div class="display-settings-surface__title">Display Settings</div>
       </div>
-      <el-tag
-        v-if="hasCustomDisplaySettings"
-        type="warning"
-        effect="plain"
-        size="small"
+      <div class="display-settings-surface__actions">
+        <el-tag
+          v-if="hasCustomDisplaySettings"
+          type="warning"
+          effect="plain"
+          size="small"
+        >
+          Custom
+        </el-tag>
+        <el-icon v-if="collapsible" class="display-settings-surface__chevron">
+          <ArrowRight />
+        </el-icon>
+      </div>
+    </component>
+
+    <div class="display-settings-surface__content">
+      <p
+        v-if="normalizedSearchQuery && !hasMatchingCards"
+        class="display-settings-empty"
       >
-        Custom
-      </el-tag>
-    </header>
+        No display settings match your search.
+      </p>
 
-    <p
-      v-if="normalizedSearchQuery && !hasMatchingCards"
-      class="display-settings-empty"
-    >
-      No display settings match your search.
-    </p>
+      <div v-else class="display-settings-grid">
+        <article v-if="showAppearanceCard" class="display-setting-card">
+          <header class="display-setting-card__header">
+            <div class="display-setting-card__label">Appearance</div>
+            <span>{{ displayTheme }}</span>
+          </header>
+          <div @change="scheduleSummaryRefresh" @click="scheduleSummaryRefresh">
+            <ThemeSwitcher />
+          </div>
+        </article>
 
-    <div v-else class="display-settings-grid">
-      <article v-if="showAppearanceCard" class="display-setting-card">
-        <header class="display-setting-card__header">
-          <div class="display-setting-card__label">Appearance</div>
-          <span>{{ displayTheme }}</span>
-        </header>
-        <div @change="scheduleSummaryRefresh" @click="scheduleSummaryRefresh">
-          <ThemeSwitcher />
-        </div>
-      </article>
+        <article v-if="showTextSizeCard" class="display-setting-card">
+          <header class="display-setting-card__header">
+            <div class="display-setting-card__label">Text Size</div>
+            <span>{{ displayFontSizePercent }}%</span>
+          </header>
+          <FontSizer @font-size-change="handleFontSizeChange" />
+        </article>
 
-      <article v-if="showTextSizeCard" class="display-setting-card">
-        <header class="display-setting-card__header">
-          <div class="display-setting-card__label">Text Size</div>
-          <span>{{ displayFontSizePercent }}%</span>
-        </header>
-        <FontSizer @font-size-change="handleFontSizeChange" />
-      </article>
-
-      <article v-if="showAudioControlsCard" class="display-setting-card">
-        <header class="display-setting-card__header">
-          <div class="display-setting-card__label">Show Audio Controls</div>
-          <span>{{ audioEnabledLocal ? 'On' : 'Off' }}</span>
-        </header>
-        <div class="display-setting-card__switch-row">
-          <el-switch
-            v-model="audioEnabledLocal"
-            size="default"
-            style="--el-switch-on-color: var(--accent-color)"
-          />
-        </div>
-        <!--        <p-->
-        <!--          v-if="contentAudioEnabled"-->
-        <!--          class="display-setting-card__dependency display-setting-card__dependency&#45;&#45;ok"-->
-        <!--        >-->
-        <!--          Reading audio is enabled for {{ contextLabel }}.-->
-        <!--        </p>-->
-        <!--        <p-->
-        <!--          v-else-->
-        <!--          class="display-setting-card__dependency display-setting-card__dependency&#45;&#45;warning"-->
-        <!--        >-->
-        <!--          Reading audio is off for {{ contextLabel }}.-->
-        <!--        </p>-->
-      </article>
+        <article v-if="showAudioControlsCard" class="display-setting-card">
+          <header class="display-setting-card__header">
+            <div class="display-setting-card__label">Show Audio Controls</div>
+            <span>{{ audioEnabledLocal ? 'On' : 'Off' }}</span>
+          </header>
+          <div class="display-setting-card__switch-row">
+            <el-switch
+              v-model="audioEnabledLocal"
+              size="default"
+              style="--el-switch-on-color: var(--accent-color)"
+            />
+          </div>
+        </article>
+      </div>
     </div>
-  </section>
+  </component>
 </template>
 
 <script>
 import FontSizer from '@/components/FontSizer.vue';
 import ThemeSwitcher from '@/components/ThemeSwitcher.vue';
+import { ArrowRight } from '@element-plus/icons-vue';
 import { DynamicStorage } from '@/helpers/storage';
 
 export default {
@@ -80,6 +84,7 @@ export default {
   components: {
     FontSizer,
     ThemeSwitcher,
+    ArrowRight,
   },
   emits: ['update:audioEnabled'],
   props: {
@@ -94,6 +99,14 @@ export default {
     searchQuery: {
       type: String,
       default: '',
+    },
+    collapsible: {
+      type: Boolean,
+      default: true,
+    },
+    startCollapsed: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {
@@ -244,6 +257,36 @@ export default {
   justify-content: space-between;
   gap: 0.5rem;
   margin-bottom: 0.58rem;
+}
+
+.display-settings-surface__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.display-settings-surface__chevron {
+  transition: transform 0.2s ease;
+  color: var(--el-text-color-secondary);
+}
+
+details.display-settings-surface[open] .display-settings-surface__chevron {
+  transform: rotate(90deg);
+}
+
+.cursor-pointer {
+  cursor: pointer;
+  user-select: none;
+}
+.cursor-pointer::-webkit-details-marker {
+  display: none;
+}
+summary.cursor-pointer {
+  list-style: none;
+}
+
+.display-settings-surface__content {
+  margin-top: 0.58rem;
 }
 
 .display-settings-surface__title-shell {

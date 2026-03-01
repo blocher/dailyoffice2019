@@ -30,6 +30,7 @@
             <DisplaySettingsModule
               :show-audio-controls="true"
               v-model:audio-enabled="audioEnabled"
+              :collapsible="false"
             />
           </div>
         </header>

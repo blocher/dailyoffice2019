@@ -866,10 +866,20 @@ body {
   #main h2,
   #main h3,
   #main p,
-  .el-collapse-item__header,
-  .el-collapse-item p {
+  #main .el-collapse-item__header {
     font-size: var(--main-font-size);
     line-height: var(--main-line-height);
+  }
+
+  #main .el-checkbox__label {
+    font-size: calc(var(--main-font-size) * 0.85);
+    line-height: normal;
+    white-space: normal;
+  }
+
+  #main .el-checkbox {
+    height: auto;
+    align-items: center;
   }
 
   h1,

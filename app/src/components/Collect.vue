@@ -1,25 +1,47 @@
 <template>
   <el-collapse-item :title="fullTitle(collect)" :name="collect.uuid">
-    <span v-if="traditional" v-html="collect.traditional_text" />
-    <span v-if="!traditional" v-html="collect.text" />
-    <h5>{{ collect.attribution }}</h5>
-    <el-card
-      class="box-card"
-      shadow="never"
-      style="margin: 0 0 15px"
-      body-style="padding:10px;"
+    <div
+      class="collect-content text-[var(--el-text-color-primary)] bg-[var(--el-fill-color-blank)]"
     >
-      <p>
-        <em>Add this prayer near the end of:</em>
-        <el-checkbox-group v-model="checkList" @change="handleCheckChange">
-          <el-checkbox
-            v-for="office in offices"
-            :key="office"
-            :label="office"
-          />
-        </el-checkbox-group>
-      </p>
-    </el-card>
+      <div
+        class="text-[var(--main-font-size)] leading-[var(--main-line-height)] p-4 font-serif break-words"
+      >
+        <div
+          v-html="traditional ? collect.traditional_text : collect.text"
+        ></div>
+      </div>
+      <h5
+        v-if="collect.attribution"
+        class="mt-2 px-4 text-sm text-[var(--el-text-color-secondary)]"
+      >
+        {{ collect.attribution }}
+      </h5>
+
+      <el-card
+        class="box-card mt-4 mx-4 mb-4 bg-[var(--el-fill-color-light)] border-[var(--el-border-color-lighter)]"
+        shadow="never"
+        body-style="padding: 1rem;"
+      >
+        <div>
+          <p
+            class="mb-2 font-sans font-medium text-[var(--el-text-color-regular)]"
+            style="
+              font-size: calc(var(--main-font-size) * 0.85) !important;
+              line-height: 1.5 !important;
+            "
+          >
+            <em>Add this prayer near the end of:</em>
+          </p>
+          <el-checkbox-group v-model="checkList" @change="handleCheckChange">
+            <el-checkbox
+              v-for="office in offices"
+              :key="office"
+              :label="office"
+            />
+          </el-checkbox-group>
+        </div>
+      </el-card>
+    </div>
   </el-collapse-item>
 </template>
 
@@ -105,5 +127,9 @@ export default {
 <style lang="scss">
 .el-collapse-item__header.is-active {
   font-weight: 800 !important;
+}
+
+.collect-content {
+  padding: 0;
 }
 </style>
