@@ -808,7 +808,9 @@ button.nav-chip {
     min-width: auto;
     padding: 0.35rem 0.55rem;
   }
+}
 
+@media (max-width: 360px) {
   .support-label {
     display: none;
   }
