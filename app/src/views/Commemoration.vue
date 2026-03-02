@@ -105,10 +105,11 @@
           <el-alert
             type="success"
             :closable="false"
-            class="border border-green-200 dark:border-green-900 bg-green-50 dark:bg-green-900/20"
+            class="season-alert mb-8"
+            :class="alertSeasonClass"
           >
             <template #title>
-              <div class="text-base text-green-900 dark:text-green-100 p-2">
+              <div class="p-2 alert-text">
                 <p class="mb-2 leading-relaxed">
                   <strong
                     v-html="
@@ -129,7 +130,7 @@
             </template>
           </el-alert>
 
-          <div class="flex flex-col lg:flex-row gap-8 mt-8">
+          <div class="flex flex-col lg:flex-row gap-8">
             <div class="lg:w-1/3 shrink-0">
               <el-card
                 class="bg-[var(--el-fill-color-light)] border-none shadow-none h-full"
@@ -285,10 +286,11 @@
           <el-alert
             type="success"
             :closable="false"
-            class="border border-green-200 dark:border-green-900 bg-green-50 dark:bg-green-900/20 mt-8"
+            class="season-alert mt-8"
+            :class="alertSeasonClass"
           >
             <template #title>
-              <div class="text-center text-green-900 dark:text-green-100 py-2">
+              <div class="text-center py-2 alert-text">
                 <p
                   class="text-lg md:text-xl mb-3 font-serif italic leading-relaxed"
                 >
@@ -339,6 +341,31 @@ export default {
         image_link: false,
       },
     };
+  },
+  computed: {
+    alertSeasonClass() {
+      if (
+        !this.commemoration ||
+        !this.commemoration.colors ||
+        !this.commemoration.colors.length
+      ) {
+        return 'season-alert-green';
+      }
+      const color = this.commemoration.colors[0].toLowerCase();
+      const validColors = [
+        'red',
+        'green',
+        'white',
+        'purple',
+        'black',
+        'rose',
+        'blue',
+      ];
+      if (validColors.includes(color)) {
+        return `season-alert-${color}`;
+      }
+      return 'season-alert-green';
+    },
   },
   async mounted() {
     await this.initialize();
@@ -442,5 +469,120 @@ export default {
   height: 0.8em;
   width: 0.8em;
   vertical-align: baseline;
+}
+
+/* Seasonal Alert Styles */
+.season-alert {
+  border-width: 1px !important;
+  border-style: solid !important;
+}
+
+.season-alert :deep(.el-alert__content) {
+  width: 100%;
+}
+
+.season-alert-red {
+  background-color: rgba(194, 28, 19, 0.1) !important;
+  border-color: rgba(194, 28, 19, 0.3) !important;
+}
+:root.dark .season-alert-red {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+.season-alert-red .alert-text {
+  color: #991b1b;
+}
+:root.dark .season-alert-red .alert-text {
+  color: #fca5a5;
+}
+
+.season-alert-green {
+  background-color: rgba(7, 115, 57, 0.1) !important;
+  border-color: rgba(7, 115, 57, 0.3) !important;
+}
+:root.dark .season-alert-green {
+  background-color: rgba(16, 185, 129, 0.1) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+.season-alert-green .alert-text {
+  color: #065f46;
+}
+:root.dark .season-alert-green .alert-text {
+  color: #6ee7b7;
+}
+
+.season-alert-purple {
+  background-color: rgba(100, 20, 125, 0.1) !important;
+  border-color: rgba(100, 20, 125, 0.3) !important;
+}
+:root.dark .season-alert-purple {
+  background-color: rgba(168, 85, 247, 0.1) !important;
+  border-color: rgba(168, 85, 247, 0.3) !important;
+}
+.season-alert-purple .alert-text {
+  color: #581c87;
+}
+:root.dark .season-alert-purple .alert-text {
+  color: #d8b4fe;
+}
+
+.season-alert-white {
+  background-color: rgba(212, 175, 55, 0.1) !important;
+  border-color: rgba(212, 175, 55, 0.3) !important;
+}
+:root.dark .season-alert-white {
+  background-color: rgba(234, 179, 8, 0.1) !important;
+  border-color: rgba(234, 179, 8, 0.3) !important;
+}
+.season-alert-white .alert-text {
+  color: #854d0e;
+}
+:root.dark .season-alert-white .alert-text {
+  color: #fef08a;
+}
+
+.season-alert-black {
+  background-color: rgba(26, 26, 26, 0.1) !important;
+  border-color: rgba(26, 26, 26, 0.3) !important;
+}
+:root.dark .season-alert-black {
+  background-color: rgba(107, 114, 128, 0.1) !important;
+  border-color: rgba(107, 114, 128, 0.3) !important;
+}
+.season-alert-black .alert-text {
+  color: #1f2937;
+}
+:root.dark .season-alert-black .alert-text {
+  color: #d1d5db;
+}
+
+.season-alert-rose {
+  background-color: rgba(194, 65, 127, 0.1) !important;
+  border-color: rgba(194, 65, 127, 0.3) !important;
+}
+:root.dark .season-alert-rose {
+  background-color: rgba(236, 72, 153, 0.1) !important;
+  border-color: rgba(236, 72, 153, 0.3) !important;
+}
+.season-alert-rose .alert-text {
+  color: #9d174d;
+}
+:root.dark .season-alert-rose .alert-text {
+  color: #fbcfe8;
+}
+
+.season-alert-blue {
+  background-color: rgba(29, 78, 216, 0.1) !important;
+  border-color: rgba(29, 78, 216, 0.3) !important;
+}
+:root.dark .season-alert-blue {
+  background-color: rgba(59, 130, 246, 0.1) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+}
+.season-alert-blue .alert-text {
+  color: #1e3a8a;
+}
+:root.dark .season-alert-blue .alert-text {
+  color: #bfdbfe;
 }
 </style>
