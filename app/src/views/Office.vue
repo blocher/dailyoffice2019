@@ -205,7 +205,7 @@ export default {
     },
   },
   async mounted() {
-    await DynamicStorage.setItem('serviceType', 'office');
+    await DynamicStorage.setItem('serviceType', this.serviceType);
     const audioEnabledString = await DynamicStorage.getItem(
       'audioEnabled',
       'true'
