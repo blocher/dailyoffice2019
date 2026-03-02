@@ -3009,9 +3009,14 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         if exists:
             return file_url, path, track_list, short_track_list
 
-        ffmpeg_cmd = ["ffmpeg", "-f", "concat", "-safe", "0", "-i", temp_file_list, "-c", "copy", file_path]
+        ffmpeg_cmd = ["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", temp_file_list, "-c", "copy", file_path]
 
         result = subprocess.run(ffmpeg_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        if result.returncode != 0:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            print(f"ffmpeg failed with return code {result.returncode}: {result.stderr}")
 
         # Cleanup temp file list
         os.remove(temp_file_list)

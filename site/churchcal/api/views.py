@@ -76,7 +76,7 @@ class AudioTrackView(APIView):
         file_path = os.path.join(settings.MEDIA_ROOT, filename)
         print(file_path)
 
-        if not os.path.exists(file_path):
+        if not os.path.exists(file_path) or os.path.getsize(file_path) == 0:
             return HttpResponseNotFound("Audio file not found.")
 
         try:
