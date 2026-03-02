@@ -88,35 +88,8 @@ class AudioTrackView(APIView):
         # Open the file in binary mode
         audio_file = open(file_path, "rb")
 
-        # Create a streaming response
+        # Create a streaming response. Django's FileResponse automatically handles Range requests.
         response = FileResponse(audio_file, content_type="audio/mpeg")
-        file_size = os.path.getsize(file_path)
-        # Handle Range header
-        range_header = request.headers.get("Range")
-        if range_header:
-            # Extract the range value
-            range_start, range_end = range_header.replace("bytes=", "").split("-")
-            range_start = int(range_start)
-            range_end = int(range_end) if range_end else file_size - 1
-
-            # Ensure range is valid
-            range_end = min(range_end, file_size - 1)
-            content_length = range_end - range_start + 1
-
-            with open(file_path, "rb") as audio_file:
-                audio_file.seek(range_start)
-                audio_data = audio_file.read(content_length)
-
-            response = HttpResponse(audio_data, status=206, content_type="audio/mpeg")
-            response["Content-Range"] = f"bytes {range_start}-{range_end}/{file_size}"
-            response["Content-Length"] = str(content_length)
-        else:
-            # Serve the full file if no Range header is present
-            with open(file_path, "rb") as audio_file:
-                audio_data = audio_file.read()
-
-            response = HttpResponse(audio_data, content_type="audio/mpeg")
-            response["Content-Length"] = str(file_size)
 
         # Set Content-Disposition for inline playback
         response["Content-Disposition"] = f'inline; filename="{filename}"'

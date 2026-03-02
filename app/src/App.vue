@@ -542,12 +542,6 @@ export default {
   font-display: swap;
 }
 
-@font-face {
-  font-family: 'Adobe Caslon Pro';
-  src: url('/assets/fonts/') format('woff2');
-  font-display: swap;
-}
-
 * {
   font-family: 'Adobe Caslon Pro', serif;
   -webkit-font-smoothing: antialiased;
