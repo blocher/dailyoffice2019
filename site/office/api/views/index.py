@@ -725,6 +725,7 @@ class ReadingModule(Module):
             text = Scripture.objects.get(passage=reading.long_citation)
             citation = reading.long_citation
         else:
+            print(reading.long_citation, reading.short_citation)
             text = Scripture.objects.get(passage=reading.short_citation)
             citation = reading.short_citation
 

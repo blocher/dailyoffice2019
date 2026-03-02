@@ -18,6 +18,7 @@
         <OfficeNav :calendar-date="calendarDate" selected-office="readings" />
 
         <div
+          id="readings-settings"
           class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-100 dark:border-gray-700 shadow-sm mt-6"
         >
           <!-- Service Selection -->
@@ -129,46 +130,54 @@
     </div>
   </div>
 
-  <div id="main" class="readingsPanel book-content" v-if="!readingsLoading">
-    <div class="mt-6">
-      <h2 class="mt-2 pt-0 text-center">{{ service }}</h2>
-      <CitationGroup
-        v-for="(readings, number) in groupedReadings"
-        :key="number"
-        :readings="readings"
-        @reading-link-click="handleReadingLinkClick"
-      />
-    </div>
+  <div
+    class="readingsPanel book-content transition-opacity duration-200"
+    :class="{ 'opacity-50 pointer-events-none': readingsLoading }"
+  >
+    <div id="main" v-if="!loading && !notFound">
+      <div class="mt-6">
+        <h2 class="mt-2 pt-0 text-center">{{ service }}</h2>
+        <CitationGroup
+          v-for="(readings, number) in groupedReadings"
+          :key="number"
+          :readings="readings"
+          @reading-link-click="handleReadingLinkClick"
+        />
+      </div>
 
-    <Collects
-      v-if="showCollects"
-      :collects="collectsToShow"
-      :style="'Contemporary'"
-    />
-    <Collects
-      v-if="showTraditionalCollects"
-      :collects="traditionalCollectsToShow"
-      :style="'Traditional'"
-    />
-    <Reading
-      v-for="(reading, index) in readingsToShow"
-      :id="readingName(index)"
-      :key="index"
-      :reading="reading"
-      :psalm-cycle="psalmCycle"
-      :length="reading.length"
-      :translation="translation"
-      :psalms-translation="psalmsTranslation"
-      @cycle-60="setCycle60"
-      @cycle-30="setCycle30"
-    />
-    <p class="text-center mt-6">
-      <a href="https://www.esv.org/">
-        Scripture quotations are from the ESV® Bible (The Holy Bible, English
-        Standard Version®), copyright © 2001 by Crossway, a publishing ministry
-        of Good News Publishers. Used by permission. All rights reserved.
-      </a>
-    </p>
+      <Collects
+        v-if="showCollects && !loading"
+        :collects="collectsToShow"
+        :style="'Contemporary'"
+      />
+      <Collects
+        v-if="showTraditionalCollects && !loading"
+        :collects="traditionalCollectsToShow"
+        :style="'Traditional'"
+      />
+      <template v-if="!loading">
+        <Reading
+          v-for="(reading, index) in readingsToShow"
+          :id="readingName(index)"
+          :key="index"
+          :reading="reading"
+          :psalm-cycle="psalmCycle"
+          :length="reading.length"
+          :translation="translation"
+          :psalms-translation="psalmsTranslation"
+          @cycle-60="setCycle60"
+          @cycle-30="setCycle30"
+        />
+      </template>
+      <p class="text-center mt-6" v-if="!loading">
+        <a href="https://www.esv.org/">
+          Scripture quotations are from the ESV® Bible (The Holy Bible, English
+          Standard Version®), copyright © 2001 by Crossway, a publishing
+          ministry of Good News Publishers. Used by permission. All rights
+          reserved.
+        </a>
+      </p>
+    </div>
   </div>
 </template>
 
@@ -305,6 +314,53 @@ export default {
       return this.traditionalCollectsToShow.length > 0;
     },
   },
+  watch: {
+    '$route.params': {
+      handler(newParams, oldParams) {
+        if (this.$route.name && this.$route.name.startsWith('readings')) {
+          if (
+            newParams.service !== oldParams?.service ||
+            newParams.position !== oldParams?.position
+          ) {
+            // Handle native route changes without reloading data
+            if (this.services) {
+              if (newParams.service) {
+                const serviceRaw = newParams.service
+                  .toLowerCase()
+                  .replace('-', '_');
+                const position = parseInt(newParams.position || 0);
+
+                if (
+                  serviceRaw === 'morning_prayer' &&
+                  this.morning_prayer[position]
+                ) {
+                  this.service = this.morning_prayer[position].name;
+                } else if (
+                  serviceRaw === 'evening_prayer' &&
+                  this.evening_prayer[position]
+                ) {
+                  this.service = this.evening_prayer[position].name;
+                } else if (
+                  serviceRaw === 'daily_office' &&
+                  this.daily_office[position]
+                ) {
+                  this.service = this.daily_office[position].name;
+                } else if (
+                  serviceRaw === 'holy_eucharist' &&
+                  this.holy_eucharist[position]
+                ) {
+                  this.service = this.holy_eucharist[position].name;
+                }
+              }
+              this.activeIndex = this.serviceLink(this.service);
+              this.setReadingsToShow();
+            }
+          }
+        }
+      },
+      deep: true,
+    },
+  },
   async created() {
     this.calendarDate = setCalendarDate(this.$route);
 
@@ -437,11 +493,11 @@ export default {
         this.psalmsTranslation
       );
       await DynamicStorage.setItem('readings_translation', this.translation);
-      this.initialize();
+      await this.initialize();
     },
     changeStyle: async function () {
       await DynamicStorage.setItem('psalm_style', this.psalmStyle);
-      this.initialize();
+      await this.initialize();
     },
     serviceLink: function (service) {
       let serviceValues = this.getPositionAndServiceName(service);
@@ -486,19 +542,32 @@ export default {
         this.$route.params.month || this.calendarDate.getMonth() + 1;
       const day = this.$route.params.day || this.calendarDate.getDate();
 
-      await this.$router.push({
-        name: routeName,
-        params: {
-          service: serviceValues.service_name,
-          year: year,
-          month: month,
-          day: day,
-          position: serviceValues.position,
-        },
-      });
+      // Only push route if it's changing
+      if (
+        this.$route.name !== routeName ||
+        this.$route.params.service !== serviceValues.service_name ||
+        this.$route.params.position !== serviceValues.position
+      ) {
+        window.sessionStorage.setItem('preventScroll', 'true');
+        await this.$router.push({
+          name: routeName,
+          params: {
+            service: serviceValues.service_name,
+            year: year,
+            month: month,
+            day: day,
+            position: serviceValues.position,
+          },
+        });
+      }
 
-      // Reload the data from the API
-      await this.initialize();
+      // No need to call initialize() here manually since we added a route watcher
+      // that will fire when the route changes. If the route didn't change (rare),
+      // we still need to update the view.
+      this.setReadingsToShow();
+
+      await nextTick();
+      this.goto('readings-settings');
     },
     setReadingsToShow: function () {
       if (this.service) {
@@ -542,9 +611,10 @@ export default {
       const menu = document.getElementById('topMenu');
       const menuHeight = menu ? menu.offsetHeight : 0;
       const element = document.getElementById(id);
-      const top = element.offsetTop;
+      if (!element) return;
+      const top = element.getBoundingClientRect().top + window.scrollY;
       window.scrollTo({
-        top: top - menuHeight - 5,
+        top: top - menuHeight - 15,
         left: 0,
         behavior: 'smooth',
       });

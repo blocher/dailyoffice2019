@@ -146,7 +146,7 @@
     <Loading v-if="loading" />
     <!--    <BetaNote/>-->
     <el-alert v-if="error" :title="error" type="error" />
-    <router-view v-if="!loading" :key="$route.fullPath" />
+    <router-view v-if="!loading" :key="routeKey" />
     <footer
       v-if="showLinks"
       class="mt-12 border-t border-gray-200 dark:border-gray-800 bg-white/40 dark:bg-gray-900/20"
@@ -355,6 +355,16 @@ export default {
   },
 
   computed: {
+    routeKey() {
+      if (this.$route.name && this.$route.name.startsWith('readings')) {
+        const d = new Date();
+        const y = this.$route.params.year || d.getFullYear();
+        const m = this.$route.params.month || d.getMonth() + 1;
+        const day = this.$route.params.day || d.getDate();
+        return `readings-${y}-${m}-${day}`;
+      }
+      return this.$route.fullPath;
+    },
     isPray() {
       return this.$route.name === 'Pray' || this.$route.name === 'Home'
         ? 'primary'
