@@ -7,9 +7,9 @@
       v-cloak
       class="max-w-6xl mx-auto pt-8 pb-12 px-4 lg:pb-16"
     >
-      <header class="settings-hero">
-        <h1 class="settings-hero__title">Settings</h1>
-        <p class="settings-hero__description">
+      <header class="settings-hero text-center">
+        <h1>Settings</h1>
+        <p class="settings-hero__description mx-auto">
           Personalize prayer, readings, and display preferences in one place.
         </p>
       </header>
@@ -200,13 +200,6 @@ export default {
 
 .settings-hero {
   margin-bottom: 1rem;
-}
-
-.settings-hero__title {
-  margin: 0;
-  font-size: clamp(1.85rem, 3.4vw, 2.45rem);
-  line-height: 1.18;
-  color: var(--el-text-color-primary);
 }
 
 .settings-hero__description {

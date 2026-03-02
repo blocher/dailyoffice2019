@@ -1,13 +1,8 @@
 <template>
   <div class="collects-view">
-    <main v-cloak class="max-w-6xl mx-auto pt-8 pb-12 px-4 lg:pb-16">
-      <header class="settings-hero">
-        <h1 class="settings-hero__title text-[var(--el-text-color-primary)]">
-          Collects
-        </h1>
-        <p class="settings-hero__description">
-          Browse and search the collects of the church.
-        </p>
+    <main v-cloak class="px-4 pt-8 pb-12 mx-auto max-w-6xl lg:pb-16">
+      <header class="text-center settings-hero">
+        <h1>Collects</h1>
       </header>
 
       <Loading v-if="loading" class="mt-8" />
@@ -18,7 +13,7 @@
         >
           <label class="settings-search-top__label"> Search & Filter </label>
           <div class="flex flex-col gap-4">
-            <div class="flex flex-col md:flex-row items-center gap-4 w-full">
+            <div class="flex flex-col gap-4 items-center w-full md:flex-row">
               <el-input
                 id="collects-search"
                 v-model="search"
@@ -31,7 +26,7 @@
                 </template>
               </el-input>
 
-              <div class="flex shrink-0 w-full md:w-auto justify-end">
+              <div class="flex justify-end w-full shrink-0 md:w-auto">
                 <el-switch
                   v-model="traditional"
                   size="large"
@@ -42,7 +37,7 @@
               </div>
             </div>
 
-            <div class="flex flex-col md:flex-row items-center gap-4 w-full">
+            <div class="flex flex-col gap-4 items-center w-full md:flex-row">
               <div class="flex-1 w-full">
                 <el-checkbox-group
                   v-model="selectedCollectTypes"
@@ -65,13 +60,13 @@
         </div>
 
         <div
-          class="settings-display-narrow mb-8 mx-auto"
+          class="mx-auto mb-8 settings-display-narrow"
           style="width: min(100%, 58rem); max-width: none"
         >
           <DisplaySettingsModule />
         </div>
 
-        <div class="mb-6 flex flex-wrap gap-2 justify-end">
+        <div class="flex flex-wrap gap-2 justify-end mb-6">
           <el-button
             size="small"
             :disabled="buttonsDisabled"
@@ -100,7 +95,7 @@
             v-if="collectCategoriesToShow.length === 0"
             class="py-12 text-center text-gray-500"
           >
-            <h3 class="text-xl font-semibold mb-2">No results</h3>
+            <h3 class="mb-2 text-xl font-semibold">No results</h3>
             <p>
               <em
                 >There are no collects that match your search terms and
@@ -131,7 +126,7 @@
         </div>
       </div>
     </main>
-    <div class="max-w-6xl mx-auto px-4">
+    <div class="px-4 mx-auto max-w-6xl">
       <el-alert v-if="error" :title="error" type="error" />
     </div>
   </div>
@@ -315,13 +310,6 @@ export default {
 
 .settings-hero {
   margin-bottom: 1rem;
-}
-
-.settings-hero__title {
-  margin: 0;
-  font-size: clamp(1.85rem, 3.4vw, 2.45rem);
-  line-height: 1.18;
-  color: var(--el-text-color-primary);
 }
 
 .settings-hero__description {
