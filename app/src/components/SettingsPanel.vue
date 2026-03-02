@@ -586,9 +586,9 @@ export default {
   z-index: 1;
   pointer-events: none;
   flex-shrink: 0;
-  border: 1px solid rgb(5 150 105 / 0.45);
-  color: rgb(5 150 105);
-  background-color: rgb(209 250 229 / 0.45);
+  border: 1px solid var(--season-green);
+  color: var(--season-green);
+  background-color: var(--el-fill-color-blank);
   border-radius: 0.3rem;
   font-size: 0.64rem;
   font-weight: 700;
@@ -650,7 +650,7 @@ export default {
   margin-top: 0.28rem;
 }
 
-:deep(.dark) .setting-options__choice--secondary {
+:root.dark .setting-options__choice--secondary {
   background-color: rgb(30 41 59 / 0.6);
 }
 
@@ -659,7 +659,7 @@ export default {
   background-color: rgb(191 219 254 / 0.2);
 }
 
-:deep(.dark) .setting-options__choice--selected {
+:root.dark .setting-options__choice--selected {
   background-color: rgb(30 64 175 / 0.2);
 }
 

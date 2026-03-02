@@ -368,11 +368,11 @@ summary.cursor-pointer {
   color: rgb(180 83 9);
 }
 
-:deep(.dark) .display-setting-card__dependency--ok {
+:root.dark .display-setting-card__dependency--ok {
   color: rgb(52 211 153);
 }
 
-:deep(.dark) .display-setting-card__dependency--warning {
+:root.dark .display-setting-card__dependency--warning {
   color: rgb(251 191 36);
 }
 
