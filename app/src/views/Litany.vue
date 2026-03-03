@@ -3,64 +3,49 @@
     <Loading v-if="loading && !notFound" />
     <PageNotFound v-if="notFound" />
     <el-alert v-if="error" :title="error" type="error" />
-    <h1>The Great Litany and the Supplication</h1>
-    <div v-if="!loading && !notFound" id="readings">
-      <el-divider />
-
-      <el-row class="mt-2 content-stretch">
-        <el-col :span="24">
-          <h4 class="text-left mt-4">Contemporary Language</h4>
-          <div v-for="service in contemporaryServices" :key="service.name">
-            <div class="grid grid-cols-12 gap-3 even:bg-grey mb-2">
-              <div class="m-auto">
-                <font-awesome-icon
-                  v-if="service.active"
-                  :icon="['fad', 'fa-octagon-check']"
+    <header class="office-header mb-8">
+      <h1 class="text-center">The Great Litany and the Supplication</h1>
+      <div v-if="!loading && !notFound" id="readings" class="space-y-6">
+        <div
+          id="litany-settings"
+          class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-100 dark:border-gray-700 shadow-sm mt-6 mb-6"
+        >
+          <div class="mb-2">
+            <h4
+              class="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-2"
+            >
+              Service
+            </h4>
+            <el-select
+              v-model="service"
+              class="w-full"
+              size="large"
+              @change="changeService"
+            >
+              <el-option-group label="Contemporary Language">
+                <el-option
+                  v-for="item in contemporaryServices"
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item.name"
                 />
-              </div>
-              <div class="col-span-11">
-                <span v-if="service.active">{{ service.name }}</span>
-                <span v-if="!service.active"
-                  ><a
-                    :href="serviceLink(service.name)"
-                    @click.prevent="changeService(service.name)"
-                    >{{ service.name }}</a
-                  ></span
-                >
-              </div>
-            </div>
-          </div>
-          <h4 class="text-left mt-4">Traditional Langauge</h4>
-          <div v-for="service in traditionalServices" :key="service.name">
-            <div class="grid grid-cols-12 gap-3 even:bg-grey mb-2">
-              <div class="m-auto">
-                <font-awesome-icon
-                  v-if="service.active"
-                  :icon="['fad', 'fa-octagon-check']"
+              </el-option-group>
+              <el-option-group label="Traditional Language">
+                <el-option
+                  v-for="item in traditionalServices"
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item.name"
                 />
-              </div>
-              <div class="col-span-11">
-                <span v-if="service.active">{{ service.name }}</span>
-                <span v-if="!service.active"
-                  ><a
-                    :href="serviceLink(service.name)"
-                    @click.prevent="changeService(service.name)"
-                    >{{ service.name }}</a
-                  ></span
-                >
-              </div>
-            </div>
+              </el-option-group>
+            </el-select>
           </div>
-        </el-col>
-      </el-row>
-
-      <el-divider />
-
-      <Loading v-if="loading" />
-    </div>
+        </div>
+        <DisplaySettingsModule v-if="!loading && !error && !notFound" />
+      </div>
+    </header>
   </div>
-  <DisplaySettingsModule v-if="!loading && !error && !notFound" />
-  <div v-if="!loading && !error" id="main" class="main litany">
+  <div v-if="!loading && !error" id="main" class="main litany book-content">
     <div v-for="(line, index) in selected.lines" :key="index">
       <OfficeHeading v-if="line.line_type == 'heading'" :line="line" />
       <OfficeLeader v-if="line.line_type == 'leader'" :line="line" />
@@ -86,7 +71,7 @@ import OfficeRubric from '@/components/OfficeRubric.vue';
 import OfficeSpacer from '@/components/OfficeSpacer.vue';
 
 export default {
-  name: 'Readings',
+  name: 'Litany',
   components: {
     Loading,
     DisplaySettingsModule,
@@ -188,28 +173,7 @@ h1 {
   margin: 2rem 0 0 !important;
 }
 
-h2 {
-  font-size: 1.2rem;
-  padding-top: 0 !important;
-}
-
-h3 {
-  margin: 0 !important;
-  padding: 0 0 1rem !important;
-}
-
 .el-select {
   width: 100%;
-}
-
-.collectsWrapper {
-  padding: 1rem;
-  border: 1px solid var(--font-color);
-  border-radius: 0.25rem;
-  margin: 1rem 0;
-}
-
-.grow {
-  flex-grow: 1;
 }
 </style>
