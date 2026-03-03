@@ -716,6 +716,20 @@ select:focus {
   max-width: calc(100vw - 1rem);
 }
 
+.el-tag {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: auto !important;
+  min-height: 24px !important;
+  padding: 2px 8px !important;
+}
+
+.el-tag .el-tag__content {
+  line-height: 1.2 !important;
+  transform: translateY(1px);
+}
+
 .el-switch,
 :root.dark .el-switch {
   --el-switch-on-color: var(--accent-color);

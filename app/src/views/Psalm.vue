@@ -1,27 +1,96 @@
 <template>
   <div class="small-container">
-    <div v-if="!loading && !error">
-      <h1>Psalm {{ psalm.number }}</h1>
-      <h4>{{ psalm.latin_title }}</h4>
-      <div class="flex justify-center full-width">
-        <el-switch
-          v-model="traditional"
-          size="large"
-          active-text="Traditional"
-          inactive-text="Contemporary"
-          class="align-center"
-          @change="setTradtional"
-        />
-      </div>
-    </div>
-    <div v-if="loading || error">
-      <h1>Psalm</h1>
-    </div>
     <Loading v-if="loading" />
     <el-alert v-if="error" :title="error" type="error" />
+
+    <div v-if="loading || error">
+      <h1 class="text-center">Psalm</h1>
+    </div>
+
+    <header v-if="!loading && !error" class="office-header mb-8">
+      <h1 class="text-center mt-8">Psalm {{ psalm.number }}</h1>
+      <h4 class="text-center">{{ psalm.latin_title }}</h4>
+      <div
+        v-if="psalm.topics && psalm.topics.length"
+        class="text-center mt-2 mb-6"
+      >
+        <router-link
+          v-for="topic in psalm.topics"
+          :key="topic.id"
+          :to="{ name: 'Psalms', query: { topic: topic.id } }"
+        >
+          <el-tag
+            class="mr-2 cursor-pointer hover:opacity-80 transition-opacity"
+            type="info"
+            size="small"
+          >
+            {{ topic.topic_name }}
+          </el-tag>
+        </router-link>
+      </div>
+      <div class="space-y-6">
+        <div
+          class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-100 dark:border-gray-700 shadow-sm mt-6 mb-6"
+        >
+          <div
+            class="flex flex-col md:flex-row justify-center md:justify-between items-center gap-4"
+          >
+            <h4
+              class="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-0"
+            >
+              Language
+            </h4>
+            <div class="flex items-center">
+              <el-switch
+                v-model="traditional"
+                size="large"
+                active-text="Traditional"
+                inactive-text="Contemporary"
+                @change="setTradtional"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <DisplaySettingsModule />
+    </header>
   </div>
-  <DisplaySettingsModule v-if="!loading && !error" />
-  <div v-if="!loading && !error" id="main">
+
+  <div v-if="!loading && !error" id="main" class="book-content">
+    <!-- Top Navigation -->
+    <div
+      class="flex justify-between items-center mb-8 text-sm md:text-base font-medium text-gray-600 dark:text-gray-400"
+    >
+      <div class="flex-1 text-left">
+        <router-link
+          v-if="psalm.number > 1"
+          :to="`/psalm/${psalm.number - 1}`"
+          class="inline-flex items-center gap-2 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+        >
+          <font-awesome-icon :icon="['fad', 'left']" />
+          <span class="hidden sm:inline">Psalm</span> {{ psalm.number - 1 }}
+        </router-link>
+      </div>
+      <div class="flex-1 text-center">
+        <router-link
+          :to="`/psalms/`"
+          class="inline-block hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+        >
+          All Psalms
+        </router-link>
+      </div>
+      <div class="flex-1 text-right">
+        <router-link
+          v-if="psalm.number < 150"
+          :to="`/psalm/${psalm.number + 1}`"
+          class="inline-flex items-center gap-2 justify-end hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+        >
+          <span class="hidden sm:inline">Psalm</span> {{ psalm.number + 1 }}
+          <font-awesome-icon :icon="['fad', 'right']" />
+        </router-link>
+      </div>
+    </div>
+
     <div v-if="!traditional">
       <span v-for="verse in psalm.verses" :key="verse.number">
         <span v-if="verse.first_half">
@@ -46,34 +115,39 @@
         </span>
       </span>
     </div>
-    <el-divider />
-    <div class="mt-3">
-      <router-link
-        v-if="psalm.number > 1"
-        class="float-left"
-        :to="`/psalm/${psalm.number - 1}`"
-      >
-        <font-awesome-icon :icon="['fad', 'left']" />
-        Psalm
-        {{ psalm.number - 1 }}
-      </router-link>
-
-      <router-link
-        v-if="psalm.number < 150"
-        class="float-right"
-        :to="`/psalm/${psalm.number + 1}`"
-      >
-        Psalm {{ psalm.number + 1 }}
-        <font-awesome-icon :icon="['fad', 'right']" />
-      </router-link>
-      <br />
-      <router-link
-        v-if="psalm.number < 150"
-        class="float-none content-center w-full"
-        :to="`/psalms/`"
-      >
-        All Psalms
-      </router-link>
+    <el-divider class="my-8" />
+    <!-- Bottom Navigation -->
+    <div
+      class="flex justify-between items-center mt-8 mb-12 text-sm md:text-base font-medium text-gray-600 dark:text-gray-400"
+    >
+      <div class="flex-1 text-left">
+        <router-link
+          v-if="psalm.number > 1"
+          :to="`/psalm/${psalm.number - 1}`"
+          class="inline-flex items-center gap-2 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+        >
+          <font-awesome-icon :icon="['fad', 'left']" />
+          <span class="hidden sm:inline">Psalm</span> {{ psalm.number - 1 }}
+        </router-link>
+      </div>
+      <div class="flex-1 text-center">
+        <router-link
+          :to="`/psalms/`"
+          class="inline-block hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+        >
+          All Psalms
+        </router-link>
+      </div>
+      <div class="flex-1 text-right">
+        <router-link
+          v-if="psalm.number < 150"
+          :to="`/psalm/${psalm.number + 1}`"
+          class="inline-flex items-center gap-2 justify-end hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+        >
+          <span class="hidden sm:inline">Psalm</span> {{ psalm.number + 1 }}
+          <font-awesome-icon :icon="['fad', 'right']" />
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
