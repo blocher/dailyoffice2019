@@ -43,6 +43,7 @@ class Command(BaseCommand):
             return
 
         full_files_found = []
+        corrupted_files_found = []
         total_size_bytes = 0
         total_mp3s = 0
 
@@ -85,7 +86,17 @@ class Command(BaseCommand):
                 # File has no ID3 tags, likely a raw OpenAI file
                 pass
             except Exception as e:
-                self.stdout.write(self.style.ERROR(f"Error reading {filename}: {e}"))
+                # If mutagen can't sync to MPEG frame, it's likely a corrupted or empty file
+                if "can't sync to MPEG frame" in str(e):
+                    size = os.path.getsize(file_path)
+                    self.stdout.write(
+                        self.style.WARNING(f"Found corrupted/invalid MP3 file: {filename} ({size} bytes)")
+                    )
+                    if not is_dry_run:
+                        os.remove(file_path)
+                        self.stdout.write(self.style.SUCCESS(f"Deleted corrupted/invalid file: {filename}"))
+                else:
+                    self.stdout.write(self.style.ERROR(f"Error reading {filename}: {e}"))
 
         self.stdout.write("\n" + "=" * 40)
         self.stdout.write(self.style.SUCCESS(f"Total MP3s scanned (older than {days_old} days): {total_mp3s}"))
