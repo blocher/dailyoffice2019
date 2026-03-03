@@ -35,6 +35,7 @@ tell application "iTerm"
         set name to "Daily Office Backend"
         write text "source ~/projects/dailyoffice2019/env/bin/activate"
         write text "cd ~/projects/dailyoffice2019/site"
+        write text "kill $(lsof -t -i:8000) 2>/dev/null || true"
         write text "python manage.py runsslserver"
         set pane2 to (split horizontally with default profile)
     end tell
@@ -45,6 +46,7 @@ tell application "iTerm"
         set name to "Daily Office Frontend"
         write text "source ~/projects/dailyoffice2019/env/bin/activate"
         write text "cd ~/projects/dailyoffice2019/app"
+        write text "kill $(lsof -t -i:5173) 2>/dev/null || true"
         write text "npm run dev"
         set pane3 to (split horizontally with default profile)
     end tell
