@@ -26,7 +26,7 @@ This project is a full-stack application divided into a modern Vue frontend and 
   
 - **`site/`**: The main Django project directory (Backend).
   - Contains standard Django apps (like `website/`) holding core logic, models, views, and custom management commands.
-  - Also contains a classic frontend build pipeline (Webpack, Babel, SCSS) for older/legacy server-rendered views or emails.
+  - Also contains a classic frontend build pipeline (Webpack, Babel, SCSS) for older/legacy server-rendered views or emails. Ignore this as it is no longer used.
 
 ## 💻 Vue Frontend Standards (`app/`)
 
@@ -42,7 +42,7 @@ This project is a full-stack application divided into a modern Vue frontend and 
    - Keep views thin and push business logic to models or dedicated service layers.
    - Use the Django ORM efficiently (e.g., utilize `select_related` and `prefetch_related` to avoid N+1 queries).
 3. **Testing**: Write tests for new backend features and bug fixes. Ensure tests pass before committing.
-4. **Documentation**: Update relevant documentation or docstrings when modifying complex logic.
+4. **Documentation**: Update relevant documentation or docstrings when modifying complex logic, but do not create new files for documentation.
 
 ## General Agent Instructions
 
