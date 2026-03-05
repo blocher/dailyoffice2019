@@ -1,8 +1,8 @@
 <template>
   <div class="commemoration-view">
-    <main v-cloak class="max-w-5xl mx-auto pt-8 pb-12 px-4 lg:pb-16">
+    <main v-cloak class="px-4 pt-8 pb-12 mx-auto max-w-5xl lg:pb-16">
       <div v-if="!loading && commemoration">
-        <header class="text-center mb-8">
+        <header class="mb-8 text-center">
           <h1
             class="text-3xl md:text-4xl font-bold text-[var(--el-text-color-primary)] m-0 mb-2 p-0"
           >
@@ -17,10 +17,10 @@
         </header>
       </div>
 
-      <div class="mb-6 max-w-2xl mx-auto">
+      <div class="mx-auto mb-6 max-w-2xl">
         <el-alert type="warning" show-icon :closable="false">
           <template #title>
-            <p class="leading-relaxed m-0">
+            <p class="m-0 leading-relaxed">
               This is an <strong>experimental</strong> feature. The information
               is compiled from <strong>unofficial</strong> sources, and was
               built with assistance by AI. While we attempt to cite and link to
@@ -38,9 +38,9 @@
       </div>
 
       <div
-        class="flex justify-between items-center mb-6 text-sm md:text-base font-semibold max-w-4xl mx-auto px-2 gap-4"
+        class="flex gap-4 justify-between items-center px-2 mx-auto mb-6 max-w-4xl text-sm font-semibold md:text-base"
       >
-        <div class="text-left flex-1 min-w-0">
+        <div class="flex-1 min-w-0 text-left">
           <a
             v-if="!loading && commemoration?.previous_commemoration"
             :href="commemoration.previous_commemoration.uuid"
@@ -53,7 +53,7 @@
             }}</span>
           </a>
         </div>
-        <div class="text-right flex-1 min-w-0">
+        <div class="flex-1 min-w-0 text-right">
           <a
             v-if="!loading && commemoration?.next_commemoration"
             :href="commemoration.next_commemoration.uuid"
@@ -74,7 +74,7 @@
       >
         <template #header>
           <div
-            class="flex flex-col sm:flex-row items-center sm:items-start gap-6"
+            class="flex flex-col gap-6 items-center sm:flex-row sm:items-start"
           >
             <div
               v-if="validImages.ai_image_1"
@@ -94,18 +94,18 @@
           </div>
         </template>
 
-        <div v-if="validImages.image_link" class="mb-8 flex justify-center">
+        <div v-if="validImages.image_link" class="flex justify-center mb-8">
           <img
             :src="commemoration.image_link"
             class="max-w-full h-auto max-h-[400px] rounded-lg shadow-sm object-contain"
           />
         </div>
 
-        <div class="space-y-8 flex flex-col gap-8">
+        <div class="flex flex-col gap-8 space-y-8">
           <el-alert
             type="success"
             :closable="false"
-            class="season-alert mb-8"
+            class="mb-8 season-alert"
             :class="alertSeasonClass"
           >
             <template #title>
@@ -122,7 +122,7 @@
                 </p>
                 <p
                   v-if="commemoration.ai_quote_by"
-                  class="opacity-90 m-0 text-sm"
+                  class="m-0 text-sm opacity-90"
                 >
                   <em>— {{ commemoration.ai_quote_by }}</em>
                 </p>
@@ -130,7 +130,7 @@
             </template>
           </el-alert>
 
-          <div class="flex flex-col lg:flex-row gap-8">
+          <div class="flex flex-col gap-8 lg:flex-row">
             <div class="lg:w-1/3 shrink-0">
               <el-card
                 class="bg-[var(--el-fill-color-light)] border-none shadow-none h-full"
@@ -178,7 +178,7 @@
             </div>
           </div>
 
-          <div v-if="commemoration.ai_legend">
+          <!-- <div v-if="commemoration.ai_legend">
             <el-card
               shadow="never"
               class="border border-[var(--el-border-color-light)] bg-transparent"
@@ -206,7 +206,7 @@
                 "
               ></div>
             </el-card>
-          </div>
+          </div> -->
 
           <div
             v-if="commemoration.collect"
@@ -224,7 +224,7 @@
             </p>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div
               v-if="
                 commemoration.ai_traditions &&
@@ -286,19 +286,19 @@
           <el-alert
             type="success"
             :closable="false"
-            class="season-alert mt-8"
+            class="mt-8 season-alert"
             :class="alertSeasonClass"
           >
             <template #title>
-              <div class="text-center py-2 alert-text">
+              <div class="py-2 text-center alert-text">
                 <p
-                  class="text-lg md:text-xl mb-3 font-serif italic leading-relaxed"
+                  class="mb-3 font-serif text-lg italic leading-relaxed md:text-xl"
                 >
                   "{{ commemoration.ai_verse }}"
                 </p>
                 <p
                   v-if="commemoration.ai_verse_citation"
-                  class="text-sm font-semibold uppercase tracking-wider opacity-90 m-0"
+                  class="m-0 text-sm font-semibold tracking-wider uppercase opacity-90"
                 >
                   — {{ commemoration.ai_verse_citation }}
                 </p>
@@ -310,7 +310,7 @@
 
       <Loading v-if="loading" class="mt-8" />
 
-      <div v-if="error" class="mt-8 max-w-2xl mx-auto">
+      <div v-if="error" class="mx-auto mt-8 max-w-2xl">
         <el-alert :title="error" type="error" :closable="false" show-icon />
       </div>
     </main>
