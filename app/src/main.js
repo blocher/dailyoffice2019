@@ -63,6 +63,7 @@ import {
   faAndroid,
   faApple,
   faFacebook,
+  faWikipediaW,
 } from '@fortawesome/free-brands-svg-icons';
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
 import { Capacitor } from '@capacitor/core';
@@ -81,6 +82,7 @@ library.add(
   faFacebook,
   faApple,
   faAndroid,
+  faWikipediaW,
   faGlobe,
   faEnvelopes,
   faBooks,
