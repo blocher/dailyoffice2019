@@ -32,6 +32,14 @@
                 >feedback@dailyoffice2019.com</a
               >
               for correction.
+              <br /><br />
+              This behavior can be changed or disabled in
+              <a
+                href="/settings"
+                class="text-[var(--accent-color)] hover:underline"
+                >Settings</a
+              >
+              under <strong>Commemoration Info</strong>.
             </p>
           </template>
         </el-alert>
