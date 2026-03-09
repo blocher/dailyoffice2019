@@ -53,7 +53,10 @@ class CollectSerializer(serializers.HyperlinkedModelSerializer):
     title_and_tags = serializers.SerializerMethodField()
 
     def get_title_and_tags(self, obj):
-        return obj.title + " " + " ".join([tag.name for tag in obj.tags.all()])
+        tags = getattr(obj, "_cached_tags", None)
+        if tags is None:
+            tags = obj.tags.all()
+        return obj.title + " " + " ".join([tag.name for tag in tags])
 
     class Meta:
         model = Collect

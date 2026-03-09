@@ -52,7 +52,11 @@ class GroupedCollectsViewSet(ViewSet):
     )
 
     def list(self, request):
-        collects = self.queryset
+        collects = list(self.queryset)
+        # Cache tags to avoid repeatedly evaluating the related manager or list
+        for collect in collects:
+            collect._cached_tags = list(collect.tags.all())
+
         collect_tags = CollectTag.objects.select_related("collect_tag_category").order_by("order").all()
         sources = [collect_tag for collect_tag in collect_tags if collect_tag.collect_tag_category.key == "source"]
 
@@ -69,7 +73,9 @@ class GroupedCollectsViewSet(ViewSet):
                 for theme in themes:
                     subcategory = theme
                     subcategory.collects = [
-                        collect for collect in collects if theme in collect.tags.all() and source in collect.tags.all()
+                        collect
+                        for collect in collects
+                        if theme in collect._cached_tags and source in collect._cached_tags
                     ]
                     if subcategory.collects:
                         source.subcategories.append(subcategory)
@@ -80,7 +86,7 @@ class GroupedCollectsViewSet(ViewSet):
                     subcategory.collects = [
                         collect
                         for collect in collects
-                        if season in collect.tags.all() and source in collect.tags.all()
+                        if season in collect._cached_tags and source in collect._cached_tags
                     ]
                     if subcategory.collects:
                         source.subcategories.append(subcategory)
@@ -91,7 +97,7 @@ class GroupedCollectsViewSet(ViewSet):
                     subcategory.collects = [
                         collect
                         for collect in collects
-                        if commemoration_type in collect.tags.all() and source in collect.tags.all()
+                        if commemoration_type in collect._cached_tags and source in collect._cached_tags
                     ]
                     if subcategory.collects:
                         source.subcategories.append(subcategory)
@@ -102,7 +108,7 @@ class GroupedCollectsViewSet(ViewSet):
                     subcategory.collects = [
                         collect
                         for collect in collects
-                        if liturgy in collect.tags.all() and source in collect.tags.all()
+                        if liturgy in collect._cached_tags and source in collect._cached_tags
                     ]
                     if subcategory.collects:
                         source.subcategories.append(subcategory)

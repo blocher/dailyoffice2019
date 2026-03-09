@@ -17,7 +17,8 @@
               <div class="settings-controls__search">
                 <el-input
                   id="collects-search"
-                  v-model="search"
+                  v-model="internalSearch"
+                  @input="handleSearchChange"
                   clearable
                   class="w-full"
                   placeholder="Search by word or phrase"
@@ -29,10 +30,10 @@
               </div>
               <div class="settings-controls__types">
                 <el-checkbox-group
-                  v-model="selectedCollectTypes"
+                  v-model="internalSelectedCollectTypes"
                   size="default"
                   class="collect-type-selector m-0"
-                  @change="persistSelectedCollectTypes"
+                  @change="handleTypeSelectionChange"
                 >
                   <el-checkbox
                     v-for="collectType in collects"
@@ -51,7 +52,7 @@
               <div class="collect-language-filter__card">
                 <label class="collect-control-label">Display Versions</label>
                 <el-checkbox-group
-                  v-model="selectedLanguages"
+                  v-model="internalSelectedLanguages"
                   class="collect-language-selector m-0"
                   @change="handleLanguageSelectionChange"
                 >
@@ -107,13 +108,21 @@
 
         <div
           id="main"
-          class="mx-auto transition-all duration-300"
-          :class="
+          class="mx-auto transition-all duration-300 relative"
+          :class="[
             hasMultipleLanguagesSelected
               ? 'max-w-480! px-2! lg:px-8!'
-              : 'max-w-3xl!'
-          "
+              : 'max-w-3xl!',
+            { 'opacity-50 pointer-events-none': isFiltering },
+          ]"
         >
+          <div
+            v-if="isFiltering"
+            class="absolute inset-0 z-10 flex justify-center pt-24"
+          >
+            <Loading />
+          </div>
+
           <div
             v-if="collectCategoriesToShow.length === 0"
             class="py-12 text-center text-gray-500"
@@ -181,10 +190,15 @@ export default {
     return {
       collects: null,
       loading: true,
+      isFiltering: false,
       error: false,
       search: '',
+      internalSearch: '',
+      searchTimeout: null,
       selectedCollectTypes: [],
+      internalSelectedCollectTypes: [],
       selectedLanguages: ['contemporary'],
+      internalSelectedLanguages: ['contemporary'],
       lastSelectedLanguages: ['contemporary'],
       languageOptions: LANGUAGE_OPTIONS,
       allCollects: [],
@@ -270,6 +284,7 @@ export default {
       storedLanguages,
       traditional
     );
+    this.internalSelectedLanguages = [...this.selectedLanguages];
     this.lastSelectedLanguages = [...this.selectedLanguages];
     let data = null;
 
@@ -298,6 +313,26 @@ export default {
     this.loading = false;
   },
   methods: {
+    handleSearchChange(val) {
+      this.isFiltering = true;
+      window.clearTimeout(this.searchTimeout);
+      this.searchTimeout = window.setTimeout(() => {
+        this.search = val;
+        this.$nextTick(() => {
+          this.isFiltering = false;
+        });
+      }, 300);
+    },
+    handleTypeSelectionChange(value) {
+      this.isFiltering = true;
+      window.setTimeout(async () => {
+        this.selectedCollectTypes = value;
+        await this.persistSelectedCollectTypes();
+        this.$nextTick(() => {
+          this.isFiltering = false;
+        });
+      }, 10);
+    },
     normalizeSelectedLanguages(storedLanguages, traditionalFallback) {
       let parsedLanguages = [];
 
@@ -339,12 +374,19 @@ export default {
     },
     async handleLanguageSelectionChange(value) {
       if (!value.length) {
-        this.selectedLanguages = [...this.lastSelectedLanguages];
+        this.internalSelectedLanguages = [...this.lastSelectedLanguages];
         return;
       }
 
-      this.lastSelectedLanguages = [...value];
-      await this.persistSelectedLanguages();
+      this.isFiltering = true;
+      window.setTimeout(async () => {
+        this.selectedLanguages = value;
+        this.lastSelectedLanguages = [...value];
+        await this.persistSelectedLanguages();
+        this.$nextTick(() => {
+          this.isFiltering = false;
+        });
+      }, 10);
     },
     async setExtraCollects() {
       this.extraCollects =
@@ -377,6 +419,8 @@ export default {
       this.selectedCollectTypes = restoredTypes.length
         ? restoredTypes
         : this.collects.map((category) => category.uuid);
+
+      this.internalSelectedCollectTypes = [...this.selectedCollectTypes];
 
       await this.persistSelectedCollectTypes();
     },
