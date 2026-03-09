@@ -1,6 +1,6 @@
 <template>
   <h4
-    class="text-xl font-semibold text-[var(--el-text-color-primary)] mt-8 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-2"
+    class="text-xl font-semibold text-(--el-text-color-primary) mt-8 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-2"
   >
     <span>{{ subcategory.name }}</span>
     <span class="flex gap-2">
@@ -21,7 +21,7 @@
       <Collect
         :key="collect.uuid"
         :collect="collect"
-        :traditional="traditional"
+        :selected-languages="selectedLanguages"
         :extra-collects="extraCollects"
         @extra-collects-changed="extraCollectsChanged"
       />
@@ -39,9 +39,9 @@ export default {
       type: Object,
       required: true,
     },
-    traditional: {
-      type: Boolean,
-      required: false,
+    selectedLanguages: {
+      type: Array,
+      default: null,
     },
     extraCollects: {
       type: Object,

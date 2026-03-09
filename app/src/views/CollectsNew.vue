@@ -1,7 +1,7 @@
 <template>
   <div class="collects-view">
-    <main v-cloak class="px-4 pt-8 pb-12 mx-auto max-w-6xl lg:pb-16">
-      <header class="text-center settings-hero">
+    <main v-cloak class="px-4 pt-8 pb-12 mx-auto lg:pb-16 w-full">
+      <header class="text-center settings-hero max-w-6xl mx-auto">
         <h1>Collects</h1>
       </header>
 
@@ -9,40 +9,30 @@
 
       <div v-if="!loading && !error">
         <div
-          class="settings-search-top mb-6 bg-[var(--el-fill-color-blank)] border border-[var(--el-border-color-light)]"
+          class="settings-search-top mb-6 bg-(--el-fill-color-blank) border border-(--el-border-color-light) max-w-6xl mx-auto"
         >
           <label class="settings-search-top__label"> Search & Filter </label>
-          <div class="flex flex-col gap-4">
-            <div class="flex flex-col gap-4 items-center w-full md:flex-row">
-              <el-input
-                id="collects-search"
-                v-model="search"
-                clearable
-                class="flex-1"
-                placeholder="Search by word or phrase"
-              >
-                <template #prefix>
-                  <el-icon><Search /></el-icon>
-                </template>
-              </el-input>
-
-              <div class="flex justify-end w-full shrink-0 md:w-auto">
-                <el-switch
-                  v-model="traditional"
-                  size="large"
-                  active-text="Traditional"
-                  inactive-text="Contemporary"
-                  @change="setTraditional"
-                />
+          <div class="settings-controls">
+            <div class="settings-controls__primary">
+              <div class="settings-controls__search">
+                <el-input
+                  id="collects-search"
+                  v-model="search"
+                  clearable
+                  class="w-full"
+                  placeholder="Search by word or phrase"
+                >
+                  <template #prefix>
+                    <el-icon><Search /></el-icon>
+                  </template>
+                </el-input>
               </div>
-            </div>
-
-            <div class="flex flex-col gap-4 items-center w-full md:flex-row">
-              <div class="flex-1 w-full">
+              <div class="settings-controls__types">
                 <el-checkbox-group
                   v-model="selectedCollectTypes"
                   size="default"
-                  class="flex flex-wrap gap-2 m-0"
+                  class="collect-type-selector m-0"
+                  @change="persistSelectedCollectTypes"
                 >
                   <el-checkbox
                     v-for="collectType in collects"
@@ -56,17 +46,42 @@
                 </el-checkbox-group>
               </div>
             </div>
+
+            <div class="collect-language-filter">
+              <div class="collect-language-filter__card">
+                <label class="collect-control-label">Display Versions</label>
+                <el-checkbox-group
+                  v-model="selectedLanguages"
+                  class="collect-language-selector m-0"
+                  @change="handleLanguageSelectionChange"
+                >
+                  <el-checkbox
+                    v-for="option in languageOptions"
+                    :key="option.value"
+                    border
+                    :label="option.value"
+                    class="mr-0"
+                  >
+                    {{ option.label }}
+                  </el-checkbox>
+                </el-checkbox-group>
+                <p class="collect-control-hint">
+                  Choose one or more versions. Multiple selections appear side
+                  by side.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
         <div
-          class="mx-auto mb-8 settings-display-narrow"
+          class="mx-auto mb-8 settings-display-narrow max-w-6xl"
           style="width: min(100%, 58rem); max-width: none"
         >
           <DisplaySettingsModule />
         </div>
 
-        <div class="flex flex-wrap gap-2 justify-end mb-6">
+        <div class="flex flex-wrap gap-2 justify-end mb-6 max-w-6xl mx-auto">
           <el-button
             size="small"
             :disabled="buttonsDisabled"
@@ -90,7 +105,15 @@
           </el-button>
         </div>
 
-        <div id="main">
+        <div
+          id="main"
+          class="mx-auto transition-all duration-300"
+          :class="
+            hasMultipleLanguagesSelected
+              ? 'max-w-480! px-2! lg:px-8!'
+              : 'max-w-3xl!'
+          "
+        >
           <div
             v-if="collectCategoriesToShow.length === 0"
             class="py-12 text-center text-gray-500"
@@ -106,7 +129,7 @@
 
           <div v-for="category in collectCategoriesToShow" :key="category.uuid">
             <h3
-              class="text-2xl font-bold mb-4 mt-8 text-[var(--el-text-color-primary)]"
+              class="text-2xl font-bold mb-4 mt-8 text-(--el-text-color-primary)"
             >
               {{ category.name }}
             </h3>
@@ -116,9 +139,9 @@
             >
               <CollectsSubcategory
                 ref="subcategories"
-                :traditional="traditional"
                 :subcategory="subcategory"
                 :extra-collects="extraCollects"
+                :selected-languages="selectedLanguages"
                 @extra-collects-changed="setExtraCollects"
               />
             </div>
@@ -139,6 +162,14 @@ import CollectsSubcategory from '@/components/CollectsSubcategory.vue';
 import { Search } from '@element-plus/icons-vue';
 import { DynamicStorage } from '@/helpers/storage';
 
+const COLLECT_LANGUAGE_STORAGE_KEY = 'collectsNewSelectedLanguages';
+const COLLECT_TYPE_STORAGE_KEY = 'collectsNewSelectedTypes';
+const LANGUAGE_OPTIONS = [
+  { value: 'contemporary', label: 'Contemporary' },
+  { value: 'traditional', label: 'Traditional' },
+  { value: 'spanish', label: 'Spanish' },
+];
+
 export default {
   components: {
     Loading,
@@ -151,9 +182,11 @@ export default {
       collects: null,
       loading: true,
       error: false,
-      traditional: false,
       search: '',
       selectedCollectTypes: [],
+      selectedLanguages: ['contemporary'],
+      lastSelectedLanguages: ['contemporary'],
+      languageOptions: LANGUAGE_OPTIONS,
       allCollects: [],
       openedItems: [],
       defaultDict: {},
@@ -175,6 +208,9 @@ export default {
     };
   },
   computed: {
+    hasMultipleLanguagesSelected() {
+      return this.selectedLanguages.length > 1;
+    },
     collectCategoriesToShow() {
       if (!this.collects) return [];
       const searchQuery = this.search.toLowerCase().trim();
@@ -189,13 +225,25 @@ export default {
                 const matchesTitle =
                   collect.title &&
                   collect.title.toLowerCase().includes(searchQuery);
+                const matchesSpanishTitle =
+                  collect.spanish_title &&
+                  collect.spanish_title.toLowerCase().includes(searchQuery);
                 const matchesText =
                   collect.text &&
                   collect.text.toLowerCase().includes(searchQuery);
                 const matchesTraditional =
                   collect.traditional_text &&
                   collect.traditional_text.toLowerCase().includes(searchQuery);
-                return matchesTitle || matchesText || matchesTraditional;
+                const matchesSpanish =
+                  collect.spanish_text &&
+                  collect.spanish_text.toLowerCase().includes(searchQuery);
+                return (
+                  matchesTitle ||
+                  matchesSpanishTitle ||
+                  matchesText ||
+                  matchesTraditional ||
+                  matchesSpanish
+                );
               });
 
               if (filteredCollects.length > 0) {
@@ -214,12 +262,15 @@ export default {
     },
   },
   async mounted() {
-    const traditional = await DynamicStorage.getItem(
-      'traditionalCollects',
-      false
+    const storedLanguages = await DynamicStorage.getItem(
+      COLLECT_LANGUAGE_STORAGE_KEY
     );
-    this.traditional = traditional === 'true' || traditional === true;
-    this.setTraditional();
+    const traditional = await DynamicStorage.getItem('traditionalCollects');
+    this.selectedLanguages = this.normalizeSelectedLanguages(
+      storedLanguages,
+      traditional
+    );
+    this.lastSelectedLanguages = [...this.selectedLanguages];
     let data = null;
 
     try {
@@ -240,26 +291,104 @@ export default {
         });
       });
     });
-    this.setDefaultFilter();
+    await this.restoreSelectedCollectTypes();
     await this.setExtraCollects();
+    await this.persistSelectedLanguages();
     this.error = false;
     this.loading = false;
   },
   methods: {
+    normalizeSelectedLanguages(storedLanguages, traditionalFallback) {
+      let parsedLanguages = [];
+
+      try {
+        parsedLanguages = JSON.parse(storedLanguages) || [];
+      } catch {
+        parsedLanguages = [];
+      }
+
+      const normalized = parsedLanguages.filter((language) =>
+        this.languageOptions.some((option) => option.value === language)
+      );
+
+      if (normalized.length) {
+        return [...new Set(normalized)];
+      }
+
+      return [
+        traditionalFallback === 'true' || traditionalFallback === true
+          ? 'traditional'
+          : 'contemporary',
+      ];
+    },
+    async persistSelectedLanguages() {
+      await DynamicStorage.setItem(
+        COLLECT_LANGUAGE_STORAGE_KEY,
+        JSON.stringify(this.selectedLanguages)
+      );
+
+      if (
+        this.selectedLanguages.length === 1 &&
+        this.selectedLanguages[0] !== 'spanish'
+      ) {
+        await DynamicStorage.setItem(
+          'traditionalCollects',
+          this.selectedLanguages[0] === 'traditional'
+        );
+      }
+    },
+    async handleLanguageSelectionChange(value) {
+      if (!value.length) {
+        this.selectedLanguages = [...this.lastSelectedLanguages];
+        return;
+      }
+
+      this.lastSelectedLanguages = [...value];
+      await this.persistSelectedLanguages();
+    },
     async setExtraCollects() {
       this.extraCollects =
         JSON.parse(await DynamicStorage.getItem('extraCollects')) ||
         this.defaultDict;
     },
-    async setTraditional() {
-      await DynamicStorage.setItem('traditionalCollects', this.traditional);
-    },
-    setDefaultFilter() {
-      if (!this.selectedCollectTypes.length && this.collects) {
-        this.selectedCollectTypes = this.collects.map(
-          (category) => category.uuid
-        );
+    async restoreSelectedCollectTypes() {
+      if (!this.collects) {
+        return;
       }
+
+      const storedTypes = await DynamicStorage.getItem(
+        COLLECT_TYPE_STORAGE_KEY
+      );
+      let parsedTypes = [];
+
+      try {
+        parsedTypes = JSON.parse(storedTypes) || [];
+      } catch {
+        parsedTypes = [];
+      }
+
+      const availableTypes = new Set(
+        this.collects.map((category) => category.uuid)
+      );
+      const restoredTypes = parsedTypes.filter((uuid) =>
+        availableTypes.has(uuid)
+      );
+
+      this.selectedCollectTypes = restoredTypes.length
+        ? restoredTypes
+        : this.collects.map((category) => category.uuid);
+
+      await this.persistSelectedCollectTypes();
+    },
+    async persistSelectedCollectTypes() {
+      if (!this.collects) {
+        return;
+      }
+
+      await DynamicStorage.setItem(
+        COLLECT_TYPE_STORAGE_KEY,
+        JSON.stringify(this.selectedCollectTypes)
+      );
     },
     async expandAll() {
       this.buttonsDisabled = true;
@@ -341,8 +470,81 @@ export default {
   color: var(--el-text-color-secondary);
 }
 
+.settings-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(24rem, 28rem);
+  gap: 1rem 1.25rem;
+  align-items: start;
+}
+
+.settings-controls__primary {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.settings-controls__search,
+.settings-controls__types {
+  min-width: 0;
+}
+
+.collect-language-filter {
+  min-width: 0;
+}
+
+.collect-language-filter__card {
+  height: 100%;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--el-border-color-light);
+  border-radius: 0.6rem;
+  background: var(--el-fill-color-light);
+}
+
+.collect-control-label {
+  display: block;
+  margin-bottom: 0.55rem;
+  color: var(--el-text-color-regular);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.collect-control-hint {
+  margin: 0.55rem 0 0;
+  color: var(--el-text-color-secondary);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.collect-type-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.collect-type-selector :deep(.el-checkbox) {
+  margin-right: 0;
+}
+
+.collect-language-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.collect-language-selector :deep(.el-checkbox) {
+  margin-right: 0;
+}
+
 .el-checkbox-group.m-0 {
   margin: 0 !important;
+}
+
+@media (max-width: 1080px) {
+  .settings-controls {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 768px) {
