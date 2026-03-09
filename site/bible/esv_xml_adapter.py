@@ -166,16 +166,30 @@ class ESVXMLAdapter(BibleSource):
 
         # Normalize the passage using scriptures library
         try:
-            self.reference = scriptures.extract(passage)[0]
+            self.references = scriptures.extract(passage)
+            if not self.references:
+                raise IndexError()
+
+            self.reference = self.references[0]
             self.book, self.start_chapter, self.start_verse, self.end_chapter, self.end_verse, _ = self.reference
-            self.passage = scriptures.reference_to_string(*self.reference)
+            self.passage = passage
         except (IndexError, AttributeError):
             # If scriptures library can't parse it, try manual parsing
             self.passage = passage
             self._parse_passage_manually()
+            self.references = [
+                (self.book, self.start_chapter, self.start_verse, self.end_chapter, self.end_verse, None)
+            ]
 
         # Normalize book name (convert Roman numerals to Arabic)
         self.book = self._normalize_book_name(self.book)
+
+        # Also normalize book names in references
+        normalized_refs = []
+        for ref in self.references:
+            book, sc, sv, ec, ev, test = ref
+            normalized_refs.append((self._normalize_book_name(book), sc, sv, ec, ev, test))
+        self.references = normalized_refs
 
         # Generate the HTML
         self.html = self._generate_html()
@@ -309,29 +323,37 @@ class ESVXMLAdapter(BibleSource):
             HTML string of the formatted passage
         """
         try:
-            root = self._load_xml_tree()
-
-            # Build HTML from verses in the range
             html_parts = []
 
-            # Special handling for Sirach chapter 1: include the prologue
-            if self.book in ["Sirach", "Ecclesiasticus"] and self.start_chapter == 1 and self.start_verse == 1:
-                prologue_html = self._extract_sirach_prologue(root)
-                if prologue_html:
-                    html_parts.append(prologue_html)
+            for ref in self.references:
+                book_name, start_chap, start_verse, end_chap, end_verse, _ = ref
 
-            # Process each chapter in range
-            for chapter_num in range(self.start_chapter, self.end_chapter + 1):
-                # Determine verse range for this chapter
-                verse_start = self.start_verse if chapter_num == self.start_chapter else 1
-                verse_end = self.end_verse if chapter_num == self.end_chapter else 999
+                # Temporarily set self.book so _load_xml_tree works
+                self.book = book_name
+                root = self._load_xml_tree()
 
-                chapter_html = self._process_chapter(root, chapter_num, verse_start, verse_end)
-                if chapter_html:
-                    html_parts.append(chapter_html)
+                # Special handling for Sirach chapter 1: include the prologue
+                if book_name in ["Sirach", "Ecclesiasticus"] and start_chap == 1 and start_verse == 1:
+                    prologue_html = self._extract_sirach_prologue(root)
+                    if prologue_html:
+                        html_parts.append(prologue_html)
+
+                # Process each chapter in range
+                for chapter_num in range(start_chap, end_chap + 1):
+                    # Determine verse range for this chapter
+                    verse_start = start_verse if chapter_num == start_chap else 1
+                    verse_end = end_verse if chapter_num == end_chap else 999
+
+                    chapter_html = self._process_chapter(root, chapter_num, verse_start, verse_end)
+                    if chapter_html:
+                        html_parts.append(chapter_html)
 
             if not html_parts:
                 raise PassageNotFoundException(f"No verses found for passage: {self.passage}")
+
+            # Restore self.book to the first reference's book
+            if hasattr(self, "references") and self.references:
+                self.book = self.references[0][0]
 
             return "\n".join(html_parts)
 
@@ -571,7 +593,8 @@ class ESVXMLAdapter(BibleSource):
 
     def _has_relevant_verse_after(self, elem: ET.Element, include_verses: set) -> bool:
         """
-        Check if there are any relevant verses after this element in the chapter.
+        Check if there are any relevant verses after this element in the chapter,
+        before the next heading.
 
         Args:
             elem: The element to check after
@@ -584,6 +607,9 @@ class ESVXMLAdapter(BibleSource):
         current = elem.getnext()
         while current is not None:
             tag = current.tag.replace(f"{{{self.NAMESPACE['cb']}}}", "")
+            if tag in ["heading", "subheading"]:
+                # Stop checking if we hit another heading
+                return False
             if tag == "verse":
                 verse_num_str = current.get("num", "0")
                 verse_num = self._extract_verse_number(verse_num_str)
@@ -802,28 +828,48 @@ class ESVXMLAdapter(BibleSource):
         headings = []
 
         try:
-            root = self._load_xml_tree()
+            for ref in self.references:
+                book_name, start_chap, start_verse, end_chap, end_verse, _ = ref
+                self.book = book_name
+                root = self._load_xml_tree()
 
-            # Find all headings in the chapter range
-            for chapter_num in range(self.start_chapter, self.end_chapter + 1):
-                chapter = root.find(f".//cb:chapter[@num='{chapter_num}']", self.NAMESPACE)
-                if chapter is None:
-                    continue
+                # Find all headings in the chapter range
+                for chapter_num in range(start_chap, end_chap + 1):
+                    chapter = root.find(f".//cb:chapter[@num='{chapter_num}']", self.NAMESPACE)
+                    if chapter is None:
+                        continue
 
-                for heading in chapter.findall(".//cb:heading", self.NAMESPACE):
-                    text = "".join(heading.itertext()).strip()
-                    if text:
-                        # Try to find the next verse to associate with the heading
-                        next_verse = heading.getnext()
-                        while next_verse is not None:
-                            if next_verse.tag.endswith("verse"):
-                                verse_num = next_verse.get("num")
-                                ref = f"{self.book} {chapter_num}:{verse_num}"
-                                headings.append((ref, text))
-                                break
-                            next_verse = next_verse.getnext()
+                    for heading in chapter.findall(".//cb:heading", self.NAMESPACE):
+                        text = "".join(heading.itertext()).strip()
+                        if text:
+                            # Try to find the next verse to associate with the heading
+                            next_verse = heading.getnext()
+                            while next_verse is not None:
+                                if next_verse.tag.endswith("verse"):
+                                    verse_num = next_verse.get("num")
+                                    # Check if verse is in our range
+                                    v_num_int = self._extract_verse_number(verse_num)
+                                    in_range = False
+                                    if chapter_num == start_chap and chapter_num == end_chap:
+                                        in_range = start_verse <= v_num_int <= end_verse
+                                    elif chapter_num == start_chap:
+                                        in_range = v_num_int >= start_verse
+                                    elif chapter_num == end_chap:
+                                        in_range = v_num_int <= end_verse
+                                    else:
+                                        in_range = True
+
+                                    if in_range:
+                                        ref_str = f"{self.book} {chapter_num}:{verse_num}"
+                                        headings.append((ref_str, text))
+                                    break
+                                next_verse = next_verse.getnext()
 
         except Exception:
             pass
+
+        # Restore self.book to the first reference's book
+        if hasattr(self, "references") and self.references:
+            self.book = self.references[0][0]
 
         return headings

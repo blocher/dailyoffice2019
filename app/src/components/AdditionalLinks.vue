@@ -1,19 +1,22 @@
 <template>
-  <div class="small-container">
-    <el-row justify="center" class="text-center mx-auto">
-      <el-col :span="6">
+  <div class="w-full">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="h-full">
         <ClassicSite />
-      </el-col>
-      <el-col :span="6">
+      </div>
+
+      <div class="h-full">
         <ShareSettings ref="shareSettings" />
-      </el-col>
-      <el-col :span="6">
+      </div>
+
+      <div class="h-full">
         <EmailSignup ref="emailSignup" />
-      </el-col>
-      <el-col :span="6">
+      </div>
+
+      <div class="h-full">
         <SubmitFeedback ref="submitFeedback" />
-      </el-col>
-    </el-row>
+      </div>
+    </div>
   </div>
 </template>
 

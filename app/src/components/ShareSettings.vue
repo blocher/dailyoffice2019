@@ -1,85 +1,201 @@
 <template>
-  <span class="sub-menu-item">
-    <a href="" @click.prevent="toggleSharePanel">
-      <font-awesome-icon :icon="['fad', 'share-nodes']" />&nbsp;<br />
-      <span class="text-xs">Share Your Settings&nbsp;</span>
-    </a>
-  </span>
-  <!--  <el-dropdown-item @click.prevent="toggleSharePanel">Share Your Settings</el-dropdown-item>-->
-  <el-drawer v-model="showSharePanel" direction="rtl" :size="panelSize">
-    <div class="mt-4">
-      <h2 class="text-left pt-0">
-        <font-awesome-icon :icon="['fad', 'share-nodes']" />&nbsp; Share Link
-      </h2>
-      <p class="text-left pb-2 mx-1">
-        This share link allows you to sync your settings with others with whom
-        you are praying.
-      </p>
+  <button
+    type="button"
+    @click.prevent="toggleSharePanel"
+    class="w-full h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--accent-color) focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900 rounded-xl"
+  >
+    <div
+      class="flex flex-col items-center justify-center p-3 h-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 transition-colors group cursor-pointer text-center"
+    >
+      <font-awesome-icon
+        :icon="['fad', 'share-nodes']"
+        class="text-lg text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200 mb-2 transition-colors"
+      />
+      <span
+        class="text-xs font-semibold text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100 leading-tight"
+        >Share Settings</span
+      >
+    </div>
+  </button>
 
-      <p class="text-left pt-2 mx-1 my-2">
-        <font-awesome-icon :icon="['fad', 'circle-1']" />&nbsp;Pick the settings
-        you want to use on the <a href="/settings">Settings</a> pages.
-      </p>
-      <p class="text-left pt-2 mx-1 my-2">
-        <font-awesome-icon :icon="['fad', 'circle-2']" />&nbsp;Return here and
-        click the
-        <font-awesome-icon :icon="['fad', 'copy']" />
-        button below (or manually copy the link).
-      </p>
-      <div @click="copyLink">
-        <el-input
-          v-model="shareLink"
-          placeholder="Copy and paste share link"
-          readonly
+  <el-drawer
+    v-model="showSharePanel"
+    direction="rtl"
+    :size="panelSize"
+    title="Share Settings"
+  >
+    <template #header>
+      <div class="drawer-panel flex items-start gap-4">
+        <div
+          class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 dark:bg-indigo-500/15 dark:text-indigo-300"
         >
-          <template #append>
-            <div class="copyLinkWrapper">
-              <font-awesome-icon :icon="['fad', 'copy']" />
-            </div>
-          </template>
-        </el-input>
+          <font-awesome-icon :icon="['fad', 'share-nodes']" class="text-lg" />
+        </div>
+        <div class="space-y-1 text-left">
+          <p
+            class="m-0 text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-500 dark:text-gray-400"
+          >
+            Pray Together
+          </p>
+          <h2 class="m-0 p-0 text-xl font-semibold tracking-tight text-left">
+            Share Settings
+          </h2>
+          <p class="m-0 text-sm leading-6 text-gray-600 dark:text-gray-300">
+            Send one link so everyone uses the same Daily Office settings.
+          </p>
+        </div>
       </div>
-      <p class="text-left pt-2 mx-1 my-2">
-        <font-awesome-icon :icon="['fad', 'circle-3']" />&nbsp;Paste the link in
-        an email, text message, or chat and send to whoever you want to pray
-        with.
-      </p>
-      <p class="text-left pt-2 mx-1 my-2">
-        <font-awesome-icon :icon="['fad', 'circle-4']" />&nbsp;When the
-        recipients click on the link, the site will automatically be set up so
-        you are all using the same settings.
-      </p>
-    </div>
-    <div v-if="canShare" class="mt-4">
-      <h2 class="text-left pt-0 pt-4">
-        <font-awesome-icon :icon="['fad', 'share-nodes']" />&nbsp; Share using
-        an app
-      </h2>
+    </template>
 
-      <div class="full-width mt-4 text-left">
-        <a href="" @click="share($event)">
-          <el-button type="primary" round>Share with an app</el-button>
-        </a>
-        <p class="mt-4">
-          Click this button to shware with an app on your phone or computer such
-          as your e-mail client, iMessages, or contact book
+    <div class="drawer-panel space-y-6 pb-6 text-left">
+      <section
+        class="rounded-2xl border border-gray-200 bg-gray-50/80 p-5 dark:border-gray-700 dark:bg-gray-800/60"
+      >
+        <p
+          class="m-0 text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400"
+        >
+          How It Works
         </p>
-      </div>
-    </div>
-    <div class="pb-4">
-      <h2 class="text-left">
-        <font-awesome-icon :icon="['fad', 'share-nodes']" />&nbsp; Share
-        Settings QR Code
-      </h2>
-      <div class="w-full settings-qr-code float-left p-2">
-        <qrcode-vue
-          :value="shareLink"
-          :size="350"
-          :render-as="'svg'"
-          level="L"
-          class="mb-4"
-        />
-      </div>
+        <ol class="mt-4 space-y-4 list-none p-0">
+          <li class="flex items-start gap-3">
+            <span
+              class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white text-xs font-semibold text-gray-700 ring-1 ring-gray-200 dark:bg-gray-900 dark:text-gray-200 dark:ring-gray-700"
+              >1</span
+            >
+            <p class="m-0 text-sm leading-6 text-gray-700 dark:text-gray-300">
+              Choose the options you want on the
+              <router-link
+                to="/settings"
+                class="font-semibold text-(--accent-color) no-underline hover:underline"
+                >Settings</router-link
+              >
+              page.
+            </p>
+          </li>
+          <li class="flex items-start gap-3">
+            <span
+              class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white text-xs font-semibold text-gray-700 ring-1 ring-gray-200 dark:bg-gray-900 dark:text-gray-200 dark:ring-gray-700"
+              >2</span
+            >
+            <p class="m-0 text-sm leading-6 text-gray-700 dark:text-gray-300">
+              Copy the link below or share it directly from your device.
+            </p>
+          </li>
+          <li class="flex items-start gap-3">
+            <span
+              class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white text-xs font-semibold text-gray-700 ring-1 ring-gray-200 dark:bg-gray-900 dark:text-gray-200 dark:ring-gray-700"
+              >3</span
+            >
+            <p class="m-0 text-sm leading-6 text-gray-700 dark:text-gray-300">
+              When someone opens the link or scans the QR code, their settings
+              are automatically matched to yours.
+            </p>
+          </li>
+        </ol>
+      </section>
+
+      <section
+        class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-900/70"
+      >
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h3
+              class="m-0 p-0 text-base font-semibold tracking-tight text-left"
+            >
+              Share link
+            </h3>
+            <p
+              class="mt-2 mb-0 text-sm leading-6 text-gray-600 dark:text-gray-300"
+            >
+              Copy and paste this into a text, email, or chat.
+            </p>
+          </div>
+          <font-awesome-icon
+            :icon="['fad', 'link']"
+            class="mt-1 text-base text-gray-400 dark:text-gray-500"
+          />
+        </div>
+
+        <div class="mt-4 flex flex-col gap-3 sm:flex-row">
+          <el-input
+            v-model="shareLink"
+            placeholder="Copy and paste share link"
+            readonly
+            class="flex-1"
+          />
+          <el-button type="primary" @click="copyLink">
+            <font-awesome-icon :icon="['fad', 'copy']" class="mr-2" />
+            Copy link
+          </el-button>
+        </div>
+      </section>
+
+      <section
+        v-if="canShare"
+        class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-900/70"
+      >
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h3
+              class="m-0 p-0 text-base font-semibold tracking-tight text-left"
+            >
+              Share with another app
+            </h3>
+            <p
+              class="mt-2 mb-0 text-sm leading-6 text-gray-600 dark:text-gray-300"
+            >
+              Use your device share sheet to send the link through email,
+              messages, or another app.
+            </p>
+          </div>
+          <font-awesome-icon
+            :icon="['fad', 'paper-plane-top']"
+            class="mt-1 text-base text-gray-400 dark:text-gray-500"
+          />
+        </div>
+
+        <div class="mt-4">
+          <el-button type="primary" plain @click="share($event)">
+            Share with an app
+          </el-button>
+        </div>
+      </section>
+
+      <section
+        class="rounded-2xl border border-gray-200 bg-gray-50/80 p-5 dark:border-gray-700 dark:bg-gray-800/60"
+      >
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h3
+              class="m-0 p-0 text-base font-semibold tracking-tight text-left"
+            >
+              QR code
+            </h3>
+            <p
+              class="mt-2 mb-0 text-sm leading-6 text-gray-600 dark:text-gray-300"
+            >
+              Open this on another device to apply the same settings instantly.
+            </p>
+          </div>
+          <font-awesome-icon
+            :icon="['fad', 'qrcode']"
+            class="mt-1 text-base text-gray-400 dark:text-gray-500"
+          />
+        </div>
+
+        <div class="settings-qr-code mt-5 flex justify-center">
+          <div
+            class="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-700"
+          >
+            <qrcode-vue
+              :value="shareLink"
+              :size="320"
+              :render-as="'svg'"
+              level="L"
+            />
+          </div>
+        </div>
+      </section>
     </div>
   </el-drawer>
 </template>
@@ -224,7 +340,12 @@ export default {
   },
 };
 </script>
-<style lang="scss">
+<style scoped lang="scss">
+.drawer-panel :is(h1, h2, h3, h4),
+.drawer-panel .drawer-kicker {
+  text-align: left !important;
+}
+
 .settings-qr-code {
   svg,
   canvas {

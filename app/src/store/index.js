@@ -11,12 +11,15 @@ export default createStore({
     saveAvailableSettings: (state, availableSettings) => {
       state.availableSettings = availableSettings;
     },
-    saveSettings: async (state, settings) => {
-      await DynamicStorage.setItem('settings', JSON.stringify(settings));
+    saveSettings: (state, settings) => {
       state.settings = settings;
     },
   },
   actions: {
+    async saveSettings({ commit }, settings) {
+      commit('saveSettings', settings);
+      await DynamicStorage.setItem('settings', JSON.stringify(settings));
+    },
     async initializeSettings({ state, commit }) {
       const initializeAdditionalCollects = async () => {
         let isSetting = false;

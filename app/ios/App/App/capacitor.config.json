@@ -1,11 +1,12 @@
 {
-	"appId": "com.dailyoffice2019.app",
+	"appId": "com.dailyoffice.dailyoffice2019",
 	"appName": "daily_office",
 	"webDir": "dist",
 	"bundledWebRuntime": false,
 	"packageClassList": [
 		"FirebaseAnalyticsPlugin",
 		"AppPlugin",
+		"CAPBrowserPlugin",
 		"ClipboardPlugin",
 		"PreferencesPlugin",
 		"SharePlugin"

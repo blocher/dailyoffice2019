@@ -560,6 +560,34 @@ minor_settings_dict = [
             },
         ],
     },
+    {
+        "title": "Commemoration Info",
+        "name": "commemoration_info",
+        "help_text": "",
+        "options": [
+            {
+                "value": "full_hagiography",
+                "hide": [],
+                "show": [],
+                "heading": "Full Hagiography",
+                "text": "Explore in-depth orthodox Anglican biographies, complete with source links, traditions, and commemoration ideas, gathered with the help of AI.",
+            },
+            {
+                "value": "wikipedia",
+                "hide": [],
+                "show": [],
+                "heading": "Wikipedia link",
+                "text": "A link to Wikipedia for the person being commemorated",
+            },
+            {
+                "value": "off",
+                "hide": [],
+                "show": [],
+                "heading": "Off",
+                "text": "Hide the learn more button",
+            },
+        ],
+    },
 ]
 family_settings_dict = [
     {

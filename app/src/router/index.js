@@ -212,15 +212,28 @@ const routes = [
 const routesToNotScrollToTop = [
   'readingsByServiceAndDate',
   'readingsByServicePositionAndDate',
+  'readingsByService',
+  'readings',
 ];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
-  scrollBehavior(to) {
-    if (routesToNotScrollToTop.includes(to.name)) {
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition;
+    } else if (routesToNotScrollToTop.includes(to.name)) {
+      // If we are changing the service in the readings page, try to maintain scroll position
+      if (from.name && routesToNotScrollToTop.includes(from.name)) {
+        return false;
+      }
       return false;
     } else {
+      // Check for explicit prevent scroll flag
+      if (window.sessionStorage.getItem('preventScroll') === 'true') {
+        window.sessionStorage.removeItem('preventScroll');
+        return false;
+      }
       // always scroll to top
       return { top: 0 };
     }

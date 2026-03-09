@@ -18,7 +18,6 @@
           </el-checkbox-button>
         </el-checkbox-group>
       </div>
-      <FontSizer v-if="readyToSetFontSize" />
       <CollectsFilters
         v-if="!loading && !error"
         :filters="collectCategories"
@@ -50,6 +49,7 @@
       <el-alert v-if="error" :title="error" type="error" />
     </div>
   </div>
+  <DisplaySettingsModule v-if="!loading && !error" />
   <div v-if="!loading && !error" id="main">
     <div v-if="displayedCollects.length < 1" class="h-96">
       <h3>No results</h3>
@@ -85,11 +85,11 @@
 import Loading from '@/components/Loading.vue';
 import CollectsFilters from '@/components/CollectsFilters.vue';
 import Collect from '@/components/Collect.vue';
-import FontSizer from '@/components/FontSizer.vue';
+import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
 import { DynamicStorage } from '@/helpers/storage';
 
 export default {
-  components: { Loading, CollectsFilters, Collect, FontSizer },
+  components: { Loading, CollectsFilters, Collect, DisplaySettingsModule },
   data() {
     return {
       collects: null,
@@ -101,7 +101,6 @@ export default {
       collectCategories: [],
       traditional: false,
       search: '',
-      readyToSetFontSize: false,
       collectTypes: [],
       collectsByCollectType: {},
       selectedCollectTypes: [],
@@ -154,7 +153,6 @@ export default {
     // this.filterCollects([])
     this.error = false;
     this.loading = false;
-    this.readyToSetFontSize = true;
   },
   methods: {
     filterType() {

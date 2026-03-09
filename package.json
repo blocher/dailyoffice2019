@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@capacitor/browser": "^8.0.1",
     "@element-plus/icons-vue": "^2.3.1"
   }
 }

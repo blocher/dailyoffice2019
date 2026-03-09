@@ -36,8 +36,15 @@ class BibleGateway(BibleSource):
         if self.version == "kjv":
             self.version = "akjv"
         # try:
-        self.reference = scriptures.extract(passage)[0]
-        self.passage = scriptures.reference_to_string(*self.reference)
+        self.references = scriptures.extract(passage)
+        if self.references:
+            self.reference = self.references[0]
+            # Use the original passage string to allow multiple ranges
+            self.passage = passage
+        else:
+            self.reference = None
+            self.passage = passage
+
         self.passage = self.passage.replace("III ", "3 ")
         self.passage = self.passage.replace("II ", "2 ")
         self.passage = self.passage.replace("I ", "1 ")
@@ -163,8 +170,14 @@ class OremusBibleBrowser(BibleSource):
     def __init__(self, passage, version="av"):
         self.version = version
 
-        self.reference = scriptures.extract(passage)[0]
-        self.passage = scriptures.reference_to_string(*self.reference)
+        self.references = scriptures.extract(passage)
+        if self.references:
+            self.reference = self.references[0]
+            self.passage = passage
+        else:
+            self.reference = None
+            self.passage = passage
+
         self.passage = self.passage.replace("III ", "3 ")
         self.passage = self.passage.replace("II ", "2 ")
         self.passage = self.passage.replace("I ", "1 ")

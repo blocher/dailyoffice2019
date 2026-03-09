@@ -1,39 +1,47 @@
 <template>
   <el-collapse-item :title="fullTitle(collect)" :name="collect.uuid">
-    <div class="collect-versions md:flex gap-8 py-4">
+    <div
+      class="collect-content text-[var(--el-text-color-primary)] bg-[var(--el-fill-color-blank)]"
+    >
       <div
-        v-for="version in activeVersions"
-        :key="version.key"
-        class="collect-version flex-1"
+        class="text-[var(--main-font-size)] leading-[var(--main-line-height)] p-4 font-serif break-words"
       >
-        <h5 v-if="activeVersions.length > 1" class="mb-4 text-gray-500">
-          {{ version.label }}
-        </h5>
-        <span class="collect-text" v-html="version.content" />
-        <h5 v-if="version.attribution" class="mt-4 text-sm text-gray-500">
-          {{ version.attribution }}
-        </h5>
+        <div
+          v-html="traditional ? collect.traditional_text : collect.text"
+        ></div>
       </div>
-    </div>
-    <!-- Fallback if no versions active (shouldn't happen but safe) -->
-    <div v-if="activeVersions.length === 0" class="py-4">
-      <span class="collect-text" v-html="collect.text" />
-      <h5 class="mt-4 text-sm text-gray-500">{{ collect.attribution }}</h5>
-    </div>
+      <h5
+        v-if="collect.attribution"
+        class="mt-2 px-4 text-sm text-[var(--el-text-color-secondary)]"
+      >
+        {{ collect.attribution }}
+      </h5>
 
-    <el-card class="box-card mt-6" shadow="never">
-      <p class="mb-2">
-        <em class="text-gray-600">Add this prayer near the end of:</em>
-      </p>
-      <el-checkbox-group v-model="checkList" @change="handleCheckChange">
-        <el-checkbox
-          v-for="office in offices"
-          :key="office"
-          :label="office"
-          class="mr-4"
-        />
-      </el-checkbox-group>
-    </el-card>
+      <el-card
+        class="box-card mt-4 mx-4 mb-4 bg-[var(--el-fill-color-light)] border-[var(--el-border-color-lighter)]"
+        shadow="never"
+        body-style="padding: 1rem;"
+      >
+        <div>
+          <p
+            class="mb-2 font-sans font-medium text-[var(--el-text-color-regular)]"
+            style="
+              font-size: calc(var(--main-font-size) * 0.85) !important;
+              line-height: 1.5 !important;
+            "
+          >
+            <em>Add this prayer near the end of:</em>
+          </p>
+          <el-checkbox-group v-model="checkList" @change="handleCheckChange">
+            <el-checkbox
+              v-for="office in offices"
+              :key="office"
+              :label="office"
+            />
+          </el-checkbox-group>
+        </div>
+      </el-card>
+    </div>
   </el-collapse-item>
 </template>
 
@@ -44,24 +52,7 @@ import { getMessageOffset } from '@/helpers/getMessageOffest';
 
 export default {
   name: 'Collect',
-  props: {
-    collect: {
-      type: Object,
-      required: true,
-    },
-    traditional: {
-      type: Boolean,
-      default: false,
-    },
-    selectedVersions: {
-      type: Array,
-      default: () => [],
-    },
-    extraCollects: {
-      type: Object,
-      required: false,
-    },
-  },
+  props: ['collect', 'traditional', 'extraCollects'],
   emits: ['extraCollectsChanged'],
   data() {
     return {
@@ -74,67 +65,9 @@ export default {
       ],
     };
   },
-  computed: {
-    activeVersions() {
-      const versions = [];
-      const sv = this.selectedVersions;
-
-      // Compatibility: if selectedVersions is empty, fallback to traditional prop
-      if (!sv || sv.length === 0) {
-        if (this.traditional) {
-          if (this.collect.traditional_text) {
-            versions.push({
-              key: 'traditional',
-              label: 'Traditional',
-              content: this.collect.traditional_text,
-              attribution: this.collect.attribution,
-            });
-          }
-        } else {
-          if (this.collect.text) {
-            versions.push({
-              key: 'contemporary',
-              label: 'Contemporary',
-              content: this.collect.text,
-              attribution: this.collect.attribution,
-            });
-          }
-        }
-        return versions;
-      }
-
-      if (sv.includes('contemporary') && this.collect.text) {
-        versions.push({
-          key: 'contemporary',
-          label: 'Contemporary',
-          content: this.collect.text,
-          attribution: this.collect.attribution,
-        });
-      }
-      if (sv.includes('traditional') && this.collect.traditional_text) {
-        versions.push({
-          key: 'traditional',
-          label: 'Traditional',
-          content: this.collect.traditional_text,
-          attribution: this.collect.attribution,
-        });
-      }
-      if (sv.includes('spanish') && this.collect.spanish_text) {
-        versions.push({
-          key: 'spanish',
-          label: 'Spanish',
-          content: this.collect.spanish_text,
-          attribution:
-            this.collect.spanish_attribution || this.collect.attribution,
-        });
-      }
-      return versions;
-    },
-  },
   async created() {
     this.offices.forEach((office) => {
       if (
-        this.extraCollects &&
         Object.prototype.hasOwnProperty.call(this.extraCollects, office) &&
         this.extraCollects[office].includes(this.collect.uuid)
       ) {
@@ -181,26 +114,11 @@ export default {
       });
     },
     fullTitle(collect) {
-      const sv = this.selectedVersions;
-      let title = collect.title;
-
-      const hasEnglish =
-        sv && (sv.includes('contemporary') || sv.includes('traditional'));
-      const hasSpanish = sv && sv.includes('spanish');
-
-      if (hasEnglish && hasSpanish && collect.spanish_title) {
-        title = `${collect.title} / ${collect.spanish_title}`;
-      } else if (!hasEnglish && hasSpanish && collect.spanish_title) {
-        title = collect.spanish_title;
-      }
-
       if (collect.number) {
-        title = `${collect.number}. ${title}`;
+        return `${collect.number}. ${collect.title}`;
+      } else {
+        return collect.title;
       }
-      if (collect.page_number) {
-        title = `${title} (p. ${collect.page_number})`;
-      }
-      return title;
     },
   },
 };
@@ -211,18 +129,7 @@ export default {
   font-weight: 800 !important;
 }
 
-.collect-text {
-  line-height: 1.6;
-  display: block;
-  margin-bottom: 1rem;
-}
-
-.collect-version h5 {
-  margin-top: 0;
-  font-weight: 600;
-}
-
-.box-card {
-  border: 1px solid #e5e7eb; /* Light gray border */
+.collect-content {
+  padding: 0;
 }
 </style>

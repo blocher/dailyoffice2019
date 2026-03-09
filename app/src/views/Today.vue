@@ -1,6 +1,6 @@
 <template>
   <Office
-    v-if="!notFound"
+    v-if="office && !notFound"
     :key="key"
     :office="office"
     :calendar-date="calendarDate"
@@ -38,16 +38,31 @@ export default {
   },
 
   watch: {
-    '$route.params.office': function () {
-      this.setDate();
-    },
-    '$route.params.forward': function () {
+    $route(to) {
+      if (to.params.serviceType) {
+        if (['office', 'family'].includes(to.params.serviceType)) {
+          this.currentServiceType = to.params.serviceType;
+          DynamicStorage.setItem('serviceType', this.currentServiceType);
+        } else {
+          this.currentServiceType = 'office';
+        }
+      } else if (!to.params.office) {
+        DynamicStorage.getItem('serviceType').then((val) => {
+          this.currentServiceType = val || 'office';
+        });
+      }
       this.setDate();
     },
   },
   async created() {
     if (this.$route.params.serviceType) {
-      this.currentServiceType = this.$route.params.serviceType;
+      if (['office', 'family'].includes(this.$route.params.serviceType)) {
+        this.currentServiceType = this.$route.params.serviceType;
+        DynamicStorage.setItem('serviceType', this.currentServiceType);
+      } else {
+        // If it's something like /morning_prayer which got caught by /:serviceType
+        this.currentServiceType = 'office';
+      }
     } else if (!this.$route.params.office) {
       this.currentServiceType =
         (await DynamicStorage.getItem('serviceType')) || 'office';

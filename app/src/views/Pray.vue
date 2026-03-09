@@ -13,6 +13,7 @@
 import Office from '@/views/Office.vue';
 import setCalendarDate from '@/helpers/setCalendarDate';
 import PageNotFound from '@/views/PageNotFound.vue';
+import { DynamicStorage } from '@/helpers/storage';
 
 export default {
   name: 'Today',
@@ -31,11 +32,35 @@ export default {
       notFound: false,
     };
   },
+  watch: {
+    $route(to) {
+      if (to.params.serviceType) {
+        this.serviceType = to.params.serviceType;
+      } else {
+        this.serviceType = 'office';
+      }
+      if (['office', 'family'].includes(this.serviceType)) {
+        DynamicStorage.setItem('serviceType', this.serviceType);
+      }
+
+      this.office = to.params.office;
+      this.calendarDate = setCalendarDate(to);
+      if (!this.calendarDate) {
+        this.notFound = true;
+      } else {
+        this.notFound = false;
+      }
+    },
+  },
   async created() {
     this.serviceType = this.$route.params.serviceType || 'office';
     this.office = this.$route.params.office;
-
     this.calendarDate = setCalendarDate(this.$route);
+
+    if (['office', 'family'].includes(this.serviceType)) {
+      DynamicStorage.setItem('serviceType', this.serviceType);
+    }
+
     if (!this.calendarDate) {
       this.notFound = true;
       return;

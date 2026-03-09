@@ -218,7 +218,7 @@ td {
 
 .el-calendar,
 .el-calendar-table td.is-selected {
-  background-color: var(--background-color) !important;
+  background-color: var(--color-bg) !important;
 }
 
 .el-calendar-day {
@@ -249,7 +249,7 @@ td {
 }
 
 .el-calendar-table__row td {
-  border: black 1px solid;
+  border: 1px solid var(--el-border-color, black);
 }
 
 .red {
@@ -263,8 +263,13 @@ td {
 }
 
 .white {
-  background-color: white;
-  color: black;
+  background-color: #f5f1e8;
+  color: #333;
+}
+
+:root.dark .white {
+  background-color: #3a3631;
+  color: #e5e7eb;
 }
 
 .purple {
@@ -273,12 +278,22 @@ td {
 }
 
 .black {
-  background-color: black;
+  background-color: #1a1a1a;
   color: white;
+}
+
+:root.dark .black {
+  background-color: #111;
+  color: #d1d5db;
 }
 
 .rose {
   background-color: pink;
-  color: black;
+  color: #333;
+}
+
+:root.dark .rose {
+  background-color: #9f3050;
+  color: #fce4ec;
 }
 </style>

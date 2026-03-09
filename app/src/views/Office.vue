@@ -2,55 +2,43 @@
   <div class="home office">
     <div class="small-container">
       <PageNotFound v-if="notFound" />
-      <div v-if="!notFound">
+      <div v-if="!notFound" class="space-y-6">
         <Loading v-if="loading" />
-        <CalendarCard
-          :office="office"
-          :calendar-date="calendarDate"
-          :card="card"
-          :service-type="serviceType"
-        />
-        <el-alert v-if="error" :title="error" type="error" />
-        <OfficeNav
-          :calendar-date="calendarDate"
-          :selected-office="office"
-          :service-type="serviceType"
-        />
-        <FontSizer v-if="readyToSetFontSize" />
-        <p style="text-align: center">
-          <el-tag type="warning">New!</el-tag>&nbsp;
-          <el-switch
-            v-model="audioEnabled"
-            size="large"
-            active-text="Show Audio Controls"
-            inactive-text="Hide Audio Controls"
+
+        <!-- Header Section -->
+        <header class="office-header mb-8">
+          <CalendarCard
+            :office="office"
+            :calendar-date="calendarDate"
+            :card="card"
+            :service-type="serviceType"
           />
-        </p>
+          <el-alert
+            v-if="error"
+            :title="error"
+            type="error"
+            show-icon
+            class="my-4"
+          />
+          <OfficeNav
+            :calendar-date="calendarDate"
+            :selected-office="office"
+            :service-type="serviceType"
+          />
+
+          <div v-if="!loading" class="office-display-settings">
+            <DisplaySettingsModule
+              :show-audio-controls="true"
+              v-model:audio-enabled="audioEnabled"
+              :collapsible="false"
+            />
+          </div>
+        </header>
       </div>
     </div>
 
-    <!--    <div style="max-width: 65ch; margin: 0 auto 5rem">-->
-    <!--      <el-alert type="info" :closable="false">-->
-    <!--        <h3>New! Audio Player</h3>-->
-    <!--        <p style="text-align: center">-->
-    <!--          Try the new audio experience to listen to the Daily Office out loud.-->
-    <!--        </p>-->
-
-    <!--        <p v-if="audioEnabled" style="color: red; text-align: center">-->
-    <!--          Audio controls are visible at the bottom of the page.-->
-    <!--        </p>-->
-    <!--        <p>-->
-    <!--          <br />-->
-    <!--          ⚠-->
-    <!--          <small-->
-    <!--            >This is an experimental feature and may not always work perfectly.-->
-    <!--            Please report any issues or feedback to-->
-    <!--            feedback@dailyoffice2019.com.</small-->
-    <!--          >-->
-    <!--        </p>-->
-    <!--      </el-alert>-->
-    <!--    </div>-->
-    <div id="main">
+    <!-- Main Content (Book Style) -->
+    <div id="main" class="book-content">
       <div v-for="module in modules" :key="module.name">
         <div v-for="line in module.lines" :key="line.content">
           <OfficeHeading v-if="line.line_type === 'heading'" :line="line" />
@@ -86,7 +74,13 @@
         </div>
       </div>
     </div>
+
+    <!-- Footer Section -->
+    <footer class="office-footer mt-12 pb-24">
+      <!-- DonationPrompt removed to avoid duplication with App.vue footer -->
+    </footer>
   </div>
+
   <AudioPlayer
     v-if="
       !loading &&
@@ -102,6 +96,7 @@
     :office="office"
     :isEsvOrKjv="isEsvOrKjv"
     :isWithinSevenDays="isWithinSevenDays"
+    @dismiss-audio="confirmDismissAudio"
   />
   <AudioPlayerMessage
     v-if="
@@ -116,6 +111,8 @@
     :isEsvOrKjv="isEsvOrKjv"
     :isWithinSevenDays="isWithinSevenDays"
     :audioReady="audioReady"
+    :hasAudioLinks="!!(audioLinks && audioLinks.length)"
+    @dismiss-audio="confirmDismissAudio"
   />
 </template>
 
@@ -135,18 +132,19 @@ import Loading from '@/components/Loading.vue';
 import CalendarCard from '@/components/CalendarCard.vue';
 import OfficeNav from '@/components/OfficeNav.vue';
 import PageNotFound from '@/views/PageNotFound.vue';
-import FontSizer from '@/components/FontSizer.vue';
 import { DynamicStorage } from '@/helpers/storage';
 import AudioPlayer from '@/components/AudioPlayer.vue';
-import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue'; // import AudioPlayer from '@/components/AudioPlayer.vue';
-// import AudioPlayer from '@/components/AudioPlayer.vue';
+import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue';
+import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
+import { ElMessageBox } from 'element-plus';
+import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
 
 export default {
   name: 'Office',
   components: {
     AudioPlayerMessage,
     AudioPlayer,
-    // AudioPlayer,
+    DisplaySettingsModule,
     OfficeHeading,
     OfficeSubheading,
     OfficeCitation,
@@ -161,7 +159,6 @@ export default {
     CalendarCard,
     OfficeNav,
     PageNotFound,
-    FontSizer,
   },
   props: {
     office: {
@@ -180,7 +177,6 @@ export default {
       counter: 0,
       modules: null,
       loading: true,
-      readyToSetFontSize: false,
       error: false,
       card: '',
       notFound: false,
@@ -209,17 +205,16 @@ export default {
     },
   },
   async mounted() {
-    await DynamicStorage.setItem('serviceType', 'office');
+    await DynamicStorage.setItem('serviceType', this.serviceType);
     const audioEnabledString = await DynamicStorage.getItem(
       'audioEnabled',
       'true'
     );
-    const audioEnabled =
+    this.audioEnabled =
       audioEnabledString === 'true' ||
       audioEnabledString === true ||
       audioEnabledString === null ||
       audioEnabledString === undefined;
-    this.audioEnabled = audioEnabled;
   },
 
   async created() {
@@ -278,10 +273,11 @@ export default {
     }
     this.modules = data.data.modules;
     this.card = data.data.calendar_day;
+    this.applySeasonAccentFromCard(this.card);
     this.error = false;
     this.loading = false;
     await this.$nextTick();
-    this.readyToSetFontSize = true;
+    await this.applyStoredFontSize();
     if (this.isEsvOrKjv) {
       this.audioLinks = await this.setAudioLinks(office_url);
     }
@@ -289,6 +285,46 @@ export default {
   },
 
   methods: {
+    async confirmDismissAudio() {
+      try {
+        await ElMessageBox.confirm(
+          'You can re-enable audio controls at any time from Display Settings at the top of this page.',
+          'Hide Audio Controls?',
+          {
+            confirmButtonText: 'Hide',
+            cancelButtonText: 'Cancel',
+            type: 'info',
+          }
+        );
+        this.audioEnabled = false;
+      } catch {
+        // user cancelled — do nothing
+      }
+    },
+    async applyStoredFontSize() {
+      const storedFontSize = parseInt(
+        (await DynamicStorage.getItem('fontSize')) || '24',
+        10
+      );
+      const fontSize = Number.isNaN(storedFontSize) ? 24 : storedFontSize;
+      this.applyFontSizeToMain(fontSize);
+    },
+    applyFontSizeToMain(value) {
+      document.documentElement.style.setProperty(
+        '--main-font-size',
+        `${value}px`
+      );
+      document.documentElement.style.setProperty(
+        '--main-line-height',
+        `${value * 1.6}px`
+      );
+    },
+    applySeasonAccentFromCard(card) {
+      const liturgicalColor = resolveColorFromCard(card, this.office);
+      if (liturgicalColor) {
+        setSeasonAccent(liturgicalColor);
+      }
+    },
     async setAudioLinks(url) {
       url = `${url}&include_audio_links=true`;
       try {
@@ -384,7 +420,28 @@ export default {
 </script>
 
 <style scoped>
-.el-alert {
-  margin-top: 2em;
+.office-header {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.office-display-settings {
+  width: min(100%, 34rem);
+  margin: 0.75rem auto 0;
+}
+
+/* Ensure main content is centered and readable on large screens */
+#main {
+  max-width: 65ch;
+  margin: 0 auto;
+  padding: 0 var(--main-content-gutter);
+}
+
+@media (max-width: 768px) {
+  .office-display-settings {
+    width: 100%;
+    margin-top: 0.65rem;
+  }
 }
 </style>

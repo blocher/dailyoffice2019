@@ -14,8 +14,12 @@ SCOPES = "https://www.googleapis.com/auth/spreadsheets.readonly"
 class Command(BaseCommand):
     def parse_passage(self, passage):
         try:
-            passage = scriptures.extract(passage)[0]
-            return scriptures.reference_to_string(*passage)
+            references = scriptures.extract(passage)
+            if not references:
+                return None
+            if len(references) == 1:
+                return scriptures.reference_to_string(*references[0])
+            return passage
         except:
             return None
 
