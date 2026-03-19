@@ -1,7 +1,7 @@
 <template>
   <div v-show="show" :id="id" :class="wrapperClass">
     <h3>
-      {{ reading.full.name }}
+      {{ displayName }}
     </h3>
     <h4 v-if="!abbreviated" :id="readingID(reading.full)">
       {{ reading.full.citation }} <span v-html="scriptureLink()" />
@@ -60,6 +60,51 @@ export default {
     };
   },
   computed: {
+    isChinese() {
+      return ['cuvs', 'cuv', 'znsigao', 'sigao'].includes(this.translation);
+    },
+    isSpanish() {
+      return ['nvi', 'rv1960'].includes(this.translation);
+    },
+    chineseNameMap() {
+      return {
+        'The First Lesson': '第一篇經課',
+        'The Second Lesson': '第二篇經課',
+        'The Third Lesson': '第三篇經課',
+        'The Psalm': '詩篇',
+        'The Psalms': '詩篇',
+        'The Psalm Appointed': '指定詩篇',
+        'The Psalms Appointed': '指定詩篇',
+        'The Epistle': '書信經課',
+        'The Gospel': '福音經課',
+        'The Old Testament': '舊約經課',
+        'The New Testament': '新約經課',
+      };
+    },
+    spanishNameMap() {
+      return {
+        'The First Lesson': 'La Primera Lectura',
+        'The Second Lesson': 'La Segunda Lectura',
+        'The Third Lesson': 'La Tercera Lectura',
+        'The Psalm': 'El Salmo',
+        'The Psalms': 'Los Salmos',
+        'The Psalm Appointed': 'El Salmo Designado',
+        'The Psalms Appointed': 'Los Salmos Designados',
+        'The Epistle': 'La Epístola',
+        'The Gospel': 'El Evangelio',
+        'The Old Testament': 'El Antiguo Testamento',
+        'The New Testament': 'El Nuevo Testamento',
+      };
+    },
+    displayName() {
+      if (this.isChinese && this.chineseNameMap[this.reading.full.name]) {
+        return this.chineseNameMap[this.reading.full.name];
+      }
+      if (this.isSpanish && this.spanishNameMap[this.reading.full.name]) {
+        return this.spanishNameMap[this.reading.full.name];
+      }
+      return this.reading.full.name;
+    },
     showAbbreviatedToggle() {
       return this.reading.full.citation != this.reading.abbreviated.citation;
     },
@@ -116,7 +161,14 @@ export default {
       let url = '';
       let abbreviation = this.translation.toLowerCase();
       if (
-        ['esv', 'niv', 'nasb'].includes(abbreviation) &&
+        ['cuvs', 'cuv'].includes(abbreviation) &&
+        this.reading.full.testament == 'DC'
+      ) {
+        // Fall back to 思高本 for deuterocanonical books when using 和合本
+        abbreviation = abbreviation == 'cuvs' ? 'znsigao' : 'sigao';
+      }
+      if (
+        ['esv', 'niv', 'nasb', 'nvi', 'rv1960'].includes(abbreviation) &&
         this.reading.full.testament == 'DC'
       ) {
         abbreviation = 'nrsvce';
@@ -125,11 +177,17 @@ export default {
         url = `https://bible.oremus.org/?version=AV&passage=${reading.citation}`;
       } else if (abbreviation == 'esv') {
         url = `https://www.esv.org/${reading.citation}`;
+      } else if (['sigao', 'znsigao'].includes(abbreviation)) {
+        const variant = abbreviation == 'znsigao' ? 'znsigao' : 'sigao';
+        url = `https://www.ccreadbible.org/chinesebible/${variant}`;
       } else {
         url = `https://www.biblegateway.com/passage/?search=${reading.citation}&version=${abbreviation}`;
       }
-      abbreviation = abbreviation == 'nrsvce' ? 'nrsv' : abbreviation;
-      return `<a target="_blank" href="${url}">(${abbreviation.toUpperCase()})</a>`;
+      let displayName = abbreviation;
+      if (abbreviation == 'nrsvce') displayName = 'nrsv';
+      else if (abbreviation == 'sigao') displayName = '思高本（繁體）';
+      else if (abbreviation == 'znsigao') displayName = '思高本（简体）';
+      return `<a target="_blank" href="${url}">(${displayName.toUpperCase()})</a>`;
     },
   },
 };
