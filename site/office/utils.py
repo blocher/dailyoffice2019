@@ -1,6 +1,72 @@
 import scriptures
 from num2words import num2words
 
+# Chinese book names for Bible reading introductions
+chinese_books = {
+    "Genesis": "創世記", "Exodus": "出埃及記", "Leviticus": "利未記",
+    "Numbers": "民數記", "Deuteronomy": "申命記", "Joshua": "約書亞記",
+    "Judges": "士師記", "Ruth": "路得記", "I Samuel": "撒母耳記上",
+    "II Samuel": "撒母耳記下", "I Kings": "列王紀上", "II Kings": "列王紀下",
+    "I Chronicles": "歷代志上", "II Chronicles": "歷代志下", "Ezra": "以斯拉記",
+    "Nehemiah": "尼希米記", "Esther": "以斯帖記", "Job": "約伯記",
+    "Psalm": "詩篇", "Psalms": "詩篇", "Proverbs": "箴言", "Ecclesiastes": "傳道書",
+    "Song of Songs": "雅歌", "Song of Solomon": "雅歌",
+    "Isaiah": "以賽亞書", "Jeremiah": "耶利米書", "Lamentations": "耶利米哀歌",
+    "Ezekiel": "以西結書", "Daniel": "但以理書", "Hosea": "何西阿書",
+    "Joel": "約珥書", "Amos": "阿摩司書", "Obadiah": "俄巴底亞書",
+    "Jonah": "約拿書", "Micah": "彌迦書", "Nahum": "那鴻書",
+    "Habakkuk": "哈巴谷書", "Zephaniah": "西番雅書", "Haggai": "哈該書",
+    "Zechariah": "撒迦利亞書", "Malachi": "瑪拉基書",
+    "Matthew": "馬太福音", "Mark": "馬可福音", "Luke": "路加福音", "John": "約翰福音",
+    "Acts": "使徒行傳", "Romans": "羅馬書", "I Corinthians": "哥林多前書",
+    "II Corinthians": "哥林多後書", "Galatians": "加拉太書", "Ephesians": "以弗所書",
+    "Philippians": "腓立比書", "Colossians": "歌羅西書",
+    "I Thessalonians": "帖撒羅尼迦前書", "II Thessalonians": "帖撒羅尼迦後書",
+    "I Timothy": "提摩太前書", "II Timothy": "提摩太後書", "Titus": "提多書",
+    "Philemon": "腓利門書", "Hebrews": "希伯來書", "James": "雅各書",
+    "I Peter": "彼得前書", "II Peter": "彼得後書", "I John": "約翰壹書",
+    "II John": "約翰貳書", "III John": "約翰參書", "Jude": "猶大書",
+    "Revelation": "啟示錄", "Revelation of Jesus Christ": "啟示錄",
+    "Tobit": "多俾亞傳", "Judith": "友弟德傳", "Wisdom": "智慧篇",
+    "Sirach": "德訓篇", "Baruch": "巴錄書",
+    "I Maccabees": "瑪加伯上", "II Maccabees": "瑪加伯下",
+    "Additions to Esther": "以斯帖記補篇", "Susanna": "蘇撒拿傳",
+    "Bel and the Dragon": "貝耳與大龍", "Letter of Jeremiah": "耶利米書信",
+    "Prayer of Azariah": "亞撒利雅禱詞", "I Esdras": "以斯德拉上",
+    "II Esdras": "以斯德拉下", "Prayer of Manasseh": "瑪拿西禱詞",
+    "Song of the Three Young Men": "三童歌",
+}
+
+spanish_books = {
+    "Genesis": "Génesis", "Exodus": "Éxodo", "Leviticus": "Levítico",
+    "Numbers": "Números", "Deuteronomy": "Deuteronomio", "Joshua": "Josué",
+    "Judges": "Jueces", "Ruth": "Rut", "I Samuel": "1 Samuel",
+    "II Samuel": "2 Samuel", "I Kings": "1 Reyes", "II Kings": "2 Reyes",
+    "I Chronicles": "1 Crónicas", "II Chronicles": "2 Crónicas", "Ezra": "Esdras",
+    "Nehemiah": "Nehemías", "Esther": "Ester", "Job": "Job",
+    "Psalm": "Salmos", "Psalms": "Salmos", "Proverbs": "Proverbios", "Ecclesiastes": "Eclesiastés",
+    "Song of Songs": "Cantar de los Cantares", "Song of Solomon": "Cantar de los Cantares",
+    "Isaiah": "Isaías", "Jeremiah": "Jeremías", "Lamentations": "Lamentaciones",
+    "Ezekiel": "Ezequiel", "Daniel": "Daniel", "Hosea": "Oseas",
+    "Joel": "Joel", "Amos": "Amós", "Obadiah": "Abdías",
+    "Jonah": "Jonás", "Micah": "Miqueas", "Nahum": "Nahúm",
+    "Habakkuk": "Habacuc", "Zephaniah": "Sofonías", "Haggai": "Hageo",
+    "Zechariah": "Zacarías", "Malachi": "Malaquías",
+    "Matthew": "San Mateo", "Mark": "San Marcos", "Luke": "San Lucas", "John": "San Juan",
+    "Acts": "Hechos", "Romans": "Romanos", "I Corinthians": "1 Corintios",
+    "II Corinthians": "2 Corintios", "Galatians": "Gálatas", "Ephesians": "Efesios",
+    "Philippians": "Filipenses", "Colossians": "Colosenses",
+    "I Thessalonians": "1 Tesalonicenses", "II Thessalonians": "2 Tesalonicenses",
+    "I Timothy": "1 Timoteo", "II Timothy": "2 Timoteo", "Titus": "Tito",
+    "Philemon": "Filemón", "Hebrews": "Hebreos", "James": "Santiago",
+    "I Peter": "1 Pedro", "II Peter": "2 Pedro", "I John": "1 Juan",
+    "II John": "2 Juan", "III John": "3 Juan", "Jude": "Judas",
+    "Revelation": "Apocalipsis", "Revelation of Jesus Christ": "Apocalipsis",
+    "Tobit": "Tobías", "Judith": "Judit", "Wisdom": "Sabiduría",
+    "Sirach": "Eclesiástico", "Baruch": "Baruc",
+    "I Maccabees": "1 Macabeos", "II Maccabees": "2 Macabeos",
+}
+
 books = {
     "Genesis": ("the Book of Genesis", False, "OT"),
     "Exodus": ("the Book of Exodus", False, "OT"),
@@ -86,7 +152,7 @@ books = {
 }
 
 
-def passage_to_citation(passage, mass=False):
+def passage_to_citation(passage, mass=False, language="english"):
     if not passage:
         return None
 
@@ -96,15 +162,41 @@ def passage_to_citation(passage, mass=False):
     if not passage:
         return None
 
-    if passage[0] == "Susanna":
-        return "The Book of Daniel, beginning with thirteenth chapter, the first verse, the Story of Susanna"
-
     book_name = passage[0]
     if book_name == "Song of Solomon":
         book_name = "Song of Songs"
-
     if book_name == "Revelation of Jesus Christ":
         book_name = "Revelation"
+
+    # Chinese reading introduction
+    if language in ("chinese-traditional", "chinese-simplified"):
+        cn_book = chinese_books.get(book_name, book_name)
+        if book_name in ["Matthew", "Mark", "Luke", "John"] and mass:
+            return cn_book
+        if passage[0] == "Susanna":
+            return "但以理書補篇（蘇撒拿傳）"
+        chapter = passage[1]
+        verse = passage[2]
+        if books.get(book_name, (None, False))[1]:  # 1 chapter book
+            return "{}第{}節".format(cn_book, verse)
+        return "{}第{}章第{}節".format(cn_book, chapter, verse)
+
+    # Spanish reading introduction
+    if language == "spanish":
+        es_book = spanish_books.get(book_name, book_name)
+        if book_name in ["Matthew", "Mark", "Luke", "John"] and mass:
+            return "El Santo Evangelio según {}".format(es_book)
+        if passage[0] == "Susanna":
+            return "Lectura del Libro de Daniel, la historia de Susana"
+        chapter = passage[1]
+        verse = passage[2]
+        if books.get(book_name, (None, False))[1]:  # 1 chapter book
+            return "Lectura de {}, comenzando en el versículo {}".format(es_book, verse)
+        return "Lectura de {}, comenzando en el capítulo {}, versículo {}".format(es_book, chapter, verse)
+
+    # English (default)
+    if passage[0] == "Susanna":
+        return "The Book of Daniel, beginning with thirteenth chapter, the first verse, the Story of Susanna"
 
     book = books[book_name]
 
