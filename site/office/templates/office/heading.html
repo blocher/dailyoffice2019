@@ -1,2 +1,10 @@
+<div class="lang-english">
 <h1>{{ data.heading }}</h1>
+</div>
+<div class="lang-chinese off">
+<h1>{% if "Morning" in data.heading %}早禱禮文{% elif "Evening" in data.heading %}晚禱禮文{% elif "Midday" in data.heading %}午禱禮文{% elif "Compline" in data.heading %}夜禱禮文{% else %}{{ data.heading }}{% endif %}</h1>
+</div>
+<div class="lang-spanish off">
+<h1>{% if "Family" in data.heading and "Morning" in data.heading %}Oración Familiar de la Mañana{% elif "Family" in data.heading and "Midday" in data.heading %}Oración Familiar del Mediodía{% elif "Family" in data.heading %}Oración Familiar de la Noche{% elif "Morning" in data.heading %}Oración Matutina Diaria{% elif "Evening" in data.heading %}Oración Vespertina Diaria{% elif "Midday" in data.heading %}Oración del Mediodía{% elif "Compline" in data.heading %}Completas{% else %}{{ data.heading }}{% endif %}</h1>
+</div>
 <div id="messages" class="no-print"></div>

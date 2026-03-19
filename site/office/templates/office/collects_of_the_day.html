@@ -5,9 +5,17 @@
     {%  if rank == "NATIONAL_DAY_CANADA" %}
         <div class="canada">
     {%  endif  %}
+    <div class="lang-english">
     <h3>Collect of the Day</h3>
+    </div>
+    <div class="lang-chinese off">
+    <h3>本日祝文</h3>
+    </div>
+    <div class="lang-spanish off">
+    <h3>Colecta del Día</h3>
+    </div>
     <h4>{{ name }}</h4>
-    <p>{{  collect }} <strong>Amen.</strong></p>
+    <p>{{  collect }} <strong class="lang-english">Amen.</strong><strong class="lang-chinese off">阿們。</strong><strong class="lang-spanish off">Amén.</strong></p>
     {%  if rank == "NATIONAL_DAY_UNITED_STATES" or rank == "NATIONAL_DAY_CANADA" %}
         </div>
     {%  endif  %}
