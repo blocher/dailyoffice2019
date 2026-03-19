@@ -543,7 +543,7 @@ export default {
 }
 
 * {
-  font-family: 'Adobe Caslon Pro', serif;
+  font-family: 'Adobe Caslon Pro', 'Noto Serif SC', 'Noto Serif TC', 'Source Han Serif SC', 'Source Han Serif TC', '宋体', '明體', serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -971,7 +971,7 @@ body {
   }
 
   p {
-    font-family: 'Adobe Caslon Pro', serif;
+    font-family: 'Adobe Caslon Pro', 'Noto Serif SC', 'Noto Serif TC', 'Source Han Serif SC', 'Source Han Serif TC', '宋体', '明體', serif;
     font-display: swap;
     font-weight: 300;
     font-style: normal;

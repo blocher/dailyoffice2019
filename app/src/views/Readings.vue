@@ -235,6 +235,12 @@ export default {
         { value: 'niv', label: 'NIV: New International Version' },
         { value: 'nrsvce', label: 'NRSV: New Revised Standard Version' },
         { value: 'nabre', label: 'NAB-RE: New American Bible Revised Edition' },
+        { value: 'cuvs', label: 'CUVS: 和合本（简体）' },
+        { value: 'cuv', label: 'CUV: 和合本（繁體）' },
+        { value: 'znsigao', label: '思高本（简体）' },
+        { value: 'sigao', label: '思高本（繁體）' },
+        { value: 'nvi', label: 'NVI: Nueva Versión Internacional' },
+        { value: 'rv1960', label: 'RVR1960: Reina-Valera 1960' },
       ],
       psalmsTranslation: 'contemporary',
       psalmsTranslations: [
