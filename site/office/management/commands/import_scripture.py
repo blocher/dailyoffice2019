@@ -1,4 +1,5 @@
 import re
+import time
 
 import scriptures
 from django.core.management.base import BaseCommand
@@ -55,6 +56,22 @@ class Command(BaseCommand):
                     citations.append(f"{book} {verses}")
         return citations
 
+    CJK_RE = re.compile(
+        r'([\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff\u2e80-\u2eff\u3000-\u303f\uff00-\uffef])'
+        r'\s+'
+        r'([\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff\u2e80-\u2eff\u3000-\u303f\uff00-\uffef])'
+    )
+    CHINESE_TRANSLATIONS = {"cuv", "cuvs", "sigao", "znsigao"}
+
+    @classmethod
+    def _strip_cjk_spaces(cls, text):
+        """Remove spaces between CJK characters inserted by BibleGateway."""
+        if not text:
+            return text
+        text = cls.CJK_RE.sub(r'\1\2', text)
+        text = cls.CJK_RE.sub(r'\1\2', text)
+        return text
+
     def get_passages(self, passage, translation="esv"):
         if "Psalm" not in passage:
             return
@@ -66,13 +83,21 @@ class Command(BaseCommand):
             try:
                 result = Passage(passage, source=translation).html
                 final.append(result.strip())
+                time.sleep(0.5)
             except PassageNotFoundException:
                 return "-"
-        return " ".join(final)
+            except Exception as e:
+                print(f"Error fetching {passage} ({translation}): {e}")
+                time.sleep(2)
+                return "-"
+        text = " ".join(final)
+        if translation in self.CHINESE_TRANSLATIONS:
+            text = self._strip_cjk_spaces(text)
+        return text
 
     def handle(self, *args, **options):
         days = OfficeDay.objects.all()
-        translations = ["esv", "rsv", "kjv", "nrsvce", "nabre", "niv", "nasb", "coverdale", "renewed_coverdale"]
+        translations = ["esv", "rsv", "kjv", "nrsvce", "nabre", "niv", "nasb", "coverdale", "renewed_coverdale", "cuvs", "cuv", "sigao", "znsigao", "nvi", "rv1960"]
         texts = [
             "mp_reading_1",
             "mp_reading_2",

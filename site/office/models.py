@@ -48,6 +48,19 @@ class OfficeDay(BaseModel):
         ).all()
         return {passage.passage: passage for passage in passages if passage}
 
+    # Fallback translations for versions that don't include deuterocanonical books
+    TRANSLATION_FALLBACKS = {
+        "cuvs": "znsigao",
+        "cuv": "sigao",
+        "esv": "nrsvce",
+        "niv": "nrsvce",
+        "nasb": "nrsvce",
+        "sigao": "nrsvce",
+        "znsigao": "nrsvce",
+        "nvi": "nrsvce",
+        "rv1960": "nvi",
+    }
+
     def passage_to_text(self, attribute, translation="esv"):
         passage = getattr(self, attribute)
         if not passage and "_abbreviated" in attribute:
@@ -55,6 +68,9 @@ class OfficeDay(BaseModel):
             passage = getattr(self, attribute)
         try:
             result = getattr(self.readings[passage], translation)
+            if not result or result.strip() in ["", "-"]:
+                fallback = self.TRANSLATION_FALLBACKS.get(translation, "nrsvce")
+                result = getattr(self.readings[passage], fallback, None)
             if not result or result.strip() in ["", "-"]:
                 result = self.readings[passage].nrsvce
             return result
@@ -264,6 +280,8 @@ class Collect(BaseModel):
     normalized_text = models.TextField(blank=True, null=True)
     traditional_text = CKEditor5Field(blank=True, null=True)
     normalized_traditional_text = models.TextField(blank=True, null=True)
+    chinese_text = models.TextField(blank=True, null=True)
+    spanish_text = models.TextField(blank=True, null=True)
     collect_type = models.ForeignKey(CollectType, on_delete=models.SET_NULL, null=True, blank=True)
     order = models.PositiveSmallIntegerField(default=0)
     number = models.PositiveSmallIntegerField(null=True, blank=True)
@@ -289,6 +307,20 @@ class Collect(BaseModel):
 
         return do_strip_tags(self.text).replace(" Amen.", "")
 
+    @property
+    def chinese_text_no_tags(self):
+        if not self.chinese_text:
+            return None
+        from office.management.commands.import_collects import do_strip_tags
+        return do_strip_tags(self.chinese_text).replace("阿們。", "").replace(" Amen.", "").strip()
+
+    @property
+    def spanish_text_no_tags(self):
+        if not self.spanish_text:
+            return None
+        from office.management.commands.import_collects import do_strip_tags
+        return do_strip_tags(self.spanish_text).replace("Amén.", "").replace(" Amen.", "").strip()
+
     def __str__(self):
         return self.title
 
@@ -304,6 +336,12 @@ class Scripture(BaseModel):
     nasb = models.TextField(blank=True, null=True)
     coverdale = models.TextField(blank=True, null=True)
     renewed_coverdale = models.TextField(blank=True, null=True)
+    cuvs = models.TextField(blank=True, null=True)
+    cuv = models.TextField(blank=True, null=True)
+    sigao = models.TextField(blank=True, null=True)
+    znsigao = models.TextField(blank=True, null=True)
+    nvi = models.TextField(blank=True, null=True)
+    rv1960 = models.TextField(blank=True, null=True)
 
     @staticmethod
     def no_headings(markup):
@@ -358,6 +396,14 @@ class Scripture(BaseModel):
     @property
     def renewed_coverdale_no_headings(self):
         return self.no_headings(self.renewed_coverdale)
+
+    @property
+    def nvi_no_headings(self):
+        return self.no_headings(self.nvi)
+
+    @property
+    def rv1960_no_headings(self):
+        return self.no_headings(self.rv1960)
 
     @property
     def apocrypha(self):
