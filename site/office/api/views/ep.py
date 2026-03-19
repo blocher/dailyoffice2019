@@ -148,8 +148,10 @@ class EPOpeningSentence(Module):
     def get_lines(self):
         sentence = self.get_sentence()
         style = self.office.settings["language_style"]
+        text = sentence["traditional"] if style == "traditional" else sentence["sentence"]
+        text = self.t(text)
         return [
             Line("Opening Sentence", "heading"),
-            Line(sentence["traditional"] if style == "traditional" else sentence["sentence"], "leader"),
+            Line(text, "leader"),
             Line(sentence["citation"], "citation"),
         ]

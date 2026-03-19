@@ -29,15 +29,18 @@ from rest_framework.viewsets import ViewSet
 
 from churchcal.api.permissions import ReadOnly
 from churchcal.api.serializer import DaySerializer, CommemorationSerializer
-from churchcal.calculations import get_church_year
+from churchcal.calculations import get_calendar_date, get_church_year
 from churchcal.models import Commemoration
+from office.api.line import Line
 from office.api.serializers import UpdateNoticeSerializer
-from office.api.views import Module, Line
+from office.api.translations import get_csv_suffix, is_chinese
+from office.api.views import Module
 from office.api.views.ep import EPOpeningSentence
 from office.canticles import DefaultCanticles, BCP1979CanticleTable, REC2011CanticleTable, EP2, EP1, S8
 from office.models import (
     UpdateNotice,
     HolyDayOfficeDay,
+    OfficeDay,
     StandardOfficeDay,
     ThirtyDayPsalterDay,
     Setting,
@@ -115,32 +118,6 @@ class Settings(dict):
 # rubric
 # leader_dialogue
 # congregation_dialogue
-
-
-def file_to_lines(filename):
-    def process_row(row):
-        result = {"content": row[0]}
-        if len(row) > 1 and row[1]:
-            result["line_type"] = row[1]
-        result["indented"] = False
-        if len(row) > 2:
-            if row[2].lower() == "true":
-                result["indented"] = "indent"
-            else:
-                result["indented"] = row[2]
-
-        if len(row) > 3:
-            if not row[3]:
-                result["extra_space_before"] = False
-            else:
-                result["extra_space_before"] = bool(strtobool(row[3].lower()))
-        return result
-
-    filename = "{}.csv".format(filename.replace(".csv", ""))
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    with open("{}/../texts/{}".format(dir_path, filename), encoding="utf-8") as csvfile:
-        reader = csv.reader(csvfile, quotechar='"', delimiter=",", quoting=csv.QUOTE_ALL, skipinitialspace=True)
-        return [Line(**process_row(row)) for row in reader]
 
 
 class MPOpeningSentence(Module):
@@ -291,9 +268,12 @@ class MPOpeningSentence(Module):
     def get_lines(self):
         sentence = self.get_sentence()
         style = self.office.settings["language_style"]
+        text = sentence["traditional"] if style == "traditional" else sentence["sentence"]
+        # Translate the opening sentence if Chinese is selected
+        text = self.t(text)
         return [
             Line("Opening Sentence", "heading"),
-            Line(sentence["traditional"] if style == "traditional" else sentence["sentence"], "leader"),
+            Line(text, "leader"),
             Line(sentence["citation"], "citation"),
         ]
 
@@ -302,7 +282,6 @@ class Office(object):
     tag = "office"
 
     def __init__(self, request, year, month, day):
-        from churchcal.calculations import get_calendar_date
 
         self.settings = Settings(request)
 
@@ -343,18 +322,18 @@ class Confession(Module):
         long = (setting == "long") or (setting == "long-on-fast" and fast)
         if long:
             return (
-                file_to_lines("confession_intro_long_traditional") + [Line("", "spacer")]
+                self._ftl("confession_intro_long_traditional") + [Line("", "spacer")]
                 if language_style == "traditional"
-                else file_to_lines("confession_intro_long") + [Line("", "spacer")]
+                else self._ftl("confession_intro_long") + [Line("", "spacer")]
             )
-        return file_to_lines("confession_intro_short") + [Line("", "spacer")]
+        return self._ftl("confession_intro_short") + [Line("", "spacer")]
 
     def get_body_lines(self):
         language_style = self.office.settings["language_style"]
         return (
-            file_to_lines("confession_body_traditional")
+            self._ftl("confession_body_traditional")
             if language_style == "traditional"
-            else file_to_lines("confession_body")
+            else self._ftl("confession_body")
         )
 
     def get_absolution_lines(self):
@@ -362,23 +341,23 @@ class Confession(Module):
         lay = self.office.settings["absolution"] == "lay"
         if lay:
             return (
-                file_to_lines("confession_absolution_lay_traditional")
+                self._ftl("confession_absolution_lay_traditional")
                 if language_style == "traditional"
-                else file_to_lines("confession_absolution_lay")
+                else self._ftl("confession_absolution_lay")
             )
         setting = self.office.settings["confession"]
         fast = self.office.date.fast_day
         long = (setting == "long") or (setting == "long-on-fast" and fast)
         if long:
             return (
-                file_to_lines("confession_absolution_long_traditional")
+                self._ftl("confession_absolution_long_traditional")
                 if language_style == "traditional"
-                else file_to_lines("confession_absolution_long")
+                else self._ftl("confession_absolution_long")
             )
         return (
-            file_to_lines("confession_absolution_short_traditional")
+            self._ftl("confession_absolution_short_traditional")
             if language_style == "traditional"
-            else file_to_lines("confession_absolution_short")
+            else self._ftl("confession_absolution_short")
         )
 
     def get_lines(self):
@@ -397,7 +376,7 @@ class Preces(Module):
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         file = "preces_traditional" if language_style == "traditional" else "preces"
-        return file_to_lines(file)
+        return self._ftl(file)
 
 
 class MPInvitatory(Module):
@@ -666,7 +645,7 @@ class MPInvitatory(Module):
         if filename != "pascha_nostrum":
             first_line_field = "first_line_traditional" if language_style == "traditional" else "first_line"
             second_line_field = "second_line_traditional" if language_style == "traditional" else "second_line"
-            canticle = file_to_lines(filename)
+            canticle = self._ftl(filename)
             canticle_heading = canticle[:3]
             canticle_body = canticle[3:]
             return (
@@ -675,7 +654,7 @@ class MPInvitatory(Module):
                 + canticle_body
                 + [Line(self.antiphon[first_line_field], "leader"), Line(self.antiphon[second_line_field])]
             )
-        return file_to_lines(filename)
+        return self._ftl(filename)
 
 
 class EPInvitatory(Module):
@@ -684,7 +663,7 @@ class EPInvitatory(Module):
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         file = "phos_hilaron_traditional" if language_style == "traditional" else "phos_hilaron"
-        return file_to_lines(file)
+        return self._ftl(file)
 
 
 class ReadingModule(Module):
@@ -719,7 +698,7 @@ class ReadingModule(Module):
         return self.office.date.primary.rank.precedence_rank <= 4
 
     def get_mass_reading_lines(self, reading):
-        translation = self.office.settings["bible_translation"]
+        translation = self.bible_translation
         abbreviated = self.office.settings["reading_length"] == "abbreviated"
         if abbreviated or not reading.short_text:
             text = Scripture.objects.get(passage=reading.long_citation)
@@ -736,7 +715,7 @@ class ReadingModule(Module):
         lines = [
             Line(citation, "subheading"),
             Line(self.audio(citation, reading.testament), "html"),
-            Line(passage_to_citation(citation), "leader"),
+            Line(passage_to_citation(citation, language=self.language), "leader"),
             Line("", "spacer"),
             Line(text, "html", "leader"),
             Line("", "spacer"),
@@ -748,10 +727,13 @@ class ReadingModule(Module):
     def get_reading(self, field, abbreviated=False, translation="esv", text_only=False):
         subheading = getattr(self.office.office_readings, field)
         passage = getattr(self.office.office_readings, field)
-        citation = passage_to_citation(getattr(self.office.office_readings, field))
+        citation = passage_to_citation(getattr(self.office.office_readings, field), language=self.language)
         text_obj = self.office.readings[passage]
         text = getattr(text_obj, translation)
         if text in ["-", "<html><head></head><body>-</body></html>", ""]:
+            fallback = OfficeDay.TRANSLATION_FALLBACKS.get(translation, "nrsvce")
+            text = getattr(text_obj, fallback, None)
+        if not text or text in ["-", "<html><head></head><body>-</body></html>", ""]:
             text = getattr(text_obj, "nrsvce")
         closing = self.closing(getattr(self.office.office_readings, "{}_testament".format(field)))
         closing_response = self.closing_response(getattr(self.office.office_readings, "{}_testament".format(field)))
@@ -767,10 +749,13 @@ class ReadingModule(Module):
             if has_abbreviated:
                 subheading = getattr(self.office.office_readings, "{}_abbreviated".format(field))
                 passage = getattr(self.office.office_readings, "{}_abbreviated".format(field))
-                citation = passage_to_citation(getattr(self.office.office_readings, "{}_abbreviated".format(field)))
+                citation = passage_to_citation(getattr(self.office.office_readings, "{}_abbreviated".format(field)), language=self.language)
                 text = self.office.readings[passage]
                 text = getattr(text, translation)
                 if text in ["-", "<html><head></head><body>-</body></html>"]:
+                    fallback = OfficeDay.TRANSLATION_FALLBACKS.get(translation, "nrsvce")
+                    text = getattr(text_obj, fallback, None)
+                if not text or text in ["-", "<html><head></head><body>-</body></html>"]:
                     text = getattr(text_obj, "nrsvce")
 
         text = self.remove_headings_if_needed(text)
@@ -821,7 +806,7 @@ class ReadingModule(Module):
         reading_cycle = self.office.settings["reading_cycle"]
         reading_length = self.office.settings["reading_length"]
         lectionary = self.office.settings["lectionary"]
-        translation = self.office.settings["bible_translation"]
+        translation = self.bible_translation
         if lectionary == "mass-readings" and self.has_mass_reading:
             return (
                 self.abbreviated_mass_reading(number)
@@ -934,7 +919,7 @@ class CanticleModule(Module):
             return []
         language_style = self.office.settings["language_style"]
         file = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
-        return file_to_lines(file)
+        return self._ftl(file)
 
     def get_canticle(self, data, antiphon=False, as_psalm=False):
         # check if data is a tuple
@@ -960,9 +945,9 @@ class CanticleModule(Module):
                     ]
                     + [Line(antiphon, "congregation")]
                     + [Line("", "spacer")]
-                    + file_to_lines(template)
+                    + self._ftl(template)
                     + [
-                        Line(data.citation, "citation"),
+                        Line(self.t(data.citation), "citation"),
                     ]
                     + self.gloria_lines(data, as_psalm=as_psalm)
                     + [Line("", "spacer")]
@@ -975,9 +960,9 @@ class CanticleModule(Module):
                 Line(data.english_name, "subheading"),
                 self.rubric(),
             ]
-            + file_to_lines(template)
+            + self._ftl(template)
             + [
-                Line(data.citation, "citation"),
+                Line(self.t(data.citation), "citation"),
             ]
             + self.gloria_lines(data, as_psalm=as_psalm)
         )
@@ -1010,20 +995,16 @@ class MPPsalms(CanticleModule, ReadingModule):
         pass
 
     def thirty_days(self):
-        from psalter.utils import get_psalms
-
         psalms = getattr(self.office.thirty_day_psalter_day, self.attribute)
         citations = psalms.split(",")
         heading = self.heading(citations)
         language_style = self.office.settings["psalm_translation"]
         psalm_style = self.office.settings["psalm_style"]
-        psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style)
+        psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style, display_language=self.language)
 
         return [Line(heading, "heading"), Line("Thirty Day Cycle", "subheading")] + psalms
 
     def sixty_days(self):
-        from psalter.utils import get_psalms
-
         psalms = getattr(self.office.office_readings, self.attribute)
         psalms = psalms.split("or")
 
@@ -1039,13 +1020,11 @@ class MPPsalms(CanticleModule, ReadingModule):
         heading = self.heading(citations)
         language_style = self.office.settings["psalm_translation"]
         psalm_style = self.office.settings["psalm_style"]
-        psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style)
+        psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style, display_language=self.language)
 
         return [Line(heading, "heading"), Line("Sixty Day Cycle", "subheading")] + psalms
 
     def mass_psalms(self):
-        from psalter.utils import get_psalms
-
         mass_psalm = None
         for reading in self.office.date.mass_readings:
             if reading.reading_type == "psalm":
@@ -1063,7 +1042,7 @@ class MPPsalms(CanticleModule, ReadingModule):
         heading = self.heading(mass_psalm)
         language_style = self.office.settings["psalm_translation"]
         psalm_style = self.office.settings["psalm_style"]
-        psalms = get_psalms(mass_psalm, api=True, language_style=language_style, headings=psalm_style)
+        psalms = get_psalms(mass_psalm, api=True, language_style=language_style, headings=psalm_style, display_language=self.language)
         return [Line(heading, "heading"), Line("Sunday & Holy Day Psalms", "subheading")] + psalms
 
     def get_psalm_lines(self):
@@ -1081,7 +1060,7 @@ class MPPsalms(CanticleModule, ReadingModule):
     def gloria_patri(self):
         language_style = self.office.settings["language_style"]
         file = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
-        return [Line("", "spacer")] + file_to_lines(file)
+        return [Line("", "spacer")] + self._ftl(file)
 
     def get_lines(self):
         return self.get_psalm_lines() + self.gloria_patri()
@@ -1199,7 +1178,7 @@ class Creed(Module):
         return [
             Line("The Apostles' Creed", "heading"),
             Line("Officiant and People together, all standing", "rubric"),
-        ] + file_to_lines(file)
+        ] + self._ftl(file)
 
 
 class Prayers(Module):
@@ -1251,7 +1230,7 @@ class Prayers(Module):
             pater_file = "pater_contemporary.csv"
 
         pronoun = "thy" if language_style == "traditional" else "your"
-        suffrages = file_to_lines(self.get_suffrages_file_name())
+        suffrages = self._ftl(self.get_suffrages_file_name())
         suffrages = self.add_names(suffrages)
         return (
             [
@@ -1261,9 +1240,9 @@ class Prayers(Module):
                 Line("Let us pray.", "leader_dialogue", preface="Officiant"),
                 Line("The People kneel or stand.", "rubric"),
             ]
-            + file_to_lines(kyrie_file)
+            + self._ftl(kyrie_file)
             + [Line("Officiant and People", "rubric")]
-            + file_to_lines(pater_file)
+            + self._ftl(pater_file)
             + suffrages
         )
 
@@ -1276,6 +1255,12 @@ class MPCollectOfTheDay(Module):
     def get_collect(self, commemoration):
         style = self.office.settings["language_style"]
         collect = getattr(commemoration, self.attribute)
+        lang = self.language
+        # Use Chinese/Spanish text if available
+        if lang in ("chinese-traditional", "chinese-simplified") and hasattr(collect, "chinese_text_no_tags") and collect.chinese_text_no_tags:
+            return collect.chinese_text_no_tags
+        if lang == "spanish" and hasattr(collect, "spanish_text_no_tags") and collect.spanish_text_no_tags:
+            return collect.spanish_text_no_tags
         text = collect.traditional_text_no_tags if style == "traditional" else collect.text_no_tags
         text = adapt_christmas_collect(text, commemoration)
         return text
@@ -1314,7 +1299,9 @@ class AdditionalCollects(Module):
         language_style = self.office.settings["language_style"]
         for collect in collects:
             text = collect["traditional"] if language_style == "traditional" else collect["contemporary"]
-            lines.append(Line(collect["title"], "heading"))
+            text = self.t(text)
+            title = self.t(collect["title"])
+            lines.append(Line(title, "heading"))
             if "weekly" in collect.keys() and collect["weekly"]:
                 lines.append(Line(self.office.date.date.strftime("%A"), "subheading"))
             lines.append(Line(text, "leader"))
@@ -1327,7 +1314,9 @@ class AdditionalCollects(Module):
 
         for collect in self.pick_fixed_collects() + (self.pick_mission_collect(),) + self.get_extra_collects():
             text = collect["traditional"] if language_style == "traditional" else collect["contemporary"]
-            lines.append(Line(collect["title"], "heading"))
+            text = self.t(text)
+            title = self.t(collect["title"])
+            lines.append(Line(title, "heading"))
             lines.append(Line(text, "leader"))
             lines.append(Line("Amen.", "congregation"))
 
@@ -1484,7 +1473,7 @@ class FinalPrayers(Module):
                     Line("The General Thanksgiving", "heading"),
                     Line("Officiant and People", "rubric"),
                 ]
-                + file_to_lines(file)
+                + self._ftl(file)
             )
 
         language_style = self.office.settings["language_style"]
@@ -1496,7 +1485,7 @@ class FinalPrayers(Module):
                 + [
                     Line("A Prayer of St. John Chrysostom", "heading"),
                 ]
-                + file_to_lines(file)
+                + self._ftl(file)
             )
 
         return lines
@@ -1567,9 +1556,9 @@ class Dismissal(Module):
             lines
             + [Line("", "spacer")]
             + [
-                Line(grace[part], "leader"),
-                Line("Amen.", "congregation"),
-                Line(grace["citation"], "citation"),
+                Line(self.t(grace[part]), "leader"),
+                Line(self.t("Amen."), "congregation"),
+                Line(self.t(grace["citation"]), "citation"),
             ]
         )
 
@@ -1596,21 +1585,21 @@ class GreatLitany(ShowGreatLitanyMixin, Module):
         if self.show_great_litany:
             style = self.office.settings["language_style"]
             kyrie = (
-                file_to_lines("kyrie_contemporary") if style == "contemporary" else file_to_lines("kyrie_traditional")
+                self._ftl("kyrie_contemporary") if style == "contemporary" else self._ftl("kyrie_traditional")
             )
             pater = (
-                file_to_lines("pater_contemporary") if style == "contemporary" else file_to_lines("pater_traditional")
+                self._ftl("pater_contemporary") if style == "contemporary" else self._ftl("pater_traditional")
             )
             template = "great_litany_traditional" if style == "traditional" else "great_litany"
             supplication_template = "supplication_traditional" if style == "traditional" else "supplication"
             lines = (
-                file_to_lines(template)
+                self._ftl(template)
                 + [Line("", "spacer")]
                 + kyrie
                 + [Line("", "spacer")]
                 + pater
                 + [Line("", "spacer")]
-                + file_to_lines(supplication_template)
+                + self._ftl(supplication_template)
             )
             for line in lines:
                 line["content"] = line["content"].replace("[_____________ and] ", self.get_names())
@@ -1726,7 +1715,7 @@ class FamilyEarlyEveningHymn(Module):
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         filename = "phos_hilaron_traditional" if language_style == "traditional" else "phos_hilaron"
-        return file_to_lines(filename)
+        return self._ftl(filename)
 
 
 class FamilyCloseOfDayHymn(Module):
@@ -1804,9 +1793,9 @@ class FamilyMorningPsalm(Module):
         gloria_patri = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
         psalm_style = self.office.settings["psalm_style"]
         return (
-            get_psalms("51:10-12", api=True, language_style=language_style, headings=psalm_style)
+            get_psalms("51:10-12", api=True, language_style=language_style, headings=psalm_style, display_language=self.language)
             + [Line("", "spacer")]
-            + file_to_lines(gloria_patri)
+            + self._ftl(gloria_patri)
         )
 
 
@@ -1818,9 +1807,9 @@ class FamilyMiddayPsalm(Module):
         gloria_patri = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
         psalm_style = self.office.settings["psalm_style"]
         return (
-            get_psalms("113:1-4", api=True, language_style=language_style, headings=psalm_style)
+            get_psalms("113:1-4", api=True, language_style=language_style, headings=psalm_style, display_language=self.language)
             + [Line("", "spacer")]
-            + file_to_lines(gloria_patri)
+            + self._ftl(gloria_patri)
         )
 
 
@@ -1832,9 +1821,9 @@ class FamilyCloseOfDayPsalm(Module):
         gloria_patri = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
         psalm_style = self.office.settings["psalm_style"]
         return (
-            get_psalms("134", api=True, language_style=language_style, headings=psalm_style)
+            get_psalms("134", api=True, language_style=language_style, headings=psalm_style, display_language=self.language)
             + [Line("", "spacer")]
-            + file_to_lines(gloria_patri)
+            + self._ftl(gloria_patri)
         )
 
 
@@ -1887,7 +1876,7 @@ class FamilyMorningScripture(FamilyReadingModule):
     name = "Reading"
 
     def get_long(self):
-        translation = self.office.settings["bible_translation"]
+        translation = self.bible_translation
         return {
             "passage": (
                 self.office.office_readings.mp_reading_1_abbreviated
@@ -1927,7 +1916,7 @@ class FamilyMiddayScripture(FamilyReadingModule):
     name = "Reading"
 
     def get_long(self):
-        translation = self.office.settings["bible_translation"]
+        translation = self.bible_translation
         return {
             "passage": self.office.office_readings.mp_reading_2,
             "text": self.get_reading("mp_reading_2", True, translation, text_only=True),
@@ -1958,7 +1947,7 @@ class FamilyEarlyEveningScripture(FamilyReadingModule):
     name = "Reading"
 
     def get_long(self):
-        translation = self.office.settings["bible_translation"]
+        translation = self.bible_translation
         return {
             "passage": (
                 self.office.office_readings.ep_reading_1_abbreviated
@@ -1998,7 +1987,7 @@ class FamilyCloseOfDayScripture(FamilyReadingModule):
     name = "Reading"
 
     def get_long(self):
-        translation = self.office.settings["bible_translation"]
+        translation = self.bible_translation
         return {
             "passage": self.office.office_readings.ep_reading_2,
             "text": self.get_reading("ep_reading_2", True, translation, text_only=True),
@@ -2061,7 +2050,7 @@ class FamilyCredo(Module):
             file = "creed_traditional" if language_style == "traditional" else "creed"
             return [
                 Line("The Apostles' Creed", "heading"),
-            ] + file_to_lines(file)
+            ] + self._ftl(file)
         return []
 
 
@@ -2074,7 +2063,7 @@ class FamilyPater(Module):
             filename = "pater_traditional"
         return [
             Line("The Lord's Prayer", "heading"),
-        ] + file_to_lines(filename)
+        ] + self._ftl(filename)
 
 
 class FamilyMorningCollect(Module):
@@ -2269,7 +2258,7 @@ class MiddayInvitatory(Module):
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         file_name = "midday_invitatory_traditional" if language_style == "traditional" else "midday_invitatory"
-        lines = file_to_lines(file_name)
+        lines = self._ftl(file_name)
         return [self.add_alleluia((line)) for line in lines]
 
 
@@ -2281,8 +2270,8 @@ class MiddayPsalms(Module):
         language_style = self.office.settings["language_style"]
         file_name = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
         psalm_style = self.office.settings["psalm_style"]
-        lines = file_to_lines(file_name)
-        psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style)
+        lines = self._ftl(file_name)
+        psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style, display_language=self.language)
 
         return [Line("The Psalms", "heading")] + psalms + lines
 
@@ -2403,16 +2392,16 @@ class MiddayPrayers(Module):
             if language_style == "traditional" or pater_style == "traditional"
             else "pater_contemporary"
         )
-        kyrie = file_to_lines(kyrie_file)
-        pater = file_to_lines(pater_file)
+        kyrie = self._ftl(kyrie_file)
+        pater = self._ftl(pater_file)
         suffrages_1_file_name = (
             "midday_suffrages_1_traditional" if language_style == "traditional" else "midday_suffrages_1"
         )
         suffrages_2_file_name = (
             "midday_suffrages_2_traditional" if language_style == "traditional" else "midday_suffrages_2"
         )
-        suffrages_1 = file_to_lines(suffrages_1_file_name)
-        suffrages_2 = file_to_lines(suffrages_2_file_name)
+        suffrages_1 = self._ftl(suffrages_1_file_name)
+        suffrages_2 = self._ftl(suffrages_2_file_name)
         return (
             [
                 Line("The Prayers", "heading"),
@@ -2462,7 +2451,7 @@ class MiddayConclusion(Module):
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         file_name = "midday_conclusion_traditional" if language_style == "traditional" else "midday_conclusion"
-        lines = file_to_lines(file_name)
+        lines = self._ftl(file_name)
         return [self.add_alleluia((line)) for line in lines]
 
 
@@ -2529,7 +2518,7 @@ class ComplineConfession(Module):
                 Line("Let us humbly confess our sins unto Almighty God.", "leader_dialogue"),
                 Line("Silence may be kept. The Officiant and People then say", "rubric"),
             ]
-            + file_to_lines(file_name)
+            + self._ftl(file_name)
             + [
                 Line("The Officiant alone says", "rubric"),
                 Line(
@@ -2582,13 +2571,13 @@ class ComplinePsalms(Module):
     def gloria_patri(self):
         language_style = self.office.settings["language_style"]
         file = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
-        return [Line("", "spacer")] + file_to_lines(file)
+        return [Line("", "spacer")] + self._ftl(file)
 
     def get_lines(self):
         psalms = "4,31:1-6,91,134"
         language_style = self.office.settings["language_style"]
         psalm_style = self.office.settings["psalm_style"]
-        psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style)
+        psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style, display_language=self.language)
 
         return [Line("The Psalms", "heading")] + psalms + self.gloria_patri()
 
@@ -2722,8 +2711,8 @@ class ComplinePrayers(AdditionalCollects):
         else:
             kyrie_file = "kyrie_contemporary"
             pater_file = "pater_contemporary"
-        kyrie = file_to_lines(kyrie_file)
-        pater = file_to_lines(pater_file)
+        kyrie = self._ftl(kyrie_file)
+        pater = self._ftl(pater_file)
         dialogue = [
             Line("The Prayers", "heading"),
             Line("Into your hands, O Lord, I commend my spirit;", "leader_dialogue"),
@@ -2780,7 +2769,7 @@ class ComplineCanticle(Module):
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         filename = "ep2_traditional" if language_style == "traditional" else "ep2"
-        canticle = file_to_lines(filename)
+        canticle = self._ftl(filename)
         gloria_patri_filename = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
         return (
             [
@@ -2794,10 +2783,10 @@ class ComplineCanticle(Module):
                 Line("", "spacer"),
             ]
             + canticle
-            + file_to_lines(gloria_patri_filename)
+            + self._ftl(gloria_patri_filename)
             + [Line("", "spacer"), Line(self.antiphon, "congregation")]
         )
-        return file_to_lines(filename)
+        return self._ftl(filename)
 
 
 class ComplineConclusion(Module):
@@ -2833,8 +2822,6 @@ class Compline(Office):
 
 class Readings(Module):
     def __init__(self, request, year, month, day, translation="esv", psalms="contemporary", style="whole_verse"):
-        from churchcal.calculations import get_calendar_date
-
         self.settings = Settings(request)
 
         self.date = get_calendar_date("{}-{}-{}".format(year, month, day))
@@ -3120,6 +3107,7 @@ def morning_prayer_30_day_psalms(obj):
             simplified_citations=True,
             language_style=obj.psalms,
             headings=obj.style,
+            display_language=obj.settings.get("display_language", "english"),
         ),
         testament="OT",
         cycle="30",
@@ -3147,6 +3135,7 @@ def evening_prayer_30_day_psalms(obj):
             simplified_citations=True,
             language_style=obj.psalms,
             headings=obj.style,
+            display_language=obj.settings.get("display_language", "english"),
         ),
         testament="OT",
         cycle="30",
@@ -3477,7 +3466,7 @@ def service_readings_to_citations(readings):
     return groups
 
 
-def mass_readings(commemoration, mass_year, calendar_date, translation="esv", psalm_style="contemporary"):
+def mass_readings(commemoration, mass_year, calendar_date, translation="esv", psalm_style="contemporary", display_language="english"):
     readings = commemoration.get_all_mass_readings_for_year(mass_year)
     passages = []
     for reading in readings:
@@ -3499,6 +3488,7 @@ def mass_readings(commemoration, mass_year, calendar_date, translation="esv", ps
                     simplified_citations=True,
                     language_style=psalm_style,
                     headings="none",
+                    display_language=display_language,
                 )
             ),
             testament=reading.testament,
@@ -3517,6 +3507,7 @@ def mass_readings(commemoration, mass_year, calendar_date, translation="esv", ps
                         simplified_citations=True,
                         language_style=psalm_style,
                         headings="none",
+                        display_language=display_language,
                     )
                 ),
                 testament=reading.testament,
@@ -3600,7 +3591,7 @@ class ReadingsSerializer(serializers.Serializer):
         ferias = {}
         non_ferias = {}
         for commemoration in obj.date.morning_and_evening:
-            masses = mass_readings(commemoration, obj.mass_year, obj.date, obj.translation, obj.psalms)
+            masses = mass_readings(commemoration, obj.mass_year, obj.date, obj.translation, obj.psalms, display_language=obj.settings.get("display_language", "english"))
             for mass, readings in masses.items():
                 name = f"{commemoration.name} ({mass}) " if mass not in ["", "-"] else f"{commemoration.name}"
                 if "FERIA" in commemoration.rank.name:
@@ -3782,8 +3773,8 @@ class GreatLitanyAloneModule(Module):
 
     def get_lines(self):
         style = self.style
-        kyrie = file_to_lines("kyrie_contemporary") if style == "contemporary" else file_to_lines("kyrie_traditional")
-        pater = file_to_lines("pater_contemporary") if style == "contemporary" else file_to_lines("pater_traditional")
+        kyrie = self._ftl("kyrie_contemporary") if style == "contemporary" else self._ftl("kyrie_traditional")
+        pater = self._ftl("pater_contemporary") if style == "contemporary" else self._ftl("pater_traditional")
         template = "great_litany_traditional" if style == "traditional" else "great_litany"
         supplication_template = "supplication_traditional" if style == "traditional" else "supplication"
         supplication_optional_template = (
@@ -3795,27 +3786,27 @@ class GreatLitanyAloneModule(Module):
 
         if self.portion == "both":
             return (
-                file_to_lines(template)
+                self._ftl(template)
                 + [Line("", "spacer")]
                 + kyrie
                 + [Line("", "spacer")]
                 + pater
                 + [Line("", "spacer")]
-                + file_to_lines(supplication_template)
-                + file_to_lines(supplication_optional_template)
+                + self._ftl(supplication_template)
+                + self._ftl(supplication_optional_template)
             )
         if self.portion == "litany":
             return (
-                file_to_lines(template)
+                self._ftl(template)
                 + [Line("", "spacer")]
                 + kyrie
                 + [Line("", "spacer")]
                 + pater
                 + [Line("", "spacer")]
-                + file_to_lines(short_ending_template)
+                + self._ftl(short_ending_template)
             )
         if self.portion == "supplication":
-            return file_to_lines(supplication_template) + file_to_lines(supplication_optional_template)
+            return self._ftl(supplication_template) + self._ftl(supplication_optional_template)
 
 
 class GreatLitanyModuleCollection:
@@ -3887,6 +3878,18 @@ SETTING_UI_METADATA = {
         "ui_category": "Readings",
         "ui_priority": 220,
         "ui_keywords": ["esv headings", "headings"],
+    },
+    "display_language": {
+        "ui_category": "Language",
+        "ui_priority": 5,
+        "ui_keywords": ["language", "chinese", "english", "中文", "简体", "繁體"],
+        "ui_help_short": "Choose the display language for prayers and liturgical text.",
+    },
+    "bible_translation": {
+        "ui_category": "Language",
+        "ui_priority": 6,
+        "ui_keywords": ["bible", "translation", "esv", "kjv", "rsv", "chinese", "和合本", "思高"],
+        "ui_help_short": "The Bible translation used for scripture readings.",
     },
     "language_style": {
         "ui_category": "Language",
