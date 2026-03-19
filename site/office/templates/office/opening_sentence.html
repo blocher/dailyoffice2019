@@ -1,6 +1,20 @@
+<div class="lang-english">
 <h2>{{ data.heading  }}</h2>
 {% if data.rubric %}
     <em>{{ data.rubric }}</em>
 {% endif %}
 <p>{{  data.sentence.sentence }}</p>
 <h5>{{  data.sentence.citation }}</h5>
+</div>
+
+<div class="lang-chinese off">
+<h2>始禮經句</h2>
+<p>{{  data.sentence.sentence }}</p>
+<h5>{{  data.sentence.citation }}</h5>
+</div>
+
+<div class="lang-spanish off">
+<h2>Sentencia de las Escrituras</h2>
+<p>{{  data.sentence.sentence }}</p>
+<h5>{{  data.sentence.citation }}</h5>
+</div>

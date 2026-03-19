@@ -281,6 +281,34 @@ minor_settings_dict = [
         ],
     },
     {
+        "title": "Display Language",
+        "name": "display_language",
+        "help_text": "Display the liturgical texts in English, Chinese, or Spanish.",
+        "options": [
+            {
+                "value": "english",
+                "hide": ["lang-chinese", "lang-spanish"],
+                "show": ["lang-english"],
+                "heading": "English",
+                "text": "Display liturgical texts in English",
+            },
+            {
+                "value": "chinese",
+                "hide": ["lang-english", "lang-spanish"],
+                "show": ["lang-chinese"],
+                "heading": "中文 (Chinese)",
+                "text": "以中文顯示禮文 Display liturgical texts in Chinese",
+            },
+            {
+                "value": "spanish",
+                "hide": ["lang-english", "lang-chinese"],
+                "show": ["lang-spanish"],
+                "heading": "Español (Spanish)",
+                "text": "Mostrar textos litúrgicos en español",
+            },
+        ],
+    },
+    {
         "title": "Language Style for Prayers",
         "name": "language_style",
         "help_text": "Traditional and contemporary language options are available for the Kyrie (Lord have mercy) and the Lord's Prayer",

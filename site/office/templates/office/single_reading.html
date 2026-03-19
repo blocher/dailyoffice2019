@@ -1,6 +1,7 @@
 <div id="{{data.tag_prefix}}{{ reading.tag }}" class="{% if not on %} off {% endif %}">
     <h4>{{ reading.passage }}</h4>
 
+    <div class="lang-english">
     <p><em>The lesson is read, the people sitting</em></p>
     <table class="dialogue">
         <tr>
@@ -8,15 +9,36 @@
             <td>{{ reading.intro }}</td>
         </tr>
     </table>
+    </div>
+    <div class="lang-chinese off">
+    <p><em>會眾皆坐。讀經員宣讀指定經課。讀經前說</em></p>
+    <table class="dialogue">
+        <tr>
+            <td><em>讀經</em></td>
+            <td>經課記載在 {{ reading.passage }}</td>
+        </tr>
+    </table>
+    </div>
+    <div class="lang-spanish off">
+    <p><em>Se lee la lección, el pueblo sentado</em></p>
+    <table class="dialogue">
+        <tr>
+            <td><em>Lector</em></td>
+            <td>{{ reading.intro }}</td>
+        </tr>
+    </table>
+    </div>
+
     <div class="reading">
         {%  if not reading.deuterocanon %}
         <div class="bible-audio off">
             <iframe src="https://www.esv.org/audio-player/{{ reading.passage|urlencode }}/" style="border: 0; width: 100%; height: 109px;"></iframe>
-            <!-- <audio controls type="audio/mpeg" src="https://audio.esv.org/hw/{{ reading.passage|urlencode }}"><a href="https://audio.esv.org/hw/{{ reading.passage|urlencode }}">Listen</a></audio>-->
         </div>
         {% endif %}
         <br>
         {{  reading.reading | safe }}
+
+        <div class="lang-english">
         <table class="dialogue">
             <tr>
                 <td><em>Reader</em></td>
@@ -29,6 +51,35 @@
                 </tr>
             {%  endif %}
         </table>
+        </div>
+        <div class="lang-chinese off">
+        <table class="dialogue">
+            <tr>
+                <td><em>讀經</em></td>
+                <td>這是上主的道。</td>
+            </tr>
+            {%  if reading.closing.people %}
+                <tr>
+                    <td><em>會眾</em></td>
+                    <td><strong>感謝上主。</strong></td>
+                </tr>
+            {%  endif %}
+        </table>
+        </div>
+        <div class="lang-spanish off">
+        <table class="dialogue">
+            <tr>
+                <td><em>Lector</em></td>
+                <td>Palabra del Señor.</td>
+            </tr>
+            {%  if reading.closing.people %}
+                <tr>
+                    <td><em>Pueblo</em></td>
+                    <td><strong>Demos Gracias a Dios.</strong></td>
+                </tr>
+            {%  endif %}
+        </table>
+        </div>
     </div>
 
 </div>
