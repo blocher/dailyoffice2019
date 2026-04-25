@@ -261,7 +261,7 @@ class TextMessageSend(models.Model):
         ordering = ("-attempted_at",)
         constraints = [
             models.CheckConstraint(
-                check=(
+                condition=(
                     (Q(event__isnull=False) & Q(patronal_feast__isnull=True))
                     | (Q(event__isnull=True) & Q(patronal_feast__isnull=False))
                 ),
