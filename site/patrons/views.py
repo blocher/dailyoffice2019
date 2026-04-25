@@ -110,6 +110,19 @@ def _ordinal(value):
     return "{}{}".format(value, suffix)
 
 
+PATRONS_DEBUG_MAX_SCAN_DAYS = 2000
+
+
+def _query_debug_mode(request):
+    raw = request.GET.get("debug")
+    if raw is None:
+        return False
+    s = str(raw).strip().lower()
+    if s in ("", "0", "false", "no", "off", "f", "n"):
+        return False
+    return True
+
+
 def _query_grace_includes_all(request):
     raw = request.GET.get("grace")
     if raw is None:
@@ -124,6 +137,75 @@ def _member_excluded_by_grace_param(member, request):
     if _query_grace_includes_all(request):
         return False
     return (member.first_name or "").strip().casefold() == "grace"
+
+
+def _any_view_entry_on_date(value):
+    for f in PatronalFeast.objects.select_related("family_member").all():
+        if f.matches_date(value):
+            return True
+    for e in Event.objects.select_related("family_member").all():
+        if e.matches_date(value):
+            return True
+    return False
+
+
+def _day_view_effective_date(request, requested):
+    if _any_view_entry_on_date(requested):
+        return requested, None
+    if not _query_debug_mode(request):
+        return requested, None
+    d = requested + timedelta(days=1)
+    for _ in range(PATRONS_DEBUG_MAX_SCAN_DAYS):
+        if _any_view_entry_on_date(d):
+            return d, requested
+        d += timedelta(days=1)
+    return requested, None
+
+
+def _index_has_any_item(anchor):
+    for _ in feast_items(anchor):
+        return True
+    for _ in event_items(anchor):
+        return True
+    return False
+
+
+def _index_effective_today(request, local_today):
+    if _index_has_any_item(local_today):
+        return local_today, None
+    if not _query_debug_mode(request):
+        return local_today, None
+    d = local_today + timedelta(days=1)
+    for _ in range(PATRONS_DEBUG_MAX_SCAN_DAYS):
+        if _index_has_any_item(d):
+            return d, local_today
+        d += timedelta(days=1)
+    return local_today, None
+
+
+def _message_window_has_entries(window_start, request):
+    for offset in (0, 1):
+        d = window_start + timedelta(days=offset)
+        for f in PatronalFeast.objects.select_related("family_member").all():
+            if f.matches_date(d) and not _member_excluded_by_grace_param(f.family_member, request):
+                return True
+        for e in Event.objects.select_related("family_member").all():
+            if e.matches_date(d) and not _member_excluded_by_grace_param(e.family_member, request):
+                return True
+    return False
+
+
+def _message_effective_window_start(request, window_start):
+    if _message_window_has_entries(window_start, request):
+        return window_start
+    if not _query_debug_mode(request):
+        return window_start
+    d = window_start + timedelta(days=1)
+    for _ in range(PATRONS_DEBUG_MAX_SCAN_DAYS):
+        if _message_window_has_entries(d, request):
+            return d
+        d += timedelta(days=1)
+    return window_start
 
 
 def _when_phrase(message_day, window_start, local_today):
@@ -199,6 +281,7 @@ def _event_entries_for_day(value, when_text, day_order, request):
 
 
 def _message_response_window(request, window_start):
+    window_start = _message_effective_window_start(request, window_start)
     d0 = window_start
     d1 = window_start + timedelta(days=1)
     local_today = timezone.localdate()
@@ -210,13 +293,23 @@ def _message_response_window(request, window_start):
 
     all_entries.sort(key=lambda e: (e["day_order"], e["person"].casefold(), e["kind_sort"], e["detail_sort"]))
     body = "\n".join(entry["message"] for entry in all_entries)
+    if not all_entries:
+        if not _query_debug_mode(request):
+            return HttpResponse("", content_type="text/plain; charset=utf-8")
+        day_url = request.build_absolute_uri(
+            reverse(
+                "patrons:day",
+                kwargs={"year": window_start.year, "month": window_start.month, "day": window_start.day},
+            )
+        )
+        return HttpResponse(day_url, content_type="text/plain; charset=utf-8")
     day_url = request.build_absolute_uri(
         reverse(
             "patrons:day",
             kwargs={"year": window_start.year, "month": window_start.month, "day": window_start.day},
         )
     )
-    body = "{}\n{}".format(body, day_url) if body else day_url
+    body = "{}\n{}".format(body, day_url)
     return HttpResponse(body, content_type="text/plain; charset=utf-8")
 
 
@@ -248,7 +341,8 @@ def calendar_feed(request, token):
 
 
 def index(request):
-    today = timezone.localdate()
+    local_today = timezone.localdate()
+    today, debug_list_shifted_from = _index_effective_today(request, local_today)
     items = list(feast_items(today)) + list(event_items(today))
     items.sort(key=lambda item: (item["sort_from_today"], item["person"], item["title"]))
 
@@ -262,6 +356,8 @@ def index(request):
             "calendar_filters": CALENDAR_FILTERS,
             "calendar_feed": CalendarFeed.objects.filter(enabled=True).first(),
             "today": today,
+            "local_today": local_today,
+            "debug_list_shifted_from": debug_list_shifted_from,
         },
     )
 
@@ -320,9 +416,10 @@ def _day_view_entries_for(value):
 
 def day_view(request, year, month, day):
     try:
-        d0 = date_class(year, month, day)
+        requested = date_class(year, month, day)
     except ValueError:
         raise Http404("Invalid date.")
+    d0, debug_shifted_from = _day_view_effective_date(request, requested)
     d1 = d0 + timedelta(days=1)
     return render(
         request,
@@ -332,6 +429,7 @@ def day_view(request, year, month, day):
             "d1": d1,
             "today_entries": _day_view_entries_for(d0),
             "tomorrow_entries": _day_view_entries_for(d1),
+            "debug_shifted_from": debug_shifted_from,
         },
     )
 

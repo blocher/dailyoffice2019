@@ -209,6 +209,42 @@ class PatronViewTests(TestCase):
         bad = self.client.get("/patrons/day/2026-2-30/")
         self.assertEqual(bad.status_code, 404)
 
+        response_debug = self.client.get(url, data={"debug": "1"})
+        self.assertEqual(response_debug.status_code, 200)
+        self.assertNotContains(response_debug, "Debug: no entries")
+
+    def test_day_view_debug_shows_next_day_with_entries(self):
+        member = FamilyMember.objects.create(first_name="Skip", last_name="Ahead")
+        PatronalFeast.objects.create(
+            family_member=member,
+            normalized_name="St. Skip",
+            feast_name="Skip Feast",
+            general_calendar_name="Skip Cal",
+            general_month=1,
+            general_day=5,
+        )
+        url = reverse("patrons:day", kwargs={"year": 2026, "month": 1, "day": 1})
+        response = self.client.get(url, data={"debug": "1"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Debug: no entries")
+        self.assertContains(response, "January 1, 2026")
+        self.assertContains(response, "January 5, 2026")
+        self.assertContains(response, "St. Skip")
+
+    def test_index_debug_does_not_shift_when_list_nonempty(self):
+        member = FamilyMember.objects.create(first_name="List", last_name="Full")
+        PatronalFeast.objects.create(
+            family_member=member,
+            normalized_name="St. List",
+            feast_name="List Feast",
+            general_calendar_name="List Cal",
+            general_month=3,
+            general_day=15,
+        )
+        response = self.client.get(reverse("patrons:index"), data={"debug": "1"})
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "next day with at least one entry")
+
     def test_calendar_feed_requires_current_enabled_token(self):
         feed = CalendarFeed.objects.create(name="Private Feed")
 
@@ -421,10 +457,32 @@ class PatronMessageApiTests(TestCase):
             self.assertTrue(resp.content.decode().rstrip().endswith("/patrons/day/2026-5-31/"))
 
     @patch("patrons.views.timezone.localdate", return_value=date(2026, 1, 1))
-    def test_message_body_is_only_day_url_when_no_rows(self, mocked_localdate):
+    def test_message_body_is_empty_when_no_rows_and_debug_off(self, mocked_localdate):
         response = self.client.get(reverse("patrons_message_today"))
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content.decode(), "")
+
+    @patch("patrons.views.timezone.localdate", return_value=date(2026, 1, 1))
+    def test_message_body_is_only_day_url_when_no_rows_and_debug_on(self, mocked_localdate):
+        response = self.client.get(reverse("patrons_message_today"), data={"debug": "1"})
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content.decode(), "http://testserver/patrons/day/2026-1-1/")
+
+    @patch("patrons.views.timezone.localdate", return_value=date(2026, 1, 1))
+    def test_message_debug_advances_past_empty_window(self, mocked_localdate):
+        member = FamilyMember.objects.create(first_name="Moxie", last_name="March")
+        PatronalFeast.objects.create(
+            family_member=member,
+            normalized_name="St. Moxie",
+            feast_name="Moxie Feast",
+            general_calendar_name="Moxie Cal",
+            general_month=1,
+            general_day=4,
+        )
+        response = self.client.get(reverse("patrons_message_today"), data={"debug": "1"})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Moxie Cal", response.content.decode())
+        self.assertIn("http://testserver/patrons/day/2026-1-3/", response.content.decode())
 
 
 class PatronSmsTests(TestCase):

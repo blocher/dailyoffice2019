@@ -57,6 +57,17 @@
                 line-height: 1.5;
             }
 
+            .patrons-debug-notice {
+                background: #f4f0e2;
+                border: 1px solid var(--gold);
+                color: var(--ink);
+                padding: 12px 14px;
+                border-radius: 6px;
+                margin: 0 0 24px;
+                font-size: 0.95rem;
+                line-height: 1.45;
+            }
+
             .calendar-link {
                 color: var(--green);
                 border: 1px solid var(--green);
@@ -770,6 +781,13 @@
                     <a class="calendar-link" href="{{ calendar_feed.get_absolute_url }}">Subscribe to calendar</a>
                 {% endif %}
             </section>
+
+            {% if debug_list_shifted_from %}
+                <p class="patrons-debug-notice" role="status">
+                    Debug: no feasts or life events in the list for {{ local_today|date:"l, F j, Y" }}. Showing data as of
+                    {{ today|date:"l, F j, Y" }} (the next day with at least one entry).
+                </p>
+            {% endif %}
 
             <div class="view-tabs" id="view-tabs" role="tablist" aria-label="Patrons views">
                 <button

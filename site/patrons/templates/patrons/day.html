@@ -3,6 +3,12 @@
 {% block title %}Patrons — {{ d0|date:"F j, Y" }}{% endblock %}
 
 {% block content %}
+    {% if debug_shifted_from %}
+        <p class="patrons-debug-notice" role="status">
+            Debug: no entries on {{ debug_shifted_from|date:"l, F j, Y" }}. Showing the next day with at least one entry
+            ({{ d0|date:"l, F j, Y" }}).
+        </p>
+    {% endif %}
     <h1 class="day-page-title">{{ d0|date:"l, F j, Y" }}</h1>
     <p class="lede">Patronal feasts, life events, and calendar dates for this day and the next.</p>
 
