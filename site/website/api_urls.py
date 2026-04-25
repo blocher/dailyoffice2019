@@ -31,6 +31,7 @@ from office.api.views.resources import (
     ScriptureViewSet,
     GroupedCollectsViewSet,
 )
+from patrons import views as patron_views
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -53,6 +54,13 @@ router_v1.register(r"scripture", ScriptureViewSet, basename="scripture2")
 router_v1.register(r"collect_categories", CollectCategoryViewSet, basename="collect_category")
 
 urlpatterns = [
+    path("api/patrons/message/today", patron_views.message_today, name="patrons_message_today"),
+    path("api/patrons/message/tomorrow", patron_views.message_tomorrow, name="patrons_message_tomorrow"),
+    path(
+        "api/patrons/message/date/<int:year>-<int:month>-<int:day>",
+        patron_views.message_date,
+        name="patrons_message_date",
+    ),
     re_path(r"^api/v1/", include(router_v1.urls)),
     path("api/v1/api-auth/", include("rest_framework.urls")),
     path(r"api/v1/calendar/<int:year>-<int:month>-<int:day>", DayView.as_view(), name="day_view"),

@@ -1,3 +1,5 @@
+from datetime import date as date_class, timedelta
+
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
@@ -5,13 +7,26 @@ from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 
 from patrons.calendar import build_ics_calendar
-from patrons.dates import display_month_day, jan_first_sort_key, next_occurrence, occurrence_date
+from patrons.dates import (
+    display_month_day,
+    jan_first_sort_key,
+    month_day_matches,
+    next_occurrence,
+    occurrence_date,
+)
 from patrons.models import CalendarFeed, Event, FamilyMember, PatronalFeast
 
 
 CALENDAR_FILTERS = (
     ("general", "Catholic/General"),
     ("traditional", "Catholic/Traditional"),
+    ("episcopal", "Episcopal"),
+)
+
+# Short labels for message API (pipe-delimited) lines.
+SHORT_CALENDAR = (
+    ("general", "Catholic"),
+    ("traditional", "Traditional"),
     ("episcopal", "Episcopal"),
 )
 
@@ -48,6 +63,171 @@ def _feast_entry_lines(feast):
     if primary and display and display != primary:
         return primary, display
     return primary, ""
+
+
+def _feast_title_for_message(feast, value):
+    for prefix, _short in SHORT_CALENDAR:
+        month = getattr(feast, "{}_month".format(prefix))
+        day = getattr(feast, "{}_day".format(prefix))
+        calendar_name = (getattr(feast, "{}_calendar_name".format(prefix)) or "").strip()
+        if calendar_name and month and day and month_day_matches(value, month, day):
+            return calendar_name
+    if (feast.feast_name or "").strip():
+        return feast.feast_name.strip()
+    return (feast.display_feast_name or "").strip()
+
+
+def _format_month_day_long(occ):
+    return "{} {}".format(occ.strftime("%B"), occ.day)
+
+
+def _feast_calendar_for_day(feast, value):
+    matching = []
+    mismatch_notes = []
+    for prefix, short in SHORT_CALENDAR:
+        month = getattr(feast, "{}_month".format(prefix))
+        day = getattr(feast, "{}_day".format(prefix))
+        if not month or not day:
+            continue
+        if month_day_matches(value, month, day):
+            matching.append(short)
+        else:
+            occ = occurrence_date(value.year, month, day)
+            mismatch_notes.append("{} on {}".format(short, _format_month_day_long(occ)))
+    main = ", ".join(matching)
+    if mismatch_notes:
+        if main:
+            return "{} ({})".format(main, "; ".join(mismatch_notes))
+        return "({})".format("; ".join(mismatch_notes))
+    return main
+
+
+def _ordinal(value):
+    if 10 <= value % 100 <= 20:
+        suffix = "th"
+    else:
+        suffix = {1: "st", 2: "nd", 3: "rd"}.get(value % 10, "th")
+    return "{}{}".format(value, suffix)
+
+
+def _query_grace_includes_all(request):
+    raw = request.GET.get("grace")
+    if raw is None:
+        return False
+    s = raw.strip().lower()
+    if s in ("", "0", "false", "no", "off", "f", "n"):
+        return False
+    return True
+
+
+def _member_excluded_by_grace_param(member, request):
+    if _query_grace_includes_all(request):
+        return False
+    return (member.first_name or "").strip().casefold() == "grace"
+
+
+def _when_phrase(message_day, window_start, local_today):
+    if window_start == local_today:
+        if message_day == window_start:
+            return "TODAY"
+        if message_day == window_start + timedelta(days=1):
+            return "TOMORROW"
+    return message_day.isoformat()
+
+
+def _life_event_message_label(event):
+    label = event.get_event_type_display()
+    if label.endswith(" Day"):
+        return label
+    return "{} Day".format(label)
+
+
+def _feast_entries_for_day(value, when_text, day_order, request):
+    entries = []
+    for feast in PatronalFeast.objects.select_related("family_member").all():
+        if not feast.matches_date(value):
+            continue
+        if _member_excluded_by_grace_param(feast.family_member, request):
+            continue
+        feast_title = _feast_title_for_message(feast, value)
+        line = "{} | {} | {} | {}".format(
+            _person_display_name(feast.family_member),
+            when_text,
+            feast_title,
+            _feast_calendar_for_day(feast, value),
+        )
+        entries.append(
+            {
+                "person": feast.family_member.full_name,
+                "day_order": day_order,
+                "kind_sort": 0,
+                "detail_sort": (
+                    (feast.normalized_name or "").casefold(),
+                    (feast_title or "").casefold(),
+                ),
+                "message": line,
+            }
+        )
+    return entries
+
+
+def _event_entries_for_day(value, when_text, day_order, request):
+    entries = []
+    for event in Event.objects.select_related("family_member").all():
+        if not event.matches_date(value):
+            continue
+        if _member_excluded_by_grace_param(event.family_member, request):
+            continue
+        anniversary = value.year - event.date.year
+        life_event_label = _life_event_message_label(event)
+        entries.append(
+            {
+                "person": event.family_member.full_name,
+                "day_order": day_order,
+                "kind_sort": 1,
+                "detail_sort": (life_event_label.casefold(), event.date.year),
+                "message": "{} | {} | {} | {} anniversary ({})".format(
+                    _person_display_name(event.family_member),
+                    when_text,
+                    life_event_label,
+                    _ordinal(anniversary),
+                    event.date.year,
+                ),
+            }
+        )
+    return entries
+
+
+def _message_response_window(request, window_start):
+    d0 = window_start
+    d1 = window_start + timedelta(days=1)
+    local_today = timezone.localdate()
+    all_entries = []
+    for day_order, message_day in enumerate((d0, d1)):
+        when_text = _when_phrase(message_day, window_start, local_today)
+        all_entries.extend(_feast_entries_for_day(message_day, when_text, day_order, request))
+        all_entries.extend(_event_entries_for_day(message_day, when_text, day_order, request))
+
+    all_entries.sort(key=lambda e: (e["day_order"], e["person"].casefold(), e["kind_sort"], e["detail_sort"]))
+    body = "\n".join(entry["message"] for entry in all_entries)
+    return HttpResponse(body, content_type="text/plain; charset=utf-8")
+
+
+def message_today(request):
+    today = timezone.localdate()
+    return _message_response_window(request, today)
+
+
+def message_tomorrow(request):
+    return _message_response_window(request, timezone.localdate() + timedelta(days=1))
+
+
+def message_date(request, year, month, day):
+    try:
+        window_start = date_class(year, month, day)
+    except ValueError:
+        return HttpResponse("Invalid date.", status=404, content_type="text/plain; charset=utf-8")
+    return _message_response_window(request, window_start)
 
 
 def calendar_feed(request, token):

@@ -126,7 +126,7 @@ class PatronImportTests(TestCase):
 
         call_command("import_patron_events")
         self.assertEqual(FamilyMember.objects.count(), 7)
-        self.assertEqual(Event.objects.count(), 20)
+        self.assertEqual(Event.objects.count(), 21)
 
 
 class PatronViewTests(TestCase):
@@ -238,6 +238,172 @@ class PatronViewTests(TestCase):
         self.assertIn("Leap: St. Leap: General Leap Feast", summaries)
         self.assertTrue(any("Catholic, Traditional Catholic" in description for description in descriptions))
         self.assertIn(date(2025, 2, 28), starts)
+
+
+class PatronMessageApiTests(TestCase):
+    @patch("patrons.views.timezone.localdate", return_value=date(2026, 7, 21))
+    def test_today_message_endpoint_returns_sorted_plain_text_messages(self, mocked_localdate):
+        alice = FamilyMember.objects.create(first_name="Alice", last_name="Able")
+        benedict = FamilyMember.objects.create(first_name="Benedict", last_name="Baker")
+
+        PatronalFeast.objects.create(
+            family_member=alice,
+            normalized_name="St. Agnes",
+            feast_name="Fallback Agnes Feast",
+            traditional_calendar_name="Traditional Agnes Feast",
+            episcopal_calendar_name="Episcopal Agnes Feast",
+            general_month=7,
+            general_day=21,
+            traditional_month=7,
+            traditional_day=21,
+            episcopal_month=7,
+            episcopal_day=21,
+        )
+        Event.objects.create(
+            family_member=alice,
+            event_type=Event.BAPTISM,
+            date=date(2020, 7, 21),
+        )
+        PatronalFeast.objects.create(
+            family_member=benedict,
+            normalized_name="St. Benedict",
+            feast_name="Fallback Benedict Feast",
+            general_calendar_name="General Benedict Feast",
+            general_month=7,
+            general_day=21,
+            traditional_month=7,
+            traditional_day=22,
+        )
+
+        response = self.client.get(reverse("patrons_message_today"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response["Content-Type"].startswith("text/plain"))
+        self.assertEqual(
+            response.content.decode(),
+            (
+                "Alice | TODAY | Traditional Agnes Feast | Catholic, Traditional, Episcopal\n"
+                "Alice | TODAY | Baptism Day | 6th anniversary (2020)\n"
+                "Benedict | TODAY | General Benedict Feast | Catholic (Traditional on July 22)\n"
+                "Benedict | TOMORROW | Fallback Benedict Feast | Traditional (Catholic on July 21)"
+            ),
+        )
+        mocked_localdate.assert_called_once_with()
+
+    @patch("patrons.views.timezone.localdate", return_value=date(2026, 7, 21))
+    def test_tomorrow_message_endpoint_uses_tomorrow_phrase(self, mocked_localdate):
+        clare = FamilyMember.objects.create(first_name="Clare", last_name="Carter")
+        Event.objects.create(
+            family_member=clare,
+            event_type=Event.WEDDING,
+            date=date(2016, 7, 22),
+        )
+
+        response = self.client.get(reverse("patrons_message_tomorrow"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.content.decode(),
+            "Clare | 2026-07-22 | Wedding Day | 10th anniversary (2016)",
+        )
+        mocked_localdate.assert_called_once_with()
+
+    @patch("patrons.views.timezone.localdate", return_value=date(2020, 1, 1))
+    def test_date_message_endpoint_uses_on_date_phrase(self, mocked_localdate):
+        david = FamilyMember.objects.create(first_name="David", last_name="Dunn")
+        PatronalFeast.objects.create(
+            family_member=david,
+            normalized_name="St. James",
+            feast_name="Fallback Feast",
+            general_calendar_name="St. James the Greater",
+            general_month=7,
+            general_day=23,
+        )
+
+        response = self.client.get("/api/patrons/message/date/2026-07-23")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.content.decode(),
+            "David | 2026-07-23 | St. James the Greater | Catholic",
+        )
+        mocked_localdate.assert_called()
+
+    @patch("patrons.views.timezone.localdate", return_value=date(2020, 1, 1))
+    def test_message_appends_other_calendar_days(self, mocked_localdate):
+        eve = FamilyMember.objects.create(first_name="Eve", last_name="Early")
+        PatronalFeast.objects.create(
+            family_member=eve,
+            normalized_name="St. Example",
+            feast_name="Fallback",
+            general_calendar_name="General Day",
+            traditional_calendar_name="Traditional Day",
+            general_month=7,
+            general_day=21,
+            traditional_month=7,
+            traditional_day=22,
+        )
+
+        response = self.client.get("/api/patrons/message/date/2026-07-22")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.content.decode(),
+            "Eve | 2026-07-22 | Traditional Day | Traditional (Catholic on July 21)",
+        )
+        mocked_localdate.assert_called()
+
+    @patch("patrons.views.timezone.localdate", return_value=date(2026, 7, 20))
+    def test_today_and_date_endpoints_match_when_date_equals_today(self, mocked_localdate):
+        frank = FamilyMember.objects.create(first_name="Frank", last_name="Friday")
+        PatronalFeast.objects.create(
+            family_member=frank,
+            normalized_name="St. Frank",
+            feast_name="Frank Feast",
+            general_calendar_name="General Frank",
+            general_month=7,
+            general_day=20,
+        )
+        a = self.client.get(reverse("patrons_message_today"))
+        b = self.client.get("/api/patrons/message/date/2026-07-20")
+        self.assertEqual(a.status_code, 200)
+        self.assertEqual(a.content, b.content)
+
+    def test_date_message_endpoint_rejects_invalid_dates(self):
+        response = self.client.get("/api/patrons/message/date/2026-02-30")
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.content.decode(), "Invalid date.")
+
+    @patch("patrons.views.timezone.localdate", return_value=date(2026, 5, 31))
+    def test_grace_query_omits_grace_first_name_unless_param_truthy(self, mocked_localdate):
+        grace = FamilyMember.objects.create(first_name="grace", last_name="Locher")
+        maria = FamilyMember.objects.create(first_name="Maria", last_name="Merry")
+        PatronalFeast.objects.create(
+            family_member=grace,
+            normalized_name="Blessed Virgin Mary",
+            feast_name="Our Lady of Grace",
+            general_calendar_name="Visitation BVM",
+            general_month=5,
+            general_day=31,
+        )
+        PatronalFeast.objects.create(
+            family_member=maria,
+            normalized_name="St. Example",
+            feast_name="Example Feast",
+            general_calendar_name="Example",
+            general_month=5,
+            general_day=31,
+        )
+        with_default = self.client.get(reverse("patrons_message_today"))
+        with_false = self.client.get(reverse("patrons_message_today"), data={"grace": "false"})
+        with_true = self.client.get(reverse("patrons_message_today"), data={"grace": "1"})
+
+        self.assertNotIn("Visitation BVM", with_default.content.decode())
+        self.assertIn("Maria", with_default.content.decode())
+        self.assertIn("Visitation BVM", with_true.content.decode())
+        self.assertIn("Example", with_true.content.decode())
+        self.assertNotIn("Visitation BVM", with_false.content.decode())
 
 
 class PatronSmsTests(TestCase):
