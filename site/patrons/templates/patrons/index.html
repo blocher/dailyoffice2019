@@ -70,6 +70,29 @@
                 color: var(--green);
             }
 
+            a.date-link {
+                font-weight: 700;
+                text-decoration: underline;
+                text-decoration-color: rgba(49, 91, 75, 0.35);
+            }
+
+            a.date-link:hover {
+                text-decoration-color: var(--green);
+            }
+
+            a.day-number-link {
+                display: block;
+                font-weight: 700;
+                color: var(--green);
+                margin-bottom: 8px;
+                text-decoration: none;
+            }
+
+            a.day-number-link:hover {
+                text-decoration: underline;
+                text-decoration-color: var(--green);
+            }
+
             .filters {
                 display: grid;
                 grid-template-columns: repeat(4, minmax(150px, 1fr));
@@ -415,12 +438,6 @@
             .calendar-day.outside-month {
                 background: #f7f8f5;
                 color: var(--muted);
-            }
-
-            .day-number {
-                font-weight: 700;
-                color: var(--green);
-                margin-bottom: 8px;
             }
 
             .calendar-event {
@@ -952,8 +969,11 @@
                                 data-details="{{ item.details }}"
                                 data-sort-today="{{ item.sort_from_today }}"
                                 data-sort-jan="{{ item.sort_jan_first }}"
+                                data-day-view-url="{{ item.day_view_url }}"
                             >
-                                <td data-label="Date">{{ item.date_label }}</td>
+                                <td data-label="Date">
+                                    <a class="date-link" href="{{ item.day_view_url }}">{{ item.date_label }}</a>
+                                </td>
                                 <td data-label="Person"><span class="person">{{ item.person_display|default:item.person }}</span></td>
                                 <td data-label="Entry">
                                     {% if item.kind == "feast" %}
@@ -1540,8 +1560,9 @@
                         cell.classList.add("outside-month");
                     }
 
-                    const label = document.createElement("div");
-                    label.className = "day-number";
+                    const label = document.createElement("a");
+                    label.className = "day-number day-number-link";
+                    label.href = `/patrons/day/${day.getFullYear()}-${day.getMonth() + 1}-${day.getDate()}/`;
                     label.textContent = day.toLocaleDateString(undefined, {
                         weekday: window.innerWidth <= 760 ? "short" : undefined,
                         month: window.innerWidth <= 760 ? "short" : undefined,

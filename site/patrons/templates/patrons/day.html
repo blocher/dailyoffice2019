@@ -1,0 +1,36 @@
+{% extends "patrons/detail_base.html" %}
+
+{% block title %}Patrons — {{ d0|date:"F j, Y" }}{% endblock %}
+
+{% block content %}
+    <h1 class="day-page-title">{{ d0|date:"l, F j, Y" }}</h1>
+    <p class="lede">Patronal feasts, life events, and calendar dates for this day and the next.</p>
+
+    {% if today_entries %}
+        {% for entry in today_entries %}
+            {% if entry.kind == "feast" %}
+                {% include "patrons/_feast_block.html" with feast=entry.feast calendar_rows=entry.calendar_rows %}
+            {% else %}
+                {% include "patrons/_event_day_block.html" with event=entry.event view_date=entry.view_date %}
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <p class="panel empty-day-note">No patronal feasts or life events on this day.</p>
+    {% endif %}
+
+    <hr class="day-divider" />
+
+    <h2 class="tomorrow-heading">Tomorrow · {{ d1|date:"l, F j, Y" }}</h2>
+
+    {% if tomorrow_entries %}
+        {% for entry in tomorrow_entries %}
+            {% if entry.kind == "feast" %}
+                {% include "patrons/_feast_block.html" with feast=entry.feast calendar_rows=entry.calendar_rows %}
+            {% else %}
+                {% include "patrons/_event_day_block.html" with event=entry.event view_date=entry.view_date %}
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <p class="panel empty-day-note">No patronal feasts or life events on this day.</p>
+    {% endif %}
+{% endblock %}

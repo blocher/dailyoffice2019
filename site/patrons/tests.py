@@ -181,6 +181,34 @@ class PatronViewTests(TestCase):
         self.assertContains(response, feast.get_absolute_url())
         self.assertContains(response, event.get_absolute_url())
 
+    def test_day_view_lists_feasts_for_date_and_tomorrow(self):
+        member = FamilyMember.objects.create(first_name="Page", last_name="Viewer")
+        PatronalFeast.objects.create(
+            family_member=member,
+            normalized_name="St. Page Test",
+            feast_name="Page Test Feast",
+            general_calendar_name="Page Test Cal",
+            general_month=6,
+            general_day=15,
+        )
+        Event.objects.create(
+            family_member=member,
+            date=date(2015, 6, 15),
+            event_type=Event.BIRTHDAY,
+            details="A birthday on the day page.",
+        )
+        url = reverse("patrons:day", kwargs={"year": 2026, "month": 6, "day": 15})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "St. Page Test")
+        self.assertContains(response, "Birthday")
+        self.assertContains(response, "first observed")
+        self.assertContains(response, "June 15, 2015")
+        self.assertContains(response, "Tomorrow")
+        self.assertContains(response, "June 16, 2026")
+        bad = self.client.get("/patrons/day/2026-2-30/")
+        self.assertEqual(bad.status_code, 404)
+
     def test_calendar_feed_requires_current_enabled_token(self):
         feed = CalendarFeed.objects.create(name="Private Feed")
 
@@ -268,7 +296,8 @@ class PatronMessageApiTests(TestCase):
                 "Alice | TODAY | Traditional Agnes Feast | Catholic, Traditional, Episcopal\n"
                 "Alice | TODAY | Baptism Day | 6th anniversary (2020)\n"
                 "Benedict | TODAY | General Benedict Feast | Catholic (Traditional on July 22)\n"
-                "Benedict | TOMORROW | Fallback Benedict Feast | Traditional (Catholic on July 21)"
+                "Benedict | TOMORROW | Fallback Benedict Feast | Traditional (Catholic on July 21)\n"
+                "http://testserver/patrons/day/2026-7-21/"
             ),
         )
         mocked_localdate.assert_called_once_with()
@@ -287,7 +316,7 @@ class PatronMessageApiTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.content.decode(),
-            "Clare | 2026-07-22 | Wedding Day | 10th anniversary (2016)",
+            "Clare | 2026-07-22 | Wedding Day | 10th anniversary (2016)\n" "http://testserver/patrons/day/2026-7-22/",
         )
         mocked_localdate.assert_called_once_with()
 
@@ -308,7 +337,7 @@ class PatronMessageApiTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.content.decode(),
-            "David | 2026-07-23 | St. James the Greater | Catholic",
+            "David | 2026-07-23 | St. James the Greater | Catholic\n" "http://testserver/patrons/day/2026-7-23/",
         )
         mocked_localdate.assert_called()
 
@@ -332,7 +361,8 @@ class PatronMessageApiTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.content.decode(),
-            "Eve | 2026-07-22 | Traditional Day | Traditional (Catholic on July 21)",
+            "Eve | 2026-07-22 | Traditional Day | Traditional (Catholic on July 21)\n"
+            "http://testserver/patrons/day/2026-7-22/",
         )
         mocked_localdate.assert_called()
 
@@ -387,6 +417,14 @@ class PatronMessageApiTests(TestCase):
         self.assertIn("Visitation BVM", with_true.content.decode())
         self.assertIn("Example", with_true.content.decode())
         self.assertNotIn("Visitation BVM", with_false.content.decode())
+        for resp in (with_default, with_false, with_true):
+            self.assertTrue(resp.content.decode().rstrip().endswith("/patrons/day/2026-5-31/"))
+
+    @patch("patrons.views.timezone.localdate", return_value=date(2026, 1, 1))
+    def test_message_body_is_only_day_url_when_no_rows(self, mocked_localdate):
+        response = self.client.get(reverse("patrons_message_today"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content.decode(), "http://testserver/patrons/day/2026-1-1/")
 
 
 class PatronSmsTests(TestCase):

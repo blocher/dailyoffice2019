@@ -1,8 +1,9 @@
 from datetime import date as date_class, timedelta
 
 from django.core.exceptions import ValidationError
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 from django.utils import timezone
 
 from patrons.calendar import build_ics_calendar
@@ -209,6 +210,13 @@ def _message_response_window(request, window_start):
 
     all_entries.sort(key=lambda e: (e["day_order"], e["person"].casefold(), e["kind_sort"], e["detail_sort"]))
     body = "\n".join(entry["message"] for entry in all_entries)
+    day_url = request.build_absolute_uri(
+        reverse(
+            "patrons:day",
+            kwargs={"year": window_start.year, "month": window_start.month, "day": window_start.day},
+        )
+    )
+    body = "{}\n{}".format(body, day_url) if body else day_url
     return HttpResponse(body, content_type="text/plain; charset=utf-8")
 
 
@@ -275,6 +283,59 @@ def event_detail(request, pk):
     return render(request, "patrons/event_detail.html", {"event": event})
 
 
+def _feasts_for_day_sorted(value):
+    feasts = [f for f in PatronalFeast.objects.select_related("family_member").all() if f.matches_date(value)]
+    feasts.sort(key=lambda f: (f.family_member.full_name.casefold(), f.normalized_name.casefold()))
+    return feasts
+
+
+def _events_for_day_sorted(value):
+    events = [e for e in Event.objects.select_related("family_member").all() if e.matches_date(value)]
+    events.sort(
+        key=lambda e: (
+            e.family_member.full_name.casefold(),
+            (e.get_event_type_display() or "").casefold(),
+        )
+    )
+    return events
+
+
+def _day_entry_sort_key(entry):
+    if entry["kind"] == "feast":
+        f = entry["feast"]
+        return (f.family_member.full_name.casefold(), 0, f.normalized_name.casefold())
+    e = entry["event"]
+    return (e.family_member.full_name.casefold(), 1, (e.get_event_type_display() or "").casefold())
+
+
+def _day_view_entries_for(value):
+    entries = []
+    for f in _feasts_for_day_sorted(value):
+        entries.append({"kind": "feast", "feast": f, "calendar_rows": feast_calendar_rows(f)})
+    for e in _events_for_day_sorted(value):
+        entries.append({"kind": "event", "event": e, "view_date": value})
+    entries.sort(key=_day_entry_sort_key)
+    return entries
+
+
+def day_view(request, year, month, day):
+    try:
+        d0 = date_class(year, month, day)
+    except ValueError:
+        raise Http404("Invalid date.")
+    d1 = d0 + timedelta(days=1)
+    return render(
+        request,
+        "patrons/day.html",
+        {
+            "d0": d0,
+            "d1": d1,
+            "today_entries": _day_view_entries_for(d0),
+            "tomorrow_entries": _day_view_entries_for(d1),
+        },
+    )
+
+
 def feast_items(today):
     for feast in PatronalFeast.objects.select_related("family_member").all():
         occurrence_groups = {}
@@ -320,12 +381,16 @@ def feast_items(today):
                 "event_year": "",
                 "sort_from_today": (upcoming - today).days,
                 "sort_jan_first": jan_first_sort_key(today.year, month, day),
+                "day_view_url": reverse(
+                    "patrons:day",
+                    kwargs={"year": feast_date.year, "month": feast_date.month, "day": feast_date.day},
+                ),
             }
 
 
 def event_items(today):
     for event in Event.objects.select_related("family_member").all():
-        occurrence_date = event.occurrence_for_year(today.year)
+        occ = event.occurrence_for_year(today.year)
         upcoming = next_occurrence(today, event.date.month, event.date.day)
         yield {
             "kind": "event",
@@ -356,6 +421,10 @@ def event_items(today):
             "event_year": str(event.date.year),
             "sort_from_today": (upcoming - today).days,
             "sort_jan_first": jan_first_sort_key(today.year, event.date.month, event.date.day),
+            "day_view_url": reverse(
+                "patrons:day",
+                kwargs={"year": occ.year, "month": occ.month, "day": occ.day},
+            ),
         }
 
 
