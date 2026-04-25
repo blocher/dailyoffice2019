@@ -1,0 +1,28 @@
+{% extends "patrons/detail_base.html" %}
+
+{% block title %}{{ event.get_event_type_display }}{% endblock %}
+
+{% block content %}
+    <h1>{{ event.family_member.first_name }}: {{ event.get_event_type_display }}</h1>
+    <p class="lede">{{ event.date|date:"F j, Y" }}</p>
+
+    <section class="panel">
+        <h2>Event Details</h2>
+        <dl>
+            <dt>Family Member</dt>
+            <dd>{{ event.family_member.full_name }}</dd>
+            <dt>Event Type</dt>
+            <dd>{{ event.get_event_type_display }}</dd>
+            <dt>Date</dt>
+            <dd>{{ event.date|date:"F j, Y" }}</dd>
+            <dt>Details</dt>
+            <dd>
+                {% if event.details %}
+                    {{ event.details|linebreaksbr }}
+                {% else %}
+                    <span class="empty">No details entered.</span>
+                {% endif %}
+            </dd>
+        </dl>
+    </section>
+{% endblock %}

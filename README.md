@@ -71,6 +71,36 @@ If you are using macOS, all the above requirements may be installed with Homebre
 - Follow the setup instructions in the client README: [app/README.md](app/README.md)
 - The frontend will be accessible locally at `http://127.0.0.1:8080`
 
+### Patrons and Twilio setup
+
+The `patrons` Django app can send patronal feast and family anniversary reminders by SMS through Twilio. The calendar
+feed is protected by an admin-rotatable token; create or rotate that token in Django admin under Patrons -> Calendar
+feeds, then subscribe to the generated `.ics` URL in Google Calendar or Outlook.
+
+To configure Twilio:
+
+- Create or log into a Twilio account at https://console.twilio.com/.
+- In the Twilio Console, buy or select an SMS-capable United States phone number. Twilio's quickstart documents this
+  under Phone Numbers -> Manage -> Buy a number, and the number should be copied in E.164 format such as
+  `+15551234567`.
+- In the Account Dashboard, copy the Account SID and Auth Token.
+- Add these variables to the deployment environment or `site/website/.env`:
+  - `TWILIO_ACCOUNT_SID`
+  - `TWILIO_AUTH_TOKEN`
+  - `TWILIO_FROM_NUMBER`
+  - `PATRONS_SMS_ENABLED=True`
+- If sending to United States mobile recipients from a 10-digit long code, complete A2P 10DLC registration in the
+  Twilio Console before enabling production reminders.
+- Send one test reminder, then confirm the result in Django admin under Patrons -> Text message sends.
+
+Twilio pricing changes over time, but as of the currently published Twilio pricing pages, US SMS starts at `$0.0083`
+per sent or received message segment, a leased US long-code number is listed at `$1.15` per month, and sole proprietor
+A2P 10DLC registration is listed at about `$4` one-time brand registration, `$15` one-time campaign vetting, and `$2`
+per month per campaign. Carrier fees, compliance fees, failed-message fees, and future price changes can apply. Check
+the official Twilio pages before budgeting: [Twilio SMS quickstart](https://www.twilio.com/docs/messaging/quickstart),
+[Twilio US SMS pricing](https://www.twilio.com/en-us/sms/pricing/us), and
+[Twilio A2P 10DLC overview](https://www.twilio.com/en-us/phone-numbers/a2p-10dlc).
+
 ### Code formatting standard
 
 - Please use `black` to format code with a line length of 119 beore submitting a pull request

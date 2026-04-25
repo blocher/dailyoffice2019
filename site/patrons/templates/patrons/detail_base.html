@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Patrons{% endblock %}</title>
+        <style>
+            :root {
+                color-scheme: light;
+                --ink: #1d2830;
+                --muted: #61717c;
+                --line: #d6ded8;
+                --paper: #fbfcf9;
+                --green: #315b4b;
+                --red: #93423d;
+                --gold: #b98f38;
+                --blue: #3f667a;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                background: var(--paper);
+                color: var(--ink);
+                font-family: ui-serif, Georgia, "Times New Roman", serif;
+            }
+
+            main {
+                width: min(880px, calc(100% - 32px));
+                margin: 0 auto;
+                padding: 40px 0 64px;
+            }
+
+            a {
+                color: var(--green);
+            }
+
+            .back-link {
+                display: inline-block;
+                margin-bottom: 24px;
+            }
+
+            h1 {
+                margin: 0;
+                font-size: 2.4rem;
+                line-height: 1.08;
+            }
+
+            .lede {
+                color: var(--muted);
+                line-height: 1.5;
+                margin: 12px 0 28px;
+            }
+
+            .panel {
+                background: white;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                padding: 20px;
+                margin-bottom: 18px;
+            }
+
+            h2 {
+                margin: 0 0 14px;
+                font-size: 1.25rem;
+                color: var(--green);
+            }
+
+            dl {
+                display: grid;
+                grid-template-columns: 180px 1fr;
+                gap: 10px 16px;
+                margin: 0;
+            }
+
+            dt {
+                color: var(--muted);
+                font-weight: 700;
+            }
+
+            dd {
+                margin: 0;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            th,
+            td {
+                border-bottom: 1px solid var(--line);
+                padding: 10px;
+                text-align: left;
+                vertical-align: top;
+            }
+
+            th {
+                color: var(--muted);
+                font-size: 0.84rem;
+                text-transform: uppercase;
+                letter-spacing: 0;
+            }
+
+            tr:last-child td {
+                border-bottom: 0;
+            }
+
+            .empty {
+                color: var(--muted);
+                font-style: italic;
+            }
+
+            @media (max-width: 700px) {
+                main {
+                    width: min(100% - 20px, 880px);
+                    padding-top: 24px;
+                }
+
+                h1 {
+                    font-size: 1.9rem;
+                }
+
+                dl {
+                    grid-template-columns: 1fr;
+                    gap: 4px 0;
+                }
+
+                th,
+                td {
+                    display: block;
+                    width: 100%;
+                    padding: 6px 0;
+                }
+
+                th {
+                    display: none;
+                }
+
+                tr {
+                    display: block;
+                    border-bottom: 1px solid var(--line);
+                    padding: 10px 0;
+                }
+
+                tr:last-child {
+                    border-bottom: 0;
+                }
+
+                td {
+                    border-bottom: 0;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <a class="back-link" href="{% url 'patrons:index' %}">Back to patrons</a>
+            {% block content %}{% endblock %}
+        </main>
+    </body>
+</html>

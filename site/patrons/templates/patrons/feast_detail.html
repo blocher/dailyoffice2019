@@ -1,0 +1,56 @@
+{% extends "patrons/detail_base.html" %}
+
+{% block title %}{{ feast.normalized_name }}{% endblock %}
+
+{% block content %}
+    <h1>{{ feast.family_member.first_name }}: {{ feast.normalized_name }}</h1>
+    <p class="lede">{{ feast.display_feast_name }}</p>
+
+    <section class="panel">
+        <h2>Names And Dates</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Calendar</th>
+                    <th>Name</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in calendar_rows %}
+                    <tr>
+                        <td>{{ row.calendar }}</td>
+                        <td>
+                            {% if row.name %}
+                                {{ row.name }}
+                            {% else %}
+                                <span class="empty">Not listed</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if row.date %}
+                                {{ row.date }}
+                            {% else %}
+                                <span class="empty">No date</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <section class="panel">
+        <h2>Feast Details</h2>
+        <dl>
+            <dt>Family Member</dt>
+            <dd>{{ feast.family_member.full_name }}</dd>
+            <dt>Normalized Name</dt>
+            <dd>{{ feast.normalized_name }}</dd>
+            <dt>Base Feast Name</dt>
+            <dd>{{ feast.feast_name }}</dd>
+            <dt>All Dates</dt>
+            <dd>{{ feast.date_summary }}</dd>
+        </dl>
+    </section>
+{% endblock %}

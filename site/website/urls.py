@@ -405,6 +405,7 @@ urlpatterns = [
     # path("djrichtextfild/", include("djrichtextfield.urls")),
     # path("jet/", include("jet.urls", "jet")),
     path("admin/", admin.site.urls),
+    path("patrons/", include("patrons.urls")),
     # path("admin/", include("material.admin.urls")),
     path("email", standrew_views.current_email),
     path("feast_email", standrew_views.feast_email),

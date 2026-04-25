@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Patrons</title>
+        <style>
+            :root {
+                color-scheme: light;
+                --ink: #1d2830;
+                --muted: #61717c;
+                --line: #d6ded8;
+                --paper: #fbfcf9;
+                --green: #315b4b;
+                --red: #93423d;
+                --gold: #b98f38;
+                --blue: #3f667a;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                background: var(--paper);
+                color: var(--ink);
+                font-family: ui-serif, Georgia, "Times New Roman", serif;
+            }
+
+            main {
+                width: min(1180px, calc(100% - 32px));
+                margin: 0 auto;
+                padding: 40px 0 64px;
+            }
+
+            h1 {
+                margin: 0;
+                font-size: 2.6rem;
+                line-height: 1.05;
+                font-weight: 700;
+            }
+
+            .intro {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                gap: 24px;
+                align-items: end;
+                border-bottom: 1px solid var(--line);
+                padding-bottom: 24px;
+            }
+
+            .intro p {
+                margin: 12px 0 0;
+                color: var(--muted);
+                max-width: 680px;
+                line-height: 1.5;
+            }
+
+            .calendar-link {
+                color: var(--green);
+                border: 1px solid var(--green);
+                padding: 10px 14px;
+                border-radius: 6px;
+                text-decoration: none;
+                white-space: nowrap;
+            }
+
+            a {
+                color: var(--green);
+            }
+
+            .filters {
+                display: grid;
+                grid-template-columns: repeat(4, minmax(150px, 1fr));
+                gap: 12px;
+                margin: 24px 0;
+            }
+
+            .view-tabs {
+                display: inline-flex;
+                gap: 6px;
+                padding: 4px;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                background: white;
+                margin: 24px 0 0;
+            }
+
+            .view-tab {
+                border: 0;
+                border-radius: 4px;
+                background: transparent;
+                color: var(--muted);
+                font-weight: 700;
+                padding: 8px 12px;
+            }
+
+            .view-tab.is-active {
+                background: var(--green);
+                color: var(--paper);
+            }
+
+            label,
+            .filter-block {
+                display: grid;
+                gap: 6px;
+                color: var(--muted);
+                font-size: 0.85rem;
+                text-transform: uppercase;
+                letter-spacing: 0;
+            }
+
+            select {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                background: white;
+                color: var(--ink);
+                font: inherit;
+            }
+
+            .filter-label {
+                color: var(--muted);
+                font-size: 0.85rem;
+                text-transform: uppercase;
+                letter-spacing: 0;
+            }
+
+            .multi-select {
+                position: relative;
+            }
+
+            .multi-select-trigger {
+                width: 100%;
+                min-height: 46px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                padding: 10px 12px;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                background: white;
+                color: var(--ink);
+                font: inherit;
+                text-align: left;
+            }
+
+            .multi-select-trigger::after {
+                content: "▾";
+                color: var(--muted);
+                flex: 0 0 auto;
+            }
+
+            .multi-select.is-open .multi-select-trigger {
+                border-color: var(--green);
+                box-shadow: 0 0 0 2px rgba(49, 91, 75, 0.08);
+            }
+
+            .multi-select-text {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                align-items: center;
+                min-width: 0;
+            }
+
+            .multi-select-placeholder {
+                color: var(--muted);
+            }
+
+            .multi-select-count {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 1.6rem;
+                height: 1.6rem;
+                padding: 0 0.45rem;
+                border-radius: 999px;
+                background: #eef5f1;
+                color: var(--green);
+                font-size: 0.74rem;
+                font-weight: 700;
+                line-height: 1;
+            }
+
+            .multi-select-panel {
+                position: absolute;
+                z-index: 10;
+                top: calc(100% + 6px);
+                left: 0;
+                width: 100%;
+                min-width: 260px;
+                max-height: 320px;
+                overflow: auto;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                background: white;
+                box-shadow: 0 14px 30px rgba(29, 40, 48, 0.08);
+                padding: 8px;
+                display: none;
+            }
+
+            .multi-select.is-open .multi-select-panel {
+                display: block;
+            }
+
+            .multi-select-actions {
+                display: flex;
+                justify-content: flex-end;
+                gap: 6px;
+                padding: 4px 2px 8px;
+                border-bottom: 1px solid var(--line);
+                margin-bottom: 6px;
+            }
+
+            .multi-action {
+                border: 0;
+                background: transparent;
+                color: var(--green);
+                padding: 4px 6px;
+                font-size: 0.82rem;
+                font-weight: 700;
+            }
+
+            .multi-group {
+                padding: 4px 0;
+            }
+
+            .multi-group + .multi-group {
+                border-top: 1px solid var(--line);
+                margin-top: 4px;
+                padding-top: 10px;
+            }
+
+            .multi-group-title {
+                display: block;
+                color: var(--muted);
+                font-size: 0.74rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0;
+                padding: 2px 6px 6px;
+            }
+
+            .multi-option {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 8px 6px;
+                border-radius: 4px;
+                color: var(--ink);
+                font-size: 0.95rem;
+                text-transform: none;
+                cursor: pointer;
+            }
+
+            .multi-option:hover {
+                background: #f6faf7;
+            }
+
+            .multi-option input {
+                margin: 0;
+                accent-color: var(--green);
+            }
+
+            .sort-panel-grid {
+                display: grid;
+                gap: 10px;
+            }
+
+            .sort-row {
+                display: grid;
+                gap: 6px;
+                color: var(--muted);
+                font-size: 0.78rem;
+                text-transform: uppercase;
+                letter-spacing: 0;
+            }
+
+            .sort-row select {
+                text-transform: none;
+            }
+
+            .toolbar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+                margin: 0 0 16px;
+            }
+
+            .count {
+                margin: 0;
+                color: var(--muted);
+            }
+
+            .month-controls {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+            }
+
+            .month-title {
+                min-width: 170px;
+                text-align: center;
+                font-weight: 700;
+                color: var(--green);
+            }
+
+            button {
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                background: white;
+                color: var(--ink);
+                font: inherit;
+                padding: 8px 10px;
+                cursor: pointer;
+            }
+
+            button:hover {
+                border-color: var(--green);
+            }
+
+            .table-wrap {
+                overflow-x: auto;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                background: white;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                min-width: 760px;
+            }
+
+            th,
+            td {
+                padding: 12px;
+                border-bottom: 1px solid var(--line);
+                text-align: left;
+                vertical-align: top;
+            }
+
+            th {
+                color: var(--muted);
+                font-size: 0.82rem;
+                text-transform: uppercase;
+                letter-spacing: 0;
+                background: #f3f7f3;
+            }
+
+            tbody tr:last-child td {
+                border-bottom: 0;
+            }
+
+            .entry-title {
+                font-weight: 700;
+                color: var(--ink);
+                line-height: 1.3;
+                text-decoration-color: var(--gold);
+                text-decoration-thickness: 1px;
+                text-underline-offset: 3px;
+            }
+
+            .entry-subtitle {
+                margin-top: 3px;
+                color: var(--muted);
+                font-size: 0.75rem;
+                line-height: 1.25;
+            }
+
+            .entry-details {
+                margin-top: 4px;
+                color: var(--muted);
+                line-height: 1.4;
+            }
+
+            .calendar-panel {
+                display: none;
+            }
+
+            .weekday-row,
+            .calendar-grid {
+                display: grid;
+                grid-template-columns: repeat(7, minmax(0, 1fr));
+            }
+
+            .weekday {
+                padding: 10px;
+                color: var(--muted);
+                font-size: 0.82rem;
+                text-transform: uppercase;
+                letter-spacing: 0;
+                border-bottom: 1px solid var(--line);
+            }
+
+            .calendar-grid {
+                border-top: 1px solid var(--line);
+                border-left: 1px solid var(--line);
+                background: white;
+            }
+
+            .calendar-day {
+                min-height: 132px;
+                background: white;
+                border-right: 1px solid var(--line);
+                border-bottom: 1px solid var(--line);
+                padding: 10px;
+            }
+
+            .calendar-day.outside-month {
+                background: #f7f8f5;
+                color: var(--muted);
+            }
+
+            .day-number {
+                font-weight: 700;
+                color: var(--green);
+                margin-bottom: 8px;
+            }
+
+            .calendar-event {
+                display: block;
+                border-left: 4px solid var(--green);
+                padding: 6px 0 6px 8px;
+                margin-bottom: 8px;
+                line-height: 1.25;
+                font-size: 0.92rem;
+                color: var(--ink);
+                text-decoration: none;
+            }
+
+            .calendar-event[data-calendar-color="feast"] {
+                border-left-color: var(--red);
+            }
+
+            .calendar-event[data-calendar-color="event"] {
+                border-left-color: var(--blue);
+            }
+
+            .calendar-event[data-calendar-color="baptism"],
+            .calendar-event[data-calendar-color="first_communion"] {
+                border-left-color: #245a7a;
+            }
+
+            .calendar-event[data-calendar-color="wedding"] {
+                border-left-color: #6d4d90;
+            }
+
+            .calendar-event[data-calendar-color="confirmation"] {
+                border-left-color: #8a4c16;
+            }
+
+            .calendar-event[data-calendar-color="priestly_ordination"],
+            .calendar-event[data-calendar-color="diaconal_ordination"] {
+                border-left-color: #6a3f82;
+            }
+
+            .calendar-event[data-calendar-color="birthday"] {
+                border-left-color: #2f6c43;
+            }
+
+            .calendar-event[data-calendar-color="death"] {
+                border-left-color: #4f5962;
+            }
+
+            .calendar-person {
+                display: block;
+                font-weight: 700;
+                margin-bottom: 2px;
+            }
+
+            .calendar-entry-title {
+                display: block;
+            }
+
+            .calendar-entry-subtitle {
+                display: block;
+                margin-top: 2px;
+                color: var(--muted);
+                font-size: 0.78rem;
+            }
+
+            .calendar-badge-row {
+                margin-top: 5px;
+            }
+
+            .meta {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+                align-items: center;
+                color: var(--muted);
+                font-size: 0.9rem;
+            }
+
+            .tag {
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                padding: 2px 8px;
+                color: var(--red);
+                background: #fffdf8;
+            }
+
+            .tag-feast {
+                color: var(--red);
+                background: #fffdf8;
+            }
+
+            .tag-event {
+                color: var(--blue);
+                background: #f6fbff;
+            }
+
+            .tag-event-baptism,
+            .tag-event-first_communion {
+                color: #245a7a;
+                background: #eef8ff;
+            }
+
+            .tag-event-wedding {
+                color: #6d4d90;
+                background: #f8f0ff;
+            }
+
+            .tag-event-confirmation {
+                color: #8a4c16;
+                background: #fff6ea;
+            }
+
+            .tag-event-priestly_ordination,
+            .tag-event-diaconal_ordination {
+                color: #6a3f82;
+                background: #f8effd;
+            }
+
+            .tag-event-birthday {
+                color: #2f6c43;
+                background: #effbf2;
+            }
+
+            .tag-event-death {
+                color: #4f5962;
+                background: #f3f5f7;
+            }
+
+            h2 {
+                margin: 12px 0 8px;
+                font-size: 1.22rem;
+                line-height: 1.25;
+            }
+
+            .person {
+                color: var(--green);
+                font-weight: 700;
+            }
+
+            .details {
+                margin: 0;
+                color: var(--muted);
+                line-height: 1.45;
+            }
+
+            .badge-row {
+                display: flex;
+                gap: 6px;
+                flex-wrap: wrap;
+                align-items: center;
+            }
+
+            .mini-badge {
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 1.4rem;
+                height: 1.4rem;
+                border: 1px solid var(--line);
+                border-radius: 999px;
+                color: var(--green);
+                background: #f7fbf7;
+                font-size: 0.74rem;
+                font-weight: 700;
+                line-height: 1;
+                cursor: default;
+            }
+
+            .mini-badge::after {
+                content: attr(data-label);
+                position: absolute;
+                z-index: 2;
+                top: calc(100% + 4px);
+                left: 50%;
+                padding: 3px 7px 4px;
+                border: 1px solid var(--line);
+                border-radius: 4px;
+                background: var(--ink);
+                color: var(--paper);
+                font-size: 0.7rem;
+                font-weight: 600;
+                white-space: nowrap;
+                line-height: 1.2;
+                letter-spacing: 0.01em;
+                opacity: 0;
+                transform: translateX(-50%) translateY(-2px);
+                pointer-events: none;
+                transition: opacity 0.1s, transform 0.1s;
+            }
+
+            .mini-badge:hover::after,
+            .mini-badge:focus-visible::after {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+
+            .empty {
+                display: none;
+                border: 1px dashed var(--line);
+                border-radius: 6px;
+                padding: 24px;
+                color: var(--muted);
+                text-align: center;
+            }
+
+            @media (max-width: 760px) {
+                main {
+                    width: min(100% - 20px, 1180px);
+                    padding-top: 24px;
+                }
+
+                .intro {
+                    grid-template-columns: 1fr;
+                    align-items: start;
+                }
+
+                .filters {
+                    grid-template-columns: 1fr;
+                }
+
+                .multi-select-panel {
+                    min-width: 0;
+                }
+
+                .view-tabs {
+                    display: flex;
+                    width: 100%;
+                }
+
+                .view-tab {
+                    flex: 1 1 0;
+                }
+
+                .toolbar {
+                    align-items: stretch;
+                    flex-direction: column;
+                }
+
+                .month-controls {
+                    justify-content: space-between;
+                }
+
+                .month-title {
+                    min-width: 0;
+                }
+
+                #sort-filter-block {
+                    display: none;
+                }
+
+                .table-wrap {
+                    border: 0;
+                    background: transparent;
+                    overflow: visible;
+                }
+
+                table,
+                thead,
+                tbody,
+                tr,
+                th,
+                td {
+                    display: block;
+                    min-width: 0;
+                    width: 100%;
+                }
+
+                thead {
+                    display: none;
+                }
+
+                tr {
+                    border: 1px solid var(--line);
+                    border-radius: 6px;
+                    background: white;
+                    margin-bottom: 10px;
+                    padding: 10px;
+                }
+
+                td {
+                    border-bottom: 0;
+                    padding: 4px 0;
+                }
+
+                td::before {
+                    content: attr(data-label);
+                    display: block;
+                    color: var(--muted);
+                    font-size: 0.78rem;
+                    text-transform: uppercase;
+                    letter-spacing: 0;
+                }
+
+                .weekday-row {
+                    display: none;
+                }
+
+                .calendar-grid {
+                    display: grid;
+                    grid-template-columns: 1fr;
+                    gap: 10px;
+                    border: 0;
+                    background: transparent;
+                }
+
+                .calendar-day {
+                    min-height: 0;
+                    border: 1px solid var(--line);
+                    border-radius: 6px;
+                }
+
+                .calendar-day.outside-month {
+                    display: none;
+                }
+
+                h1 {
+                    font-size: 2rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <section class="intro">
+                <div>
+                    <h1>Patrons</h1>
+                    <p>Feasts and family anniversaries for prayer, remembrance, and a well-timed text from someone who loves you.</p>
+                </div>
+                {% if calendar_feed %}
+                    <a class="calendar-link" href="{{ calendar_feed.get_absolute_url }}">Subscribe to calendar</a>
+                {% endif %}
+            </section>
+
+            <div class="view-tabs" id="view-tabs" role="tablist" aria-label="Patrons views">
+                <button
+                    type="button"
+                    class="view-tab"
+                    id="view-tab-list"
+                    data-view="list"
+                    role="tab"
+                    aria-controls="list-view"
+                    aria-selected="true"
+                >
+                    Table
+                </button>
+                <button
+                    type="button"
+                    class="view-tab"
+                    id="view-tab-calendar"
+                    data-view="calendar"
+                    role="tab"
+                    aria-controls="calendar-view"
+                    aria-selected="false"
+                >
+                    Calendar
+                </button>
+            </div>
+
+            <section class="filters" aria-label="Filters">
+                <div class="filter-block">
+                    <span class="filter-label">Person</span>
+                    <div class="multi-select" id="person-filter" data-filter="person" data-placeholder="Everyone">
+                        <button type="button" class="multi-select-trigger" aria-expanded="false">
+                            <span class="multi-select-text"></span>
+                        </button>
+                        <div class="multi-select-panel">
+                            <div class="multi-select-actions">
+                                <button type="button" class="multi-action" data-action="select-all">All</button>
+                                <button type="button" class="multi-action" data-action="clear">Clear</button>
+                            </div>
+                            <div class="multi-group">
+                                {% for member in family_members %}
+                                    <label class="multi-option">
+                                        <input type="checkbox" value="{{ member.pk }}" data-label="{{ member.full_name }}">
+                                        <span>{{ member.full_name }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-block">
+                    <span class="filter-label">Type</span>
+                    <div class="multi-select" id="type-filter" data-filter="type" data-placeholder="All types">
+                        <button type="button" class="multi-select-trigger" aria-expanded="false">
+                            <span class="multi-select-text"></span>
+                        </button>
+                        <div class="multi-select-panel">
+                            <div class="multi-select-actions">
+                                <button type="button" class="multi-action" data-action="select-all">All</button>
+                                <button type="button" class="multi-action" data-action="clear">Clear</button>
+                            </div>
+                            <div class="multi-group">
+                                <span class="multi-group-title">Categories</span>
+                                <label class="multi-option">
+                                    <input type="checkbox" value="kind:feast" data-label="Patronal feasts">
+                                    <span>Patronal feasts</span>
+                                </label>
+                                <label class="multi-option">
+                                    <input
+                                        type="checkbox"
+                                        data-control-only="true"
+                                        data-role="event-parent"
+                                        data-label="Life events"
+                                    >
+                                    <span>Life events</span>
+                                </label>
+                            </div>
+                            <div class="multi-group">
+                                <span class="multi-group-title">Event Types</span>
+                                {% for value, label in event_types %}
+                                    <label class="multi-option">
+                                        <input
+                                            type="checkbox"
+                                            value="event:{{ value }}"
+                                            data-label="{{ label }}"
+                                            data-event-option="true"
+                                        >
+                                        <span>{{ label }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-block">
+                    <span class="filter-label">Calendar</span>
+                    <div class="multi-select" id="calendar-filter" data-filter="calendar" data-placeholder="All calendars">
+                        <button type="button" class="multi-select-trigger" aria-expanded="false">
+                            <span class="multi-select-text"></span>
+                        </button>
+                        <div class="multi-select-panel">
+                            <div class="multi-select-actions">
+                                <button type="button" class="multi-action" data-action="select-all">All</button>
+                                <button type="button" class="multi-action" data-action="clear">Clear</button>
+                            </div>
+                            <div class="multi-group">
+                                {% for value, label in calendar_filters %}
+                                    <label class="multi-option">
+                                        <input type="checkbox" value="{{ value }}" data-label="{{ label }}">
+                                        <span>{{ label }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-block" id="sort-filter-block">
+                    <span class="filter-label">Sort</span>
+                    <div class="multi-select" id="sort-filter">
+                        <button type="button" class="multi-select-trigger" aria-expanded="false">
+                            <span class="multi-select-text"></span>
+                        </button>
+                        <div class="multi-select-panel">
+                            <div class="sort-panel-grid">
+                                <label class="sort-row">
+                                    Primary
+                                    <select id="sort-primary">
+                                        <option value="date-today">Date, starting today</option>
+                                        <option value="date-jan">Date, starting Jan 1</option>
+                                        <option value="person">Person (A-Z)</option>
+                                        <option value="saint">Saint name (A-Z)</option>
+                                    </select>
+                                </label>
+                                <label class="sort-row">
+                                    Secondary
+                                    <select id="sort-secondary">
+                                        <option value="person">Person (A-Z)</option>
+                                        <option value="date-today">Date, starting today</option>
+                                        <option value="date-jan">Date, starting Jan 1</option>
+                                        <option value="saint">Saint name (A-Z)</option>
+                                    </select>
+                                </label>
+                                <label class="sort-row">
+                                    Tertiary
+                                    <select id="sort-tertiary">
+                                        <option value="saint">Saint name (A-Z)</option>
+                                        <option value="person">Person (A-Z)</option>
+                                        <option value="date-today">Date, starting today</option>
+                                        <option value="date-jan">Date, starting Jan 1</option>
+                                    </select>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="toolbar">
+                <p class="count"><span id="visible-count">{{ items|length }}</span> of {{ items|length }} shown</p>
+                <div class="month-controls" id="month-controls">
+                    <button type="button" id="previous-month">Previous</button>
+                    <span class="month-title" id="month-title"></span>
+                    <button type="button" id="today-month">Today</button>
+                    <button type="button" id="next-month">Next</button>
+                </div>
+            </section>
+
+            <section class="table-wrap" id="list-view" aria-label="Matching patron entries">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Person</th>
+                            <th>Entry</th>
+                            <th>Type</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="items">
+                        {% for item in items %}
+                            <tr
+                                class="item"
+                                data-kind="{{ item.kind }}"
+                                data-kind-label="{{ item.kind_label }}"
+                                data-person-id="{{ item.person_id }}"
+                                data-person="{{ item.person }}"
+                                data-person-display="{{ item.person_display|default:item.person }}"
+                                data-saint-name="{{ item.saint_name }}"
+                                data-event-type="{{ item.event_type }}"
+                                data-calendar-values="{{ item.calendar_values }}"
+                                data-month="{{ item.month }}"
+                                data-day="{{ item.day }}"
+                                data-title="{{ item.title }}"
+                                data-entry-primary="{{ item.entry_primary|default:item.title }}"
+                                data-entry-secondary="{{ item.entry_secondary }}"
+                                data-detail-url="{{ item.detail_url }}"
+                                data-date-label="{{ item.date_label }}"
+                                data-details="{{ item.details }}"
+                                data-sort-today="{{ item.sort_from_today }}"
+                                data-sort-jan="{{ item.sort_jan_first }}"
+                            >
+                                <td data-label="Date">{{ item.date_label }}</td>
+                                <td data-label="Person"><span class="person">{{ item.person_display|default:item.person }}</span></td>
+                                <td data-label="Entry">
+                                    {% if item.kind == "feast" %}
+                                        <a class="entry-title" href="{{ item.detail_url }}">{{ item.entry_primary|default:item.title }}</a>
+                                        {% if item.entry_secondary %}
+                                            <div class="entry-subtitle">{{ item.entry_secondary }}</div>
+                                        {% endif %}
+                                    {% else %}
+                                        <a class="entry-title" href="{{ item.detail_url }}">{{ item.title }}</a>
+                                    {% endif %}
+                                </td>
+                                <td data-label="Type">
+                                    <span class="tag tag-{{ item.kind }} {% if item.kind == 'event' and item.event_type %}tag-event-{{ item.event_type }}{% endif %}">
+                                        {{ item.kind_label }}
+                                    </span>
+                                </td>
+                                <td data-label="Details">
+                                    {% if item.kind == "feast" and item.calendar_badges %}
+                                        <div class="badge-row">
+                                            {% for badge in item.calendar_badges %}
+                                                <span
+                                                    class="mini-badge"
+                                                    data-label="{{ badge.label }}"
+                                                    aria-label="{{ badge.label }}"
+                                                    tabindex="0"
+                                                >
+                                                    {{ badge.code }}
+                                                </span>
+                                            {% endfor %}
+                                        </div>
+                                    {% elif item.kind == "event" and item.event_year %}
+                                        <div class="entry-details">{{ item.event_year }}</div>
+                                    {% elif item.details %}
+                                        <div class="entry-details">{{ item.details }}</div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+            <section class="calendar-panel" id="calendar-view" aria-label="Month calendar">
+                <div class="weekday-row" aria-hidden="true">
+                    <div class="weekday">Sun</div>
+                    <div class="weekday">Mon</div>
+                    <div class="weekday">Tue</div>
+                    <div class="weekday">Wed</div>
+                    <div class="weekday">Thu</div>
+                    <div class="weekday">Fri</div>
+                    <div class="weekday">Sat</div>
+                </div>
+                <div class="calendar-grid" id="calendar-grid"></div>
+            </section>
+            <p class="empty" id="empty">No feasts or events match those filters.</p>
+        </main>
+        <script>
+            const items = Array.from(document.querySelectorAll(".item"));
+            const list = document.querySelector("#items");
+            const listView = document.querySelector("#list-view");
+            const calendarView = document.querySelector("#calendar-view");
+            const calendarGrid = document.querySelector("#calendar-grid");
+            const monthControls = document.querySelector("#month-controls");
+            const monthTitle = document.querySelector("#month-title");
+            const visibleCount = document.querySelector("#visible-count");
+            const empty = document.querySelector("#empty");
+            const sortFilterBlock = document.querySelector("#sort-filter-block");
+            const multiSelectElements = {
+                person: document.querySelector("#person-filter"),
+                type: document.querySelector("#type-filter"),
+                calendar: document.querySelector("#calendar-filter"),
+            };
+            const sortFilterElement = document.querySelector("#sort-filter");
+            const sortControls = {
+                primary: document.querySelector("#sort-primary"),
+                secondary: document.querySelector("#sort-secondary"),
+                tertiary: document.querySelector("#sort-tertiary"),
+            };
+            const viewTabs = Array.from(document.querySelectorAll(".view-tab"));
+            const today = new Date();
+            const DEFAULT_SORTS = {
+                primary: "date-today",
+                secondary: "person",
+                tertiary: "saint",
+            };
+            const SORT_OPTION_LABELS = {
+                "date-today": "Today date",
+                "date-jan": "Jan 1 date",
+                person: "Person A-Z",
+                saint: "Saint A-Z",
+            };
+            let calendarDate = new Date(today.getFullYear(), today.getMonth(), 1);
+            let currentViewMode = "list";
+
+            function compareText(a, b) {
+                return a.localeCompare(b, undefined, { sensitivity: "base" });
+            }
+
+            function compareOptionalText(a, b) {
+                if (a && b) {
+                    return compareText(a, b);
+                }
+                if (a) {
+                    return -1;
+                }
+                if (b) {
+                    return 1;
+                }
+                return 0;
+            }
+
+            function isLeapYear(year) {
+                return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+            }
+
+            function occurrenceForYear(item, year) {
+                let month = Number(item.dataset.month);
+                let day = Number(item.dataset.day);
+                if (month === 2 && day === 29 && !isLeapYear(year)) {
+                    day = 28;
+                }
+                return new Date(year, month - 1, day);
+            }
+
+            function dateKey(value) {
+                return [
+                    value.getFullYear(),
+                    String(value.getMonth() + 1).padStart(2, "0"),
+                    String(value.getDate()).padStart(2, "0"),
+                ].join("-");
+            }
+
+            function monthParam(value) {
+                return [
+                    value.getFullYear(),
+                    String(value.getMonth() + 1).padStart(2, "0"),
+                ].join("-");
+            }
+
+            function parseMonthParam(value) {
+                if (!/^\d{4}-\d{2}$/.test(value || "")) {
+                    return new Date(today.getFullYear(), today.getMonth(), 1);
+                }
+                const [year, month] = value.split("-").map(Number);
+                return new Date(year, month - 1, 1);
+            }
+
+            function calendarBadgeData(calendarValue) {
+                const badgeMap = {
+                    general: { code: "C", label: "Catholic" },
+                    traditional: { code: "T", label: "Traditional Catholic" },
+                    episcopal: { code: "E", label: "Episcopal" },
+                };
+                return badgeMap[calendarValue] || null;
+            }
+
+            function buildBadgeRow(calendarValues) {
+                const values = (calendarValues || "").split(" ").filter(Boolean);
+                if (!values.length) {
+                    return null;
+                }
+                const row = document.createElement("div");
+                row.className = "badge-row calendar-badge-row";
+                values.forEach((calendarValue) => {
+                    const badgeData = calendarBadgeData(calendarValue);
+                    if (!badgeData) {
+                        return;
+                    }
+                    const badge = document.createElement("span");
+                    badge.className = "mini-badge";
+                    badge.dataset.label = badgeData.label;
+                    badge.setAttribute("aria-label", badgeData.label);
+                    badge.setAttribute("tabindex", "0");
+                    badge.textContent = badgeData.code;
+                    row.appendChild(badge);
+                });
+                return row.childElementCount ? row : null;
+            }
+
+            function setSelectValue(select, value, fallbackValue) {
+                select.value = value || fallbackValue;
+                if (select.value !== (value || fallbackValue)) {
+                    select.value = fallbackValue;
+                }
+            }
+
+            function closeDropdowns(exceptElement = null) {
+                [...Object.values(multiSelectElements), sortFilterElement].forEach((element) => {
+                    if (!element || element === exceptElement) {
+                        return;
+                    }
+                    element.classList.remove("is-open");
+                    element.querySelector(".multi-select-trigger").setAttribute("aria-expanded", "false");
+                });
+            }
+
+            function initMultiSelect(element, config = {}) {
+                const trigger = element.querySelector(".multi-select-trigger");
+                const text = element.querySelector(".multi-select-text");
+                const panel = element.querySelector(".multi-select-panel");
+                const checkboxes = Array.from(element.querySelectorAll('input[type="checkbox"]'));
+                const valueCheckboxes = checkboxes.filter((checkbox) => checkbox.dataset.controlOnly !== "true");
+                const placeholder = element.dataset.placeholder || "All";
+                const api = {
+                    allCheckboxes: checkboxes,
+                    close,
+                    element,
+                    panel,
+                    setValues,
+                    trigger,
+                    updateLabel,
+                    valueCheckboxes,
+                    values,
+                };
+
+                function values() {
+                    return valueCheckboxes.filter((checkbox) => checkbox.checked).map((checkbox) => checkbox.value);
+                }
+
+                function setValues(nextValues) {
+                    const allowed = new Set(valueCheckboxes.map((checkbox) => checkbox.value));
+                    const normalized = new Set(nextValues.filter((value) => allowed.has(value)));
+                    valueCheckboxes.forEach((checkbox) => {
+                        checkbox.checked = normalized.has(checkbox.value);
+                    });
+                    if (typeof config.afterValueSync === "function") {
+                        config.afterValueSync(api);
+                    }
+                    updateLabel();
+                }
+
+                function updateLabel() {
+                    const labels =
+                        typeof config.summaryLabels === "function"
+                            ? config.summaryLabels(api)
+                            : valueCheckboxes
+                                  .filter((checkbox) => checkbox.checked)
+                                  .map((checkbox) => checkbox.dataset.label);
+                    if (!labels.length) {
+                        text.innerHTML = `<span class="multi-select-placeholder">${placeholder}</span>`;
+                        return;
+                    }
+                    const primary = labels.slice(0, 2).join(", ");
+                    const extraCount = labels.length - 2;
+                    text.innerHTML = "";
+                    const labelSpan = document.createElement("span");
+                    labelSpan.textContent = primary;
+                    text.appendChild(labelSpan);
+                    if (extraCount > 0) {
+                        const count = document.createElement("span");
+                        count.className = "multi-select-count";
+                        count.textContent = `+${extraCount}`;
+                        text.appendChild(count);
+                    }
+                }
+
+                function close() {
+                    element.classList.remove("is-open");
+                    trigger.setAttribute("aria-expanded", "false");
+                }
+
+                trigger.addEventListener("click", () => {
+                    const willOpen = !element.classList.contains("is-open");
+                    closeDropdowns(element);
+                    element.classList.toggle("is-open", willOpen);
+                    trigger.setAttribute("aria-expanded", willOpen ? "true" : "false");
+                });
+
+                panel.addEventListener("click", (event) => {
+                    const action = event.target.closest("[data-action]");
+                    if (action) {
+                        event.preventDefault();
+                        if (action.dataset.action === "select-all") {
+                            setValues(valueCheckboxes.map((checkbox) => checkbox.value));
+                            applyFilters();
+                        } else if (action.dataset.action === "clear") {
+                            setValues([]);
+                            applyFilters();
+                        }
+                    }
+                });
+
+                checkboxes.forEach((checkbox) => {
+                    checkbox.addEventListener("change", (event) => {
+                        if (typeof config.onCheckboxChange === "function" && config.onCheckboxChange(event, api)) {
+                            return;
+                        }
+                        if (typeof config.afterValueSync === "function") {
+                            config.afterValueSync(api);
+                        }
+                        updateLabel();
+                        if (checkbox.dataset.controlOnly !== "true") {
+                            applyFilters();
+                        }
+                    });
+                });
+
+                if (typeof config.afterValueSync === "function") {
+                    config.afterValueSync(api);
+                }
+                updateLabel();
+
+                return api;
+            }
+
+            function initSortFilter(element) {
+                const trigger = element.querySelector(".multi-select-trigger");
+                const text = element.querySelector(".multi-select-text");
+
+                function values() {
+                    return {
+                        primary: sortControls.primary.value,
+                        secondary: sortControls.secondary.value,
+                        tertiary: sortControls.tertiary.value,
+                    };
+                }
+
+                function updateLabel() {
+                    const sortValues = values();
+                    text.textContent = [
+                        SORT_OPTION_LABELS[sortValues.primary],
+                        SORT_OPTION_LABELS[sortValues.secondary],
+                        SORT_OPTION_LABELS[sortValues.tertiary],
+                    ].join(" / ");
+                }
+
+                function setValues(nextValues) {
+                    Object.entries(DEFAULT_SORTS).forEach(([key, fallbackValue]) => {
+                        setSelectValue(sortControls[key], nextValues[key], fallbackValue);
+                    });
+                    updateLabel();
+                }
+
+                function close() {
+                    element.classList.remove("is-open");
+                    trigger.setAttribute("aria-expanded", "false");
+                }
+
+                trigger.addEventListener("click", () => {
+                    const willOpen = !element.classList.contains("is-open");
+                    closeDropdowns(element);
+                    element.classList.toggle("is-open", willOpen);
+                    trigger.setAttribute("aria-expanded", willOpen ? "true" : "false");
+                });
+
+                Object.values(sortControls).forEach((control) => {
+                    control.addEventListener("change", () => {
+                        updateLabel();
+                        applyFilters();
+                    });
+                });
+
+                updateLabel();
+                return { close, setValues, updateLabel, values };
+            }
+
+            const typeEventParent = multiSelectElements.type.querySelector('[data-role="event-parent"]');
+            const typeEventOptions = Array.from(
+                multiSelectElements.type.querySelectorAll('[data-event-option="true"]'),
+            );
+            const typeMultiSelectConfig = {
+                afterValueSync() {
+                    const checkedCount = typeEventOptions.filter((checkbox) => checkbox.checked).length;
+                    typeEventParent.checked = checkedCount === typeEventOptions.length && checkedCount > 0;
+                    typeEventParent.indeterminate =
+                        checkedCount > 0 && checkedCount < typeEventOptions.length;
+                    typeEventParent.setAttribute(
+                        "aria-checked",
+                        typeEventParent.indeterminate ? "mixed" : typeEventParent.checked ? "true" : "false",
+                    );
+                },
+                summaryLabels(api) {
+                    const labels = [];
+                    const feastCheckbox = api.valueCheckboxes.find((checkbox) => checkbox.value === "kind:feast");
+                    if (feastCheckbox && feastCheckbox.checked) {
+                        labels.push(feastCheckbox.dataset.label);
+                    }
+
+                    const checkedEventLabels = typeEventOptions
+                        .filter((checkbox) => checkbox.checked)
+                        .map((checkbox) => checkbox.dataset.label);
+                    if (checkedEventLabels.length === typeEventOptions.length && checkedEventLabels.length) {
+                        labels.push(typeEventParent.dataset.label);
+                    } else {
+                        labels.push(...checkedEventLabels);
+                    }
+                    return labels;
+                },
+                onCheckboxChange(event, api) {
+                    const checkbox = event.target;
+                    if (checkbox === typeEventParent) {
+                        const shouldSelectAll = !typeEventOptions.every((option) => option.checked);
+                        typeEventOptions.forEach((option) => {
+                            option.checked = shouldSelectAll;
+                        });
+                        this.afterValueSync();
+                        api.updateLabel();
+                        applyFilters();
+                        return true;
+                    }
+                    return false;
+                },
+            };
+            const multiSelects = Object.fromEntries(
+                Object.entries(multiSelectElements).map(([name, element]) => [
+                    name,
+                    initMultiSelect(element, name === "type" ? typeMultiSelectConfig : {}),
+                ]),
+            );
+            const sortFilter = initSortFilter(sortFilterElement);
+
+            document.addEventListener("click", (event) => {
+                [...Object.values(multiSelectElements), sortFilterElement].forEach((element) => {
+                    if (element && !element.contains(event.target)) {
+                        element.classList.remove("is-open");
+                        element.querySelector(".multi-select-trigger").setAttribute("aria-expanded", "false");
+                    }
+                });
+            });
+
+            function loadStateFromUrl() {
+                const params = new URLSearchParams(window.location.search);
+                multiSelects.person.setValues(params.getAll("person"));
+                multiSelects.type.setValues(params.getAll("type"));
+                multiSelects.calendar.setValues(params.getAll("calendar"));
+                sortFilter.setValues({
+                    primary: params.get("sort_primary") || DEFAULT_SORTS.primary,
+                    secondary: params.get("sort_secondary") || DEFAULT_SORTS.secondary,
+                    tertiary: params.get("sort_tertiary") || DEFAULT_SORTS.tertiary,
+                });
+                currentViewMode = params.get("view") === "calendar" ? "calendar" : "list";
+                calendarDate = parseMonthParam(params.get("month") || monthParam(today));
+            }
+
+            function syncUrlFromState() {
+                const params = new URLSearchParams();
+                multiSelects.person.values().forEach((value) => {
+                    params.append("person", value);
+                });
+                multiSelects.type.values().forEach((value) => {
+                    params.append("type", value);
+                });
+                multiSelects.calendar.values().forEach((value) => {
+                    params.append("calendar", value);
+                });
+                const sortValues = sortFilter.values();
+                Object.entries(DEFAULT_SORTS).forEach(([key, defaultValue]) => {
+                    if (sortValues[key] !== defaultValue) {
+                        params.set(`sort_${key}`, sortValues[key]);
+                    }
+                });
+                if (currentViewMode !== "list") {
+                    params.set("view", currentViewMode);
+                }
+                if (monthParam(calendarDate) !== monthParam(today)) {
+                    params.set("month", monthParam(calendarDate));
+                }
+                const queryString = params.toString();
+                const nextUrl = queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname;
+                window.history.replaceState({ path: nextUrl }, "", nextUrl);
+            }
+
+            function applyViewMode() {
+                viewTabs.forEach((tab) => {
+                    const isActive = tab.dataset.view === currentViewMode;
+                    tab.classList.toggle("is-active", isActive);
+                    tab.setAttribute("aria-selected", isActive ? "true" : "false");
+                });
+                listView.style.display = currentViewMode === "list" ? "block" : "none";
+                calendarView.style.display = currentViewMode === "calendar" ? "block" : "none";
+                monthControls.style.display = currentViewMode === "calendar" ? "flex" : "none";
+                sortFilterBlock.style.display = currentViewMode === "list" ? "" : "none";
+                if (currentViewMode !== "list") {
+                    sortFilter.close();
+                }
+            }
+
+            function applyFilters(options = {}) {
+                const { syncUrl = true } = options;
+                const people = new Set(multiSelects.person.values());
+                const selectedTypeValues = multiSelects.type.values();
+                const selectedKinds = new Set(
+                    selectedTypeValues
+                        .filter((value) => value.startsWith("kind:"))
+                        .map((value) => value.replace("kind:", "")),
+                );
+                const selectedEventTypes = new Set(
+                    selectedTypeValues
+                        .filter((value) => value.startsWith("event:"))
+                        .map((value) => value.replace("event:", "")),
+                );
+                const selectedCalendars = new Set(multiSelects.calendar.values());
+                const hasTypeSelection = selectedKinds.size > 0 || selectedEventTypes.size > 0;
+                const sortValues = sortFilter.values();
+                const sortComparators = {
+                    "date-today": (a, b) => Number(a.dataset.sortToday) - Number(b.dataset.sortToday),
+                    "date-jan": (a, b) => Number(a.dataset.sortJan) - Number(b.dataset.sortJan),
+                    person: (a, b) => compareText(a.dataset.person, b.dataset.person),
+                    saint: (a, b) => compareOptionalText(a.dataset.saintName, b.dataset.saintName),
+                };
+                const sortOrder = [sortValues.primary, sortValues.secondary, sortValues.tertiary];
+
+                let visible = items.filter((item) => {
+                    const personMatches = !people.size || people.has(item.dataset.personId);
+                    const typeMatches =
+                        !hasTypeSelection
+                            ? true
+                            : item.dataset.kind === "feast"
+                              ? selectedKinds.has("feast")
+                              : selectedEventTypes.has(item.dataset.eventType);
+                    const calendars = item.dataset.calendarValues ? item.dataset.calendarValues.split(" ") : [];
+                    const calendarMatches =
+                        !selectedCalendars.size
+                            ? true
+                            : item.dataset.kind === "feast" &&
+                              calendars.some((calendarValue) => selectedCalendars.has(calendarValue));
+                    return personMatches && typeMatches && calendarMatches;
+                });
+
+                visible.sort((a, b) => {
+                    for (const sortKey of sortOrder) {
+                        const comparator = sortComparators[sortKey] || sortComparators["date-today"];
+                        const result = comparator(a, b);
+                        if (result) {
+                            return result;
+                        }
+                    }
+                    return (
+                        compareText(a.dataset.person, b.dataset.person) ||
+                        compareOptionalText(a.dataset.saintName, b.dataset.saintName) ||
+                        compareText(a.dataset.title, b.dataset.title)
+                    );
+                });
+
+                items.forEach((item) => {
+                    item.hidden = true;
+                });
+                visible.forEach((item) => {
+                    item.hidden = false;
+                    list.appendChild(item);
+                });
+
+                applyViewMode();
+                visibleCount.textContent = visible.length;
+                empty.style.display = visible.length ? "none" : "block";
+                renderCalendar(visible);
+                if (syncUrl) {
+                    syncUrlFromState();
+                }
+            }
+
+            function renderCalendar(visible) {
+                calendarGrid.innerHTML = "";
+                const year = calendarDate.getFullYear();
+                const month = calendarDate.getMonth();
+                const firstDay = new Date(year, month, 1);
+                const gridStart = new Date(year, month, 1 - firstDay.getDay());
+                const monthEvents = new Map();
+
+                visible.forEach((item) => {
+                    const occurrence = occurrenceForYear(item, year);
+                    if (occurrence.getMonth() !== month) {
+                        return;
+                    }
+                    const key = dateKey(occurrence);
+                    if (!monthEvents.has(key)) {
+                        monthEvents.set(key, []);
+                    }
+                    monthEvents.get(key).push(item);
+                });
+
+                monthTitle.textContent = firstDay.toLocaleDateString(undefined, {
+                    month: "long",
+                    year: "numeric",
+                });
+
+                for (let index = 0; index < 42; index += 1) {
+                    const day = new Date(gridStart);
+                    day.setDate(gridStart.getDate() + index);
+                    const cell = document.createElement("div");
+                    const key = dateKey(day);
+                    const entries = monthEvents.get(key) || [];
+                    cell.className = "calendar-day";
+                    if (day.getMonth() !== month) {
+                        cell.classList.add("outside-month");
+                    }
+
+                    const label = document.createElement("div");
+                    label.className = "day-number";
+                    label.textContent = day.toLocaleDateString(undefined, {
+                        weekday: window.innerWidth <= 760 ? "short" : undefined,
+                        month: window.innerWidth <= 760 ? "short" : undefined,
+                        day: "numeric",
+                    });
+                    cell.appendChild(label);
+
+                    entries.forEach((item) => {
+                        const event = document.createElement("a");
+                        event.className = "calendar-event";
+                        event.href = item.dataset.detailUrl;
+                        event.dataset.kind = item.dataset.kind;
+                        event.dataset.calendarColor = item.dataset.kind === "feast" ? "feast" : item.dataset.eventType || "event";
+                        const person = document.createElement("span");
+                        person.className = "calendar-person";
+                        person.textContent = item.dataset.personDisplay;
+                        const title = document.createElement("span");
+                        title.className = "calendar-entry-title";
+                        title.textContent = item.dataset.entryPrimary || item.dataset.title;
+                        event.appendChild(person);
+                        event.appendChild(title);
+                        if (item.dataset.kind === "feast" && item.dataset.entrySecondary) {
+                            const subtitle = document.createElement("span");
+                            subtitle.className = "calendar-entry-subtitle";
+                            subtitle.textContent = item.dataset.entrySecondary;
+                            event.appendChild(subtitle);
+                        }
+                        if (item.dataset.kind === "feast") {
+                            const badgeRow = buildBadgeRow(item.dataset.calendarValues);
+                            if (badgeRow) {
+                                event.appendChild(badgeRow);
+                            }
+                        }
+                        cell.appendChild(event);
+                    });
+                    calendarGrid.appendChild(cell);
+                }
+            }
+
+            viewTabs.forEach((tab) => {
+                tab.addEventListener("click", () => {
+                    currentViewMode = tab.dataset.view;
+                    applyFilters();
+                });
+            });
+            document.querySelector("#previous-month").addEventListener("click", () => {
+                calendarDate = new Date(calendarDate.getFullYear(), calendarDate.getMonth() - 1, 1);
+                applyFilters();
+            });
+            document.querySelector("#today-month").addEventListener("click", () => {
+                calendarDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                applyFilters();
+            });
+            document.querySelector("#next-month").addEventListener("click", () => {
+                calendarDate = new Date(calendarDate.getFullYear(), calendarDate.getMonth() + 1, 1);
+                applyFilters();
+            });
+            window.addEventListener("resize", () => {
+                renderCalendar(items.filter((item) => !item.hidden));
+            });
+            window.addEventListener("popstate", () => {
+                loadStateFromUrl();
+                applyFilters({ syncUrl: false });
+            });
+            loadStateFromUrl();
+            applyFilters();
+        </script>
+    </body>
+</html>
