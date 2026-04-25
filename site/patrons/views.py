@@ -1,6 +1,5 @@
 from datetime import date as date_class, timedelta
 
-from django.contrib.admin.views.decorators import staff_member_required
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
@@ -240,7 +239,6 @@ def calendar_feed(request, token):
     return HttpResponse(content, content_type="text/calendar; charset=utf-8")
 
 
-@staff_member_required
 def index(request):
     today = timezone.localdate()
     items = list(feast_items(today)) + list(event_items(today))
@@ -260,7 +258,6 @@ def index(request):
     )
 
 
-@staff_member_required
 def feast_detail(request, pk):
     feast = get_object_or_404(PatronalFeast.objects.select_related("family_member"), pk=pk)
     return render(
@@ -273,7 +270,6 @@ def feast_detail(request, pk):
     )
 
 
-@staff_member_required
 def event_detail(request, pk):
     event = get_object_or_404(Event.objects.select_related("family_member"), pk=pk)
     return render(request, "patrons/event_detail.html", {"event": event})

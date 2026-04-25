@@ -1,7 +1,6 @@
 from datetime import date, datetime, time
 from unittest.mock import Mock, patch
 
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.management import call_command
 from django.test import TestCase, override_settings
@@ -130,17 +129,7 @@ class PatronImportTests(TestCase):
 
 
 class PatronViewTests(TestCase):
-    def test_index_requires_staff(self):
-        response = self.client.get(reverse("patrons:index"))
-        self.assertEqual(response.status_code, 302)
-
-        user = User.objects.create_user(username="person", password="secret")
-        self.client.force_login(user)
-        response = self.client.get(reverse("patrons:index"))
-        self.assertEqual(response.status_code, 302)
-
-        staff = User.objects.create_user(username="staff", password="secret", is_staff=True)
-        self.client.force_login(staff)
+    def test_index_renders_for_anonymous_user(self):
         response = self.client.get(reverse("patrons:index"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'id="view-tabs"')
@@ -153,7 +142,7 @@ class PatronViewTests(TestCase):
         self.assertContains(response, 'id="calendar-filter"')
         self.assertContains(response, 'id="sort-filter"')
 
-    def test_detail_views_require_staff_and_show_details(self):
+    def test_detail_views_show_details_without_login(self):
         member = FamilyMember.objects.create(first_name="Mary", last_name="Locher")
         feast = PatronalFeast.objects.create(
             family_member=member,
@@ -175,12 +164,6 @@ class PatronViewTests(TestCase):
             date=date(2015, 5, 9),
             details="Born at home.",
         )
-
-        response = self.client.get(feast.get_absolute_url())
-        self.assertEqual(response.status_code, 302)
-
-        staff = User.objects.create_user(username="staff-detail", password="secret", is_staff=True)
-        self.client.force_login(staff)
 
         response = self.client.get(feast.get_absolute_url())
         self.assertEqual(response.status_code, 200)
