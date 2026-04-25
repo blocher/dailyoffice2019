@@ -295,7 +295,7 @@ def _message_response_window(request, window_start):
     body = "\n".join(entry["message"] for entry in all_entries)
     if not all_entries:
         if not _query_debug_mode(request):
-            return HttpResponse("", content_type="text/plain; charset=utf-8")
+            return HttpResponse("No entries", content_type="text/plain; charset=utf-8")
         day_url = request.build_absolute_uri(
             reverse(
                 "patrons:day",

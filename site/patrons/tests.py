@@ -457,10 +457,10 @@ class PatronMessageApiTests(TestCase):
             self.assertTrue(resp.content.decode().rstrip().endswith("/patrons/day/2026-5-31/"))
 
     @patch("patrons.views.timezone.localdate", return_value=date(2026, 1, 1))
-    def test_message_body_is_empty_when_no_rows_and_debug_off(self, mocked_localdate):
+    def test_message_says_no_entries_when_no_rows_and_debug_off(self, mocked_localdate):
         response = self.client.get(reverse("patrons_message_today"))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content.decode(), "")
+        self.assertEqual(response.content.decode(), "No entries")
 
     @patch("patrons.views.timezone.localdate", return_value=date(2026, 1, 1))
     def test_message_body_is_only_day_url_when_no_rows_and_debug_on(self, mocked_localdate):
