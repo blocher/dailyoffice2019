@@ -29,7 +29,7 @@
             Add to your calendar app
           </p>
           <h2
-            class="p-0 m-0 max-w-full text-base font-semibold tracking-tight leading-snug text-left"
+            class="p-0 m-0 max-w-full text-base font-semibold tracking-tight leading-snug text-left text-slate-900 dark:text-slate-50"
           >
             Add Feasts and Readings to Your Calendar App
           </h2>
@@ -68,7 +68,7 @@
               Add to your calendar app
             </p>
             <h2
-              class="p-0 m-0 text-base font-semibold tracking-tight text-left"
+              class="p-0 m-0 text-base font-semibold tracking-tight text-left text-slate-900 dark:text-slate-50"
             >
               Add the liturgical calendar to your calendar
             </h2>
@@ -96,17 +96,22 @@
       <div
         v-if="panelMode === 'quick'"
         class="flex flex-col gap-4 text-left quick-feed-panel"
+        :class="{ 'quick-feed-panel--dark': isDarkTheme }"
       >
-        <section class="quick-panel-hero">
+        <section
+          class="quick-panel-hero flex flex-col gap-4 rounded-2xl border border-slate-200/90 bg-gradient-to-b from-slate-50 to-white p-4 dark:!border-slate-600 dark:!bg-slate-900"
+        >
           <div
             class="quick-doc-strip"
             role="group"
             aria-label="Third-party help for your calendar"
           >
-            <p class="quick-doc-strip__label">
+            <p
+              class="quick-doc-strip__label text-slate-600 dark:!text-slate-400"
+            >
               Official help
               <span
-                class="ml-0.5 text-[0.65rem] font-normal normal-case tracking-normal text-slate-500"
+                class="ml-0.5 text-[0.65rem] font-normal normal-case tracking-normal text-slate-500 dark:text-slate-400"
               >
                 (opens in a new tab)
               </span>
@@ -118,7 +123,7 @@
                 v-for="doc in docLinks"
                 :key="doc.value"
                 :href="doc.url"
-                class="quick-doc-chip"
+                class="quick-doc-chip gap-1.5 border border-slate-300/80 bg-white/90 text-(--accent-color) dark:!border-slate-500 dark:!bg-slate-800/90 dark:text-sky-200"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -127,7 +132,7 @@
               </a>
               <button
                 type="button"
-                class="quick-doc-chip quick-doc-chip--action"
+                class="quick-doc-chip quick-doc-chip--action gap-1.5 border border-slate-300/80 bg-white/90 text-slate-900 dark:!border-slate-500 dark:!bg-slate-800/90 dark:!text-slate-100"
                 @click="goToFullWizard"
               >
                 Guided setup
@@ -136,8 +141,12 @@
           </div>
 
           <div class="quick-panel-hero__advice">
-            <div class="quick-note quick-note--positive">
-              <div class="quick-note__icon">
+            <div
+              class="quick-note quick-note--positive border border-emerald-200/60 bg-emerald-50/90 text-emerald-950 dark:!border-emerald-500/25 dark:!bg-emerald-950/45 dark:!text-emerald-50"
+            >
+              <div
+                class="quick-note__icon bg-white text-emerald-600 shadow-sm dark:!bg-slate-800 dark:!text-emerald-300 dark:shadow-none dark:ring-1 dark:ring-slate-600"
+              >
                 <font-awesome-icon :icon="['fad', 'octagon-check']" />
               </div>
               <div>
@@ -151,8 +160,12 @@
               </div>
             </div>
 
-            <div class="quick-note quick-note--caution">
-              <div class="quick-note__icon">
+            <div
+              class="quick-note quick-note--caution border border-amber-200/70 bg-amber-50/95 text-amber-950 dark:!border-amber-500/30 dark:!bg-amber-950/40 dark:!text-amber-50"
+            >
+              <div
+                class="quick-note__icon bg-white text-amber-600 shadow-sm dark:!bg-slate-800 dark:!text-amber-300 dark:shadow-none dark:ring-1 dark:ring-slate-600"
+              >
                 <font-awesome-icon :icon="['fad', 'triangle-exclamation']" />
               </div>
               <div>
@@ -172,7 +185,7 @@
           <div
             v-for="row in quickPanelRows"
             :key="row.value"
-            class="w-full text-left quick-feed-card"
+            class="quick-feed-card w-full rounded-2xl border border-slate-200/90 bg-white px-[1.05rem] py-2.5 pb-4 text-left shadow-sm dark:!border-slate-600 dark:!bg-slate-900/95 dark:shadow-none"
           >
             <div
               class="flex flex-col gap-1 justify-start items-stretch w-full text-left"
@@ -203,17 +216,22 @@
                 <el-input
                   :model-value="row.feedUrl"
                   readonly
-                  class="mt-1.5 w-full font-mono quick-feed-input"
+                  class="mt-1.5 w-full font-mono quick-feed-input calendar-wizard-input"
                 />
               </div>
 
               <div
                 class="flex flex-wrap gap-2 justify-start items-center w-full"
               >
-                <el-tooltip placement="top" :show-after="180" effect="light">
+                <el-tooltip
+                  placement="top"
+                  :show-after="180"
+                  effect="light"
+                  popper-class="calendar-wizard-tooltip"
+                >
                   <template #content>
                     <div
-                      class="space-y-1.5 max-w-xs text-xs tracking-normal leading-relaxed text-slate-700"
+                      class="space-y-1.5 max-w-xs text-xs tracking-normal leading-relaxed text-slate-700 dark:text-slate-200"
                     >
                       <p class="m-0">
                         Paste this address into “Subscribe from URL,” “Add by
@@ -233,10 +251,15 @@
                     Copy URL
                   </el-button>
                 </el-tooltip>
-                <el-tooltip placement="top" :show-after="180" effect="light">
+                <el-tooltip
+                  placement="top"
+                  :show-after="180"
+                  effect="light"
+                  popper-class="calendar-wizard-tooltip"
+                >
                   <template #content>
                     <div
-                      class="space-y-1.5 max-w-xs text-xs tracking-normal leading-relaxed text-slate-700"
+                      class="space-y-1.5 max-w-xs text-xs tracking-normal leading-relaxed text-slate-700 dark:text-slate-200"
                     >
                       <p class="m-0">
                         <span class="whitespace-nowrap">webcal://</span> is used
@@ -263,10 +286,15 @@
                     Open webcal
                   </el-button>
                 </el-tooltip>
-                <el-tooltip placement="top" :show-after="180" effect="light">
+                <el-tooltip
+                  placement="top"
+                  :show-after="180"
+                  effect="light"
+                  popper-class="calendar-wizard-tooltip"
+                >
                   <template #content>
                     <p
-                      class="m-0 max-w-xs text-xs tracking-normal leading-relaxed text-left text-slate-700"
+                      class="m-0 max-w-xs text-xs tracking-normal leading-relaxed text-left text-slate-700 dark:text-slate-200"
                     >
                       An imported <span class="whitespace-nowrap">.ics</span> is
                       a one-time snapshot: it will not get updates when this
@@ -327,7 +355,11 @@
           v-if="currentStep === 1"
           class="p-3 space-y-2 bg-white rounded-xl border shadow-sm wizard-step border-slate-200 dark:border-slate-700 dark:bg-slate-900/70"
         >
-          <h3 class="m-0 text-sm font-semibold tracking-tight">Feed</h3>
+          <h3
+            class="m-0 text-sm font-semibold tracking-tight text-slate-900 dark:text-slate-100"
+          >
+            Feed
+          </h3>
           <div class="grid gap-1.5 sm:grid-cols-1">
             <button
               v-for="option in scopeOptions"
@@ -358,7 +390,11 @@
           v-else-if="currentStep === 2"
           class="p-3 space-y-2 bg-white rounded-xl border shadow-sm wizard-step border-slate-200 dark:border-slate-700 dark:bg-slate-900/70"
         >
-          <h3 class="m-0 text-sm font-semibold tracking-tight">Calendar</h3>
+          <h3
+            class="m-0 text-sm font-semibold tracking-tight text-slate-900 dark:text-slate-100"
+          >
+            Calendar
+          </h3>
           <div class="grid gap-1.5 sm:grid-cols-2">
             <button
               v-for="option in appOptions"
@@ -396,7 +432,9 @@
           v-else-if="currentStep === 3"
           class="p-3 space-y-2 bg-white rounded-xl border shadow-sm wizard-step border-slate-200 dark:border-slate-700 dark:bg-slate-900/70"
         >
-          <h3 class="m-0 text-sm font-semibold tracking-tight">
+          <h3
+            class="m-0 text-sm font-semibold tracking-tight text-slate-900 dark:text-slate-100"
+          >
             Subscribe or import
           </h3>
           <div class="grid gap-1.5">
@@ -459,7 +497,11 @@
           class="p-3 space-y-3 bg-white rounded-xl border shadow-sm wizard-step border-slate-200 dark:border-slate-700 dark:bg-slate-900/70"
         >
           <div>
-            <h3 class="m-0 text-sm font-semibold tracking-tight">Set up</h3>
+            <h3
+              class="m-0 text-sm font-semibold tracking-tight text-slate-900 dark:text-slate-100"
+            >
+              Set up
+            </h3>
             <p
               class="m-0 mt-0.5 text-xs tracking-normal leading-relaxed text-slate-500 dark:text-slate-400"
             >
@@ -509,7 +551,11 @@
           <section
             class="p-2.5 rounded-lg border border-slate-200 bg-slate-50/90 dark:border-slate-700 dark:bg-slate-950/40"
           >
-            <h4 class="m-0 text-xs font-semibold">What to do</h4>
+            <h4
+              class="m-0 text-xs font-semibold text-slate-900 dark:text-slate-100"
+            >
+              What to do
+            </h4>
             <p
               class="mt-0.5 mb-0 text-[11px] leading-relaxed tracking-normal text-slate-600 dark:text-slate-300"
             >
@@ -544,10 +590,11 @@
                 placement="top"
                 :show-after="180"
                 effect="light"
+                popper-class="calendar-wizard-tooltip"
               >
                 <template #content>
                   <div
-                    class="space-y-1.5 max-w-xs text-xs tracking-normal leading-relaxed text-slate-700"
+                    class="space-y-1.5 max-w-xs text-xs tracking-normal leading-relaxed text-slate-700 dark:text-slate-200"
                   >
                     <p class="m-0">
                       Same as <strong>Open webcal</strong> in the quick panel: a
@@ -608,12 +655,21 @@
                   Paste the feed URL, or use an .ics file if your calendar only
                   accepts imports.
                 </p>
-                <el-input :model-value="subscribeUrl" readonly />
+                <el-input
+                  :model-value="subscribeUrl"
+                  readonly
+                  class="w-full font-mono calendar-wizard-input"
+                />
                 <div class="flex flex-wrap gap-2">
-                  <el-tooltip placement="top" :show-after="180" effect="light">
+                  <el-tooltip
+                    placement="top"
+                    :show-after="180"
+                    effect="light"
+                    popper-class="calendar-wizard-tooltip"
+                  >
                     <template #content>
                       <div
-                        class="space-y-1.5 max-w-xs text-xs tracking-normal leading-relaxed text-slate-700"
+                        class="space-y-1.5 max-w-xs text-xs tracking-normal leading-relaxed text-slate-700 dark:text-slate-200"
                       >
                         <p class="m-0">
                           The <strong>HTTPS</strong> address for the feed you
@@ -672,7 +728,11 @@
             </p>
 
             <div class="grid gap-1.5 mt-2">
-              <el-input :model-value="cancelUrl" readonly />
+              <el-input
+                :model-value="cancelUrl"
+                readonly
+                class="w-full font-mono calendar-wizard-input"
+              />
               <div class="flex flex-wrap gap-2">
                 <el-button plain @click="copyUndoUrl">
                   <font-awesome-icon :icon="['fad', 'copy']" class="mr-1.5" />
@@ -780,6 +840,7 @@ export default {
     return {
       showWizard: false,
       panelSize: '42%',
+      isDarkTheme: false,
       currentStep: 1,
       selectedScope: this.defaultScope,
       selectedApp: null,
@@ -803,6 +864,7 @@ export default {
       scopeOptions: CALENDAR_SCOPE_OPTIONS,
       appOptions: CALENDAR_APP_OPTIONS,
       methodOptions: CALENDAR_METHOD_OPTIONS,
+      themeObserver: null,
     };
   },
   computed: {
@@ -893,13 +955,27 @@ export default {
     },
   },
   mounted() {
+    this.syncThemeMode();
     window.addEventListener('resize', this.setPanelSize);
     this.setPanelSize();
+    if (typeof window.MutationObserver !== 'undefined') {
+      this.themeObserver = new window.MutationObserver(() =>
+        this.syncThemeMode()
+      );
+      this.themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class'],
+      });
+    }
   },
   unmounted() {
     window.removeEventListener('resize', this.setPanelSize);
+    this.themeObserver?.disconnect();
   },
   methods: {
+    syncThemeMode() {
+      this.isDarkTheme = document.documentElement.classList.contains('dark');
+    },
     appIcon(option) {
       if (option.icon && option.icon.length) {
         return option.icon;
@@ -924,6 +1000,7 @@ export default {
       return 1;
     },
     openWizard(options = {}) {
+      this.syncThemeMode();
       this.panelMode = 'wizard';
       const fallbackScope = getCalendarWizardDefaultScope({
         source: 'calendar',
@@ -939,12 +1016,14 @@ export default {
       this.showWizard = true;
     },
     openQuickLinks() {
+      this.syncThemeMode();
       this.panelMode = 'quick';
       this.completedAction = null;
       this.moreOptionsOpen = [];
       this.showWizard = true;
     },
     goToFullWizard() {
+      this.syncThemeMode();
       const fallback = getCalendarWizardDefaultScope({
         source: 'calendar',
         includeMinorFeasts: this.includeMinorFeasts,
@@ -1189,20 +1268,9 @@ export default {
   text-align: left !important;
 }
 
+/* Hero/card surfaces: colors come from template Tailwind; scoped `background: white` beats plain dark: utilities. */
 .quick-panel-hero {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  border-radius: 1rem;
-  border: 1px solid rgb(226 232 240 / 0.95);
-  background:
-    radial-gradient(
-      circle at top right,
-      rgb(191 219 254 / 0.45),
-      transparent 42%
-    ),
-    linear-gradient(180deg, rgb(248 250 252), rgb(255 255 255));
-  padding: 1rem 1rem 1.1rem;
+  min-width: 0;
 }
 
 .quick-panel-hero__intro {
@@ -1221,7 +1289,7 @@ export default {
   text-align: left;
 }
 
-:global(.dark) .quick-doc-strip {
+:global(html.dark) .quick-doc-strip {
   border-top-color: rgb(51 65 85);
 }
 
@@ -1233,7 +1301,6 @@ export default {
   letter-spacing: 0.1em;
   line-height: 1.35;
   text-transform: uppercase;
-  color: rgb(100 116 139);
 }
 
 .quick-doc-strip__label span {
@@ -1253,14 +1320,10 @@ export default {
 .quick-doc-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
   border-radius: 9999px;
-  border: 1px solid rgb(203 213 225 / 0.9);
-  background: rgb(255 255 255 / 0.92);
   padding: 0.38rem 0.62rem;
   font-size: 0.68rem;
   font-weight: 700;
-  color: var(--accent-color);
   text-decoration: none;
   transition:
     border-color 150ms ease,
@@ -1272,10 +1335,6 @@ export default {
   border-color: rgb(148 163 184);
   transform: translateY(-1px);
   box-shadow: 0 8px 18px -18px rgb(15 23 42 / 0.8);
-}
-
-.quick-doc-chip--action {
-  color: rgb(15 23 42);
 }
 
 .quick-panel-hero__advice {
@@ -1306,8 +1365,6 @@ export default {
   align-items: center;
   justify-content: center;
   border-radius: 0.75rem;
-  background: rgb(255 255 255 / 0.9);
-  box-shadow: 0 1px 2px 0 rgb(15 23 42 / 0.08);
 }
 
 .quick-note__title {
@@ -1327,24 +1384,6 @@ export default {
   letter-spacing: normal;
 }
 
-.quick-note--positive {
-  background: rgb(236 253 245 / 0.85);
-  color: rgb(6 78 59);
-}
-
-.quick-note--positive .quick-note__icon {
-  color: rgb(5 150 105);
-}
-
-.quick-note--caution {
-  background: rgb(255 247 237 / 0.95);
-  color: rgb(146 64 14);
-}
-
-.quick-note--caution .quick-note__icon {
-  color: rgb(217 119 6);
-}
-
 .summary-pill {
   display: inline-flex;
   border-radius: 9999px;
@@ -1355,7 +1394,7 @@ export default {
   color: rgb(51 65 85);
 }
 
-:global(.dark) .summary-pill {
+:global(html.dark) .summary-pill {
   background: rgb(30 41 59);
   color: rgb(226 232 240);
 }
@@ -1401,14 +1440,14 @@ export default {
   outline-offset: 2px;
 }
 
-:global(.dark) .selection-card,
-:global(.dark) .step-pill {
+:global(html.dark) .selection-card,
+:global(html.dark) .step-pill {
   border-color: rgb(51 65 85);
   background: rgba(15, 23, 42, 0.5);
 }
 
-:global(.dark) .selection-card:hover,
-:global(.dark) .step-pill:hover {
+:global(html.dark) .selection-card:hover,
+:global(html.dark) .step-pill:hover {
   border-color: rgb(71 85 105);
   background: rgba(30, 41, 59, 0.7);
 }
@@ -1419,7 +1458,7 @@ export default {
   box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.08);
 }
 
-:global(.dark) .selection-card--selected {
+:global(html.dark) .selection-card--selected {
   border-color: rgba(52, 211, 153, 0.3);
   background: rgba(16, 185, 129, 0.12);
 }
@@ -1452,7 +1491,7 @@ export default {
   color: rgb(255 255 255);
 }
 
-:global(.dark) .step-pill--active {
+:global(html.dark) .step-pill--active {
   border-color: rgb(255, 255, 255);
   background: rgb(255, 255, 255);
   color: rgb(15, 23, 42);
@@ -1464,7 +1503,7 @@ export default {
   color: rgb(6 78 59);
 }
 
-:global(.dark) .step-pill--complete {
+:global(html.dark) .step-pill--complete {
   border-color: rgba(52, 211, 153, 0.3);
   background: rgba(16, 185, 129, 0.12);
   color: rgb(209 250 229);
@@ -1489,11 +1528,11 @@ export default {
   background: rgba(255, 255, 255, 0.25);
 }
 
-:global(.dark) .step-pill__num {
+:global(html.dark) .step-pill__num {
   background: rgba(255, 255, 255, 0.12);
 }
 
-:global(.dark) .step-pill--active .step-pill__num {
+:global(html.dark) .step-pill--active .step-pill__num {
   background: rgba(0, 0, 0, 0.12);
   color: inherit;
 }
@@ -1533,6 +1572,64 @@ export default {
   width: 100%;
 }
 
+.quick-feed-panel--dark .quick-panel-hero {
+  border-color: rgb(71 85 105 / 0.95) !important;
+  background:
+    radial-gradient(
+      circle at top right,
+      rgb(56 189 248 / 0.14),
+      transparent 38%
+    ),
+    linear-gradient(180deg, rgb(15 23 42 / 0.96), rgb(2 6 23 / 0.98)) !important;
+  box-shadow:
+    inset 0 1px 0 rgb(148 163 184 / 0.08),
+    0 20px 45px -35px rgb(0 0 0 / 0.9);
+}
+
+.quick-feed-panel--dark .quick-feed-card {
+  border-color: rgb(71 85 105 / 0.95) !important;
+  background: linear-gradient(
+    180deg,
+    rgb(15 23 42 / 0.98),
+    rgb(2 6 23 / 0.98)
+  ) !important;
+  box-shadow:
+    inset 0 1px 0 rgb(148 163 184 / 0.08),
+    0 20px 45px -36px rgb(0 0 0 / 0.95);
+}
+
+.quick-feed-panel--dark .quick-doc-chip {
+  border-color: rgb(100 116 139 / 0.9) !important;
+  background: rgb(30 41 59 / 0.96) !important;
+  color: rgb(191 219 254) !important;
+}
+
+.quick-feed-panel--dark .quick-doc-chip--action {
+  color: rgb(241 245 249) !important;
+}
+
+.quick-feed-panel--dark .quick-doc-chip:hover {
+  border-color: rgb(125 211 252 / 0.9) !important;
+  box-shadow: 0 12px 24px -20px rgb(14 165 233 / 0.45);
+}
+
+.quick-feed-panel--dark .quick-note--positive {
+  border-color: rgb(16 185 129 / 0.32) !important;
+  background: rgb(6 78 59 / 0.42) !important;
+  color: rgb(236 253 245) !important;
+}
+
+.quick-feed-panel--dark .quick-note--caution {
+  border-color: rgb(245 158 11 / 0.32) !important;
+  background: rgb(120 53 15 / 0.44) !important;
+  color: rgb(255 247 237) !important;
+}
+
+.quick-feed-panel--dark .quick-note__icon {
+  background: rgb(15 23 42) !important;
+  box-shadow: inset 0 0 0 1px rgb(71 85 105 / 0.95) !important;
+}
+
 .quick-feed-panel :deep(.quick-feed-input) {
   width: 100%;
 }
@@ -1543,12 +1640,52 @@ export default {
   line-height: 1.4;
 }
 
+.quick-feed-panel--dark :deep(.quick-feed-input .el-input__wrapper) {
+  background-color: rgb(15 23 42 / 0.92) !important;
+  box-shadow: 0 0 0 1px rgb(71 85 105 / 0.95) inset !important;
+}
+
+.quick-feed-panel--dark :deep(.quick-feed-input .el-input__inner) {
+  color: rgb(241 245 249) !important;
+  -webkit-text-fill-color: rgb(241 245 249) !important;
+}
+
+/* Element Plus: wrapper holds the field surface; ensure dark mode matches theme vars. */
+:global(html.dark)
+  .quick-feed-panel
+  :deep(.quick-feed-input .el-input__wrapper),
+:global(html.dark)
+  .calendar-wizard-drawer
+  :deep(.calendar-wizard-input .el-input__wrapper) {
+  background-color: var(--el-fill-color-blank) !important;
+  box-shadow: 0 0 0 1px var(--el-border-color) inset !important;
+}
+
+:global(html.dark) .quick-feed-panel :deep(.quick-feed-input .el-input__inner),
+:global(html.dark)
+  .calendar-wizard-drawer
+  :deep(.calendar-wizard-input .el-input__inner) {
+  color: var(--el-text-color-primary) !important;
+  -webkit-text-fill-color: var(--el-text-color-primary) !important;
+}
+
+:global(html.dark) .more-options-collapse :deep(.el-collapse) {
+  --el-border-color: rgba(51, 65, 85, 0.95);
+  border-color: rgba(51, 65, 85, 0.95);
+}
+
+:global(html.dark) .more-options-collapse :deep(.el-collapse-item__header) {
+  color: var(--el-text-color-primary) !important;
+  background-color: rgba(15, 23, 42, 0.35) !important;
+  border-color: rgba(51, 65, 85, 0.9) !important;
+}
+
+:global(html.dark) .more-options-collapse :deep(.el-collapse-item__arrow) {
+  color: var(--el-text-color-secondary) !important;
+}
+
 .quick-feed-card {
-  border-radius: 1rem;
-  border: 1px solid rgb(226 232 240 / 0.95);
-  background: rgb(255 255 255);
-  box-shadow: 0 10px 24px -24px rgb(15 23 42 / 0.7);
-  padding: 0.6rem 1.05rem 1rem;
+  min-width: 0;
 }
 
 .download-ics-warn {
@@ -1557,7 +1694,7 @@ export default {
   filter: drop-shadow(0 0 0.5px rgb(234 179 8 / 0.5));
 }
 
-:global(.dark) .download-ics-warn {
+:global(html.dark) .download-ics-warn {
   color: rgb(250 204 21);
 }
 
@@ -1565,57 +1702,71 @@ export default {
   position: relative;
 }
 
-:global(.dark) .quick-feed-card {
-  border-color: rgb(51 65 85);
-  background: rgba(15, 23, 42, 0.4);
-}
-
-:global(.dark) .quick-panel-hero {
-  border-color: rgb(51 65 85);
-  background:
-    radial-gradient(
-      circle at top right,
-      rgb(59 130 246 / 0.16),
-      transparent 42%
-    ),
-    linear-gradient(180deg, rgba(15, 23, 42, 0.75), rgba(2, 6, 23, 0.9));
-}
-
-:global(.dark) .quick-note--positive {
-  background: rgb(6 78 59 / 0.28);
-  color: rgb(209 250 229);
-}
-
-:global(.dark) .quick-note--caution {
-  background: rgb(120 53 15 / 0.28);
-  color: rgb(254 215 170);
-}
-
-:global(.dark) .quick-note__icon {
-  background: rgba(15, 23, 42, 0.9);
-  box-shadow: inset 0 0 0 1px rgb(51 65 85 / 0.95);
-}
-
-:global(.dark) .quick-doc-chip {
-  border-color: rgb(71 85 105);
-  background: rgba(15, 23, 42, 0.7);
-  color: rgb(191 219 254);
-}
-
-:global(.dark) .quick-doc-strip__label {
-  color: rgb(148 163 184);
-}
-
-:global(.dark) .quick-doc-chip--action {
-  color: rgb(248 250 252);
-}
-
-:global(.dark) .quick-doc-chip:hover {
-  border-color: rgb(96 165 250);
-}
-
-:global(.dark) .quick-feed-badge {
+:global(html.dark) .quick-feed-badge {
   background: rgb(22 101 52 / 0.4);
   color: rgb(220 252 231);
+}
+</style>
+
+<style lang="scss">
+/*
+ * Unscoped: beats Vue scoped rules that set light surfaces, so dark mode card
+ * backgrounds are never left white while `dark:` text is applied.
+ */
+html.dark .calendar-wizard-drawer__inner .quick-panel-hero {
+  border-color: #475569 !important;
+  background: #0f172a !important;
+  background-image: none !important;
+}
+
+html.dark .calendar-wizard-drawer__inner .quick-feed-card {
+  border-color: #475569 !important;
+  background: rgb(15 23 42 / 0.98) !important;
+}
+
+html.dark .calendar-wizard-drawer__inner .quick-doc-chip {
+  border-color: #64748b !important;
+  background: rgb(30 41 59 / 0.96) !important;
+}
+
+html.dark .calendar-wizard-drawer__inner a.quick-doc-chip {
+  color: var(--accent-color) !important;
+}
+
+html.dark .calendar-wizard-drawer__inner .quick-doc-chip--action {
+  color: #f1f5f9 !important;
+}
+
+html.dark .calendar-wizard-drawer__inner .quick-note--positive {
+  border-color: rgba(16, 185, 129, 0.35) !important;
+  background: rgba(6, 78, 59, 0.4) !important;
+  color: #ecfdf5 !important;
+}
+
+html.dark .calendar-wizard-drawer__inner .quick-note--caution {
+  border-color: rgba(245, 158, 11, 0.35) !important;
+  background: rgba(120, 53, 15, 0.45) !important;
+  color: #fff7ed !important;
+}
+
+html.dark .calendar-wizard-drawer__inner .quick-note__icon {
+  background: rgb(15 23 42) !important;
+  box-shadow: inset 0 0 0 1px #475569 !important;
+}
+
+/* Teleported Element Plus poppers. */
+html.dark .el-popper.is-light.calendar-wizard-tooltip,
+html.dark .el-popper.calendar-wizard-tooltip {
+  --el-text-color-primary: #e5e7eb;
+  --el-text-color-regular: #d1d5db;
+  background: #1f2937 !important;
+  border: 1px solid #334155 !important;
+  color: #e5e7eb !important;
+}
+
+html.dark .el-popper.is-light.calendar-wizard-tooltip .el-popper__arrow::before,
+html.dark .el-popper.calendar-wizard-tooltip .el-popper__arrow::before {
+  background: #1f2937 !important;
+  border: 1px solid #334155 !important;
 }
 </style>
