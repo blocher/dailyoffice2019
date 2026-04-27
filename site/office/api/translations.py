@@ -12,7 +12,6 @@ CHINESE = {
     "Evening Prayer": "晚禱禮文",
     "Midday Prayer": "午禱禮文",
     "Compline": "夜禱禮文",
-
     # Section headings (from templates)
     "Opening Sentence": "始禮經句",
     "Closing Sentence": "結句",
@@ -47,7 +46,6 @@ CHINESE = {
     "The Suffrages": "應答禱文",
     "Additional Collects": "附加祝文",
     "A Collect for Mission": "宣教禱文",
-
     # Canticle headings (uppercase forms used in API)
     "MAGNIFICAT": "尊主頌",
     "The Song of Mary": "聖母之歌",
@@ -68,7 +66,6 @@ CHINESE = {
     "PHOS HILARON": "恩光頌",
     "O Gracious Light": "恩慈之光",
     "GLORIA IN EXCELSIS": "榮歸主頌",
-
     # Weekday names
     "Monday": "星期一",
     "Tuesday": "星期二",
@@ -77,7 +74,6 @@ CHINESE = {
     "Friday": "星期五",
     "Saturday": "星期六",
     "Sunday": "主日",
-
     # Subheadings
     "Thirty Day Cycle": "三十日循環",
     "Sixty Day Cycle": "六十日循環",
@@ -86,7 +82,6 @@ CHINESE = {
     "At Midday": "午禱",
     "At Early Evening": "晚禱",
     "At the Close of Day": "夜禱",
-
     # Rubrics (from templates)
     "The Officiant says to the People": "主禮或司禱向會眾說",
     "The following Canticle is sung or said, all standing": "眾立，唱或誦以下頌歌",
@@ -104,7 +99,6 @@ CHINESE = {
     "Prayers may be offered for ourselves and others.": "可為自己和他人祈禱。",
     "A hymn or canticle may be used.": "可唱讚美詩或頌歌。",
     "The Officiant concludes with the following": "主禮以下列經文作結",
-
     # Dialogues (from BCP 2019 pages 53, 57, 60, 65, 72)
     "The Lord be with you.": "願主與你們同在。",
     "And with your spirit.": "也與你的心靈同在。",
@@ -129,7 +123,6 @@ CHINESE = {
     "The Lord Almighty grant us a peaceful night and a perfect end.": "願全能的主賜我們安寧的夜晚和完美的終結。",
     "Our help is in the Name of the Lord;": "我們的幫助在乎主的名；",
     "Let us bless the Lord.": "讓我們稱頌主。",
-
     # Compline-specific (from templates)
     "Into your hands, O Lord, I commend my spirit;": "主啊，我將我的靈魂交在你手裡；",
     "For you have redeemed me, O Lord, O God of truth.": "因為你救贖了我，主啊，信實的上帝。",
@@ -143,15 +136,12 @@ CHINESE = {
     "And let our cry come to you.": "願我們的呼求達到你面前。",
     "O Lord, hear our prayer;": "主啊，求你垂聽我們的禱告；",
     "And let our cry come unto thee.": "願我們的呼求達到你面前。",
-
     # Confession (from BCP 2019 page 52/60)
     "Let us humbly confess our sins to Almighty God.": "親愛的兄弟姊妹，我們應在全能的上帝面前，謙卑認罪。",
     "Let us humbly confess our sins unto Almighty God.": "親愛的兄弟姊妹，我們應在全能的上帝面前，謙卑認罪。",
-
     # Dismissal (from BCP 2019 page 65)
     "Let us go forth in the name of Christ.": "我們要奉基督的名，勇往直前。",
     "Let us bless the Lord.": "我們要頌揚主。",
-
     # Opening Sentences (from BCP 2019 pages 66-67)
     # Advent
     "In the wilderness prepare the way of the Lord; make straight in the desert a highway for our God.": "在曠野為耶和華預備道路，在沙漠為我們的上帝修直大道。",
@@ -182,7 +172,6 @@ CHINESE = {
     "The Lord is in his holy temple; let all the earth keep silence before him.": "耶和華在祂的聖殿中，全地都當在祂面前肅靜。",
     "O send out your light and your truth, that they may lead me, and bring me to your holy hill, and to your dwelling.": "求祢發出祢的亮光和信實，好引導我，帶我到祢的聖山，到祢的居所！",
     "The hour is coming, and is now here, when the true worshipers will worship the Father in spirit and truth, for the Father is seeking such people to worship him.": "時候將到，現在就是了，那真正敬拜父的，要用心靈和誠實敬拜祂，因為父要這樣的人敬拜祂。",
-
     # Evening Prayer opening sentences (from BCP 2019 pages 70, 81-82)
     "Jesus spoke to them, saying, \u201cI am the light of the world. Whoever follows me will not walk in darkness, but will have the light of life.\u201d": "耶穌又對眾人說：「我就是世界的光。跟從我的，必不在黑暗裏走，卻要得着生命的光。」",
     "Lord, I have loved the habitation of your house and the place where your honor dwells.": "耶和華啊，我喜愛祢所住的殿和祢顯榮耀的居所。",
@@ -213,11 +202,9 @@ CHINESE = {
     "I will thank the Lord for giving me counsel; my heart also chastens me in the night season. I have set the Lord always before me; he is at my right hand, therefore I shall not fall.": "我要稱頌那指引我的耶和華，在夜間我的心腸也指教我。我讓耶和華常在我面前，因祂在我右邊，我就不致動搖。",
     # EP Thanksgiving
     "The Lord by wisdom founded the earth; by understanding he established the heavens; by his knowledge the deeps broke open, and the clouds drop down the dew.": "耶和華以智慧奠立地基，以聰明鋪設諸天，以知識使深淵裂開，使天空滴下甘露。",
-
     # Dismissal (from BCP 2019 page 65/80)
     "Let us go forth in the name of Christ.": "我們要奉基督的名，勇往直前。",
     "We give thanks to God.": "感謝上主。",
-
     # Grace sentences (from BCP 2019 page 65/80)
     # Keys must match the exact strings in index.py Dismissal.get_grace() / get_fixed_grace()
     "The grace of our Lord Jesus Christ, and the love of God, and the fellowship of the Holy Spirit, be with us all evermore.": "願我們主耶穌基督的恩惠，上帝的慈愛，聖靈的感動，常與我們眾人同在。",
@@ -226,7 +213,6 @@ CHINESE = {
     "May the God of hope fill us with all joy and peace in believing through the power of the Holy Spirit. ": "願賜盼望的上帝，因你們的信把各樣的喜樂、平安充滿你們的心，使你們藉着聖靈的能力大有盼望。",
     "May the God of hope fill us with all joy and peace in believing through the power of the Holy Ghost.": "願賜盼望的上帝，因你們的信把各樣的喜樂、平安充滿你們的心，使你們藉着聖靈的能力大有盼望。",
     "Glory to God whose power, working in us, can do infinitely more than we can ask or imagine: Glory to him from generation to generation in the Church, and in Christ Jesus for ever and ever.": "願榮耀歸與上帝，因祂能照着運行在我們心裏的大能，充充足足地成就一切，超過我們所求所想的。但願祂在教會中，並在基督耶穌裏，得着榮耀，直到世世代代，永永遠遠。",
-
     # === MORNING PRAYER WEEKLY COLLECTS (BCP 2019 pages 62-63) ===
     # Collect headings
     "A Collect for Strength to Await Christ's Return": "求賜力量等候基督再臨禱文",
@@ -237,7 +223,6 @@ CHINESE = {
     "A Collect for Endurance": "求堅忍禱文",
     "A Collect for Sabbath Rest": "求安息禱文",
     "A Prayer for Mission": "宣教禱文",
-
     # MP Sunday - Collect for Strength to Await Christ's Return
     "O God our King, by the resurrection of your Son Jesus Christ on the first day of the week, you conquered sin, put death to flight, and gave us the hope of everlasting life: Redeem all our days by this victory; forgive our sins, banish our fears, make us bold to praise you and to do your will; and steel us to wait for the consummation of your kingdom on the last great Day; through Jesus Christ our Lord.": "上帝啊，我們的王，藉賴聖子耶穌基督在七日的第一日復活，祢戰勝罪惡，粉碎死亡的權勢，並賜我們永生的盼望：求祢藉基督得勝救贖我們在世的日子；赦免我們的罪，驅除懼怕，使我們放膽稱頌祢，遵行祢的旨意；並忍耐等候末日天國的完成；此賴我們主耶穌基督而求。",
     # MP Monday - Collect for the Renewal of Life
@@ -252,12 +237,10 @@ CHINESE = {
     "Almighty God, whose most dear Son went not up to joy but first he suffered pain, and entered not into glory before he was crucified: Mercifully grant that we, walking in the way of the Cross, may find it none other than the way of life and peace; through Jesus Christ your Son our Lord.": "全能的上帝，主的愛子昔日寧願經歷痛苦，而不願先享快樂；寧願被釘於十字架，而不願先得榮耀：現今求主發大慈悲，使我們甘願背起十字架，從而踏上生命與平安之道路；此賴我們主耶穌基督而求。",
     # MP Saturday - Collect for Sabbath Rest
     "Almighty God, who after the creation of the world rested from all your works and sanctified a day of rest for all your creatures: Grant that we, putting away all earthly anxieties, may be duly prepared for the service of your sanctuary, and that our rest here upon earth may be a preparation for the eternal rest promised to your people in heaven; through Jesus Christ our Lord.": "全能的上帝，祢在第七日歇了一切創造的工，並將此日分別為聖，賜萬物得享安息：求主幫助我們，放下世上煩擾，虔敬預備到聖所敬拜事奉祢；並使地上的休息能夠預備我們，享受祢應許賜給子民在天上永恆的安息；此賴我們主耶穌基督而求。",
-
     # MP Mission Collects
     "Almighty and everlasting God, who alone works great marvels: Send down upon our clergy and the congregations committed to their charge the life-giving Spirit of your grace, shower them with the continual dew of your blessing, and ignite in them a zealous love of your Gospel; through Jesus Christ our Lord.": "全能永生的上帝，惟祢能行神蹟奇事：現今求主施恩，差遣賜給生命的聖靈，充滿各聖品人及會眾；又求主以無窮的福澤，沛降他們，燃點愛傳福音的熱忱；此賴我們主耶穌基督而求。",
     "O God, you have made of one blood all the peoples of the earth, and sent your blessed Son to preach peace to those who are far off and to those who are near: Grant that people everywhere may seek after you and find you; bring the nations into your fold; pour out your Spirit upon all flesh; and hasten the coming of your kingdom; through Jesus Christ our Lord.": "上帝啊，祢從一本造出萬族，又曾差遣祢的聖子傳平安的福音給遠近的人：求主使凡尋求祢的，得以尋見；萬邦得以歸向祢；又求祢將聖靈澆灌凡有氣息的；願天國早日完成；此賴我們主耶穌基督而求。",
     "Lord Jesus Christ, you stretched out your arms of love on the hard wood of the Cross that everyone might come within the reach of your saving embrace: So clothe us in your Spirit that we, reaching forth our hands in love, may bring those who do not know you to the knowledge and love of you; for the honor of your Name.": "主耶穌基督在十字架上，張開祢慈愛的膀臂，拯救世人進入祢的懷抱：求聖靈澆灌我們，教我們伸出慈愛的手，帶領人認識祢，經歷祢的愛；榮耀祢的聖名。",
-
     # === EVENING PRAYER WEEKLY COLLECTS (BCP 2019 pages 77-78) ===
     "A Collect for Resurrection Hope": "復活盼望祝文",
     "A Collect for Aid against Perils": "求恩助禱文",
@@ -265,7 +248,6 @@ CHINESE = {
     "A Collect for the Presence of Christ": "求基督同在禱文",
     "A Collect for Faith": "求信心禱文",
     "A Collect for the Eve of Worship": "崇拜前夕祝文",
-
     # EP Sunday - Collect for Resurrection Hope
     "Lord God, whose Son our Savior Jesus Christ triumphed over the powers of death and prepared for us our place in the new Jerusalem: Grant that we, who have this day given thanks for his resurrection, may praise you in that City of which he is the light, and where he lives and reigns for ever and ever.": "主上帝，祢的兒子──我們的救主耶穌基督勝過死亡的權勢，並在新耶路撒冷為我們預備了地方：我們今天為祂的復活而感恩，求祢使我們將來在耶城中讚美祢，因祂是耶城的光，在那裏永遠居住，永遠掌權。",
     # EP Monday - Collect for Peace
@@ -280,12 +262,10 @@ CHINESE = {
     "Lord Jesus Christ, by your death you took away the sting of death: Grant to us your servants so to follow in faith where you have led the way, that we may at length fall asleep peacefully in you and wake up in your likeness; for your tender mercies\u2019 sake.": "主耶穌基督，祢藉十架犧牲消滅了死亡的毒鉤：求祢使祢的眾僕人憑信心跟隨祢，在祢裏面整夜安睡，新的一天醒來活像基督；因着祢的慈悲憐憫而求。",
     # EP Saturday - Collect for the Eve of Worship
     "O God, the source of eternal light: Shed forth your unending day upon us who watch for you, that our lips may praise you, our lives may bless you, and our worship on the morrow give you glory; through Jesus Christ our Lord.": "上帝啊，永恆光輝之源：我們做醒等候祢永恆日光彰顯，以致我們能用口讚美祢，用我們的生命稱頌祢，我們明天的敬拜能歸榮耀給祢；此賴我們主耶穌基督而求。",
-
     # EP Mission Collects
     "O God and Father of all, whom the whole heavens adore: Let the whole earth also worship you, all nations obey you, all tongues confess and bless you, and men, women, and children everywhere love you and serve you in peace; through Jesus Christ our Lord.": "諸天景仰的父上帝啊：願全地都敬拜祢，萬國都順服祢，萬口都承認祢讚美祢，願各地的男女老少都敬愛祢，在平安裏服事祢；此賴我們主耶穌基督而求。",
     "Keep watch, dear Lord, with those who work, or watch, or weep this night, and give your angels charge over those who sleep. Tend the sick, Lord Christ; give rest to the weary, bless the dying, soothe the suffering, pity the afflicted, shield the joyous; and all for your love\u2019s sake.": "親愛的主，求祢看顧那些在今夜仍要工作、或當夜更、或徹夜哀哭的人，並差派天使保護睡眠的人。主基督啊，求祢照料病患者，賜困乏者休息，臨終者蒙祝福，受苦者得安慰，受折磨者蒙憐憫，並且保守喜樂的人；全因着祢愛的緣故。",
     "O God, you manifest in your servants the signs of your presence: Send forth upon us the Spirit of love, that in companionship with one another your abounding grace may increase among us; through Jesus Christ our Lord.": "上帝啊，祢在祢的眾僕人中間彰顯祢臨在的記號：求祢差遣聖靈以愛澆灌我們，使我們在彼此的團契中，領受祢豐盛的恩典，多而又多；此賴我們主耶穌基督而求。",
-
     # === INVITATORY ANTIPHON LINES (MPInvitatory) ===
     # Lenten antiphon
     "The Lord is full of compassion and mercy:": "上主滿有憐憫和慈愛：",
@@ -320,30 +300,24 @@ CHINESE = {
     "The mercy of the Lord is everlasting: ": "主的慈愛永遠長存：",
     "The mercy of the Lord is everlasting:": "主的慈愛永遠長存：",
     "The mercy of the Lord is everlasting: *": "主的慈愛永遠長存：",
-
     # === COMPLINE-SPECIFIC TEXTS ===
     # Compline opening sentence
     "The maker of heaven and earth.": "創造天地的主。",
     "Who hath made heaven and earth.": "創造天地的主。",
-
     # Compline confession - lay absolution
     "May almighty God grant us forgiveness of all our sins, and the grace and comfort of the Holy Spirit.": "願全能的上帝赦免我們一切的罪，賜我們聖靈的恩典和安慰。",
     "May almighty God grant us forgiveness of all our sins, and the grace and comfort of the Holy Spirit. ": "願全能的上帝赦免我們一切的罪，賜我們聖靈的恩典和安慰。",
-
     # Compline invitatory - Gloria Patri dialogue lines
     "Glory be to the Father, and to the Son, and to the Holy Spirit;": "榮耀歸與聖父、聖子、聖靈；",
     "Glory be to the Father, and to the Son, and to the Holy Ghost;": "榮耀歸與聖父、聖子、聖靈；",
     "As it was in the beginning, is now, and ever shall be, world without end. Amen.": "起初這樣，現在這樣，將來也這樣，永無窮盡。阿們。",
     "As it was in the beginning, is now, and ever shall be, world without end. Amen. Alleluia.": "起初這樣，現在這樣，將來也這樣，永無窮盡。阿們。哈利路亞。",
-
     # Compline Nunc Dimittis rubric + antiphon
     "The Officiant and People say or sing the Song of Simeon with this Antiphon, all standing": "主禮與會眾立，唱或誦西面頌，前後加此對經",
     "Guide us waking, O Lord, and guard us sleeping; that awake we may watch with Christ, and asleep we may rest in peace.": "主啊，求你在我們醒來時引導我們，在我們睡覺時看守我們；使我們醒來時與基督一同警醒，安睡時得享安息。",
     "Guide us waking, O Lord, and guard us sleeping; that awake we may watch with Christ, and asleep we may rest in peace. Alleluia, alleluia, alleluia.": "主啊，求你在我們醒來時引導我們，在我們睡覺時看守我們；使我們醒來時與基督一同警醒，安睡時得享安息。哈利路亞，哈利路亞，哈利路亞。",
-
     # Compline/Family conclusion blessing
     "The almighty and merciful Lord, Father, Son, and Holy Spirit, bless us and keep us, this night and evermore.": "願全能仁慈的主——聖父、聖子、聖靈——賜福保守我們，今夜以及永遠。",
-
     # === MIDDAY/COMPLINE PRAYER COLLECTS ===
     # Midday collects
     "Blessed Savior, at this hour you hung upon the Cross, stretching out your loving arms: Grant that all the peoples of the earth may look to you and be saved; for your tender mercies\u2019 sake.": "慈悲的救主，在這時辰你被掛在十字架上，伸出你慈愛的雙臂：求你使天下萬民都仰望你而得救；因着你的憐憫慈愛。",
@@ -354,7 +328,6 @@ CHINESE = {
     "Father of all mercies, thou hast revealed thy boundless compassion to thine apostle Saint Peter in a three-fold vision: Forgive our unbelief, we pray, and so strengthen our hearts and enkindle our zeal, that we may fervently desire the salvation of all people, and diligently labor in the extension of thy kingdom; through him who gave himself for the life of the world, thy Son our Savior Jesus Christ. ": "滿有慈悲的天父，你以三次異象向你的使徒聖彼得顯明你無限的慈悲：求你赦免我們的不信，堅固我們的心，點燃我們的熱忱，使我們切慕萬民得救，殷勤拓展你的國度；此賴那為世人捨命的，你的兒子我們的救主耶穌基督。",
     "Pour your grace into our hearts, O Lord, that we who have known the incarnation of your Son Jesus Christ, announced by an angel to the Virgin Mary, may by his Cross and passion be brought to the glory of his resurrection; who lives and reigns with you, in the unity of the Holy Spirit, one God, now and for ever.": "主啊，求你將恩典傾注在我們心中，使我們既已藉天使報信，得知你聖子耶穌基督道成肉身，願我們也藉着祂的十字架和受難，得以進入祂復活的榮耀；祂與你和聖靈，同是一位上帝，現在以至永遠。",
     "We beseech thee, O Lord, pour thy grace into our hearts; that as we have known the incarnation of thy Son Jesus Christ announced by the message of an angel to the Virgin Mary, so by his cross and passion we may be brought unto the glory of his resurrection; through the same Christ our Lord.": "主啊，求你將恩典傾注在我們心中，使我們既已藉天使報信，得知你聖子耶穌基督道成肉身，願我們也藉着祂的十字架和受難，得以進入祂復活的榮耀；此賴我們的主基督。",
-
     # Compline collects
     "Visit this place, O Lord, and drive far from it all snares of the enemy; let your holy angels dwell with us to preserve us in peace; and let your blessing be upon us always; through Jesus Christ our Lord.": "主啊，求你眷顧這地方，驅除仇敵一切的詭計；讓你的聖天使與我們同住，保守我們平安；願你的祝福常與我們同在；此賴我們主耶穌基督。",
     "Visit this place, we beseech thee, O Lord, and drive from it all the snares of the enemy; let thy holy angels dwell herein to preserve us in peace; and may thy blessing be upon us evermore; through Jesus Christ our Lord.": "主啊，求你眷顧這地方，驅除仇敵一切的詭計；讓你的聖天使與我們同住，保守我們平安；願你的祝福常與我們同在；此賴我們主耶穌基督。",
@@ -368,16 +341,13 @@ CHINESE = {
     "We give thee thanks, O God, for revealing thy Son Jesus Christ to us by the light of his resurrection: Grant that as we sing thy glory at the close of this day, our joy may abound in the morning as we celebrate the Paschal mystery; through Jesus Christ our Lord.": "上帝啊，感謝你藉着聖子耶穌基督復活的光向我們啟示祂：求你使我們在這日將盡之時歌頌你的榮耀，明晨慶祝逾越奧蹟時更加喜樂洋溢；此賴我們主耶穌基督。",
     "O God, your unfailing providence sustains the world we live in and the life we live: Watch over those, both night and day, who work while others sleep, and grant that we may never forget that our common life depends upon each other\u2019s toil; through Jesus Christ our Lord.": "上帝啊，你永不止息的眷顧維護着我們生活的世界和我們的生命：求你日夜看顧那些在他人安睡時仍在工作的人，使我們不忘記我們共同的生活全賴彼此的勞苦；此賴我們主耶穌基督。",
     "O God, whose unfailing providence sustaineth the world we live in and the life we live: Watch over those, both night and day, who work while others sleep, and grant that we may never forget that our common life depends upon each other\u2019s toil; through Jesus Christ our Lord.": "上帝啊，你永不止息的眷顧維護着我們生活的世界和我們的生命：求你日夜看顧那些在他人安睡時仍在工作的人，使我們不忘記我們共同的生活全賴彼此的勞苦；此賴我們主耶穌基督。",
-
     # Compline collect subheadings
     "A Collect for Evening": "晚禱祝文",
     "A Collect for Aid Against Peril": "求恩助禱文",
     "A Collect for Saturdays": "週六祝文",
-
     # === FAMILY PRAYER RUBRICS ===
     "These devotions follow the basic structure of the Daily Office of the Church and are particularly appropriate for families with young children.": "這些靈修遵循教會每日禱告的基本架構，特別適合有幼童的家庭。",
     "The Reading and the Collect may be read by one person, and the other parts said in unison, or in some other convenient manner.": "讀經和祝文可由一人誦讀，其他部分可齊聲誦讀，或以其他合適的方式進行。",
-
     # === FAMILY OPENING SENTENCES ===
     "O Lord, open my lips, and my mouth shall show forth your praise.": "主啊，求你開我的口，我的嘴便要讚美你。",
     "O Lord, open thou my lips, and my mouth shall show forth thy praise.": "主啊，求你開我的口，我的嘴便要讚美你。",
@@ -387,7 +357,6 @@ CHINESE = {
     "How excellent is thy mercy, O God! The children of men shall put their trust under the shadow of thy wings. For with thee is the well of life, and in thy light shall we see light.": "上帝啊，你的慈愛何等寶貴！世人投靠在你翅膀的蔭下。他們必因你殿裏的肥甘得以飽足；你也必叫他們喝你樂河的水。因為在你那裏有生命的源頭；在你的光中，我們必得見光。",
     "I will lay me down in peace, and take my rest; for you, LORD, only, make me dwell in safety.": "我必安然躺下睡覺，因為獨有你耶和華使我安然居住。",
     "I will lay me down in peace, and take my rest; for it is thou, Lord, only, that makest me dwell in safety": "我必安然躺下睡覺，因為獨有你耶和華使我安然居住。",
-
     # === MIDDAY/COMPLINE SCRIPTURE READINGS ===
     # Midday scripture (inline in MiddayScripture)
     "Jesus said, \u201cNow is the judgment of this world; now will the ruler of this world be cast out. And I, when I am lifted up from the earth, will draw all people to myself.\u201d": "耶穌說：「現在這世界受審判，這世界的王要被趕出去。我若從地上被舉起來，就要吸引萬人來歸我。」",
@@ -396,7 +365,6 @@ CHINESE = {
     "If any man be in Christ, he is a new creature: old things are passed away; behold, all things are become new. And all things are of God, who hath reconciled us to himself by Jesus Christ, and hath given to us the ministry of reconciliation.": "若有人在基督裏，他就是新造的人，舊事已過，都變成新的了。一切都是出於上帝，祂藉着基督使我們與祂和好，又將勸人與祂和好的使命賜給我們。",
     "From the rising of the sun to its setting my name will be great among the nations, and in every place incense will be offered to my name, and a pure offering. For my name will be great among the nations, says the Lord of Hosts.": "萬軍之耶和華說：從日出之地到日落之處，我的名在列國中必尊為大。在各處，人必奉我名燒香，獻潔淨的供物，因為我的名在列國中必尊為大。",
     "From the rising of the sun even unto the going down of the same my name shall be great among the Gentiles; and in every place incense shall be offered unto my name, and a pure offering: for my name shall be great among the heathen, saith the Lord of hosts.": "萬軍之耶和華說：從日出之地到日落之處，我的名在列國中必尊為大。在各處，人必奉我名燒香，獻潔淨的供物，因為我的名在列國中必尊為大。",
-
     # Compline scripture (inline in ComplineScripture)
     "You, O Lord, are in the midst of us, and we are called by your name; do not leave us.": "耶和華啊，你在我們中間，我們也稱為你名下的人，求你不要離開我們。",
     "Thou, O Lord, art in the midst of us, and we are called by thy Name. Leave us not, O Lord our God.": "耶和華啊，你在我們中間，我們也稱為你名下的人，求你不要離開我們。",
@@ -406,7 +374,6 @@ CHINESE = {
     "Now the God of peace, that brought again from the dead our Lord Jesus, that great Shepherd of the sheep, through the blood of the everlasting covenant, make you perfect in every good work to do his will, working in you that which is well pleasing in his sight; through Jesus Christ, to whom be glory for ever and ever. Amen.": "願賜平安的上帝，就是那憑永約之血，使群羊的大牧人──我們主耶穌從死裏復活的上帝，在各樣善事上成全你們，叫你們遵行祂的旨意；又藉着耶穌基督在我們心裏行祂所喜悅的事。願榮耀歸給祂，直到永永遠遠。阿們。",
     "Be sober-minded; be watchful. Your adversary the devil prowls around like a roaring lion, seeking someone to devour. Resist him, firm in your faith.": "務要謹守、警醒。因為你們的仇敵魔鬼，如同吼叫的獅子，遍地遊行，尋找可吞吃的人。你們要用堅固的信心抵擋牠。",
     "Be sober, be vigilant, because your adversary the devil, as a roaring lion, walketh about, seeking whom he may devour: whom resist, steadfast in the faith.": "務要謹守、警醒。因為你們的仇敵魔鬼，如同吼叫的獅子，遍地遊行，尋找可吞吃的人。你們要用堅固的信心抵擋牠。",
-
     # Family morning scripture
     "Blessed be the God and Father of our Lord Jesus Christ! According to his great mercy, he has caused us to be born again to a living hope through the resurrection of Jesus Christ from the dead.": "願頌讚歸與我們主耶穌基督的父上帝！祂曾照自己的大憐憫，藉耶穌基督從死裏復活，重生了我們，叫我們有活潑的盼望。",
     "Blessed be the God and Father of our Lord Jesus Christ, which according to his abundant mercy hath begotten us again unto a lively hope by the resurrection of Jesus Christ from the dead.": "願頌讚歸與我們主耶穌基督的父上帝！祂曾照自己的大憐憫，藉耶穌基督從死裏復活，重生了我們，叫我們有活潑的盼望。",
@@ -414,29 +381,24 @@ CHINESE = {
     "Give thanks unto the Father, who hath made us meet to be partakers of the inheritance of the saints in light: Who hath delivered us from the power of darkness, and hath translated us into the kingdom of his dear Son: In whom we have redemption through his blood, even the forgiveness of sins.": "感謝天父，叫我們能與眾聖徒在光明中同得基業。祂救了我們脫離黑暗的權勢，把我們遷到祂愛子的國裏；我們在愛子裏得蒙救贖，罪過得以赦免。",
     "If then you have been raised with Christ, seek the things that are above, where Christ is, seated at the right hand of God. Set your minds on things that are above, not on things that are on earth. For you have died, and your life is hidden with Christ in God. When Christ who is your life appears, then you also will appear with him in glory.": "所以，你們若真與基督一同復活，就當求在上面的事；那裏有基督坐在上帝的右邊。你們要思念上面的事，不要思念地上的事。因為你們已經死了，你們的生命與基督一同藏在上帝裏面。基督是我們的生命，祂顯現的時候，你們也要與祂一同顯現在榮耀裏。",
     "If ye then be risen with Christ, seek those things which are above, where Christ sitteth on the right hand of God. Set your affection on things above, not on things on the earth. For ye are dead, and your life is hid with Christ in God. When Christ, who is our life, shall appear, then shall ye also appear with him in glory.": "所以，你們若真與基督一同復活，就當求在上面的事；那裏有基督坐在上帝的右邊。你們要思念上面的事，不要思念地上的事。因為你們已經死了，你們的生命與基督一同藏在上帝裏面。基督是我們的生命，祂顯現的時候，你們也要與祂一同顯現在榮耀裏。",
-
     # Family midday scripture
     "Abide in me, and I in you. As the branch cannot bear fruit by itself, unless it abides in the vine, neither can you, unless you abide in me. I am the vine; you are the branches. Whoever abides in me and I in him, he it is that bears much fruit, for apart from me you can do nothing.": "你們要常在我裏面，我也常在你們裏面。枝子若不常在葡萄樹上，自己就不能結果子；你們若不常在我裏面，也是這樣。我是葡萄樹，你們是枝子。常在我裏面的，我也常在他裏面，這人就多結果子；因為離了我，你們就不能做甚麼。",
     "Abide in me, and I in you. As the branch cannot bear fruit of itself, except it abide in the vine; no more can ye, except ye abide in me. I am the vine, ye are the branches: He that abideth in me, and I in him, the same bringeth forth much fruit: for without me ye can do nothing.": "你們要常在我裏面，我也常在你們裏面。枝子若不常在葡萄樹上，自己就不能結果子；你們若不常在我裏面，也是這樣。我是葡萄樹，你們是枝子。常在我裏面的，我也常在他裏面，這人就多結果子；因為離了我，你們就不能做甚麼。",
     "Do not be anxious about anything, but in everything by prayer and supplication with thanksgiving let your requests be made known to God. And the peace of God, which surpasses all understanding, will guard your hearts and your minds in Christ Jesus.": "應當一無掛慮，只要凡事藉着禱告、祈求和感謝，將你們所要的告訴上帝。上帝所賜出人意外的平安，必在基督耶穌裏保守你們的心懷意念。",
     "Do not be anxious about anything, but in every thing by prayer and supplication with thanksgiving let your requests be made known to God. And the peace of God, which passeth all understanding, shall keep your hearts and minds through Christ Jesus.": "應當一無掛慮，只要凡事藉着禱告、祈求和感謝，將你們所要的告訴上帝。上帝所賜出人意外的平安，必在基督耶穌裏保守你們的心懷意念。",
-
     # === ADDITIONAL RUBRICS ===
     "Prayers may be offered for ourselves and others. It is appropriate that prayers of thanksgiving for the blessings of the day, and penitence for our sins, be included.": "可為自己和他人祈禱。在禱告中加入感恩和認罪的內容是合適的。",
-
     # Family early evening scripture
     "For what we proclaim is not ourselves, but Jesus Christ as Lord, with ourselves as your servants for Jesus\u2019 sake. For God, who said, \u201cLet light shine out of darkness,\u201d has shone in our hearts, to give the light of the knowledge of the glory of God in the face of Jesus Christ.": "我們原不是傳自己，乃是傳基督耶穌為主，並且自己因耶穌作你們的僕人。那吩咐光從黑暗裏照出來的上帝，已經照在我們心裏，使我們得知上帝榮耀的光顯在耶穌基督的面上。",
     "For we preach not ourselves, but Christ Jesus the Lord; and ourselves your servants for Jesus\u2019 sake. For God, who commanded the light to shine out of darkness, hath shined in our hearts, to give the light of the knowledge of the glory of God in the face of Jesus Christ.": "我們原不是傳自己，乃是傳基督耶穌為主，並且自己因耶穌作你們的僕人。那吩咐光從黑暗裏照出來的上帝，已經照在我們心裏，使我們得知上帝榮耀的光顯在耶穌基督的面上。",
     "Jesus spoke to them, saying, \u201cI am the light of the world. Whoever follows me will not walk in darkness, but will have the light of life.\u201d": "耶穌又對眾人說：「我就是世界的光。跟從我的，必不在黑暗裏走，卻要得着生命的光。」",
     "Jesus said, \u201cBehold, I stand at the door and knock. If anyone hears my voice and opens the door, I will come in to him and eat with him, and he with me.\u201d": "看哪，我站在門外叩門，若有聽見我聲音就開門的，我要進到他那裏去，我與他，他與我，一同坐席。",
     "Jesus said, Behold, I stand at the door, and knock: if any man hear my voice, and open the door, I will come in to him, and will sup with him, and he with me. ": "看哪，我站在門外叩門，若有聽見我聲音就開門的，我要進到他那裏去，我與他，他與我，一同坐席。",
-
     # Family close of day scripture
     "You keep them in perfect peace whose minds are stayed on you, because they trust in you. Trust in the LORD for ever, for the LORD God is an everlasting rock.": "堅心倚賴你的，你必保守他十分平安，因為他倚靠你。你們當倚靠耶和華直到永遠，因為耶和華是永久的磐石。",
     "Thou wilt keep him in perfect peace, whose mind is stayed on thee: because he trusteth in thee. Trust ye in the Lord for ever: for the Lord God is everlasting strength. ": "堅心倚賴你的，你必保守他十分平安，因為他倚靠你。你們當倚靠耶和華直到永遠，因為耶和華是永久的磐石。",
     "Now may the God of peace himself sanctify you completely, and may your whole spirit and soul and body be kept blameless at the coming of our Lord Jesus Christ.": "願賜平安的上帝親自使你們全然成聖！又願你們的靈與魂與身子得蒙保守，在我們主耶穌基督降臨的時候，完全無可指摘。",
     "May the very God of peace sanctify you wholly; and I pray God your whole spirit and soul and body be preserved blameless unto the coming of our Lord Jesus Christ.": "願賜平安的上帝親自使你們全然成聖！又願你們的靈與魂與身子得蒙保守，在我們主耶穌基督降臨的時候，完全無可指摘。",
-
     # === CANTICLE CITATION ===
     "SONG OF THE THREE YOUNG MEN, 29-34": "三童歌 29-34",
     "SONG OF THE THREE YOUNG MEN, 35-65": "三童歌 35-65",
@@ -452,7 +414,6 @@ SPANISH = {
     "Evening Prayer": "Oración Vespertina",
     "Midday Prayer": "Oración del Mediodía",
     "Compline": "Completas",
-
     # Section headings
     "Opening Sentence": "Oración Inicial",
     "Closing Sentence": "Oración Final",
@@ -487,7 +448,6 @@ SPANISH = {
     "The Suffrages": "Los Sufragios",
     "Additional Collects": "Colectas Adicionales",
     "A Collect for Mission": "Colecta por la Misión",
-
     # Canticle headings
     "MAGNIFICAT": "MAGNIFICAT",
     "The Song of Mary": "El Cántico de María",
@@ -508,7 +468,6 @@ SPANISH = {
     "PHOS HILARON": "PHOS HILARON",
     "O Gracious Light": "Oh Luz Alegrante",
     "GLORIA IN EXCELSIS": "GLORIA IN EXCELSIS",
-
     # Weekday names
     "Monday": "Lunes",
     "Tuesday": "Martes",
@@ -517,7 +476,6 @@ SPANISH = {
     "Friday": "Viernes",
     "Saturday": "Sábado",
     "Sunday": "Domingo",
-
     # Subheadings
     "Thirty Day Cycle": "Ciclo de Treinta Días",
     "Sixty Day Cycle": "Ciclo de Sesenta Días",
@@ -526,7 +484,6 @@ SPANISH = {
     "At Midday": "Al Mediodía",
     "At Early Evening": "Al Anochecer",
     "At the Close of Day": "Al Cierre del Día",
-
     # Rubrics
     "The Officiant says to the People": "El Oficiante dice al Pueblo",
     "The following Canticle is sung or said, all standing": "Se canta o dice el siguiente cántico, todos de pie",
@@ -544,7 +501,6 @@ SPANISH = {
     "Prayers may be offered for ourselves and others.": "Se pueden ofrecer oraciones por nosotros mismos y por otros.",
     "A hymn or canticle may be used.": "Se puede cantar un himno o cántico.",
     "The Officiant concludes with the following": "El Oficiante concluye con lo siguiente",
-
     # Dialogues
     "The Lord be with you.": "El Señor esté con ustedes.",
     "And with your spirit.": "Y con tu espíritu.",
@@ -569,7 +525,6 @@ SPANISH = {
     "The Lord Almighty grant us a peaceful night and a perfect end.": "El Señor Todopoderoso nos conceda una noche tranquila y un perfecto fin.",
     "Our help is in the Name of the Lord;": "Nuestro auxilio está en el Nombre del Señor;",
     "Let us bless the Lord.": "Bendigamos al Señor.",
-
     # Compline-specific
     "Into your hands, O Lord, I commend my spirit;": "En tus manos, Señor, encomiendo mi espíritu;",
     "For you have redeemed me, O Lord, O God of truth.": "Porque me has redimido Señor, Dios de verdad.",
@@ -583,15 +538,12 @@ SPANISH = {
     "And let our cry come to you.": "Y llegue a ti nuestro clamor.",
     "O Lord, hear our prayer;": "Señor, escucha nuestra oración;",
     "And let our cry come unto thee.": "Y llegue a ti nuestro clamor.",
-
     # Confession
     "Let us humbly confess our sins to Almighty God.": "Confesemos humildemente nuestros pecados al Dios Todopoderoso.",
     "Let us humbly confess our sins unto Almighty God.": "Confesemos humildemente nuestros pecados al Dios Todopoderoso.",
-
     # Dismissal
     "Let us go forth in the name of Christ.": "Salgamos en el nombre de Cristo.",
     "We give thanks to God.": "Demos Gracias a Dios.",
-
     # Opening Sentences (NVI text)
     # Advent
     "In the wilderness prepare the way of the Lord; make straight in the desert a highway for our God.": "Una voz proclama: «Preparen en el desierto un camino para el Señor; enderecen en la estepa un sendero para nuestro Dios.",
@@ -604,7 +556,7 @@ SPANISH = {
     "Turn your face from my sins, and blot out all my misdeeds.": "Aparta tu rostro de mis pecados y borra toda mi maldad.",
     "If anyone would come after me, let him deny himself and take up his cross and follow me.": "Entonces llamó a la multitud y a sus discípulos. —Si alguien quiere ser mi discípulo —les dijo—, que se niegue a sí mismo, lleve su cruz y me siga.",
     # Holy Week
-    "Is it nothing to you, all you who pass by? Look and see if there is any sorrow like my sorrow, which was brought upon me, which the Lord inflicted on the day of his fierce anger.": "\"Fíjense ustedes, los que pasan por el camino: ¿Acaso no les importa? ¿Dónde hay sufrimiento como el mío, como el que el Señor me ha hecho padecer, como el que el Señor lanzó sobre mí en el día de su furor?",
+    "Is it nothing to you, all you who pass by? Look and see if there is any sorrow like my sorrow, which was brought upon me, which the Lord inflicted on the day of his fierce anger.": '"Fíjense ustedes, los que pasan por el camino: ¿Acaso no les importa? ¿Dónde hay sufrimiento como el mío, como el que el Señor me ha hecho padecer, como el que el Señor lanzó sobre mí en el día de su furor?',
     # Easter
     "If then you have been raised with Christ, seek the things that are above, where Christ is, seated at the right hand of God.": "Ya que han resucitado con Cristo, busquen las cosas de arriba, donde está Cristo sentado a la derecha de Dios.",
     # Ascension
@@ -612,25 +564,24 @@ SPANISH = {
     # Pentecost
     "You will receive power when the Holy Spirit has come upon you, and you will be my witnesses in Jerusalem and in all Judea and Samaria, and to the end of the earth.": "Pero, cuando venga el Espíritu Santo sobre ustedes, recibirán poder y serán mis testigos tanto en Jerusalén como en toda Judea y Samaria, y hasta los confines de la tierra.",
     # Trinity Sunday
-    "Holy, holy, holy, is the Lord God Almighty, who was and is and is to come!": "\"¡Santo, santo, santo, es el Señor Dios Todopoderoso, el que era, y que es y que ha de venir!\"",
+    "Holy, holy, holy, is the Lord God Almighty, who was and is and is to come!": '"¡Santo, santo, santo, es el Señor Dios Todopoderoso, el que era, y que es y que ha de venir!"',
     # Thanksgiving
     "Honor the Lord with your wealth and with the firstfruits of all your produce; then your barns will be filled with plenty, and your vats will be bursting with wine.": "Honra al Señor con tus riquezas y con los primeros frutos de tus cosechas; Así tus graneros se llenarán a reventar y tus bodegas rebosarán de vino nuevo.",
     # General
     "Grace to you and peace from God our Father and the Lord Jesus Christ.": "Que Dios nuestro Padre y el Señor Jesucristo les concedan gracia y paz.",
-    "I was glad when they said unto me, \u201cWe will go into the house of the Lord.": "Yo me alegro cuando me dicen: \"Vamos a la casa del Señor.\"",
+    "I was glad when they said unto me, \u201cWe will go into the house of the Lord.": 'Yo me alegro cuando me dicen: "Vamos a la casa del Señor."',
     "Let the words of my mouth and the meditation of my heart be always acceptable in your sight, O Lord, my rock and my redeemer.": "Sean, pues, aceptables ante ti mis palabras y mis pensamientos, oh Señor, roca mía y redentor mío.",
     "The Lord is in his holy temple; let all the earth keep silence before him.": "En cambio, el Señor está en su santo templo; ¡guarde toda la tierra silencio en su presencia!",
     "O send out your light and your truth, that they may lead me, and bring me to your holy hill, and to your dwelling.": "Envía tu luz y tu verdad, que ellas me guíen hasta tu monte santo, que me lleven al lugar donde tú habitas.",
     "The hour is coming, and is now here, when the true worshipers will worship the Father in spirit and truth, for the Father is seeking such people to worship him.": "Pero se acerca la hora, y ha llegado ya, en que los verdaderos adoradores rendirán culto al Padre en espíritu y en verdad, porque así quiere el Padre que sean los que le adoren.",
-
     # Evening Prayer opening sentences (NVI text)
     "Jesus spoke to them, saying, \u201cI am the light of the world. Whoever follows me will not walk in darkness, but will have the light of life.\u201d": "\"Una vez más Jesús se dirigió a la gente, y les dijo: 'Yo soy la luz del mundo. El que me sigue no andará en tinieblas, sino que tendrá la luz de la vida'\".",
     "Lord, I have loved the habitation of your house and the place where your honor dwells.": "Señor, yo amo la casa donde vives, el lugar donde reside tu gloria.",
     "Let my prayer be set forth in your sight as incense, and let the lifting up of my hands be an evening sacrifice.": "Que suba a tu presencia mi plegaria como una ofrenda de incienso; que hacia ti se eleven mis manos como un sacrificio vespertino.",
     # EP Advent
-    "Therefore stay awake\u2014for you do not know when the master of the house will come, in the evening, or at midnight, or when the rooster crows, or in the morning\u2014lest he come suddenly and find you asleep.": "\"Por lo tanto, manténganse despiertos, porque no saben cuándo volverá el dueño de la casa, si al atardecer, o a la medianoche, o al canto del gallo, o al amanecer; no sea que venga de repente y los encuentre dormidos\".",
+    "Therefore stay awake\u2014for you do not know when the master of the house will come, in the evening, or at midnight, or when the rooster crows, or in the morning\u2014lest he come suddenly and find you asleep.": '"Por lo tanto, manténganse despiertos, porque no saben cuándo volverá el dueño de la casa, si al atardecer, o a la medianoche, o al canto del gallo, o al amanecer; no sea que venga de repente y los encuentre dormidos".',
     # EP Christmas
-    "Behold, the dwelling place of God is with man. He will dwell with them, and they will be his people, and God himself will be with them as their God.": "Oí una potente voz que provenía del trono y decía: «¡Aquí, entre los seres humanos, está la morada de Dios! Él acampará en medio de ellos, y ellos serán su pueblo; Dios mismo estará con ellos y será su Dios\".",
+    "Behold, the dwelling place of God is with man. He will dwell with them, and they will be his people, and God himself will be with them as their God.": 'Oí una potente voz que provenía del trono y decía: «¡Aquí, entre los seres humanos, está la morada de Dios! Él acampará en medio de ellos, y ellos serán su pueblo; Dios mismo estará con ellos y será su Dios".',
     # EP Epiphany
     "Nations shall come to your light, and kings to the brightness of your rising.": "Las naciones serán guiadas por tu luz, y los reyes, por tu amanecer esplendoroso.",
     # EP Lent
@@ -653,7 +604,6 @@ SPANISH = {
     "I will thank the Lord for giving me counsel; my heart also chastens me in the night season. I have set the Lord always before me; he is at my right hand, therefore I shall not fall.": "Siempre tengo presente al Señor; con él a mi derecha, nada me hará caer. Por eso mi corazón se alegra, y se regocijan mis entrañas; todo mi ser se llena de confianza.",
     # EP Thanksgiving
     "The Lord by wisdom founded the earth; by understanding he established the heavens; by his knowledge the deeps broke open, and the clouds drop down the dew.": "Con sabiduría afirmó el Señor la tierra, con inteligencia estableció los cielos. Por su conocimiento se separaron las aguas, y las nubes dejaron caer su rocío.",
-
     # Grace sentences
     "The grace of our Lord Jesus Christ, and the love of God, and the fellowship of the Holy Spirit, be with us all evermore.": "Que la gracia del Señor Jesucristo, el amor de Dios y la comunión del Espíritu Santo sean con todos ustedes. Amén.",
     "May the God of hope fill us with all joy and peace in believing through the power of the Holy Spirit.": "Que el Dios de la esperanza los llene de toda alegría y paz a ustedes que creen en él, para que rebosen de esperanza por el poder del Espíritu Santo. Amén.",

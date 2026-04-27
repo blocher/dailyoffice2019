@@ -3,7 +3,7 @@ import os
 from django.conf import settings
 from django.core.cache import cache
 from django.http import FileResponse
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponseNotFound
 from django.utils import timezone
 from mutagen.mp3 import MP3
 from rest_framework.response import Response
@@ -12,7 +12,12 @@ from rest_framework.views import APIView
 from churchcal.api.permissions import ReadOnly
 from churchcal.api.serializer import DaySerializer
 from churchcal.calculations import get_calendar_date, ChurchYear, CalendarYear
-from website import settings
+from churchcal.calendar_feeds import (
+    ChurchCalendarFeedService,
+    get_calendar_feed_filename,
+    get_feed_scope_label,
+)
+from website import settings as site_settings
 
 
 def get_calendar_year(year, calendar):
@@ -20,11 +25,11 @@ def get_calendar_year(year, calendar):
     first_year = year - 1
     second_year = year
     print(calendar)
-    first_church_year = cache.get(f"{first_year}_{calendar}") if settings.USE_CALENDAR_CACHE else None
+    first_church_year = cache.get(f"{first_year}_{calendar}") if site_settings.USE_CALENDAR_CACHE else None
     if not first_church_year:
         first_church_year = ChurchYear(first_year, calendar)
         cache.set(f"{first_year}_{calendar}", first_church_year, 60 * 60 * 12)
-    second_church_year = cache.get(f"{second_year}_{calendar}") if settings.USE_CALENDAR_CACHE else None
+    second_church_year = cache.get(f"{second_year}_{calendar}") if site_settings.USE_CALENDAR_CACHE else None
     if not second_church_year:
         second_church_year = ChurchYear(second_year, calendar)
     cache.set(f"{second_year}_{calendar}", second_church_year, 60 * 60 * 12)
@@ -60,12 +65,30 @@ class YearView(APIView):
 
     def get(self, request, year):
         calendar = request.GET.get("calendar", "ACNA_BCP2019")
-        church_year = cache.get(f"{year}_{calendar}") if settings.USE_CALENDAR_CACHE else None
+        church_year = cache.get(f"{year}_{calendar}") if site_settings.USE_CALENDAR_CACHE else None
         if not church_year:
             church_year = ChurchYear(year, calendar)
             cache.set(f"{year}_{calendar}", church_year, 60 * 60 * 12)
         serializer = DaySerializer([date for date in church_year], many=True)
         return Response(serializer.data)
+
+
+class CalendarFeedView(APIView):
+    permission_classes = [ReadOnly]
+
+    def get(self, request, scope, canceled=False):
+        try:
+            feed_path = ChurchCalendarFeedService.get_feed_path(scope, canceled=canceled)
+            get_feed_scope_label(scope)
+        except ValueError:
+            return Response(status=404)
+
+        response = FileResponse(open(feed_path, "rb"), content_type="text/calendar; charset=utf-8")
+        disposition = "attachment" if request.GET.get("download") == "1" else "inline"
+        response["Content-Disposition"] = (
+            f'{disposition}; filename="{get_calendar_feed_filename(scope, canceled=canceled)}"'
+        )
+        return response
 
 
 class AudioTrackView(APIView):

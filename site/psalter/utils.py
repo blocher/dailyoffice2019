@@ -111,8 +111,12 @@ def _has_verse_text(verse, language_style, display_language, use_target_language
 
 
 def get_psalms(
-    citations, api=False, simplified_citations=False, language_style="contemporary",
-    headings="whole_verse", display_language="english"
+    citations,
+    api=False,
+    simplified_citations=False,
+    language_style="contemporary",
+    headings="whole_verse",
+    display_language="english",
 ):
     citations = normalize_citations(citations)
     html = ""
@@ -138,7 +142,10 @@ def get_psalms(
             display_language=display_language,
         )
         lines = lines + psalm_api_lines(
-            citation, verses, language_style=language_style, headings=headings,
+            citation,
+            verses,
+            language_style=language_style,
+            headings=headings,
             display_language=display_language,
         )
     if api:
@@ -146,15 +153,18 @@ def get_psalms(
     return html
 
 
-def psalm_api_lines(citation, verses, heading=True, language_style="contemporary",
-                    headings="whole_verse", display_language="english"):
+def psalm_api_lines(
+    citation, verses, heading=True, language_style="contemporary", headings="whole_verse", display_language="english"
+):
     # Decide at the psalm level: use target language for all verses, or English for all
     use_target = _psalm_has_language(verses, display_language)
 
     lines = []
     if heading:
         if use_target:
-            psalm_label = {"spanish": "Salmo", "chinese-traditional": "詩篇", "chinese-simplified": "詩篇"}.get(display_language, "Psalm")
+            psalm_label = {"spanish": "Salmo", "chinese-traditional": "詩篇", "chinese-simplified": "詩篇"}.get(
+                display_language, "Psalm"
+            )
         else:
             psalm_label = "Psalm"
         lines.append(Line("{} {}".format(psalm_label, citation), "heading"))
@@ -204,14 +214,21 @@ def psalm_api_lines(citation, verses, heading=True, language_style="contemporary
 
 
 def psalm_html(
-    citation, verses, heading=True, simplified_citations=False, language_style="contemporary",
-    headings="whole_verse", display_language="english"
+    citation,
+    verses,
+    heading=True,
+    simplified_citations=False,
+    language_style="contemporary",
+    headings="whole_verse",
+    display_language="english",
 ):
     # Decide at the psalm level: use target language for all verses, or English for all
     use_target = _psalm_has_language(verses, display_language)
 
     if use_target:
-        psalm_label = {"spanish": "Salmo", "chinese-traditional": "詩篇", "chinese-simplified": "詩篇"}.get(display_language, "Psalm")
+        psalm_label = {"spanish": "Salmo", "chinese-traditional": "詩篇", "chinese-simplified": "詩篇"}.get(
+            display_language, "Psalm"
+        )
     else:
         psalm_label = "Psalm"
     html = "<div class='psalm'>"

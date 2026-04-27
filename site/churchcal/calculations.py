@@ -30,6 +30,8 @@ class CalendarDate(object):
         if sunday_date.weekday() != 6:
             sun_offset = (sunday_date.weekday() - 6) % 7
             sunday_date = sunday_date - timedelta(days=sun_offset)
+        if hasattr(self.year, "proper_lookup"):
+            return self.year.proper_lookup.get((sunday_date.month, sunday_date.day))
         date = datetime.strptime("2019-{}-{}".format(sunday_date.month, sunday_date.day), "%Y-%m-%d").date()
         return Proper.objects.filter(calendar=self.calendar, start_date__lte=date, end_date__gte=date).first()
 
@@ -337,11 +339,25 @@ class ChurchYear(object):
         commemorations = (
             Commemoration.objects.select_related(
                 "rank",
+                "collect_1",
+                "collect_2",
+                "collect_eve",
+                "sanctoralecommemoration__common",
+                "sanctoralecommemoration__common__collect_1",
+                "sanctoralecommemoration__common__collect_2",
+                "cannot_occur_after",
                 "cannot_occur_after__rank",
             )
             .filter(calendar=self.calendar)
             .all()
         )
+        commemorations = list(commemorations)
+        commemorations_by_pk = {commemoration.pk: commemoration for commemoration in commemorations}
+        for commemoration in commemorations:
+            if commemoration.cannot_occur_after_id and commemoration.cannot_occur_after_id in commemorations_by_pk:
+                commemoration._cannot_occur_after_subtype_cache = commemorations_by_pk[
+                    commemoration.cannot_occur_after_id
+                ]
         already_added = []
         for commemoration in commemorations:
             if not commemoration.can_occur_in_year(self.start_year):
@@ -376,6 +392,7 @@ class ChurchYear(object):
         self.end_year = year_of_advent + 1
 
         self.dates = IndexedOrderedDict()
+        self.proper_lookup = self._build_proper_lookup()
 
         start_date = advent(year_of_advent)
         end_date = advent(year_of_advent + 1) - timedelta(days=1)
@@ -407,7 +424,8 @@ class ChurchYear(object):
 
     def _get_seasons(self):
         seasons = (
-            Season.objects.filter(calendar=Calendar.objects.filter(abbreviation=self.calendar.abbreviation).get())
+            Season.objects.select_related("start_commemoration", "rank")
+            .filter(calendar=self.calendar)
             .order_by("order")
             .all()
         )
@@ -416,6 +434,16 @@ class ChurchYear(object):
             season_mapping[season.start_commemoration.name] = season
         self.seasons = season_mapping
         # print(self.seasons)
+
+    def _build_proper_lookup(self):
+        proper_lookup = {}
+        propers = Proper.objects.select_related("collect_1").filter(calendar=self.calendar).all()
+        for proper in propers:
+            current_date = proper.start_date
+            while current_date <= proper.end_date:
+                proper_lookup[(current_date.month, current_date.day)] = proper
+                current_date += timedelta(days=1)
+        return proper_lookup
 
     def _set_season(self, calendar_date):
         calendar_date.season = self.season_tracker

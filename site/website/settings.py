@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import mimetypes
 import os
+import sys
 
 import environ
 
@@ -101,6 +102,11 @@ INSTALLED_APPS = [
 ]
 
 if DEBUG:
+    RUNNING_TESTS = "test" in sys.argv
+else:
+    RUNNING_TESTS = False
+
+if DEBUG and not RUNNING_TESTS:
     INSTALLED_APPS = ["debug_toolbar"] + INSTALLED_APPS
 
 MIDDLEWARE = [
@@ -116,7 +122,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-if DEBUG:
+if DEBUG and not RUNNING_TESTS:
     MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE
 
 ROOT_URLCONF = "website.urls"
@@ -227,7 +233,7 @@ def show_toolbar(request):
     return True
 
 
-DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": show_toolbar}
+DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": show_toolbar, "IS_RUNNING_TESTS": False}
 
 DISTILL_DIR = "{}/../static_export".format(BASE_DIR)
 

@@ -749,7 +749,9 @@ class ReadingModule(Module):
             if has_abbreviated:
                 subheading = getattr(self.office.office_readings, "{}_abbreviated".format(field))
                 passage = getattr(self.office.office_readings, "{}_abbreviated".format(field))
-                citation = passage_to_citation(getattr(self.office.office_readings, "{}_abbreviated".format(field)), language=self.language)
+                citation = passage_to_citation(
+                    getattr(self.office.office_readings, "{}_abbreviated".format(field)), language=self.language
+                )
                 text = self.office.readings[passage]
                 text = getattr(text, translation)
                 if text in ["-", "<html><head></head><body>-</body></html>"]:
@@ -1000,7 +1002,9 @@ class MPPsalms(CanticleModule, ReadingModule):
         heading = self.heading(citations)
         language_style = self.office.settings["psalm_translation"]
         psalm_style = self.office.settings["psalm_style"]
-        psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style, display_language=self.language)
+        psalms = get_psalms(
+            psalms, api=True, language_style=language_style, headings=psalm_style, display_language=self.language
+        )
 
         return [Line(heading, "heading"), Line("Thirty Day Cycle", "subheading")] + psalms
 
@@ -1020,7 +1024,9 @@ class MPPsalms(CanticleModule, ReadingModule):
         heading = self.heading(citations)
         language_style = self.office.settings["psalm_translation"]
         psalm_style = self.office.settings["psalm_style"]
-        psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style, display_language=self.language)
+        psalms = get_psalms(
+            psalms, api=True, language_style=language_style, headings=psalm_style, display_language=self.language
+        )
 
         return [Line(heading, "heading"), Line("Sixty Day Cycle", "subheading")] + psalms
 
@@ -1042,7 +1048,9 @@ class MPPsalms(CanticleModule, ReadingModule):
         heading = self.heading(mass_psalm)
         language_style = self.office.settings["psalm_translation"]
         psalm_style = self.office.settings["psalm_style"]
-        psalms = get_psalms(mass_psalm, api=True, language_style=language_style, headings=psalm_style, display_language=self.language)
+        psalms = get_psalms(
+            mass_psalm, api=True, language_style=language_style, headings=psalm_style, display_language=self.language
+        )
         return [Line(heading, "heading"), Line("Sunday & Holy Day Psalms", "subheading")] + psalms
 
     def get_psalm_lines(self):
@@ -1257,7 +1265,11 @@ class MPCollectOfTheDay(Module):
         collect = getattr(commemoration, self.attribute)
         lang = self.language
         # Use Chinese/Spanish text if available
-        if lang in ("chinese-traditional", "chinese-simplified") and hasattr(collect, "chinese_text_no_tags") and collect.chinese_text_no_tags:
+        if (
+            lang in ("chinese-traditional", "chinese-simplified")
+            and hasattr(collect, "chinese_text_no_tags")
+            and collect.chinese_text_no_tags
+        ):
             return collect.chinese_text_no_tags
         if lang == "spanish" and hasattr(collect, "spanish_text_no_tags") and collect.spanish_text_no_tags:
             return collect.spanish_text_no_tags
@@ -1584,12 +1596,8 @@ class GreatLitany(ShowGreatLitanyMixin, Module):
     def get_lines(self):
         if self.show_great_litany:
             style = self.office.settings["language_style"]
-            kyrie = (
-                self._ftl("kyrie_contemporary") if style == "contemporary" else self._ftl("kyrie_traditional")
-            )
-            pater = (
-                self._ftl("pater_contemporary") if style == "contemporary" else self._ftl("pater_traditional")
-            )
+            kyrie = self._ftl("kyrie_contemporary") if style == "contemporary" else self._ftl("kyrie_traditional")
+            pater = self._ftl("pater_contemporary") if style == "contemporary" else self._ftl("pater_traditional")
             template = "great_litany_traditional" if style == "traditional" else "great_litany"
             supplication_template = "supplication_traditional" if style == "traditional" else "supplication"
             lines = (
@@ -1793,7 +1801,13 @@ class FamilyMorningPsalm(Module):
         gloria_patri = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
         psalm_style = self.office.settings["psalm_style"]
         return (
-            get_psalms("51:10-12", api=True, language_style=language_style, headings=psalm_style, display_language=self.language)
+            get_psalms(
+                "51:10-12",
+                api=True,
+                language_style=language_style,
+                headings=psalm_style,
+                display_language=self.language,
+            )
             + [Line("", "spacer")]
             + self._ftl(gloria_patri)
         )
@@ -1807,7 +1821,13 @@ class FamilyMiddayPsalm(Module):
         gloria_patri = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
         psalm_style = self.office.settings["psalm_style"]
         return (
-            get_psalms("113:1-4", api=True, language_style=language_style, headings=psalm_style, display_language=self.language)
+            get_psalms(
+                "113:1-4",
+                api=True,
+                language_style=language_style,
+                headings=psalm_style,
+                display_language=self.language,
+            )
             + [Line("", "spacer")]
             + self._ftl(gloria_patri)
         )
@@ -1821,7 +1841,9 @@ class FamilyCloseOfDayPsalm(Module):
         gloria_patri = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
         psalm_style = self.office.settings["psalm_style"]
         return (
-            get_psalms("134", api=True, language_style=language_style, headings=psalm_style, display_language=self.language)
+            get_psalms(
+                "134", api=True, language_style=language_style, headings=psalm_style, display_language=self.language
+            )
             + [Line("", "spacer")]
             + self._ftl(gloria_patri)
         )
@@ -2271,7 +2293,9 @@ class MiddayPsalms(Module):
         file_name = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
         psalm_style = self.office.settings["psalm_style"]
         lines = self._ftl(file_name)
-        psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style, display_language=self.language)
+        psalms = get_psalms(
+            psalms, api=True, language_style=language_style, headings=psalm_style, display_language=self.language
+        )
 
         return [Line("The Psalms", "heading")] + psalms + lines
 
@@ -2577,7 +2601,9 @@ class ComplinePsalms(Module):
         psalms = "4,31:1-6,91,134"
         language_style = self.office.settings["language_style"]
         psalm_style = self.office.settings["psalm_style"]
-        psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style, display_language=self.language)
+        psalms = get_psalms(
+            psalms, api=True, language_style=language_style, headings=psalm_style, display_language=self.language
+        )
 
         return [Line("The Psalms", "heading")] + psalms + self.gloria_patri()
 
@@ -3466,7 +3492,9 @@ def service_readings_to_citations(readings):
     return groups
 
 
-def mass_readings(commemoration, mass_year, calendar_date, translation="esv", psalm_style="contemporary", display_language="english"):
+def mass_readings(
+    commemoration, mass_year, calendar_date, translation="esv", psalm_style="contemporary", display_language="english"
+):
     readings = commemoration.get_all_mass_readings_for_year(mass_year)
     passages = []
     for reading in readings:
@@ -3591,7 +3619,14 @@ class ReadingsSerializer(serializers.Serializer):
         ferias = {}
         non_ferias = {}
         for commemoration in obj.date.morning_and_evening:
-            masses = mass_readings(commemoration, obj.mass_year, obj.date, obj.translation, obj.psalms, display_language=obj.settings.get("display_language", "english"))
+            masses = mass_readings(
+                commemoration,
+                obj.mass_year,
+                obj.date,
+                obj.translation,
+                obj.psalms,
+                display_language=obj.settings.get("display_language", "english"),
+            )
             for mass, readings in masses.items():
                 name = f"{commemoration.name} ({mass}) " if mass not in ["", "-"] else f"{commemoration.name}"
                 if "FERIA" in commemoration.rank.name:

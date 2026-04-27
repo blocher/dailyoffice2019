@@ -13,15 +13,9 @@ class Command(BaseCommand):
     help = "Import Chinese (CUV) psalm text from BibleGateway into PsalmVerse.first_half_chinese/second_half_chinese"
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "--start", type=int, default=1, help="Starting psalm number (default: 1)"
-        )
-        parser.add_argument(
-            "--end", type=int, default=150, help="Ending psalm number (default: 150)"
-        )
-        parser.add_argument(
-            "--force", action="store_true", help="Overwrite existing Chinese text"
-        )
+        parser.add_argument("--start", type=int, default=1, help="Starting psalm number (default: 1)")
+        parser.add_argument("--end", type=int, default=150, help="Ending psalm number (default: 150)")
+        parser.add_argument("--force", action="store_true", help="Overwrite existing Chinese text")
 
     def handle(self, *args, **options):
         start = options["start"]
@@ -178,7 +172,15 @@ class Command(BaseCommand):
     def _strip_cjk_spaces(text):
         """Remove spaces between CJK characters inserted by BibleGateway."""
         # Remove space between two CJK characters
-        text = re.sub(r'([\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff\u2e80-\u2eff\u3000-\u303f\uff00-\uffef])\s+([\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff\u2e80-\u2eff\u3000-\u303f\uff00-\uffef])', r'\1\2', text)
+        text = re.sub(
+            r"([\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff\u2e80-\u2eff\u3000-\u303f\uff00-\uffef])\s+([\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff\u2e80-\u2eff\u3000-\u303f\uff00-\uffef])",
+            r"\1\2",
+            text,
+        )
         # Run twice to catch overlapping pairs (a b c d -> ab cd -> abcd)
-        text = re.sub(r'([\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff\u2e80-\u2eff\u3000-\u303f\uff00-\uffef])\s+([\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff\u2e80-\u2eff\u3000-\u303f\uff00-\uffef])', r'\1\2', text)
+        text = re.sub(
+            r"([\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff\u2e80-\u2eff\u3000-\u303f\uff00-\uffef])\s+([\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff\u2e80-\u2eff\u3000-\u303f\uff00-\uffef])",
+            r"\1\2",
+            text,
+        )
         return text

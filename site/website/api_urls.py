@@ -5,7 +5,7 @@ from rest_framework import permissions
 from rest_framework import routers
 
 from bible.api.BiblePassageView import BiblePassageView
-from churchcal.api.views import DayView, MonthView, YearView, AudioTrackView
+from churchcal.api.views import DayView, MonthView, YearView, AudioTrackView, CalendarFeedView
 from office.api.views.index import (
     MorningPrayerView,
     AvailableSettings,
@@ -63,6 +63,13 @@ urlpatterns = [
     ),
     re_path(r"^api/v1/", include(router_v1.urls)),
     path("api/v1/api-auth/", include("rest_framework.urls")),
+    path(r"api/v1/calendar/feed/<str:scope>.ics", CalendarFeedView.as_view(), name="calendar_feed"),
+    path(
+        r"api/v1/calendar/feed/<str:scope>/cancel.ics",
+        CalendarFeedView.as_view(),
+        {"canceled": True},
+        name="calendar_feed_cancel",
+    ),
     path(r"api/v1/calendar/<int:year>-<int:month>-<int:day>", DayView.as_view(), name="day_view"),
     path(r"api/v1/readings/<int:year>-<int:month>-<int:day>", ReadingsView.as_view(), name="readings"),
     path(r"api/v1/commemorations/<uuid:uuid>", CommemorationsView.as_view(), name="commemoration"),

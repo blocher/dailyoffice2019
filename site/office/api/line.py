@@ -2,6 +2,7 @@
 
 Extracted to break circular imports between office.api.views, office.api.views.index, and psalter.utils.
 """
+
 import csv
 import os
 from distutils.util import strtobool
@@ -69,5 +70,7 @@ def file_to_lines(filename, language="english"):
         filepath = os.path.join(dir_path, try_filename)
         if os.path.exists(filepath):
             with open(filepath, encoding="utf-8") as csvfile:
-                reader = csv.reader(csvfile, quotechar='"', delimiter=",", quoting=csv.QUOTE_ALL, skipinitialspace=True)
+                reader = csv.reader(
+                    csvfile, quotechar='"', delimiter=",", quoting=csv.QUOTE_ALL, skipinitialspace=True
+                )
                 return [Line(**process_row(row)) for row in reader]

@@ -3,6 +3,7 @@
 Fetches CUV, CUVS (from BibleGateway) and SIGAO, ZNSIGAO (from CCReadBible)
 for all passages that don't already have Chinese translations.
 """
+
 import time
 
 from django.core.management.base import BaseCommand
@@ -87,7 +88,9 @@ class Command(BaseCommand):
                 skipped += 1
 
             if (i + 1) % 50 == 0:
-                self.stdout.write(f"Progress: {i+1}/{total} processed, {imported} imported, {skipped} skipped, {errors} errors")
+                self.stdout.write(
+                    f"Progress: {i+1}/{total} processed, {imported} imported, {skipped} skipped, {errors} errors"
+                )
 
         self.stdout.write(
             self.style.SUCCESS(

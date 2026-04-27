@@ -127,6 +127,8 @@ class Commemoration(BaseModel):
 
     @cached_property
     def cannot_occur_after_subtype(self):
+        if hasattr(self, "_cannot_occur_after_subtype_cache"):
+            return self._cannot_occur_after_subtype_cache
         if not self.cannot_occur_after:
             return None
         return Commemoration.objects.get(pk=self.cannot_occur_after.pk)
@@ -194,7 +196,7 @@ class Commemoration(BaseModel):
         if self.name in ["Eve of Palm Sunday", "Palm Sunday"]:
             query = query.filter(service="Liturgy of the Word")
 
-        return query.all()
+        return query.select_related("long_scripture", "short_scripture").all()
 
     def get_all_mass_readings_for_year(self, year):
         commemoration = (
@@ -399,7 +401,12 @@ class Proper(BaseModel):
     calendar = models.ForeignKey(Calendar, on_delete=models.CASCADE, null=False, blank=False)
 
     def get_mass_readings_for_year(self, year):
-        return MassReading.objects.filter(years__contains=year, proper=self).order_by("reading_number", "order").all()
+        return (
+            MassReading.objects.filter(years__contains=year, proper=self)
+            .order_by("reading_number", "order")
+            .select_related("long_scripture", "short_scripture")
+            .all()
+        )
 
     def __repr__(self):
         return str(self.number)

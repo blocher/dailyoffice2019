@@ -36,6 +36,7 @@ import {
   faCircle3,
   faCircle4,
   faCopy,
+  faDownload,
   faEnvelopes,
   faFontCase,
   faGift,
@@ -57,13 +58,17 @@ import {
   faSun,
   faSunrise,
   faSunset,
+  faTriangleExclamation,
 } from '@fortawesome/pro-duotone-svg-icons';
 import { createGtag, event } from 'vue-gtag';
 import {
   faAndroid,
   faApple,
   faFacebook,
+  faGoogle,
+  faMicrosoft,
   faWikipediaW,
+  faYahoo,
 } from '@fortawesome/free-brands-svg-icons';
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
 import { Capacitor } from '@capacitor/core';
@@ -73,15 +78,20 @@ library.add(
   faSun,
   faSunrise,
   faSunset,
+  faTriangleExclamation,
   faMoonStars,
   faLeft,
   faRight,
   faFontCase,
   faShareNodes,
   faCopy,
+  faDownload,
   faFacebook,
   faApple,
   faAndroid,
+  faGoogle,
+  faMicrosoft,
+  faYahoo,
   faWikipediaW,
   faGlobe,
   faEnvelopes,

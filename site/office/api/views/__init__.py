@@ -35,7 +35,17 @@ class Module(object):
         # If display language is non-English and the bible_translation is still an English one,
         # auto-switch to the default for that language
         if lang in self.LANGUAGE_BIBLE_DEFAULTS:
-            english_translations = {"esv", "kjv", "rsv", "nrsvce", "nabre", "niv", "nasb", "coverdale", "renewed_coverdale"}
+            english_translations = {
+                "esv",
+                "kjv",
+                "rsv",
+                "nrsvce",
+                "nabre",
+                "niv",
+                "nasb",
+                "coverdale",
+                "renewed_coverdale",
+            }
             if configured in english_translations:
                 return self.LANGUAGE_BIBLE_DEFAULTS[lang]
         return configured
@@ -73,13 +83,13 @@ class Module(object):
         normalized = citation
         for num, roman in [("3 ", "III "), ("2 ", "II "), ("1 ", "I ")]:
             if normalized.startswith(num):
-                normalized = roman + normalized[len(num):]
+                normalized = roman + normalized[len(num) :]
                 break
         # Try to match book name (handles "I SAMUEL", "SONG OF SOLOMON", etc.)
         for eng_name, translated in book_map.items():
             upper_name = eng_name.upper()
             if normalized.upper().startswith(upper_name):
-                rest = normalized[len(eng_name):]
+                rest = normalized[len(eng_name) :]
                 return translated + rest
         return citation
 
@@ -98,8 +108,10 @@ class Module(object):
         line_type = line.get("line_type", "")
         content = line.get("content", "")
         # Translate headings, subheadings, rubrics, dialogues, and short responses
-        if line_type in ("heading", "rubric", "leader_dialogue",
-                         "congregation_dialogue") or content in ("Amen.", "Amen"):
+        if line_type in ("heading", "rubric", "leader_dialogue", "congregation_dialogue") or content in (
+            "Amen.",
+            "Amen",
+        ):
             line["content"] = _translate_text(content, lang)
         elif line_type == "subheading":
             translated = _translate_text(content, lang)

@@ -32,6 +32,7 @@ class Passage(object):
 
         # Handle lazy-loaded adapters (like ESV XML) - functions that return a class
         import inspect
+
         if callable(adapter) and not inspect.isclass(adapter):
             adapter = adapter()
 

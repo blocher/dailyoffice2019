@@ -13,15 +13,9 @@ class Command(BaseCommand):
     help = "Import Spanish (NVI) psalm text from BibleGateway into PsalmVerse.first_half_spanish/second_half_spanish"
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "--start", type=int, default=1, help="Starting psalm number (default: 1)"
-        )
-        parser.add_argument(
-            "--end", type=int, default=150, help="Ending psalm number (default: 150)"
-        )
-        parser.add_argument(
-            "--force", action="store_true", help="Overwrite existing Spanish text"
-        )
+        parser.add_argument("--start", type=int, default=1, help="Starting psalm number (default: 1)")
+        parser.add_argument("--end", type=int, default=150, help="Ending psalm number (default: 150)")
+        parser.add_argument("--force", action="store_true", help="Overwrite existing Spanish text")
 
     def handle(self, *args, **options):
         start = options["start"]

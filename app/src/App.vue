@@ -3,14 +3,14 @@
 
   <!-- Header / Navigation -->
   <div
-    class="fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-gray-950/90 backdrop-blur border-b border-gray-200 dark:border-gray-800 px-4 pt-safe-top transition-transform duration-300"
+    class="fixed top-0 right-0 left-0 z-50 px-4 border-b border-gray-200 backdrop-blur transition-transform duration-300 bg-white/95 dark:bg-gray-950/90 dark:border-gray-800 pt-safe-top"
     :class="{
       'translate-y-0': isHeaderVisible,
       '-translate-y-full': !isHeaderVisible,
     }"
   >
     <!-- Title Row -->
-    <div class="flex items-center justify-between h-10">
+    <div class="flex justify-between items-center h-10">
       <span
         class="text-[11px] font-semibold text-gray-800 dark:text-gray-200 uppercase tracking-[0.14em]"
         >The Daily Office</span
@@ -22,9 +22,9 @@
     </div>
 
     <!-- Navigation Row -->
-    <nav class="flex items-center justify-between pb-2 gap-2">
+    <nav class="flex gap-2 justify-between items-center pb-2">
       <!-- Main Actions -->
-      <div class="flex items-center gap-1.5">
+      <div class="flex gap-1.5 items-center">
         <router-link
           to="/"
           class="nav-chip"
@@ -51,7 +51,7 @@
       </div>
 
       <!-- More / Support -->
-      <div class="flex items-center gap-1.5 pr-1">
+      <div class="flex gap-1.5 items-center pr-1">
         <button
           v-if="showLinks"
           @click.prevent="openDonation"
@@ -90,6 +90,12 @@
               <a href="/readings"
                 ><el-dropdown-item>Readings</el-dropdown-item></a
               >
+              <el-dropdown-item @click="openCalendarPage">
+                Calendar
+              </el-dropdown-item>
+              <el-dropdown-item @click="openCalendarSubscription">
+                Add to your calendar app
+              </el-dropdown-item>
 
               <el-dropdown-item
                 divided
@@ -142,7 +148,7 @@
     </nav>
   </div>
 
-  <div class="main-body pt-24" :style="mainBodyStyle">
+  <div class="pt-24 main-body" :style="mainBodyStyle">
     <Loading v-if="loading" />
     <!--    <BetaNote/>-->
     <el-alert v-if="error" :title="error" type="error" />
@@ -151,10 +157,10 @@
       v-if="showLinks"
       class="mt-12 border-t border-gray-200 dark:border-gray-800 bg-white/40 dark:bg-gray-900/20"
     >
-      <div class="max-w-3xl mx-auto px-4 py-10 space-y-8">
+      <div class="px-4 py-10 mx-auto space-y-8 max-w-3xl">
         <AdditionalLinks ref="additionalLinks" />
 
-        <div class="grid md:grid-cols-2 gap-4 items-stretch">
+        <div class="grid gap-4 items-stretch md:grid-cols-2">
           <div class="h-full">
             <DonationPrompt variant="long" class="h-full" :compact="true" />
           </div>
@@ -165,14 +171,14 @@
         </div>
 
         <div class="space-y-3 text-center">
-          <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+          <p class="text-xs leading-relaxed text-gray-500 dark:text-gray-400">
             2019 Book of Common Prayer used by permission of the Anglican Church
             in North America
           </p>
           <p class="text-xs text-gray-500 dark:text-gray-400">
             <a
               href="/privacy-policy"
-              class="hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+              class="transition-colors hover:text-gray-700 dark:hover:text-gray-200"
               >Privacy Policy</a
             >
           </p>
@@ -310,6 +316,38 @@ export default {
     async openDonation() {
       await Browser.open({ url: 'https://ko-fi.com/dailyoffice' });
     },
+    async openCalendarPage() {
+      if (this.$route.path.startsWith('/calendar')) {
+        return;
+      }
+      await this.$router.push({ path: '/calendar' });
+    },
+    async openCalendarSubscription() {
+      window.sessionStorage.setItem('calendarSubscriptionPanelMode', 'quick');
+
+      if (this.$route.path.startsWith('/calendar')) {
+        window.dispatchEvent(
+          new window.CustomEvent('open-calendar-subscription', {
+            detail: { source: 'menu', mode: 'quick' },
+          })
+        );
+        return;
+      }
+
+      await this.$router.push({
+        path: '/calendar',
+        query: { subscribe: '1', panel: 'quick' },
+      });
+      // Ensure Calendar is mounted and can receive the same event the in-page
+      // path uses; query handling at end of setCalendar can run too late for refs.
+      await this.$nextTick();
+      await this.$nextTick();
+      window.dispatchEvent(
+        new window.CustomEvent('open-calendar-subscription', {
+          detail: { source: 'menu', mode: 'quick' },
+        })
+      );
+    },
     async openAppStore(platform) {
       const urls = {
         ios: 'https://apps.apple.com/us/app/the-daily-office/id1513851259',
@@ -362,6 +400,11 @@ export default {
         const m = this.$route.params.month || d.getMonth() + 1;
         const day = this.$route.params.day || d.getDate();
         return `readings-${y}-${m}-${day}`;
+      }
+      // Stable key so /calendar, /calendar?…, and /calendar/:y/:m/ reuse the
+      // same instance (e.g. subscription drawer stays open when query/path updates).
+      if (this.$route.name === 'calendar') {
+        return 'calendar';
       }
       return this.$route.fullPath;
     },
@@ -543,7 +586,9 @@ export default {
 }
 
 * {
-  font-family: 'Adobe Caslon Pro', 'Noto Serif SC', 'Noto Serif TC', 'Source Han Serif SC', 'Source Han Serif TC', '宋体', '明體', serif;
+  font-family:
+    'Adobe Caslon Pro', 'Noto Serif SC', 'Noto Serif TC', 'Source Han Serif SC',
+    'Source Han Serif TC', '宋体', '明體', serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -971,7 +1016,9 @@ body {
   }
 
   p {
-    font-family: 'Adobe Caslon Pro', 'Noto Serif SC', 'Noto Serif TC', 'Source Han Serif SC', 'Source Han Serif TC', '宋体', '明體', serif;
+    font-family:
+      'Adobe Caslon Pro', 'Noto Serif SC', 'Noto Serif TC',
+      'Source Han Serif SC', 'Source Han Serif TC', '宋体', '明體', serif;
     font-display: swap;
     font-weight: 300;
     font-style: normal;

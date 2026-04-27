@@ -312,6 +312,7 @@ class Collect(BaseModel):
         if not self.chinese_text:
             return None
         from office.management.commands.import_collects import do_strip_tags
+
         return do_strip_tags(self.chinese_text).replace("阿們。", "").replace(" Amen.", "").strip()
 
     @property
@@ -319,6 +320,7 @@ class Collect(BaseModel):
         if not self.spanish_text:
             return None
         from office.management.commands.import_collects import do_strip_tags
+
         return do_strip_tags(self.spanish_text).replace("Amén.", "").replace(" Amen.", "").strip()
 
     def __str__(self):

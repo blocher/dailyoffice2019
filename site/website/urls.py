@@ -22,6 +22,7 @@ from django.contrib import admin
 # from django.contrib.sitemaps import Sitemap
 # from django.contrib.sitemaps import views
 from django.urls import path, include
+from django.views.generic import RedirectView
 
 # from django.utils import timezone
 # from django.views.generic import TemplateView
@@ -406,6 +407,14 @@ urlpatterns = [
     # path("jet/", include("jet.urls", "jet")),
     path("admin/", admin.site.urls),
     path("patrons/", include("patrons.urls")),
+    path(
+        "dailyoffice.ics",
+        RedirectView.as_view(
+            url="https://api.dailyoffice2019.com/api/v1/calendar/feed/every.ics",
+            permanent=True,
+        ),
+        name="legacy_calendar_feed",
+    ),
     # path("admin/", include("material.admin.urls")),
     path("email", standrew_views.current_email),
     path("feast_email", standrew_views.feast_email),

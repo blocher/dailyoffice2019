@@ -1,7 +1,33 @@
 <template>
   <h1>Calendar</h1>
+  <section
+    class="p-4 mx-3 mb-4 rounded-2xl border shadow-sm border-slate-200 bg-white/90 dark:border-slate-700 dark:bg-slate-900/65 sm:mx-4 sm:p-5"
+  >
+    <div
+      class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <div class="min-w-0">
+        <p
+          class="m-0 text-sm font-semibold tracking-tight text-slate-900 dark:text-white"
+        >
+          Susbcribe in your calendar app
+        </p>
+        <p
+          class="m-0 mt-1 text-sm leading-6 text-slate-600 dark:text-slate-300"
+        >
+          Add this liturgical calendar in your preferred calendar app such as
+          Apple Calendar, Microsoft Outlook, or Google Calendar
+        </p>
+      </div>
+      <CalendarSubscriptionWizard
+        ref="calendarSubscriptionWizard"
+        :default-scope="calendarWizardDefaultScope"
+        :include-minor-feasts="includeMinorFeasts"
+      />
+    </div>
+  </section>
   <Loading v-if="loading" />
-  <div class="full-width text-center">
+  <div class="text-center full-width">
     <el-switch
       v-model="includeMinorFeasts"
       size="large"
@@ -15,10 +41,6 @@
       <span>{{ date }}</span>
 
       <el-button-group>
-        <!--        <el-button size="small" @click="selectDate('prev-year')"-->
-        <!--          >Previous Year</el-button-->
-        <!--        >-->
-
         <el-button size="small" @click="selectDate('today')"> Now</el-button>
         <el-button size="small" @click="selectDate('prev-month')">
           Previous Month
@@ -26,9 +48,6 @@
         <el-button size="small" @click="selectDate('next-month')">
           Next Month
         </el-button>
-        <!--        <el-button size="small" @click="selectDate('next-year')"-->
-        <!--          >Next Year</el-button-->
-        <!--        >-->
       </el-button-group>
     </template>
     <template #date-cell="{ data }">
@@ -45,17 +64,15 @@
 </template>
 
 <script>
-// @ is an alias to /src
-
-// @ is an alias to /src
-// @ is an alias to /src
-// @ is an alias to /src
-import { DynamicStorage } from '@/helpers/storage';
+import CalendarSubscriptionWizard from '@/components/CalendarSubscriptionWizard.vue';
 import Loading from '@/components/Loading.vue';
+import { getCalendarWizardDefaultScope } from '@/helpers/calendarSubscription';
+import { DynamicStorage } from '@/helpers/storage';
 
 export default {
   name: 'Calendar',
   components: {
+    CalendarSubscriptionWizard,
     Loading,
   },
   data() {
@@ -65,8 +82,17 @@ export default {
       days: {},
       date: null,
       loading: true,
+      error: false,
       includeMinorFeasts: false,
     };
+  },
+  computed: {
+    calendarWizardDefaultScope() {
+      return getCalendarWizardDefaultScope({
+        source: 'calendar',
+        includeMinorFeasts: this.includeMinorFeasts,
+      });
+    },
   },
   watch: {
     '$route.params.year': function () {
@@ -75,37 +101,59 @@ export default {
     '$route.params.month': function () {
       this.setCalendar();
     },
+    '$route.query.subscribe': function (value) {
+      if (value === '1') {
+        this.openSubscriptionWizardFromQuery();
+      }
+    },
   },
   async created() {
     this.setCalendar();
   },
+  mounted() {
+    window.addEventListener(
+      'open-calendar-subscription',
+      this.handleCalendarSubscriptionEvent
+    );
+  },
+  unmounted() {
+    window.removeEventListener(
+      'open-calendar-subscription',
+      this.handleCalendarSubscriptionEvent
+    );
+  },
   methods: {
-    updateIncludeMinorFeasts: async function () {
+    getCalendarPath(year = this.year, month = this.month) {
+      if (year && month) {
+        return `/calendar/${year}/${month}/`;
+      }
+      return '/calendar';
+    },
+    async updateIncludeMinorFeasts() {
       const includeMinorFeasts = this.includeMinorFeasts ? 'true' : 'false';
       await DynamicStorage.setItem('includeMinorFeasts', includeMinorFeasts);
     },
-    getColorForDate: function (day) {
+    getColorForDate(day) {
       try {
         let commemorations = this.days[day].commemorations;
         if (this.includeMinorFeasts) {
-          commemorations = commemorations.filter((commemorations) => {
-            return commemorations.rank.name.includes('FERIA') == false;
+          commemorations = commemorations.filter((commemoration) => {
+            return commemoration.rank.name.includes('FERIA') === false;
           });
           if (!commemorations.length) {
             return this.days[day].season.colors[0];
           }
-          return commemorations[0]['colors'][0];
-        } else {
-          if (this.days[day].major_feast) {
-            return commemorations[0]['colors'][0];
-          }
-          return this.days[day].season.colors[0];
+          return commemorations[0].colors[0];
         }
+        if (this.days[day].major_feast) {
+          return commemorations[0].colors[0];
+        }
+        return this.days[day].season.colors[0];
       } catch {
         return '';
       }
     },
-    getFeastNameForDate: function (day) {
+    getFeastNameForDate(day) {
       let feast = '';
       let bold = false;
       try {
@@ -128,38 +176,38 @@ export default {
       }
       return feast;
     },
-    selectDate: async function (changeType) {
-      if (changeType == 'prev-month') {
-        if (this.month == 1) {
-          this.year = this.year - 1;
+    async selectDate(changeType) {
+      if (changeType === 'prev-month') {
+        if (this.month === 1) {
+          this.year -= 1;
           this.month = 12;
         } else {
-          this.month = this.month - 1;
+          this.month -= 1;
         }
       }
-      if (changeType == 'next-month') {
-        if (this.month == 12) {
-          this.year = this.year + 1;
+      if (changeType === 'next-month') {
+        if (this.month === 12) {
+          this.year += 1;
           this.month = 1;
         } else {
-          this.month = this.month + 1;
+          this.month += 1;
         }
       }
-      if (changeType == 'today') {
+      if (changeType === 'today') {
         const today = new Date();
         this.year = today.getFullYear();
         this.month = today.getMonth() + 1;
       }
       const year = this.year;
       const month = this.month;
-      await this.$router.push({ name: 'calendar', params: { year, month } });
-      return;
+      await this.$router.push({ path: this.getCalendarPath(year, month) });
     },
-    setCalendar: async function () {
+    async setCalendar() {
       this.loading = true;
+      this.days = {};
       const includeMinorFeasts =
         (await DynamicStorage.getItem('includeMinorFeasts')) || 'false';
-      this.includeMinorFeasts = includeMinorFeasts == 'true';
+      this.includeMinorFeasts = includeMinorFeasts === 'true';
       this.updateIncludeMinorFeasts();
       let data = null;
       const today = new Date();
@@ -182,27 +230,86 @@ export default {
         this.error =
           'There was an error retrieving the office. Please try again.';
         this.loading = false;
+        if (this.$route.query.subscribe === '1') {
+          await this.$nextTick();
+          await this.openSubscriptionWizardFromQuery();
+        }
         return;
       }
       data.data.forEach((day) => {
-        const dateString = day['date'];
+        const dateString = day.date;
         this.days[dateString] = day;
       });
       this.loading = false;
+      if (this.$route.query.subscribe === '1') {
+        await this.openSubscriptionWizardFromQuery();
+      }
     },
-    clickDateCell: async function (data, event) {
+    async clickDateCell(data, event) {
       event.preventDefault();
       event.stopPropagation();
       const day = data.day.split('-');
       await this.$router.push({
-        name: `day`,
+        name: 'day',
         params: { year: day[0], month: day[1], day: day[2] },
       });
-      return;
+    },
+    async openSubscriptionWizard(options = {}) {
+      for (let i = 0; i < 6; i += 1) {
+        await this.$nextTick();
+        if (this.$refs.calendarSubscriptionWizard) {
+          break;
+        }
+      }
+      if (!this.$refs.calendarSubscriptionWizard) {
+        return;
+      }
+
+      const { source = 'calendar', ...wizardOptions } = options;
+      if (!wizardOptions.scope) {
+        wizardOptions.scope = getCalendarWizardDefaultScope({
+          source,
+          includeMinorFeasts: this.includeMinorFeasts,
+        });
+      }
+
+      if (wizardOptions.mode === 'quick') {
+        this.$refs.calendarSubscriptionWizard.openQuickLinks();
+        return;
+      }
+
+      this.$refs.calendarSubscriptionWizard.openWizard(wizardOptions);
+    },
+    async openSubscriptionWizardFromQuery() {
+      const panelMode =
+        this.$route.query.panel ||
+        window.sessionStorage.getItem('calendarSubscriptionPanelMode') ||
+        'quick';
+
+      await this.openSubscriptionWizard({
+        source: 'menu',
+        mode: panelMode,
+      });
+      const query = { ...this.$route.query };
+      delete query.subscribe;
+      delete query.panel;
+      window.sessionStorage.removeItem('calendarSubscriptionPanelMode');
+      await this.$router.replace({
+        path: this.getCalendarPath(this.year, this.month),
+        query,
+      });
+    },
+    async handleCalendarSubscriptionEvent(event) {
+      const detail = event?.detail || {};
+      await this.openSubscriptionWizard({
+        source: 'menu',
+        ...detail,
+      });
     },
   },
 };
 </script>
+
 <style lang="scss">
 .dateCellWrapper {
   @media only screen and (max-width: 733px) {
