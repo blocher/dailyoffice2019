@@ -168,6 +168,23 @@ class CalendarFeedEndpointTests(SimpleTestCase):
         self.assertIn("inline", response["Content-Disposition"])
         self.assertIn("acna-major.ics", response["Content-Disposition"])
 
+    def test_calendar_feed_endpoint_accepts_apple_calendar_headers(self):
+        with TemporaryDirectory() as temp_dir:
+            feed_path = Path(temp_dir) / "major.ics"
+            feed_path.write_bytes(b"BEGIN:VCALENDAR\r\nEND:VCALENDAR\r\n")
+
+            with patch("churchcal.api.views.ChurchCalendarFeedService.get_feed_path", return_value=feed_path):
+                response = self.client.get(
+                    "/api/v1/calendar/feed/major.ics",
+                    HTTP_ACCEPT="text/calendar",
+                    HTTP_USER_AGENT="CalendarAgent/1000 CFNetwork/1496.0.7 Darwin/23.5.0",
+                )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response["Content-Type"].startswith("text/calendar"))
+        self.assertIn("inline", response["Content-Disposition"])
+        self.assertIn("acna-major.ics", response["Content-Disposition"])
+
     def test_calendar_feed_endpoint_supports_download_and_cancel_routes(self):
         with TemporaryDirectory() as temp_dir:
             feed_path = Path(temp_dir) / "major-cancel.ics"

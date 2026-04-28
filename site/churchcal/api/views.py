@@ -6,6 +6,7 @@ from django.http import FileResponse
 from django.http import HttpResponseNotFound
 from django.utils import timezone
 from mutagen.mp3 import MP3
+from rest_framework.renderers import BaseRenderer, BrowsableAPIRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -18,6 +19,19 @@ from churchcal.calendar_feeds import (
     get_feed_scope_label,
 )
 from website import settings as site_settings
+
+
+class CalendarFeedRenderer(BaseRenderer):
+    media_type = "text/calendar"
+    format = "ics"
+    charset = "utf-8"
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        if data is None:
+            return b""
+        if isinstance(data, bytes):
+            return data
+        return str(data).encode(self.charset)
 
 
 def get_calendar_year(year, calendar):
@@ -75,6 +89,7 @@ class YearView(APIView):
 
 class CalendarFeedView(APIView):
     permission_classes = [ReadOnly]
+    renderer_classes = [CalendarFeedRenderer, JSONRenderer, BrowsableAPIRenderer]
 
     def get(self, request, scope, canceled=False):
         try:
