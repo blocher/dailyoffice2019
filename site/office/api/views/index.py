@@ -283,6 +283,7 @@ class Office(object):
 
     def __init__(self, request, year, month, day):
 
+        self.request = request
         self.settings = Settings(request)
 
         self.date = get_calendar_date("{}-{}-{}".format(year, month, day))
@@ -2883,52 +2884,25 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
 
     @staticmethod
     def get_line_audio_file(line, no_generate=False):
-        content = line["content"]
+        from office.audio.services import OfficeAudioBuilder, line_reference_url, normalize_audio_text
+
         line_type = line["line_type"]
-        if "leader" in line_type:
-            voice_type = "onyx"
-        elif "congregation" in line_type:
-            voice_type = "ash"
-        elif "html" in line_type:
-            voice_type = "echo"
-        elif "reader" in line_type:
-            voice_type = "echo"
-        else:
-            return None, None
-        content = content.replace("LORD", "Lord")
-        content = content.replace("Lᴏʀᴅ", "Lord")
-        audio_id = generate_uuid_from_string(f"{line_type} {voice_type} {content}")
-        filename = f"{audio_id}.mp3"
-        file_path = os.path.join(settings.MEDIA_ROOT, filename)
-        exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
-        domain = Site.objects.get_current().domain
-        path = settings.MEDIA_URL + filename
-        file_url = f"https://{domain}{path}"
+        content = normalize_audio_text(line["content"])
         if no_generate:
-            return file_url, path
-        if exists:
-            return file_url, path
+            return line_reference_url(line_type, content)
+
+        class LegacyAudioOffice:
+            settings = {"bible_translation": "esv"}
+            date = None
+            request = None
+
         try:
-            from pathlib import Path
-            from openai import OpenAI
-
-            client = OpenAI()
-            response = client.audio.speech.create(
-                model="tts-1",
-                voice=voice_type,
-                input=content,
+            return OfficeAudioBuilder(LegacyAudioOffice()).legacy_line_audio(
+                Line(content, line_type),
+                no_generate=no_generate,
             )
-            response.stream_to_file(file_path)
-
-        except Exception as e:
+        except Exception:
             return None, None
-        # user_name = "dailyoffice"
-        # group_name = "dailyoffice"
-        # uid = pwd.getpwnam(user_name).pw_uid
-        # gid = grp.getgrnam(group_name).gr_gid
-        # os.chmod(file_path, 0o777)
-        # os.chown(file_path, uid, gid)
-        return file_url, path
 
     @staticmethod
     def handle_html(line, html=False, no_generate=False, id=None, module="Reading"):
@@ -2948,13 +2922,13 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             soup = BeautifulSoup(sentence, "html.parser")
             plain_text = soup.get_text()
             text_without_verses = re.sub(r"(\b\d+\b\s)", "", plain_text)
+            from office.audio.services import line_reference_cache_key
+
             url, path = GenericDailyOfficeSerializer.get_line_audio_file(
                 Line(text_without_verses, "reader"), no_generate=no_generate
             )
             if url:
-                uuid_match = re.search(r"/uploads/([0-9a-fA-F-]+)\.mp3", url)
-                if uuid_match:
-                    uuid = uuid_match.group(1)
+                uuid = line_reference_cache_key("reader", text_without_verses)[:32]
                 if id is not None:
                     id = re.sub(r"_[^_]+$", f"_{uuid}", id)
                 lines.append(f"<span data-line-id='{id}'></span>{sentence}")
@@ -2976,7 +2950,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             return audio.info.length
 
         tracks = [
-            {"path": f"{settings.BASE_DIR}{track["path"]}", "name": track["module"], "id": track["line_id"]}
+            {"path": f"{settings.BASE_DIR}{track['path']}", "name": track["module"], "id": track["line_id"]}
             for track in tracks
             if "path" in track
         ]
@@ -3037,65 +3011,9 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         return file_url, path, track_list, short_track_list
 
     def get_audio(self, obj):
-        if hasattr(obj.settings, "bible_translation") and obj.settings.bible_translation not in ["esv", "kjv"]:
-            return []
-        modules = self.get_modules(obj)
-        tracks = []
-        headings = []
-        for module in modules:
-            for i, line in enumerate(module["lines"]):
-                if line["line_type"] in ["heading"]:
-                    j = i
-                    look_ahead_line = module["lines"][j + 1] if j + 1 < len(module["lines"]) else None
-                    while j + 1 < len(module["lines"]) and (
-                        look_ahead_line["line_type"]
-                        not in [
-                            "reader",
-                            "leader",
-                            "congregation",
-                            "leader_dialogue",
-                            "congregation_dialogue",
-                            "html",
-                        ]
-                        or "iframe" in look_ahead_line["content"]
-                    ):
-                        look_ahead_line = module["lines"][j + 1]
-                        j = j + 1
-                    if (
-                        look_ahead_line["line_type"]
-                        not in [
-                            "reader",
-                            "leader",
-                            "congregation",
-                            "leader_dialogue",
-                            "congregation_dialogue",
-                            "html",
-                        ]
-                        or "iframe" in look_ahead_line["content"]
-                    ):
-                        continue
-                    headings.append({"heading": line["content"], "next_id": look_ahead_line["id"]})
+        from office.audio.services import OfficeAudioBuilder
 
-                if line["line_type"] == "html" and "<iframe" in line["content"]:
-                    continue
-                if line["line_type"] == "html":
-                    temp_id = "_".join([line["id"].split("_")[0], line["id"].split("_")[-1]])
-                    print(self.handle_html(line["content"], id=temp_id))
-                    tracks = tracks + self.handle_html(line["content"], id=temp_id, module=module["name"])
-                elif line["line_type"] in [
-                    "reader",
-                    "leader",
-                    "congregation",
-                    "leader_dialogue",
-                    "congregation_dialogue",
-                ]:
-                    url, path = self.get_line_audio_file(line)
-                    tracks = tracks + [{"line_id": line["id"], "module": module["name"], "url": url, "path": path}]
-        tracks = [track for track in tracks if track]
-        headings = [heading for heading in headings if heading]
-        single_track = self.get_single_track(tracks)
-
-        return {"tracks": tracks, "headings": headings, "single_track": single_track}
+        return OfficeAudioBuilder(obj, modules=self.get_modules(obj)).build()
 
 
 class OfficeSerializer(GenericDailyOfficeSerializer):
@@ -3652,35 +3570,8 @@ class AudioViewSet(ViewSet):
         if not content:
             return Response({"path": ""})
         line_type = data.get("line_type", "leader")
-        if "leader" in line_type:
-            voice_type = "alloy"
-        elif "congregation" in line_type:
-            voice_type = "ash"
-        elif "html" in line_type:
-            voice_type = "echo"
-        else:
-            return Response({"path": ""})
-        audio_id = generate_uuid_from_string(f"{line_type} {voice_type} {content}")
-        filename = f"{audio_id}.mp3"
-        file_path = os.path.join(settings.MEDIA_ROOT, filename)
-        exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
-        file_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
-        if exists:
-            return Response({"path": file_url})
-        try:
-            from pathlib import Path
-            from openai import OpenAI
-
-            client = OpenAI()
-            response = client.audio.speech.create(
-                model="tts-1",
-                voice=voice_type,
-                input=content,
-            )
-            response.stream_to_file(file_path)
-        except Exception as e:
-            return Response({"error": str(e)})
-        return Response({"path": file_url})
+        file_url, _path = GenericDailyOfficeSerializer.get_line_audio_file(Line(content, line_type))
+        return Response({"path": file_url or ""})
 
 
 class MorningPrayerView(OfficeAPIView):
