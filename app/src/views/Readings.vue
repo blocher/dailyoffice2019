@@ -369,11 +369,14 @@ export default {
   },
   async created() {
     this.calendarDate = setCalendarDate(this.$route);
+    await this.$store.dispatch('initializeSettings');
 
     let translation = await DynamicStorage.getItem('readings_translation');
-    if (!translation) {
-      const settings = this.$store.state.settings;
-      translation = settings['bible_translation'];
+    if (!translation || translation === 'undefined') {
+      translation = this.$store.state.settings['bible_translation'];
+    }
+    if (!translation || translation === 'undefined') {
+      translation = 'esv';
     }
     await DynamicStorage.setItem('readings_translation', translation);
     this.translation = translation;
