@@ -3657,7 +3657,7 @@ class ComplineView(OfficeAPIView):
 
 class ReadingsView(OfficeAPIView):
     def get(self, request, year, month, day):
-        translation = request.GET.get("translation", "esv")
+        translation = Scripture.normalize_bible_translation(request.GET.get("translation", "esv"))
         psalms = request.GET.get("psalms", "contemporary")
         style = request.GET.get("style", "whole_verse")
         office = Readings(request, year, month, day, translation, psalms, style)

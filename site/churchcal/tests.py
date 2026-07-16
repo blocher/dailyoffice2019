@@ -14,8 +14,72 @@ from churchcal.calendar_feeds import (
     OfficeReadingsResolver,
     get_feed_window_start_years,
 )
+from churchcal.ce_bce_replacement import replace_ce_bce_in_text
 from churchcal.utils import advent
 from office.models import StandardOfficeDay, ThirtyDayPsalterDay
+
+
+class CeBceReplacementTests(SimpleTestCase):
+    def test_replaces_bce_variants(self):
+        cases = [
+            ("born circa 300 BCE", "born circa 300 BC"),
+            ("born circa 300 B.C.E.", "born circa 300 BC"),
+            ("born circa 300 b.c.e.", "born circa 300 BC"),
+            ("born circa 300 bce.", "born circa 300 BC"),
+        ]
+        for original, expected in cases:
+            with self.subTest(original=original):
+                updated, replacements = replace_ce_bce_in_text(original)
+                self.assertEqual(updated, expected)
+                self.assertTrue(replacements)
+
+    def test_replaces_ce_variants(self):
+        cases = [
+            ("died in 100 CE", "died in 100 AD"),
+            ("died in 100 C.E.", "died in 100 AD"),
+            ("died in 100 ce.", "died in 100 AD"),
+            ("(100 CE)", "(100 AD)"),
+        ]
+        for original, expected in cases:
+            with self.subTest(original=original):
+                updated, replacements = replace_ce_bce_in_text(original)
+                self.assertEqual(updated, expected)
+                self.assertTrue(replacements)
+
+    def test_includes_context_around_replacements(self):
+        text = "He was born in Alexandria around 300 BCE and died in Rome in 100 CE."
+        _, replacements = replace_ce_bce_in_text(text, context_chars=20)
+        self.assertEqual(len(replacements), 2)
+        self.assertIn("300 BCE", replacements[0].context_before)
+        self.assertIn("300 BC", replacements[0].context_after)
+        self.assertIn("100 CE", replacements[1].context_before)
+        self.assertIn("100 AD", replacements[1].context_after)
+
+    def test_does_not_replace_within_words_or_ids(self):
+        cases = [
+            "face",
+            "service",
+            "acceptance",
+            "abce",
+            "uuid_bce_field",
+            "foo-ce-bar",
+            "something.ce.other",
+            "abc123bce456",
+            "https://example.com/bce/article",
+            "early CE period",
+            "source-id-ce-123",
+        ]
+        for original in cases:
+            with self.subTest(original=original):
+                updated, replacements = replace_ce_bce_in_text(original)
+                self.assertEqual(updated, original)
+                self.assertEqual(replacements, [])
+
+    def test_replaces_at_line_boundaries(self):
+        text = "300 BCE\nDied in 100 CE."
+        updated, replacements = replace_ce_bce_in_text(text)
+        self.assertEqual(updated, "300 BC\nDied in 100 AD")
+        self.assertEqual(len(replacements), 2)
 
 
 class CalendarFeedWindowTests(SimpleTestCase):

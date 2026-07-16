@@ -63,6 +63,7 @@ class OfficeDay(BaseModel):
     }
 
     def passage_to_text(self, attribute, translation="esv"):
+        translation = Scripture.normalize_bible_translation(translation)
         passage = getattr(self, attribute)
         if not passage and "_abbreviated" in attribute:
             attribute = attribute.replace("_abbreviated", "")
@@ -75,7 +76,7 @@ class OfficeDay(BaseModel):
             if not result or result.strip() in ["", "-"]:
                 result = self.readings[passage].nrsvce
             return result
-        except KeyError:
+        except (KeyError, AttributeError):
             return None
 
     def __getattribute__(self, attrname):
@@ -588,6 +589,38 @@ class Collect(BaseModel):
 
 
 class Scripture(BaseModel):
+    BIBLE_TRANSLATIONS = frozenset(
+        {
+            "esv",
+            "kjv",
+            "rsv",
+            "nrsvce",
+            "nabre",
+            "niv",
+            "nasb",
+            "coverdale",
+            "renewed_coverdale",
+            "cuvs",
+            "cuv",
+            "sigao",
+            "znsigao",
+            "nvi",
+            "rv1960",
+        }
+    )
+    INVALID_TRANSLATION_VALUES = frozenset({"undefined", "null", "none"})
+
+    @classmethod
+    def normalize_bible_translation(cls, translation, default="esv"):
+        if not translation:
+            return default
+        translation = str(translation).lower().strip()
+        if translation in cls.INVALID_TRANSLATION_VALUES:
+            return default
+        if translation not in cls.BIBLE_TRANSLATIONS:
+            return default
+        return translation
+
     passage = models.CharField(max_length=255)
     esv = models.TextField(blank=True, null=True)
     kjv = models.TextField(blank=True, null=True)
