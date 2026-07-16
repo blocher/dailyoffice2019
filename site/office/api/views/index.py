@@ -9,7 +9,6 @@ from urllib.parse import quote
 import mailchimp_marketing as MailchimpMarketing
 from distutils.util import strtobool
 from django.conf import settings
-from django.contrib.sites.models import Site
 from django.db.models import Prefetch
 from django.http import HttpResponse
 from django.template.loader import render_to_string
@@ -2960,9 +2959,10 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         filename = f"{audio_id}.mp3"
         file_path = os.path.join(settings.MEDIA_ROOT, filename)
         exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
-        domain = Site.objects.get_current().domain
         path = settings.MEDIA_URL + filename
-        file_url = f"https://{domain}/api/v1/audio_track/{filename}"
+        from office.audio.services import absolute_url
+
+        file_url = absolute_url(f"/api/v1/audio_track/{filename}")
 
         temp_file_list = os.path.join(settings.MEDIA_ROOT, f"{filename}.txt")
         track_list = []

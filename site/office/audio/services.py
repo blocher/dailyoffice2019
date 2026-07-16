@@ -10,7 +10,6 @@ from decimal import Decimal
 
 from bs4 import BeautifulSoup
 from django.conf import settings
-from django.contrib.sites.models import Site
 from django.utils import timezone
 from mutagen.mp3 import MP3
 
@@ -118,12 +117,23 @@ def line_reference_cache_key(line_type, text, provider_mode=None):
     return hash_payload(payload)
 
 
+def site_base_url():
+    return settings.SITE_ADDRESS.rstrip("/")
+
+
+def absolute_url(path):
+    if path.startswith("http://") or path.startswith("https://"):
+        return path
+    if not path.startswith("/"):
+        path = f"/{path}"
+    return f"{site_base_url()}{path}"
+
+
 def line_reference_url(line_type, text, provider_mode=None):
     cache_key = line_reference_cache_key(line_type, text, provider_mode=provider_mode)
     filename = f"audio_ref_{cache_key[:32]}.mp3"
-    domain = Site.objects.get_current().domain
     media_path = settings.MEDIA_URL + filename
-    return f"https://{domain}{media_path}", media_path
+    return absolute_url(media_path), media_path
 
 
 def media_file_name(cache_key, suffix="mp3"):
@@ -140,13 +150,11 @@ def public_media_path(file_name):
 
 
 def track_url(file_name):
-    domain = Site.objects.get_current().domain
-    return f"https://{domain}/api/v1/audio_track/{file_name}"
+    return absolute_url(f"/api/v1/audio_track/{file_name}")
 
 
 def file_url(file_name):
-    domain = Site.objects.get_current().domain
-    return f"https://{domain}{public_media_path(file_name)}"
+    return absolute_url(public_media_path(file_name))
 
 
 def audio_duration(file_path, fallback=Decimal("0")):

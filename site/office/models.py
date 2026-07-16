@@ -439,7 +439,7 @@ class AudioUsage(BaseModel):
     settings_snapshot = models.JSONField(default=dict, blank=True)
     start_time_seconds = models.DecimalField(max_digits=10, decimal_places=3, default=0)
     duration_seconds = models.DecimalField(max_digits=10, decimal_places=3, default=0)
-    request_path = models.CharField(max_length=512, null=True, blank=True)
+    request_path = models.TextField(null=True, blank=True)
 
     class Meta:
         ordering = ("-created",)

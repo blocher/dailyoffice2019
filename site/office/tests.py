@@ -11,7 +11,14 @@ from django.contrib.sites.models import Site
 from django.test import TestCase, override_settings
 
 from office.audio.providers import ProviderResult, get_audio_provider
-from office.audio.services import AudioItem, FFMPEGAudioAssembler, OfficeAudioBuilder, VoiceResolver
+from office.audio.services import (
+    AudioItem,
+    FFMPEGAudioAssembler,
+    OfficeAudioBuilder,
+    VoiceResolver,
+    absolute_url,
+    track_url,
+)
 from office.models import AudioGeneratedFile, AudioGenerationConfig, AudioGenerationEvent, AudioVoice, Scripture
 
 
@@ -27,11 +34,11 @@ class AudioGenerationTestCase(TestCase):
         self.override.disable()
         shutil.rmtree(self.media_root, ignore_errors=True)
 
-    def dummy_office(self):
+    def dummy_office(self, request_path="/api/v1/office/morning_prayer/2026-05-03"):
         return SimpleNamespace(
             settings={"bible_translation": "esv"},
             date=SimpleNamespace(date=datetime.date(2026, 5, 3)),
-            request=SimpleNamespace(get_full_path=lambda: "/api/v1/office/morning_prayer/2026-05-03"),
+            request=SimpleNamespace(get_full_path=lambda: request_path),
         )
 
     def builder(self):
@@ -218,6 +225,47 @@ class AudioBuilderTests(AudioGenerationTestCase):
         self.assertEqual(len(response["single_track"]), 4)
         self.assertEqual(response["single_track"][2][0]["name"], "Opening")
         self.assertEqual(response["single_track"][3][0]["id"], "leader-1")
+
+    @patch.object(FFMPEGAudioAssembler, "assemble")
+    @patch("office.audio.services.audio_duration", return_value=Decimal("1.000"))
+    @patch("office.audio.providers.OpenAIAudioProvider.generate_spoken_file")
+    def test_long_request_path_does_not_block_audio_build(self, generate_spoken_file, audio_duration, assemble):
+        def fake_spoken(text, voice_id, output_path):
+            self.write_fake_audio(output_path)
+            return ProviderResult(characters=len(text))
+
+        def fake_assemble(pieces, output_path, padding_ms=None):
+            self.write_fake_audio(output_path)
+
+        generate_spoken_file.side_effect = fake_spoken
+        assemble.side_effect = fake_assemble
+        long_path = "/api/v1/office/morning_prayer/2026-05-03?" + ("setting=value&" * 80)
+        module = {
+            "name": "Opening",
+            "lines": [
+                {"id": "leader-1", "line_type": "leader", "content": "Let us pray."},
+            ],
+        }
+
+        response = OfficeAudioBuilder(self.dummy_office(request_path=long_path), modules=[module]).build()
+
+        self.assertIn("single_track", response)
+        self.assertEqual(len(response["single_track"]), 4)
+        from office.models import AudioUsage
+
+        self.assertTrue(AudioUsage.objects.filter(request_path=long_path).exists())
+
+
+class AudioUrlTests(TestCase):
+    def test_track_url_uses_site_address_not_django_site_domain(self):
+        Site.objects.update_or_create(id=settings.SITE_ID, defaults={"domain": "example.com", "name": "Example"})
+        url = track_url("audio_test.mp3")
+        self.assertTrue(url.startswith(settings.SITE_ADDRESS.rstrip("/")))
+        self.assertIn("/api/v1/audio_track/audio_test.mp3", url)
+        self.assertNotIn("example.com", url)
+
+    def test_absolute_url_joins_site_address(self):
+        self.assertEqual(absolute_url("/uploads/a.mp3"), f"{settings.SITE_ADDRESS.rstrip('/')}/uploads/a.mp3")
 
 
 class NormalizeBibleTranslationTests(TestCase):
