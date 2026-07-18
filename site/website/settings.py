@@ -359,6 +359,27 @@ EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")  # 587
 
 OPENAI_API_KEY = env("OPENAI_API_KEY")
 
+# --- Text-to-speech (liturgy audio) -----------------------------------------
+# All configurable via environment so the model/voices can be switched without
+# code changes. Valid tts-1 / tts-1-hd voices: alloy, ash, coral, echo, fable,
+# onyx, nova, sage, shimmer. gpt-4o-mini-tts adds ballad, verse, marin, cedar
+# and supports the `instructions` steering prompt (tts-1 does not).
+TTS_MODEL = env("TTS_MODEL", default="tts-1")
+TTS_SPEED = env.float("TTS_SPEED", default=0.95)
+TTS_VOICE_LEADER = env("TTS_VOICE_LEADER", default="onyx")
+TTS_VOICE_CONGREGATION = env("TTS_VOICE_CONGREGATION", default="sage")
+TTS_VOICE_READER = env("TTS_VOICE_READER", default="alloy")
+TTS_INSTRUCTIONS = env(
+    "TTS_INSTRUCTIONS",
+    default=(
+        "You are reading the Anglican Daily Office aloud in a worship setting. "
+        "Speak in a calm, warm, reverent tone at a measured, unhurried pace. "
+        "Keep the pacing and delivery steady and consistent from line to line, "
+        "as if leading a congregation in prayer. Do not dramatize or add emotion; "
+        "read prayerfully, clearly, and naturally. Pronounce 'Amen' as 'ah-men'."
+    ),
+)
+
 OMDB_API_KEY = env("OMDB_API_KEY")
 UTELLY_API_KEY = env("UTELLY_API_KEY")
 IMDB_API_KEY = env("IMDB_API_KEY")

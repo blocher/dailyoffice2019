@@ -3,7 +3,9 @@ import os
 from django.conf import settings
 from django.core.cache import cache
 from django.http import FileResponse
+from django.http import HttpResponse
 from django.http import HttpResponseNotFound
+from django.http import StreamingHttpResponse
 from django.utils import timezone
 from mutagen.mp3 import MP3
 from rest_framework.renderers import BaseRenderer, BrowsableAPIRenderer, JSONRenderer
@@ -112,7 +114,6 @@ class AudioTrackView(APIView):
     def get(self, request, *args, **kwargs):
         filename = kwargs["track"]
         file_path = os.path.join(settings.MEDIA_ROOT, filename)
-        print(file_path)
 
         if not os.path.exists(file_path) or os.path.getsize(file_path) == 0:
             return HttpResponseNotFound("Audio file not found.")
@@ -123,11 +124,28 @@ class AudioTrackView(APIView):
         except Exception:
             duration = "Unknown"  # Fallback if metadata cannot be read
 
-        # Open the file in binary mode
-        audio_file = open(file_path, "rb")
+        file_size = os.path.getsize(file_path)
+        range_header = request.META.get("HTTP_RANGE", "").strip()
+        start, end = self._parse_range(range_header, file_size)
 
-        # Create a streaming response. Django's FileResponse automatically handles Range requests.
-        response = FileResponse(audio_file, content_type="audio/mpeg")
+        if start is not None:
+            # Partial content: browsers require this to seek/"Jump To". We stream
+            # only the requested byte window and advertise the range so the
+            # <audio> element can map a timestamp to a byte offset.
+            length = end - start + 1
+            response = StreamingHttpResponse(
+                self._iter_file(file_path, start, length),
+                status=206,
+                content_type="audio/mpeg",
+            )
+            response["Content-Range"] = f"bytes {start}-{end}/{file_size}"
+            response["Content-Length"] = str(length)
+        else:
+            response = FileResponse(open(file_path, "rb"), content_type="audio/mpeg")
+            response["Content-Length"] = str(file_size)
+
+        # Advertise range support on every response so the client knows it can seek.
+        response["Accept-Ranges"] = "bytes"
 
         # Set Content-Disposition for inline playback
         response["Content-Disposition"] = f'inline; filename="{filename}"'
@@ -138,3 +156,46 @@ class AudioTrackView(APIView):
         response["X-Audio-Duration"] = str(duration)  # Add duration in seconds
 
         return response
+
+    @staticmethod
+    def _parse_range(range_header, file_size):
+        """Parse a single-range "bytes=start-end" header.
+
+        Returns (start, end) inclusive byte offsets, or (None, None) when there
+        is no usable range so the caller serves the full file.
+        """
+        if not range_header.startswith("bytes="):
+            return None, None
+        spec = range_header[len("bytes=") :].split(",")[0].strip()
+        if "-" not in spec:
+            return None, None
+        start_str, end_str = spec.split("-", 1)
+        try:
+            if start_str:
+                start = int(start_str)
+                end = int(end_str) if end_str else file_size - 1
+            else:
+                # Suffix range: last N bytes.
+                if not end_str:
+                    return None, None
+                length = int(end_str)
+                start = max(file_size - length, 0)
+                end = file_size - 1
+        except ValueError:
+            return None, None
+        if start > end or start >= file_size:
+            return None, None
+        end = min(end, file_size - 1)
+        return start, end
+
+    @staticmethod
+    def _iter_file(file_path, start, length, chunk_size=8192):
+        with open(file_path, "rb") as f:
+            f.seek(start)
+            remaining = length
+            while remaining > 0:
+                chunk = f.read(min(chunk_size, remaining))
+                if not chunk:
+                    break
+                remaining -= len(chunk)
+                yield chunk

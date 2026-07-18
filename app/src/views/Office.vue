@@ -325,12 +325,32 @@ export default {
         setSeasonAccent(liturgicalColor);
       }
     },
+    resolveAudioUrl(rawUrl) {
+      // The backend builds the track URL from Django's Site.domain (e.g.
+      // "example.com"), which is not reachable from the client. Resolve it
+      // against the same API host the office was fetched from so audio works
+      // in every environment.
+      if (!rawUrl) {
+        return rawUrl;
+      }
+      try {
+        const path = new window.URL(rawUrl, window.location.origin).pathname;
+        const base = (import.meta.env.VITE_API_URL || '/').replace(/\/$/, '');
+        return `${base}/${path.replace(/^\//, '')}`;
+      } catch {
+        return rawUrl;
+      }
+    },
     async setAudioLinks(url) {
       url = `${url}&include_audio_links=true`;
       try {
         const data = await this.$http.get(url);
-        this.audioLinks = data.data.audio.single_track;
-        return data.data.audio.single_track;
+        const singleTrack = data.data.audio.single_track;
+        if (Array.isArray(singleTrack) && singleTrack.length) {
+          singleTrack[0] = this.resolveAudioUrl(singleTrack[0]);
+        }
+        this.audioLinks = singleTrack;
+        return singleTrack;
       } catch {
         return [];
       }

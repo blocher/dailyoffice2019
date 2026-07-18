@@ -658,6 +658,119 @@ class LectionaryItem(BaseModel):
         return collects
 
 
+class PronunciationOverride(models.Model):
+    """Admin-editable text substitutions applied to TTS input before synthesis.
+
+    These affect only the audio input (and therefore the generated clip hash),
+    never the text displayed to the user. Kept in the database so that
+    "this sounds wrong" reports are a data edit rather than a code change.
+    """
+
+    CACHE_KEY = "tts_pronunciation_overrides_v1"
+
+    match = models.CharField(max_length=255, help_text="Text (or regex) to find in the TTS input before synthesis.")
+    replacement = models.CharField(max_length=255, blank=True, default="", help_text="Replacement text.")
+    is_regex = models.BooleanField(default=False, help_text="Treat 'match' as a regular expression.")
+    order = models.PositiveIntegerField(default=0, help_text="Lower numbers are applied first.")
+    enabled = models.BooleanField(default=True)
+    note = models.CharField(max_length=255, blank=True, default="")
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("order", "id")
+
+    def __str__(self):
+        return f"{self.match!r} -> {self.replacement!r}"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self._clear_cache()
+
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        self._clear_cache()
+
+    @classmethod
+    def _clear_cache(cls):
+        from django.core.cache import cache
+
+        cache.delete(cls.CACHE_KEY)
+
+    @classmethod
+    def cached_rules(cls):
+        from django.core.cache import cache
+
+        rules = cache.get(cls.CACHE_KEY)
+        if rules is None:
+            rules = list(
+                cls.objects.filter(enabled=True).order_by("order", "id").values("match", "replacement", "is_regex")
+            )
+            cache.set(cls.CACHE_KEY, rules, 60)
+        return rules
+
+    @classmethod
+    def apply(cls, text):
+        if not text:
+            return text
+        for rule in cls.cached_rules():
+            if rule["is_regex"]:
+                text = re.sub(rule["match"], rule["replacement"], text)
+            else:
+                text = text.replace(rule["match"], rule["replacement"])
+        return text
+
+
+class AudioClip(BaseModel):
+    """Tracks which normalized text maps to which generated TTS audio file.
+
+    Enables deleting/rebuilding individual clips and pruning orphaned files
+    left behind when voices, pacing, or pronunciation change.
+    """
+
+    KINDS = (
+        ("line", "Single line"),
+        ("group", "Grouped lines"),
+        ("reader", "Reading sentence"),
+        ("silence", "Silence"),
+    )
+
+    key = models.CharField(max_length=64, unique=True, db_index=True, help_text="uuid5 stem / filename base.")
+    filename = models.CharField(max_length=128)
+    text = models.TextField(blank=True, default="", help_text="Normalized text sent to OpenAI.")
+    line_type = models.CharField(max_length=64, blank=True, default="")
+    voice = models.CharField(max_length=32, blank=True, default="", db_index=True)
+    model = models.CharField(max_length=32, blank=True, default="")
+    speed = models.FloatField(default=1.0)
+    kind = models.CharField(max_length=16, choices=KINDS, default="line")
+    duration = models.FloatField(null=True, blank=True, help_text="Length in seconds (via mutagen).")
+
+    class Meta:
+        ordering = ("line_type", "voice", "text")
+
+    def __str__(self):
+        return f"{self.voice} [{self.line_type}] {self.text[:60]}"
+
+    @property
+    def file_path(self):
+        import os
+
+        from django.conf import settings
+
+        return os.path.join(settings.MEDIA_ROOT, self.filename)
+
+    def delete_file(self):
+        import os
+
+        try:
+            if self.filename and os.path.isfile(self.file_path):
+                os.remove(self.file_path)
+                return True
+        except OSError:
+            pass
+        return False
+
+
 class MetricalCollect(BaseModel):
     collect_number = models.PositiveSmallIntegerField(null=True, blank=True)
     original_collect = models.TextField(max_length=255, null=True, blank=True)
