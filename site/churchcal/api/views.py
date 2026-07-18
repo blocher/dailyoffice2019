@@ -2,8 +2,7 @@ import os
 
 from django.conf import settings
 from django.core.cache import cache
-from django.http import FileResponse
-from django.http import HttpResponseNotFound
+from django.http import FileResponse, HttpResponse, HttpResponseNotFound, StreamingHttpResponse
 from django.utils import timezone
 from mutagen.mp3 import MP3
 from rest_framework.renderers import BaseRenderer, BrowsableAPIRenderer, JSONRenderer
@@ -107,34 +106,88 @@ class CalendarFeedView(APIView):
 
 
 class AudioTrackView(APIView):
+    """Serve office audio with HTTP Range support so the browser can Jump To / seek."""
+
     permission_classes = [ReadOnly]
 
     def get(self, request, *args, **kwargs):
         filename = kwargs["track"]
-        file_path = os.path.join(settings.MEDIA_ROOT, filename)
-        print(file_path)
+        # Allow nested paths under MEDIA_ROOT (e.g. audio_v2/full/....mp3); block traversal.
+        safe_name = os.path.normpath(filename).lstrip(os.sep)
+        if safe_name.startswith("..") or "/../" in f"/{safe_name}/":
+            return HttpResponseNotFound("Audio file not found.")
+        media_root = os.path.abspath(settings.MEDIA_ROOT)
+        file_path = os.path.abspath(os.path.join(media_root, safe_name))
+        if not file_path.startswith(media_root + os.sep) and file_path != media_root:
+            return HttpResponseNotFound("Audio file not found.")
 
         if not os.path.exists(file_path) or os.path.getsize(file_path) == 0:
             return HttpResponseNotFound("Audio file not found.")
 
+        file_size = os.path.getsize(file_path)
         try:
             audio = MP3(file_path)
-            duration = int(audio.info.length)  # Duration in seconds
+            duration = int(audio.info.length)
         except Exception:
-            duration = "Unknown"  # Fallback if metadata cannot be read
+            duration = "Unknown"
 
-        # Open the file in binary mode
-        audio_file = open(file_path, "rb")
+        range_header = request.META.get("HTTP_RANGE", "").strip()
+        start, end = 0, file_size - 1
+        status = 200
+        if range_header.startswith("bytes="):
+            try:
+                unit_range = range_header.split("=", 1)[1]
+                # Only honor a single range; multi-range is uncommon for <audio>.
+                unit_range = unit_range.split(",", 1)[0].strip()
+                start_s, sep, end_s = unit_range.partition("-")
+                if not sep:
+                    raise ValueError("malformed range")
+                if start_s == "" and end_s:
+                    # Suffix range "bytes=-N": the final N bytes of the file.
+                    suffix = int(end_s)
+                    if suffix <= 0:
+                        raise ValueError("empty suffix range")
+                    start = max(file_size - suffix, 0)
+                    end = file_size - 1
+                else:
+                    if start_s:
+                        start = int(start_s)
+                    if end_s:
+                        end = int(end_s)
+                end = min(end, file_size - 1)
+                if start < 0 or start > end or start >= file_size:
+                    response = HttpResponse(status=416)
+                    response["Content-Range"] = f"bytes */{file_size}"
+                    return response
+                status = 206
+            except ValueError:
+                start, end = 0, file_size - 1
+                status = 200
 
-        # Create a streaming response. Django's FileResponse automatically handles Range requests.
-        response = FileResponse(audio_file, content_type="audio/mpeg")
+        length = end - start + 1
 
-        # Set Content-Disposition for inline playback
-        response["Content-Disposition"] = f'inline; filename="{filename}"'
+        def _iter_file_range(path, offset, nbytes, block_size=64 * 1024):
+            with open(path, "rb") as handle:
+                handle.seek(offset)
+                remaining = nbytes
+                while remaining > 0:
+                    chunk = handle.read(min(block_size, remaining))
+                    if not chunk:
+                        break
+                    remaining -= len(chunk)
+                    yield chunk
 
-        # Metadata (Adjust these as needed)
+        response = StreamingHttpResponse(
+            _iter_file_range(file_path, start, length),
+            status=status,
+            content_type="audio/mpeg",
+        )
+        response["Accept-Ranges"] = "bytes"
+        response["Content-Length"] = str(length)
+        response["Content-Disposition"] = f'inline; filename="{os.path.basename(safe_name)}"'
         response["X-Audio-Title"] = "The Daily Office"
         response["X-Audio-Year"] = "2025"
-        response["X-Audio-Duration"] = str(duration)  # Add duration in seconds
-
+        response["X-Audio-Duration"] = str(duration)
+        if status == 206:
+            response["Content-Range"] = f"bytes {start}-{end}/{file_size}"
         return response

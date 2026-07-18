@@ -76,7 +76,7 @@ urlpatterns = [
     path(r"api/v1/litany", GreatLitanyView.as_view(), name="litany"),
     path(r"api/v1/calendar/<int:year>-<int:month>", MonthView.as_view(), name="month_view"),
     path(r"api/v1/calendar/<int:year>", YearView.as_view(), name="month_view"),
-    path(r"api/v1/audio_track/<str:track>", AudioTrackView.as_view(), name="audio_track"),
+    path(r"api/v1/audio_track/<path:track>", AudioTrackView.as_view(), name="audio_track"),
     path(
         r"api/v1/audio",
         AudioViewSet.as_view({"post": "retrieve"}),

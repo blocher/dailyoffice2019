@@ -2,11 +2,12 @@
   <div class="audio-player">
     <div class="controls fixed-controls" style="width: 100%">
       <div class="menu-and-buttons">
-        <span v-if="!isEsvOrKjv">
+        <span v-if="!isAudioEligible">
           <small>
-            &nbsp;&nbsp;Audio is only available if the selected bible
-            translation is the English Standard Version (ESV) or the Kings James
-            Version.&nbsp;&nbsp;
+            &nbsp;&nbsp;{{
+              unavailableMessage ||
+              'Audio is only available for English contemporary or traditional offices with the ESV or KJV Bible. Support for other languages is still in progress.'
+            }}&nbsp;&nbsp;
             <a href="/settings"> Change Settings >>> </a>
           </small>
         </span>
@@ -25,7 +26,9 @@
         </span>
         <span v-else-if="!hasAudioLinks">
           <small>
-            &nbsp;&nbsp;Audio is not available for this office.&nbsp;&nbsp;
+            &nbsp;&nbsp;{{
+              unavailableMessage || 'Audio is not available for this office.'
+            }}&nbsp;&nbsp;
           </small>
         </span>
         <button
@@ -53,7 +56,12 @@ export default {
     },
     isEsvOrKjv: {
       type: Boolean,
-      required: true,
+      required: false,
+      default: false,
+    },
+    isAudioEligible: {
+      type: Boolean,
+      required: false,
       default: false,
     },
     isWithinSevenDays: {
@@ -65,6 +73,11 @@ export default {
       type: Boolean,
       required: false,
       default: false,
+    },
+    unavailableMessage: {
+      type: String,
+      required: false,
+      default: '',
     },
   },
   computed: {
@@ -98,23 +111,6 @@ export default {
 <style scoped>
 .audio-player {
   padding: 10px;
-}
-
-.audio-player .playing {
-  font-weight: bold;
-  color: green;
-}
-
-.el-button-group {
-  width: 100%;
-}
-
-.audio-list {
-  margin-bottom: 100px;
-}
-
-.el-switch {
-  margin-left: 10px;
 }
 
 .controls.fixed-controls {
@@ -162,10 +158,6 @@ export default {
   -webkit-tap-highlight-color: transparent;
 }
 
-:deep(.dark) .dismiss-button {
-  border-left-color: rgba(255, 255, 255, 0.1);
-}
-
 .dismiss-button:hover {
   opacity: 1;
   background: rgba(0, 0, 0, 0.08);
@@ -173,43 +165,5 @@ export default {
 
 .dismiss-button:active {
   transform: scale(0.92);
-}
-
-button {
-  padding: 10px 15px;
-  font-size: 14px;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-}
-
-button:disabled {
-  cursor: not-allowed;
-}
-
-.smallSelector {
-  max-width: 200px;
-  flex-shrink: 1;
-}
-
-.smallestSelector {
-  max-width: 75px;
-  flex-shrink: 1;
-  margin-right: 5px;
-}
-
-@media (max-width: 768px) {
-  .smallSelector {
-    max-width: 150px;
-  }
-
-  .menu-and-buttons {
-    flex-wrap: nowrap;
-    gap: 5px;
-  }
-
-  button {
-    flex-shrink: 0;
-  }
 }
 </style>

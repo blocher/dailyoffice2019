@@ -64,6 +64,7 @@ mjml>=0.11.1
 mutagen>=1.47.0
 num2words>=0.5.14
 openai>=2.0.0
+google-genai>=2.0.0
 pdfplumber>=0.11.7
 Pillow>=11.3.0
 pip>=25.2

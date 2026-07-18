@@ -11,6 +11,7 @@ from office.models import (
     Collect,
     CollectTag,
     CollectTagCategory,
+    AudioBatchJob,
 )
 
 
@@ -100,3 +101,11 @@ admin.site.register(Setting, OfficeSettingAdmin)
 admin.site.register(CollectTag, CollectTagAdmin)
 admin.site.register(CollectTagCategory, CollectTagCategoryAdmin)
 admin.site.register(Collect, CollectAdmin)
+
+
+@admin.register(AudioBatchJob)
+class AudioBatchJobAdmin(admin.ModelAdmin):
+    list_display = ("job_name", "status", "last_state", "written", "failed", "created", "completed_at")
+    list_filter = ("status",)
+    search_fields = ("job_name",)
+    readonly_fields = ("created", "updated", "completed_at")

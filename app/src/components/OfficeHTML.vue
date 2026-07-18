@@ -1,5 +1,5 @@
 <template>
-  <div class="officeHTML" v-html="line.content" />
+  <div class="officeHTML" :data-line-id="line.id" v-html="line.content" />
 </template>
 
 <script>

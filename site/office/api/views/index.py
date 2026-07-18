@@ -2901,9 +2901,10 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         filename = f"{audio_id}.mp3"
         file_path = os.path.join(settings.MEDIA_ROOT, filename)
         exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
-        domain = Site.objects.get_current().domain
         path = settings.MEDIA_URL + filename
-        file_url = f"https://{domain}{path}"
+        from office.audio.v2 import _absolute_url
+
+        file_url = _absolute_url(path)
         if no_generate:
             return file_url, path
         if exists:
@@ -2986,9 +2987,10 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         filename = f"{audio_id}.mp3"
         file_path = os.path.join(settings.MEDIA_ROOT, filename)
         exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
-        domain = Site.objects.get_current().domain
         path = settings.MEDIA_URL + filename
-        file_url = f"https://{domain}/api/v1/audio_track/{filename}"
+        from office.audio.v2 import _absolute_url
+
+        file_url = _absolute_url(f"/api/v1/audio_track/{filename}")
 
         temp_file_list = os.path.join(settings.MEDIA_ROOT, f"{filename}.txt")
         track_list = []
@@ -3036,10 +3038,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
 
         return file_url, path, track_list, short_track_list
 
-    def get_audio(self, obj):
-        if hasattr(obj.settings, "bible_translation") and obj.settings.bible_translation not in ["esv", "kjv"]:
-            return []
-        modules = self.get_modules(obj)
+    def _build_legacy_audio(self, modules):
         tracks = []
         headings = []
         for module in modules:
@@ -3080,7 +3079,6 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     continue
                 if line["line_type"] == "html":
                     temp_id = "_".join([line["id"].split("_")[0], line["id"].split("_")[-1]])
-                    print(self.handle_html(line["content"], id=temp_id))
                     tracks = tracks + self.handle_html(line["content"], id=temp_id, module=module["name"])
                 elif line["line_type"] in [
                     "reader",
@@ -3094,8 +3092,45 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         tracks = [track for track in tracks if track]
         headings = [heading for heading in headings if heading]
         single_track = self.get_single_track(tracks)
-
         return {"tracks": tracks, "headings": headings, "single_track": single_track}
+
+    def get_audio(self, obj):
+        from office.audio import check_audio_eligibility, get_audio_pipeline
+        from office.audio.v2 import build_v2_audio
+
+        eligibility = check_audio_eligibility(obj.settings)
+        if not eligibility.available:
+            return {
+                "tracks": [],
+                "headings": [],
+                "single_track": [],
+                "available": False,
+                "unavailable_reason": eligibility.reason,
+                "unavailable_message": eligibility.message,
+                "pipeline": get_audio_pipeline(),
+            }
+
+        modules = self.get_modules(obj)
+        pipeline = get_audio_pipeline()
+        if pipeline == "v2":
+            result = build_v2_audio(modules)
+        elif pipeline == "gemini":
+            from office.audio.gemini import build_gemini_audio
+
+            result = build_gemini_audio(modules)
+        else:
+            result = self._build_legacy_audio(modules)
+        result.setdefault("available", True)
+        result.setdefault("unavailable_reason", None)
+        result.setdefault("unavailable_message", None)
+        result["pipeline"] = pipeline
+        if not result.get("single_track"):
+            result["available"] = False
+            result["unavailable_reason"] = result.get("unavailable_reason") or "generation_failed"
+            result["unavailable_message"] = result.get("unavailable_message") or (
+                "Audio could not be generated right now. Please try again later."
+            )
+        return result
 
 
 class OfficeSerializer(GenericDailyOfficeSerializer):

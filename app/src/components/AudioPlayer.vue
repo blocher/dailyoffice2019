@@ -148,6 +148,7 @@
               v-model="currentTrackSegment"
               class="segment-selector"
               placeholder="Jump to..."
+              :disabled="!mediaReady"
               @change="handleTrackSegmentChange"
             >
               <el-option
@@ -222,7 +223,12 @@ export default {
       isPaused: false,
       trackSegments: [],
       detailedSegments: [],
+      activeSegmentId: null,
       loading: true,
+      mediaReady: false,
+      pendingSeek: null,
+      audioErrorRetries: 0,
+      maxAudioErrorRetries: 3,
       audioElement: null,
       playbackSpeed: '1.0x',
       enableScrolling: true,
@@ -262,22 +268,33 @@ export default {
       Array.isArray(this.audio[2]) &&
       Array.isArray(this.audio[3])
     ) {
-      this.audioElement = new Audio(this.audio[0] || '', { preload: 'auto' });
+      this.audioElement = new Audio();
+      this.audioElement.preload = 'auto';
+      this.audioElement.src = this.audio[0] || '';
       this.audioElement.load();
       if (this.audioElement.readyState === this.audioElement.HAVE_ENOUGH_DATA) {
         this.loading = false;
       }
       this.audioElement.addEventListener('canplaythrough', () => {
         this.loading = false;
+        this.mediaReady = true;
+        this.audioErrorRetries = 0;
+        this.applyPendingSeek();
       });
       this.audioElement.addEventListener('timeupdate', this.handleTimeUpdate);
       this.audioElement.addEventListener('ended', this.stopAudio);
       this.audioElement.addEventListener('loadedmetadata', () => {
         this.duration = this.audioElement.duration;
+        this.mediaReady = true;
+        this.applyPendingSeek();
       });
+      this.audioElement.addEventListener('error', this.handleAudioError);
+      this.audioElement.addEventListener('stalled', this.handleAudioStalled);
+      this.audioElement.addEventListener('waiting', this.handleAudioWaiting);
 
       this.trackSegments = this.audio[2];
       this.detailedSegments = this.audio[3];
+      this.activeSegmentId = null;
     }
 
     this.$nextTick(() => this.emitVisibility());
@@ -292,7 +309,11 @@ export default {
         'timeupdate',
         this.handleTimeUpdate
       );
+      this.audioElement.removeEventListener('error', this.handleAudioError);
+      this.audioElement.removeEventListener('stalled', this.handleAudioStalled);
+      this.audioElement.removeEventListener('waiting', this.handleAudioWaiting);
     }
+    this.clearActiveLineHighlight();
     this.emitVisibility(false);
   },
   methods: {
@@ -307,11 +328,18 @@ export default {
       document.dispatchEvent(event);
     },
     startAudio() {
-      if (this.audioElement) {
-        this.audioElement.play();
-        this.isPlaying = true;
-        this.isPaused = false;
-      }
+      if (!this.audioElement || !this.audioElement.src) return;
+      this.audioElement
+        .play()
+        .then(() => {
+          this.isPlaying = true;
+          this.isPaused = false;
+        })
+        .catch(() => {
+          this.isPlaying = false;
+          this.isPaused = false;
+          this.loading = false;
+        });
     },
     pauseAudio() {
       if (this.audioElement) {
@@ -337,9 +365,46 @@ export default {
     },
     handleTrackSegmentChange() {
       if (this.audioElement && this.currentTrackSegment !== null) {
-        this.audioElement.currentTime = parseFloat(this.currentTrackSegment);
-        this.startAudio();
+        const seekTime = Number(this.currentTrackSegment);
         this.currentTrackSegment = null;
+        if (!Number.isFinite(seekTime)) return;
+        if (!this.mediaReady || this.audioElement.readyState === 0) {
+          this.pendingSeek = seekTime;
+          return;
+        }
+        this.seekAndPlay(seekTime);
+      }
+    },
+    applyPendingSeek() {
+      if (this.pendingSeek === null || !this.mediaReady) return;
+      const seekTime = this.pendingSeek;
+      this.pendingSeek = null;
+      this.seekAndPlay(seekTime);
+    },
+    seekAndPlay(seekTime) {
+      if (!this.audioElement) return;
+      const audio = this.audioElement;
+      const applySeek = () => {
+        try {
+          const duration = audio.duration;
+          // Don't clamp to 0 when duration is still unknown/0 — that resets Jump To.
+          if (Number.isFinite(duration) && duration > 0) {
+            audio.currentTime = Math.max(0, Math.min(seekTime, duration));
+          } else {
+            audio.currentTime = Math.max(0, seekTime);
+          }
+          this.startAudio();
+        } catch {
+          this.pendingSeek = seekTime;
+        }
+      };
+      if (audio.readyState >= 1) {
+        applySeek();
+      } else {
+        this.pendingSeek = seekTime;
+        audio.addEventListener('loadedmetadata', this.applyPendingSeek, {
+          once: true,
+        });
       }
     },
     handleTimeUpdate() {
@@ -347,15 +412,64 @@ export default {
 
       this.currentTime = this.audioElement.currentTime;
 
-      if (!this.isPlaying || !this.enableScrolling) return;
+      if (!this.isPlaying) return;
 
       const currentTime = this.audioElement.currentTime;
-      for (const segment of this.detailedSegments) {
-        if (Math.abs(currentTime - segment.start_time) < 0.5) {
-          this.scrollToSegment(segment.id);
-          break;
+      const active = this.findActiveSegment(currentTime);
+      if (!active) return;
+
+      if (active.id !== this.activeSegmentId) {
+        this.activeSegmentId = active.id;
+        this.highlightSegment(active.id);
+        if (this.enableScrolling) {
+          this.scrollToSegment(active.id);
         }
       }
+    },
+    findActiveSegment(currentTime) {
+      const segments = this.detailedSegments || [];
+      if (!segments.length) return null;
+
+      for (const segment of segments) {
+        const start = Number(segment.start_time) || 0;
+        const duration = Number(segment.duration);
+        if (Number.isFinite(duration) && duration > 0) {
+          if (currentTime >= start && currentTime < start + duration) {
+            return segment;
+          }
+        }
+      }
+
+      // Legacy timestamps without duration: active until the next segment starts
+      for (let i = 0; i < segments.length; i++) {
+        const start = Number(segments[i].start_time) || 0;
+        const nextStart =
+          i + 1 < segments.length
+            ? Number(segments[i + 1].start_time)
+            : Number.POSITIVE_INFINITY;
+        if (
+          currentTime >= start &&
+          currentTime < (Number.isFinite(nextStart) ? nextStart : Infinity)
+        ) {
+          return segments[i];
+        }
+      }
+      return segments[segments.length - 1];
+    },
+    highlightSegment(segmentId) {
+      this.clearActiveLineHighlight();
+      const element = document.querySelector(`[data-line-id='${segmentId}']`);
+      if (!element) return;
+      const target =
+        element.closest('p, .office-line, .html-content') ||
+        element.parentElement ||
+        element;
+      target.classList.add('audio-playing-line');
+    },
+    clearActiveLineHighlight() {
+      document
+        .querySelectorAll('.audio-playing-line')
+        .forEach((el) => el.classList.remove('audio-playing-line'));
     },
     scrollToSegment(segmentId) {
       if (!this.enableScrolling) return;
@@ -363,6 +477,41 @@ export default {
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
+    },
+    handleAudioError() {
+      this.loading = false;
+      if (!this.audioElement || !this.audio?.[0]) return;
+      // Bounded, backed-off recovery so a permanently broken source (e.g. 404)
+      // can't spin in an endless load()/error loop hammering the server.
+      if (this.audioErrorRetries >= this.maxAudioErrorRetries) {
+        this.isPlaying = false;
+        this.isPaused = false;
+        return;
+      }
+      this.audioErrorRetries += 1;
+      const current = this.audioElement.currentTime || 0;
+      const delay = 500 * this.audioErrorRetries;
+      window.setTimeout(() => {
+        if (!this.audioElement) return;
+        this.audioElement.load();
+        try {
+          this.audioElement.currentTime = current;
+        } catch {
+          // currentTime may be unavailable until metadata reloads; ignore.
+        }
+        if (this.isPlaying && !this.isPaused) {
+          this.audioElement.play().catch(() => {});
+        }
+      }, delay);
+    },
+    handleAudioStalled() {
+      if (!this.audioElement) return;
+      if (this.isPlaying && !this.isPaused) {
+        this.audioElement.play().catch(() => {});
+      }
+    },
+    handleAudioWaiting() {
+      // Browser is buffering; leave playback state as-is.
     },
     toggleExpanded() {
       this.isExpanded = !this.isExpanded;
@@ -973,5 +1122,18 @@ button,
   display: flex;
   align-items: center;
   gap: 4px;
+}
+</style>
+
+<style>
+/* Global so office line components can show the active spoken line */
+.audio-playing-line {
+  background-color: color-mix(
+    in srgb,
+    var(--season-accent, #2a6f6a) 14%,
+    transparent
+  );
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
 }
 </style>

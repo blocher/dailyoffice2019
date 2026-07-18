@@ -359,6 +359,25 @@ EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")  # 587
 
 OPENAI_API_KEY = env("OPENAI_API_KEY")
 
+# Office TTS pipeline: "legacy" | "v2" | "gemini"
+# - legacy: OpenAI tts-1 in MEDIA_ROOT (never deleted by v2/gemini)
+# - v2: OpenAI gpt-4o-mini-tts under MEDIA_ROOT/audio_v2/
+# - gemini: Gemini API multi-speaker TTS under MEDIA_ROOT/audio_gemini/
+OFFICE_AUDIO_PIPELINE = env("OFFICE_AUDIO_PIPELINE", default="v2")
+GEMINI_API_KEY = env("GEMINI_API_KEY", default="")
+GEMINI_TTS_MODEL = env("GEMINI_TTS_MODEL", default="gemini-3.1-flash-tts-preview")
+# Lower temperature reduces pitch/prosody drift between independently generated
+# segments (does not change the words). We run low (0.4) to keep the same speaker's
+# register consistent line to line; the synthesizer retries on the rare low-temp
+# generation failure. Raise toward 0.7 if generations start failing often.
+GEMINI_TTS_TEMPERATURE = env("GEMINI_TTS_TEMPERATURE", default="0.4")
+# Gemini Batch API pre-warm tuning (used by `update_audio_files --batch`). Batch is
+# ~half the price of real-time synthesis but asynchronous, so it is only used for
+# advance pre-warming, never for on-demand requests.
+GEMINI_BATCH_SIZE = env.int("GEMINI_BATCH_SIZE", default=100)
+GEMINI_BATCH_POLL_SECONDS = env.int("GEMINI_BATCH_POLL_SECONDS", default=30)
+GEMINI_BATCH_TIMEOUT_SECONDS = env.int("GEMINI_BATCH_TIMEOUT_SECONDS", default=6 * 60 * 60)
+
 OMDB_API_KEY = env("OMDB_API_KEY")
 UTELLY_API_KEY = env("UTELLY_API_KEY")
 IMDB_API_KEY = env("IMDB_API_KEY")

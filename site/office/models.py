@@ -671,3 +671,41 @@ class MetricalCollect(BaseModel):
     text_source = models.CharField(max_length=255, null=True, blank=True)
     tune_source = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True)
+
+
+class AudioBatchJob(BaseModel):
+    """A submitted Gemini Batch TTS job awaiting asynchronous retrieval.
+
+    Decouples submission from retrieval: `update_audio_files --batch submit`
+    creates these rows, and `--batch fetch` polls each one, writing finished
+    clips to the audio cache. Rows are a transient work queue, safe to prune
+    once terminal.
+    """
+
+    STATUS_PENDING = "pending"
+    STATUS_SUCCEEDED = "succeeded"
+    STATUS_FAILED = "failed"
+    STATUS_CHOICES = (
+        (STATUS_PENDING, "Pending"),
+        (STATUS_SUCCEEDED, "Succeeded"),
+        (STATUS_FAILED, "Failed"),
+    )
+
+    # Provider job handle, e.g. "batches/abc123".
+    job_name = models.CharField(max_length=255, unique=True)
+    model_name = models.CharField(max_length=128, blank=True, default="")
+    status = models.CharField(max_length=32, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    # Ordered [{cache_key, file_path, spoken_chars}, ...] matching submission
+    # order, used to positionally map batch responses back to cache files.
+    chunks = models.JSONField(default=list)
+    written = models.PositiveIntegerField(default=0)
+    failed = models.PositiveIntegerField(default=0)
+    last_state = models.CharField(max_length=64, blank=True, default="")
+    detail = models.TextField(blank=True, default="")
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created"]
+
+    def __str__(self):
+        return f"{self.job_name} ({self.status})"

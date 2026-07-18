@@ -89,7 +89,7 @@
       audioLinks &&
       audioLinks.length &&
       isWithinSevenDays &&
-      isEsvOrKjv
+      isAudioEligible
     "
     :audio="audioLinks"
     :audioReady="audioReady"
@@ -103,15 +103,17 @@
       !loading &&
       audioEnabled &&
       (!isWithinSevenDays ||
-        !isEsvOrKjv ||
+        !isAudioEligible ||
         !audioLinks ||
         !audioLinks.length ||
         !audioReady)
     "
     :isEsvOrKjv="isEsvOrKjv"
+    :isAudioEligible="isAudioEligible"
     :isWithinSevenDays="isWithinSevenDays"
     :audioReady="audioReady"
     :hasAudioLinks="!!(audioLinks && audioLinks.length)"
+    :unavailableMessage="audioUnavailableMessage"
     @dismiss-audio="confirmDismissAudio"
   />
 </template>
@@ -184,6 +186,8 @@ export default {
       audioReady: false,
       audioEnabled: true,
       isEsvOrKjv: false,
+      isAudioEligible: false,
+      audioUnavailableMessage: '',
     };
   },
   computed: {
@@ -252,6 +256,10 @@ export default {
       settings.bible_translation = 'esv';
     }
     this.isEsvOrKjv = ['esv', 'kjv'].includes(settings.bible_translation);
+    this.isAudioEligible = this.computeAudioEligibility(settings);
+    if (!this.isAudioEligible) {
+      this.audioUnavailableMessage = this.audioEligibilityMessage(settings);
+    }
     const queryString = Object.keys(settings)
       .map((key) => key + '=' + settings[key])
       .join('&');
@@ -278,7 +286,7 @@ export default {
     this.loading = false;
     await this.$nextTick();
     await this.applyStoredFontSize();
-    if (this.isEsvOrKjv) {
+    if (this.isAudioEligible) {
       this.audioLinks = await this.setAudioLinks(office_url);
     }
     this.audioReady = true;
@@ -325,12 +333,64 @@ export default {
         setSeasonAccent(liturgicalColor);
       }
     },
+    computeAudioEligibility(settings) {
+      const display = (settings.display_language || 'english').toLowerCase();
+      const style = (settings.language_style || 'contemporary').toLowerCase();
+      const psalm = (
+        settings.psalm_translation || 'contemporary'
+      ).toLowerCase();
+      const bible = (settings.bible_translation || 'esv').toLowerCase();
+      return (
+        display === 'english' &&
+        ['contemporary', 'traditional'].includes(style) &&
+        ['contemporary', 'traditional'].includes(psalm) &&
+        ['esv', 'kjv'].includes(bible)
+      );
+    },
+    audioEligibilityMessage(settings) {
+      const display = (settings.display_language || 'english').toLowerCase();
+      const style = (settings.language_style || 'contemporary').toLowerCase();
+      const psalm = (
+        settings.psalm_translation || 'contemporary'
+      ).toLowerCase();
+      const bible = (settings.bible_translation || 'esv').toLowerCase();
+      if (display !== 'english') {
+        return (
+          'Audio is only available for English offices (contemporary or traditional). ' +
+          'Support for other languages is still in progress.'
+        );
+      }
+      if (
+        !['contemporary', 'traditional'].includes(style) ||
+        !['contemporary', 'traditional'].includes(psalm)
+      ) {
+        return (
+          'Audio is only available for English contemporary or traditional settings. ' +
+          'Support for other languages is still in progress.'
+        );
+      }
+      if (!['esv', 'kjv'].includes(bible)) {
+        return (
+          'Audio is only available when the Bible translation is ESV or KJV. ' +
+          'Support for other translations and languages is still in progress.'
+        );
+      }
+      return '';
+    },
     async setAudioLinks(url) {
       url = `${url}&include_audio_links=true`;
       try {
         const data = await this.$http.get(url);
-        this.audioLinks = data.data.audio.single_track;
-        return data.data.audio.single_track;
+        const audio = data.data.audio || {};
+        if (audio.available === false) {
+          this.audioUnavailableMessage =
+            audio.unavailable_message ||
+            'Audio is not available for this office.';
+          this.audioLinks = [];
+          return [];
+        }
+        this.audioLinks = audio.single_track;
+        return audio.single_track;
       } catch {
         return [];
       }
