@@ -360,8 +360,12 @@ EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")  # 587
 OPENAI_API_KEY = env("OPENAI_API_KEY")
 
 # --- Text-to-speech (liturgy audio) -----------------------------------------
-# All configurable via environment so the model/voices can be switched without
-# code changes. Valid tts-1 / tts-1-hd voices: alloy, ash, coral, echo, fable,
+# Which backend generates office audio: "openai" or "fish" (Fish Audio).
+# The adapters live in office/api/views/tts.py; each reads its own settings
+# below so the model and voices can be switched without code changes.
+TTS_PROVIDER = env("TTS_PROVIDER", default="openai")
+
+# OpenAI TTS. Valid tts-1 / tts-1-hd voices: alloy, ash, coral, echo, fable,
 # onyx, nova, sage, shimmer. gpt-4o-mini-tts adds ballad, verse, marin, cedar
 # and supports the `instructions` steering prompt (tts-1 does not).
 TTS_MODEL = env("TTS_MODEL", default="tts-1")
@@ -379,6 +383,28 @@ TTS_INSTRUCTIONS = env(
         "read prayerfully, clearly, and naturally. Pronounce 'Amen' as 'ah-men'."
     ),
 )
+
+# Fish Audio TTS (https://fish.audio). Voices are `reference_id` values that
+# point at voice models in the Fish Audio library; browse them at
+# https://fish.audio/ or via the /model API. `s2.1-pro-free` is the free
+# developer tier. Set TTS_PROVIDER=fish to use these. `FISH_AUDIO_AI_KEY` is
+# the historical env spelling and is used as a fallback in the adapter.
+FISH_AUDIO_API_KEY = env("FISH_AUDIO_API_KEY", default=env("FISH_AUDIO_AI_KEY", default=""))
+FISH_AUDIO_AI_KEY = env("FISH_AUDIO_AI_KEY", default="")
+FISH_TTS_MODEL = env("FISH_TTS_MODEL", default="s2.1-pro-free")
+FISH_TTS_SPEED = env.float("FISH_TTS_SPEED", default=0.95)
+FISH_TTS_SAMPLE_RATE = env.int("FISH_TTS_SAMPLE_RATE", default=44100)  # mp3: 32000 or 44100
+FISH_TTS_MP3_BITRATE = env.int("FISH_TTS_MP3_BITRATE", default=128)  # 64, 128, or 192
+# Resilience for rate limits / transient errors (used during bulk pre-warming).
+FISH_TTS_TIMEOUT = env.int("FISH_TTS_TIMEOUT", default=120)  # per-request seconds
+FISH_TTS_MAX_RETRIES = env.int("FISH_TTS_MAX_RETRIES", default=4)  # retries after the first try
+FISH_TTS_BACKOFF_BASE = env.float("FISH_TTS_BACKOFF_BASE", default=1.0)  # seconds, doubled each retry
+FISH_TTS_BACKOFF_MAX = env.float("FISH_TTS_BACKOFF_MAX", default=30.0)  # cap per backoff wait
+# Recommended calm/reverent narration voices (see office management command
+# audition_tts_voices to preview and swap these).
+FISH_TTS_VOICE_LEADER = env("FISH_TTS_VOICE_LEADER", default="536d3a5e000945adb7038665781a4aca")  # "Ethan"
+FISH_TTS_VOICE_CONGREGATION = env("FISH_TTS_VOICE_CONGREGATION", default="e3cd384158934cc9a01029cd7d278634")  # "Laura"
+FISH_TTS_VOICE_READER = env("FISH_TTS_VOICE_READER", default="c5f56a6cc2ec4fa8920cb4c5889a3fb7")  # "Slax"
 
 OMDB_API_KEY = env("OMDB_API_KEY")
 UTELLY_API_KEY = env("UTELLY_API_KEY")

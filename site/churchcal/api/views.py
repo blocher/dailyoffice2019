@@ -113,7 +113,14 @@ class AudioTrackView(APIView):
 
     def get(self, request, *args, **kwargs):
         filename = kwargs["track"]
-        file_path = os.path.join(settings.MEDIA_ROOT, filename)
+        # `track` may include a provider subfolder (e.g. "fish/<uuid>.mp3").
+        # Normalize and confine to MEDIA_ROOT to prevent path traversal.
+        safe_rel = os.path.normpath(filename).lstrip("/\\")
+        media_root = os.path.abspath(settings.MEDIA_ROOT)
+        file_path = os.path.abspath(os.path.join(media_root, safe_rel))
+
+        if os.path.commonpath([media_root, file_path]) != media_root:
+            return HttpResponseNotFound("Audio file not found.")
 
         if not os.path.exists(file_path) or os.path.getsize(file_path) == 0:
             return HttpResponseNotFound("Audio file not found.")

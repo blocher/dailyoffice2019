@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
+from office.api.views.tts import provider_names
 from office.models import AudioClip
 
 
@@ -21,6 +22,12 @@ class Command(BaseCommand):
             help="Delete clips whose stored (normalized) text contains this string (case-insensitive).",
         )
         parser.add_argument("--drop-voice", help="Delete all clips generated with this voice (e.g. alloy, ash).")
+        parser.add_argument(
+            "--clear-provider",
+            help="Delete ALL generated audio (files + AudioClip rows) for a provider's subfolder, "
+            "e.g. 'fish' or 'openai'. Use 'legacy' for files stored at the media root before "
+            "per-provider subfolders existed. Pass 'all' to clear every provider plus legacy.",
+        )
         parser.add_argument(
             "--prune-orphans",
             action="store_true",
@@ -63,6 +70,13 @@ class Command(BaseCommand):
                 AudioClip.objects.filter(voice=options["drop_voice"]), is_dry_run, f"voice={options['drop_voice']}"
             )
 
+        if options["clear_provider"]:
+            did_something = True
+            target = options["clear_provider"].lower()
+            targets = provider_names() + ["legacy"] if target == "all" else [target]
+            for name in targets:
+                self._clear_provider(name, is_dry_run)
+
         if options["prune_orphans"]:
             did_something = True
             self._prune_orphans(is_dry_run)
@@ -97,24 +111,97 @@ class Command(BaseCommand):
                 self.style.SUCCESS(f"Removed {len(clips)} clip record(s) and {deleted_files} file(s) for {label}.")
             )
 
+    def _clear_provider(self, name, is_dry_run):
+        """Delete every generated file (and matching AudioClip rows) for a
+        provider subfolder. ``legacy`` targets pre-subfolder files stored
+        directly in the media root."""
+        media_root = settings.MEDIA_ROOT
+        if not os.path.exists(media_root):
+            self.stdout.write(self.style.ERROR(f"Media root does not exist: {media_root}"))
+            return
+
+        if name == "legacy":
+            # Loose office audio directly under the media root (no subfolder):
+            # per-clip/combined mp3s and leftover ffmpeg concat lists.
+            target_dir = media_root
+            files = [
+                f
+                for f in os.listdir(media_root)
+                if os.path.isfile(os.path.join(media_root, f)) and (f.endswith(".mp3") or f.endswith(".mp3.txt"))
+            ]
+            rows = AudioClip.objects.exclude(filename__contains="/")
+        else:
+            target_dir = os.path.join(media_root, name)
+            files = []
+            if os.path.isdir(target_dir):
+                for entry in os.listdir(target_dir):
+                    full = os.path.join(target_dir, entry)
+                    if os.path.isfile(full) and (entry.endswith(".mp3") or entry.endswith(".mp3.txt")):
+                        files.append(entry)
+            rows = AudioClip.objects.filter(filename__startswith=f"{name}/")
+
+        row_count = rows.count()
+        if not files and not row_count:
+            self.stdout.write(self.style.WARNING(f"Nothing to clear for provider '{name}'."))
+            return
+
+        freed_bytes = 0
+        for entry in files:
+            file_path = os.path.join(target_dir, entry)
+            size = os.path.getsize(file_path) if os.path.exists(file_path) else 0
+            if is_dry_run:
+                self.stdout.write(f"Would clear [{name}] {entry} ({size / 1024 / 1024:.2f} MB)")
+                continue
+            try:
+                os.remove(file_path)
+                freed_bytes += size
+            except OSError as e:
+                self.stdout.write(self.style.ERROR(f"Could not remove {entry}: {e}"))
+
+        if is_dry_run:
+            self.stdout.write(
+                self.style.WARNING(f"[{name}] Would delete {len(files)} file(s) and {row_count} AudioClip row(s).")
+            )
+            return
+
+        rows.delete()
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"[{name}] Deleted {len(files)} file(s) ({freed_bytes / 1024 / 1024:.2f} MB) "
+                f"and {row_count} AudioClip row(s)."
+            )
+        )
+
     def _prune_orphans(self, is_dry_run):
         media_root = settings.MEDIA_ROOT
         if not os.path.exists(media_root):
             self.stdout.write(self.style.ERROR(f"Media root does not exist: {media_root}"))
             return
         known = set(AudioClip.objects.values_list("filename", flat=True))
-        orphans = []
-        for filename in os.listdir(media_root):
-            if not filename.endswith(".mp3"):
-                continue
-            if filename in known:
-                continue
-            orphans.append(filename)
+        # Scan the media root top level plus each provider subfolder. Other
+        # pipelines' directories (e.g. audio_gemini) are deliberately skipped.
+        scan_dirs = [("", media_root)]
+        for name in provider_names():
+            provider_dir = os.path.join(media_root, name)
+            if os.path.isdir(provider_dir):
+                scan_dirs.append((name, provider_dir))
+
+        orphans = []  # (rel_name_for_known_lookup, absolute_path)
+        for prefix, directory in scan_dirs:
+            for entry in os.listdir(directory):
+                if not entry.endswith(".mp3"):
+                    continue
+                full = os.path.join(directory, entry)
+                if not os.path.isfile(full):
+                    continue
+                rel_name = f"{prefix}/{entry}" if prefix else entry
+                if rel_name in known:
+                    continue
+                orphans.append((rel_name, full))
 
         deleted = 0
         freed_bytes = 0
-        for filename in orphans:
-            file_path = os.path.join(media_root, filename)
+        for filename, file_path in orphans:
             size = os.path.getsize(file_path) if os.path.exists(file_path) else 0
             if is_dry_run:
                 self.stdout.write(f"Would prune orphan: {filename} ({size / 1024 / 1024:.2f} MB)")

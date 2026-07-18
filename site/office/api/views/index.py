@@ -2,6 +2,7 @@ import csv
 import datetime
 import json
 import os
+import re
 import subprocess
 from collections import defaultdict
 from urllib.parse import quote
@@ -9,7 +10,6 @@ from urllib.parse import quote
 import mailchimp_marketing as MailchimpMarketing
 from distutils.util import strtobool
 from django.conf import settings
-from django.contrib.sites.models import Site
 from django.db.models import Prefetch
 from django.http import HttpResponse
 from django.template.loader import render_to_string
@@ -36,6 +36,7 @@ from office.api.serializers import UpdateNoticeSerializer
 from office.api.translations import get_csv_suffix, is_chinese
 from office.api.views import Module
 from office.api.views.ep import EPOpeningSentence
+from office.api.views.tts import get_tts_provider
 from office.canticles import DefaultCanticles, BCP1979CanticleTable, REC2011CanticleTable, EP2, EP1, S8
 from office.models import (
     UpdateNotice,
@@ -52,45 +53,47 @@ from office.utils import passage_to_citation, get_client_ip, generate_uuid_from_
 from psalter.utils import get_psalms
 
 # --- Text-to-speech configuration -------------------------------------------
-# Sourced from Django settings (env-overridable) so the model and voices can be
-# switched without code changes. Kept in module-level names so both the batch
-# (single_track) path and the legacy on-demand endpoint stay in sync.
-TTS_MODEL = getattr(settings, "TTS_MODEL", "tts-1")
-TTS_SPEED = getattr(settings, "TTS_SPEED", 0.95)  # 0.25-4.0; one value paces all voices the same
-TTS_VOICES = {
-    "leader": getattr(settings, "TTS_VOICE_LEADER", "echo"),
-    "congregation": getattr(settings, "TTS_VOICE_CONGREGATION", "coral"),
-    "reader": getattr(settings, "TTS_VOICE_READER", "ash"),
-    "html": getattr(settings, "TTS_VOICE_READER", "ash"),
-}
-# Steering prompt for pacing/style consistency. Only gpt-4o-mini-tts accepts the
-# `instructions` parameter; tts-1/tts-1-hd ignore it, so we drop it there (and
-# leave it out of the cache key) to keep the hash consistent with what is sent.
-TTS_INSTRUCTIONS = getattr(settings, "TTS_INSTRUCTIONS", "")
-TTS_SUPPORTS_INSTRUCTIONS = TTS_MODEL not in ("tts-1", "tts-1-hd")
-TTS_EFFECTIVE_INSTRUCTIONS = TTS_INSTRUCTIONS if TTS_SUPPORTS_INSTRUCTIONS else ""
-# Natural silence (seconds) inserted when concatenating clips. Encoded as
-# 24000 Hz mono mp3 to match the OpenAI TTS output so ffmpeg can `-c copy`
-# (the exact bitrate need not match; sample rate + channels + codec do).
+# The active backend (OpenAI, Fish Audio, ...) is selected by the TTS_PROVIDER
+# setting and encapsulates everything that affects the generated audio: model,
+# speed, per-role voices, steering, and output sample rate. Keeping that on the
+# provider means the clip cache key and AudioClip rows stay in sync no matter
+# which service is used. See office/api/views/tts.py.
+TTS_PROVIDER = get_tts_provider()
+# Natural silence (seconds) inserted when concatenating clips, encoded as mono
+# mp3 at the provider's output sample rate so the final concat re-encode stays
+# consistent.
 TTS_GAP_GROUP = 0.35  # between speaker turns within a module
 TTS_GAP_MODULE = 0.9  # between modules
-TTS_SILENCE_SAMPLE_RATE = 24000
+TTS_SILENCE_SAMPLE_RATE = TTS_PROVIDER.output_sample_rate
 TTS_SILENCE_BITRATE = "160k"
 
 
 def voice_for_line_type(line_type):
-    """Map a liturgical line_type to an OpenAI voice (substring match)."""
-    if not line_type:
-        return None
-    if "leader" in line_type:
-        return TTS_VOICES["leader"]
-    if "congregation" in line_type:
-        return TTS_VOICES["congregation"]
-    if "html" in line_type:
-        return TTS_VOICES["html"]
-    if "reader" in line_type:
-        return TTS_VOICES["reader"]
-    return None
+    """Map a liturgical line_type to a voice for the active TTS provider."""
+    return TTS_PROVIDER.voice_for_line_type(line_type)
+
+
+def audio_base_url():
+    """Absolute base URL for serving audio, resolved per environment.
+
+    Uses SITE_ADDRESS (e.g. https://127.0.0.1:8000 in dev, the real domain in
+    production) rather than the django.contrib.sites domain, which always points
+    at production and therefore breaks local playback of freshly generated clips.
+    """
+    return settings.SITE_ADDRESS.rstrip("/")
+
+
+def provider_media_name(filename):
+    """Media-relative name for a generated file under the active provider's
+    subfolder, e.g. ``fish/<uuid>.mp3``. Ensures the folder exists.
+
+    The returned name is what we store on AudioClip.filename and append to
+    MEDIA_URL / MEDIA_ROOT, so per-provider audio is neatly grouped and can be
+    cleared by simply removing (or targeting) that one subfolder.
+    """
+    subdir = TTS_PROVIDER.media_subdir
+    os.makedirs(os.path.join(settings.MEDIA_ROOT, subdir), exist_ok=True)
+    return f"{subdir}/{filename}"
 
 
 class UpdateNoticeView(TemplateResponseMixin, ListAPIView):
@@ -2922,16 +2925,27 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         modules = [module for module in modules if module and module["lines"]]
         return modules
 
+    # Anglican pointing / breath marks used in the psalter and canticles. They
+    # are visual reading cues (e.g. the mid-verse asterisk) and must never be
+    # spoken, or the voice literally says "asterisk".
+    _TTS_POINTING_RE = re.compile(r"[ \t]*[*\u2020\u2021\u2051][ \t]*")
+
     @staticmethod
     def normalize_tts_text(content):
-        """Apply admin-editable pronunciation overrides to TTS input only."""
+        """Prepare text for synthesis: apply admin-editable pronunciation
+        overrides and strip liturgical pointing marks. Affects TTS input (and
+        the clip hash) only, never the text shown to the user."""
         from office.models import PronunciationOverride
 
         try:
-            return PronunciationOverride.apply(content)
+            content = PronunciationOverride.apply(content)
         except Exception:
             # Never let a bad override break audio; fall back to the raw text.
-            return content
+            pass
+        # Replace pointing marks (and any spaces hugging them) with a single
+        # space so the surrounding words don't run together.
+        content = GenericDailyOfficeSerializer._TTS_POINTING_RE.sub(" ", content)
+        return content
 
     @staticmethod
     def record_audio_clip(key, filename, text, line_type, voice, kind, file_path):
@@ -2951,8 +2965,8 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 text=text,
                 line_type=line_type,
                 voice=voice,
-                model=TTS_MODEL,
-                speed=TTS_SPEED,
+                model=TTS_PROVIDER.model,
+                speed=TTS_PROVIDER.speed,
                 kind=kind,
                 duration=duration,
             )
@@ -2965,19 +2979,15 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         """Deterministic cache key. Includes every input that affects the audio
         (voice, model, speed, steering instructions, text) so any config change
         regenerates the clip."""
-        return generate_uuid_from_string(f"{voice} {TTS_MODEL} {TTS_SPEED} {TTS_EFFECTIVE_INSTRUCTIONS} {normalized}")
+        return generate_uuid_from_string(f"{voice} {TTS_PROVIDER.cache_signature()} {normalized}")
 
     @staticmethod
     def synthesize_speech(voice, text, file_path):
-        """Call OpenAI TTS and stream the result to disk. Raises on failure."""
-        from openai import OpenAI
+        """Synthesize a line via the active TTS provider and write it to disk.
 
-        client = OpenAI()
-        kwargs = {"model": TTS_MODEL, "voice": voice, "input": text, "speed": TTS_SPEED}
-        if TTS_EFFECTIVE_INSTRUCTIONS:
-            kwargs["instructions"] = TTS_EFFECTIVE_INSTRUCTIONS
-        response = client.audio.speech.create(**kwargs)
-        response.stream_to_file(file_path)
+        Raises on failure and never leaves a partial file behind.
+        """
+        TTS_PROVIDER.synthesize(voice, text, file_path)
 
     @staticmethod
     def get_or_create_clip(content, line_type, kind="line", no_generate=False):
@@ -2991,12 +3001,11 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             return None, None
         normalized = GenericDailyOfficeSerializer.normalize_tts_text(content)
         key = GenericDailyOfficeSerializer.tts_clip_key(voice, normalized)
-        filename = f"{key}.mp3"
+        filename = provider_media_name(f"{key}.mp3")
         file_path = os.path.join(settings.MEDIA_ROOT, filename)
         exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
-        domain = Site.objects.get_current().domain
         path = settings.MEDIA_URL + filename
-        file_url = f"https://{domain}{path}"
+        file_url = f"{audio_base_url()}{path}"
         if exists:
             GenericDailyOfficeSerializer.record_audio_clip(
                 key, filename, normalized, line_type, voice, kind, file_path
@@ -3021,9 +3030,12 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
 
     @staticmethod
     def get_silence_clip(seconds):
-        """Return the path to a cached silence mp3 (24kHz mono, concat-compatible)."""
+        """Return the path to a cached mono silence mp3 at the provider's sample
+        rate. The sample rate is part of the filename so switching TTS providers
+        (and thus output rates) never reuses a mismatched cached gap clip."""
         ms = int(round(seconds * 1000))
-        filename = f"silence_{ms}ms.mp3"
+        sr = TTS_SILENCE_SAMPLE_RATE
+        filename = provider_media_name(f"silence_{ms}ms_{sr}.mp3")
         file_path = os.path.join(settings.MEDIA_ROOT, filename)
         if os.path.isfile(file_path) and os.path.getsize(file_path) > 0:
             return file_path
@@ -3050,7 +3062,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         if result.returncode != 0 or not os.path.isfile(file_path):
             return None
         GenericDailyOfficeSerializer.record_audio_clip(
-            f"silence_{ms}ms", filename, "", "silence", "", "silence", file_path
+            f"silence_{TTS_PROVIDER.media_subdir}_{ms}ms_{sr}", filename, "", "silence", "", "silence", file_path
         )
         return file_path
 
@@ -3086,7 +3098,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 text_without_verses, "reader", kind="reader", no_generate=no_generate
             )
             if url:
-                uuid_match = re.search(r"/uploads/([0-9a-fA-F-]+)\.mp3", url)
+                uuid_match = re.search(r"/uploads/(?:[^/]+/)?([0-9a-fA-F-]+)\.mp3", url)
                 if uuid_match:
                     uuid = uuid_match.group(1)
                 if id is not None:
@@ -3156,19 +3168,35 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 short_track_list.append({"id": member_id, "start_time": start_time})
             start_time += get_audio_duration(track["path"])
 
+        # Segment start_times are summed from each source clip's reported length,
+        # but the concatenated file is re-encoded (see below) and ends up a hair
+        # shorter per clip; over a whole office that drift makes "jump to" land a
+        # few seconds late. Rescale the timeline to the actual output duration so
+        # timestamps line up with what the browser actually plays.
+        computed_total = start_time
+
+        def rescale_segments(actual_total):
+            if not (computed_total and actual_total and actual_total > 0):
+                return
+            scale = actual_total / computed_total
+            for segment in track_list:
+                segment["start_time"] *= scale
+            for segment in short_track_list:
+                segment["start_time"] *= scale
+
         # The silence entries are part of the concat list, so the hash naturally
         # changes when gaps change and the concatenated file is rebuilt. The
         # "cbr1" marker also busts the cache for the re-encode change below.
         full_string = "cbr1 " + " ".join(concat_paths)
         audio_id = generate_uuid_from_string(full_string)
-        filename = f"{audio_id}.mp3"
+        filename = provider_media_name(f"{audio_id}.mp3")
         file_path = os.path.join(settings.MEDIA_ROOT, filename)
         exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
-        domain = Site.objects.get_current().domain
         path = settings.MEDIA_URL + filename
-        file_url = f"https://{domain}/api/v1/audio_track/{filename}"
+        file_url = f"{audio_base_url()}/api/v1/audio_track/{filename}"
 
         if exists:
+            rescale_segments(get_audio_duration(file_path))
             return file_url, path, track_list, short_track_list
 
         temp_file_list = os.path.join(settings.MEDIA_ROOT, f"{filename}.txt")
@@ -3207,6 +3235,8 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             if os.path.exists(file_path):
                 os.remove(file_path)
             print(f"ffmpeg failed with return code {result.returncode}: {result.stderr}")
+        elif os.path.isfile(file_path):
+            rescale_segments(get_audio_duration(file_path))
 
         # Cleanup temp file list
         if os.path.exists(temp_file_list):
@@ -3860,7 +3890,7 @@ class AudioViewSet(ViewSet):
             return Response({"path": ""})
         normalized = GenericDailyOfficeSerializer.normalize_tts_text(content)
         key = GenericDailyOfficeSerializer.tts_clip_key(voice, normalized)
-        filename = f"{key}.mp3"
+        filename = provider_media_name(f"{key}.mp3")
         file_path = os.path.join(settings.MEDIA_ROOT, filename)
         exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
         file_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
