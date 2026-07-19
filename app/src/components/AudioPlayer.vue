@@ -336,10 +336,37 @@ export default {
       }
     },
     handleTrackSegmentChange() {
-      if (this.audioElement && this.currentTrackSegment !== null) {
-        this.audioElement.currentTime = parseFloat(this.currentTrackSegment);
-        this.startAudio();
-        this.currentTrackSegment = null;
+      if (!this.audioElement || this.currentTrackSegment === null) return;
+
+      const skipTo = parseFloat(this.currentTrackSegment);
+      // Reset immediately so the same segment can be selected again.
+      this.currentTrackSegment = null;
+
+      const seek = () => {
+        try {
+          this.audioElement.currentTime = skipTo;
+        } catch {
+          /* seeking not yet possible; ignore */
+        }
+      };
+
+      // iOS (Safari & Chrome both run on WebKit) only preloads media after a
+      // user-gesture play() and ignores currentTime writes until the element
+      // is seekable. Desktop is permissive, so the old "seek then play" order
+      // worked there but silently dropped the seek on iPhone. Play first to
+      // satisfy the gesture, then seek once playback has actually begun.
+      const playPromise = this.audioElement.play();
+      this.isPlaying = true;
+      this.isPaused = false;
+
+      if (playPromise && typeof playPromise.then === 'function') {
+        playPromise.then(seek).catch(() => {
+          // Autoplay/gesture rejected: still attempt the seek so a later
+          // manual Play resumes from the requested position.
+          seek();
+        });
+      } else {
+        seek();
       }
     },
     handleTimeUpdate() {
