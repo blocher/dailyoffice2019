@@ -10,8 +10,9 @@ import mailchimp_marketing as MailchimpMarketing
 from distutils.util import strtobool
 from django.conf import settings
 from django.contrib.sites.models import Site
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
 from django.http import HttpResponse
+from django.utils import timezone
 from django.template.loader import render_to_string
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
@@ -32,7 +33,7 @@ from churchcal.api.serializer import DaySerializer, CommemorationSerializer
 from churchcal.calculations import get_calendar_date, get_church_year
 from churchcal.models import Commemoration
 from office.api.line import Line
-from office.api.serializers import UpdateNoticeSerializer
+from office.api.serializers import UpdateNoticeSerializer, SiteMessageSerializer
 from office.api.translations import get_csv_suffix, is_chinese
 from office.api.views import Module
 from office.api.views.ep import EPOpeningSentence
@@ -47,6 +48,7 @@ from office.models import (
     SettingOption,
     Collect,
     Scripture,
+    SiteMessage,
 )
 from office.utils import passage_to_citation, get_client_ip, generate_uuid_from_string
 from psalter.utils import get_psalms
@@ -4085,6 +4087,25 @@ class AvailableSettings(mixins.ListModelMixin, viewsets.GenericViewSet):
         .order_by("site", "setting_type", "order")
         .all()
     )
+
+
+class SiteMessageViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = SiteMessageSerializer
+    queryset = SiteMessage.objects.all()
+
+    def get_queryset(self):
+        now = timezone.now()
+        queryset = SiteMessage.objects.filter(active=True).filter(
+            Q(expiration_date__isnull=True) | Q(expiration_date__gt=now)
+        )
+        platform = (self.request.query_params.get("platform") or "").strip().lower()
+        if platform == "ios":
+            queryset = queryset.filter(show_on_ios=True)
+        elif platform == "android":
+            queryset = queryset.filter(show_on_android=True)
+        elif platform == "web":
+            queryset = queryset.filter(show_on_web=True)
+        return queryset.order_by("order", "-created")
 
 
 # heading

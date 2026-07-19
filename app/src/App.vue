@@ -152,6 +152,7 @@
     <Loading v-if="loading" />
     <!--    <BetaNote/>-->
     <el-alert v-if="error" :title="error" type="error" />
+    <SiteMessages v-if="!loading" />
     <router-view v-if="!loading" :key="routeKey" />
     <footer
       v-if="showLinks"
@@ -211,6 +212,7 @@ import { useRoute } from 'vue-router';
 import AdditionalLinks from '@/components/AdditionalLinks.vue';
 import { ArrowDown } from '@element-plus/icons-vue';
 import DonationPrompt from '@/components/DonationPrompt.vue';
+import SiteMessages from '@/components/SiteMessages.vue';
 import { DynamicStorage } from '@/helpers/storage.js';
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
@@ -222,6 +224,7 @@ export default {
     AdditionalLinks,
     ArrowDown,
     DonationPrompt,
+    SiteMessages,
   },
   setup() {
     const route = useRoute();

@@ -182,6 +182,70 @@ class UpdateNotice(BaseModel):
         ordering = ["-version"]
 
 
+class SiteMessage(BaseModel):
+    """A dynamic announcement/notice banner controlled from the Django admin.
+
+    Replaces the previously hard-coded "New" banner in the frontend, allowing
+    staff to add, style, target, and expire messages without a code change.
+    """
+
+    TAG_COLOR_CHOICES = (
+        ("emerald", "Green"),
+        ("blue", "Blue"),
+        ("amber", "Amber / Yellow"),
+        ("red", "Red"),
+        ("purple", "Purple"),
+        ("gray", "Gray"),
+    )
+
+    tag_text = models.CharField(
+        max_length=40,
+        blank=True,
+        default="",
+        help_text="Short label shown in the colored tag (e.g. 'New'). Leave blank to hide the tag.",
+    )
+    tag_color = models.CharField(
+        max_length=20,
+        choices=TAG_COLOR_CHOICES,
+        default="emerald",
+        help_text="Color of the tag.",
+    )
+    text = models.CharField(max_length=500, help_text="The main message text.")
+    link = models.CharField(
+        max_length=1000,
+        blank=True,
+        default="",
+        help_text="Optional link destination. Use an internal path (e.g. /calendar) or a full URL (https://...).",
+    )
+
+    dismissible = models.BooleanField(default=True, help_text="Allow users to dismiss (close) the message.")
+    dismiss_permanent = models.BooleanField(
+        default=True,
+        help_text=(
+            "Only applies when the message is dismissible. When checked, a dismissed message stays hidden "
+            "forever on that device. When unchecked, it reappears on the user's next visit/session."
+        ),
+    )
+
+    show_on_web = models.BooleanField(default=True, help_text="Show this message on the website.")
+    show_on_android = models.BooleanField(default=True, help_text="Show this message in the Android app.")
+    show_on_ios = models.BooleanField(default=True, help_text="Show this message in the iOS app.")
+
+    active = models.BooleanField(default=True, help_text="Uncheck to hide the message without deleting it.")
+    expiration_date = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Optional. After this date/time the message will no longer be shown.",
+    )
+    order = models.PositiveSmallIntegerField(default=0, help_text="Lower numbers appear first.")
+
+    class Meta:
+        ordering = ["order", "-created"]
+
+    def __str__(self):
+        return self.text[:60] if self.text else "Site Message"
+
+
 class Setting(BaseModel):
     MAIN_SETTINGS = 1
     ADDITIONAL_SETTINGS = 2

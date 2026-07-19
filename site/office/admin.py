@@ -11,6 +11,7 @@ from office.models import (
     Collect,
     CollectTag,
     CollectTagCategory,
+    SiteMessage,
 )
 
 
@@ -24,6 +25,29 @@ class UpdateNoticeAdmin(admin.ModelAdmin):
     list_display = ("version", "app_mode", "web_mode")
     fields = ("version", "notice", "app_mode", "web_mode")
     list_filter = ("app_mode", "web_mode")
+
+
+class SiteMessageAdmin(admin.ModelAdmin):
+    list_display = (
+        "text",
+        "tag_text",
+        "tag_color",
+        "active",
+        "show_on_web",
+        "show_on_android",
+        "show_on_ios",
+        "expiration_date",
+        "order",
+    )
+    list_filter = ("active", "tag_color", "show_on_web", "show_on_android", "show_on_ios")
+    search_fields = ("text", "tag_text", "link")
+    list_editable = ("active", "order")
+    fieldsets = (
+        ("Content", {"fields": ("tag_text", "tag_color", "text", "link")}),
+        ("Dismissal", {"fields": ("dismissible", "dismiss_permanent")}),
+        ("Platforms", {"fields": ("show_on_web", "show_on_android", "show_on_ios")}),
+        ("Visibility", {"fields": ("active", "expiration_date", "order")}),
+    )
 
 
 class StandardOfficeDayAdmin(admin.ModelAdmin):
@@ -94,6 +118,7 @@ class CollectAdmin(admin.ModelAdmin):
 
 admin.site.register(AboutItem, AboutItemAdmin)
 admin.site.register(UpdateNotice, UpdateNoticeAdmin)
+admin.site.register(SiteMessage, SiteMessageAdmin)
 admin.site.register(StandardOfficeDay, StandardOfficeDayAdmin)
 admin.site.register(HolyDayOfficeDay, HolyDayOfficeDayAdmin)
 admin.site.register(Setting, OfficeSettingAdmin)

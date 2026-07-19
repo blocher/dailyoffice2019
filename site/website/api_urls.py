@@ -9,6 +9,7 @@ from churchcal.api.views import DayView, MonthView, YearView, AudioTrackView, Ca
 from office.api.views.index import (
     MorningPrayerView,
     AvailableSettings,
+    SiteMessageViewSet,
     MorningPrayerDisplayView,
     EveningPrayerView,
     MiddayPrayerView,
@@ -48,6 +49,7 @@ schema_view = get_schema_view(
 
 router_v1 = routers.DefaultRouter()
 router_v1.register(r"available_settings", AvailableSettings)
+router_v1.register(r"site_messages", SiteMessageViewSet, basename="site_messages")
 router_v1.register(r"psalms", PsalmsViewSet, basename="psalms")
 router_v1.register(r"scripture", ScriptureViewSet, basename="scripture2")
 
