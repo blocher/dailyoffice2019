@@ -776,11 +776,11 @@ class ReadingModule(Module):
         lines = [
             Line(citation, "subheading"),
             Line(self.audio(citation, reading.testament), "html"),
-            Line(passage_to_citation(citation, language=self.language), "leader"),
+            Line(passage_to_citation(citation, language=self.language), "reader"),
             Line("", "spacer"),
-            Line(text, "html", "leader"),
+            Line(text, "html"),
             Line("", "spacer"),
-            Line(self.closing(reading.testament), "leader"),
+            Line(self.closing(reading.testament), "reader"),
             Line(self.closing_response(reading.testament), "congregation"),
         ]
         return [line for line in lines if line and (line["content"] or line["line_type"] == "spacer")]
@@ -3291,7 +3291,11 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             """
             if not group_buffer:
                 return
-            merged_text = "\n".join(line["content"] for line in group_buffer)
+            # Join consecutive same-speaker lines with spaces (not newlines) and
+            # collapse any internal line breaks so blocks like the confession are
+            # synthesized as one flowing request instead of feeling chopped.
+            merged_text = " ".join(line["content"] for line in group_buffer)
+            merged_text = re.sub(r"\s+", " ", merged_text).strip()
             line_type = group_buffer[0]["line_type"]
             kind = "group" if len(group_buffer) > 1 else "line"
             url, path = self.get_or_create_clip(merged_text, line_type, kind=kind)
