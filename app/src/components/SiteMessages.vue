@@ -1,18 +1,18 @@
 <template>
   <div
     v-if="visibleMessages.length"
-    class="mx-auto mt-2 mb-3 max-w-[700px] space-y-2 px-4 sm:mt-3 sm:mb-4 sm:px-5"
+    class="mx-auto mt-2 mb-3 max-w-[700px] space-y-2.5 px-4 sm:mt-3 sm:mb-4 sm:px-5"
   >
     <div
       v-for="message in visibleMessages"
       :key="message.uuid"
-      class="flex flex-wrap items-center gap-2 rounded-lg border border-slate-200/90 bg-slate-50/90 px-3 py-2.5 text-left text-slate-600 shadow-sm dark:border-slate-600/50 dark:bg-slate-800/40 dark:text-slate-300 sm:gap-3"
+      class="flex flex-wrap items-center gap-2.5 rounded-xl border border-slate-200/80 bg-white/70 px-3.5 py-2.5 text-left text-slate-600 shadow-sm ring-1 ring-slate-900/3 backdrop-blur-sm transition-colors hover:border-slate-300/80 dark:border-slate-700/60 dark:bg-slate-800/50 dark:text-slate-300 dark:ring-white/4 dark:hover:border-slate-600/70 sm:gap-3 sm:px-4"
       role="region"
       aria-label="Announcement"
     >
       <span
         v-if="message.tag_text"
-        class="inline-flex shrink-0 items-center rounded-md px-2 py-1 text-[10px] font-semibold uppercase leading-none tracking-wide"
+        class="inline-flex shrink-0 items-center rounded-full px-2.5 pt-[6px] pb-1 text-[10px] font-bold uppercase leading-none tracking-wider ring-1 ring-inset ring-black/4 dark:ring-white/10"
         :class="tagClasses(message.tag_color)"
       >
         {{ message.tag_text }}
@@ -40,7 +40,7 @@
       <button
         v-if="message.dismissible"
         type="button"
-        class="ml-auto shrink-0 rounded-md px-2 py-1 text-sm leading-none text-slate-400 transition hover:bg-slate-200/80 hover:text-slate-700 dark:hover:bg-slate-700/60 dark:hover:text-slate-200"
+        class="-mr-1 ml-auto grid size-6 shrink-0 place-items-center rounded-full text-base leading-none text-slate-400 transition hover:bg-slate-200/80 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-700/60 dark:hover:text-slate-200"
         aria-label="Dismiss"
         @click="dismiss(message)"
       >
