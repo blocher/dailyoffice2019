@@ -15,6 +15,7 @@ import os
 import sys
 
 import environ
+from corsheaders.defaults import default_headers
 
 env = environ.Env(
     DEBUG=(bool, False),
@@ -99,6 +100,7 @@ INSTALLED_APPS = [
     "robots",
     "standrew",
     "patrons",
+    "analytics",
 ]
 
 if DEBUG:
@@ -120,6 +122,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "analytics.middleware.AnalyticsMiddleware",
 ]
 
 if DEBUG and not RUNNING_TESTS:
@@ -318,11 +321,14 @@ ROBOTS_SITEMAP_URLS = ["https://www.dailyoffice2019.com/sitemap.xml"]
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"]
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"],
+    "DEFAULT_THROTTLE_RATES": {"analytics_event": "240/hour"},
 }
 # IS this right?
 
 CORS_ALLOW_ALL_ORIGINS = True
+# Custom analytics headers must be explicitly allowed even with allow-all origins.
+CORS_ALLOW_HEADERS = (*default_headers, "x-client-id", "x-client-platform")
 mimetypes.add_type("image/svg+xml", ".svg", True)
 
 SWAGGER_SETTINGS = {"USE_SESSION_AUTH": False}

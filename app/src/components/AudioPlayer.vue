@@ -197,7 +197,7 @@ export default {
   components: {
     Loading,
   },
-  emits: ['dismiss-audio'],
+  emits: ['dismiss-audio', 'audio-play'],
   props: {
     audio: {
       type: Object,
@@ -238,6 +238,7 @@ export default {
       currentTime: 0, // Current playback time
       duration: 0, // Total duration
       isMobile: false, // Track if we're on mobile
+      hasEmittedPlay: false, // analytics: emit audio-play once per office load
       speeds: [
         '0.5x',
         '0.6x',
@@ -319,6 +320,10 @@ export default {
         this.audioElement.play();
         this.isPlaying = true;
         this.isPaused = false;
+        if (!this.hasEmittedPlay) {
+          this.hasEmittedPlay = true;
+          this.$emit('audio-play');
+        }
       }
     },
     pauseAudio() {

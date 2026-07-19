@@ -135,6 +135,12 @@ class AudioTrackView(APIView):
         range_header = request.META.get("HTTP_RANGE", "").strip()
         start, end = self._parse_range(range_header, file_size)
 
+        # Log an approximate "audio loaded" event on the initial request only
+        # (no range, or a range that starts at byte 0) so seeks don't recount.
+        from analytics.utils import record_audio_loaded
+
+        record_audio_loaded(request, is_initial_request=(start is None or start == 0))
+
         if start is not None:
             # Partial content: browsers require this to seek/"Jump To". We stream
             # only the requested byte window and advertise the range so the

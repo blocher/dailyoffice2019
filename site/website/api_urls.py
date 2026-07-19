@@ -32,6 +32,7 @@ from office.api.views.resources import (
     ScriptureViewSet,
     GroupedCollectsViewSet,
 )
+from analytics.views import AnalyticsEventView
 from patrons import views as patron_views
 
 schema_view = get_schema_view(
@@ -79,6 +80,7 @@ urlpatterns = [
     path(r"api/v1/calendar/<int:year>-<int:month>", MonthView.as_view(), name="month_view"),
     path(r"api/v1/calendar/<int:year>", YearView.as_view(), name="month_view"),
     path(r"api/v1/audio_track/<path:track>", AudioTrackView.as_view(), name="audio_track"),
+    path(r"api/v1/analytics/event", AnalyticsEventView.as_view(), name="analytics_event"),
     path(
         r"api/v1/audio",
         AudioViewSet.as_view({"post": "retrieve"}),

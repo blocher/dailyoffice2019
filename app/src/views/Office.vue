@@ -101,6 +101,7 @@
     :isEsvOrKjv="isEsvOrKjv"
     :isWithinSevenDays="isWithinSevenDays"
     @dismiss-audio="confirmDismissAudio"
+    @audio-play="onAudioPlay"
   />
   <AudioPlayerMessage
     v-if="
@@ -144,6 +145,8 @@ import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue';
 import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
 import { ElMessageBox } from 'element-plus';
 import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
+import { trackEvent } from '@/helpers/analytics';
+import { getCachedClientId } from '@/helpers/clientId';
 
 export default {
   name: 'Office',
@@ -191,6 +194,9 @@ export default {
       audioEnabled: true,
       isEsvOrKjv: false,
       isEnglish: false,
+      officeDateStr: null,
+      bibleTranslation: null,
+      audioPlayTracked: false,
     };
   },
   computed: {
@@ -289,6 +295,20 @@ export default {
     this.applySeasonAccentFromCard(this.card);
     this.error = false;
     this.loading = false;
+    // Fire once, on the text request only, so the include_audio_links request
+    // below is never double-counted. Backend logs the view; GA gets the mirror.
+    this.officeDateStr = today_str;
+    this.bibleTranslation = settings.bible_translation;
+    trackEvent(
+      'office_view',
+      {
+        service_type: this.serviceType,
+        office: this.office,
+        office_date: today_str,
+        translation: settings.bible_translation,
+      },
+      { toBackend: false, toGA: true }
+    );
     await this.$nextTick();
     await this.applyStoredFontSize();
     if (this.isEsvOrKjv && this.isEnglish) {
@@ -349,10 +369,31 @@ export default {
       try {
         const path = new window.URL(rawUrl, window.location.origin).pathname;
         const base = (import.meta.env.VITE_API_URL || '/').replace(/\/$/, '');
-        return `${base}/${path.replace(/^\//, '')}`;
+        // Append the anonymous client id so the backend can attribute the
+        // "audio loaded" event (the <audio> element can't send custom headers).
+        const clientId = getCachedClientId();
+        const query = clientId ? `?cid=${encodeURIComponent(clientId)}` : '';
+        return `${base}/${path.replace(/^\//, '')}${query}`;
       } catch {
         return rawUrl;
       }
+    },
+    onAudioPlay() {
+      // First real play per office load; the player guards repeat presses too.
+      if (this.audioPlayTracked) {
+        return;
+      }
+      this.audioPlayTracked = true;
+      trackEvent(
+        'audio_play',
+        {
+          service_type: this.serviceType,
+          office: this.office,
+          office_date: this.officeDateStr,
+          translation: this.bibleTranslation,
+        },
+        { toBackend: true, toGA: true }
+      );
     },
     async setAudioLinks(url) {
       url = `${url}&include_audio_links=true`;
