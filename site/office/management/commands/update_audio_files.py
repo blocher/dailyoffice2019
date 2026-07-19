@@ -9,13 +9,34 @@ from django.utils import timezone
 
 @kronos.register("55 9 * * *")
 class Command(BaseCommand):
-    help = "My shiny new management command."
+    help = "Pre-warm generated office audio for a range of days."
+
+    DEFAULT_DAYS = 9
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--days",
+            type=int,
+            default=self.DEFAULT_DAYS,
+            help=(
+                f"Number of days to warm (default: {self.DEFAULT_DAYS}). Counting starts "
+                "yesterday, or today when --skip-yesterday is set."
+            ),
+        )
+        parser.add_argument(
+            "--skip-yesterday",
+            action="store_true",
+            help="Start warming from today instead of including yesterday.",
+        )
 
     def handle(self, *args, **options):
 
+        days = options["days"]
+        skip_yesterday = options["skip_yesterday"]
+
         now = timezone.now()
-        start_date = now - timedelta(days=1)
-        date_list = [(start_date + timedelta(days=i)) for i in range(9)]
+        start_date = now if skip_yesterday else now - timedelta(days=1)
+        date_list = [(start_date + timedelta(days=i)) for i in range(days)]
 
         for day in date_list:
 

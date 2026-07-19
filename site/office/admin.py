@@ -1,5 +1,8 @@
 from adminsortable2.admin import SortableAdminMixin
-from django.contrib import admin
+from django.contrib import admin, messages
+from django.shortcuts import redirect
+from django.urls import path, reverse
+from django.utils.html import format_html
 
 from office.models import (
     AboutItem,
@@ -103,12 +106,80 @@ class PronunciationOverrideAdmin(admin.ModelAdmin):
 
 
 class AudioClipAdmin(admin.ModelAdmin):
-    list_display = ("text", "voice", "line_type", "kind", "duration", "model", "speed", "updated")
+    list_display = ("text", "voice", "line_type", "kind", "duration", "model", "speed", "updated", "clip_actions")
     list_filter = ("voice", "line_type", "kind", "model")
     search_fields = ("text", "voice", "line_type", "key", "filename")
     readonly_fields = ("key", "filename", "duration", "created", "updated")
     ordering = ("line_type", "voice", "text")
     actions = ("delete_and_rebuild",)
+
+    def get_urls(self):
+        custom = [
+            path(
+                "<uuid:object_id>/regenerate/",
+                self.admin_site.admin_view(self.regenerate_clip_view),
+                name="office_audioclip_regenerate",
+            ),
+            path(
+                "<uuid:object_id>/delete-clip/",
+                self.admin_site.admin_view(self.delete_clip_view),
+                name="office_audioclip_delete_clip",
+            ),
+        ]
+        return custom + super().get_urls()
+
+    @admin.display(description="Actions")
+    def clip_actions(self, obj):
+        return format_html(
+            '<a class="button" href="{}" '
+            "onclick=\"return confirm('Delete this clip and re-synthesize the exact same text?')\">"
+            "Regenerate</a>&nbsp;"
+            '<a class="button" style="background:#ba2121;color:#fff" href="{}" '
+            "onclick=\"return confirm('Delete this clip and its audio file?')\">Delete</a>",
+            reverse("admin:office_audioclip_regenerate", args=[obj.pk]),
+            reverse("admin:office_audioclip_delete_clip", args=[obj.pk]),
+        )
+
+    def _back(self, request):
+        return redirect(request.META.get("HTTP_REFERER") or "admin:office_audioclip_changelist")
+
+    def regenerate_clip_view(self, request, object_id):
+        clip = self.get_object(request, str(object_id))
+        if clip is None:
+            self.message_user(request, "Audio clip not found.", level=messages.ERROR)
+            return self._back(request)
+
+        import os
+
+        from mutagen.mp3 import MP3
+
+        from office.api.views.index import GenericDailyOfficeSerializer
+
+        try:
+            clip.delete_file()
+            os.makedirs(os.path.dirname(clip.file_path), exist_ok=True)
+            GenericDailyOfficeSerializer.synthesize_speech(clip.voice, clip.text, clip.file_path)
+            try:
+                clip.duration = MP3(clip.file_path).info.length
+            except Exception:
+                clip.duration = None
+            clip.save()
+            self.message_user(request, f"Regenerated audio for “{clip}”.")
+        except Exception as e:
+            self.message_user(request, f"Failed to regenerate “{clip}”: {e}", level=messages.ERROR)
+        return self._back(request)
+
+    def delete_clip_view(self, request, object_id):
+        clip = self.get_object(request, str(object_id))
+        if clip is None:
+            self.message_user(request, "Audio clip not found.", level=messages.ERROR)
+            return self._back(request)
+        label = str(clip)
+        had_file = clip.delete_file()
+        clip.delete()
+        suffix = " and its audio file" if had_file else " (no file on disk)"
+        self.message_user(request, f"Deleted “{label}”{suffix}.")
+        return self._back(request)
 
     @admin.action(description="Delete file(s) and rebuild on next request")
     def delete_and_rebuild(self, request, queryset):
