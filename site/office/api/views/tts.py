@@ -108,6 +108,15 @@ class OpenAITTSProvider(BaseTTSProvider):
     _MODELS_WITHOUT_INSTRUCTIONS = ("tts-1", "tts-1-hd")
 
     @property
+    def media_subdir(self):
+        # Versioned subfolder (distinct from the provider name) so newly
+        # generated OpenAI clips are isolated from legacy files: the original
+        # code wrote clips to the MEDIA_ROOT root and the first refactor used a
+        # plain "openai" folder. Both are now orphaned (different voices, model,
+        # and line-grouping) and can be deleted without affecting current audio.
+        return "openai_v2"
+
+    @property
     def model(self):
         return getattr(settings, "TTS_MODEL", "tts-1")
 
