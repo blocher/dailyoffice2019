@@ -2,31 +2,25 @@
   <div class="audio-player">
     <div class="controls fixed-controls" style="width: 100%">
       <div class="menu-and-buttons">
-        <span v-if="!isEsvOrKjv">
+        <span v-if="!isEnglish || !isEsvOrKjv" class="audio-message">
           <small>
-            &nbsp;&nbsp;Audio is only available if the selected bible
-            translation is the English Standard Version (ESV) or the Kings James
-            Version.&nbsp;&nbsp;
+            Audio is available when English is selected as the display language,
+            along with the English Standard Version (ESV) or King James Version
+            (KJV) Bible translation.
             <a href="/settings"> Change Settings >>> </a>
           </small>
         </span>
-        <span v-else-if="!isWithinSevenDays">
+        <span v-else-if="!isWithinSevenDays" class="audio-message">
           <small>
-            &nbsp;&nbsp;Audio is available for today and the next seven days
-            only.&nbsp;&nbsp;
+            Audio is available for today and the next seven days only.
             <a href="/"> Go to Today >>> </a>
           </small>
         </span>
-        <span v-else-if="!audioReady">
-          <small>
-            &nbsp;&nbsp;Audio is loading...it may take a few
-            moments.&nbsp;&nbsp;
-          </small>
+        <span v-else-if="!audioReady" class="audio-message">
+          <small> Audio is loading...it may take a few moments. </small>
         </span>
-        <span v-else-if="!hasAudioLinks">
-          <small>
-            &nbsp;&nbsp;Audio is not available for this office.&nbsp;&nbsp;
-          </small>
+        <span v-else-if="!hasAudioLinks" class="audio-message">
+          <small> Audio is not available for this office. </small>
         </span>
         <button
           class="dismiss-button"
@@ -54,6 +48,11 @@ export default {
     isEsvOrKjv: {
       type: Boolean,
       required: true,
+      default: false,
+    },
+    isEnglish: {
+      type: Boolean,
+      required: false,
       default: false,
     },
     isWithinSevenDays: {
@@ -98,6 +97,12 @@ export default {
 <style scoped>
 .audio-player {
   padding: 10px;
+}
+
+.audio-message {
+  display: block;
+  padding: 0 8px;
+  line-height: 1.4;
 }
 
 .audio-player .playing {

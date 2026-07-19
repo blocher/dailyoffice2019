@@ -2,6 +2,7 @@ import csv
 import datetime
 import json
 import os
+import re
 import subprocess
 from collections import defaultdict
 from urllib.parse import quote
@@ -37,6 +38,7 @@ from office.api.serializers import UpdateNoticeSerializer, SiteMessageSerializer
 from office.api.translations import get_csv_suffix, is_chinese
 from office.api.views import Module
 from office.api.views.ep import EPOpeningSentence
+from office.api.views.tts import get_tts_provider
 from office.canticles import DefaultCanticles, BCP1979CanticleTable, REC2011CanticleTable, EP2, EP1, S8
 from office.models import (
     UpdateNotice,
@@ -52,6 +54,63 @@ from office.models import (
 )
 from office.utils import passage_to_citation, get_client_ip, generate_uuid_from_string
 from psalter.utils import get_psalms
+
+# --- Text-to-speech configuration -------------------------------------------
+# The active backend (OpenAI, Fish Audio, ...) is selected by the TTS_PROVIDER
+# setting and encapsulates everything that affects the generated audio: model,
+# speed, per-role voices, steering, and output sample rate. Keeping that on the
+# provider means the clip cache key and AudioClip rows stay in sync no matter
+# which service is used. See office/api/views/tts.py.
+TTS_PROVIDER = get_tts_provider()
+# Natural silence (seconds) inserted when concatenating clips, encoded as mono
+# mp3 at the provider's output sample rate so the final concat re-encode stays
+# consistent.
+TTS_GAP_GROUP = 0.35  # between speaker turns within a module
+TTS_GAP_MODULE = 0.9  # between modules
+TTS_SILENCE_SAMPLE_RATE = TTS_PROVIDER.output_sample_rate
+TTS_SILENCE_BITRATE = "160k"
+
+
+def voice_for_line_type(line_type):
+    """Map a liturgical line_type to a voice for the active TTS provider."""
+    return TTS_PROVIDER.voice_for_line_type(line_type)
+
+
+def audio_base_url():
+    """Absolute base URL for serving audio, resolved per environment.
+
+    Uses SITE_ADDRESS (e.g. https://127.0.0.1:8000 in dev, the real domain in
+    production) rather than the django.contrib.sites domain, which always points
+    at production and therefore breaks local playback of freshly generated clips.
+    """
+    return settings.SITE_ADDRESS.rstrip("/")
+
+
+def provider_media_name(filename):
+    """Media-relative name for a generated file under the active provider's
+    subfolder, e.g. ``fish/<uuid>.mp3``. Ensures the folder exists.
+
+    The returned name is what we store on AudioClip.filename and append to
+    MEDIA_URL / MEDIA_ROOT, so per-provider audio is neatly grouped and can be
+    cleared by simply removing (or targeting) that one subfolder.
+    """
+    subdir = TTS_PROVIDER.media_subdir
+    os.makedirs(os.path.join(settings.MEDIA_ROOT, subdir), exist_ok=True)
+    return f"{subdir}/{filename}"
+
+
+# Audio is only ever generated or served for English offices read from an ESV or
+# KJV text -- the only combination the recorded voices and pronunciation
+# overrides are tuned for. Everything else must never hit the TTS backend.
+AUDIO_BIBLE_TRANSLATIONS = ("esv", "kjv")
+AUDIO_DISPLAY_LANGUAGE = "english"
+
+
+def audio_available(bible_translation, display_language):
+    """Whether audio may be generated/served for this translation + language."""
+    return (bible_translation or "").lower() in AUDIO_BIBLE_TRANSLATIONS and (
+        display_language or ""
+    ).lower() == AUDIO_DISPLAY_LANGUAGE
 
 
 class UpdateNoticeView(TemplateResponseMixin, ListAPIView):
@@ -2883,54 +2942,146 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         modules = [module for module in modules if module and module["lines"]]
         return modules
 
+    # Anglican pointing / breath marks used in the psalter and canticles. They
+    # are visual reading cues (e.g. the mid-verse asterisk) and must never be
+    # spoken, or the voice literally says "asterisk".
+    _TTS_POINTING_RE = re.compile(r"[ \t]*[*\u2020\u2021\u2051][ \t]*")
+
     @staticmethod
-    def get_line_audio_file(line, no_generate=False):
-        content = line["content"]
-        line_type = line["line_type"]
-        if "leader" in line_type:
-            voice_type = "onyx"
-        elif "congregation" in line_type:
-            voice_type = "ash"
-        elif "html" in line_type:
-            voice_type = "echo"
-        elif "reader" in line_type:
-            voice_type = "echo"
-        else:
+    def normalize_tts_text(content):
+        """Prepare text for synthesis: apply admin-editable pronunciation
+        overrides and strip liturgical pointing marks. Affects TTS input (and
+        the clip hash) only, never the text shown to the user."""
+        from office.models import PronunciationOverride
+
+        try:
+            content = PronunciationOverride.apply(content)
+        except Exception:
+            # Never let a bad override break audio; fall back to the raw text.
+            pass
+        # Replace pointing marks (and any spaces hugging them) with a single
+        # space so the surrounding words don't run together.
+        content = GenericDailyOfficeSerializer._TTS_POINTING_RE.sub(" ", content)
+        return content
+
+    @staticmethod
+    def record_audio_clip(key, filename, text, line_type, voice, kind, file_path):
+        """Ensure an AudioClip row exists for a generated file (backfill-friendly)."""
+        try:
+            from office.models import AudioClip
+
+            if AudioClip.objects.filter(key=key).exists():
+                return
+            try:
+                duration = MP3(file_path).info.length
+            except Exception:
+                duration = None
+            AudioClip.objects.create(
+                key=key,
+                filename=filename,
+                text=text,
+                line_type=line_type,
+                voice=voice,
+                model=TTS_PROVIDER.model,
+                speed=TTS_PROVIDER.speed,
+                kind=kind,
+                duration=duration,
+            )
+        except Exception:
+            # DB tracking is best-effort; audio generation must not depend on it.
+            pass
+
+    @staticmethod
+    def tts_clip_key(voice, normalized):
+        """Deterministic cache key. Includes every input that affects the audio
+        (voice, model, speed, steering instructions, text) so any config change
+        regenerates the clip."""
+        return generate_uuid_from_string(f"{voice} {TTS_PROVIDER.cache_signature()} {normalized}")
+
+    @staticmethod
+    def synthesize_speech(voice, text, file_path):
+        """Synthesize a line via the active TTS provider and write it to disk.
+
+        Raises on failure and never leaves a partial file behind.
+        """
+        TTS_PROVIDER.synthesize(voice, text, file_path)
+
+    @staticmethod
+    def get_or_create_clip(content, line_type, kind="line", no_generate=False):
+        """Normalize -> hash -> reuse-or-generate a TTS clip; record it in the DB.
+
+        Returns (file_url, media_relative_path) or (None, None) when the line is
+        not spoken or generation fails.
+        """
+        voice = voice_for_line_type(line_type)
+        if not voice:
             return None, None
-        content = content.replace("LORD", "Lord")
-        content = content.replace("Lᴏʀᴅ", "Lord")
-        audio_id = generate_uuid_from_string(f"{line_type} {voice_type} {content}")
-        filename = f"{audio_id}.mp3"
+        normalized = GenericDailyOfficeSerializer.normalize_tts_text(content)
+        key = GenericDailyOfficeSerializer.tts_clip_key(voice, normalized)
+        filename = provider_media_name(f"{key}.mp3")
         file_path = os.path.join(settings.MEDIA_ROOT, filename)
         exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
-        domain = Site.objects.get_current().domain
         path = settings.MEDIA_URL + filename
-        file_url = f"https://{domain}{path}"
+        file_url = f"{audio_base_url()}{path}"
+        if exists:
+            GenericDailyOfficeSerializer.record_audio_clip(
+                key, filename, normalized, line_type, voice, kind, file_path
+            )
+            return file_url, path
         if no_generate:
             return file_url, path
-        if exists:
-            return file_url, path
         try:
-            from pathlib import Path
-            from openai import OpenAI
-
-            client = OpenAI()
-            response = client.audio.speech.create(
-                model="tts-1",
-                voice=voice_type,
-                input=content,
-            )
-            response.stream_to_file(file_path)
-
-        except Exception as e:
+            GenericDailyOfficeSerializer.synthesize_speech(voice, normalized, file_path)
+        except Exception:
             return None, None
-        # user_name = "dailyoffice"
-        # group_name = "dailyoffice"
-        # uid = pwd.getpwnam(user_name).pw_uid
-        # gid = grp.getgrnam(group_name).gr_gid
-        # os.chmod(file_path, 0o777)
-        # os.chown(file_path, uid, gid)
+        if not (os.path.isfile(file_path) and os.path.getsize(file_path) > 0):
+            return None, None
+        GenericDailyOfficeSerializer.record_audio_clip(key, filename, normalized, line_type, voice, kind, file_path)
         return file_url, path
+
+    @staticmethod
+    def get_line_audio_file(line, no_generate=False):
+        return GenericDailyOfficeSerializer.get_or_create_clip(
+            line["content"], line["line_type"], kind="line", no_generate=no_generate
+        )
+
+    @staticmethod
+    def get_silence_clip(seconds):
+        """Return the path to a cached mono silence mp3 at the provider's sample
+        rate. The sample rate is part of the filename so switching TTS providers
+        (and thus output rates) never reuses a mismatched cached gap clip."""
+        ms = int(round(seconds * 1000))
+        sr = TTS_SILENCE_SAMPLE_RATE
+        filename = provider_media_name(f"silence_{ms}ms_{sr}.mp3")
+        file_path = os.path.join(settings.MEDIA_ROOT, filename)
+        if os.path.isfile(file_path) and os.path.getsize(file_path) > 0:
+            return file_path
+        cmd = [
+            "ffmpeg",
+            "-y",
+            "-f",
+            "lavfi",
+            "-i",
+            f"anullsrc=r={TTS_SILENCE_SAMPLE_RATE}:cl=mono",
+            "-t",
+            str(seconds),
+            "-c:a",
+            "libmp3lame",
+            "-b:a",
+            TTS_SILENCE_BITRATE,
+            "-ar",
+            str(TTS_SILENCE_SAMPLE_RATE),
+            "-ac",
+            "1",
+            file_path,
+        ]
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if result.returncode != 0 or not os.path.isfile(file_path):
+            return None
+        GenericDailyOfficeSerializer.record_audio_clip(
+            f"silence_{TTS_PROVIDER.media_subdir}_{ms}ms_{sr}", filename, "", "silence", "", "silence", file_path
+        )
+        return file_path
 
     @staticmethod
     def handle_html(line, html=False, no_generate=False, id=None, module="Reading"):
@@ -2945,22 +3096,34 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         lines = []
         audio_files = []
 
-        sentences = re.split(r"(?<=[.!?])", line)
-        for sentence in sentences:
-            soup = BeautifulSoup(sentence, "html.parser")
+        # Group readings by paragraph (not per-sentence) for a smoother, more
+        # natural read. Split after each closing </p> and keep the delimiters so
+        # the concatenated display HTML is preserved exactly.
+        paragraphs = re.split(r"(?<=</p>)", line)
+        for paragraph in paragraphs:
+            if not paragraph.strip():
+                lines.append(paragraph)
+                continue
+            soup = BeautifulSoup(paragraph, "html.parser")
             plain_text = soup.get_text()
             text_without_verses = re.sub(r"(\b\d+\b\s)", "", plain_text)
-            url, path = GenericDailyOfficeSerializer.get_line_audio_file(
-                Line(text_without_verses, "reader"), no_generate=no_generate
+            text_without_verses = re.sub(r"\s+", " ", text_without_verses).strip()
+            if not text_without_verses:
+                lines.append(paragraph)
+                continue
+            url, path = GenericDailyOfficeSerializer.get_or_create_clip(
+                text_without_verses, "reader", kind="reader", no_generate=no_generate
             )
             if url:
-                uuid_match = re.search(r"/uploads/([0-9a-fA-F-]+)\.mp3", url)
+                uuid_match = re.search(r"/uploads/(?:[^/]+/)?([0-9a-fA-F-]+)\.mp3", url)
                 if uuid_match:
                     uuid = uuid_match.group(1)
                 if id is not None:
                     id = re.sub(r"_[^_]+$", f"_{uuid}", id)
-                lines.append(f"<span data-line-id='{id}'></span>{sentence}")
+                lines.append(f"<span data-line-id='{id}'></span>{paragraph}")
                 audio_files.append({"line_id": id, "url": url, "path": path, "module": module})
+            else:
+                lines.append(paragraph)
         result = "".join(lines)
 
         if html:
@@ -2978,53 +3141,110 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             return audio.info.length
 
         tracks = [
-            {"path": f"{settings.BASE_DIR}{track["path"]}", "name": track["module"], "id": track["line_id"]}
+            {
+                "path": f"{settings.BASE_DIR}{track['path']}",
+                "name": track["module"],
+                "id": track["line_id"],
+                "member_ids": track.get("member_ids") or [track["line_id"]],
+            }
             for track in tracks
-            if "path" in track
+            if track.get("path")
         ]
         mp3_files = [track for track in tracks if os.path.exists(track["path"])]
-        full_string = " ".join([track["path"] for track in mp3_files])
-        audio_id = generate_uuid_from_string(full_string)
-        filename = f"{audio_id}.mp3"
-        file_path = os.path.join(settings.MEDIA_ROOT, filename)
-        exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
-        domain = Site.objects.get_current().domain
-        path = settings.MEDIA_URL + filename
-        file_url = f"https://{domain}/api/v1/audio_track/{filename}"
 
-        temp_file_list = os.path.join(settings.MEDIA_ROOT, f"{filename}.txt")
+        # Cached silence clips inserted between speaker groups (short) and modules
+        # (longer) for more natural pacing. They share the TTS output sample rate
+        # and channel layout so ffmpeg can still concatenate with `-c copy`.
+        gap_group_clip = GenericDailyOfficeSerializer.get_silence_clip(TTS_GAP_GROUP)
+        gap_module_clip = GenericDailyOfficeSerializer.get_silence_clip(TTS_GAP_MODULE)
+        gap_group_dur = get_audio_duration(gap_group_clip) if gap_group_clip and os.path.exists(gap_group_clip) else 0
+        gap_module_dur = (
+            get_audio_duration(gap_module_clip) if gap_module_clip and os.path.exists(gap_module_clip) else 0
+        )
+
+        concat_paths = []
         track_list = []
         short_track_list = []
         start_time = 0
         name = ""
-        if not os.path.exists(temp_file_list):
-            open(temp_file_list, "w").close()
-        # user_name = "dailyoffice"
-        # group_name = "dailyoffice"
-        # uid = pwd.getpwnam(user_name).pw_uid
-        # gid = grp.getgrnam(group_name).gr_gid
-        # os.chmod(temp_file_list, 0o777)
-        # os.chown(temp_file_list, uid, gid)
-        with open(temp_file_list, "w") as f:
-            for track in mp3_files:
-                f.write(f"file '{os.path.abspath(track['path'])}'\n")
-                # user_name = "dailyoffice"
-                # group_name = "dailyoffice"
-                # uid = pwd.getpwnam(user_name).pw_uid
-                # gid = grp.getgrnam(group_name).gr_gid
-                # os.chmod(track["path"], 0o777)
-                # os.chown(track["path"], uid, gid)
-                duration = get_audio_duration(track["path"])  # Function to get audio duration
-                if track["name"] != name:
-                    name = track["name"]
-                    track_list.append({"name": track["name"], "start_time": start_time})
-                short_track_list.append({"id": track["id"], "start_time": start_time})
-                start_time += duration
+        first = True
+        for track in mp3_files:
+            is_new_module = track["name"] != name
+            if not first:
+                gap_clip = gap_module_clip if is_new_module else gap_group_clip
+                gap_dur = gap_module_dur if is_new_module else gap_group_dur
+                if gap_clip:
+                    concat_paths.append(os.path.abspath(gap_clip))
+                    start_time += gap_dur
+            first = False
+            concat_paths.append(os.path.abspath(track["path"]))
+            if is_new_module:
+                name = track["name"]
+                track_list.append({"name": track["name"], "start_time": start_time})
+            for member_id in track["member_ids"]:
+                short_track_list.append({"id": member_id, "start_time": start_time})
+            start_time += get_audio_duration(track["path"])
+
+        # Segment start_times are summed from each source clip's reported length,
+        # but the concatenated file is re-encoded (see below) and ends up a hair
+        # shorter per clip; over a whole office that drift makes "jump to" land a
+        # few seconds late. Rescale the timeline to the actual output duration so
+        # timestamps line up with what the browser actually plays.
+        computed_total = start_time
+
+        def rescale_segments(actual_total):
+            if not (computed_total and actual_total and actual_total > 0):
+                return
+            scale = actual_total / computed_total
+            for segment in track_list:
+                segment["start_time"] *= scale
+            for segment in short_track_list:
+                segment["start_time"] *= scale
+
+        # The silence entries are part of the concat list, so the hash naturally
+        # changes when gaps change and the concatenated file is rebuilt. The
+        # "cbr1" marker also busts the cache for the re-encode change below.
+        full_string = "cbr1 " + " ".join(concat_paths)
+        audio_id = generate_uuid_from_string(full_string)
+        filename = provider_media_name(f"{audio_id}.mp3")
+        file_path = os.path.join(settings.MEDIA_ROOT, filename)
+        exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
+        path = settings.MEDIA_URL + filename
+        file_url = f"{audio_base_url()}/api/v1/audio_track/{filename}"
 
         if exists:
+            rescale_segments(get_audio_duration(file_path))
             return file_url, path, track_list, short_track_list
 
-        ffmpeg_cmd = ["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", temp_file_list, "-c", "copy", file_path]
+        temp_file_list = os.path.join(settings.MEDIA_ROOT, f"{filename}.txt")
+        with open(temp_file_list, "w") as f:
+            for concat_path in concat_paths:
+                f.write(f"file '{concat_path}'\n")
+
+        # Re-encode (rather than `-c copy`) to a single constant-bitrate mp3 with
+        # a proper header. The per-clip sources vary in bitrate (gpt-4o-mini-tts
+        # ~128k vs the silence clips), and a stream-copied VBR mp3 with no Xing
+        # header is not reliably seekable in browsers (seeks snap to the start).
+        # A uniform CBR encode restores accurate time-based seeking.
+        ffmpeg_cmd = [
+            "ffmpeg",
+            "-y",
+            "-f",
+            "concat",
+            "-safe",
+            "0",
+            "-i",
+            temp_file_list,
+            "-c:a",
+            "libmp3lame",
+            "-b:a",
+            "160k",
+            "-ar",
+            str(TTS_SILENCE_SAMPLE_RATE),
+            "-ac",
+            "1",
+            file_path,
+        ]
 
         result = subprocess.run(ffmpeg_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
@@ -3032,67 +3252,100 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             if os.path.exists(file_path):
                 os.remove(file_path)
             print(f"ffmpeg failed with return code {result.returncode}: {result.stderr}")
+        elif os.path.isfile(file_path):
+            rescale_segments(get_audio_duration(file_path))
 
         # Cleanup temp file list
-        os.remove(temp_file_list)
+        if os.path.exists(temp_file_list):
+            os.remove(temp_file_list)
 
         return file_url, path, track_list, short_track_list
 
     def get_audio(self, obj):
-        if hasattr(obj.settings, "bible_translation") and obj.settings.bible_translation not in ["esv", "kjv"]:
+        # Never synthesize/serve audio outside the supported English + ESV/KJV
+        # combination. obj.settings is a dict, so read the keys (the old
+        # attribute check silently never fired).
+        office_settings = getattr(obj, "settings", None) or {}
+        if not audio_available(
+            office_settings.get("bible_translation", "esv"),
+            office_settings.get("display_language", "english"),
+        ):
             return []
         modules = self.get_modules(obj)
+        spoken_types = [
+            "reader",
+            "leader",
+            "congregation",
+            "leader_dialogue",
+            "congregation_dialogue",
+        ]
         tracks = []
         headings = []
+
+        def flush_group(group_buffer, module_name):
+            """Synthesize a run of consecutive same-voice lines as one clip.
+
+            Grouping keeps blocks like the confession from sounding disjointed.
+            Every constituent line id is kept so the player can still scroll to
+            the block (all pointing at the group's start time).
+            """
+            if not group_buffer:
+                return
+            merged_text = "\n".join(line["content"] for line in group_buffer)
+            line_type = group_buffer[0]["line_type"]
+            kind = "group" if len(group_buffer) > 1 else "line"
+            url, path = self.get_or_create_clip(merged_text, line_type, kind=kind)
+            if path:
+                tracks.append(
+                    {
+                        "line_id": group_buffer[0]["id"],
+                        "member_ids": [line["id"] for line in group_buffer],
+                        "module": module_name,
+                        "url": url,
+                        "path": path,
+                    }
+                )
+            group_buffer.clear()
+
         for module in modules:
+            group_buffer = []
             for i, line in enumerate(module["lines"]):
                 if line["line_type"] in ["heading"]:
+                    # A heading starts a new subsection; close any open group.
+                    flush_group(group_buffer, module["name"])
                     j = i
                     look_ahead_line = module["lines"][j + 1] if j + 1 < len(module["lines"]) else None
                     while j + 1 < len(module["lines"]) and (
-                        look_ahead_line["line_type"]
-                        not in [
-                            "reader",
-                            "leader",
-                            "congregation",
-                            "leader_dialogue",
-                            "congregation_dialogue",
-                            "html",
-                        ]
+                        look_ahead_line["line_type"] not in spoken_types + ["html"]
                         or "iframe" in look_ahead_line["content"]
                     ):
                         look_ahead_line = module["lines"][j + 1]
                         j = j + 1
                     if (
-                        look_ahead_line["line_type"]
-                        not in [
-                            "reader",
-                            "leader",
-                            "congregation",
-                            "leader_dialogue",
-                            "congregation_dialogue",
-                            "html",
-                        ]
+                        look_ahead_line["line_type"] not in spoken_types + ["html"]
                         or "iframe" in look_ahead_line["content"]
                     ):
                         continue
                     headings.append({"heading": line["content"], "next_id": look_ahead_line["id"]})
 
                 if line["line_type"] == "html" and "<iframe" in line["content"]:
+                    flush_group(group_buffer, module["name"])
                     continue
                 if line["line_type"] == "html":
+                    flush_group(group_buffer, module["name"])
                     temp_id = "_".join([line["id"].split("_")[0], line["id"].split("_")[-1]])
-                    print(self.handle_html(line["content"], id=temp_id))
                     tracks = tracks + self.handle_html(line["content"], id=temp_id, module=module["name"])
-                elif line["line_type"] in [
-                    "reader",
-                    "leader",
-                    "congregation",
-                    "leader_dialogue",
-                    "congregation_dialogue",
-                ]:
-                    url, path = self.get_line_audio_file(line)
-                    tracks = tracks + [{"line_id": line["id"], "module": module["name"], "url": url, "path": path}]
+                elif line["line_type"] in spoken_types:
+                    voice = voice_for_line_type(line["line_type"])
+                    if group_buffer and voice_for_line_type(group_buffer[0]["line_type"]) != voice:
+                        flush_group(group_buffer, module["name"])
+                    group_buffer.append(line)
+                else:
+                    # Any other non-spoken line (rubric, spacer, citation, ...)
+                    # separates speaker turns and gets its own natural pause.
+                    flush_group(group_buffer, module["name"])
+            flush_group(group_buffer, module["name"])
+
         tracks = [track for track in tracks if track]
         headings = [heading for heading in headings if heading]
         single_track = self.get_single_track(tracks)
@@ -3653,35 +3906,35 @@ class AudioViewSet(ViewSet):
         content = data.get("content", None)
         if not content:
             return Response({"path": ""})
-        line_type = data.get("line_type", "leader")
-        if "leader" in line_type:
-            voice_type = "alloy"
-        elif "congregation" in line_type:
-            voice_type = "ash"
-        elif "html" in line_type:
-            voice_type = "echo"
-        else:
+        # Only English ESV/KJV offices ever get audio; honor the office's
+        # translation/language when the caller supplies them.
+        if not audio_available(
+            data.get("bible_translation", "esv"),
+            data.get("display_language", "english"),
+        ):
             return Response({"path": ""})
-        audio_id = generate_uuid_from_string(f"{line_type} {voice_type} {content}")
-        filename = f"{audio_id}.mp3"
+        line_type = data.get("line_type", "leader")
+        # Shares the same voice map, pronunciation normalization, hashing, and DB
+        # tracking as the batch path so identical text yields identical clips.
+        voice = voice_for_line_type(line_type)
+        if not voice:
+            return Response({"path": ""})
+        normalized = GenericDailyOfficeSerializer.normalize_tts_text(content)
+        key = GenericDailyOfficeSerializer.tts_clip_key(voice, normalized)
+        filename = provider_media_name(f"{key}.mp3")
         file_path = os.path.join(settings.MEDIA_ROOT, filename)
         exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
         file_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
         if exists:
+            GenericDailyOfficeSerializer.record_audio_clip(
+                key, filename, normalized, line_type, voice, "line", file_path
+            )
             return Response({"path": file_url})
         try:
-            from pathlib import Path
-            from openai import OpenAI
-
-            client = OpenAI()
-            response = client.audio.speech.create(
-                model="tts-1",
-                voice=voice_type,
-                input=content,
-            )
-            response.stream_to_file(file_path)
+            GenericDailyOfficeSerializer.synthesize_speech(voice, normalized, file_path)
         except Exception as e:
             return Response({"error": str(e)})
+        GenericDailyOfficeSerializer.record_audio_clip(key, filename, normalized, line_type, voice, "line", file_path)
         return Response({"path": file_url})
 
 
