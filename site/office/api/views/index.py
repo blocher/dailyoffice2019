@@ -65,10 +65,36 @@ TTS_PROVIDER = get_tts_provider()
 # Natural silence (seconds) inserted when concatenating clips, encoded as mono
 # mp3 at the provider's output sample rate so the final concat re-encode stays
 # consistent.
-TTS_GAP_GROUP = 0.35  # between speaker turns within a module
-TTS_GAP_MODULE = 0.9  # between modules
+TTS_GAP_GROUP = 0.5  # between speaker turns within a module
+TTS_GAP_MODULE = 1.35  # between modules
+# Short "breath" before a bare Amen/Alleluia response so it lands as an
+# immediate, natural reply to the preceding line instead of after a full
+# speaker-turn pause. Set to 0 to remove the gap entirely.
+TTS_GAP_AMEN = 0.03
 TTS_SILENCE_SAMPLE_RATE = TTS_PROVIDER.output_sample_rate
 TTS_SILENCE_BITRATE = "160k"
+
+# Bare congregational responses that should follow the previous line almost
+# immediately. Compared against normalized text (lowercased, punctuation
+# stripped, "ah-men" folded to "amen"), so "Amen.", "Ah-men.", "Alleluia.",
+# "Amen. Alleluia." and "Ah-men. Alleluia." all match.
+_IMMEDIATE_RESPONSE_TEXTS = frozenset(
+    {
+        "amen",
+        "alleluia",
+        "amen alleluia",
+    }
+)
+
+
+def is_immediate_response(text):
+    """True when ``text`` is a bare Amen/Alleluia response (see the set above)."""
+    if not text:
+        return False
+    normalized = text.lower().replace("ah-men", "amen").replace("ah men", "amen")
+    normalized = re.sub(r"[^a-z ]+", " ", normalized)
+    normalized = re.sub(r"\s+", " ", normalized).strip()
+    return normalized in _IMMEDIATE_RESPONSE_TEXTS
 
 
 def voice_for_line_type(line_type):
@@ -387,7 +413,9 @@ class Confession(Module):
                 if language_style == "traditional"
                 else self._ftl("confession_intro_long") + [Line("", "spacer")]
             )
-        return self._ftl("confession_intro_short") + [Line("", "spacer")]
+        return self._ftl("confession_intro_short") + [
+            Line("Silence is kept. All kneeling, the Officiant and People say", "rubric", silence_after=6)
+        ]
 
     def get_body_lines(self):
         language_style = self.office.settings["language_style"]
@@ -778,9 +806,9 @@ class ReadingModule(Module):
             Line(self.audio(citation, reading.testament), "html"),
             Line(passage_to_citation(citation, language=self.language), "reader"),
             Line("", "spacer"),
-            Line(text, "html"),
+            Line(text, "html", silence_before=1.3),
             Line("", "spacer"),
-            Line(self.closing(reading.testament), "reader"),
+            Line(self.closing(reading.testament), "reader", silence_before=1.3),
             Line(self.closing_response(reading.testament), "congregation"),
         ]
         return [line for line in lines if line and (line["content"] or line["line_type"] == "spacer")]
@@ -1524,6 +1552,7 @@ class Intercessions(Module):
             Line("Intercessions, Thanksgivings, and Praise", "heading"),
             Line("The Officiant may invite the People to offer intercessions and thanksgivings.", "rubric"),
             Line("A hymn or anthem may be sung.", "rubric"),
+            Line("Let us pause to offer our own intercessions and thanksgivings.", "speaker", silence_after=10),
         ]
 
 
@@ -3146,11 +3175,22 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 "name": track["module"],
                 "id": track["line_id"],
                 "member_ids": track.get("member_ids") or [track["line_id"]],
+                "text": track.get("text"),
+                "silence_before": track.get("silence_before") or 0,
+                "silence_after": track.get("silence_after") or 0,
             }
             for track in tracks
             if track.get("path")
         ]
         mp3_files = [track for track in tracks if os.path.exists(track["path"])]
+
+        def silence_pad(seconds):
+            """(clip_path, duration) for an arbitrary silence length, or (None, 0)."""
+            if not seconds or seconds <= 0:
+                return None, 0
+            clip = GenericDailyOfficeSerializer.get_silence_clip(seconds)
+            dur = get_audio_duration(clip) if clip and os.path.exists(clip) else 0
+            return clip, dur
 
         # Cached silence clips inserted between speaker groups (short) and modules
         # (longer) for more natural pacing. They share the TTS output sample rate
@@ -3161,6 +3201,9 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         gap_module_dur = (
             get_audio_duration(gap_module_clip) if gap_module_clip and os.path.exists(gap_module_clip) else 0
         )
+        # Optional near-zero gap used only before a bare Amen/Alleluia response.
+        gap_amen_clip = GenericDailyOfficeSerializer.get_silence_clip(TTS_GAP_AMEN) if TTS_GAP_AMEN > 0 else None
+        gap_amen_dur = get_audio_duration(gap_amen_clip) if gap_amen_clip and os.path.exists(gap_amen_clip) else 0
 
         concat_paths = []
         track_list = []
@@ -3171,12 +3214,27 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         for track in mp3_files:
             is_new_module = track["name"] != name
             if not first:
-                gap_clip = gap_module_clip if is_new_module else gap_group_clip
-                gap_dur = gap_module_dur if is_new_module else gap_group_dur
+                # A bare "Amen"/"Alleluia" should reply almost immediately, so it
+                # overrides the usual group/module pause with a short breath.
+                if is_immediate_response(track.get("text")):
+                    gap_clip = gap_amen_clip
+                    gap_dur = gap_amen_dur
+                elif is_new_module:
+                    gap_clip = gap_module_clip
+                    gap_dur = gap_module_dur
+                else:
+                    gap_clip = gap_group_clip
+                    gap_dur = gap_group_dur
                 if gap_clip:
                     concat_paths.append(os.path.abspath(gap_clip))
                     start_time += gap_dur
             first = False
+            # Explicit per-item silence padding (decimals allowed), added on top
+            # of the normal pacing gap. Applied even to the first track.
+            sb_clip, sb_dur = silence_pad(track["silence_before"])
+            if sb_clip:
+                concat_paths.append(os.path.abspath(sb_clip))
+                start_time += sb_dur
             concat_paths.append(os.path.abspath(track["path"]))
             if is_new_module:
                 name = track["name"]
@@ -3184,6 +3242,10 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             for member_id in track["member_ids"]:
                 short_track_list.append({"id": member_id, "start_time": start_time})
             start_time += get_audio_duration(track["path"])
+            sa_clip, sa_dur = silence_pad(track["silence_after"])
+            if sa_clip:
+                concat_paths.append(os.path.abspath(sa_clip))
+                start_time += sa_dur
 
         # Segment start_times are summed from each source clip's reported length,
         # but the concatenated file is re-encoded (see below) and ends up a hair
@@ -3278,9 +3340,21 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             "congregation",
             "leader_dialogue",
             "congregation_dialogue",
+            # Audio-only narration in the leader voice; never rendered visually.
+            "speaker",
         ]
         tracks = []
         headings = []
+        # Extra silence (seconds) accumulated from lines that do not themselves
+        # produce audio (rubrics, spacers, headings, ...) plus explicit
+        # silence_before values, to be prepended to the next real track.
+        pending_before = [0.0]
+
+        def line_silence(line, key):
+            try:
+                return float(line.get(key) or 0)
+            except (TypeError, ValueError):
+                return 0.0
 
         def flush_group(group_buffer, module_name):
             """Synthesize a run of consecutive same-voice lines as one clip.
@@ -3298,17 +3372,29 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             merged_text = re.sub(r"\s+", " ", merged_text).strip()
             line_type = group_buffer[0]["line_type"]
             kind = "group" if len(group_buffer) > 1 else "line"
+            # silence_before of the first line and silence_after of the last line
+            # bracket the whole group; any accumulated pending silence is folded
+            # into the leading pad so it lands right before this clip.
+            silence_before = pending_before[0] + line_silence(group_buffer[0], "silence_before")
+            silence_after = line_silence(group_buffer[-1], "silence_after")
             url, path = self.get_or_create_clip(merged_text, line_type, kind=kind)
             if path:
+                pending_before[0] = 0.0
                 tracks.append(
                     {
                         "line_id": group_buffer[0]["id"],
                         "member_ids": [line["id"] for line in group_buffer],
                         "module": module_name,
+                        "text": merged_text,
                         "url": url,
                         "path": path,
+                        "silence_before": silence_before,
+                        "silence_after": silence_after,
                     }
                 )
+            else:
+                # Clip generation failed: keep the silence so it is not lost.
+                pending_before[0] = silence_before + silence_after
             group_buffer.clear()
 
         for module in modules:
@@ -3334,20 +3420,46 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
 
                 if line["line_type"] == "html" and "<iframe" in line["content"]:
                     flush_group(group_buffer, module["name"])
+                    # An iframe produces no audio; carry any requested silence
+                    # forward to the next real track.
+                    pending_before[0] += line_silence(line, "silence_before") + line_silence(line, "silence_after")
                     continue
                 if line["line_type"] == "html":
                     flush_group(group_buffer, module["name"])
                     temp_id = "_".join([line["id"].split("_")[0], line["id"].split("_")[-1]])
-                    tracks = tracks + self.handle_html(line["content"], id=temp_id, module=module["name"])
+                    html_tracks = self.handle_html(line["content"], id=temp_id, module=module["name"])
+                    if html_tracks:
+                        # Pad the first/last reading clip; fold in pending silence.
+                        html_tracks[0]["silence_before"] = (
+                            (html_tracks[0].get("silence_before") or 0)
+                            + pending_before[0]
+                            + line_silence(line, "silence_before")
+                        )
+                        html_tracks[-1]["silence_after"] = (html_tracks[-1].get("silence_after") or 0) + line_silence(
+                            line, "silence_after"
+                        )
+                        pending_before[0] = 0.0
+                        tracks = tracks + html_tracks
+                    else:
+                        pending_before[0] += line_silence(line, "silence_before") + line_silence(line, "silence_after")
                 elif line["line_type"] in spoken_types:
                     voice = voice_for_line_type(line["line_type"])
-                    if group_buffer and voice_for_line_type(group_buffer[0]["line_type"]) != voice:
+                    same_voice = bool(group_buffer) and voice_for_line_type(group_buffer[0]["line_type"]) == voice
+                    # A line requesting silence before it starts a fresh clip so
+                    # the pause can be placed at exactly that point.
+                    if group_buffer and (not same_voice or line_silence(line, "silence_before") > 0):
                         flush_group(group_buffer, module["name"])
                     group_buffer.append(line)
+                    # A line requesting silence after it ends the clip here so the
+                    # pause follows it (rather than a later line in the group).
+                    if line_silence(line, "silence_after") > 0:
+                        flush_group(group_buffer, module["name"])
                 else:
                     # Any other non-spoken line (rubric, spacer, citation, ...)
-                    # separates speaker turns and gets its own natural pause.
+                    # separates speaker turns and gets its own natural pause. Its
+                    # silence padding accrues to the next real track.
                     flush_group(group_buffer, module["name"])
+                    pending_before[0] += line_silence(line, "silence_before") + line_silence(line, "silence_after")
             flush_group(group_buffer, module["name"])
 
         tracks = [track for track in tracks if track]

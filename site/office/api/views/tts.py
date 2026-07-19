@@ -73,7 +73,9 @@ class BaseTTSProvider:
         if not line_type:
             return None
         voices = self.voices
-        if "leader" in line_type:
+        # "speaker" is an audio-only narration line spoken in the leader voice
+        # (it never renders visually); see office/api/views/index.py.
+        if "leader" in line_type or "speaker" in line_type:
             return voices["leader"]
         if "congregation" in line_type:
             return voices["congregation"]

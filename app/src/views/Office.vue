@@ -40,7 +40,10 @@
     <!-- Main Content (Book Style) -->
     <div id="main" class="book-content">
       <div v-for="module in modules" :key="module.name">
-        <div v-for="line in module.lines" :key="line.content">
+        <div
+          v-for="line in module.lines.filter((l) => l.line_type !== 'speaker')"
+          :key="line.content"
+        >
           <OfficeHeading v-if="line.line_type === 'heading'" :line="line" />
           <OfficeSubheading
             v-if="line.line_type === 'subheading'"
@@ -400,6 +403,7 @@ export default {
           'leader_dialogue',
           'congregation_dialogue',
           'reader',
+          'speaker',
         ].includes(line.line_type)
       ) {
         return null;

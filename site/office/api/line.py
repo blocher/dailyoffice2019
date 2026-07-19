@@ -19,9 +19,14 @@ class Line(dict):
         preface=None,
         extra_space_before=False,
         audio_heading_content=None,
+        silence_before=None,
+        silence_after=None,
         *args,
         **kwargs,
     ):
+        # silence_before/silence_after are audio-only: extra seconds of silence
+        # (decimals allowed) inserted around this item in the generated office
+        # audio. They never affect the visual output.
         super().__init__(
             content=content,
             line_type=line_type,
@@ -29,6 +34,8 @@ class Line(dict):
             preface=preface,
             extra_space_before=extra_space_before,
             audio_heading_content=audio_heading_content,
+            silence_before=silence_before,
+            silence_after=silence_after,
             *args,
             **kwargs,
         )
@@ -51,6 +58,18 @@ def file_to_lines(filename, language="english"):
                 result["extra_space_before"] = False
             else:
                 result["extra_space_before"] = bool(strtobool(row[3].lower()))
+        # Optional audio-only silence padding (seconds, decimals allowed):
+        # column 5 = silence_before, column 6 = silence_after.
+        if len(row) > 4 and row[4].strip():
+            try:
+                result["silence_before"] = float(row[4])
+            except ValueError:
+                pass
+        if len(row) > 5 and row[5].strip():
+            try:
+                result["silence_after"] = float(row[5])
+            except ValueError:
+                pass
         return result
 
     base_filename = filename.replace(".csv", "")
