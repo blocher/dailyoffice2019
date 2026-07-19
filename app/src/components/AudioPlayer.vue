@@ -317,7 +317,15 @@ export default {
     },
     startAudio() {
       if (this.audioElement) {
-        this.audioElement.play();
+        // play() rejects (e.g. NotSupportedError) when the source can't be
+        // loaded; catch it so it doesn't surface as an uncaught promise error.
+        const playPromise = this.audioElement.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+          playPromise.catch(() => {
+            this.isPlaying = false;
+            this.isPaused = false;
+          });
+        }
         this.isPlaying = true;
         this.isPaused = false;
         if (!this.hasEmittedPlay) {

@@ -3184,6 +3184,12 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         ]
         mp3_files = [track for track in tracks if os.path.exists(track["path"])]
 
+        # No usable source clips (e.g. TTS synthesis failed): don't advertise a
+        # combined track that would 404 and crash the player. Returning an empty
+        # list makes the client treat audio as unavailable and hide the player.
+        if not mp3_files:
+            return []
+
         def silence_pad(seconds):
             """(clip_path, duration) for an arbitrary silence length, or (None, 0)."""
             if not seconds or seconds <= 0:
@@ -3320,6 +3326,12 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         # Cleanup temp file list
         if os.path.exists(temp_file_list):
             os.remove(temp_file_list)
+
+        # Only advertise the combined track if it was actually produced. If
+        # ffmpeg failed (or produced nothing), return empty so the client hides
+        # the player instead of loading a 404 and throwing NotSupportedError.
+        if not (os.path.isfile(file_path) and os.path.getsize(file_path) > 0):
+            return []
 
         return file_url, path, track_list, short_track_list
 
