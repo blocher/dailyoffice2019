@@ -89,7 +89,8 @@
       audioLinks &&
       audioLinks.length &&
       isWithinSevenDays &&
-      isEsvOrKjv
+      isEsvOrKjv &&
+      isEnglish
     "
     :audio="audioLinks"
     :audioReady="audioReady"
@@ -104,11 +105,13 @@
       audioEnabled &&
       (!isWithinSevenDays ||
         !isEsvOrKjv ||
+        !isEnglish ||
         !audioLinks ||
         !audioLinks.length ||
         !audioReady)
     "
     :isEsvOrKjv="isEsvOrKjv"
+    :isEnglish="isEnglish"
     :isWithinSevenDays="isWithinSevenDays"
     :audioReady="audioReady"
     :hasAudioLinks="!!(audioLinks && audioLinks.length)"
@@ -184,6 +187,7 @@ export default {
       audioReady: false,
       audioEnabled: true,
       isEsvOrKjv: false,
+      isEnglish: false,
     };
   },
   computed: {
@@ -252,6 +256,12 @@ export default {
       settings.bible_translation = 'esv';
     }
     this.isEsvOrKjv = ['esv', 'kjv'].includes(settings.bible_translation);
+    const displayLanguage =
+      Object.prototype.hasOwnProperty.call(settings, 'display_language') &&
+      settings.display_language
+        ? settings.display_language
+        : 'english';
+    this.isEnglish = displayLanguage === 'english';
     const queryString = Object.keys(settings)
       .map((key) => key + '=' + settings[key])
       .join('&');
@@ -278,7 +288,7 @@ export default {
     this.loading = false;
     await this.$nextTick();
     await this.applyStoredFontSize();
-    if (this.isEsvOrKjv) {
+    if (this.isEsvOrKjv && this.isEnglish) {
       this.audioLinks = await this.setAudioLinks(office_url);
     }
     this.audioReady = true;

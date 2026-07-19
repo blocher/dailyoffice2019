@@ -163,10 +163,19 @@ class FishAudioTTSProvider(BaseTTSProvider):
     # Transient HTTP statuses worth retrying: rate limiting plus server errors.
     # 4xx like 400/401/402/422 are permanent (bad key/params) and fail fast.
     _RETRY_STATUSES = frozenset({429, 500, 502, 503, 504})
+    # Models that yield interchangeable audio and so should share cached clips.
+    # The free and paid tiers of s2.1-pro produce the same voice output, so a
+    # clip generated on one must not be regenerated just because the other is
+    # configured. Only affects the cache key; the real model header is unchanged.
+    _CACHE_MODEL_ALIASES = {"s2.1-pro-free": "s2.1-pro"}
 
     @property
     def model(self):
         return getattr(settings, "FISH_TTS_MODEL", "s2.1-pro-free")
+
+    def cache_signature(self):
+        canonical_model = self._CACHE_MODEL_ALIASES.get(self.model, self.model)
+        return f"{canonical_model} {self.speed} {self.effective_instructions}"
 
     @property
     def speed(self):

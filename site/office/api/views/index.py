@@ -96,6 +96,20 @@ def provider_media_name(filename):
     return f"{subdir}/{filename}"
 
 
+# Audio is only ever generated or served for English offices read from an ESV or
+# KJV text -- the only combination the recorded voices and pronunciation
+# overrides are tuned for. Everything else must never hit the TTS backend.
+AUDIO_BIBLE_TRANSLATIONS = ("esv", "kjv")
+AUDIO_DISPLAY_LANGUAGE = "english"
+
+
+def audio_available(bible_translation, display_language):
+    """Whether audio may be generated/served for this translation + language."""
+    return (bible_translation or "").lower() in AUDIO_BIBLE_TRANSLATIONS and (
+        display_language or ""
+    ).lower() == AUDIO_DISPLAY_LANGUAGE
+
+
 class UpdateNoticeView(TemplateResponseMixin, ListAPIView):
     queryset = UpdateNotice.objects.all()
     serializer_class = UpdateNoticeSerializer
@@ -3245,7 +3259,14 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         return file_url, path, track_list, short_track_list
 
     def get_audio(self, obj):
-        if hasattr(obj.settings, "bible_translation") and obj.settings.bible_translation not in ["esv", "kjv"]:
+        # Never synthesize/serve audio outside the supported English + ESV/KJV
+        # combination. obj.settings is a dict, so read the keys (the old
+        # attribute check silently never fired).
+        office_settings = getattr(obj, "settings", None) or {}
+        if not audio_available(
+            office_settings.get("bible_translation", "esv"),
+            office_settings.get("display_language", "english"),
+        ):
             return []
         modules = self.get_modules(obj)
         spoken_types = [
@@ -3881,6 +3902,13 @@ class AudioViewSet(ViewSet):
         data = json.loads(request.body)
         content = data.get("content", None)
         if not content:
+            return Response({"path": ""})
+        # Only English ESV/KJV offices ever get audio; honor the office's
+        # translation/language when the caller supplies them.
+        if not audio_available(
+            data.get("bible_translation", "esv"),
+            data.get("display_language", "english"),
+        ):
             return Response({"path": ""})
         line_type = data.get("line_type", "leader")
         # Shares the same voice map, pronunciation normalization, hashing, and DB
