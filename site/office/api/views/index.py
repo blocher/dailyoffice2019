@@ -2630,7 +2630,7 @@ class ComplineConfession(Module):
                 Line("Confession of Sin", "heading"),
                 Line("The Officiant continues", "rubric"),
                 Line("Let us humbly confess our sins unto Almighty God.", "leader_dialogue"),
-                Line("Silence may be kept. The Officiant and People then say", "rubric"),
+                Line("Silence may be kept. The Officiant and People then say", "rubric", silence_after=6),
             ]
             + self._ftl(file_name)
             + [
