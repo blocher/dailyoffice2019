@@ -144,20 +144,27 @@
                 {{ speed }}
               </el-option>
             </el-select>
-            <el-select
-              v-model="currentTrackSegment"
-              class="segment-selector"
-              placeholder="Jump to..."
-              @change="handleTrackSegmentChange"
-            >
-              <el-option
-                v-for="segment in trackSegments"
-                :key="segment.start_time"
-                :value="segment.start_time"
+            <div class="segment-selector-wrap">
+              <el-select
+                v-model="currentTrackSegment"
+                class="segment-selector"
+                placeholder="Jump to..."
+                :disabled="seeking"
+                @change="handleTrackSegmentChange"
               >
-                {{ segment.name }}
-              </el-option>
-            </el-select>
+                <el-option
+                  v-for="segment in trackSegments"
+                  :key="segment.start_time"
+                  :value="segment.start_time"
+                >
+                  {{ segment.name }}
+                </el-option>
+              </el-select>
+              <div v-if="seeking" class="seeking-overlay">
+                <Loading :small="true" />
+                <span class="seeking-text">Jumping…</span>
+              </div>
+            </div>
             <el-switch
               v-model="enableScrolling"
               active-text="Scroll"
@@ -220,6 +227,7 @@ export default {
       currentTrackSegment: null,
       isPlaying: false,
       isPaused: false,
+      seeking: false, // true while a "Jump to" seek is waiting to become reachable
       trackSegments: [],
       detailedSegments: [],
       loading: true,
@@ -338,35 +346,79 @@ export default {
     handleTrackSegmentChange() {
       if (!this.audioElement || this.currentTrackSegment === null) return;
 
-      const skipTo = parseFloat(this.currentTrackSegment);
+      const el = this.audioElement;
+      const rawTarget = parseFloat(this.currentTrackSegment);
       // Reset immediately so the same segment can be selected again.
       this.currentTrackSegment = null;
+      if (Number.isNaN(rawTarget)) return;
 
-      const seek = () => {
+      // Seeks consistently land a beat *past* the segment start (encoder frame
+      // snapping + accumulated re-encode drift), clipping the first words. Each
+      // segment in the "Jump to" list is preceded by a silence gap, so nudging
+      // the seek slightly earlier lands in that silence instead of mid-word.
+      const LEAD_IN = 1.0;
+      const target = Math.max(0, rawTarget - LEAD_IN);
+
+      // iOS (Safari & Chrome both run on WebKit) gates seeking on a known,
+      // finite `duration` AND a `seekable` range that already reaches the
+      // target; writing currentTime too early is silently clamped to the
+      // buffered end. Short offices (e.g. Compline) buffer instantly so a
+      // single seek works, but long ones (e.g. Evening Prayer, with the
+      // lessons) aren't seekable to a late chapter yet — so we retry the seek
+      // as the media reports it can reach the target. Desktop is permissive
+      // and simply seeks on the first attempt.
+      let settled = false;
+      // Only surface the spinner if the seek can't land quickly, so short
+      // offices (Compline) never flash an indicator for an instant jump.
+      const spinnerTimer = window.setTimeout(() => {
+        if (!settled) this.seeking = true;
+      }, 250);
+      const cleanup = () => {
+        if (settled) return;
+        settled = true;
+        window.clearTimeout(spinnerTimer);
+        this.seeking = false;
+        el.removeEventListener('loadedmetadata', trySeek);
+        el.removeEventListener('durationchange', trySeek);
+        el.removeEventListener('canplay', trySeek);
+        el.removeEventListener('progress', trySeek);
+        el.removeEventListener('seeked', onSeeked);
+      };
+      const canReachTarget = () => {
+        if (!Number.isFinite(el.duration) || el.duration <= 0) return false;
+        for (let i = 0; i < el.seekable.length; i += 1) {
+          if (target <= el.seekable.end(i) + 0.25) return true;
+        }
+        return false;
+      };
+      const onSeeked = () => {
+        if (Math.abs(el.currentTime - target) < 1) cleanup();
+      };
+      const trySeek = () => {
+        if (settled || !canReachTarget()) return;
         try {
-          this.audioElement.currentTime = skipTo;
+          el.currentTime = Math.min(target, el.duration - 0.05);
         } catch {
-          /* seeking not yet possible; ignore */
+          /* not seekable yet; a later event will retry */
         }
       };
 
-      // iOS (Safari & Chrome both run on WebKit) only preloads media after a
-      // user-gesture play() and ignores currentTime writes until the element
-      // is seekable. Desktop is permissive, so the old "seek then play" order
-      // worked there but silently dropped the seek on iPhone. Play first to
-      // satisfy the gesture, then seek once playback has actually begun.
-      const playPromise = this.audioElement.play();
+      el.addEventListener('loadedmetadata', trySeek);
+      el.addEventListener('durationchange', trySeek);
+      el.addEventListener('canplay', trySeek);
+      el.addEventListener('progress', trySeek);
+      el.addEventListener('seeked', onSeeked);
+      // Safety valve so listeners don't linger forever if the seek never lands.
+      window.setTimeout(cleanup, 15000);
+
+      // Play first to satisfy iOS's user-activation requirement, then seek.
+      const playPromise = el.play();
       this.isPlaying = true;
       this.isPaused = false;
-
       if (playPromise && typeof playPromise.then === 'function') {
-        playPromise.then(seek).catch(() => {
-          // Autoplay/gesture rejected: still attempt the seek so a later
-          // manual Play resumes from the requested position.
-          seek();
-        });
+        playPromise.then(trySeek).catch(trySeek);
       } else {
-        seek();
+        trySeek();
       }
     },
     handleTimeUpdate() {
@@ -782,10 +834,39 @@ button,
 }
 
 /* Segment selector - flexible width */
-.segment-selector {
+.segment-selector-wrap {
+  position: relative;
   flex: 1;
   min-width: 0;
   touch-action: manipulation;
+}
+
+.segment-selector {
+  width: 100%;
+  min-width: 0;
+  touch-action: manipulation;
+}
+
+/* Spinner shown over the "Jump to" control while a long-office seek settles */
+.seeking-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--el-border-radius-base, 4px);
+  background: var(--color-bg);
+  border: 1px solid var(--el-border-color, #dcdfe6);
+  color: var(--color-text);
+  cursor: progress;
+  z-index: 2;
+}
+
+.seeking-text {
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.85;
 }
 
 .segment-selector :deep(.el-input__inner),
@@ -898,7 +979,7 @@ button,
     flex-shrink: 0;
   }
 
-  .segment-selector {
+  .segment-selector-wrap {
     flex: 1 1 auto;
     min-width: 130px;
     max-width: 220px;
