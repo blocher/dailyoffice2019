@@ -185,9 +185,23 @@ def extract_and_remove_parenthetical(s):
     return s.strip(), extracted
 
 
-def go(commemoration, overwrite=False):
+def _append_generation_instructions(prompt, instructions):
+    if not instructions or not instructions.strip():
+        return prompt
+    return f"{prompt}\n\nImportant additional instructions (follow carefully): {instructions.strip()}"
+
+
+def _extract_legend_title(legend_text):
+    if not legend_text:
+        return ""
+    first_line = legend_text.strip().splitlines()[0].strip()
+    return clean_string(first_line)
+
+
+def go_perplexity(commemoration, overwrite=False):
+    """Regenerate Perplexity-backed AI fields shown in the frontend."""
     person = commemoration.name
-    name = commemoration.saint_name
+    instructions = getattr(commemoration, "ai_generation_instructions", None) or ""
 
     prompts = [
         (
@@ -234,7 +248,8 @@ def go(commemoration, overwrite=False):
     for prompt in prompts:
         current_value = getattr(commemoration, prompt[0])
         if not current_value or overwrite:
-            result, citations = perplexity(prompt[2])
+            message = _append_generation_instructions(prompt[2], instructions)
+            result, citations = perplexity(message)
             print("")
             print(f"===={prompt}====")
             print("")
@@ -246,19 +261,25 @@ def go(commemoration, overwrite=False):
                 setattr(commemoration, prompt[1], citations)
             if prompt[0] == "ai_verse":
                 verse, citation = extract_and_remove_parenthetical(result)
-                setattr(commemoration, "ai_verse", verse)
-                setattr(commemoration, "ai_verse_citation", citation)
+                setattr(commemoration, "ai_verse", clean_string(verse))
+                setattr(commemoration, "ai_verse_citation", clean_string(citation))
             if prompt[0] == "ai_quote":
                 quote, author = extract_and_remove_parenthetical(result)
-                setattr(commemoration, "ai_quote", quote)
-                setattr(commemoration, "ai_quote_by", author)
+                setattr(commemoration, "ai_quote", clean_string(quote))
+                setattr(commemoration, "ai_quote_by", clean_string(author))
+            if prompt[0] == "ai_legend":
+                setattr(commemoration, "ai_legend_title", _extract_legend_title(result))
         commemoration.save()
 
-    both_sources = " Use both the uploaded files and your broader knowledge to provide comprehensive answers. If information is unavailable in the provided files, use external knowledge to fill in the gaps."
+
+def go_openai_sources(commemoration, overwrite=False):
+    """Regenerate OpenAI assistant source excerpts (not shown in frontend)."""
+    person = commemoration.name
+    name = getattr(commemoration, "saint_name", None) or person
+
     internal_sources = (
         " Use only the uploaded files. If information is unavailable in the provided files, return null."
     )
-    external_sources = " Use your broader knowledge only. Do not reference the uploaded files."
     prompts = [
         (
             "ai_martyrology",
@@ -283,6 +304,11 @@ def go(commemoration, overwrite=False):
             res = chat_with_assistant(prompt[1])
             setattr(commemoration, prompt[0], res)
             commemoration.save()
+
+
+def go(commemoration, overwrite=False):
+    go_perplexity(commemoration, overwrite=overwrite)
+    go_openai_sources(commemoration, overwrite=overwrite)
 
 
 def run_all_bios(overwrite=False):
