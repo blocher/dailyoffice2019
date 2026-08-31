@@ -1,8 +1,10 @@
 import base64
 import os
 import tempfile
+from io import StringIO
 from unittest.mock import MagicMock, patch
 
+from django.core.management import call_command
 from django.test import SimpleTestCase, TestCase, override_settings
 
 from office.api.views import index
@@ -237,3 +239,51 @@ class CombinedTrackTimingTests(TestCase):
         self.assertEqual(result[4][0]["speaker"], "leader")
         self.assertAlmostEqual(result[4][1]["start_time"], 2.55)
         self.assertAlmostEqual(result[4][1]["end_time"], 2.95)
+
+
+class RebuildAudioClipCommandTests(TestCase):
+    def test_clear_provider_uses_versioned_openai_media_subdir(self):
+        with tempfile.TemporaryDirectory() as directory:
+            provider_dir = os.path.join(directory, "openai_v2")
+            os.makedirs(provider_dir)
+            audio_path = os.path.join(provider_dir, "clip.mp3")
+            sidecar_path = f"{audio_path}.json"
+            for path in (audio_path, sidecar_path):
+                with open(path, "wb") as handle:
+                    handle.write(b"data")
+            AudioClip.objects.create(
+                key="openai-clip",
+                filename="openai_v2/clip.mp3",
+                provider="openai",
+            )
+
+            with override_settings(MEDIA_ROOT=directory):
+                call_command(
+                    "rebuild_audio_clip",
+                    "--clear-provider",
+                    "openai",
+                    "--execute",
+                    stdout=StringIO(),
+                )
+
+            self.assertFalse(os.path.exists(audio_path))
+            self.assertFalse(os.path.exists(sidecar_path))
+            self.assertFalse(AudioClip.objects.filter(key="openai-clip").exists())
+
+    def test_prune_orphans_scans_versioned_openai_media_subdir(self):
+        with tempfile.TemporaryDirectory() as directory:
+            provider_dir = os.path.join(directory, "openai_v2")
+            os.makedirs(provider_dir)
+            orphan_path = os.path.join(provider_dir, "orphan.mp3")
+            with open(orphan_path, "wb") as handle:
+                handle.write(b"orphan")
+
+            with override_settings(MEDIA_ROOT=directory):
+                call_command(
+                    "rebuild_audio_clip",
+                    "--prune-orphans",
+                    "--execute",
+                    stdout=StringIO(),
+                )
+
+            self.assertFalse(os.path.exists(orphan_path))
