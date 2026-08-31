@@ -190,6 +190,7 @@ class CombinedTrackTimingTests(TestCase):
                     "word_timing": [
                         {
                             "id": "line-one",
+                            "speaker": "leader",
                             "word": "Grace",
                             "start_time": 0.1,
                             "end_time": 0.4,
@@ -203,6 +204,7 @@ class CombinedTrackTimingTests(TestCase):
                     "word_timing": [
                         {
                             "id": "line-two",
+                            "speaker": "reader",
                             "word": "Peace",
                             "start_time": 0.2,
                             "end_time": 0.6,
@@ -232,5 +234,6 @@ class CombinedTrackTimingTests(TestCase):
 
         self.assertEqual(result[2][1]["start_time"], 2.35)
         self.assertEqual(result[4][0]["start_time"], 0.1)
+        self.assertEqual(result[4][0]["speaker"], "leader")
         self.assertAlmostEqual(result[4][1]["start_time"], 2.55)
         self.assertAlmostEqual(result[4][1]["end_time"], 2.95)

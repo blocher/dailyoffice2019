@@ -3262,7 +3262,10 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 if id is not None:
                     id = re.sub(r"_[^_]+$", f"_{uuid}", id)
                 lines.append(f"<span data-line-id='{id}'></span>{paragraph}")
-                word_timing = [{**word, "id": id} for word in GenericDailyOfficeSerializer.get_clip_word_timing(path)]
+                word_timing = [
+                    {**word, "id": id, "speaker": "reader"}
+                    for word in GenericDailyOfficeSerializer.get_clip_word_timing(path)
+                ]
                 audio_files.append(
                     {
                         "line_id": id,
@@ -3374,6 +3377,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 word_track_list.append(
                     {
                         "id": word["id"],
+                        "speaker": word.get("speaker"),
                         "word": word["word"],
                         "start_time": start_time + word["start_time"],
                         "end_time": start_time + word["end_time"],
@@ -3549,7 +3553,13 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                         if start <= char_start < end:
                             line_id = member_id
                             break
-                    word_timing.append({**word, "id": line_id})
+                    word_timing.append(
+                        {
+                            **word,
+                            "id": line_id,
+                            "speaker": TTS_PROVIDER.role_for_line_type(line_type),
+                        }
+                    )
                 pending_before[0] = 0.0
                 tracks.append(
                     {
