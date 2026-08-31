@@ -3,9 +3,11 @@ import os
 import tempfile
 from unittest.mock import MagicMock, patch
 
-from django.test import SimpleTestCase, override_settings
+from django.test import SimpleTestCase, TestCase, override_settings
 
+from office.api.views import index
 from office.api.views.tts import ElevenLabsTTSProvider
+from office.models import AudioClip
 
 
 class ElevenLabsTTSProviderTests(SimpleTestCase):
@@ -75,3 +77,152 @@ class ElevenLabsTTSProviderTests(SimpleTestCase):
         self.assertEqual(request.kwargs["json"]["model_id"], "eleven_v3")
         self.assertEqual(request.kwargs["json"]["voice_settings"]["speed"], 0.9)
         self.assertEqual(request.kwargs["params"]["output_format"], "mp3_44100_128")
+
+
+class ElevenLabsClipReuseTests(TestCase):
+    def test_reader_exact_text_reuses_any_existing_elevenlabs_voice(self):
+        with tempfile.TemporaryDirectory() as directory:
+            provider_dir = os.path.join(directory, "elevenlabs")
+            os.makedirs(provider_dir)
+            filename = "elevenlabs/existing.mp3"
+            file_path = os.path.join(directory, filename)
+            with open(file_path, "wb") as handle:
+                handle.write(b"existing-audio")
+            AudioClip.objects.create(
+                key="existing",
+                filename=filename,
+                text="The Word of the Lord.",
+                line_type="reader",
+                provider="elevenlabs",
+                voice="old-reader",
+                model="eleven_multilingual_v2",
+                kind="reader",
+                word_timing=[{"word": "The", "start_time": 0.0, "end_time": 0.2}],
+            )
+
+            provider = ElevenLabsTTSProvider()
+            with (
+                override_settings(
+                    MEDIA_ROOT=directory,
+                    MEDIA_URL="/uploads/",
+                    SITE_ADDRESS="https://example.test",
+                    ELEVENLABS_TTS_VOICES_READER=("new-reader",),
+                ),
+                patch.object(index, "TTS_PROVIDER", provider),
+                patch.object(provider, "synthesize") as synthesize,
+            ):
+                url, path = index.GenericDailyOfficeSerializer.get_or_create_clip(
+                    "The Word of the Lord.",
+                    "reader",
+                    kind="reader",
+                )
+
+            self.assertEqual(url, "https://example.test/uploads/elevenlabs/existing.mp3")
+            self.assertEqual(path, "/uploads/elevenlabs/existing.mp3")
+            synthesize.assert_not_called()
+
+    def test_word_timing_round_trips_through_sidecar_without_database_row(self):
+        timing = [{"word": "Peace", "start_time": 0.0, "end_time": 0.4}]
+        with tempfile.TemporaryDirectory() as directory:
+            provider_dir = os.path.join(directory, "elevenlabs")
+            os.makedirs(provider_dir)
+            file_path = os.path.join(provider_dir, "clip.mp3")
+            with override_settings(MEDIA_ROOT=directory, MEDIA_URL="/uploads/"):
+                index.GenericDailyOfficeSerializer.save_word_timing(file_path, timing)
+                loaded = index.GenericDailyOfficeSerializer.get_clip_word_timing("/uploads/elevenlabs/clip.mp3")
+
+        self.assertEqual(loaded, timing)
+
+
+class CombinedTrackTimingTests(TestCase):
+    def test_word_timing_preserves_module_pause_offsets(self):
+        with tempfile.TemporaryDirectory() as directory:
+            os.makedirs(os.path.join(directory, "elevenlabs"))
+            paths = {
+                "first": os.path.join(directory, "first.mp3"),
+                "second": os.path.join(directory, "second.mp3"),
+                "group_gap": os.path.join(directory, "group-gap.mp3"),
+                "module_gap": os.path.join(directory, "module-gap.mp3"),
+                "amen_gap": os.path.join(directory, "amen-gap.mp3"),
+            }
+            for path in paths.values():
+                with open(path, "wb") as handle:
+                    handle.write(b"audio")
+
+            durations = {
+                paths["first"]: 1.0,
+                paths["second"]: 2.0,
+                paths["group_gap"]: 0.5,
+                paths["module_gap"]: 1.35,
+                paths["amen_gap"]: 0.03,
+            }
+
+            def fake_mp3(path):
+                result = MagicMock()
+                result.info.length = durations.get(path, 4.35)
+                return result
+
+            def fake_silence(seconds):
+                return {
+                    0.5: paths["group_gap"],
+                    1.35: paths["module_gap"],
+                    0.03: paths["amen_gap"],
+                }[seconds]
+
+            def fake_ffmpeg(command, **_kwargs):
+                with open(command[-1], "wb") as handle:
+                    handle.write(b"combined")
+                return MagicMock(returncode=0, stderr="")
+
+            tracks = [
+                {
+                    "path": "/first.mp3",
+                    "module": "Opening",
+                    "line_id": "line-one",
+                    "word_timing": [
+                        {
+                            "id": "line-one",
+                            "word": "Grace",
+                            "start_time": 0.1,
+                            "end_time": 0.4,
+                        }
+                    ],
+                },
+                {
+                    "path": "/second.mp3",
+                    "module": "Psalm",
+                    "line_id": "line-two",
+                    "word_timing": [
+                        {
+                            "id": "line-two",
+                            "word": "Peace",
+                            "start_time": 0.2,
+                            "end_time": 0.6,
+                        }
+                    ],
+                },
+            ]
+
+            with (
+                override_settings(
+                    BASE_DIR=directory,
+                    MEDIA_ROOT=directory,
+                    MEDIA_URL="/",
+                    SITE_ADDRESS="https://example.test",
+                ),
+                patch.object(index, "TTS_PROVIDER", ElevenLabsTTSProvider()),
+                patch.object(index, "MP3", side_effect=fake_mp3),
+                patch.object(
+                    index.GenericDailyOfficeSerializer,
+                    "get_silence_clip",
+                    side_effect=fake_silence,
+                ),
+                patch.object(index.subprocess, "run", side_effect=fake_ffmpeg),
+                patch.object(index, "generate_uuid_from_string", return_value="full"),
+            ):
+                result = index.GenericDailyOfficeSerializer.get_single_track(tracks)
+
+        self.assertEqual(result[2][1]["start_time"], 2.35)
+        self.assertEqual(result[4][0]["start_time"], 0.1)
+        self.assertAlmostEqual(result[4][1]["start_time"], 2.55)
+        self.assertAlmostEqual(result[4][1]["end_time"], 2.95)

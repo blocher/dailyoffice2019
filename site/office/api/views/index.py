@@ -2994,31 +2994,118 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         return content
 
     @staticmethod
-    def record_audio_clip(key, filename, text, line_type, voice, kind, file_path):
+    def record_audio_clip(
+        key,
+        filename,
+        text,
+        line_type,
+        voice,
+        kind,
+        file_path,
+        word_timing=None,
+    ):
         """Ensure an AudioClip row exists for a generated file (backfill-friendly)."""
         try:
             from office.models import AudioClip
 
-            if AudioClip.objects.filter(key=key).exists():
-                return
             try:
                 duration = MP3(file_path).info.length
             except Exception:
                 duration = None
-            AudioClip.objects.create(
+            clip, created = AudioClip.objects.get_or_create(
                 key=key,
-                filename=filename,
-                text=text,
-                line_type=line_type,
-                voice=voice,
-                model=TTS_PROVIDER.model,
-                speed=TTS_PROVIDER.speed,
-                kind=kind,
-                duration=duration,
+                defaults={
+                    "filename": filename,
+                    "text": text,
+                    "line_type": line_type,
+                    "provider": TTS_PROVIDER.name,
+                    "voice": voice,
+                    "model": TTS_PROVIDER.model,
+                    "speed": TTS_PROVIDER.speed,
+                    "kind": kind,
+                    "duration": duration,
+                    "word_timing": word_timing or [],
+                },
             )
+            if not created:
+                update_fields = []
+                if not clip.provider:
+                    clip.provider = TTS_PROVIDER.name
+                    update_fields.append("provider")
+                if word_timing and not clip.word_timing:
+                    clip.word_timing = word_timing
+                    clip.duration = duration
+                    update_fields.extend(("word_timing", "duration"))
+                if update_fields:
+                    clip.save(update_fields=(*update_fields, "updated"))
         except Exception:
             # DB tracking is best-effort; audio generation must not depend on it.
             pass
+
+    @staticmethod
+    def word_timing_sidecar(file_path):
+        return f"{file_path}.json"
+
+    @staticmethod
+    def save_word_timing(file_path, word_timing):
+        """Persist alignment beside audio so it survives DB row maintenance."""
+        if not word_timing:
+            return
+        sidecar = GenericDailyOfficeSerializer.word_timing_sidecar(file_path)
+        temp_sidecar = f"{sidecar}.part"
+        try:
+            with open(temp_sidecar, "w", encoding="utf-8") as handle:
+                json.dump(word_timing, handle, separators=(",", ":"))
+            os.replace(temp_sidecar, sidecar)
+        except Exception:
+            if os.path.exists(temp_sidecar):
+                os.remove(temp_sidecar)
+
+    @staticmethod
+    def get_clip_word_timing(path):
+        """Load clip-relative word timing from the DB, then its sidecar."""
+        if not path:
+            return []
+        filename = path.removeprefix(settings.MEDIA_URL).lstrip("/")
+        try:
+            from office.models import AudioClip
+
+            timing = AudioClip.objects.filter(filename=filename).values_list("word_timing", flat=True).first()
+            if timing:
+                return timing
+        except Exception:
+            pass
+        sidecar = GenericDailyOfficeSerializer.word_timing_sidecar(os.path.join(settings.MEDIA_ROOT, filename))
+        try:
+            with open(sidecar, encoding="utf-8") as handle:
+                return json.load(handle)
+        except (OSError, ValueError, TypeError):
+            return []
+
+    @staticmethod
+    def find_reusable_elevenlabs_reader(normalized):
+        """Return an existing ElevenLabs reader clip regardless of its voice.
+
+        Reader voices are intentionally randomized only when a passage is first
+        generated. Once exact normalized text exists, changing or reordering the
+        configured reader list must not synthesize it again.
+        """
+        if TTS_PROVIDER.name != "elevenlabs":
+            return None
+        try:
+            from office.models import AudioClip
+
+            clips = AudioClip.objects.filter(
+                filename__startswith="elevenlabs/",
+                line_type="reader",
+                text=normalized,
+            ).order_by("-updated")
+            for clip in clips:
+                if os.path.isfile(clip.file_path) and os.path.getsize(clip.file_path) > 0:
+                    return clip
+        except Exception:
+            pass
+        return None
 
     @staticmethod
     def tts_clip_key(voice, normalized):
@@ -3033,7 +3120,9 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
 
         Raises on failure and never leaves a partial file behind.
         """
-        TTS_PROVIDER.synthesize(voice, text, file_path)
+        word_timing = TTS_PROVIDER.synthesize(voice, text, file_path) or []
+        GenericDailyOfficeSerializer.save_word_timing(file_path, word_timing)
+        return word_timing
 
     @staticmethod
     def get_or_create_clip(content, line_type, kind="line", no_generate=False):
@@ -3042,10 +3131,16 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         Returns (file_url, media_relative_path) or (None, None) when the line is
         not spoken or generation fails.
         """
+        normalized = GenericDailyOfficeSerializer.normalize_tts_text(content)
+        reusable_reader = GenericDailyOfficeSerializer.find_reusable_elevenlabs_reader(normalized)
+        if reusable_reader:
+            path = settings.MEDIA_URL + reusable_reader.filename
+            file_url = f"{audio_base_url()}{path}"
+            return file_url, path
+
         voice = voice_for_line_type(line_type)
         if not voice:
             return None, None
-        normalized = GenericDailyOfficeSerializer.normalize_tts_text(content)
         key = GenericDailyOfficeSerializer.tts_clip_key(voice, normalized)
         filename = provider_media_name(f"{key}.mp3")
         file_path = os.path.join(settings.MEDIA_ROOT, filename)
@@ -3053,19 +3148,36 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         path = settings.MEDIA_URL + filename
         file_url = f"{audio_base_url()}{path}"
         if exists:
+            word_timing = GenericDailyOfficeSerializer.get_clip_word_timing(path)
             GenericDailyOfficeSerializer.record_audio_clip(
-                key, filename, normalized, line_type, voice, kind, file_path
+                key,
+                filename,
+                normalized,
+                line_type,
+                voice,
+                kind,
+                file_path,
+                word_timing,
             )
             return file_url, path
         if no_generate:
             return file_url, path
         try:
-            GenericDailyOfficeSerializer.synthesize_speech(voice, normalized, file_path)
+            word_timing = GenericDailyOfficeSerializer.synthesize_speech(voice, normalized, file_path)
         except Exception:
             return None, None
         if not (os.path.isfile(file_path) and os.path.getsize(file_path) > 0):
             return None, None
-        GenericDailyOfficeSerializer.record_audio_clip(key, filename, normalized, line_type, voice, kind, file_path)
+        GenericDailyOfficeSerializer.record_audio_clip(
+            key,
+            filename,
+            normalized,
+            line_type,
+            voice,
+            kind,
+            file_path,
+            word_timing,
+        )
         return file_url, path
 
     @staticmethod
@@ -3150,7 +3262,16 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 if id is not None:
                     id = re.sub(r"_[^_]+$", f"_{uuid}", id)
                 lines.append(f"<span data-line-id='{id}'></span>{paragraph}")
-                audio_files.append({"line_id": id, "url": url, "path": path, "module": module})
+                word_timing = [{**word, "id": id} for word in GenericDailyOfficeSerializer.get_clip_word_timing(path)]
+                audio_files.append(
+                    {
+                        "line_id": id,
+                        "url": url,
+                        "path": path,
+                        "module": module,
+                        "word_timing": word_timing,
+                    }
+                )
             else:
                 lines.append(paragraph)
         result = "".join(lines)
@@ -3176,6 +3297,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 "id": track["line_id"],
                 "member_ids": track.get("member_ids") or [track["line_id"]],
                 "text": track.get("text"),
+                "word_timing": track.get("word_timing") or [],
                 "silence_before": track.get("silence_before") or 0,
                 "silence_after": track.get("silence_after") or 0,
             }
@@ -3214,6 +3336,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         concat_paths = []
         track_list = []
         short_track_list = []
+        word_track_list = []
         start_time = 0
         name = ""
         first = True
@@ -3247,6 +3370,15 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 track_list.append({"name": track["name"], "start_time": start_time})
             for member_id in track["member_ids"]:
                 short_track_list.append({"id": member_id, "start_time": start_time})
+            for word in track["word_timing"]:
+                word_track_list.append(
+                    {
+                        "id": word["id"],
+                        "word": word["word"],
+                        "start_time": start_time + word["start_time"],
+                        "end_time": start_time + word["end_time"],
+                    }
+                )
             start_time += get_audio_duration(track["path"])
             sa_clip, sa_dur = silence_pad(track["silence_after"])
             if sa_clip:
@@ -3268,6 +3400,9 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 segment["start_time"] *= scale
             for segment in short_track_list:
                 segment["start_time"] *= scale
+            for word in word_track_list:
+                word["start_time"] *= scale
+                word["end_time"] *= scale
 
         # The silence entries are part of the concat list, so the hash naturally
         # changes when gaps change and the concatenated file is rebuilt. The
@@ -3282,7 +3417,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
 
         if exists:
             rescale_segments(get_audio_duration(file_path))
-            return file_url, path, track_list, short_track_list
+            return file_url, path, track_list, short_track_list, word_track_list
 
         temp_file_list = os.path.join(settings.MEDIA_ROOT, f"{filename}.txt")
         with open(temp_file_list, "w") as f:
@@ -3333,7 +3468,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         if not (os.path.isfile(file_path) and os.path.getsize(file_path) > 0):
             return []
 
-        return file_url, path, track_list, short_track_list
+        return file_url, path, track_list, short_track_list, word_track_list
 
     def get_audio(self, obj):
         # Never synthesize/serve audio outside the supported English + ESV/KJV
@@ -3384,6 +3519,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             merged_text = re.sub(r"\s+", " ", merged_text).strip()
             line_type = group_buffer[0]["line_type"]
             kind = "group" if len(group_buffer) > 1 else "line"
+            normalized_merged = self.normalize_tts_text(merged_text)
             # silence_before of the first line and silence_after of the last line
             # bracket the whole group; any accumulated pending silence is folded
             # into the leading pad so it lands right before this clip.
@@ -3391,6 +3527,29 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             silence_after = line_silence(group_buffer[-1], "silence_after")
             url, path = self.get_or_create_clip(merged_text, line_type, kind=kind)
             if path:
+                # Associate each aligned word with the rendered source line.
+                # This preserves precise highlighting even when several
+                # same-role lines are synthesized as one natural-flowing clip.
+                member_ranges = []
+                search_from = 0
+                for line in group_buffer:
+                    normalized_line = self.normalize_tts_text(line["content"])
+                    start = normalized_merged.find(normalized_line, search_from)
+                    if start < 0:
+                        start = search_from
+                    end = start + len(normalized_line)
+                    member_ranges.append((start, end, line["id"]))
+                    search_from = end
+
+                word_timing = []
+                for word in self.get_clip_word_timing(path):
+                    char_start = word.get("char_start", 0)
+                    line_id = member_ranges[-1][2]
+                    for start, end, member_id in member_ranges:
+                        if start <= char_start < end:
+                            line_id = member_id
+                            break
+                    word_timing.append({**word, "id": line_id})
                 pending_before[0] = 0.0
                 tracks.append(
                     {
@@ -3400,6 +3559,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                         "text": merged_text,
                         "url": url,
                         "path": path,
+                        "word_timing": word_timing,
                         "silence_before": silence_before,
                         "silence_after": silence_after,
                     }
@@ -3455,11 +3615,13 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     else:
                         pending_before[0] += line_silence(line, "silence_before") + line_silence(line, "silence_after")
                 elif line["line_type"] in spoken_types:
-                    voice = voice_for_line_type(line["line_type"])
-                    same_voice = bool(group_buffer) and voice_for_line_type(group_buffer[0]["line_type"]) == voice
+                    role = TTS_PROVIDER.role_for_line_type(line["line_type"])
+                    same_role = (
+                        bool(group_buffer) and TTS_PROVIDER.role_for_line_type(group_buffer[0]["line_type"]) == role
+                    )
                     # A line requesting silence before it starts a fresh clip so
                     # the pause can be placed at exactly that point.
-                    if group_buffer and (not same_voice or line_silence(line, "silence_before") > 0):
+                    if group_buffer and (not same_role or line_silence(line, "silence_before") > 0):
                         flush_group(group_buffer, module["name"])
                     group_buffer.append(line)
                     # A line requesting silence after it ends the clip here so the

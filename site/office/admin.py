@@ -1,6 +1,7 @@
 from adminsortable2.admin import SortableAdminMixin
 from django.contrib import admin, messages
 from django.shortcuts import redirect
+from django.test import override_settings
 from django.urls import path, reverse
 from django.utils.html import format_html
 
@@ -130,10 +131,21 @@ class PronunciationOverrideAdmin(admin.ModelAdmin):
 
 
 class AudioClipAdmin(admin.ModelAdmin):
-    list_display = ("text", "voice", "line_type", "kind", "duration", "model", "speed", "updated", "clip_actions")
-    list_filter = ("voice", "line_type", "kind", "model")
+    list_display = (
+        "text",
+        "provider",
+        "voice",
+        "line_type",
+        "kind",
+        "duration",
+        "model",
+        "speed",
+        "updated",
+        "clip_actions",
+    )
+    list_filter = ("provider", "voice", "line_type", "kind", "model")
     search_fields = ("text", "voice", "line_type", "key", "filename")
-    readonly_fields = ("key", "filename", "duration", "created", "updated")
+    readonly_fields = ("key", "filename", "duration", "word_timing", "created", "updated")
     ordering = ("line_type", "voice", "text")
     actions = ("delete_and_rebuild",)
 
@@ -178,15 +190,31 @@ class AudioClipAdmin(admin.ModelAdmin):
         from mutagen.mp3 import MP3
 
         from office.api.views.index import GenericDailyOfficeSerializer
+        from office.api.views.tts import get_tts_provider
 
         try:
             clip.delete_file()
             os.makedirs(os.path.dirname(clip.file_path), exist_ok=True)
-            GenericDailyOfficeSerializer.synthesize_speech(clip.voice, clip.text, clip.file_path)
+            provider_name = clip.provider
+            if not provider_name:
+                folder = clip.filename.split("/", 1)[0]
+                provider_name = folder if folder in {"elevenlabs", "fish"} else "openai"
+            provider = get_tts_provider(provider_name)
+            setting_names = {
+                "openai": ("TTS_MODEL", "TTS_SPEED"),
+                "elevenlabs": ("ELEVENLABS_TTS_MODEL", "ELEVENLABS_TTS_SPEED"),
+                "fish": ("FISH_TTS_MODEL", "FISH_TTS_SPEED"),
+            }
+            model_setting, speed_setting = setting_names[provider_name]
+            with override_settings(**{model_setting: clip.model, speed_setting: clip.speed}):
+                word_timing = provider.synthesize(clip.voice, clip.text, clip.file_path) or []
+            GenericDailyOfficeSerializer.save_word_timing(clip.file_path, word_timing)
             try:
                 clip.duration = MP3(clip.file_path).info.length
             except Exception:
                 clip.duration = None
+            clip.provider = provider_name
+            clip.word_timing = word_timing
             clip.save()
             self.message_user(request, f"Regenerated audio for “{clip}”.")
         except Exception as e:

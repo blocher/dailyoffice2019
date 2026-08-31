@@ -801,13 +801,19 @@ class AudioClip(BaseModel):
 
     key = models.CharField(max_length=64, unique=True, db_index=True, help_text="uuid5 stem / filename base.")
     filename = models.CharField(max_length=128)
-    text = models.TextField(blank=True, default="", help_text="Normalized text sent to OpenAI.")
+    text = models.TextField(blank=True, default="", help_text="Normalized text sent to the TTS provider.")
     line_type = models.CharField(max_length=64, blank=True, default="")
+    provider = models.CharField(max_length=32, blank=True, default="", db_index=True)
     voice = models.CharField(max_length=32, blank=True, default="", db_index=True)
     model = models.CharField(max_length=32, blank=True, default="")
     speed = models.FloatField(default=1.0)
     kind = models.CharField(max_length=16, choices=KINDS, default="line")
     duration = models.FloatField(null=True, blank=True, help_text="Length in seconds (via mutagen).")
+    word_timing = models.JSONField(
+        blank=True,
+        default=list,
+        help_text="Provider word alignment relative to the beginning of this clip.",
+    )
 
     class Meta:
         ordering = ("line_type", "voice", "text")
@@ -829,6 +835,9 @@ class AudioClip(BaseModel):
         try:
             if self.filename and os.path.isfile(self.file_path):
                 os.remove(self.file_path)
+                sidecar = f"{self.file_path}.json"
+                if os.path.isfile(sidecar):
+                    os.remove(sidecar)
                 return True
         except OSError:
             pass

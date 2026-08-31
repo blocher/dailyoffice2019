@@ -127,7 +127,8 @@ class Command(BaseCommand):
             files = [
                 f
                 for f in os.listdir(media_root)
-                if os.path.isfile(os.path.join(media_root, f)) and (f.endswith(".mp3") or f.endswith(".mp3.txt"))
+                if os.path.isfile(os.path.join(media_root, f))
+                and (f.endswith(".mp3") or f.endswith(".mp3.txt") or f.endswith(".mp3.json"))
             ]
             rows = AudioClip.objects.exclude(filename__contains="/")
         else:
@@ -136,7 +137,9 @@ class Command(BaseCommand):
             if os.path.isdir(target_dir):
                 for entry in os.listdir(target_dir):
                     full = os.path.join(target_dir, entry)
-                    if os.path.isfile(full) and (entry.endswith(".mp3") or entry.endswith(".mp3.txt")):
+                    if os.path.isfile(full) and (
+                        entry.endswith(".mp3") or entry.endswith(".mp3.txt") or entry.endswith(".mp3.json")
+                    ):
                         files.append(entry)
             rows = AudioClip.objects.filter(filename__startswith=f"{name}/")
 
