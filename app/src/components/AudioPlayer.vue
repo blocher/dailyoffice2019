@@ -1,22 +1,20 @@
 <template>
   <div class="audio-player">
     <div class="controls fixed-controls" style="width: 100%">
-      <div v-if="!isEsvOrKjv || !isWithinSevenDays" class="menu-and-buttons">
+      <div v-if="!isEsvOrKjv || !isWithinSevenDays" class="availability-note">
         <span v-if="!isEsvOrKjv">
           <small>
-            &nbsp;&nbsp;Audio is only available if the selected bible
-            translation is the English Standard Version (ESV) or the Kings James
-            Version.&nbsp;&nbsp;
-            <a href="/settings"> Change Settings >>> </a>
+            Audio is only available if the selected Bible translation is the
+            English Standard Version (ESV) or the Kings James Version.
+            <a href="/settings">Change settings</a>
           </small>
         </span>
         <span v-if="!isWithinSevenDays">
           <small>
-            &nbsp;&nbsp;Audio is for today and the next seven days.&nbsp;&nbsp;
-            <a href="/"> Go to Today >>> </a>
+            Audio is for today and the next seven days.
+            <a href="/">Go to today</a>
           </small>
         </span>
-        <!-- Dismiss button (not-playing state only) -->
         <button
           v-if="!isPlaying"
           class="dismiss-button"
@@ -27,11 +25,12 @@
         </button>
       </div>
 
-      <div v-if="isEsvOrKjv" class="menu-and-buttons">
-        <!-- Mini Player View (Mobile Only - Collapsed) -->
-        <div
+      <div v-if="isEsvOrKjv" class="player-shell">
+        <button
           v-if="isMobile && !isExpanded"
           class="mini-player"
+          type="button"
+          aria-label="Expand audio player"
           @click="toggleExpanded"
         >
           <div class="mini-player-content">
@@ -41,40 +40,34 @@
               />
             </span>
             <span class="mini-player-text">
-              <template v-if="isPlaying && !isPaused">
-                Now Playing
-                <span class="mini-player-time">
-                  {{ formattedCurrentTime }} / {{ formattedDuration }}
-                </span>
-              </template>
-              <template v-else> Audio Available </template>
+              <span class="mini-player-eyebrow">
+                {{ isPlaying ? 'Now listening' : 'Audio ready' }}
+              </span>
+              <strong>{{ currentSectionName }}</strong>
+            </span>
+            <span class="mini-player-time">
+              {{ formattedCurrentTime }} / {{ formattedDuration }}
             </span>
             <span class="mini-player-expand">
               <font-awesome-icon :icon="faChevronUp" />
             </span>
-            <!-- Dismiss X on mini player (only when not playing) -->
-            <button
-              v-if="!isPlaying"
-              class="dismiss-button dismiss-button--mini"
-              title="Hide audio controls"
-              @click.stop="$emit('dismiss-audio')"
-            >
-              <font-awesome-icon :icon="faXmark" />
-            </button>
           </div>
-          <!-- Progress bar when playing -->
-          <div v-if="isPlaying && !isPaused" class="mini-player-progress">
+          <div class="mini-player-progress">
             <div
               class="mini-player-progress-bar"
               :style="{ width: progressPercentage + '%' }"
             ></div>
           </div>
-        </div>
+        </button>
 
-        <!-- Full Player View (Always on Desktop, Expandable on Mobile) -->
         <template v-else>
-          <div v-if="isMobile" class="player-header">
-            <span class="player-title">Audio Player</span>
+          <div class="player-header">
+            <div class="player-now">
+              <span class="player-kicker">
+                {{ isPlaying ? 'Now listening' : 'Daily Office audio' }}
+              </span>
+              <strong class="player-section">{{ currentSectionName }}</strong>
+            </div>
             <div class="player-header-actions">
               <button
                 v-if="!isPlaying"
@@ -85,92 +78,116 @@
                 <font-awesome-icon :icon="faXmark" />
               </button>
               <button
+                v-if="isMobile"
                 class="collapse-button"
-                @click="toggleExpanded"
                 title="Minimize"
+                type="button"
+                @click="toggleExpanded"
               >
                 <font-awesome-icon :icon="faChevronDown" />
               </button>
             </div>
           </div>
-          <div class="button-row">
-            <el-button-group v-if="audioReady" class="playback-buttons">
-              <el-button
-                size="large"
-                type="primary"
-                :disabled="isPlaying && !isPaused"
-                @click="startAudio"
-                class="play-button"
-              >
-                <span class="button-icon">
-                  <font-awesome-icon :icon="faPlay" />
-                </span>
-                <span class="button-text">Play</span>
-              </el-button>
-              <el-button
-                size="large"
-                type="primary"
-                :disabled="!isPlaying"
-                @click="pauseAudio"
-                class="pause-button"
-              >
-                <span class="button-icon">
-                  <font-awesome-icon :icon="faPause" />
-                </span>
-                <span class="button-text">Pause</span>
-              </el-button>
-            </el-button-group>
-            <Loading v-if="loading" :small="true" />
 
-            <!-- Desktop dismiss button (inline in button row) -->
-            <button
-              v-if="!isMobile && !isPlaying"
-              class="dismiss-button dismiss-button--desktop"
-              title="Hide audio controls"
-              @click.stop="$emit('dismiss-audio')"
-            >
-              <font-awesome-icon :icon="faXmark" />
-            </button>
-          </div>
-
-          <div class="controls-row" v-if="audioReady && trackSegments.length">
-            <el-select
-              v-model="playbackSpeed"
-              class="speed-selector"
-              placeholder="Speed"
-              @change="handleSpeedChange"
-            >
-              <el-option v-for="speed in speeds" :key="speed" :value="speed">
-                {{ speed }}
-              </el-option>
-            </el-select>
-            <div class="segment-selector-wrap">
-              <el-select
-                v-model="currentTrackSegment"
-                class="segment-selector"
-                placeholder="Jump to..."
-                :disabled="seeking"
-                @change="handleTrackSegmentChange"
+          <div v-if="audioReady" class="player-main">
+            <div class="transport-controls">
+              <button
+                class="skip-button"
+                type="button"
+                title="Back 15 seconds"
+                aria-label="Back 15 seconds"
+                @click="skipBy(-15)"
               >
-                <el-option
-                  v-for="segment in trackSegments"
-                  :key="segment.start_time"
-                  :value="segment.start_time"
-                >
-                  {{ segment.name }}
-                </el-option>
-              </el-select>
-              <div v-if="seeking" class="seeking-overlay">
-                <Loading :small="true" />
-                <span class="seeking-text">Jumping…</span>
+                <font-awesome-icon :icon="faBackwardStep" />
+                <span>15</span>
+              </button>
+              <button
+                class="primary-play-button"
+                type="button"
+                :aria-label="isPlaying ? 'Pause audio' : 'Play audio'"
+                @click="togglePlayback"
+              >
+                <font-awesome-icon :icon="isPlaying ? faPause : faPlay" />
+              </button>
+              <button
+                class="skip-button"
+                type="button"
+                title="Forward 15 seconds"
+                aria-label="Forward 15 seconds"
+                @click="skipBy(15)"
+              >
+                <font-awesome-icon :icon="faForwardStep" />
+                <span>15</span>
+              </button>
+            </div>
+
+            <div class="timeline">
+              <input
+                class="timeline-slider"
+                type="range"
+                min="0"
+                :max="duration || 0"
+                step="0.01"
+                :value="currentTime"
+                aria-label="Audio progress"
+                :style="{ '--progress': progressPercentage + '%' }"
+                @input="seekToTime"
+              />
+              <div class="timeline-times" aria-hidden="true">
+                <span>{{ formattedCurrentTime }}</span>
+                <span>-{{ formattedRemainingTime }}</span>
               </div>
             </div>
-            <el-switch
-              v-model="enableScrolling"
-              active-text="Scroll"
-              inactive-text="No Scroll"
-              class="scroll-toggle"
-            ></el-switch>
+
+            <div v-if="trackSegments.length" class="utility-controls">
+              <el-select
+                v-model="playbackSpeed"
+                class="speed-selector"
+                aria-label="Playback speed"
+                @change="handleSpeedChange"
+              >
+                <el-option v-for="speed in speeds" :key="speed" :value="speed">
+                  {{ speed }}
+                </el-option>
+              </el-select>
+              <div class="segment-selector-wrap">
+                <span class="control-label">Section</span>
+                <el-select
+                  v-model="currentTrackSegment"
+                  class="segment-selector"
+                  placeholder="Jump to…"
+                  :disabled="seeking"
+                  aria-label="Jump to section"
+                  @change="handleTrackSegmentChange"
+                >
+                  <el-option
+                    v-for="segment in trackSegments"
+                    :key="segment.start_time"
+                    :value="segment.start_time"
+                  >
+                    {{ segment.name }}
+                  </el-option>
+                </el-select>
+                <div v-if="seeking" class="seeking-overlay">
+                  <Loading :small="true" />
+                  <span class="seeking-text">Jumping…</span>
+                </div>
+              </div>
+              <button
+                class="scroll-control"
+                :class="{ 'scroll-control--active': enableScrolling }"
+                type="button"
+                :aria-pressed="enableScrolling"
+                @click="enableScrolling = !enableScrolling"
+              >
+                <span class="scroll-control-mark" aria-hidden="true">↹</span>
+                Auto-scroll
+              </button>
+            </div>
+          </div>
+          <div v-else class="player-loading">
+            <Loading :small="true" />
+            <span>Preparing audio…</span>
           </div>
         </template>
       </div>
@@ -200,7 +217,7 @@ export default {
   emits: ['dismiss-audio', 'audio-play'],
   props: {
     audio: {
-      type: Object,
+      type: Array,
       required: true,
     },
     audioReady: {
@@ -230,6 +247,8 @@ export default {
       seeking: false, // true while a "Jump to" seek is waiting to become reachable
       trackSegments: [],
       detailedSegments: [],
+      wordSegments: [],
+      activeWordIndex: -1,
       loading: true,
       audioElement: null,
       playbackSpeed: '1.0x',
@@ -287,6 +306,8 @@ export default {
 
       this.trackSegments = this.audio[2];
       this.detailedSegments = this.audio[3];
+      this.wordSegments = Array.isArray(this.audio[4]) ? this.audio[4] : [];
+      this.$nextTick(() => this.prepareWordElements());
     }
 
     this.$nextTick(() => this.emitVisibility());
@@ -302,6 +323,7 @@ export default {
         this.handleTimeUpdate
       );
     }
+    this.clearActiveWord();
     this.emitVisibility(false);
   },
   methods: {
@@ -334,6 +356,13 @@ export default {
         }
       }
     },
+    togglePlayback() {
+      if (this.isPlaying) {
+        this.pauseAudio();
+      } else {
+        this.startAudio();
+      }
+    },
     pauseAudio() {
       if (this.audioElement) {
         this.audioElement.pause();
@@ -347,7 +376,29 @@ export default {
         this.audioElement.currentTime = 0;
         this.isPlaying = false;
         this.isPaused = false;
+        this.currentTime = 0;
+        this.clearActiveWord();
       }
+    },
+    skipBy(seconds) {
+      if (!this.audioElement) return;
+      const duration = Number.isFinite(this.audioElement.duration)
+        ? this.audioElement.duration
+        : this.duration;
+      this.audioElement.currentTime = Math.min(
+        Math.max(0, this.audioElement.currentTime + seconds),
+        duration || 0
+      );
+      this.currentTime = this.audioElement.currentTime;
+      this.updateActiveWord(this.currentTime);
+    },
+    seekToTime(event) {
+      if (!this.audioElement) return;
+      const target = Number.parseFloat(event.target.value);
+      if (Number.isNaN(target)) return;
+      this.audioElement.currentTime = target;
+      this.currentTime = target;
+      this.updateActiveWord(target);
     },
     handleSpeedChange() {
       if (this.audioElement) {
@@ -438,6 +489,10 @@ export default {
       if (!this.audioElement) return;
 
       this.currentTime = this.audioElement.currentTime;
+      if (this.wordSegments.length) {
+        this.updateActiveWord(this.currentTime);
+        return;
+      }
 
       if (!this.isPlaying || !this.enableScrolling) return;
 
@@ -447,6 +502,181 @@ export default {
           this.scrollToSegment(segment.id);
           break;
         }
+      }
+    },
+    normalizeWord(word) {
+      return String(word || '')
+        .normalize('NFKD')
+        .replace(/\p{M}/gu, '')
+        .toLocaleLowerCase()
+        .replace(/[^\p{L}\p{N}]/gu, '');
+    },
+    findLineAnchor(lineId) {
+      return Array.from(document.querySelectorAll('[data-line-id]')).find(
+        (element) => element.dataset.lineId === lineId
+      );
+    },
+    wordContainerForAnchor(anchor) {
+      if (!anchor) return null;
+      if (anchor.nextElementSibling) return anchor.nextElementSibling;
+      const parent = anchor.parentElement;
+      if (!parent) return null;
+      return Array.from(parent.children).find((element) =>
+        element.matches('p, div')
+      );
+    },
+    prepareWordElements() {
+      if (!this.wordSegments.length) return;
+      const segmentsByLine = new Map();
+      this.wordSegments.forEach((segment, index) => {
+        if (!segment.id) return;
+        if (!segmentsByLine.has(segment.id)) {
+          segmentsByLine.set(segment.id, []);
+        }
+        segmentsByLine.get(segment.id).push({ ...segment, index });
+      });
+
+      segmentsByLine.forEach((segments, lineId) => {
+        if (
+          segments.every((segment) =>
+            document.querySelector(`[data-audio-word-index='${segment.index}']`)
+          )
+        ) {
+          return;
+        }
+        const container = this.wordContainerForAnchor(
+          this.findLineAnchor(lineId)
+        );
+        if (!container) return;
+
+        const walker = document.createTreeWalker(
+          container,
+          window.NodeFilter.SHOW_TEXT
+        );
+        const tokens = [];
+        let node = walker.nextNode();
+        while (node) {
+          if (!node.parentElement?.closest('.audio-word')) {
+            for (const match of node.data.matchAll(
+              /[\p{L}\p{N}]+(?:[’'][\p{L}\p{N}]+)*/gu
+            )) {
+              tokens.push({
+                node,
+                start: match.index,
+                end: match.index + match[0].length,
+                normalized: this.normalizeWord(match[0]),
+              });
+            }
+          }
+          node = walker.nextNode();
+        }
+
+        const matches = [];
+        let cursor = 0;
+        segments.forEach((segment) => {
+          const normalized = this.normalizeWord(segment.word);
+          let tokenIndex = tokens.findIndex(
+            (token, index) =>
+              index >= cursor &&
+              index < cursor + 24 &&
+              token.normalized === normalized
+          );
+          if (tokenIndex < 0) {
+            while (
+              cursor < tokens.length &&
+              /^\d+$/.test(tokens[cursor].normalized) &&
+              !/^\d+$/.test(normalized)
+            ) {
+              cursor += 1;
+            }
+            tokenIndex = cursor < tokens.length ? cursor : -1;
+          }
+          if (tokenIndex >= 0) {
+            matches.push({ ...tokens[tokenIndex], index: segment.index });
+            cursor = tokenIndex + 1;
+          }
+        });
+
+        const matchesByNode = new Map();
+        matches.forEach((match) => {
+          if (!matchesByNode.has(match.node)) {
+            matchesByNode.set(match.node, []);
+          }
+          matchesByNode.get(match.node).push(match);
+        });
+        matchesByNode.forEach((nodeMatches) => {
+          nodeMatches
+            .sort((left, right) => right.start - left.start)
+            .forEach((match) => {
+              const range = document.createRange();
+              range.setStart(match.node, match.start);
+              range.setEnd(match.node, match.end);
+              const word = document.createElement('span');
+              word.className = 'audio-word';
+              word.dataset.audioWordIndex = String(match.index);
+              range.surroundContents(word);
+            });
+        });
+      });
+    },
+    activeWordAt(time) {
+      let low = 0;
+      let high = this.wordSegments.length - 1;
+      let candidate = -1;
+      while (low <= high) {
+        const middle = Math.floor((low + high) / 2);
+        if (this.wordSegments[middle].start_time <= time) {
+          candidate = middle;
+          low = middle + 1;
+        } else {
+          high = middle - 1;
+        }
+      }
+      if (
+        candidate >= 0 &&
+        time <= this.wordSegments[candidate].end_time + 0.08
+      ) {
+        return candidate;
+      }
+      return -1;
+    },
+    clearActiveWord() {
+      if (this.activeWordIndex < 0) return;
+      const previous = document.querySelector(
+        `[data-audio-word-index='${this.activeWordIndex}']`
+      );
+      previous?.classList.remove('audio-word--active');
+      previous?.removeAttribute('aria-current');
+      this.activeWordIndex = -1;
+    },
+    updateActiveWord(time) {
+      const nextIndex = this.activeWordAt(time);
+      if (nextIndex === this.activeWordIndex) return;
+      this.clearActiveWord();
+      if (nextIndex < 0) return;
+
+      this.activeWordIndex = nextIndex;
+      const active = document.querySelector(
+        `[data-audio-word-index='${nextIndex}']`
+      );
+      if (!active) {
+        this.scrollToSegment(this.wordSegments[nextIndex].id);
+        return;
+      }
+      active.classList.add('audio-word--active');
+      active.setAttribute('aria-current', 'true');
+      if (this.enableScrolling && this.isPlaying) {
+        this.followActiveWord(active);
+      }
+    },
+    followActiveWord(element) {
+      const rect = element.getBoundingClientRect();
+      const controlsHeight =
+        this.$el?.querySelector('.controls.fixed-controls')?.offsetHeight || 0;
+      const safeTop = window.innerHeight * 0.24;
+      const safeBottom = window.innerHeight - controlsHeight - 48;
+      if (rect.top < safeTop || rect.bottom > safeBottom) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     },
     scrollToSegment(segmentId) {
@@ -481,6 +711,20 @@ export default {
     },
     formattedDuration() {
       return this.formatTime(this.duration);
+    },
+    formattedRemainingTime() {
+      return this.formatTime(Math.max(0, this.duration - this.currentTime));
+    },
+    currentSectionName() {
+      if (!this.trackSegments.length) {
+        return this.office.replaceAll('_', ' ');
+      }
+      let current = this.trackSegments[0];
+      for (const segment of this.trackSegments) {
+        if (segment.start_time > this.currentTime) break;
+        current = segment;
+      }
+      return current.name;
     },
     progressPercentage() {
       if (!this.duration) return 0;
@@ -1094,5 +1338,386 @@ button,
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+/* 12ui direction C: warm book paper, restrained gold, quiet green transport. */
+.controls.fixed-controls {
+  left: 50%;
+  right: auto;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  width: min(calc(100% - 24px), 1120px) !important;
+  padding: 14px 18px;
+  transform: translateX(-50%);
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--color-text) 14%, transparent);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--color-bg) 96%, transparent);
+  box-shadow:
+    0 18px 50px rgba(48, 40, 28, 0.16),
+    0 2px 8px rgba(48, 40, 28, 0.08);
+  backdrop-filter: blur(18px);
+}
+
+.player-shell {
+  display: grid;
+  grid-template-columns: minmax(140px, 190px) minmax(0, 1fr);
+  align-items: center;
+  gap: 22px;
+  width: 100%;
+}
+
+.player-header {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  margin: 0;
+  padding: 0 16px 0 2px;
+  border-right: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
+}
+
+.player-now,
+.mini-player-text {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  text-align: left;
+}
+
+.player-kicker,
+.mini-player-eyebrow,
+.control-label {
+  color: color-mix(in srgb, var(--color-text) 58%, transparent);
+  font-size: 0.68rem;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.player-section {
+  display: block;
+  margin-top: 5px;
+  overflow: hidden;
+  color: var(--color-text);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.08rem;
+  font-weight: 500;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.player-main {
+  display: grid;
+  grid-template-columns: auto minmax(180px, 1fr) auto;
+  align-items: center;
+  gap: 22px;
+  min-width: 0;
+}
+
+.transport-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.primary-play-button,
+.skip-button,
+.scroll-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  cursor: pointer;
+}
+
+.primary-play-button {
+  width: 54px;
+  height: 54px;
+  flex: 0 0 54px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent-color) 72%, #315844);
+  color: var(--accent-contrast);
+  font-size: 1.1rem;
+  box-shadow: 0 6px 18px
+    color-mix(in srgb, var(--accent-color) 26%, transparent);
+  transition:
+    transform 160ms ease,
+    filter 160ms ease;
+}
+
+.primary-play-button:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.primary-play-button:active {
+  transform: scale(0.96);
+}
+
+.skip-button {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
+  font-size: 0.9rem;
+}
+
+.skip-button span {
+  position: absolute;
+  bottom: 2px;
+  font-size: 0.48rem !important;
+  font-weight: 700;
+}
+
+.skip-button:hover {
+  background: color-mix(in srgb, var(--color-text) 7%, transparent);
+  color: var(--color-text);
+}
+
+.timeline {
+  min-width: 0;
+}
+
+.timeline-slider {
+  width: 100%;
+  height: 30px;
+  margin: 0;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.timeline-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--accent-color) 0 var(--progress),
+    color-mix(in srgb, var(--color-text) 16%, transparent) var(--progress) 100%
+  );
+}
+
+.timeline-slider::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-text) 16%, transparent);
+}
+
+.timeline-slider::-moz-range-progress {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--accent-color);
+}
+
+.timeline-slider::-webkit-slider-thumb {
+  width: 16px;
+  height: 16px;
+  margin-top: -6px;
+  appearance: none;
+  border: 2px solid var(--color-bg);
+  border-radius: 50%;
+  background: var(--accent-color);
+  box-shadow: 0 1px 5px rgba(50, 40, 24, 0.28);
+}
+
+.timeline-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--color-bg);
+  border-radius: 50%;
+  background: var(--accent-color);
+}
+
+.timeline-times {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -3px;
+  color: color-mix(in srgb, var(--color-text) 54%, transparent);
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.utility-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.utility-controls .speed-selector {
+  width: 76px;
+  min-width: 76px;
+}
+
+.utility-controls .segment-selector-wrap {
+  display: grid;
+  grid-template-columns: auto minmax(104px, 160px);
+  align-items: center;
+  gap: 7px;
+  max-width: none;
+}
+
+.scroll-control {
+  min-height: 40px;
+  gap: 6px;
+  padding: 0 12px;
+  border: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--color-bg) 80%, transparent);
+  color: color-mix(in srgb, var(--color-text) 72%, transparent);
+  font-size: 0.78rem !important;
+  white-space: nowrap;
+}
+
+.scroll-control--active {
+  border-color: color-mix(in srgb, var(--accent-color) 34%, transparent);
+  background: color-mix(in srgb, var(--accent-color) 17%, var(--color-bg));
+  color: var(--color-text);
+}
+
+.scroll-control-mark {
+  color: var(--accent-color);
+  font-size: 1rem !important;
+}
+
+.availability-note,
+.player-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.mini-player {
+  width: 100%;
+  padding: 3px 2px;
+  border: 0;
+}
+
+.mini-player-content {
+  gap: 10px;
+}
+
+.mini-player-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent-color) 16%, var(--color-bg));
+}
+
+.mini-player-time {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+:global(.audio-word) {
+  position: relative;
+  margin-inline: -0.015em;
+  padding-inline: 0.015em;
+  border-radius: 0.2em;
+  transition:
+    color 100ms ease,
+    background-color 140ms ease,
+    box-shadow 140ms ease;
+}
+
+:global(.audio-word--active) {
+  background: color-mix(in srgb, var(--accent-color) 22%, transparent);
+  box-shadow:
+    0 0 0 0.13em color-mix(in srgb, var(--accent-color) 22%, transparent),
+    inset 0 -0.08em 0 color-mix(in srgb, var(--accent-color) 65%, transparent);
+  color: color-mix(in srgb, var(--color-text) 88%, var(--accent-color));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :global(.audio-word),
+  .primary-play-button {
+    transition: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .player-shell {
+    grid-template-columns: 130px minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .player-main {
+    grid-template-columns: auto minmax(150px, 1fr);
+    gap: 14px;
+  }
+
+  .utility-controls {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .controls.fixed-controls {
+    bottom: max(8px, env(safe-area-inset-bottom));
+    width: calc(100% - 16px) !important;
+    padding: 12px 14px;
+    border-radius: 14px;
+  }
+
+  .player-shell {
+    display: block;
+  }
+
+  .player-header {
+    margin-bottom: 10px;
+    padding: 0 0 9px;
+    border-right: 0;
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--color-text) 9%, transparent);
+  }
+
+  .player-main {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 10px 14px;
+  }
+
+  .primary-play-button {
+    width: 50px;
+    height: 50px;
+    flex-basis: 50px;
+  }
+
+  .utility-controls {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr) auto;
+    width: 100%;
+  }
+
+  .utility-controls .speed-selector {
+    width: 72px;
+    min-width: 72px;
+  }
+
+  .utility-controls .segment-selector-wrap {
+    display: block;
+    min-width: 0;
+  }
+
+  .control-label {
+    display: none;
+  }
+
+  .scroll-control {
+    min-width: 44px;
+    padding: 0 10px;
+    font-size: 0 !important;
+  }
+
+  .scroll-control-mark {
+    font-size: 1.05rem !important;
+  }
 }
 </style>
