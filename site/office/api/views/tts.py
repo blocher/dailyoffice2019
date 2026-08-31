@@ -13,9 +13,11 @@ bookkeeping rows stay in sync automatically. Switch backends with the
 model/voice knobs.
 """
 
+import base64
 import logging
 import os
 import random
+import re
 import time
 
 import requests
@@ -59,6 +61,11 @@ class BaseTTSProvider:
         raise NotImplementedError
 
     @property
+    def supports_alignment(self):
+        """Whether synthesis returns word-level timing metadata."""
+        return False
+
+    @property
     def output_sample_rate(self):
         """Sample rate (Hz) of generated clips; silence gaps match this."""
         return 24000
@@ -68,22 +75,29 @@ class BaseTTSProvider:
         """Steering prompt actually sent (empty when unsupported)."""
         return ""
 
-    def voice_for_line_type(self, line_type):
-        """Map a liturgical line_type to a voice via substring match."""
+    def role_for_line_type(self, line_type):
+        """Map a liturgical line type to its configured speaking role."""
         if not line_type:
             return None
-        voices = self.voices
         # "speaker" is an audio-only narration line spoken in the leader voice
         # (it never renders visually); see office/api/views/index.py.
         if "leader" in line_type or "speaker" in line_type:
-            return voices["leader"]
+            return "leader"
         if "congregation" in line_type:
-            return voices["congregation"]
-        if "html" in line_type:
-            return voices["html"]
-        if "reader" in line_type:
-            return voices["reader"]
+            return "congregation"
+        if "html" in line_type or "reader" in line_type:
+            return "reader"
         return None
+
+    def voice_for_line_type(self, line_type):
+        """Choose a configured voice for a liturgical line type."""
+        role = self.role_for_line_type(line_type)
+        if not role:
+            return None
+        configured = self.voices[role]
+        if isinstance(configured, (list, tuple)):
+            return random.choice(configured) if configured else None
+        return configured
 
     def cache_signature(self):
         """Everything besides the voice and text that affects the audio bytes.
@@ -95,7 +109,8 @@ class BaseTTSProvider:
     def synthesize(self, voice, text, file_path):
         """Generate speech for ``text`` in ``voice`` and write mp3 to file_path.
 
-        Must raise on failure and must not leave a partial file behind.
+        Returns word timing dictionaries when supported, otherwise an empty
+        list. Must raise on failure and must not leave a partial file behind.
         """
         raise NotImplementedError
 
@@ -157,6 +172,138 @@ class OpenAITTSProvider(BaseTTSProvider):
             kwargs["instructions"] = instructions
         response = client.audio.speech.create(**kwargs)
         response.stream_to_file(file_path)
+        return []
+
+
+class ElevenLabsTTSProvider(BaseTTSProvider):
+    """ElevenLabs v2/v3 TTS with character alignment grouped into words."""
+
+    name = "elevenlabs"
+    ENDPOINT = "https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/with-timestamps"
+    _RETRY_STATUSES = frozenset({429, 500, 502, 503, 504})
+
+    @property
+    def model(self):
+        return getattr(settings, "ELEVENLABS_TTS_MODEL", "eleven_multilingual_v2")
+
+    @property
+    def speed(self):
+        return getattr(settings, "ELEVENLABS_TTS_SPEED", 1.0)
+
+    @property
+    def output_sample_rate(self):
+        return 44100
+
+    @property
+    def supports_alignment(self):
+        return True
+
+    @property
+    def voices(self):
+        configured_readers = getattr(settings, "ELEVENLABS_TTS_VOICES_READER", ())
+        if isinstance(configured_readers, str):
+            configured_readers = configured_readers.split(",")
+        readers = tuple(voice.strip() for voice in configured_readers if voice.strip())[:10]
+        return {
+            "leader": getattr(settings, "ELEVENLABS_TTS_VOICE_LEADER", ""),
+            "congregation": getattr(settings, "ELEVENLABS_TTS_VOICE_CONGREGATION", ""),
+            "reader": readers,
+        }
+
+    @property
+    def timeout(self):
+        return getattr(settings, "ELEVENLABS_TTS_TIMEOUT", 120)
+
+    @property
+    def max_retries(self):
+        return getattr(settings, "ELEVENLABS_TTS_MAX_RETRIES", 4)
+
+    def synthesize(self, voice, text, file_path):
+        api_key = getattr(settings, "ELEVENLABS_API_KEY", "")
+        if not api_key:
+            raise RuntimeError("ELEVENLABS_API_KEY is not configured.")
+        if not voice:
+            raise RuntimeError("No ElevenLabs voice configured for this role.")
+
+        payload = {
+            "text": text,
+            "model_id": self.model,
+            "voice_settings": {"speed": self.speed},
+            "apply_text_normalization": "auto",
+        }
+        headers = {
+            "xi-api-key": api_key,
+            "Content-Type": "application/json",
+        }
+        max_attempts = max(1, self.max_retries + 1)
+        for attempt in range(1, max_attempts + 1):
+            try:
+                response = requests.post(
+                    self.ENDPOINT.format(voice_id=voice),
+                    params={"output_format": "mp3_44100_128"},
+                    json=payload,
+                    headers=headers,
+                    timeout=self.timeout,
+                )
+                response.raise_for_status()
+                data = response.json()
+                audio = base64.b64decode(data["audio_base64"])
+                tmp_path = f"{file_path}.part"
+                try:
+                    with open(tmp_path, "wb") as handle:
+                        handle.write(audio)
+                    os.replace(tmp_path, file_path)
+                except Exception:
+                    if os.path.exists(tmp_path):
+                        os.remove(tmp_path)
+                    raise
+                alignment = data.get("alignment") or data.get("normalized_alignment")
+                return self.words_from_alignment(alignment)
+            except requests.HTTPError as exc:
+                status = exc.response.status_code if exc.response is not None else None
+                if status not in self._RETRY_STATUSES or attempt >= max_attempts:
+                    raise
+            except (requests.ConnectionError, requests.Timeout):
+                if attempt >= max_attempts:
+                    raise
+
+            delay = min(2 ** (attempt - 1), 30)
+            logger.warning(
+                "ElevenLabs TTS retry (attempt %d/%d) in %ds",
+                attempt,
+                max_attempts,
+                delay,
+            )
+            time.sleep(delay)
+
+        return []
+
+    @staticmethod
+    def words_from_alignment(alignment):
+        """Collapse ElevenLabs character alignment into precise word timings."""
+        if not alignment:
+            return []
+        characters = alignment.get("characters") or []
+        starts = alignment.get("character_start_times_seconds") or []
+        ends = alignment.get("character_end_times_seconds") or []
+        if not characters or not (len(characters) == len(starts) == len(ends)):
+            return []
+
+        text = "".join(characters)
+        words = []
+        for match in re.finditer(r"[\w]+(?:[’'][\w]+)*", text, flags=re.UNICODE):
+            first = match.start()
+            last = match.end() - 1
+            words.append(
+                {
+                    "word": match.group(0),
+                    "start_time": starts[first],
+                    "end_time": ends[last],
+                    "char_start": first,
+                    "char_end": match.end(),
+                }
+            )
+        return words
 
 
 class FishAudioTTSProvider(BaseTTSProvider):
@@ -333,6 +480,7 @@ class FishAudioTTSProvider(BaseTTSProvider):
 
 _PROVIDERS = {
     OpenAITTSProvider.name: OpenAITTSProvider,
+    ElevenLabsTTSProvider.name: ElevenLabsTTSProvider,
     FishAudioTTSProvider.name: FishAudioTTSProvider,
 }
 

@@ -366,7 +366,7 @@ EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")  # 587
 OPENAI_API_KEY = env("OPENAI_API_KEY")
 
 # --- Text-to-speech (liturgy audio) -----------------------------------------
-# Which backend generates office audio: "openai" or "fish" (Fish Audio).
+# Which backend generates office audio: "openai", "elevenlabs", or "fish".
 # The adapters live in office/api/views/tts.py; each reads its own settings
 # below so the model and voices can be switched without code changes.
 TTS_PROVIDER = env("TTS_PROVIDER", default="openai")
@@ -389,6 +389,19 @@ TTS_INSTRUCTIONS = env(
         "read prayerfully, clearly, and naturally. Pronounce 'Amen' as 'ah-men'."
     ),
 )
+
+# ElevenLabs TTS. Use ELEVENLABS_TTS_MODEL=eleven_multilingual_v2 for v2 or
+# ELEVENLABS_TTS_MODEL=eleven_v3 for v3. Leader/leader_dialogue share one voice,
+# congregation/congregation_dialogue share one voice, and each newly generated
+# reader block randomly chooses from the comma-separated list (maximum 10).
+ELEVENLABS_API_KEY = env("ELEVENLABS_API_KEY", default="")
+ELEVENLABS_TTS_MODEL = env("ELEVENLABS_TTS_MODEL", default="eleven_multilingual_v2")
+ELEVENLABS_TTS_SPEED = env.float("ELEVENLABS_TTS_SPEED", default=1.0)
+ELEVENLABS_TTS_VOICE_LEADER = env("ELEVENLABS_TTS_VOICE_LEADER", default="")
+ELEVENLABS_TTS_VOICE_CONGREGATION = env("ELEVENLABS_TTS_VOICE_CONGREGATION", default="")
+ELEVENLABS_TTS_VOICES_READER = env.list("ELEVENLABS_TTS_VOICES_READER", default=[])
+ELEVENLABS_TTS_TIMEOUT = env.int("ELEVENLABS_TTS_TIMEOUT", default=120)
+ELEVENLABS_TTS_MAX_RETRIES = env.int("ELEVENLABS_TTS_MAX_RETRIES", default=4)
 
 # Fish Audio TTS (https://fish.audio). Voices are `reference_id` values that
 # point at voice models in the Fish Audio library; browse them at
