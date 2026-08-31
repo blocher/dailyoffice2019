@@ -26,6 +26,14 @@ class ElevenLabsTTSProviderTests(SimpleTestCase):
         with patch("office.api.views.tts.random.choice", return_value="reader-two") as choice:
             self.assertEqual(provider.voice_for_line_type("reader"), "reader-two")
             choice.assert_called_once_with(("reader-one", "reader-two"))
+        self.assertEqual(
+            provider.voice_for_text("reader", "In the beginning"),
+            provider.voice_for_text("reader", "In the beginning"),
+        )
+        self.assertIn(
+            provider.voice_for_text("reader", "In the beginning"),
+            ("reader-one", "reader-two"),
+        )
 
     @override_settings(
         ELEVENLABS_API_KEY="test-key",

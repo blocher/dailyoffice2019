@@ -3138,7 +3138,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             file_url = f"{audio_base_url()}{path}"
             return file_url, path
 
-        voice = voice_for_line_type(line_type)
+        voice = TTS_PROVIDER.voice_for_text(line_type, normalized)
         if not voice:
             return None, None
         key = GenericDailyOfficeSerializer.tts_clip_key(voice, normalized)

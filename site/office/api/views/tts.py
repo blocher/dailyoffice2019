@@ -14,6 +14,7 @@ model/voice knobs.
 """
 
 import base64
+import hashlib
 import logging
 import os
 import random
@@ -98,6 +99,10 @@ class BaseTTSProvider:
         if isinstance(configured, (list, tuple)):
             return random.choice(configured) if configured else None
         return configured
+
+    def voice_for_text(self, line_type, text):
+        """Choose the voice used to synthesize a specific text block."""
+        return self.voice_for_line_type(line_type)
 
     def cache_signature(self):
         """Everything besides the voice and text that affects the audio bytes.
@@ -217,6 +222,19 @@ class ElevenLabsTTSProvider(BaseTTSProvider):
     @property
     def max_retries(self):
         return getattr(settings, "ELEVENLABS_TTS_MAX_RETRIES", 4)
+
+    def voice_for_text(self, line_type, text):
+        role = self.role_for_line_type(line_type)
+        if role != "reader":
+            return self.voice_for_line_type(line_type)
+        readers = self.voices["reader"]
+        if not readers:
+            return None
+        # Stable pseudo-random assignment keeps repeated serializer passes (the
+        # rendered reading and its audio metadata) on the same voice and cache
+        # key. Existing DB reuse still wins before this is called.
+        digest = hashlib.sha256(text.encode("utf-8")).digest()
+        return readers[int.from_bytes(digest[:8], "big") % len(readers)]
 
     def synthesize(self, voice, text, file_path):
         api_key = getattr(settings, "ELEVENLABS_API_KEY", "")
