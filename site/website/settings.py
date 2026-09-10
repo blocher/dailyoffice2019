@@ -91,6 +91,7 @@ INSTALLED_APPS = [
     "bible",
     "meta",
     "office",
+    "feeds",
     "djrichtextfield",
     "taggit",
     # "address",
