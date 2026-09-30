@@ -1,5 +1,10 @@
 import base64
+import binascii
+import copy
 import os
+import subprocess
+import tempfile
+import time
 from dataclasses import dataclass, field
 from decimal import Decimal
 
@@ -72,6 +77,138 @@ class OpenAIAudioProvider(BaseAudioProvider):
         )
         response.stream_to_file(output_path)
         return ProviderResult(characters=len(text), metadata={"voice_id": voice_id})
+
+
+class GeminiAudioProvider(BaseAudioProvider):
+    """Gemini 3.8 unary TTS, converted to the pipeline's seekable MP3 format.
+
+    REST schema: https://ai.google.dev/gemini-api/docs/speech-generation
+    Delivery directions belong in speech_metadata, never the prayer transcript.
+    One voice per line preserves the existing per-line navigation.
+    """
+
+    provider_name = "gemini"
+    endpoint = "https://generativelanguage.googleapis.com/v1beta/interactions"
+
+    @property
+    def model_id(self):
+        return getattr(settings, "GEMINI_TTS_MODEL", "gemini-3.8-flash-tts")
+
+    @property
+    def cache_settings(self):
+        return {
+            "style": getattr(settings, "GEMINI_TTS_STYLE", ""),
+            "output_format": "mp3_44100_128",
+            "adapter_version": 1,
+        }
+
+    def generate_spoken_file(self, text, voice_id, output_path):
+        api_key = getattr(settings, "GEMINI_API_KEY", "")
+        if not api_key:
+            raise AudioProviderError("GEMINI_API_KEY is not configured.")
+        if not voice_id:
+            raise AudioProviderError("No Gemini voice is configured for this role.")
+        payload = {
+            "model": self.model_id,
+            "input": [
+                {
+                    "type": "user_input",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": text,
+                            "annotations": [{"type": "speech_metadata", "style": self.cache_settings["style"]}],
+                        }
+                    ],
+                }
+            ],
+            "response_format": {"type": "audio", "mime_type": "audio/wav"},
+            "generation_config": {"speech_config": [{"voice": voice_id}]},
+        }
+        response = self._request(payload, api_key)
+        try:
+            data = response.json()
+            audio_blocks = [
+                part
+                for step in data.get("steps", [])
+                if step.get("type") == "model_output"
+                for part in step.get("content", [])
+                if part.get("type") == "audio"
+            ]
+            if not audio_blocks:
+                raise AudioProviderError("Gemini returned no audio.")
+            audio = base64.b64decode(audio_blocks[-1].get("data", ""), validate=True)
+            if len(audio) <= 44 or audio[:4] != b"RIFF" or audio[8:12] != b"WAVE":
+                raise AudioProviderError("Gemini returned empty or invalid WAV audio.")
+        except (ValueError, TypeError, AttributeError, binascii.Error) as exc:
+            raise AudioProviderError("Gemini returned an invalid audio response.") from exc
+
+        directory = os.path.dirname(os.path.abspath(output_path))
+        os.makedirs(directory, exist_ok=True)
+        # Publish atomically, leaving no partial cache file after any failure.
+        with tempfile.TemporaryDirectory(prefix="gemini-", dir=directory) as temp:
+            wav_path = os.path.join(temp, "input.wav")
+            mp3_path = os.path.join(temp, "output.mp3")
+            with open(wav_path, "wb") as handle:
+                handle.write(audio)
+            try:
+                result = subprocess.run(
+                    [
+                        "ffmpeg",
+                        "-y",
+                        "-i",
+                        wav_path,
+                        "-ac",
+                        "1",
+                        "-ar",
+                        "44100",
+                        "-c:a",
+                        "libmp3lame",
+                        "-b:a",
+                        "128k",
+                        mp3_path,
+                    ],
+                    capture_output=True,
+                    text=True,
+                    timeout=120,
+                )
+            except (OSError, subprocess.TimeoutExpired) as exc:
+                raise AudioProviderError("Gemini audio conversion could not run.") from exc
+            if result.returncode or not os.path.isfile(mp3_path) or not os.path.getsize(mp3_path):
+                raise AudioProviderError("Gemini WAV-to-MP3 conversion failed.")
+            os.replace(mp3_path, output_path)
+        return ProviderResult(
+            characters=len(text),
+            request_id=_request_id_from_headers(response.headers),
+            metadata={
+                "voice_id": voice_id,
+                "endpoint": self.endpoint,
+                "model_id": self.model_id,
+                **self.cache_settings,
+                "usage": data.get("usage", {}),
+            },
+        )
+
+    def _request(self, payload, api_key):
+        retries = max(0, min(int(getattr(settings, "GEMINI_TTS_MAX_RETRIES", 2)), 5))
+        for attempt in range(retries + 1):
+            try:
+                response = requests.post(
+                    self.endpoint,
+                    headers={"x-goog-api-key": api_key, "Content-Type": "application/json"},
+                    json=payload,
+                    timeout=getattr(settings, "GEMINI_TTS_TIMEOUT", 180),
+                )
+            except (requests.ConnectionError, requests.Timeout) as exc:
+                if attempt == retries:
+                    raise AudioProviderError("Gemini TTS request failed or timed out.") from exc
+            else:
+                if response.status_code < 400:
+                    return response
+                if response.status_code not in {429, 500, 502, 503, 504} or attempt == retries:
+                    # Vendor bodies can contain request data; never persist them.
+                    raise AudioProviderError(f"Gemini TTS request failed (HTTP {response.status_code}).")
+            time.sleep(min(2**attempt, 30))
 
 
 class ElevenLabsV3AudioProvider(BaseAudioProvider):
@@ -206,8 +343,25 @@ class ElevenLabsStudioAudioProvider(ElevenLabsV3AudioProvider):
         return False, response.text
 
 
+def configured_provider_mode(config=None):
+    config = config or AudioGenerationConfig.get_solo()
+    mode = getattr(settings, "AUDIO_PROVIDER", "").strip().lower() or config.provider_mode
+    if mode == "elevenlabs":
+        mode = AudioGenerationConfig.ProviderMode.ELEVENLABS_V3
+    if mode not in AudioGenerationConfig.ProviderMode.values:
+        raise AudioProviderError(f"Unknown audio provider {mode!r}.")
+    return mode
+
+
 def get_audio_provider(config=None):
     config = config or AudioGenerationConfig.get_solo()
+    selected_mode = configured_provider_mode(config)
+    if selected_mode != config.provider_mode:
+        # Environment selection must not overwrite the saved administrator choice.
+        config = copy.copy(config)
+        config.provider_mode = selected_mode
+    if config.provider_mode == AudioGenerationConfig.ProviderMode.GEMINI:
+        return GeminiAudioProvider(config), config.provider_mode
     if config.provider_mode == AudioGenerationConfig.ProviderMode.OPENAI:
         return OpenAIAudioProvider(config), config.provider_mode
 

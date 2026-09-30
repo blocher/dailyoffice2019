@@ -222,6 +222,7 @@ class SettingOption(BaseModel):
 class AudioGenerationConfig(BaseModel):
     class ProviderMode(models.TextChoices):
         OPENAI = "openai", "OpenAI"
+        GEMINI = "gemini", "Gemini TTS"
         ELEVENLABS_V3 = "elevenlabs_v3", "ElevenLabs v3"
         ELEVENLABS_STUDIO = "elevenlabs_studio", "ElevenLabs Studio"
 
@@ -275,6 +276,7 @@ class AudioGenerationConfig(BaseModel):
 class AudioVoice(BaseModel):
     class Provider(models.TextChoices):
         OPENAI = "openai", "OpenAI"
+        GEMINI = "gemini", "Gemini TTS"
         ELEVENLABS = "elevenlabs", "ElevenLabs"
 
     class Role(models.TextChoices):
@@ -305,6 +307,7 @@ class AudioVoice(BaseModel):
 class AudioGeneratedFile(BaseModel):
     class Provider(models.TextChoices):
         OPENAI = "openai", "OpenAI"
+        GEMINI = "gemini", "Gemini TTS"
         ELEVENLABS = "elevenlabs", "ElevenLabs"
         LOCAL = "local", "Local"
 

@@ -486,3 +486,15 @@ CKEDITOR_5_CONFIGS = {
         }
     },
 }
+
+# Blank preserves the AudioGenerationConfig admin selection; restart after changes.
+# Choices: openai, elevenlabs (alias for elevenlabs_v3), elevenlabs_studio, gemini.
+AUDIO_PROVIDER = env("AUDIO_PROVIDER", default="")
+GEMINI_API_KEY = env("GEMINI_API_KEY", default="")
+GEMINI_TTS_MODEL = env("GEMINI_TTS_MODEL", default="gemini-3.8-flash-tts")
+GEMINI_TTS_STYLE = env("GEMINI_TTS_STYLE", default="")
+GEMINI_TTS_VOICE_LEADER = env("GEMINI_TTS_VOICE_LEADER", default="")
+GEMINI_TTS_VOICE_CONGREGATION = env("GEMINI_TTS_VOICE_CONGREGATION", default="")
+GEMINI_TTS_VOICE_READER = env("GEMINI_TTS_VOICE_READER", default="")
+GEMINI_TTS_TIMEOUT = env.int("GEMINI_TTS_TIMEOUT", default=180)
+GEMINI_TTS_MAX_RETRIES = env.int("GEMINI_TTS_MAX_RETRIES", default=2)

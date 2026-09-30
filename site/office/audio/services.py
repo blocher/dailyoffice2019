@@ -13,7 +13,7 @@ from django.conf import settings
 from django.utils import timezone
 from mutagen.mp3 import MP3
 
-from office.audio.providers import AudioProviderError, get_audio_provider
+from office.audio.providers import AudioProviderError, configured_provider_mode, get_audio_provider
 from office.models import (
     AudioCostRate,
     AudioGeneratedFile,
@@ -110,7 +110,7 @@ def safe_settings_snapshot(settings_dict):
 
 def line_reference_cache_key(line_type, text, provider_mode=None):
     payload = {
-        "provider_mode": provider_mode or AudioGenerationConfig.get_solo().provider_mode,
+        "provider_mode": provider_mode or configured_provider_mode(),
         "line_type": normalize_line_type(line_type),
         "text": normalize_audio_text(text),
     }
@@ -253,7 +253,7 @@ class VoiceResolver:
     def __init__(self, provider, provider_mode):
         self.provider = provider
         self.provider_mode = provider_mode
-        self.provider_name = "elevenlabs" if provider.provider_name == "elevenlabs" else "openai"
+        self.provider_name = provider.provider_name
         self._voices = None
 
     @property
@@ -266,12 +266,25 @@ class VoiceResolver:
 
     def for_role(self, role, selector_key=""):
         role = normalize_line_type(role)
+        if self.provider_name == "gemini":
+            voice_role = role.removesuffix("_dialogue").upper()
+            configured = getattr(settings, f"GEMINI_TTS_VOICE_{voice_role}", "")
+            if configured:
+                return configured
         role_voices = [voice for voice in self.voices if voice.role == role]
         if role == AudioVoice.Role.READER and role_voices:
             index = int(hash_payload({"selector": selector_key or role})[:8], 16) % len(role_voices)
             return role_voices[index].voice_id
         if role_voices:
             return role_voices[0].voice_id
+        if self.provider_name == "gemini":
+            return {
+                "leader": "Kore",
+                "leader_dialogue": "Kore",
+                "congregation": "Sulafat",
+                "congregation_dialogue": "Sulafat",
+                "reader": "Charon",
+            }.get(role)
         if self.provider_name == "openai":
             return OPENAI_DEFAULT_VOICES.get(role)
         return None
@@ -597,25 +610,27 @@ class OfficeAudioBuilder:
         return items
 
     def _generate_spoken_items(self, items):
-        if self.provider.provider_name == "openai":
-            return [self._generate_openai_spoken_item(item) for item in items]
+        if self.provider.provider_name in {"openai", "gemini"}:
+            return [self._generate_single_voice_spoken_item(item) for item in items]
         artifacts = []
         for chunk in self._spoken_chunks(items):
             artifacts.append(self._generate_elevenlabs_dialogue_chunk(chunk))
         return artifacts
 
-    def _generate_openai_spoken_item(self, item):
+    def _generate_single_voice_spoken_item(self, item):
         voice_id = self.voice_resolver.for_role(item.role, item.selector_key)
         payload = {
-            "provider": "openai",
+            "provider": self.provider.provider_name,
             "provider_mode": self.provider_mode,
             "generation_type": "spoken",
-            "model_id": self.config.openai_model,
+            "model_id": self.provider.model_id,
             "voice_id": voice_id,
             "line_type": item.line_type,
             "text": item.text,
             "settings_hash": self.context.settings_hash,
         }
+        if self.provider.provider_name == "gemini":
+            payload["provider_settings"] = self.provider.cache_settings
         cache_key = hash_payload(payload)
         cached = self.cache.reusable(cache_key)
         if cached:
@@ -624,15 +639,15 @@ class OfficeAudioBuilder:
             return artifact
 
         generated_file = self.cache.create_pending(
-            provider=AudioGeneratedFile.Provider.OPENAI,
+            provider=self.provider.provider_name,
             generation_type=AudioGeneratedFile.GenerationType.SPOKEN,
             cache_key=cache_key,
             content_hash=hash_payload({"text": item.text}),
             text_preview=item.text[:1000],
             voice_key=voice_id,
             voices={item.role: voice_id},
-            model_id=self.config.openai_model,
-            endpoint="openai.audio.speech",
+            model_id=self.provider.model_id,
+            endpoint=getattr(self.provider, "endpoint", "openai.audio.speech"),
             module_name=item.module_name,
             line_type=item.line_type,
             line_id=item.line_id,
@@ -643,8 +658,8 @@ class OfficeAudioBuilder:
             result = self.provider.generate_spoken_file(item.text, voice_id, output_path)
             duration = audio_duration(output_path)
             cost_usd, cost_source = self._estimate_cost(
-                "openai",
-                self.config.openai_model,
+                self.provider.provider_name,
+                self.provider.model_id,
                 AudioGeneratedFile.GenerationType.SPOKEN,
                 characters=result.characters,
                 cost_units=result.cost_units,
