@@ -121,6 +121,10 @@
               </el-button>
             </el-button-group>
             <Loading v-if="loading" :small="true" />
+            <span v-if="playbackError" role="status" class="audio-error">
+              {{ playbackError }}
+              <button type="button" @click="retryAudio">Retry audio</button>
+            </span>
 
             <!-- Desktop dismiss button (inline in button row) -->
             <button
@@ -232,6 +236,10 @@ export default {
       detailedSegments: [],
       loading: true,
       audioElement: null,
+      playbackError: '',
+      pendingResumeTime: null,
+      playbackRequested: false,
+      playAttempt: 0,
       playbackSpeed: '1.0x',
       enableScrolling: true,
       isExpanded: false, // Track if player is expanded or minimized (mobile only)
@@ -271,19 +279,37 @@ export default {
       Array.isArray(this.audio[2]) &&
       Array.isArray(this.audio[3])
     ) {
-      this.audioElement = new Audio(this.audio[0] || '', { preload: 'auto' });
-      this.audioElement.load();
-      if (this.audioElement.readyState === this.audioElement.HAVE_ENOUGH_DATA) {
-        this.loading = false;
+      // Audio has no constructor options argument. Subscribe before loading
+      // so cached media events cannot race past the handlers.
+      this.audioElement = new Audio();
+      this.audioElement.preload = 'auto';
+      this.audioElement.src = this.audio[0] || '';
+      this.mediaListeners = {
+        canplay: this.handleCanPlay,
+        canplaythrough: this.handleCanPlay,
+        timeupdate: this.handleTimeUpdate,
+        ended: this.handleEnded,
+        loadedmetadata: this.handleMetadata,
+        durationchange: this.handleMetadata,
+        progress: this.restorePosition,
+        play: this.handlePlay,
+        playing: this.handlePlaying,
+        pause: this.handlePause,
+        waiting: this.handleWaiting,
+        stalled: this.handleStalled,
+        error: this.handleAudioError,
+        ratechange: this.updateMediaPosition,
+      };
+      for (const [event, listener] of Object.entries(this.mediaListeners)) {
+        this.audioElement.addEventListener(event, listener);
       }
-      this.audioElement.addEventListener('canplaythrough', () => {
-        this.loading = false;
-      });
-      this.audioElement.addEventListener('timeupdate', this.handleTimeUpdate);
-      this.audioElement.addEventListener('ended', this.stopAudio);
-      this.audioElement.addEventListener('loadedmetadata', () => {
-        this.duration = this.audioElement.duration;
-      });
+      this.setupMediaSession();
+      document.addEventListener(
+        'visibilitychange',
+        this.handleVisibilityChange
+      );
+      this.audioElement.load();
+      if (this.audioElement.readyState >= 3) this.loading = false;
 
       this.trackSegments = this.audio[2];
       this.detailedSegments = this.audio[3];
@@ -292,16 +318,27 @@ export default {
     this.$nextTick(() => this.emitVisibility());
   },
   beforeUnmount() {
-    this.stopAudio();
+    this.destroyed = true;
+    this.cancelTrackSeek?.();
+    this.playbackRequested = false;
+    document.removeEventListener(
+      'visibilitychange',
+      this.handleVisibilityChange
+    );
     window.removeEventListener('resize', this.checkMobile);
     window.visualViewport?.removeEventListener('resize', this.emitVisibility);
     window.visualViewport?.removeEventListener('scroll', this.emitVisibility);
     if (this.audioElement) {
-      this.audioElement.removeEventListener(
-        'timeupdate',
-        this.handleTimeUpdate
-      );
+      for (const [event, listener] of Object.entries(
+        this.mediaListeners || {}
+      )) {
+        this.audioElement.removeEventListener(event, listener);
+      }
+      this.audioElement.pause();
+      this.audioElement.removeAttribute('src');
+      this.audioElement.load();
     }
+    this.clearMediaSession();
     this.emitVisibility(false);
   },
   methods: {
@@ -316,38 +353,226 @@ export default {
       document.dispatchEvent(event);
     },
     startAudio() {
-      if (this.audioElement) {
-        // play() rejects (e.g. NotSupportedError) when the source can't be
-        // loaded; catch it so it doesn't surface as an uncaught promise error.
-        const playPromise = this.audioElement.play();
-        if (playPromise && typeof playPromise.catch === 'function') {
-          playPromise.catch(() => {
-            this.isPlaying = false;
-            this.isPaused = false;
-          });
-        }
-        this.isPlaying = true;
-        this.isPaused = false;
-        if (!this.hasEmittedPlay) {
-          this.hasEmittedPlay = true;
-          this.$emit('audio-play');
-        }
+      if (!this.audioElement) return;
+      this.playbackError = '';
+      const attempt = ++this.playAttempt;
+      this.playbackRequested = true;
+      this.loading = this.audioElement.readyState < 3;
+      // Call play directly in the user gesture for mobile autoplay policies.
+      // Media events, rather than optimistic clicks, determine playing state.
+      try {
+        const promise = this.audioElement.play();
+        promise?.catch((error) => {
+          if (
+            this.destroyed ||
+            !this.playbackRequested ||
+            attempt !== this.playAttempt
+          )
+            return;
+          this.playbackRequested = false;
+          this.isPlaying = false;
+          this.isPaused = true;
+          this.loading = false;
+          this.isExpanded = true;
+          this.playbackError =
+            error.name === 'NotAllowedError'
+              ? 'Playback was interrupted. Press Play to continue.'
+              : 'Audio could not start. Please retry.';
+          this.updateMediaPosition();
+        });
+      } catch {
+        this.handleAudioError();
       }
     },
     pauseAudio() {
-      if (this.audioElement) {
-        this.audioElement.pause();
-        this.isPaused = true;
-        this.isPlaying = false;
-      }
+      this.cancelTrackSeek?.();
+      this.playAttempt += 1;
+      this.playbackRequested = false;
+      this.pendingResumeTime = null;
+      this.audioElement?.pause();
+      this.handlePause();
     },
     stopAudio() {
-      if (this.audioElement) {
-        this.audioElement.pause();
-        this.audioElement.currentTime = 0;
-        this.isPlaying = false;
-        this.isPaused = false;
+      this.pauseAudio();
+      if (this.audioElement) this.audioElement.currentTime = 0;
+      this.currentTime = 0;
+      this.isPaused = false;
+      this.playbackError = '';
+      this.updateMediaPosition();
+    },
+    handlePlay() {
+      this.playbackRequested = true;
+      this.isPlaying = true;
+      this.isPaused = false;
+      this.updateMediaPosition();
+    },
+    handlePlaying() {
+      this.handlePlay();
+      if (!this.hasEmittedPlay) {
+        this.hasEmittedPlay = true;
+        this.$emit('audio-play');
       }
+      this.loading = false;
+      this.playbackError = '';
+    },
+    handlePause() {
+      this.cancelTrackSeek?.();
+      this.isPlaying = false;
+      this.isPaused = true;
+      this.playbackRequested = false;
+      this.loading = false;
+      this.updateMediaPosition();
+    },
+    handleEnded() {
+      this.stopAudio();
+    },
+    handleCanPlay() {
+      this.loading = false;
+      this.restorePosition();
+    },
+    handleMetadata() {
+      const duration = this.audioElement?.duration;
+      this.duration = Number.isFinite(duration) ? duration : 0;
+      this.restorePosition();
+      this.updateMediaPosition();
+    },
+    handleWaiting() {
+      if (this.playbackRequested) this.loading = true;
+    },
+    handleStalled() {
+      if (!this.playbackRequested) return;
+      this.loading = true;
+      this.isExpanded = true;
+      this.playbackError =
+        'Audio is buffering. Check your connection if it does not resume.';
+    },
+    handleAudioError() {
+      if (!this.audioElement) return;
+      this.currentTime = this.audioElement.currentTime || this.currentTime;
+      this.playbackRequested = false;
+      this.isPlaying = false;
+      this.isPaused = true;
+      this.loading = false;
+      this.isExpanded = true;
+      this.playbackError =
+        'Audio stopped loading. Retry to continue from your place.';
+      this.updateMediaPosition();
+    },
+    retryAudio() {
+      if (!this.audioElement) return;
+      this.cancelTrackSeek?.();
+      this.pendingResumeTime =
+        this.pendingResumeTime ??
+        (this.audioElement.currentTime || this.currentTime);
+      this.audioElement.load();
+      this.startAudio();
+    },
+    restorePosition() {
+      if (this.pendingResumeTime === null || !this.audioElement) return;
+      const duration = this.audioElement.duration;
+      if (!Number.isFinite(duration) || duration <= 0) return;
+      try {
+        const target = Math.min(
+          this.pendingResumeTime,
+          Math.max(0, duration - 0.05)
+        );
+        this.audioElement.currentTime = target;
+        // Some engines silently clamp seeks to the buffered end. Keep the
+        // target for a later progress/canplay event until it actually lands.
+        if (Math.abs(this.audioElement.currentTime - target) < 0.25) {
+          this.pendingResumeTime = null;
+        }
+      } catch {
+        // Retry at canplay/progress when the media is seekable.
+      }
+    },
+    handleVisibilityChange() {
+      if (document.visibilityState !== 'visible' || !this.audioElement) return;
+      // Respect a user/OS pause; foregrounding must not restart playback.
+      this.isPlaying = !this.audioElement.paused && !this.audioElement.ended;
+      this.isPaused = this.audioElement.paused;
+      this.currentTime = this.audioElement.currentTime;
+      this.updateMediaPosition();
+    },
+    setupMediaSession() {
+      if (!navigator.mediaSession) return;
+      const session = navigator.mediaSession;
+      if (window.MediaMetadata) {
+        session.metadata = new window.MediaMetadata({
+          title: this.office.replace(/_/g, ' '),
+          artist: 'The Daily Office',
+        });
+      }
+      const actions = {
+        play: this.startAudio,
+        pause: this.pauseAudio,
+        stop: this.stopAudio,
+        seekbackward: (details) =>
+          this.seekTo(
+            this.audioElement.currentTime - (details.seekOffset || 10)
+          ),
+        seekforward: (details) =>
+          this.seekTo(
+            this.audioElement.currentTime + (details.seekOffset || 10)
+          ),
+        seekto: (details) => this.seekTo(details.seekTime),
+      };
+      this.mediaActions = [];
+      for (const [action, handler] of Object.entries(actions)) {
+        try {
+          session.setActionHandler(action, handler);
+          this.mediaActions.push(action);
+        } catch {
+          // Browsers support different subsets of Media Session actions.
+        }
+      }
+    },
+    clearMediaSession() {
+      if (!navigator.mediaSession) return;
+      for (const action of this.mediaActions || []) {
+        try {
+          navigator.mediaSession.setActionHandler(action, null);
+        } catch {
+          // A WebView may lose support during activity shutdown.
+        }
+      }
+      navigator.mediaSession.metadata = null;
+      navigator.mediaSession.playbackState = 'none';
+      try {
+        navigator.mediaSession.setPositionState?.();
+      } catch {
+        // Position state is optional in older WebViews.
+      }
+    },
+    updateMediaPosition() {
+      if (!navigator.mediaSession || !this.audioElement) return;
+      navigator.mediaSession.playbackState = this.isPlaying
+        ? 'playing'
+        : 'paused';
+      const { duration, currentTime, playbackRate } = this.audioElement;
+      if (!Number.isFinite(duration) || duration <= 0) return;
+      try {
+        navigator.mediaSession.setPositionState?.({
+          duration,
+          position: Math.max(0, Math.min(currentTime, duration)),
+          playbackRate,
+        });
+      } catch {
+        // Partial Media Session support must never stop playback.
+      }
+    },
+    seekTo(value) {
+      if (!this.audioElement || !Number.isFinite(value)) return;
+      this.cancelTrackSeek?.();
+      const duration = this.audioElement.duration;
+      if (!Number.isFinite(duration) || duration <= 0) {
+        this.pendingResumeTime = Math.max(0, value);
+        return;
+      }
+      this.pendingResumeTime = Math.max(0, Math.min(value, duration));
+      this.restorePosition();
+      this.currentTime = this.audioElement.currentTime;
+      this.updateMediaPosition();
     },
     handleSpeedChange() {
       if (this.audioElement) {
@@ -359,6 +584,8 @@ export default {
     handleTrackSegmentChange() {
       if (!this.audioElement || this.currentTrackSegment === null) return;
 
+      this.cancelTrackSeek?.();
+      this.pendingResumeTime = null;
       const el = this.audioElement;
       const rawTarget = parseFloat(this.currentTrackSegment);
       // Reset immediately so the same segment can be selected again.
@@ -381,6 +608,7 @@ export default {
       // as the media reports it can reach the target. Desktop is permissive
       // and simply seeks on the first attempt.
       let settled = false;
+      let expiryTimer;
       // Only surface the spinner if the seek can't land quickly, so short
       // offices (Compline) never flash an indicator for an instant jump.
       const spinnerTimer = window.setTimeout(() => {
@@ -390,6 +618,8 @@ export default {
         if (settled) return;
         settled = true;
         window.clearTimeout(spinnerTimer);
+        window.clearTimeout(expiryTimer);
+        this.cancelTrackSeek = null;
         this.seeking = false;
         el.removeEventListener('loadedmetadata', trySeek);
         el.removeEventListener('durationchange', trySeek);
@@ -416,29 +646,26 @@ export default {
         }
       };
 
+      this.cancelTrackSeek = cleanup;
       el.addEventListener('loadedmetadata', trySeek);
       el.addEventListener('durationchange', trySeek);
       el.addEventListener('canplay', trySeek);
       el.addEventListener('progress', trySeek);
       el.addEventListener('seeked', onSeeked);
       // Safety valve so listeners don't linger forever if the seek never lands.
-      window.setTimeout(cleanup, 15000);
+      expiryTimer = window.setTimeout(cleanup, 15000);
 
       // Play first to satisfy iOS's user-activation requirement, then seek.
-      const playPromise = el.play();
-      this.isPlaying = true;
-      this.isPaused = false;
-      if (playPromise && typeof playPromise.then === 'function') {
-        playPromise.then(trySeek).catch(trySeek);
-      } else {
-        trySeek();
-      }
+      this.startAudio();
+      trySeek();
     },
     handleTimeUpdate() {
       if (!this.audioElement) return;
 
       this.currentTime = this.audioElement.currentTime;
+      this.updateMediaPosition();
 
+      if (document.visibilityState === 'hidden') return;
       if (!this.isPlaying || !this.enableScrolling) return;
 
       const currentTime = this.audioElement.currentTime;
