@@ -390,8 +390,12 @@ TTS_INSTRUCTIONS = env(
     ),
 )
 
-# ElevenLabs TTS. Use ELEVENLABS_TTS_MODEL=eleven_multilingual_v2 for v2 or
-# ELEVENLABS_TTS_MODEL=eleven_v3 for v3. Leader/leader_dialogue share one voice,
+# ElevenLabs TTS. ELEVENLABS_TTS_MODEL options:
+#   eleven_multilingual_v2  default; stable long-form (no IPA)
+#   eleven_flash_v2_5       fast multilingual (alias dictionaries only)
+#   eleven_flash_v2         English; SSML IPA/CMU phoneme tags
+#   eleven_v3               expressive; native /IPA/ in the text
+# Leader/leader_dialogue share one voice,
 # congregation/congregation_dialogue share one voice, and each newly generated
 # reader block randomly chooses from the comma-separated list (maximum 10).
 ELEVENLABS_API_KEY = env("ELEVENLABS_API_KEY", default="")
@@ -402,6 +406,10 @@ ELEVENLABS_TTS_VOICE_CONGREGATION = env("ELEVENLABS_TTS_VOICE_CONGREGATION", def
 ELEVENLABS_TTS_VOICES_READER = env.list("ELEVENLABS_TTS_VOICES_READER", default=[])
 ELEVENLABS_TTS_TIMEOUT = env.int("ELEVENLABS_TTS_TIMEOUT", default=120)
 ELEVENLABS_TTS_MAX_RETRIES = env.int("ELEVENLABS_TTS_MAX_RETRIES", default=4)
+# v2 cannot use IPA. Create a dictionary of alias rules (Amen -> "ahmén")
+# with `setup_elevenlabs_pronunciation` and paste the printed IDs here.
+ELEVENLABS_PRONUNCIATION_DICTIONARY_ID = env("ELEVENLABS_PRONUNCIATION_DICTIONARY_ID", default="")
+ELEVENLABS_PRONUNCIATION_DICTIONARY_VERSION_ID = env("ELEVENLABS_PRONUNCIATION_DICTIONARY_VERSION_ID", default="")
 
 # Fish Audio TTS (https://fish.audio). Voices are `reference_id` values that
 # point at voice models in the Fish Audio library; browse them at

@@ -123,8 +123,8 @@ class CollectAdmin(admin.ModelAdmin):
 
 
 class PronunciationOverrideAdmin(admin.ModelAdmin):
-    list_display = ("match", "replacement", "is_regex", "order", "enabled", "note")
-    list_editable = ("replacement", "is_regex", "order", "enabled")
+    list_display = ("match", "replacement", "is_regex", "providers", "order", "enabled", "note")
+    list_editable = ("replacement", "is_regex", "providers", "order", "enabled")
     list_filter = ("enabled", "is_regex")
     search_fields = ("match", "replacement", "note")
     ordering = ("order", "id")

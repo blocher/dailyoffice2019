@@ -9,7 +9,7 @@ from django.test import SimpleTestCase, TestCase, override_settings
 
 from office.api.views import index
 from office.api.views.tts import ElevenLabsTTSProvider
-from office.models import AudioClip
+from office.models import AudioClip, PronunciationOverride
 
 
 class ElevenLabsTTSProviderTests(SimpleTestCase):
@@ -87,6 +87,46 @@ class ElevenLabsTTSProviderTests(SimpleTestCase):
         self.assertEqual(request.kwargs["json"]["model_id"], "eleven_v3")
         self.assertEqual(request.kwargs["json"]["voice_settings"]["speed"], 0.9)
         self.assertEqual(request.kwargs["params"]["output_format"], "mp3_44100_128")
+        self.assertNotIn("pronunciation_dictionary_locators", request.kwargs["json"])
+
+    def test_flash_v2_5_is_a_documented_model_option(self):
+        self.assertIn("eleven_flash_v2_5", ElevenLabsTTSProvider.MODELS)
+        self.assertIn("eleven_flash_v2", ElevenLabsTTSProvider.MODELS)
+
+    @override_settings(
+        ELEVENLABS_API_KEY="test-key",
+        ELEVENLABS_TTS_MODEL="eleven_flash_v2_5",
+        ELEVENLABS_TTS_MAX_RETRIES=0,
+        ELEVENLABS_PRONUNCIATION_DICTIONARY_ID="dict-1",
+        ELEVENLABS_PRONUNCIATION_DICTIONARY_VERSION_ID="ver-1",
+    )
+    @patch("office.api.views.tts.requests.post")
+    def test_synthesize_sends_flash_model_and_pronunciation_dictionary(self, post):
+        response = MagicMock()
+        response.json.return_value = {
+            "audio_base64": base64.b64encode(b"mp3-data").decode(),
+            "alignment": {
+                "characters": ["A"],
+                "character_start_times_seconds": [0.0],
+                "character_end_times_seconds": [0.1],
+            },
+        }
+        post.return_value = response
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = os.path.join(directory, "clip.mp3")
+            ElevenLabsTTSProvider().synthesize("voice-id", "Amen", path)
+
+        payload = post.call_args.kwargs["json"]
+        self.assertEqual(payload["model_id"], "eleven_flash_v2_5")
+        self.assertEqual(
+            payload["pronunciation_dictionary_locators"],
+            [{"pronunciation_dictionary_id": "dict-1", "version_id": "ver-1"}],
+        )
+        self.assertEqual(
+            ElevenLabsTTSProvider().cache_signature(),
+            "eleven_flash_v2_5 1.0 dict-1:ver-1",
+        )
 
 
 class ElevenLabsClipReuseTests(TestCase):
@@ -142,6 +182,21 @@ class ElevenLabsClipReuseTests(TestCase):
                 loaded = index.GenericDailyOfficeSerializer.get_clip_word_timing("/uploads/elevenlabs/clip.mp3")
 
         self.assertEqual(loaded, timing)
+
+
+class PronunciationOverrideProviderTests(TestCase):
+    def test_openai_only_amen_rule_leaves_elevenlabs_text_alone(self):
+        PronunciationOverride.objects.create(
+            match="Amen",
+            replacement="Ah-men",
+            providers="openai",
+            enabled=True,
+            order=20,
+        )
+
+        self.assertEqual(PronunciationOverride.apply("Amen.", provider="openai"), "Ah-men.")
+        self.assertEqual(PronunciationOverride.apply("Amen.", provider="elevenlabs"), "Amen.")
+        self.assertEqual(PronunciationOverride.apply("Amen."), "Amen.")
 
 
 class CombinedTrackTimingTests(TestCase):

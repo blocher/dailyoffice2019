@@ -111,6 +111,10 @@ class BaseTTSProvider:
         """
         return f"{self.model} {self.speed} {self.effective_instructions}"
 
+    def pronunciation_locators(self):
+        """Optional provider-specific pronunciation dictionary locators."""
+        return []
+
     def synthesize(self, voice, text, file_path):
         """Generate speech for ``text`` in ``voice`` and write mp3 to file_path.
 
@@ -186,6 +190,15 @@ class ElevenLabsTTSProvider(BaseTTSProvider):
     name = "elevenlabs"
     ENDPOINT = "https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/with-timestamps"
     _RETRY_STATUSES = frozenset({429, 500, 502, 503, 504})
+    # Documented models the office audio path can send as model_id.
+    # IPA/CMU phoneme tags work on eleven_flash_v2; native /IPA/ on eleven_v3.
+    # eleven_flash_v2_5 and eleven_multilingual_v2 skip phoneme tags (alias only).
+    MODELS = (
+        "eleven_multilingual_v2",
+        "eleven_flash_v2_5",
+        "eleven_flash_v2",
+        "eleven_v3",
+    )
 
     @property
     def model(self):
@@ -223,6 +236,23 @@ class ElevenLabsTTSProvider(BaseTTSProvider):
     def max_retries(self):
         return getattr(settings, "ELEVENLABS_TTS_MAX_RETRIES", 4)
 
+    def cache_signature(self):
+        locators = self.pronunciation_locators()
+        locator_key = " ".join(
+            f"{item.get('pronunciation_dictionary_id', '')}:{item.get('version_id', '')}" for item in locators
+        )
+        return f"{self.model} {self.speed} {locator_key}"
+
+    def pronunciation_locators(self):
+        dictionary_id = getattr(settings, "ELEVENLABS_PRONUNCIATION_DICTIONARY_ID", "")
+        if not dictionary_id:
+            return []
+        locator = {"pronunciation_dictionary_id": dictionary_id}
+        version_id = getattr(settings, "ELEVENLABS_PRONUNCIATION_DICTIONARY_VERSION_ID", "")
+        if version_id:
+            locator["version_id"] = version_id
+        return [locator]
+
     def voice_for_text(self, line_type, text):
         role = self.role_for_line_type(line_type)
         if role != "reader":
@@ -249,6 +279,9 @@ class ElevenLabsTTSProvider(BaseTTSProvider):
             "voice_settings": {"speed": self.speed},
             "apply_text_normalization": "auto",
         }
+        locators = self.pronunciation_locators()
+        if locators:
+            payload["pronunciation_dictionary_locators"] = locators
         headers = {
             "xi-api-key": api_key,
             "Content-Type": "application/json",

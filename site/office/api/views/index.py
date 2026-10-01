@@ -2984,7 +2984,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         from office.models import PronunciationOverride
 
         try:
-            content = PronunciationOverride.apply(content)
+            content = PronunciationOverride.apply(content, provider=TTS_PROVIDER.name)
         except Exception:
             # Never let a bad override break audio; fall back to the raw text.
             pass
