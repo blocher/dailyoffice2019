@@ -16,6 +16,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { createMetaManager } from 'vue-meta';
 import { DynamicStorage } from './helpers/storage';
 import { installViewportCssVars } from './helpers/viewport';
+import { getClientId } from './helpers/clientId';
 
 // import { faTwitter } from "@fortawesome/free-brands-svg-icons";
 // import { faUserSecret } from "@fortawesome/free-solid-svg-icons";
@@ -299,6 +300,16 @@ app.config.globalProperties.$gtag = { event };
 
 const bootstrap = async () => {
   await applyInitialThemePreference();
+  // Attach the anonymous client id + platform to every API request so the
+  // backend can attribute office views to a unique user (updated clients only).
+  try {
+    const clientId = await getClientId();
+    axios.defaults.headers.common['X-Client-Id'] = clientId;
+    axios.defaults.headers.common['X-Client-Platform'] =
+      Capacitor.getPlatform();
+  } catch {
+    // analytics headers are best-effort
+  }
   await router.isReady();
   app.mount('#app');
 };

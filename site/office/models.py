@@ -4,7 +4,6 @@ from functools import cached_property
 
 from bs4 import BeautifulSoup
 from django.db import models
-from django.utils import timezone
 from django_ckeditor_5.fields import CKEditor5Field
 
 from churchcal.base_models import BaseModel
@@ -183,6 +182,70 @@ class UpdateNotice(BaseModel):
         ordering = ["-version"]
 
 
+class SiteMessage(BaseModel):
+    """A dynamic announcement/notice banner controlled from the Django admin.
+
+    Replaces the previously hard-coded "New" banner in the frontend, allowing
+    staff to add, style, target, and expire messages without a code change.
+    """
+
+    TAG_COLOR_CHOICES = (
+        ("emerald", "Green"),
+        ("blue", "Blue"),
+        ("amber", "Amber / Yellow"),
+        ("red", "Red"),
+        ("purple", "Purple"),
+        ("gray", "Gray"),
+    )
+
+    tag_text = models.CharField(
+        max_length=40,
+        blank=True,
+        default="",
+        help_text="Short label shown in the colored tag (e.g. 'New'). Leave blank to hide the tag.",
+    )
+    tag_color = models.CharField(
+        max_length=20,
+        choices=TAG_COLOR_CHOICES,
+        default="emerald",
+        help_text="Color of the tag.",
+    )
+    text = models.CharField(max_length=500, help_text="The main message text.")
+    link = models.CharField(
+        max_length=1000,
+        blank=True,
+        default="",
+        help_text="Optional link destination. Use an internal path (e.g. /calendar) or a full URL (https://...).",
+    )
+
+    dismissible = models.BooleanField(default=True, help_text="Allow users to dismiss (close) the message.")
+    dismiss_permanent = models.BooleanField(
+        default=True,
+        help_text=(
+            "Only applies when the message is dismissible. When checked, a dismissed message stays hidden "
+            "forever on that device. When unchecked, it reappears on the user's next visit/session."
+        ),
+    )
+
+    show_on_web = models.BooleanField(default=True, help_text="Show this message on the website.")
+    show_on_android = models.BooleanField(default=True, help_text="Show this message in the Android app.")
+    show_on_ios = models.BooleanField(default=True, help_text="Show this message in the iOS app.")
+
+    active = models.BooleanField(default=True, help_text="Uncheck to hide the message without deleting it.")
+    expiration_date = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Optional. After this date/time the message will no longer be shown.",
+    )
+    order = models.PositiveSmallIntegerField(default=0, help_text="Lower numbers appear first.")
+
+    class Meta:
+        ordering = ["order", "-created"]
+
+    def __str__(self):
+        return self.text[:60] if self.text else "Site Message"
+
+
 class Setting(BaseModel):
     MAIN_SETTINGS = 1
     ADDITIONAL_SETTINGS = 2
@@ -217,268 +280,6 @@ class SettingOption(BaseModel):
     description = models.TextField(blank=True, null=True)
     value = models.CharField(max_length=255)
     abbreviation = models.CharField(null=False, max_length=1, default=DEFAULT_ABBREVIATION)
-
-
-class AudioGenerationConfig(BaseModel):
-    class ProviderMode(models.TextChoices):
-        OPENAI = "openai", "OpenAI"
-        GEMINI = "gemini", "Gemini TTS"
-        ELEVENLABS_V3 = "elevenlabs_v3", "ElevenLabs v3"
-        ELEVENLABS_STUDIO = "elevenlabs_studio", "ElevenLabs Studio"
-
-    class TextNormalization(models.TextChoices):
-        AUTO = "auto", "Auto"
-        ON = "on", "On"
-        OFF = "off", "Off"
-
-    name = models.CharField(max_length=255, unique=True, default="default")
-    provider_mode = models.CharField(max_length=32, choices=ProviderMode.choices, default=ProviderMode.OPENAI)
-    openai_model = models.CharField(max_length=64, default="tts-1")
-    openai_output_format = models.CharField(max_length=32, default="mp3")
-    elevenlabs_model_id = models.CharField(max_length=64, default="eleven_v3")
-    elevenlabs_sound_model_id = models.CharField(max_length=64, default="eleven_v3")
-    elevenlabs_output_format = models.CharField(max_length=64, default="mp3_44100_128")
-    elevenlabs_language_code = models.CharField(max_length=16, null=True, blank=True)
-    elevenlabs_apply_text_normalization = models.CharField(
-        max_length=16,
-        choices=TextNormalization.choices,
-        default=TextNormalization.AUTO,
-    )
-    elevenlabs_seed = models.PositiveBigIntegerField(null=True, blank=True)
-    elevenlabs_studio_enabled = models.BooleanField(default=False)
-    elevenlabs_studio_access_granted = models.BooleanField(default=False)
-    elevenlabs_studio_last_checked = models.DateTimeField(null=True, blank=True)
-    elevenlabs_studio_last_error = models.TextField(null=True, blank=True)
-    sound_default_duration_seconds = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    sound_prompt_influence = models.DecimalField(max_digits=4, decimal_places=3, default=0.300)
-    sound_loop = models.BooleanField(default=False)
-    spoken_chunk_target_characters = models.PositiveSmallIntegerField(default=1800)
-    spoken_chunk_max_characters = models.PositiveSmallIntegerField(default=2000)
-    assembly_target_loudness_lufs = models.DecimalField(max_digits=5, decimal_places=2, default=-18.00)
-    sound_target_loudness_lufs = models.DecimalField(max_digits=5, decimal_places=2, default=-22.00)
-    module_boundary_padding_ms = models.PositiveSmallIntegerField(default=120)
-    settings_notes = models.TextField(null=True, blank=True)
-
-    @classmethod
-    def get_solo(cls):
-        config, _ = cls.objects.get_or_create(name="default")
-        return config
-
-    def save(self, *args, **kwargs):
-        if self.elevenlabs_model_id != "eleven_v3":
-            self.elevenlabs_model_id = "eleven_v3"
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"Audio generation ({self.get_provider_mode_display()})"
-
-
-class AudioVoice(BaseModel):
-    class Provider(models.TextChoices):
-        OPENAI = "openai", "OpenAI"
-        GEMINI = "gemini", "Gemini TTS"
-        ELEVENLABS = "elevenlabs", "ElevenLabs"
-
-    class Role(models.TextChoices):
-        LEADER = "leader", "Leader"
-        LEADER_DIALOGUE = "leader_dialogue", "Leader Dialogue"
-        CONGREGATION = "congregation", "Congregation"
-        CONGREGATION_DIALOGUE = "congregation_dialogue", "Congregation Dialogue"
-        READER = "reader", "Reader"
-
-    provider = models.CharField(max_length=32, choices=Provider.choices)
-    role = models.CharField(max_length=32, choices=Role.choices)
-    name = models.CharField(max_length=255)
-    voice_id = models.CharField(max_length=255)
-    enabled = models.BooleanField(default=True)
-    order = models.PositiveSmallIntegerField(default=0)
-    settings = models.JSONField(default=dict, blank=True)
-
-    class Meta:
-        ordering = ("provider", "role", "order", "name")
-        indexes = [
-            models.Index(fields=["provider", "role", "enabled"]),
-        ]
-
-    def __str__(self):
-        return f"{self.name} ({self.provider}, {self.role})"
-
-
-class AudioGeneratedFile(BaseModel):
-    class Provider(models.TextChoices):
-        OPENAI = "openai", "OpenAI"
-        GEMINI = "gemini", "Gemini TTS"
-        ELEVENLABS = "elevenlabs", "ElevenLabs"
-        LOCAL = "local", "Local"
-
-    class GenerationType(models.TextChoices):
-        SPOKEN = "spoken", "Spoken"
-        SOUND = "sound", "Sound"
-        SILENCE = "silence", "Silence"
-        MODULE = "module", "Module"
-        FINAL = "final", "Final"
-
-    class Status(models.TextChoices):
-        PENDING = "pending", "Pending"
-        READY = "ready", "Ready"
-        FAILED = "failed", "Failed"
-        DISABLED = "disabled", "Disabled"
-        DELETED = "deleted", "Deleted"
-        MISSING = "missing", "Missing"
-
-    provider = models.CharField(max_length=32, choices=Provider.choices)
-    provider_mode = models.CharField(max_length=32, default=AudioGenerationConfig.ProviderMode.OPENAI)
-    generation_type = models.CharField(max_length=32, choices=GenerationType.choices)
-    status = models.CharField(max_length=32, choices=Status.choices, default=Status.PENDING)
-    cache_key = models.CharField(max_length=128, db_index=True)
-    content_hash = models.CharField(max_length=128, db_index=True, null=True, blank=True)
-    text_preview = models.TextField(null=True, blank=True)
-    voice_key = models.CharField(max_length=512, null=True, blank=True)
-    voices = models.JSONField(default=dict, blank=True)
-    model_id = models.CharField(max_length=128, null=True, blank=True)
-    endpoint = models.CharField(max_length=255, null=True, blank=True)
-    settings_hash = models.CharField(max_length=128, db_index=True, null=True, blank=True)
-    settings_snapshot = models.JSONField(default=dict, blank=True)
-    office = models.CharField(max_length=128, null=True, blank=True)
-    office_date = models.DateField(null=True, blank=True)
-    module_name = models.CharField(max_length=255, null=True, blank=True)
-    line_type = models.CharField(max_length=64, null=True, blank=True)
-    line_id = models.CharField(max_length=255, null=True, blank=True)
-    file_name = models.CharField(max_length=255, null=True, blank=True)
-    media_path = models.CharField(max_length=512, null=True, blank=True)
-    duration_seconds = models.DecimalField(max_digits=10, decimal_places=3, default=0)
-    characters = models.PositiveIntegerField(default=0)
-    cost_units = models.DecimalField(max_digits=12, decimal_places=4, default=0)
-    cost_usd = models.DecimalField(max_digits=12, decimal_places=6, default=0)
-    cost_source = models.CharField(max_length=64, default="unpriced")
-    request_id = models.CharField(max_length=255, null=True, blank=True)
-    response_metadata = models.JSONField(default=dict, blank=True)
-    disabled_at = models.DateTimeField(null=True, blank=True)
-    deleted_at = models.DateTimeField(null=True, blank=True)
-    error_message = models.TextField(null=True, blank=True)
-
-    class Meta:
-        ordering = ("-created",)
-        indexes = [
-            models.Index(fields=["provider", "provider_mode", "generation_type"]),
-            models.Index(fields=["status", "disabled_at", "deleted_at"]),
-            models.Index(fields=["office_date", "module_name"]),
-        ]
-
-    @property
-    def is_reusable(self):
-        return self.status == self.Status.READY and self.disabled_at is None and self.deleted_at is None
-
-    def mark_disabled(self):
-        self.disabled_at = timezone.now()
-        self.status = self.Status.DISABLED
-        self.save(update_fields=["disabled_at", "status", "updated"])
-
-    def mark_deleted(self):
-        self.deleted_at = timezone.now()
-        self.status = self.Status.DELETED
-        self.save(update_fields=["deleted_at", "status", "updated"])
-
-    def __str__(self):
-        return f"{self.generation_type} {self.provider_mode} {self.cache_key[:12]}"
-
-
-class AudioGenerationEvent(BaseModel):
-    class Action(models.TextChoices):
-        GENERATED = "generated", "Generated"
-        CACHE_HIT = "cache_hit", "Cache hit"
-        CACHE_SKIP = "cache_skip", "Cache skip"
-        ASSEMBLED = "assembled", "Assembled"
-        FALLBACK = "fallback", "Fallback"
-        HEALTH_CHECK = "health_check", "Health check"
-        ERROR = "error", "Error"
-
-    generated_file = models.ForeignKey(
-        AudioGeneratedFile,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="events",
-    )
-    action = models.CharField(max_length=32, choices=Action.choices)
-    provider = models.CharField(max_length=32, null=True, blank=True)
-    provider_mode = models.CharField(max_length=32, null=True, blank=True)
-    generation_type = models.CharField(max_length=32, null=True, blank=True)
-    model_id = models.CharField(max_length=128, null=True, blank=True)
-    cache_key = models.CharField(max_length=128, db_index=True, null=True, blank=True)
-    office = models.CharField(max_length=128, null=True, blank=True)
-    office_date = models.DateField(null=True, blank=True)
-    module_name = models.CharField(max_length=255, null=True, blank=True)
-    settings_hash = models.CharField(max_length=128, db_index=True, null=True, blank=True)
-    characters = models.PositiveIntegerField(default=0)
-    cost_units = models.DecimalField(max_digits=12, decimal_places=4, default=0)
-    cost_usd = models.DecimalField(max_digits=12, decimal_places=6, default=0)
-    request_id = models.CharField(max_length=255, null=True, blank=True)
-    metadata = models.JSONField(default=dict, blank=True)
-    error_message = models.TextField(null=True, blank=True)
-
-    class Meta:
-        ordering = ("-created",)
-        indexes = [
-            models.Index(fields=["provider", "provider_mode", "generation_type"]),
-            models.Index(fields=["office_date", "module_name"]),
-            models.Index(fields=["action", "created"]),
-        ]
-
-    def __str__(self):
-        return f"{self.action} {self.provider_mode or ''} {self.generation_type or ''}".strip()
-
-
-class AudioUsage(BaseModel):
-    generated_file = models.ForeignKey(AudioGeneratedFile, on_delete=models.CASCADE, related_name="usage_links")
-    office = models.CharField(max_length=128, null=True, blank=True)
-    office_date = models.DateField(null=True, blank=True)
-    module_name = models.CharField(max_length=255, null=True, blank=True)
-    line_id = models.CharField(max_length=255, null=True, blank=True)
-    line_type = models.CharField(max_length=64, null=True, blank=True)
-    provider_mode = models.CharField(max_length=32, null=True, blank=True)
-    generation_type = models.CharField(max_length=32, null=True, blank=True)
-    settings_hash = models.CharField(max_length=128, db_index=True, null=True, blank=True)
-    settings_snapshot = models.JSONField(default=dict, blank=True)
-    start_time_seconds = models.DecimalField(max_digits=10, decimal_places=3, default=0)
-    duration_seconds = models.DecimalField(max_digits=10, decimal_places=3, default=0)
-    request_path = models.TextField(null=True, blank=True)
-
-    class Meta:
-        ordering = ("-created",)
-        indexes = [
-            models.Index(fields=["office_date", "module_name"]),
-            models.Index(fields=["provider_mode", "generation_type"]),
-        ]
-
-    def __str__(self):
-        return f"{self.generated_file} used by {self.module_name or self.office or 'unknown'}"
-
-
-class AudioCostRate(BaseModel):
-    class Unit(models.TextChoices):
-        CHARACTER = "character", "Character"
-        COST_UNIT = "cost_unit", "Provider cost unit"
-        MINUTE = "minute", "Audio minute"
-        FILE = "file", "File"
-
-    provider = models.CharField(max_length=32)
-    model_id = models.CharField(max_length=128)
-    generation_type = models.CharField(max_length=32, default=AudioGeneratedFile.GenerationType.SPOKEN)
-    unit = models.CharField(max_length=32, choices=Unit.choices, default=Unit.CHARACTER)
-    usd_per_unit = models.DecimalField(max_digits=12, decimal_places=8, default=0)
-    effective_at = models.DateTimeField(default=timezone.now)
-    enabled = models.BooleanField(default=True)
-    notes = models.TextField(null=True, blank=True)
-
-    class Meta:
-        ordering = ("-effective_at", "provider", "model_id")
-        indexes = [
-            models.Index(fields=["provider", "model_id", "generation_type", "enabled", "effective_at"]),
-        ]
-
-    def __str__(self):
-        return f"{self.provider} {self.model_id} {self.generation_type}: {self.usd_per_unit}/{self.unit}"
 
 
 class CollectType(BaseModel):
@@ -919,6 +720,139 @@ class LectionaryItem(BaseModel):
             if self.common.collect_2:
                 collects.append(self.common.collect_2)
         return collects
+
+
+class PronunciationOverride(models.Model):
+    """Admin-editable text substitutions applied to TTS input before synthesis.
+
+    These affect only the audio input (and therefore the generated clip hash),
+    never the text displayed to the user. Kept in the database so that
+    "this sounds wrong" reports are a data edit rather than a code change.
+    """
+
+    CACHE_KEY = "tts_pronunciation_overrides_v2"
+
+    match = models.CharField(max_length=255, help_text="Text (or regex) to find in the TTS input before synthesis.")
+    replacement = models.CharField(max_length=255, blank=True, default="", help_text="Replacement text.")
+    is_regex = models.BooleanField(default=False, help_text="Treat 'match' as a regular expression.")
+    providers = models.CharField(
+        max_length=128,
+        blank=True,
+        default="",
+        help_text="Comma-separated TTS providers this rule applies to (e.g. openai). Leave blank for all.",
+    )
+    order = models.PositiveIntegerField(default=0, help_text="Lower numbers are applied first.")
+    enabled = models.BooleanField(default=True)
+    note = models.CharField(max_length=255, blank=True, default="")
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("order", "id")
+
+    def __str__(self):
+        return f"{self.match!r} -> {self.replacement!r}"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self._clear_cache()
+
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        self._clear_cache()
+
+    @classmethod
+    def _clear_cache(cls):
+        from django.core.cache import cache
+
+        cache.delete(cls.CACHE_KEY)
+
+    @classmethod
+    def cached_rules(cls):
+        from django.core.cache import cache
+
+        rules = cache.get(cls.CACHE_KEY)
+        if rules is None:
+            rules = list(
+                cls.objects.filter(enabled=True)
+                .order_by("order", "id")
+                .values("match", "replacement", "is_regex", "providers")
+            )
+            cache.set(cls.CACHE_KEY, rules, 60)
+        return rules
+
+    @classmethod
+    def apply(cls, text, provider=None):
+        if not text:
+            return text
+        for rule in cls.cached_rules():
+            allowed = [name.strip().lower() for name in (rule.get("providers") or "").split(",") if name.strip()]
+            if allowed and (not provider or provider.lower() not in allowed):
+                continue
+            if rule["is_regex"]:
+                text = re.sub(rule["match"], rule["replacement"], text)
+            else:
+                text = text.replace(rule["match"], rule["replacement"])
+        return text
+
+
+class AudioClip(BaseModel):
+    """Tracks which normalized text maps to which generated TTS audio file.
+
+    Enables deleting/rebuilding individual clips and pruning orphaned files
+    left behind when voices, pacing, or pronunciation change.
+    """
+
+    KINDS = (
+        ("line", "Single line"),
+        ("group", "Grouped lines"),
+        ("reader", "Reading sentence"),
+        ("silence", "Silence"),
+    )
+
+    key = models.CharField(max_length=64, unique=True, db_index=True, help_text="uuid5 stem / filename base.")
+    filename = models.CharField(max_length=128)
+    text = models.TextField(blank=True, default="", help_text="Normalized text sent to the TTS provider.")
+    line_type = models.CharField(max_length=64, blank=True, default="")
+    provider = models.CharField(max_length=32, blank=True, default="", db_index=True)
+    voice = models.CharField(max_length=32, blank=True, default="", db_index=True)
+    model = models.CharField(max_length=32, blank=True, default="")
+    speed = models.FloatField(default=1.0)
+    kind = models.CharField(max_length=16, choices=KINDS, default="line")
+    duration = models.FloatField(null=True, blank=True, help_text="Length in seconds (via mutagen).")
+    word_timing = models.JSONField(
+        blank=True,
+        default=list,
+        help_text="Provider word alignment relative to the beginning of this clip.",
+    )
+
+    class Meta:
+        ordering = ("line_type", "voice", "text")
+
+    def __str__(self):
+        return f"{self.voice} [{self.line_type}] {self.text[:60]}"
+
+    @property
+    def file_path(self):
+        import os
+
+        from django.conf import settings
+
+        return os.path.join(settings.MEDIA_ROOT, self.filename)
+
+    def delete_file(self):
+        import os
+
+        try:
+            if self.filename and os.path.isfile(self.file_path):
+                os.remove(self.file_path)
+                sidecar = f"{self.file_path}.json"
+                if os.path.isfile(sidecar):
+                    os.remove(sidecar)
+                return True
+        except OSError:
+            pass
+        return False
 
 
 class MetricalCollect(BaseModel):

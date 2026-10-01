@@ -1,9 +1,12 @@
 import os
 import time
-from django.core.management.base import BaseCommand
+
 from django.conf import settings
-from mutagen.mp3 import MP3
+from django.core.management.base import BaseCommand
 from mutagen.id3 import ID3NoHeaderError
+from mutagen.mp3 import MP3
+
+from office.api.views.tts import get_tts_provider, provider_names
 
 
 class Command(BaseCommand):
@@ -21,6 +24,26 @@ class Command(BaseCommand):
             default=0,
             help="Minimum age in days of the files to delete (default: 0).",
         )
+
+    def _scan_dirs(self, media_root):
+        """MEDIA_ROOT plus each TTS provider media subfolder (e.g. openai_v2/, fish/)."""
+        dirs = [media_root]
+        for name in provider_names():
+            subdir = get_tts_provider(name).media_subdir
+            path = os.path.join(media_root, subdir)
+            if path not in dirs and os.path.isdir(path):
+                dirs.append(path)
+        return dirs
+
+    def _is_ffmpeg_full_track(self, audio):
+        if not audio.tags:
+            return False
+        # TSSE is the 'Software/Hardware and settings used for encoding' frame
+        for tag in audio.tags.getall("TSSE"):
+            text = str(tag.text)
+            if "Lavf" in text or "ffmpeg" in text.lower():
+                return True
+        return False
 
     def handle(self, *args, **options):
         is_dry_run = not options["execute"]
@@ -42,61 +65,59 @@ class Command(BaseCommand):
             self.stdout.write(self.style.ERROR(f"Media root does not exist: {media_root}"))
             return
 
+        scan_dirs = self._scan_dirs(media_root)
+        self.stdout.write(f"Scanning: {', '.join(scan_dirs)}")
+
         full_files_found = []
-        corrupted_files_found = []
         total_size_bytes = 0
         total_mp3s = 0
 
-        for filename in os.listdir(media_root):
-            if not filename.endswith(".mp3"):
-                continue
+        for scan_dir in scan_dirs:
+            for filename in os.listdir(scan_dir):
+                if not filename.endswith(".mp3"):
+                    continue
 
-            file_path = os.path.join(media_root, filename)
+                file_path = os.path.join(scan_dir, filename)
+                if not os.path.isfile(file_path):
+                    continue
 
-            # Check file age
-            if os.path.getmtime(file_path) >= cutoff_time:
-                continue
+                # Check file age
+                if os.path.getmtime(file_path) >= cutoff_time:
+                    continue
 
-            total_mp3s += 1
+                total_mp3s += 1
+                display_name = os.path.relpath(file_path, media_root)
 
-            try:
-                audio = MP3(file_path)
-                # Check ID3 tags for ffmpeg/Lavf signature
-                is_ffmpeg = False
-                if audio.tags:
-                    # TSSE is the 'Software/Hardware and settings used for encoding' frame
-                    tsse_tags = audio.tags.getall("TSSE")
-                    for tag in tsse_tags:
-                        if "Lavf" in str(tag.text) or "ffmpeg" in str(tag.text).lower():
-                            is_ffmpeg = True
-                            break
+                try:
+                    audio = MP3(file_path)
+                    if not self._is_ffmpeg_full_track(audio):
+                        continue
 
-                if is_ffmpeg:
                     size = os.path.getsize(file_path)
-                    full_files_found.append((filename, size))
+                    full_files_found.append((display_name, size))
                     total_size_bytes += size
 
                     if is_dry_run:
-                        self.stdout.write(f"Found full file: {filename} ({size / 1024 / 1024:.2f} MB)")
+                        self.stdout.write(f"Found full file: {display_name} ({size / 1024 / 1024:.2f} MB)")
                     else:
                         os.remove(file_path)
-                        self.stdout.write(self.style.SUCCESS(f"Deleted: {filename}"))
+                        self.stdout.write(self.style.SUCCESS(f"Deleted: {display_name}"))
 
-            except ID3NoHeaderError:
-                # File has no ID3 tags, likely a raw OpenAI file
-                pass
-            except Exception as e:
-                # If mutagen can't sync to MPEG frame, it's likely a corrupted or empty file
-                if "can't sync to MPEG frame" in str(e):
-                    size = os.path.getsize(file_path)
-                    self.stdout.write(
-                        self.style.WARNING(f"Found corrupted/invalid MP3 file: {filename} ({size} bytes)")
-                    )
-                    if not is_dry_run:
-                        os.remove(file_path)
-                        self.stdout.write(self.style.SUCCESS(f"Deleted corrupted/invalid file: {filename}"))
-                else:
-                    self.stdout.write(self.style.ERROR(f"Error reading {filename}: {e}"))
+                except ID3NoHeaderError:
+                    # File has no ID3 tags, likely a raw TTS clip
+                    pass
+                except Exception as e:
+                    # If mutagen can't sync to MPEG frame, it's likely a corrupted or empty file
+                    if "can't sync to MPEG frame" in str(e):
+                        size = os.path.getsize(file_path)
+                        self.stdout.write(
+                            self.style.WARNING(f"Found corrupted/invalid MP3 file: {display_name} ({size} bytes)")
+                        )
+                        if not is_dry_run:
+                            os.remove(file_path)
+                            self.stdout.write(self.style.SUCCESS(f"Deleted corrupted/invalid file: {display_name}"))
+                    else:
+                        self.stdout.write(self.style.ERROR(f"Error reading {display_name}: {e}"))
 
         self.stdout.write("\n" + "=" * 40)
         self.stdout.write(self.style.SUCCESS(f"Total MP3s scanned (older than {days_old} days): {total_mp3s}"))

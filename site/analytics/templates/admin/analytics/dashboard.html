@@ -1,0 +1,207 @@
+{% extends "admin/base_site.html" %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+{% endblock %}
+
+{% block breadcrumbs %}
+  <div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">Home</a>
+    &rsaquo; <a href="{% url 'admin:app_list' app_label='analytics' %}">Analytics</a>
+    &rsaquo; Dashboard
+  </div>
+{% endblock %}
+
+{% block content %}
+<style>
+  .an-cards { display: flex; flex-wrap: wrap; gap: 16px; margin: 12px 0 24px; }
+  .an-card { flex: 1 1 160px; border: 1px solid var(--hairline-color, #e0e0e0); border-radius: 8px; padding: 14px 16px; }
+  .an-card .an-num { font-size: 28px; font-weight: 700; }
+  .an-card .an-lbl { color: var(--body-quiet-color, #666); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+  .an-grid { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+  .an-grid > div { flex: 1 1 320px; }
+  table.an-table { width: 100%; border-collapse: collapse; }
+  table.an-table th, table.an-table td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--hairline-color, #eee); }
+  table.an-table td.num, table.an-table th.num { text-align: right; }
+  .an-range a { margin-right: 10px; }
+  .an-range a.active { font-weight: 700; text-decoration: underline; }
+  canvas#anChart { max-height: 320px; }
+</style>
+
+<div class="an-range">
+  Range:
+  {% for opt in day_options %}
+    <a href="?days={{ opt }}" class="{% if opt == days %}active{% endif %}">Last {{ opt }} days</a>
+  {% endfor %}
+</div>
+
+<div class="an-cards">
+  <div class="an-card"><div class="an-num">{{ totals.views }}</div><div class="an-lbl">Office views</div></div>
+  <div class="an-card"><div class="an-num">{{ totals.unique_users }}</div><div class="an-lbl">Unique users</div></div>
+  <div class="an-card"><div class="an-num">{{ totals.audio_play }}</div><div class="an-lbl">Audio plays (confirmed)</div></div>
+  <div class="an-card"><div class="an-num">{{ totals.audio_loaded }}</div><div class="an-lbl">Audio loaded (approx.)</div></div>
+</div>
+
+<canvas id="anChart"></canvas>
+{{ chart_data_json|json_script:"an-chart-data" }}
+
+<h2 style="margin-top:28px;">By office</h2>
+<table class="an-table">
+  <thead>
+    <tr>
+      <th>Service</th><th>Office</th>
+      <th class="num">Views</th><th class="num">Unique users</th>
+      <th class="num">Audio plays</th><th class="num">Play rate</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in per_office %}
+    <tr>
+      <td>{{ row.service_type|default:"—" }}</td>
+      <td>{{ row.office_label }}</td>
+      <td class="num">{{ row.views }}</td>
+      <td class="num">{{ row.unique_users }}</td>
+      <td class="num">{{ row.audio_play }}</td>
+      <td class="num">{{ row.play_rate }}%</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">No data for this range.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="an-grid" style="margin-top:28px;">
+  <div>
+    <h2>By app type (platform)</h2>
+    <p style="color:var(--body-quiet-color,#666);font-size:12px;">Native vs web is only known for updated clients; older clients show as "Unknown".</p>
+    <table class="an-table">
+      <thead><tr><th>Platform</th><th class="num">Views</th><th class="num">Unique users</th></tr></thead>
+      <tbody>
+        {% for row in platform_rows %}
+        <tr><td>{{ row.label }}</td><td class="num">{{ row.views }}</td><td class="num">{{ row.unique_users }}</td></tr>
+        {% empty %}<tr><td colspan="3">No data.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <h2>By operating system</h2>
+    <table class="an-table">
+      <thead><tr><th>OS</th><th class="num">Views</th><th class="num">Unique users</th></tr></thead>
+      <tbody>
+        {% for row in os_rows %}
+        <tr><td>{{ row.label }}</td><td class="num">{{ row.views }}</td><td class="num">{{ row.unique_users }}</td></tr>
+        {% empty %}<tr><td colspan="3">No data.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <h2>By browser</h2>
+    <table class="an-table">
+      <thead><tr><th>Browser</th><th class="num">Views</th><th class="num">Unique users</th></tr></thead>
+      <tbody>
+        {% for row in browser_rows %}
+        <tr><td>{{ row.label }}</td><td class="num">{{ row.views }}</td><td class="num">{{ row.unique_users }}</td></tr>
+        {% empty %}<tr><td colspan="3">No data.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if setting_defs %}
+<h2 style="margin-top:28px;">Settings usage</h2>
+<form method="get" style="margin-bottom:12px;">
+  <input type="hidden" name="days" value="{{ days }}">
+  <label for="an-setting-select">Setting:</label>
+  <select id="an-setting-select" name="setting" onchange="this.form.submit()">
+    {% for def in setting_defs %}
+      <option value="{{ def.name }}" {% if def.name == selected_setting %}selected{% endif %}>{{ def.title }}</option>
+    {% endfor %}
+  </select>
+  <noscript><button type="submit">Show</button></noscript>
+</form>
+
+<div class="an-grid">
+  <div>
+    <canvas id="anSettingChart" style="max-height:320px;"></canvas>
+    {{ setting_chart_json|json_script:"an-setting-data" }}
+  </div>
+  <div>
+    <h3 style="margin-top:0;">{{ selected_setting_title }} — most common</h3>
+    <table class="an-table">
+      <thead><tr><th>Value</th><th class="num">Views</th><th class="num">Share</th></tr></thead>
+      <tbody>
+        {% for row in setting_distribution %}
+        <tr><td>{{ row.label }}</td><td class="num">{{ row.count }}</td><td class="num">{{ row.share }}%</td></tr>
+        {% empty %}
+        <tr><td colspan="3">No settings captured for this range yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h3 style="margin-top:24px;">Most common value per setting</h3>
+<table class="an-table">
+  <thead>
+    <tr><th>Setting</th><th>Most common</th><th class="num">Views</th><th class="num">Share</th><th class="num">Distinct values</th></tr>
+  </thead>
+  <tbody>
+    {% for row in settings_overview %}
+    <tr>
+      <td><a href="?days={{ days }}&setting={{ row.name }}">{{ row.title }}</a></td>
+      <td>{{ row.top_label }}</td>
+      <td class="num">{{ row.top_count }}</td>
+      <td class="num">{{ row.top_share }}%</td>
+      <td class="num">{{ row.distinct_values }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">No settings captured for this range yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+<script>
+  (function () {
+    var data = JSON.parse(document.getElementById("an-chart-data").textContent);
+    var ctx = document.getElementById("anChart");
+    if (!ctx || !window.Chart) return;
+    new window.Chart(ctx, {
+      type: "line",
+      data: {
+        labels: data.labels,
+        datasets: [
+          { label: "Office views", data: data.views, borderColor: "#2faa60", tension: 0.25 },
+          { label: "Audio plays", data: data.audio_play, borderColor: "#5EADDE", tension: 0.25 },
+          { label: "Audio loaded", data: data.audio_loaded, borderColor: "#a464c4", borderDash: [5, 4], tension: 0.25 }
+        ]
+      },
+      options: {
+        responsive: true,
+        interaction: { mode: "index", intersect: false },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  })();
+
+  (function () {
+    var el = document.getElementById("an-setting-data");
+    var canvas = document.getElementById("anSettingChart");
+    if (!el || !canvas || !window.Chart) return;
+    var data = JSON.parse(el.textContent);
+    new window.Chart(canvas, {
+      type: "bar",
+      data: {
+        labels: data.labels,
+        datasets: [{ label: "Views", data: data.counts, backgroundColor: "#2faa60" }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  })();
+</script>
+{% endblock %}

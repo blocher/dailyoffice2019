@@ -40,7 +40,10 @@
     <!-- Main Content (Book Style) -->
     <div id="main" class="book-content">
       <div v-for="module in modules" :key="module.name">
-        <div v-for="line in module.lines" :key="line.content">
+        <div
+          v-for="line in module.lines.filter((l) => l.line_type !== 'speaker')"
+          :key="line.content"
+        >
           <OfficeHeading v-if="line.line_type === 'heading'" :line="line" />
           <OfficeSubheading
             v-if="line.line_type === 'subheading'"
@@ -89,7 +92,8 @@
       audioLinks &&
       audioLinks.length &&
       isWithinSevenDays &&
-      isEsvOrKjv
+      isEsvOrKjv &&
+      isEnglish
     "
     :audio="audioLinks"
     :audioReady="audioReady"
@@ -97,6 +101,7 @@
     :isEsvOrKjv="isEsvOrKjv"
     :isWithinSevenDays="isWithinSevenDays"
     @dismiss-audio="confirmDismissAudio"
+    @audio-play="onAudioPlay"
   />
   <AudioPlayerMessage
     v-if="
@@ -104,11 +109,13 @@
       audioEnabled &&
       (!isWithinSevenDays ||
         !isEsvOrKjv ||
+        !isEnglish ||
         !audioLinks ||
         !audioLinks.length ||
         !audioReady)
     "
     :isEsvOrKjv="isEsvOrKjv"
+    :isEnglish="isEnglish"
     :isWithinSevenDays="isWithinSevenDays"
     :audioReady="audioReady"
     :hasAudioLinks="!!(audioLinks && audioLinks.length)"
@@ -138,6 +145,8 @@ import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue';
 import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
 import { ElMessageBox } from 'element-plus';
 import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
+import { trackEvent } from '@/helpers/analytics';
+import { getCachedClientId } from '@/helpers/clientId';
 
 export default {
   name: 'Office',
@@ -184,6 +193,10 @@ export default {
       audioReady: false,
       audioEnabled: true,
       isEsvOrKjv: false,
+      isEnglish: false,
+      officeDateStr: null,
+      bibleTranslation: null,
+      audioPlayTracked: false,
     };
   },
   computed: {
@@ -252,6 +265,12 @@ export default {
       settings.bible_translation = 'esv';
     }
     this.isEsvOrKjv = ['esv', 'kjv'].includes(settings.bible_translation);
+    const displayLanguage =
+      Object.prototype.hasOwnProperty.call(settings, 'display_language') &&
+      settings.display_language
+        ? settings.display_language
+        : 'english';
+    this.isEnglish = displayLanguage === 'english';
     const queryString = Object.keys(settings)
       .map((key) => key + '=' + settings[key])
       .join('&');
@@ -276,9 +295,23 @@ export default {
     this.applySeasonAccentFromCard(this.card);
     this.error = false;
     this.loading = false;
+    // Fire once, on the text request only, so the include_audio_links request
+    // below is never double-counted. Backend logs the view; GA gets the mirror.
+    this.officeDateStr = today_str;
+    this.bibleTranslation = settings.bible_translation;
+    trackEvent(
+      'office_view',
+      {
+        service_type: this.serviceType,
+        office: this.office,
+        office_date: today_str,
+        translation: settings.bible_translation,
+      },
+      { toBackend: false, toGA: true }
+    );
     await this.$nextTick();
     await this.applyStoredFontSize();
-    if (this.isEsvOrKjv) {
+    if (this.isEsvOrKjv && this.isEnglish) {
       this.audioLinks = await this.setAudioLinks(office_url);
     }
     this.audioReady = true;
@@ -325,12 +358,53 @@ export default {
         setSeasonAccent(liturgicalColor);
       }
     },
+    resolveAudioUrl(rawUrl) {
+      // The backend builds the track URL from Django's Site.domain (e.g.
+      // "example.com"), which is not reachable from the client. Resolve it
+      // against the same API host the office was fetched from so audio works
+      // in every environment.
+      if (!rawUrl) {
+        return rawUrl;
+      }
+      try {
+        const path = new window.URL(rawUrl, window.location.origin).pathname;
+        const base = (import.meta.env.VITE_API_URL || '/').replace(/\/$/, '');
+        // Append the anonymous client id so the backend can attribute the
+        // "audio loaded" event (the <audio> element can't send custom headers).
+        const clientId = getCachedClientId();
+        const query = clientId ? `?cid=${encodeURIComponent(clientId)}` : '';
+        return `${base}/${path.replace(/^\//, '')}${query}`;
+      } catch {
+        return rawUrl;
+      }
+    },
+    onAudioPlay() {
+      // First real play per office load; the player guards repeat presses too.
+      if (this.audioPlayTracked) {
+        return;
+      }
+      this.audioPlayTracked = true;
+      trackEvent(
+        'audio_play',
+        {
+          service_type: this.serviceType,
+          office: this.office,
+          office_date: this.officeDateStr,
+          translation: this.bibleTranslation,
+        },
+        { toBackend: true, toGA: true }
+      );
+    },
     async setAudioLinks(url) {
       url = `${url}&include_audio_links=true`;
       try {
         const data = await this.$http.get(url);
-        this.audioLinks = data.data.audio.single_track;
-        return data.data.audio.single_track;
+        const singleTrack = data.data.audio.single_track;
+        if (Array.isArray(singleTrack) && singleTrack.length) {
+          singleTrack[0] = this.resolveAudioUrl(singleTrack[0]);
+        }
+        this.audioLinks = singleTrack;
+        return singleTrack;
       } catch {
         return [];
       }
@@ -370,6 +444,7 @@ export default {
           'leader_dialogue',
           'congregation_dialogue',
           'reader',
+          'speaker',
         ].includes(line.line_type)
       ) {
         return null;

@@ -1,16 +1,12 @@
 from adminsortable2.admin import SortableAdminMixin
-from django.contrib import admin
-from django.db.models import Sum
-from django.utils import timezone
+from django.contrib import admin, messages
+from django.shortcuts import redirect
+from django.test import override_settings
+from django.urls import path, reverse
+from django.utils.html import format_html
 
 from office.models import (
     AboutItem,
-    AudioCostRate,
-    AudioGeneratedFile,
-    AudioGenerationConfig,
-    AudioGenerationEvent,
-    AudioUsage,
-    AudioVoice,
     UpdateNotice,
     StandardOfficeDay,
     HolyDayOfficeDay,
@@ -19,6 +15,9 @@ from office.models import (
     Collect,
     CollectTag,
     CollectTagCategory,
+    SiteMessage,
+    AudioClip,
+    PronunciationOverride,
 )
 
 
@@ -32,6 +31,29 @@ class UpdateNoticeAdmin(admin.ModelAdmin):
     list_display = ("version", "app_mode", "web_mode")
     fields = ("version", "notice", "app_mode", "web_mode")
     list_filter = ("app_mode", "web_mode")
+
+
+class SiteMessageAdmin(admin.ModelAdmin):
+    list_display = (
+        "text",
+        "tag_text",
+        "tag_color",
+        "active",
+        "show_on_web",
+        "show_on_android",
+        "show_on_ios",
+        "expiration_date",
+        "order",
+    )
+    list_filter = ("active", "tag_color", "show_on_web", "show_on_android", "show_on_ios")
+    search_fields = ("text", "tag_text", "link")
+    list_editable = ("active", "order")
+    fieldsets = (
+        ("Content", {"fields": ("tag_text", "tag_color", "text", "link")}),
+        ("Dismissal", {"fields": ("dismissible", "dismiss_permanent")}),
+        ("Platforms", {"fields": ("show_on_web", "show_on_android", "show_on_ios")}),
+        ("Visibility", {"fields": ("active", "expiration_date", "order")}),
+    )
 
 
 class StandardOfficeDayAdmin(admin.ModelAdmin):
@@ -100,239 +122,140 @@ class CollectAdmin(admin.ModelAdmin):
     search_fields = ("title", "attribution", "text", "traditional_text")
 
 
-@admin.action(description="Disable selected audio files")
-def disable_audio_files(modeladmin, request, queryset):
-    for generated_file in queryset:
-        generated_file.mark_disabled()
+class PronunciationOverrideAdmin(admin.ModelAdmin):
+    list_display = ("match", "replacement", "is_regex", "providers", "order", "enabled", "note")
+    list_editable = ("replacement", "is_regex", "providers", "order", "enabled")
+    list_filter = ("enabled", "is_regex")
+    search_fields = ("match", "replacement", "note")
+    ordering = ("order", "id")
 
 
-@admin.action(description="Mark selected audio files as deleted")
-def mark_audio_files_deleted(modeladmin, request, queryset):
-    for generated_file in queryset:
-        generated_file.mark_deleted()
-
-
-@admin.action(description="Run Studio access health check")
-def run_studio_health_check(modeladmin, request, queryset):
-    from office.audio.providers import get_audio_provider
-
-    for config in queryset:
-        previous_mode = config.provider_mode
-        previous_studio_enabled = config.elevenlabs_studio_enabled
-        config.provider_mode = AudioGenerationConfig.ProviderMode.ELEVENLABS_STUDIO
-        config.elevenlabs_studio_enabled = True
-        config.save(
-            update_fields=[
-                "provider_mode",
-                "elevenlabs_studio_enabled",
-                "updated",
-            ]
-        )
-        get_audio_provider(config)
-        config.provider_mode = previous_mode
-        config.elevenlabs_studio_enabled = previous_studio_enabled
-        config.save(update_fields=["provider_mode", "elevenlabs_studio_enabled", "updated"])
-
-
-class AudioGenerationConfigAdmin(admin.ModelAdmin):
+class AudioClipAdmin(admin.ModelAdmin):
     list_display = (
-        "name",
-        "provider_mode",
-        "elevenlabs_model_id",
-        "elevenlabs_sound_model_id",
-        "elevenlabs_studio_enabled",
-        "elevenlabs_studio_access_granted",
-        "elevenlabs_studio_last_checked",
-    )
-    fieldsets = (
-        (
-            "Provider",
-            {
-                "fields": (
-                    "name",
-                    "provider_mode",
-                    "openai_model",
-                    "openai_output_format",
-                )
-            },
-        ),
-        (
-            "ElevenLabs v3",
-            {
-                "fields": (
-                    "elevenlabs_model_id",
-                    "elevenlabs_sound_model_id",
-                    "elevenlabs_output_format",
-                    "elevenlabs_language_code",
-                    "elevenlabs_apply_text_normalization",
-                    "elevenlabs_seed",
-                )
-            },
-        ),
-        (
-            "Studio",
-            {
-                "fields": (
-                    "elevenlabs_studio_enabled",
-                    "elevenlabs_studio_access_granted",
-                    "elevenlabs_studio_last_checked",
-                    "elevenlabs_studio_last_error",
-                )
-            },
-        ),
-        (
-            "Sound and Assembly",
-            {
-                "fields": (
-                    "sound_default_duration_seconds",
-                    "sound_prompt_influence",
-                    "sound_loop",
-                    "spoken_chunk_target_characters",
-                    "spoken_chunk_max_characters",
-                    "assembly_target_loudness_lufs",
-                    "sound_target_loudness_lufs",
-                    "module_boundary_padding_ms",
-                    "settings_notes",
-                )
-            },
-        ),
-    )
-    readonly_fields = (
-        "elevenlabs_studio_access_granted",
-        "elevenlabs_studio_last_checked",
-        "elevenlabs_studio_last_error",
-    )
-    actions = (run_studio_health_check,)
-
-
-class AudioVoiceAdmin(admin.ModelAdmin):
-    list_display = ("provider", "role", "name", "voice_id", "enabled", "order")
-    list_editable = ("enabled", "order")
-    list_filter = ("provider", "role", "enabled")
-    search_fields = ("name", "voice_id")
-    ordering = ("provider", "role", "order", "name")
-
-
-class AudioGeneratedFileAdmin(admin.ModelAdmin):
-    list_display = (
-        "created",
-        "provider_mode",
-        "generation_type",
-        "status",
-        "module_name",
-        "model_id",
-        "duration_seconds",
-        "characters",
-        "cost_usd",
-        "cost_source",
-        "disabled_at",
-        "deleted_at",
-    )
-    list_filter = (
+        "text",
         "provider",
-        "provider_mode",
-        "generation_type",
-        "status",
-        "office_date",
-        "module_name",
-        "model_id",
-        "disabled_at",
-        "deleted_at",
-    )
-    search_fields = (
-        "cache_key",
-        "content_hash",
-        "text_preview",
-        "module_name",
-        "line_id",
-        "settings_hash",
-        "request_id",
-        "file_name",
-    )
-    readonly_fields = (
-        "cache_key",
-        "content_hash",
-        "settings_hash",
-        "settings_snapshot",
-        "response_metadata",
-        "created",
-        "updated",
-    )
-    actions = (disable_audio_files, mark_audio_files_deleted)
-    date_hierarchy = "created"
-
-
-class AudioGenerationEventAdmin(admin.ModelAdmin):
-    change_list_template = "admin/office/audio_spend_changelist.html"
-    list_display = (
-        "created",
-        "action",
-        "provider_mode",
-        "generation_type",
-        "module_name",
-        "model_id",
-        "characters",
-        "cost_units",
-        "cost_usd",
-        "request_id",
-    )
-    list_filter = ("action", "provider", "provider_mode", "generation_type", "office_date", "module_name", "model_id")
-    search_fields = ("cache_key", "settings_hash", "request_id", "error_message", "metadata")
-    date_hierarchy = "created"
-
-    def changelist_view(self, request, extra_context=None):
-        response = super().changelist_view(request, extra_context=extra_context)
-        try:
-            queryset = response.context_data["cl"].queryset
-            response.context_data["audio_spend_totals"] = queryset.values("provider").annotate(
-                cost_usd=Sum("cost_usd"),
-                cost_units=Sum("cost_units"),
-                characters=Sum("characters"),
-            )
-            response.context_data["audio_spend_generated_total"] = queryset.filter(
-                action=AudioGenerationEvent.Action.GENERATED
-            ).aggregate(cost_usd=Sum("cost_usd"))
-            response.context_data["audio_spend_as_of"] = timezone.now()
-        except (AttributeError, KeyError):
-            pass
-        return response
-
-
-class AudioUsageAdmin(admin.ModelAdmin):
-    list_display = (
-        "created",
-        "office_date",
-        "office",
-        "module_name",
+        "voice",
         "line_type",
-        "provider_mode",
-        "generation_type",
-        "settings_hash",
-        "generated_file",
+        "kind",
+        "duration",
+        "model",
+        "speed",
+        "updated",
+        "clip_actions",
     )
-    list_filter = ("office_date", "office", "module_name", "line_type", "provider_mode", "generation_type")
-    search_fields = ("settings_hash", "settings_snapshot", "line_id", "module_name", "generated_file__cache_key")
-    date_hierarchy = "created"
+    list_filter = ("provider", "voice", "line_type", "kind", "model")
+    search_fields = ("text", "voice", "line_type", "key", "filename")
+    readonly_fields = ("key", "filename", "duration", "word_timing", "created", "updated")
+    ordering = ("line_type", "voice", "text")
+    actions = ("delete_and_rebuild",)
+
+    def get_urls(self):
+        custom = [
+            path(
+                "<uuid:object_id>/regenerate/",
+                self.admin_site.admin_view(self.regenerate_clip_view),
+                name="office_audioclip_regenerate",
+            ),
+            path(
+                "<uuid:object_id>/delete-clip/",
+                self.admin_site.admin_view(self.delete_clip_view),
+                name="office_audioclip_delete_clip",
+            ),
+        ]
+        return custom + super().get_urls()
+
+    @admin.display(description="Actions")
+    def clip_actions(self, obj):
+        return format_html(
+            '<a class="button" href="{}" '
+            "onclick=\"return confirm('Delete this clip and re-synthesize the exact same text?')\">"
+            "Regenerate</a>&nbsp;"
+            '<a class="button" style="background:#ba2121;color:#fff" href="{}" '
+            "onclick=\"return confirm('Delete this clip and its audio file?')\">Delete</a>",
+            reverse("admin:office_audioclip_regenerate", args=[obj.pk]),
+            reverse("admin:office_audioclip_delete_clip", args=[obj.pk]),
+        )
+
+    def _back(self, request):
+        return redirect(request.META.get("HTTP_REFERER") or "admin:office_audioclip_changelist")
+
+    def regenerate_clip_view(self, request, object_id):
+        clip = self.get_object(request, str(object_id))
+        if clip is None:
+            self.message_user(request, "Audio clip not found.", level=messages.ERROR)
+            return self._back(request)
+
+        import os
+
+        from mutagen.mp3 import MP3
+
+        from office.api.views.index import GenericDailyOfficeSerializer
+        from office.api.views.tts import get_tts_provider
+
+        try:
+            clip.delete_file()
+            os.makedirs(os.path.dirname(clip.file_path), exist_ok=True)
+            provider_name = clip.provider
+            if not provider_name:
+                folder = clip.filename.split("/", 1)[0]
+                provider_name = folder if folder in {"elevenlabs", "fish"} else "openai"
+            provider = get_tts_provider(provider_name)
+            setting_names = {
+                "openai": ("TTS_MODEL", "TTS_SPEED"),
+                "elevenlabs": ("ELEVENLABS_TTS_MODEL", "ELEVENLABS_TTS_SPEED"),
+                "fish": ("FISH_TTS_MODEL", "FISH_TTS_SPEED"),
+            }
+            model_setting, speed_setting = setting_names[provider_name]
+            with override_settings(**{model_setting: clip.model, speed_setting: clip.speed}):
+                word_timing = provider.synthesize(clip.voice, clip.text, clip.file_path) or []
+            GenericDailyOfficeSerializer.save_word_timing(clip.file_path, word_timing)
+            try:
+                clip.duration = MP3(clip.file_path).info.length
+            except Exception:
+                clip.duration = None
+            clip.provider = provider_name
+            clip.word_timing = word_timing
+            clip.save()
+            self.message_user(request, f"Regenerated audio for “{clip}”.")
+        except Exception as e:
+            self.message_user(request, f"Failed to regenerate “{clip}”: {e}", level=messages.ERROR)
+        return self._back(request)
+
+    def delete_clip_view(self, request, object_id):
+        clip = self.get_object(request, str(object_id))
+        if clip is None:
+            self.message_user(request, "Audio clip not found.", level=messages.ERROR)
+            return self._back(request)
+        label = str(clip)
+        had_file = clip.delete_file()
+        clip.delete()
+        suffix = " and its audio file" if had_file else " (no file on disk)"
+        self.message_user(request, f"Deleted “{label}”{suffix}.")
+        return self._back(request)
+
+    @admin.action(description="Delete file(s) and rebuild on next request")
+    def delete_and_rebuild(self, request, queryset):
+        deleted_files = 0
+        for clip in queryset:
+            if clip.delete_file():
+                deleted_files += 1
+        count = queryset.count()
+        queryset.delete()
+        self.message_user(
+            request,
+            f"Removed {count} clip record(s) and {deleted_files} file(s). "
+            f"They will regenerate the next time the audio is requested.",
+        )
 
 
-class AudioCostRateAdmin(admin.ModelAdmin):
-    list_display = ("provider", "model_id", "generation_type", "unit", "usd_per_unit", "effective_at", "enabled")
-    list_filter = ("provider", "model_id", "generation_type", "unit", "enabled")
-    search_fields = ("provider", "model_id", "notes")
-    date_hierarchy = "effective_at"
-
-
+admin.site.register(PronunciationOverride, PronunciationOverrideAdmin)
+admin.site.register(AudioClip, AudioClipAdmin)
 admin.site.register(AboutItem, AboutItemAdmin)
 admin.site.register(UpdateNotice, UpdateNoticeAdmin)
+admin.site.register(SiteMessage, SiteMessageAdmin)
 admin.site.register(StandardOfficeDay, StandardOfficeDayAdmin)
 admin.site.register(HolyDayOfficeDay, HolyDayOfficeDayAdmin)
 admin.site.register(Setting, OfficeSettingAdmin)
 admin.site.register(CollectTag, CollectTagAdmin)
 admin.site.register(CollectTagCategory, CollectTagCategoryAdmin)
 admin.site.register(Collect, CollectAdmin)
-admin.site.register(AudioGenerationConfig, AudioGenerationConfigAdmin)
-admin.site.register(AudioVoice, AudioVoiceAdmin)
-admin.site.register(AudioGeneratedFile, AudioGeneratedFileAdmin)
-admin.site.register(AudioGenerationEvent, AudioGenerationEventAdmin)
-admin.site.register(AudioUsage, AudioUsageAdmin)
-admin.site.register(AudioCostRate, AudioCostRateAdmin)
