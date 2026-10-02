@@ -27,6 +27,8 @@ import tempfile
 import requests
 from django.conf import settings
 
+from office.voice_style import GEMINI_PRAYER_STYLE
+
 logger = logging.getLogger(__name__)
 
 
@@ -405,7 +407,7 @@ class GeminiTTSProvider(BaseTTSProvider):
 
     @property
     def effective_instructions(self):
-        return getattr(settings, "GEMINI_TTS_STYLE", "")
+        return getattr(settings, "GEMINI_TTS_STYLE", "") or GEMINI_PRAYER_STYLE
 
     def cache_signature(self):
         return f"{super().cache_signature()} mp3_44100_128 gemini_adapter_v1"
