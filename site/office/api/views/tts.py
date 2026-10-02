@@ -377,13 +377,27 @@ class GeminiTTSProvider(BaseTTSProvider):
 
     @property
     def voices(self):
-        reader = getattr(settings, "GEMINI_TTS_VOICE_READER", "") or "Charon"
+        configured = getattr(settings, "GEMINI_TTS_VOICES_READER", ())
+        if isinstance(configured, str):
+            configured = configured.split(",")
+        reader = tuple(voice.strip() for voice in configured if voice.strip())
+        if not reader:
+            reader = (getattr(settings, "GEMINI_TTS_VOICE_READER", "") or "Charon",)
         return {
             "leader": getattr(settings, "GEMINI_TTS_VOICE_LEADER", "") or "Kore",
             "congregation": getattr(settings, "GEMINI_TTS_VOICE_CONGREGATION", "") or "Sulafat",
             "reader": reader,
             "html": reader,
         }
+
+    def voice_for_text(self, line_type, text):
+        if self.role_for_line_type(line_type) != "reader":
+            return self.voice_for_line_type(line_type)
+        readers = self.voices["reader"]
+        # Stable selection avoids changing voices between serializer passes.
+        # Existing passage recordings are reused before choosing a new voice.
+        digest = hashlib.sha256(text.encode("utf-8")).digest()
+        return readers[int.from_bytes(digest[:8], "big") % len(readers)]
 
     @property
     def output_sample_rate(self):

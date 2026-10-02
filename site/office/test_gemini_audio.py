@@ -17,6 +17,7 @@ from django.test import SimpleTestCase, TestCase, override_settings
 from office.api.views import index
 from office.api.views.tts import GeminiTTSProvider, ElevenLabsTTSProvider, get_tts_provider, provider_names
 from office.models import AudioClip
+from rest_framework.test import APIRequestFactory
 
 
 def wav_bytes():
@@ -143,6 +144,21 @@ class GeminiProviderTests(SimpleTestCase):
         self.assertEqual(self.provider.voice_for_line_type("reader"), "Charon")
         self.assertIsNone(self.provider.voice_for_line_type("rubric"))
 
+    @override_settings(GEMINI_TTS_VOICES_READER=" Kore, ,Charon, Sulafat ")
+    def test_reader_pool_uses_stable_selection_for_reader_and_html(self):
+        self.assertEqual(self.provider.voices["reader"], ("Kore", "Charon", "Sulafat"))
+        selected = {self.provider.voice_for_text("reader", f"Passage {i}") for i in range(50)}
+        self.assertEqual(selected, {"Kore", "Charon", "Sulafat"})
+        for role in ("reader", "html"):
+            self.assertEqual(
+                self.provider.voice_for_text(role, "In the beginning"),
+                self.provider.voice_for_text("reader", "In the beginning"),
+            )
+
+    @override_settings(GEMINI_TTS_VOICES_READER=[" ", ""], GEMINI_TTS_VOICE_READER="Puck")
+    def test_empty_pool_preserves_single_voice_setting(self):
+        self.assertEqual(self.provider.voice_for_text("reader", "Amen."), "Puck")
+
     @skipUnless(shutil.which("ffmpeg"), "ffmpeg is required for the real transcoding smoke test")
     @patch("office.api.views.tts.requests.post")
     def test_real_ffmpeg_produces_readable_mp3(self, post):
@@ -194,3 +210,57 @@ class GeminiClipTests(TestCase):
             self.assertEqual(index.GenericDailyOfficeSerializer.get_or_create_clip("Amen.", "leader"), (None, None))
         self.assertFalse(AudioClip.objects.exists())
         self.assertFalse(any(Path(self.temp.name).rglob("*.mp3")))
+
+    @override_settings(GEMINI_TTS_VOICES_READER=["Charon", "Kore"])
+    def test_reader_reuse_survives_pool_changes_in_both_endpoints(self):
+        text = "The Word of the Lord."
+        filename = "gemini/existing.mp3"
+        path = Path(self.temp.name) / filename
+        path.parent.mkdir()
+        path.write_bytes(b"existing-audio")
+        AudioClip.objects.create(
+            key="existing",
+            filename=filename,
+            text=text,
+            line_type="reader",
+            provider="gemini",
+            voice="old-reader",
+            model="gemini-3.8-flash-tts",
+            kind="reader",
+        )
+        get_clip = index.GenericDailyOfficeSerializer.get_or_create_clip
+        with patch.object(self.provider, "synthesize") as synthesize:
+            first = get_clip(text, "reader")
+            self.assertEqual(first[1], "/uploads/" + filename)
+            for pool in (["Kore", "Charon"], ["Sulafat"], []):
+                with self.subTest(pool=pool), override_settings(GEMINI_TTS_VOICES_READER=pool):
+                    self.assertEqual(get_clip(text, "reader"), first)
+                    self.assertEqual(get_clip(text, "html"), first)
+                    request = APIRequestFactory().post(
+                        "/audio/", {"content": text, "line_type": "reader"}, format="json"
+                    )
+                    response = index.AudioViewSet().retrieve(request)
+                    self.assertTrue(response.data["path"].endswith("/uploads/" + filename))
+            synthesize.assert_not_called()
+        self.assertIsNone(index.GenericDailyOfficeSerializer.find_reusable_reader(text, "leader"))
+        self.assertIsNone(index.GenericDailyOfficeSerializer.find_reusable_reader("Different text", "reader"))
+        path.unlink()
+        self.assertIsNone(index.GenericDailyOfficeSerializer.find_reusable_reader(text, "reader"))
+        path.write_bytes(b"")
+        self.assertIsNone(index.GenericDailyOfficeSerializer.find_reusable_reader(text, "reader"))
+
+    def test_reader_reuse_is_provider_scoped(self):
+        path = Path(self.temp.name) / "elevenlabs" / "existing.mp3"
+        path.parent.mkdir()
+        path.write_bytes(b"other-provider")
+        AudioClip.objects.create(
+            key="other",
+            filename="elevenlabs/existing.mp3",
+            text="Amen.",
+            line_type="reader",
+            provider="elevenlabs",
+            voice="other",
+            model="eleven_v3",
+            kind="reader",
+        )
+        self.assertIsNone(index.GenericDailyOfficeSerializer.find_reusable_reader("Amen.", "reader"))

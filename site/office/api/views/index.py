@@ -3083,21 +3083,21 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             return []
 
     @staticmethod
-    def find_reusable_elevenlabs_reader(normalized):
-        """Return an existing ElevenLabs reader clip regardless of its voice.
+    def find_reusable_reader(normalized, line_type):
+        """Return an existing provider reader clip regardless of its voice.
 
         Reader voices are intentionally randomized only when a passage is first
         generated. Once exact normalized text exists, changing or reordering the
         configured reader list must not synthesize it again.
         """
-        if TTS_PROVIDER.name != "elevenlabs":
+        if TTS_PROVIDER.name not in {"elevenlabs", "gemini"} or TTS_PROVIDER.role_for_line_type(line_type) != "reader":
             return None
         try:
             from office.models import AudioClip
 
             clips = AudioClip.objects.filter(
-                filename__startswith="elevenlabs/",
-                line_type="reader",
+                filename__startswith=f"{TTS_PROVIDER.media_subdir}/",
+                line_type__in=("reader", "html"),
                 text=normalized,
             ).order_by("-updated")
             for clip in clips:
@@ -3132,7 +3132,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         not spoken or generation fails.
         """
         normalized = GenericDailyOfficeSerializer.normalize_tts_text(content)
-        reusable_reader = GenericDailyOfficeSerializer.find_reusable_elevenlabs_reader(normalized)
+        reusable_reader = GenericDailyOfficeSerializer.find_reusable_reader(normalized, line_type)
         if reusable_reader:
             path = settings.MEDIA_URL + reusable_reader.filename
             file_url = f"{audio_base_url()}{path}"
@@ -4216,10 +4216,13 @@ class AudioViewSet(ViewSet):
         line_type = data.get("line_type", "leader")
         # Shares the same voice map, pronunciation normalization, hashing, and DB
         # tracking as the batch path so identical text yields identical clips.
-        voice = voice_for_line_type(line_type)
+        normalized = GenericDailyOfficeSerializer.normalize_tts_text(content)
+        reusable_reader = GenericDailyOfficeSerializer.find_reusable_reader(normalized, line_type)
+        if reusable_reader:
+            return Response({"path": request.build_absolute_uri(settings.MEDIA_URL + reusable_reader.filename)})
+        voice = TTS_PROVIDER.voice_for_text(line_type, normalized)
         if not voice:
             return Response({"path": ""})
-        normalized = GenericDailyOfficeSerializer.normalize_tts_text(content)
         key = GenericDailyOfficeSerializer.tts_clip_key(voice, normalized)
         filename = provider_media_name(f"{key}.mp3")
         file_path = os.path.join(settings.MEDIA_ROOT, filename)
