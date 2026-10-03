@@ -1,10 +1,12 @@
 from datetime import timedelta
 
 import kronos
-from django.core.management.base import BaseCommand
+import bugsnag
+from django.core.management.base import BaseCommand, CommandError
 from django.test import RequestFactory
 from django.urls import resolve
 from django.utils import timezone
+from office.api.views.index import AUDIO_GENERATION_REQUIRED
 
 
 @kronos.register("55 9 * * *")
@@ -32,7 +34,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         days = options["days"]
+        if days < 1:
+            raise CommandError("--days must be at least 1.")
         skip_yesterday = options["skip_yesterday"]
+        completed = 0
+        failures = 0
 
         now = timezone.now()
         start_date = now if skip_yesterday else now - timedelta(days=1)
@@ -154,17 +160,49 @@ class Command(BaseCommand):
                         # This trusted, sequential job may warm its full requested
                         # range, independently of the public API's date window.
                         request._audio_prewarm = True
-                        print(base_url, newest_params)
+                        label = f"{base_url} {style['language_style']} {change}"
+                        self.stdout.write(f"Warming {label}")
                         # Resolve the view based on the URL
                         match = resolve(base_url)
 
                         # Call the resolved view with the mock request
-                        response = match.func(request, *match.args, **match.kwargs)
+                        token = AUDIO_GENERATION_REQUIRED.set(True)
+                        try:
+                            response = match.func(request, *match.args, **match.kwargs)
+                            if hasattr(response, "render") and callable(response.render):
+                                response = response.render()
+                            if response.status_code >= 400:
+                                raise RuntimeError(f"Office audio returned HTTP {response.status_code}.")
+                        except Exception as exc:
+                            failures += 1
+                            causes = []
+                            cause = exc
+                            while cause is not None:
+                                causes.append(f"{type(cause).__name__}: {cause}")
+                                cause = cause.__cause__
+                            self.stderr.write(f"FAILED {label}: {' <- '.join(causes)}")
+                            try:
+                                bugsnag.notify(
+                                    exc,
+                                    context="update_audio_files",
+                                    metadata={
+                                        "audio_batch": {
+                                            "office": office,
+                                            "date": day.date().isoformat(),
+                                            "style": style["language_style"],
+                                            "variation": change,
+                                        }
+                                    },
+                                )
+                            except Exception:
+                                self.stderr.write("Bugsnag notification failed; continuing audio batch.")
+                            continue
+                        finally:
+                            AUDIO_GENERATION_REQUIRED.reset(token)
+                        completed += 1
+                        self.stdout.write(f"Completed {label}")
 
-                        # Check if the response is a TemplateResponse
-                        if hasattr(response, "render") and callable(response.render):
-                            response = response.render()  # Render the TemplateResponse explicitly
-
-                        # Print the response content
-                        print(response.content)
-                        print(response.status_code)
+        summary = f"Audio warming finished: {completed} succeeded, {failures} failed."
+        self.stdout.write(summary)
+        if failures:
+            raise CommandError(summary)

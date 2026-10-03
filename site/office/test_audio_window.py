@@ -103,3 +103,33 @@ class AudioWindowTests(SimpleTestCase):
             (self.today + datetime.timedelta(days=i)).isoformat() for i in range(12) for _ in range(8 * 2 * 11)
         ]
         self.assertEqual(calls, expected)
+
+    def test_batch_continues_after_exception_and_http_error_and_exits_nonzero(self):
+        from django.core.management.base import CommandError
+        from office.management.commands import update_audio_files
+
+        calls = []
+        output, errors = StringIO(), StringIO()
+
+        def view(request, *args, **kwargs):
+            calls.append(request.path)
+            self.assertTrue(index.AUDIO_GENERATION_REQUIRED.get())
+            if len(calls) == 1:
+                try:
+                    raise RuntimeError("Gemini TTS request failed (HTTP 429).")
+                except RuntimeError as cause:
+                    raise RuntimeError("Unable to generate the office announcement.") from cause
+            return SimpleNamespace(content=b"", status_code=500 if len(calls) == 2 else 200)
+
+        with (
+            patch.object(update_audio_files, "resolve", return_value=SimpleNamespace(func=view, args=(), kwargs={})),
+            patch.object(update_audio_files.bugsnag, "notify", side_effect=RuntimeError("reporting down")) as notify,
+        ):
+            with self.assertRaisesRegex(CommandError, "350 succeeded, 2 failed"):
+                call_command("update_audio_files", days=2, stdout=output, stderr=errors)
+        self.assertEqual(len(calls), 352)
+        self.assertFalse(index.AUDIO_GENERATION_REQUIRED.get())
+        self.assertEqual(notify.call_count, 2)
+        self.assertIn("HTTP 429", errors.getvalue())
+        self.assertIn("HTTP 500", errors.getvalue())
+        self.assertIn("Bugsnag notification failed", errors.getvalue())

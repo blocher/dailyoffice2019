@@ -141,7 +141,9 @@ class AudioCeremonyTests(SimpleTestCase):
                 sum(MP3(Path(directory) / t["path"].removeprefix("/uploads/")).info.length for t in tracks) + 29.5
             )
             self.assertAlmostEqual(MP3(combined).info.length, expected, delta=0.5)
-            serializer.get_or_create_clip.assert_called_once_with(announcement(self.office()), "speaker", kind="line")
+            serializer.get_or_create_clip.assert_called_once_with(
+                announcement(self.office()), "speaker", kind="line", raise_on_error=True
+            )
 
     def test_serializer_inserts_ceremony_without_changing_display_modules(self):
         from office.api.views import index
@@ -177,3 +179,11 @@ class AudioCeremonyTests(SimpleTestCase):
         serializer = Mock()
         self.assertEqual(frame_tracks(self.office(), [], serializer, ""), [])
         serializer.get_or_create_clip.assert_not_called()
+
+    def test_announcement_error_preserves_provider_cause(self):
+        serializer = Mock()
+        error = RuntimeError("Gemini TTS request failed (HTTP 429).")
+        serializer.get_or_create_clip.side_effect = error
+        with self.assertRaisesRegex(RuntimeError, "office announcement") as raised:
+            frame_tracks(self.office(), [{"text": "Prayer"}], serializer, "")
+        self.assertIs(raised.exception.__cause__, error)

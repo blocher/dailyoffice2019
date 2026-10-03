@@ -102,7 +102,10 @@ def frame_tracks(office, tracks, serializer, base_url):
     if not tracks:
         return tracks
     text = announcement(office)
-    url, path = serializer.get_or_create_clip(text, "speaker", kind="line")
+    try:
+        url, path = serializer.get_or_create_clip(text, "speaker", kind="line", raise_on_error=True)
+    except Exception as exc:
+        raise RuntimeError("Unable to generate the office announcement.") from exc
     if not path:
         raise RuntimeError("Unable to generate the office announcement.")
     intro = {

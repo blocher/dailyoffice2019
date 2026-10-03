@@ -1,10 +1,12 @@
 import csv
 import datetime
 import json
+import logging
 import os
 import re
 import subprocess
 from collections import defaultdict
+from contextvars import ContextVar
 from urllib.parse import quote
 
 import mailchimp_marketing as MailchimpMarketing
@@ -63,6 +65,10 @@ from psalter.utils import get_psalms
 # provider means the clip cache key and AudioClip rows stay in sync no matter
 # which service is used. See office/api/views/tts.py.
 TTS_PROVIDER = get_tts_provider()
+logger = logging.getLogger(__name__)
+# Per-execution context: a batch must report missing clips as failures, without
+# changing the web player's optional-clip fallback in another thread.
+AUDIO_GENERATION_REQUIRED = ContextVar("audio_generation_required", default=False)
 # Natural silence (seconds) inserted when concatenating clips, encoded as mono
 # mp3 at the provider's output sample rate so the final concat re-encode stays
 # consistent.
@@ -3218,12 +3224,14 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         return word_timing
 
     @staticmethod
-    def get_or_create_clip(content, line_type, kind="line", no_generate=False):
+    def get_or_create_clip(content, line_type, kind="line", no_generate=False, raise_on_error=False):
         """Normalize -> hash -> reuse-or-generate a TTS clip; record it in the DB.
 
         Returns (file_url, media_relative_path) or (None, None) when the line is
-        not spoken or generation fails.
+        not spoken or generation fails. Required clips can opt into propagating
+        the original synthesis error instead of treating it as missing audio.
         """
+        raise_on_error = raise_on_error or AUDIO_GENERATION_REQUIRED.get()
         normalized = GenericDailyOfficeSerializer.normalize_tts_text(content)
         reusable_reader = GenericDailyOfficeSerializer.find_reusable_reader(normalized, line_type)
         if reusable_reader:
@@ -3271,8 +3279,15 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         try:
             word_timing = GenericDailyOfficeSerializer.synthesize_speech(voice, normalized, file_path)
         except Exception:
+            if raise_on_error:
+                raise
+            logger.warning(
+                "Audio clip generation failed (provider=%s, kind=%s)", TTS_PROVIDER.name, kind, exc_info=True
+            )
             return None, None
         if not (os.path.isfile(file_path) and os.path.getsize(file_path) > 0):
+            if raise_on_error:
+                raise RuntimeError("Audio synthesis returned without a nonempty clip.")
             return None, None
         GenericDailyOfficeSerializer.record_audio_clip(
             key,

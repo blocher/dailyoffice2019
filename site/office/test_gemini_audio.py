@@ -211,6 +211,23 @@ class GeminiClipTests(TestCase):
         self.assertFalse(AudioClip.objects.exists())
         self.assertFalse(any(Path(self.temp.name).rglob("*.mp3")))
 
+    def test_required_clip_preserves_original_synthesis_exception(self):
+        error = RuntimeError("Gemini TTS request failed (HTTP 429).")
+        with patch.object(self.provider, "synthesize", side_effect=error):
+            with self.assertRaises(RuntimeError) as raised:
+                index.GenericDailyOfficeSerializer.get_or_create_clip("Amen.", "speaker", raise_on_error=True)
+        self.assertIs(raised.exception, error)
+        self.assertFalse(AudioClip.objects.exists())
+
+    def test_batch_does_not_silently_skip_failed_optional_clips(self):
+        token = index.AUDIO_GENERATION_REQUIRED.set(True)
+        try:
+            with patch.object(self.provider, "synthesize", side_effect=RuntimeError("provider unavailable")):
+                with self.assertRaisesRegex(RuntimeError, "provider unavailable"):
+                    index.GenericDailyOfficeSerializer.get_or_create_clip("Amen.", "leader")
+        finally:
+            index.AUDIO_GENERATION_REQUIRED.reset(token)
+
     @override_settings(GEMINI_TTS_VOICES_READER=["Charon", "Kore"])
     def test_reader_reuse_survives_pool_changes_in_both_endpoints(self):
         text = "The Word of the Lord."

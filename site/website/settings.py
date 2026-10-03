@@ -333,7 +333,12 @@ mimetypes.add_type("image/svg+xml", ".svg", True)
 
 SWAGGER_SETTINGS = {"USE_SESSION_AUTH": False}
 
-BUGSNAG = {"api_key": env("BUGSNAG_KEY"), "project_root": BASE_DIR}
+BUGSNAG = {
+    "api_key": env("BUGSNAG_KEY"),
+    "project_root": BASE_DIR,
+    "release_stage": "development" if DEBUG else "production",
+    "send_environment": False,
+}
 
 DEFAULT_FROM_EMAIL = "donotreply@mail.dailyoffice2019.com"
 DEFAULT_REPLY_TO_EMAIL = "feedback@dailyoffice2019.com"
