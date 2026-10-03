@@ -1,0 +1,760 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <title>Daily Office · Voice auditions</title>
+    <meta
+      content="responsive-band-assembly-v4"
+      name="responsive-band-assembly"
+    />
+
+    <meta content="__SESSION_TOKEN__" name="audition-token" />
+    <style>
+      :root {
+        --paper: #fcfbf8;
+        --ink: #142c26;
+        --green: #175441;
+        --line: #dedfd7;
+        --muted: #626c65;
+        --tint: #e8eee6;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font:
+          14px/1.5 -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+        color: inherit;
+      }
+      button {
+        cursor: pointer;
+        border: 1px solid #bfc7bf;
+        background: transparent;
+        border-radius: 6px;
+        padding: 10px 14px;
+        transition: background 0.15s;
+      }
+      button:hover {
+        background: var(--tint);
+      }
+      button:disabled {
+        opacity: 0.45;
+        cursor: default;
+      }
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible,
+      summary:focus-visible {
+        outline: 3px solid #71a48c;
+        outline-offset: 2px;
+      }
+      .primary {
+        background: var(--green);
+        border-color: var(--green);
+        color: #fff;
+      }
+      .primary:hover {
+        background: #236a53;
+      }
+      h1,
+      h2,
+      h3,
+      .brand strong {
+        font-family: Georgia, "Times New Roman", serif;
+        font-weight: 400;
+        line-height: 1.15;
+      }
+      h1 {
+        font-size: 42px;
+        margin: 20px 0 8px;
+      }
+      h2 {
+        font-size: 28px;
+        margin: 0;
+      }
+      h3 {
+        font-size: 21px;
+        margin: 24px 0 12px;
+      }
+      p {
+        margin: 8px 0;
+      }
+      small {
+        font-size: 12px;
+      }
+      .muted {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .eyebrow {
+        font-size: 10px;
+        letter-spacing: 1.6px;
+        color: var(--muted);
+      }
+      #header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 28px;
+        border-bottom: 1px solid var(--line);
+        gap: 20px;
+      }
+      .brand,
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .brand strong {
+        font-size: 29px;
+      }
+      .book-mark {
+        font-size: 33px;
+        color: var(--green);
+      }
+      .brand-sub {
+        border-left: 1px solid #c6cec6;
+        padding-left: 20px;
+        font-size: 15px;
+      }
+      .header-actions {
+        font-size: 12px;
+      }
+      #workspace {
+        display: grid;
+        grid-template-columns: minmax(270px, 0.95fr) minmax(
+            440px,
+            1.85fr
+          ) minmax(280px, 1fr);
+        max-width: 1800px;
+        margin: auto;
+      }
+      #library,
+      #audition,
+      #shortlist {
+        padding: 26px 24px;
+        min-width: 0;
+      }
+      #library,
+      #audition {
+        border-right: 1px solid var(--line);
+      }
+      .panel-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      input[type="search"],
+      select,
+      textarea {
+        background: #fffefa;
+        border: 1px solid #cdd2c9;
+        border-radius: 6px;
+        padding: 10px;
+        width: 100%;
+      }
+      #search {
+        margin: 10px 0 14px;
+      }
+      .filters {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .filters label {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .filters select {
+        font-size: 12px;
+        margin-top: 4px;
+      }
+      .ranking-note {
+        font-size: 11px;
+        line-height: 1.6;
+        margin: 12px 0;
+      }
+      .voice-row {
+        display: flex;
+        width: 100%;
+        text-align: left;
+        border: 0;
+        border-bottom: 1px solid #e4e5dc;
+        border-radius: 0;
+        align-items: center;
+        gap: 13px;
+        padding: 14px 7px;
+      }
+      .voice-row.selected {
+        background: var(--tint);
+        border-left: 3px solid var(--green);
+        border-radius: 6px;
+      }
+      .avatar {
+        display: grid;
+        place-items: center;
+        background: #e0e5da;
+        border-radius: 50%;
+        width: 38px;
+        height: 38px;
+        flex: none;
+        font-family: Georgia, serif;
+        font-size: 17px;
+      }
+      .voice-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .voice-info strong {
+        display: block;
+        font-family: Georgia, serif;
+        font-weight: 400;
+        font-size: 18px;
+        overflow-wrap: anywhere;
+      }
+      .voice-info small {
+        display: block;
+        color: var(--muted);
+        font-size: 11px;
+      }
+      .voice-info .voice-description {
+        margin: 6px 0;
+        font-size: 12px;
+        line-height: 1.5;
+        white-space: normal;
+        overflow-wrap: anywhere;
+      }
+      #library-list {
+        max-height: 520px;
+        overflow: auto;
+        margin-top: 15px;
+      }
+      .pagination {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 18px;
+        font-size: 12px;
+      }
+      .pagination button {
+        padding: 5px 14px;
+      }
+      .voice-meta {
+        font-size: 14px;
+      }
+      code {
+        font-size: 11px;
+        color: var(--muted);
+        overflow-wrap: anywhere;
+      }
+      #voice-description {
+        min-height: 40px;
+        margin-top: 14px;
+      }
+      .player {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin-top: 22px;
+        flex-wrap: wrap;
+      }
+      .player button {
+        white-space: nowrap;
+      }
+      audio {
+        flex: 1;
+        min-width: 220px;
+        height: 42px;
+        width: 100%;
+      }
+      #notice {
+        font-size: 12px;
+        min-height: 24px;
+        margin: 10px 0;
+      }
+      .error {
+        color: #a3362c;
+      }
+      #audition-prayer {
+        background: #f3f1e8;
+        border: 1px solid #ece9df;
+        border-radius: 9px;
+        padding: 25px 28px;
+      }
+      #sample-title {
+        margin: 16px 0;
+      }
+      #sample-text {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 21px;
+        line-height: 1.6;
+      }
+      .delivery {
+        font-size: 12px;
+        margin: 16px 0;
+      }
+      .delivery summary {
+        cursor: pointer;
+        color: var(--green);
+      }
+      .evaluation {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border-top: 1px solid var(--line);
+        padding-top: 18px;
+        margin-top: 18px;
+      }
+      .evaluation select {
+        width: 140px;
+        color: var(--green);
+      }
+      .notes-label {
+        display: block;
+        margin-top: 18px;
+        margin-bottom: 6px;
+        font-size: 12px;
+      }
+      textarea {
+        resize: vertical;
+      }
+      .decision-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 14px;
+        flex-wrap: wrap;
+      }
+      .decision-actions button[aria-pressed="true"] {
+        outline: 2px solid var(--green);
+        outline-offset: 2px;
+      }
+      .check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        margin: 15px 0;
+      }
+      .check input {
+        accent-color: var(--green);
+      }
+      .result-row {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        text-align: left;
+        gap: 4px;
+        margin: 8px 0;
+        border-color: var(--line);
+        padding: 14px 16px;
+      }
+      .result-row strong {
+        font-family: Georgia, serif;
+        font-weight: 400;
+        font-size: 19px;
+      }
+      .result-row small {
+        color: var(--muted);
+        overflow-wrap: anywhere;
+      }
+      .stars {
+        color: var(--green);
+        letter-spacing: 2px;
+      }
+      .result-group h3 small {
+        font-family: system-ui;
+        font-size: 12px;
+        border-radius: 20px;
+        background: var(--tint);
+        padding: 3px 8px;
+      }
+      .empty {
+        font-size: 12px;
+        padding: 10px 0 20px;
+        border-bottom: 1px solid var(--line);
+      }
+      #board-list {
+        max-height: 550px;
+        overflow: auto;
+        margin-bottom: 20px;
+      }
+      #export-env {
+        width: 100%;
+      }
+      #footer {
+        border-top: 1px solid var(--line);
+        padding: 15px 28px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+        font-size: 12px;
+      }
+      #progress {
+        color: var(--green);
+      }
+      .shortcuts {
+        margin-left: auto;
+      }
+      kbd {
+        background: #fff;
+        border: 1px solid #d1d6cc;
+        border-radius: 4px;
+        padding: 4px 7px;
+        font: 11px monospace;
+      }
+      #catalog-summary {
+        width: 100%;
+        font-size: 11px;
+      }
+      #refresh {
+        padding: 6px 10px;
+        font-size: 11px;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      @media (min-width: 1600px) {
+        #sample-text {
+          font-size: 24px;
+        }
+        .voice-info .voice-description {
+        margin: 6px 0;
+        font-size: 12px;
+        line-height: 1.5;
+        white-space: normal;
+        overflow-wrap: anywhere;
+      }
+      #library-list {
+          max-height: 650px;
+        }
+      }
+      @media (max-width: 1100px) {
+        #workspace {
+          grid-template-columns: 280px minmax(0, 1fr);
+        }
+        #shortlist {
+          grid-column: 1/-1;
+          border-top: 1px solid var(--line);
+        }
+        #board-list {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+        }
+        #audition {
+          border-right: 0;
+        }
+        .header-actions span {
+          display: none;
+        }
+        #export-env {
+          width: auto;
+        }
+        .brand-sub {
+          font-size: 12px;
+        }
+      }
+      @media (max-width: 700px) {
+        #header {
+          padding: 16px;
+          align-items: flex-start;
+        }
+        .brand {
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+        .brand strong {
+          font-size: 25px;
+        }
+        .brand-sub {
+          width: 100%;
+          border: 0;
+          padding: 0;
+        }
+        .book-mark {
+          display: none;
+        }
+        .header-actions button {
+          font-size: 11px;
+          white-space: nowrap;
+        }
+        #workspace {
+          display: flex;
+          flex-direction: column;
+        }
+        #library,
+        #audition,
+        #shortlist {
+          padding: 22px 18px;
+          border-right: 0;
+        }
+        #library {
+          border-bottom: 1px solid var(--line);
+        }
+        .voice-info .voice-description {
+        margin: 6px 0;
+        font-size: 12px;
+        line-height: 1.5;
+        white-space: normal;
+        overflow-wrap: anywhere;
+      }
+      #library-list {
+          max-height: 220px;
+        }
+        #audition-prayer {
+          padding: 20px;
+        }
+        #sample-text {
+          font-size: 20px;
+        }
+        h1 {
+          font-size: 34px;
+        }
+        .player {
+          display: block;
+        }
+        .player audio {
+          margin-top: 12px;
+        }
+        #board-list {
+          display: block;
+        }
+        .shortcuts {
+          display: none;
+        }
+        #footer {
+          padding: 15px 18px;
+        }
+        .evaluation {
+          gap: 8px;
+          font-size: 12px;
+        }
+        .evaluation select {
+          width: 125px;
+        }
+      }
+    </style>
+    <script defer="True" src="/voice-auditions.js"></script>
+  </head>
+  <body>
+    <div class="ly-band" data-ly-band="native">
+      <div class="generated-screen">
+        <div class="ly-anchor-canvas">
+          <div class="fx-abs" id="page-flow">
+            <header class="fx-abs" id="header">
+              <div class="brand">
+                <span aria-hidden="true" class="book-mark">✝</span
+                ><strong>Daily Office</strong
+                ><span class="brand-sub">Voice audition workbench</span>
+              </div>
+              <div class="header-actions">
+                <span id="save-state">Saved on this computer</span
+                ><button id="export-json">Export results</button>
+              </div>
+            </header>
+            <section aria-label="Bulk generation" style="padding: 16px 24px; border-bottom: 1px solid #d8ded6">
+              <strong>Generate the voice library</strong>
+              <p class="muted">All American English voices, using the sample and delivery instructions below. Uses your Google API quota. Existing samples are skipped.</p>
+              <button id="batch-start" disabled>Generate all missing samples</button>
+              <button id="batch-stop" disabled>Stop after current sample</button>
+              <p id="batch-status" role="status" aria-live="polite">Loading generation status…</p>
+              <progress id="batch-progress" value="0" max="1" aria-label="Samples ready" style="width: 100%"></progress>
+              <details id="batch-errors" hidden><summary>Failed voices</summary><p id="batch-failures"></p></details>
+              <small class="muted">You can close this tab while it runs. Keep the local server running; after a restart, use Resume to generate the remaining samples.</small>
+            </section>
+            <section class="fx-row" id="workspace">
+              <section class="fx-col" id="library">
+                <div class="panel-title">
+                  <h2>Voice library</h2>
+                  <span class="eyebrow">ENGLISH / US</span>
+                </div>
+                <p class="muted" id="library-count">Loading catalog…</p>
+                <label class="sr-only" for="search">Search voices</label
+                ><input
+                  id="search"
+                  placeholder="Search names, tone, or voice ID…"
+                  type="search"
+                />
+                <div class="filters">
+                  <label>Voice library<select id="voice-library">
+                    <option value="">All libraries</option>
+                    <option value="studio">Studio voices (30)</option>
+                    <option value="extended">Extended library</option>
+                  </select></label>
+                  <label
+                    >Voice gender<select id="gender">
+                      <option value="">All voices</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="neutral">Neutral / unspecified</option>
+                    </select></label
+                  ><label
+                    >Accent<select id="accent">
+                      <option value="">All US accents</option>
+                    </select></label
+                  ><label
+                    >Review status<select id="review-filter">
+                      <option value="">All statuses</option>
+                      <option value="unreviewed">Unreviewed</option>
+                      <option value="shortlist">Shortlist</option>
+                      <option value="maybe">Maybe</option>
+                      <option value="reject">Rejected</option>
+                    </select></label
+                  ><label
+                    >Sort by<select id="sort">
+                      <option value="name">Name A–Z</option>
+                      <option value="rating">Your rating: high–low</option>
+                    </select></label
+                  >
+                </div>
+                <p class="muted ranking-note">
+                  Google does not publish usage rankings.
+                </p>
+                <div aria-label="Voice catalog" id="library-list"></div>
+                <div class="pagination">
+                  <button aria-label="Previous page" id="page-prev">←</button
+                  ><span id="page-info"></span
+                  ><button aria-label="Next page" id="page-next">→</button>
+                </div>
+              </section>
+              <section class="fx-col" id="audition">
+                <div class="panel-title">
+                  <span class="eyebrow">AUDITION A VOICE</span
+                  ><button id="next-voice">Next voice →</button>
+                </div>
+                <h1 id="voice-name">Loading…</h1>
+                <p class="voice-meta" id="voice-meta"></p>
+                <code id="voice-id"></code>
+                <p class="muted" id="voice-description"></p>
+                <div class="player">
+                  <button class="primary" id="play">Generate &amp; play</button
+                  ><audio
+                    aria-label="Daily Office audition sample"
+                    controls=""
+                    id="audio"
+                    preload="none"
+                  ></audio>
+                </div>
+                <p aria-live="polite" id="notice" role="status"></p>
+                <div id="audition-prayer">
+                  <p class="eyebrow" id="sample-source"></p>
+                  <h2 id="sample-title"></h2>
+                  <p id="sample-text"></p>
+                </div>
+                <details class="delivery">
+                  <summary>Shared delivery instructions</summary>
+                  <p id="style-text"></p>
+                  <p class="muted">
+                    Model: <span id="model-label"></span>. Each new sample uses
+                    your Google API quota. Replays use the saved MP3.
+                  </p>
+                </details>
+                <div class="evaluation">
+                  <label for="rating">Your rating</label
+                  ><select id="rating">
+                    <option value="0">Not rated</option>
+                    <option value="1">★ · 1 / 5</option>
+                    <option value="2">★★ · 2 / 5</option>
+                    <option value="3">★★★ · 3 / 5</option>
+                    <option value="4">★★★★ · 4 / 5</option>
+                    <option value="5">★★★★★ · 5 / 5</option></select
+                  ><span class="muted" id="decision-label"></span>
+                </div>
+                <label class="notes-label" for="notes">Listening notes</label
+                ><textarea
+                  id="notes"
+                  maxlength="2000"
+                  placeholder="Clarity, pronunciation, pacing, prayerfulness…"
+                  rows="2"
+                ></textarea>
+                <div class="decision-actions">
+                  <button
+                    aria-pressed="false"
+                    class="primary"
+                    data-decision="shortlist"
+                  >
+                    ✓ Keep voice</button
+                  ><button aria-pressed="false" data-decision="maybe">
+                    Maybe</button
+                  ><button aria-pressed="false" data-decision="reject">
+                    Reject</button
+                  ><button aria-pressed="false" data-decision="unreviewed">
+                    Reset
+                  </button>
+                </div>
+                <label class="check"
+                  ><input id="auto-next" type="checkbox" /> Advance after a
+                  decision</label
+                >
+              </section>
+              <section class="fx-col" id="shortlist">
+                <div class="panel-title">
+                  <h2>Results board</h2>
+                  <span class="muted" id="board-count"></span>
+                </div>
+                <p class="muted">Return to the voices worth a second listen.</p>
+                <label class="sr-only" for="board-filter"
+                  >Results to display</label
+                ><select id="board-filter">
+                  <option value="shortlist">Shortlisted voices</option>
+                  <option value="all">All evaluated voices</option>
+                  <option value="maybe">Maybe</option>
+                  <option value="reject">Rejected</option></select
+                ><label class="check"
+                  ><input checked="" id="group-gender" type="checkbox" /> Group
+                  by male / female</label
+                >
+                <p class="muted ranking-note">
+                  Gender labels come from Google; neutral voices stay in their
+                  own group.
+                </p>
+                <div id="board-list"></div>
+                <button class="primary" id="export-env">
+                  Export reader shortlist
+                </button>
+                <p class="muted ranking-note">
+                  Downloads your selected voice IDs as an .env setting. Your app
+                  configuration stays unchanged until you apply it.
+                </p>
+              </section>
+            </section>
+
+            <footer class="fx-col" id="footer">
+              <span id="progress">Loading…</span
+              ><span class="shortcuts"
+                ><kbd>Space</kbd> Play / pause   <kbd>→</kbd> Next  
+                <kbd>K</kbd> Keep   <kbd>R</kbd> Reject</span
+              ><button id="refresh">Refresh catalog</button
+              ><span class="muted" id="catalog-summary"></span>
+            </footer>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

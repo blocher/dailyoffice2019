@@ -1389,6 +1389,10 @@ class EPCollectOfTheDay(MPCollectOfTheDay):
 class AdditionalCollects(Module):
     name = "Additional Collects"
 
+    def __init__(self, office=None, include_mission=True):
+        super().__init__(office)
+        self.include_mission = include_mission
+
     def get_collects(self):
         return {}
 
@@ -1396,7 +1400,7 @@ class AdditionalCollects(Module):
         lines = []
         weekly_collect = self.pick_weekly_collect()
         weekly_collect["weekly"] = True
-        collects = (weekly_collect,) + (self.pick_mission_collect(),) + self.get_extra_collects()
+        collects = (weekly_collect,) + self.get_mission_collects() + self.get_extra_collects()
         language_style = self.office.settings["language_style"]
         for collect in collects:
             text = collect["traditional"] if language_style == "traditional" else collect["contemporary"]
@@ -1413,7 +1417,7 @@ class AdditionalCollects(Module):
         lines = []
         language_style = self.office.settings["language_style"]
 
-        for collect in self.pick_fixed_collects() + (self.pick_mission_collect(),) + self.get_extra_collects():
+        for collect in self.pick_fixed_collects() + self.get_mission_collects() + self.get_extra_collects():
             text = collect["traditional"] if language_style == "traditional" else collect["contemporary"]
             text = self.t(text)
             title = self.t(collect["title"])
@@ -1456,6 +1460,12 @@ class AdditionalCollects(Module):
     def possible_mission_collects(self):
         results, mission_collects = self.all_possible_collects
         return mission_collects
+
+    def get_mission_collects(self):
+        # The Litany replaces the Prayer for Mission (BCP 2019, pp. 24 and 50).
+        if not self.include_mission:
+            return ()
+        return (self.pick_mission_collect(),)
 
     def pick_mission_collect(self):
         day_of_year = self.office.date.date.timetuple().tm_yday
@@ -1683,13 +1693,38 @@ class GreatLitany(ShowGreatLitanyMixin, Module):
             return "your servants His Majesty King Charles, the Sovereign, and Mark Carney, the Prime Minister of Canada, "
         return "your servant Donald Trump, the President of the United States of America, your servants His Majesty King Charles, the Sovereign, and Mark Carney, the Prime Minister of Canada, Claudia Sheinbaum Pardo, the president of Mexico, "
 
+    def get_ending(self, style):
+        # The Supplication replaces the versicle and collect, not the whole
+        # conclusion (BCP 2019, pp. 97-98). Keep the existing full form default.
+        if self.office.settings.get("great_litany_ending", "supplication") == "litany":
+            template = (
+                "great_litany_short_ending_traditional" if style == "traditional" else "great_litany_short_ending"
+            )
+            lines = self._ftl(template)
+            if self.office.settings.get("chrysostom", "off") == "on":
+                chrysostom_template = "chrysostom_traditional" if style == "traditional" else "chrysostom"
+                chrysostom = (
+                    [Line("A Prayer of St. John Chrysostom", "heading")]
+                    + self._ftl(chrysostom_template)
+                    + [Line("Amen.", "congregation")]
+                )
+                grace_index = max(index for index, line in enumerate(lines) if line.get("line_type") == "rubric") + 1
+                lines[grace_index:grace_index] = chrysostom
+            return lines
+
+        template = "supplication_traditional" if style == "traditional" else "supplication"
+        lines = self._ftl(template)
+        if self.office.settings.get("chrysostom", "off") == "on":
+            template = "supplication_optional_traditional" if style == "traditional" else "supplication_optional"
+            lines += self._ftl(template)
+        return lines
+
     def get_lines(self):
         if self.show_great_litany:
             style = self.office.settings["language_style"]
             kyrie = self._ftl("kyrie_contemporary") if style == "contemporary" else self._ftl("kyrie_traditional")
             pater = self._ftl("pater_contemporary") if style == "contemporary" else self._ftl("pater_traditional")
             template = "great_litany_traditional" if style == "traditional" else "great_litany"
-            supplication_template = "supplication_traditional" if style == "traditional" else "supplication"
             lines = (
                 self._ftl(template)
                 + [Line("", "spacer")]
@@ -1697,7 +1732,7 @@ class GreatLitany(ShowGreatLitanyMixin, Module):
                 + [Line("", "spacer")]
                 + pater
                 + [Line("", "spacer")]
-                + self._ftl(supplication_template)
+                + self.get_ending(style)
             )
             for line in lines:
                 line["content"] = line["content"].replace("[_____________ and] ", self.get_names())
@@ -1727,7 +1762,8 @@ class EPGreatLitany(GreatLitany):
 
 class MorningPrayer(Office):
     def get_modules(self):
-        return [
+        litany = MPGreatLitany(self)
+        modules = [
             MPOpeningSentence(self),
             Confession(self),
             Preces(self),
@@ -1741,8 +1777,13 @@ class MorningPrayer(Office):
             Creed(self),
             Prayers(self),
             MPCollectOfTheDay(self),
-            MPAdditionalCollects(self),
-            MPGreatLitany(self),
+            MPAdditionalCollects(self, include_mission=not litany.show_great_litany),
+            litany,
+        ]
+        # When used here, the Litany concludes the Office (BCP 2019, pp. 24/50).
+        if litany.show_great_litany:
+            return modules
+        return modules + [
             Intercessions(self),
             FinalPrayers(self),
             Dismissal(self),
@@ -2331,7 +2372,8 @@ class FamilyCloseOfDayPrayer(Office):
 
 class EveningPrayer(Office):
     def get_modules(self):
-        return [
+        litany = EPGreatLitany(self)
+        modules = [
             EPOpeningSentence(self),
             Confession(self),
             Preces(self),
@@ -2345,8 +2387,13 @@ class EveningPrayer(Office):
             Creed(self),
             Prayers(self),
             EPCollectOfTheDay(self),
-            EPAdditionalCollects(self),
-            EPGreatLitany(self),
+            EPAdditionalCollects(self, include_mission=not litany.show_great_litany),
+            litany,
+        ]
+        # When used here, the Litany concludes the Office (BCP 2019, pp. 24/50).
+        if litany.show_great_litany:
+            return modules
+        return modules + [
             Intercessions(self),
             FinalPrayers(self),
             Dismissal(self),
@@ -3083,21 +3130,21 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             return []
 
     @staticmethod
-    def find_reusable_elevenlabs_reader(normalized):
-        """Return an existing ElevenLabs reader clip regardless of its voice.
+    def find_reusable_reader(normalized, line_type):
+        """Return an existing provider reader clip regardless of its voice.
 
         Reader voices are intentionally randomized only when a passage is first
         generated. Once exact normalized text exists, changing or reordering the
         configured reader list must not synthesize it again.
         """
-        if TTS_PROVIDER.name != "elevenlabs":
+        if TTS_PROVIDER.name not in {"elevenlabs", "gemini"} or TTS_PROVIDER.role_for_line_type(line_type) != "reader":
             return None
         try:
             from office.models import AudioClip
 
             clips = AudioClip.objects.filter(
-                filename__startswith="elevenlabs/",
-                line_type="reader",
+                filename__startswith=f"{TTS_PROVIDER.media_subdir}/",
+                line_type__in=("reader", "html"),
                 text=normalized,
             ).order_by("-updated")
             for clip in clips:
@@ -3132,7 +3179,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         not spoken or generation fails.
         """
         normalized = GenericDailyOfficeSerializer.normalize_tts_text(content)
-        reusable_reader = GenericDailyOfficeSerializer.find_reusable_elevenlabs_reader(normalized)
+        reusable_reader = GenericDailyOfficeSerializer.find_reusable_reader(normalized, line_type)
         if reusable_reader:
             path = settings.MEDIA_URL + reusable_reader.filename
             file_url = f"{audio_base_url()}{path}"
@@ -4216,10 +4263,13 @@ class AudioViewSet(ViewSet):
         line_type = data.get("line_type", "leader")
         # Shares the same voice map, pronunciation normalization, hashing, and DB
         # tracking as the batch path so identical text yields identical clips.
-        voice = voice_for_line_type(line_type)
+        normalized = GenericDailyOfficeSerializer.normalize_tts_text(content)
+        reusable_reader = GenericDailyOfficeSerializer.find_reusable_reader(normalized, line_type)
+        if reusable_reader:
+            return Response({"path": request.build_absolute_uri(settings.MEDIA_URL + reusable_reader.filename)})
+        voice = TTS_PROVIDER.voice_for_text(line_type, normalized)
         if not voice:
             return Response({"path": ""})
-        normalized = GenericDailyOfficeSerializer.normalize_tts_text(content)
         key = GenericDailyOfficeSerializer.tts_clip_key(voice, normalized)
         filename = provider_media_name(f"{key}.mp3")
         file_path = os.path.join(settings.MEDIA_ROOT, filename)
@@ -4515,6 +4565,11 @@ SETTING_UI_METADATA = {
         "ui_category": "Litany",
         "ui_priority": 290,
         "ui_keywords": ["evening prayer litany", "wednesday", "friday", "sunday"],
+    },
+    "great_litany_ending": {
+        "ui_category": "Litany",
+        "ui_priority": 295,
+        "ui_keywords": ["supplication", "short ending", "litany conclusion"],
     },
     "general_thanksgiving": {
         "ui_category": "Conclusion",

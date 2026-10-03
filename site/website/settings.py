@@ -366,7 +366,7 @@ EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")  # 587
 OPENAI_API_KEY = env("OPENAI_API_KEY")
 
 # --- Text-to-speech (liturgy audio) -----------------------------------------
-# Which backend generates office audio: "openai", "elevenlabs", or "fish".
+# Which backend generates office audio: "openai", "elevenlabs", "gemini", or "fish".
 # The adapters live in office/api/views/tts.py; each reads its own settings
 # below so the model and voices can be switched without code changes.
 TTS_PROVIDER = env("TTS_PROVIDER", default="openai")
@@ -410,6 +410,18 @@ ELEVENLABS_TTS_MAX_RETRIES = env.int("ELEVENLABS_TTS_MAX_RETRIES", default=4)
 # with `setup_elevenlabs_pronunciation` and paste the printed IDs here.
 ELEVENLABS_PRONUNCIATION_DICTIONARY_ID = env("ELEVENLABS_PRONUNCIATION_DICTIONARY_ID", default="")
 ELEVENLABS_PRONUNCIATION_DICTIONARY_VERSION_ID = env("ELEVENLABS_PRONUNCIATION_DICTIONARY_VERSION_ID", default="")
+
+# Gemini 3.8 TTS via the Gemini API; restart after changing provider settings.
+GEMINI_API_KEY = env("GEMINI_API_KEY", default="")
+GEMINI_TTS_MODEL = env("GEMINI_TTS_MODEL", default="gemini-3.8-flash-tts")
+GEMINI_TTS_STYLE = env("GEMINI_TTS_STYLE", default="")
+GEMINI_TTS_VOICE_LEADER = env("GEMINI_TTS_VOICE_LEADER", default="Kore")
+GEMINI_TTS_VOICE_CONGREGATION = env("GEMINI_TTS_VOICE_CONGREGATION", default="Sulafat")
+# Optional reader pool; blank falls back to the single reader voice below.
+GEMINI_TTS_VOICES_READER = env.list("GEMINI_TTS_VOICES_READER", default=[])
+GEMINI_TTS_VOICE_READER = env("GEMINI_TTS_VOICE_READER", default="Charon")
+GEMINI_TTS_TIMEOUT = env.int("GEMINI_TTS_TIMEOUT", default=180)
+GEMINI_TTS_MAX_RETRIES = env.int("GEMINI_TTS_MAX_RETRIES", default=2)
 
 # Fish Audio TTS (https://fish.audio). Voices are `reference_id` values that
 # point at voice models in the Fish Audio library; browse them at

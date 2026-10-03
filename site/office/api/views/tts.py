@@ -14,15 +14,20 @@ model/voice knobs.
 """
 
 import base64
+import binascii
 import hashlib
 import logging
 import os
 import random
 import re
 import time
+import subprocess
+import tempfile
 
 import requests
 from django.conf import settings
+
+from office.voice_style import GEMINI_PRAYER_STYLE
 
 logger = logging.getLogger(__name__)
 
@@ -357,6 +362,155 @@ class ElevenLabsTTSProvider(BaseTTSProvider):
         return words
 
 
+class GeminiTTSProvider(BaseTTSProvider):
+    """Gemini 3.8 unary TTS, converted to the pipeline's seekable MP3 format.
+
+    REST schema: https://ai.google.dev/gemini-api/docs/speech-generation
+    Delivery directions belong in speech_metadata, never the prayer transcript.
+    One voice per line preserves the existing per-line navigation.
+    """
+
+    name = "gemini"
+    endpoint = "https://generativelanguage.googleapis.com/v1beta/interactions"
+
+    @property
+    def model(self):
+        return getattr(settings, "GEMINI_TTS_MODEL", "gemini-3.8-flash-tts")
+
+    @property
+    def voices(self):
+        configured = getattr(settings, "GEMINI_TTS_VOICES_READER", ())
+        if isinstance(configured, str):
+            configured = configured.split(",")
+        reader = tuple(voice.strip() for voice in configured if voice.strip())
+        if not reader:
+            reader = (getattr(settings, "GEMINI_TTS_VOICE_READER", "") or "Charon",)
+        return {
+            "leader": getattr(settings, "GEMINI_TTS_VOICE_LEADER", "") or "Kore",
+            "congregation": getattr(settings, "GEMINI_TTS_VOICE_CONGREGATION", "") or "Sulafat",
+            "reader": reader,
+            "html": reader,
+        }
+
+    def voice_for_text(self, line_type, text):
+        if self.role_for_line_type(line_type) != "reader":
+            return self.voice_for_line_type(line_type)
+        readers = self.voices["reader"]
+        # Stable selection avoids changing voices between serializer passes.
+        # Existing passage recordings are reused before choosing a new voice.
+        digest = hashlib.sha256(text.encode("utf-8")).digest()
+        return readers[int.from_bytes(digest[:8], "big") % len(readers)]
+
+    @property
+    def output_sample_rate(self):
+        return 44100
+
+    @property
+    def effective_instructions(self):
+        return getattr(settings, "GEMINI_TTS_STYLE", "") or GEMINI_PRAYER_STYLE
+
+    def cache_signature(self):
+        return f"{super().cache_signature()} mp3_44100_128 gemini_adapter_v1"
+
+    def synthesize(self, voice, text, file_path):
+        api_key = getattr(settings, "GEMINI_API_KEY", "")
+        if not api_key:
+            raise RuntimeError("GEMINI_API_KEY is not configured.")
+        if not voice:
+            raise RuntimeError("No Gemini voice is configured for this role.")
+        payload = {
+            "model": self.model,
+            "input": [
+                {
+                    "type": "user_input",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": text,
+                            "annotations": [{"type": "speech_metadata", "style": self.effective_instructions}],
+                        }
+                    ],
+                }
+            ],
+            "response_format": {"type": "audio", "mime_type": "audio/wav"},
+            "generation_config": {"speech_config": [{"voice": voice}]},
+        }
+        response = self._request(payload, api_key)
+        try:
+            data = response.json()
+            audio_blocks = [
+                part
+                for step in data.get("steps", [])
+                if step.get("type") == "model_output"
+                for part in step.get("content", [])
+                if part.get("type") == "audio"
+            ]
+            if not audio_blocks:
+                raise RuntimeError("Gemini returned no audio.")
+            audio = base64.b64decode(audio_blocks[-1].get("data", ""), validate=True)
+            if len(audio) <= 44 or audio[:4] != b"RIFF" or audio[8:12] != b"WAVE":
+                raise RuntimeError("Gemini returned empty or invalid WAV audio.")
+        except (ValueError, TypeError, AttributeError, binascii.Error) as exc:
+            raise RuntimeError("Gemini returned an invalid audio response.") from exc
+
+        directory = os.path.dirname(os.path.abspath(file_path))
+        os.makedirs(directory, exist_ok=True)
+        # Publish atomically, leaving no partial cache file after any failure.
+        with tempfile.TemporaryDirectory(prefix="gemini-", dir=directory) as temp:
+            wav_path = os.path.join(temp, "input.wav")
+            mp3_path = os.path.join(temp, "output.mp3")
+            with open(wav_path, "wb") as handle:
+                handle.write(audio)
+            try:
+                result = subprocess.run(
+                    [
+                        "ffmpeg",
+                        "-y",
+                        "-i",
+                        wav_path,
+                        "-ac",
+                        "1",
+                        "-ar",
+                        "44100",
+                        "-c:a",
+                        "libmp3lame",
+                        "-b:a",
+                        "128k",
+                        mp3_path,
+                    ],
+                    capture_output=True,
+                    text=True,
+                    timeout=120,
+                )
+            except (OSError, subprocess.TimeoutExpired) as exc:
+                raise RuntimeError("Gemini audio conversion could not run.") from exc
+            if result.returncode or not os.path.isfile(mp3_path) or not os.path.getsize(mp3_path):
+                raise RuntimeError("Gemini WAV-to-MP3 conversion failed.")
+            os.replace(mp3_path, file_path)
+        return []
+
+    def _request(self, payload, api_key):
+        retries = max(0, min(int(getattr(settings, "GEMINI_TTS_MAX_RETRIES", 2)), 5))
+        for attempt in range(retries + 1):
+            try:
+                response = requests.post(
+                    self.endpoint,
+                    headers={"x-goog-api-key": api_key, "Content-Type": "application/json"},
+                    json=payload,
+                    timeout=getattr(settings, "GEMINI_TTS_TIMEOUT", 180),
+                )
+            except (requests.ConnectionError, requests.Timeout) as exc:
+                if attempt == retries:
+                    raise RuntimeError("Gemini TTS request failed or timed out.") from exc
+            else:
+                if response.status_code < 400:
+                    return response
+                if response.status_code not in {429, 500, 502, 503, 504} or attempt == retries:
+                    # Vendor bodies can contain request data; never persist them.
+                    raise RuntimeError(f"Gemini TTS request failed (HTTP {response.status_code}).")
+            time.sleep(min(2**attempt, 30))
+
+
 class FishAudioTTSProvider(BaseTTSProvider):
     """Fish Audio backend (https://fish.audio).
 
@@ -530,6 +684,7 @@ class FishAudioTTSProvider(BaseTTSProvider):
 
 
 _PROVIDERS = {
+    GeminiTTSProvider.name: GeminiTTSProvider,
     OpenAITTSProvider.name: OpenAITTSProvider,
     ElevenLabsTTSProvider.name: ElevenLabsTTSProvider,
     FishAudioTTSProvider.name: FishAudioTTSProvider,
