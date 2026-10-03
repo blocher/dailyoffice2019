@@ -151,6 +151,9 @@ class Command(BaseCommand):
                         # Create the mock request
                         factory = RequestFactory()
                         request = factory.get(base_url, data=newest_params)
+                        # This trusted, sequential job may warm its full requested
+                        # range, independently of the public API's date window.
+                        request._audio_prewarm = True
                         print(base_url, newest_params)
                         # Resolve the view based on the URL
                         match = resolve(base_url)

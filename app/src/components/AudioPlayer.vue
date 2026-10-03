@@ -11,7 +11,7 @@
         </span>
         <span v-if="!isWithinSevenDays">
           <small>
-            Audio is for today and the next seven days.
+            Audio is available from three days ago through nine days ahead.
             <a href="/">Go to today</a>
           </small>
         </span>

@@ -202,10 +202,12 @@ export default {
   computed: {
     isWithinSevenDays() {
       const today = new Date();
+      today.setHours(0, 0, 0, 0);
       const yesterday = new Date(today);
       yesterday.setDate(today.getDate() - 3);
       const sevenDaysFromNow = new Date(today);
       sevenDaysFromNow.setDate(today.getDate() + 9);
+      sevenDaysFromNow.setHours(23, 59, 59, 999);
 
       return (
         this.calendarDate >= yesterday && this.calendarDate <= sevenDaysFromNow
@@ -311,7 +313,7 @@ export default {
     );
     await this.$nextTick();
     await this.applyStoredFontSize();
-    if (this.isEsvOrKjv && this.isEnglish) {
+    if (this.isWithinSevenDays && this.isEsvOrKjv && this.isEnglish) {
       this.audioLinks = await this.setAudioLinks(office_url);
     }
     this.audioReady = true;
@@ -396,6 +398,7 @@ export default {
       );
     },
     async setAudioLinks(url) {
+      if (!this.isWithinSevenDays) return [];
       url = `${url}&include_audio_links=true`;
       try {
         const data = await this.$http.get(url);

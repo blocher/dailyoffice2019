@@ -12,7 +12,7 @@
         </span>
         <span v-else-if="!isWithinSevenDays" class="audio-message">
           <small>
-            Audio is available for today and the next seven days only.
+            Audio is available from three days ago through nine days ahead.
             <a href="/"> Go to Today >>> </a>
           </small>
         </span>

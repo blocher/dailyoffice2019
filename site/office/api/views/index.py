@@ -22,7 +22,7 @@ from django.views.generic.base import TemplateResponseMixin
 from mailchimp_marketing.api_client import ApiClientError
 from mutagen.mp3 import MP3
 from rest_framework import serializers, mixins, viewsets
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -3022,6 +3022,22 @@ class Readings(Module):
 
 class OfficeAPIView(APIView):
     permission_classes = [ReadOnly]
+
+    def initial(self, request, *args, **kwargs):
+        super().initial(request, *args, **kwargs)
+        # Only the in-process management command can set this attribute;
+        # query parameters and HTTP headers cannot bypass the web date window.
+        if not request.GET.get("include_audio_links") or getattr(request, "_audio_prewarm", False) is True:
+            return
+        try:
+            requested_date = datetime.date(kwargs["year"], kwargs["month"], kwargs["day"])
+        except (KeyError, TypeError, ValueError):
+            raise ValidationError("Invalid office date.")
+        today = timezone.localdate()
+        if not today - datetime.timedelta(days=3) <= requested_date <= today + datetime.timedelta(days=9):
+            raise PermissionDenied(
+                "Audio is available from three days ago through nine days ahead.", code="audio_date_unavailable"
+            )
 
     def get(self, request, year, month, day):
         raise NotImplementedError("You must implement this method.")
