@@ -20,6 +20,7 @@ class MockAudio extends window.EventTarget {
   }
 
   load() {}
+  removeAttribute() {}
 }
 
 const audio = [
