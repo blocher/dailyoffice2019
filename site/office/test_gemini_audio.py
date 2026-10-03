@@ -138,10 +138,10 @@ class GeminiProviderTests(SimpleTestCase):
         with self.assertRaisesMessage(ValueError, "Unknown TTS_PROVIDER"):
             get_tts_provider()
 
-    @override_settings(GEMINI_TTS_VOICE_LEADER="voice_custom", GEMINI_TTS_VOICE_READER="")
+    @override_settings(GEMINI_TTS_VOICE_LEADER="voice_custom", GEMINI_TTS_VOICES_READER=[])
     def test_voice_roles_and_blank_defaults(self):
         self.assertEqual(self.provider.voice_for_line_type("leader_dialogue"), "voice_custom")
-        self.assertEqual(self.provider.voice_for_line_type("reader"), "Charon")
+        self.assertEqual(self.provider.voice_for_line_type("reader"), "Algieba")
         self.assertIsNone(self.provider.voice_for_line_type("rubric"))
 
     @override_settings(GEMINI_TTS_VOICES_READER=" Kore, ,Charon, Sulafat ")
@@ -156,8 +156,8 @@ class GeminiProviderTests(SimpleTestCase):
             )
 
     @override_settings(GEMINI_TTS_VOICES_READER=[" ", ""], GEMINI_TTS_VOICE_READER="Puck")
-    def test_empty_pool_preserves_single_voice_setting(self):
-        self.assertEqual(self.provider.voice_for_text("reader", "Amen."), "Puck")
+    def test_empty_pool_defaults_to_algieba_ignoring_legacy_setting(self):
+        self.assertEqual(self.provider.voice_for_text("reader", "Amen."), "Algieba")
 
     @skipUnless(shutil.which("ffmpeg"), "ffmpeg is required for the real transcoding smoke test")
     @patch("office.api.views.tts.requests.post")

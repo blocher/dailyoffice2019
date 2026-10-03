@@ -420,8 +420,7 @@ GEMINI_TTS_STYLE = env("GEMINI_TTS_STYLE", default="")
 GEMINI_TTS_VOICE_LEADER = env("GEMINI_TTS_VOICE_LEADER", default="Kore")
 GEMINI_TTS_VOICE_CONGREGATION = env("GEMINI_TTS_VOICE_CONGREGATION", default="Sulafat")
 # Optional reader pool; blank falls back to the single reader voice below.
-GEMINI_TTS_VOICES_READER = env.list("GEMINI_TTS_VOICES_READER", default=[])
-GEMINI_TTS_VOICE_READER = env("GEMINI_TTS_VOICE_READER", default="Charon")
+GEMINI_TTS_VOICES_READER = env.list("GEMINI_TTS_VOICES_READER", default=["Algieba"])
 GEMINI_TTS_TIMEOUT = env.int("GEMINI_TTS_TIMEOUT", default=180)
 GEMINI_TTS_MAX_RETRIES = env.int("GEMINI_TTS_MAX_RETRIES", default=2)
 
