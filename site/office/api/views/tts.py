@@ -490,6 +490,12 @@ class GeminiTTSProvider(BaseTTSProvider):
         return []
 
     def _request(self, payload, api_key):
+        model = payload.get("model", self.model)
+        if not hasattr(self, "_rate_limits"):
+            self._rate_limits = {}
+        deadline, message = self._rate_limits.get(model, (0, ""))
+        if time.monotonic() < deadline:
+            raise RuntimeError(message)
         retries = max(0, min(int(getattr(settings, "GEMINI_TTS_MAX_RETRIES", 2)), 5))
         for attempt in range(retries + 1):
             try:
@@ -505,6 +511,17 @@ class GeminiTTSProvider(BaseTTSProvider):
             else:
                 if response.status_code < 400:
                     return response
+                if response.status_code == 429:
+                    try:
+                        retry_after = int(response.headers.get("Retry-After", "0"))
+                    except (ValueError, TypeError):
+                        retry_after = 0
+                    if retry_after > 0:
+                        message = f"Gemini {model} rate limited (HTTP 429); retry after {retry_after} seconds."
+                        # Share the cooldown across clips in this process, but
+                        # keep synthesis and transcription model limits separate.
+                        self._rate_limits[model] = (time.monotonic() + retry_after, message)
+                        raise RuntimeError(message)
                 if response.status_code not in {429, 500, 502, 503, 504} or attempt == retries:
                     # Vendor bodies can contain request data; never persist them.
                     raise RuntimeError(f"Gemini TTS request failed (HTTP {response.status_code}).")

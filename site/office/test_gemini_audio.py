@@ -133,6 +133,24 @@ class GeminiProviderTests(SimpleTestCase):
         self.assertIsInstance(get_tts_provider("elevenlabs"), ElevenLabsTTSProvider)
         self.assertIn("gemini", provider_names())
 
+    @patch("office.api.views.tts.time.monotonic")
+    @patch("office.api.views.tts.requests.post")
+    def test_rate_limit_cooldown_prevents_repeat_requests_and_expires(self, post, clock):
+        clock.return_value = 100
+        response = self.response(status=429)
+        response.headers["Retry-After"] = "3000"
+        post.return_value = response
+        for _ in range(3):
+            with self.assertRaisesMessage(RuntimeError, "retry after 3000 seconds"):
+                self.provider._request({"model": "tts"}, "placeholder")
+        self.assertEqual(post.call_count, 1)
+        post.return_value = self.response()
+        self.provider._request({"model": "transcribe"}, "placeholder")
+        self.assertEqual(post.call_count, 2)
+        clock.return_value = 3101
+        self.provider._request({"model": "tts"}, "placeholder")
+        self.assertEqual(post.call_count, 3)
+
     @override_settings(TTS_PROVIDER="typo")
     def test_invalid_provider_fails_clearly(self):
         with self.assertRaisesMessage(ValueError, "Unknown TTS_PROVIDER"):

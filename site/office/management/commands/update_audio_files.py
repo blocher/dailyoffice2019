@@ -39,6 +39,7 @@ class Command(BaseCommand):
         skip_yesterday = options["skip_yesterday"]
         completed = 0
         failures = 0
+        reported_errors = set()
 
         now = timezone.now()
         start_date = now if skip_yesterday else now - timedelta(days=1)
@@ -181,6 +182,9 @@ class Command(BaseCommand):
                                 causes.append(f"{type(cause).__name__}: {cause}")
                                 cause = cause.__cause__
                             self.stderr.write(f"FAILED {label}: {' <- '.join(causes)}")
+                            error_key = tuple(causes)
+                            if error_key in reported_errors:
+                                continue
                             try:
                                 bugsnag.notify(
                                     exc,
@@ -194,6 +198,7 @@ class Command(BaseCommand):
                                         }
                                     },
                                 )
+                                reported_errors.add(error_key)
                             except Exception:
                                 self.stderr.write("Bugsnag notification failed; continuing audio batch.")
                             continue
