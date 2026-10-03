@@ -33,8 +33,9 @@ def forward(apps, schema_editor):
             "Short ending",
             "litany",
             "L",
-            "Omit the Supplication, retaining the concluding versicle, the collect beginning "
-            "'Almighty God, you have promised', and the Grace.",
+            "Omit the Supplication, retaining the concluding versicle and the collect beginning "
+            "'Almighty God, you have promised.' When the Prayer of St. John Chrysostom is enabled, "
+            "conclude with that prayer and the Grace; otherwise conclude with the Grace.",
         ),
     ]
     for order, (name, value, abbreviation, description) in enumerate(options):

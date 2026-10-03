@@ -193,7 +193,7 @@ class EmbeddedGreatLitanyTests(SimpleTestCase):
                         isinstance(office_class.get_modules(office)[-1], litany_class), prefix == active_prefix
                     )
 
-    def test_short_ending_retains_versicle_collect_and_grace_without_supplication(self):
+    def test_short_ending_retains_versicle_collect_chrysostom_and_grace_without_supplication(self):
         for _, _, litany_class, prefix in self.office_classes:
             for style in ("contemporary", "traditional"):
                 with self.subTest(office=prefix, style=style):
@@ -216,9 +216,13 @@ class EmbeddedGreatLitanyTests(SimpleTestCase):
                         else "Almighty God, you have promised"
                     )
                     self.assertIn(collect, text)
+                    self.assertEqual(text.count("given us grace at this time"), 1)
                     self.assertEqual(text.count("The grace of our Lord Jesus Christ"), 1)
                     self.assertLess(text.index("O Lord, show us"), text.index(collect))
-                    self.assertLess(text.index(collect), text.index("The grace of our Lord Jesus Christ"))
+                    self.assertLess(text.index(collect), text.index("given us grace at this time"))
+                    self.assertLess(
+                        text.index("given us grace at this time"), text.index("The grace of our Lord Jesus Christ")
+                    )
                     self.assertNotIn("Let us bless the Lord.", text)
                     collect_line = next(line for line in lines if line["content"].startswith(collect))
                     self.assertFalse(collect_line["content"].endswith("Amen."))
@@ -259,6 +263,22 @@ class EmbeddedGreatLitanyTests(SimpleTestCase):
                     self.assertIn("Look mercifully", text)
                     self.assertNotIn("given us grace at this time", text)
                     self.assertNotIn("The grace of our Lord Jesus Christ", text)
+
+    def test_short_ending_omits_chrysostom_when_setting_is_off(self):
+        for _, _, litany_class, prefix in self.office_classes:
+            for style in ("contemporary", "traditional"):
+                with self.subTest(office=prefix, style=style):
+                    office = self.make_office(
+                        **{
+                            f"{prefix}_great_litany": f"{prefix}_litany_everyday",
+                            "great_litany_ending": "litany",
+                            "language_style": style,
+                            "chrysostom": "off",
+                        }
+                    )
+                    text = self.content(litany_class(office).get_lines())
+                    self.assertNotIn("given us grace at this time", text)
+                    self.assertEqual(text.count("The grace of our Lord Jesus Christ"), 1)
 
     def test_lords_prayer_remains_in_both_office_and_litany(self):
         for _, _, litany_class, prefix in self.office_classes:

@@ -21,3 +21,4 @@ site/website/.env
 .pnp.*
 dailyofficelocalapi/
 site/env_test/
+.voice-auditions/

@@ -1700,7 +1700,17 @@ class GreatLitany(ShowGreatLitanyMixin, Module):
             template = (
                 "great_litany_short_ending_traditional" if style == "traditional" else "great_litany_short_ending"
             )
-            return self._ftl(template)
+            lines = self._ftl(template)
+            if self.office.settings.get("chrysostom", "off") == "on":
+                chrysostom_template = "chrysostom_traditional" if style == "traditional" else "chrysostom"
+                chrysostom = (
+                    [Line("A Prayer of St. John Chrysostom", "heading")]
+                    + self._ftl(chrysostom_template)
+                    + [Line("Amen.", "congregation")]
+                )
+                grace_index = max(index for index, line in enumerate(lines) if line.get("line_type") == "rubric") + 1
+                lines[grace_index:grace_index] = chrysostom
+            return lines
 
         template = "supplication_traditional" if style == "traditional" else "supplication"
         lines = self._ftl(template)
