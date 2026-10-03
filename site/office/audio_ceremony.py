@@ -17,6 +17,44 @@ INTERCESSION_INVITATION = "Let us unite our prayers and thanksgivings with those
 INTERCESSION_MODULE = "Intercessions, Thanksgivings, and Praise"
 
 
+def spoken_day(day):
+    """Spell out calendar ordinals so TTS cannot read them as cardinal numbers."""
+    ordinals = (
+        "first",
+        "second",
+        "third",
+        "fourth",
+        "fifth",
+        "sixth",
+        "seventh",
+        "eighth",
+        "ninth",
+        "tenth",
+        "eleventh",
+        "twelfth",
+        "thirteenth",
+        "fourteenth",
+        "fifteenth",
+        "sixteenth",
+        "seventeenth",
+        "eighteenth",
+        "nineteenth",
+        "twentieth",
+        "twenty-first",
+        "twenty-second",
+        "twenty-third",
+        "twenty-fourth",
+        "twenty-fifth",
+        "twenty-sixth",
+        "twenty-seventh",
+        "twenty-eighth",
+        "twenty-ninth",
+        "thirtieth",
+        "thirty-first",
+    )
+    return ordinals[day - 1]
+
+
 def announcement(office):
     evening = office.name in {
         "Evening Prayer",
@@ -30,7 +68,7 @@ def announcement(office):
         office.name, office.name
     )
     day = office.date.date
-    return f"{name} for {day:%A}, {day:%B} {day.day}, {day.year}: {names}."
+    return f"{name} for {day:%A}, {day:%B} {spoken_day(day.day)}, {day.year}: {names}."
 
 
 def bell_track(asset, module, identifier, base_url, before=0, after=0):
@@ -73,7 +111,7 @@ def frame_tracks(office, tracks, serializer, base_url):
         "text": text,
         "url": url,
         "path": path,
-        "silence_before": 2,
+        "silence_before": 0,
         "silence_after": 0,
         "word_timing": [],
     }

@@ -7,7 +7,7 @@ from unittest.mock import Mock, patch
 from django.test import SimpleTestCase, override_settings
 from mutagen.mp3 import MP3
 
-from office.audio_ceremony import announcement, frame_tracks, INTERCESSION_INVITATION
+from office.audio_ceremony import announcement, frame_tracks, INTERCESSION_INVITATION, spoken_day
 from office.api.views.index import GenericDailyOfficeSerializer
 
 
@@ -24,11 +24,26 @@ class AudioCeremonyTests(SimpleTestCase):
             ),
         )
 
+    def test_spoken_calendar_ordinals(self):
+        for day, expected in [
+            (1, "first"),
+            (2, "second"),
+            (3, "third"),
+            (12, "twelfth"),
+            (21, "twenty-first"),
+            (22, "twenty-second"),
+            (23, "twenty-third"),
+            (30, "thirtieth"),
+            (31, "thirty-first"),
+        ]:
+            self.assertEqual(spoken_day(day), expected)
+        self.assertEqual(len({spoken_day(day) for day in range(1, 32)}), 31)
+
     def test_all_office_names_and_evening_commemorations(self):
         for name in ["Morning Prayer", "Midday Prayer", "Family Prayer in the Morning", "Family Prayer at Midday"]:
             self.assertEqual(
                 announcement(self.office(name)),
-                f"{'Daily Morning Prayer' if name == 'Morning Prayer' else name} for Saturday, October 3, 2026: Morning Saint and Second Saint.",
+                f"{'Daily Morning Prayer' if name == 'Morning Prayer' else name} for Saturday, October third, 2026: Morning Saint and Second Saint.",
             )
         for name in [
             "Evening Prayer",
@@ -80,7 +95,7 @@ class AudioCeremonyTests(SimpleTestCase):
             ]
             tracks = frame_tracks(self.office(), original, serializer, "https://example.test")
             self.assertEqual(len(tracks), 6)
-            self.assertEqual(tracks[0]["silence_before"], 2)
+            self.assertEqual(tracks[0]["silence_before"], 0)
             self.assertEqual(tracks[1]["silence_after"], 2.5)
             self.assertEqual(tracks[3]["silence_after"], 25)
             self.assertTrue(tracks[4]["skip_gap_before"])
@@ -119,11 +134,11 @@ class AudioCeremonyTests(SimpleTestCase):
                 self.assertGreater(segment["end_time"], segment["start_time"])
             self.assertEqual(result[4][0]["word"], "Let")
             # Word timing follows the opening announcement, bells, and explicit silence.
-            expected_start = 2 + MP3(Path(directory, "spoken.mp3")).info.length + 8 + 2.5 + 0.2
+            expected_start = MP3(Path(directory, "spoken.mp3")).info.length + 8 + 2.5 + 0.2
             self.assertAlmostEqual(result[4][0]["start_time"], expected_start, delta=0.2)
             combined = Path(directory) / result[1].removeprefix("/uploads/")
             expected = (
-                sum(MP3(Path(directory) / t["path"].removeprefix("/uploads/")).info.length for t in tracks) + 31.5
+                sum(MP3(Path(directory) / t["path"].removeprefix("/uploads/")).info.length for t in tracks) + 29.5
             )
             self.assertAlmostEqual(MP3(combined).info.length, expected, delta=0.5)
             serializer.get_or_create_clip.assert_called_once_with(announcement(self.office()), "speaker", kind="line")
