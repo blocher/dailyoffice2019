@@ -3046,6 +3046,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         overrides and strip liturgical pointing marks. Affects TTS input (and
         the clip hash) only, never the text shown to the user."""
         from office.models import PronunciationOverride
+        from office.audio_text import expand_spoken_numbers
 
         try:
             content = PronunciationOverride.apply(content, provider=TTS_PROVIDER.name)
@@ -3055,7 +3056,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         # Replace pointing marks (and any spaces hugging them) with a single
         # space so the surrounding words don't run together.
         content = GenericDailyOfficeSerializer._TTS_POINTING_RE.sub(" ", content)
-        return content
+        return expand_spoken_numbers(content)
 
     @staticmethod
     def record_audio_clip(
@@ -3316,7 +3317,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
     @staticmethod
     def handle_html(line, html=False, no_generate=False, id=None, module="Reading"):
         import re
-        from bs4 import BeautifulSoup
+        from office.audio_text import reading_text
 
         if "<iframe" in line and html:
             return line
@@ -3334,10 +3335,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             if not paragraph.strip():
                 lines.append(paragraph)
                 continue
-            soup = BeautifulSoup(paragraph, "html.parser")
-            plain_text = soup.get_text()
-            text_without_verses = re.sub(r"(\b\d+\b\s)", "", plain_text)
-            text_without_verses = re.sub(r"\s+", " ", text_without_verses).strip()
+            text_without_verses = reading_text(paragraph)
             if not text_without_verses:
                 lines.append(paragraph)
                 continue
