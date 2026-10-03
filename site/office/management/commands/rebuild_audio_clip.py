@@ -4,7 +4,7 @@ from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
-from office.api.views.tts import provider_names
+from office.api.views.tts import get_tts_provider, provider_names
 from office.models import AudioClip
 
 
@@ -127,18 +127,26 @@ class Command(BaseCommand):
             files = [
                 f
                 for f in os.listdir(media_root)
-                if os.path.isfile(os.path.join(media_root, f)) and (f.endswith(".mp3") or f.endswith(".mp3.txt"))
+                if os.path.isfile(os.path.join(media_root, f))
+                and (f.endswith(".mp3") or f.endswith(".mp3.txt") or f.endswith(".mp3.json"))
             ]
             rows = AudioClip.objects.exclude(filename__contains="/")
         else:
-            target_dir = os.path.join(media_root, name)
+            try:
+                media_subdir = get_tts_provider(name).media_subdir
+            except ValueError as error:
+                self.stdout.write(self.style.ERROR(str(error)))
+                return
+            target_dir = os.path.join(media_root, media_subdir)
             files = []
             if os.path.isdir(target_dir):
                 for entry in os.listdir(target_dir):
                     full = os.path.join(target_dir, entry)
-                    if os.path.isfile(full) and (entry.endswith(".mp3") or entry.endswith(".mp3.txt")):
+                    if os.path.isfile(full) and (
+                        entry.endswith(".mp3") or entry.endswith(".mp3.txt") or entry.endswith(".mp3.json")
+                    ):
                         files.append(entry)
-            rows = AudioClip.objects.filter(filename__startswith=f"{name}/")
+            rows = AudioClip.objects.filter(filename__startswith=f"{media_subdir}/")
 
         row_count = rows.count()
         if not files and not row_count:
@@ -182,9 +190,10 @@ class Command(BaseCommand):
         # pipelines' directories (e.g. audio_gemini) are deliberately skipped.
         scan_dirs = [("", media_root)]
         for name in provider_names():
-            provider_dir = os.path.join(media_root, name)
+            media_subdir = get_tts_provider(name).media_subdir
+            provider_dir = os.path.join(media_root, media_subdir)
             if os.path.isdir(provider_dir):
-                scan_dirs.append((name, provider_dir))
+                scan_dirs.append((media_subdir, provider_dir))
 
         orphans = []  # (rel_name_for_known_lookup, absolute_path)
         for prefix, directory in scan_dirs:

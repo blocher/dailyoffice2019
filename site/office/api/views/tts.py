@@ -13,13 +13,21 @@ bookkeeping rows stay in sync automatically. Switch backends with the
 model/voice knobs.
 """
 
+import base64
+import binascii
+import hashlib
 import logging
 import os
 import random
+import re
 import time
+import subprocess
+import tempfile
 
 import requests
 from django.conf import settings
+
+from office.voice_style import GEMINI_PRAYER_STYLE
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +67,11 @@ class BaseTTSProvider:
         raise NotImplementedError
 
     @property
+    def supports_alignment(self):
+        """Whether synthesis returns word-level timing metadata."""
+        return False
+
+    @property
     def output_sample_rate(self):
         """Sample rate (Hz) of generated clips; silence gaps match this."""
         return 24000
@@ -68,22 +81,33 @@ class BaseTTSProvider:
         """Steering prompt actually sent (empty when unsupported)."""
         return ""
 
-    def voice_for_line_type(self, line_type):
-        """Map a liturgical line_type to a voice via substring match."""
+    def role_for_line_type(self, line_type):
+        """Map a liturgical line type to its configured speaking role."""
         if not line_type:
             return None
-        voices = self.voices
         # "speaker" is an audio-only narration line spoken in the leader voice
         # (it never renders visually); see office/api/views/index.py.
         if "leader" in line_type or "speaker" in line_type:
-            return voices["leader"]
+            return "leader"
         if "congregation" in line_type:
-            return voices["congregation"]
-        if "html" in line_type:
-            return voices["html"]
-        if "reader" in line_type:
-            return voices["reader"]
+            return "congregation"
+        if "html" in line_type or "reader" in line_type:
+            return "reader"
         return None
+
+    def voice_for_line_type(self, line_type):
+        """Choose a configured voice for a liturgical line type."""
+        role = self.role_for_line_type(line_type)
+        if not role:
+            return None
+        configured = self.voices[role]
+        if isinstance(configured, (list, tuple)):
+            return random.choice(configured) if configured else None
+        return configured
+
+    def voice_for_text(self, line_type, text):
+        """Choose the voice used to synthesize a specific text block."""
+        return self.voice_for_line_type(line_type)
 
     def cache_signature(self):
         """Everything besides the voice and text that affects the audio bytes.
@@ -92,10 +116,15 @@ class BaseTTSProvider:
         """
         return f"{self.model} {self.speed} {self.effective_instructions}"
 
+    def pronunciation_locators(self):
+        """Optional provider-specific pronunciation dictionary locators."""
+        return []
+
     def synthesize(self, voice, text, file_path):
         """Generate speech for ``text`` in ``voice`` and write mp3 to file_path.
 
-        Must raise on failure and must not leave a partial file behind.
+        Returns word timing dictionaries when supported, otherwise an empty
+        list. Must raise on failure and must not leave a partial file behind.
         """
         raise NotImplementedError
 
@@ -157,6 +186,329 @@ class OpenAITTSProvider(BaseTTSProvider):
             kwargs["instructions"] = instructions
         response = client.audio.speech.create(**kwargs)
         response.stream_to_file(file_path)
+        return []
+
+
+class ElevenLabsTTSProvider(BaseTTSProvider):
+    """ElevenLabs v2/v3 TTS with character alignment grouped into words."""
+
+    name = "elevenlabs"
+    ENDPOINT = "https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/with-timestamps"
+    _RETRY_STATUSES = frozenset({429, 500, 502, 503, 504})
+    # Documented models the office audio path can send as model_id.
+    # IPA/CMU phoneme tags work on eleven_flash_v2; native /IPA/ on eleven_v3.
+    # eleven_flash_v2_5 and eleven_multilingual_v2 skip phoneme tags (alias only).
+    MODELS = (
+        "eleven_multilingual_v2",
+        "eleven_flash_v2_5",
+        "eleven_flash_v2",
+        "eleven_v3",
+    )
+
+    @property
+    def model(self):
+        return getattr(settings, "ELEVENLABS_TTS_MODEL", "eleven_multilingual_v2")
+
+    @property
+    def speed(self):
+        return getattr(settings, "ELEVENLABS_TTS_SPEED", 1.0)
+
+    @property
+    def output_sample_rate(self):
+        return 44100
+
+    @property
+    def supports_alignment(self):
+        return True
+
+    @property
+    def voices(self):
+        configured_readers = getattr(settings, "ELEVENLABS_TTS_VOICES_READER", ())
+        if isinstance(configured_readers, str):
+            configured_readers = configured_readers.split(",")
+        readers = tuple(voice.strip() for voice in configured_readers if voice.strip())[:10]
+        return {
+            "leader": getattr(settings, "ELEVENLABS_TTS_VOICE_LEADER", ""),
+            "congregation": getattr(settings, "ELEVENLABS_TTS_VOICE_CONGREGATION", ""),
+            "reader": readers,
+        }
+
+    @property
+    def timeout(self):
+        return getattr(settings, "ELEVENLABS_TTS_TIMEOUT", 120)
+
+    @property
+    def max_retries(self):
+        return getattr(settings, "ELEVENLABS_TTS_MAX_RETRIES", 4)
+
+    def cache_signature(self):
+        locators = self.pronunciation_locators()
+        locator_key = " ".join(
+            f"{item.get('pronunciation_dictionary_id', '')}:{item.get('version_id', '')}" for item in locators
+        )
+        return f"{self.model} {self.speed} {locator_key}"
+
+    def pronunciation_locators(self):
+        dictionary_id = getattr(settings, "ELEVENLABS_PRONUNCIATION_DICTIONARY_ID", "")
+        if not dictionary_id:
+            return []
+        locator = {"pronunciation_dictionary_id": dictionary_id}
+        version_id = getattr(settings, "ELEVENLABS_PRONUNCIATION_DICTIONARY_VERSION_ID", "")
+        if version_id:
+            locator["version_id"] = version_id
+        return [locator]
+
+    def voice_for_text(self, line_type, text):
+        role = self.role_for_line_type(line_type)
+        if role != "reader":
+            return self.voice_for_line_type(line_type)
+        readers = self.voices["reader"]
+        if not readers:
+            return None
+        # Stable pseudo-random assignment keeps repeated serializer passes (the
+        # rendered reading and its audio metadata) on the same voice and cache
+        # key. Existing DB reuse still wins before this is called.
+        digest = hashlib.sha256(text.encode("utf-8")).digest()
+        return readers[int.from_bytes(digest[:8], "big") % len(readers)]
+
+    def synthesize(self, voice, text, file_path):
+        api_key = getattr(settings, "ELEVENLABS_API_KEY", "")
+        if not api_key:
+            raise RuntimeError("ELEVENLABS_API_KEY is not configured.")
+        if not voice:
+            raise RuntimeError("No ElevenLabs voice configured for this role.")
+
+        payload = {
+            "text": text,
+            "model_id": self.model,
+            "voice_settings": {"speed": self.speed},
+            "apply_text_normalization": "auto",
+        }
+        locators = self.pronunciation_locators()
+        if locators:
+            payload["pronunciation_dictionary_locators"] = locators
+        headers = {
+            "xi-api-key": api_key,
+            "Content-Type": "application/json",
+        }
+        max_attempts = max(1, self.max_retries + 1)
+        for attempt in range(1, max_attempts + 1):
+            try:
+                response = requests.post(
+                    self.ENDPOINT.format(voice_id=voice),
+                    params={"output_format": "mp3_44100_128"},
+                    json=payload,
+                    headers=headers,
+                    timeout=self.timeout,
+                )
+                response.raise_for_status()
+                data = response.json()
+                audio = base64.b64decode(data["audio_base64"])
+                tmp_path = f"{file_path}.part"
+                try:
+                    with open(tmp_path, "wb") as handle:
+                        handle.write(audio)
+                    os.replace(tmp_path, file_path)
+                except Exception:
+                    if os.path.exists(tmp_path):
+                        os.remove(tmp_path)
+                    raise
+                alignment = data.get("alignment") or data.get("normalized_alignment")
+                return self.words_from_alignment(alignment)
+            except requests.HTTPError as exc:
+                status = exc.response.status_code if exc.response is not None else None
+                if status not in self._RETRY_STATUSES or attempt >= max_attempts:
+                    raise
+            except (requests.ConnectionError, requests.Timeout):
+                if attempt >= max_attempts:
+                    raise
+
+            delay = min(2 ** (attempt - 1), 30)
+            logger.warning(
+                "ElevenLabs TTS retry (attempt %d/%d) in %ds",
+                attempt,
+                max_attempts,
+                delay,
+            )
+            time.sleep(delay)
+
+        return []
+
+    @staticmethod
+    def words_from_alignment(alignment):
+        """Collapse ElevenLabs character alignment into precise word timings."""
+        if not alignment:
+            return []
+        characters = alignment.get("characters") or []
+        starts = alignment.get("character_start_times_seconds") or []
+        ends = alignment.get("character_end_times_seconds") or []
+        if not characters or not (len(characters) == len(starts) == len(ends)):
+            return []
+
+        text = "".join(characters)
+        words = []
+        for match in re.finditer(r"[\w]+(?:[’'][\w]+)*", text, flags=re.UNICODE):
+            first = match.start()
+            last = match.end() - 1
+            words.append(
+                {
+                    "word": match.group(0),
+                    "start_time": starts[first],
+                    "end_time": ends[last],
+                    "char_start": first,
+                    "char_end": match.end(),
+                }
+            )
+        return words
+
+
+class GeminiTTSProvider(BaseTTSProvider):
+    """Gemini 3.8 unary TTS, converted to the pipeline's seekable MP3 format.
+
+    REST schema: https://ai.google.dev/gemini-api/docs/speech-generation
+    Delivery directions belong in speech_metadata, never the prayer transcript.
+    One voice per line preserves the existing per-line navigation.
+    """
+
+    name = "gemini"
+    endpoint = "https://generativelanguage.googleapis.com/v1beta/interactions"
+
+    @property
+    def model(self):
+        return getattr(settings, "GEMINI_TTS_MODEL", "gemini-3.8-flash-tts")
+
+    @property
+    def voices(self):
+        configured = getattr(settings, "GEMINI_TTS_VOICES_READER", ())
+        if isinstance(configured, str):
+            configured = configured.split(",")
+        reader = tuple(voice.strip() for voice in configured if voice.strip())
+        if not reader:
+            reader = (getattr(settings, "GEMINI_TTS_VOICE_READER", "") or "Charon",)
+        return {
+            "leader": getattr(settings, "GEMINI_TTS_VOICE_LEADER", "") or "Kore",
+            "congregation": getattr(settings, "GEMINI_TTS_VOICE_CONGREGATION", "") or "Sulafat",
+            "reader": reader,
+            "html": reader,
+        }
+
+    def voice_for_text(self, line_type, text):
+        if self.role_for_line_type(line_type) != "reader":
+            return self.voice_for_line_type(line_type)
+        readers = self.voices["reader"]
+        # Stable selection avoids changing voices between serializer passes.
+        # Existing passage recordings are reused before choosing a new voice.
+        digest = hashlib.sha256(text.encode("utf-8")).digest()
+        return readers[int.from_bytes(digest[:8], "big") % len(readers)]
+
+    @property
+    def output_sample_rate(self):
+        return 44100
+
+    @property
+    def effective_instructions(self):
+        return getattr(settings, "GEMINI_TTS_STYLE", "") or GEMINI_PRAYER_STYLE
+
+    def cache_signature(self):
+        return f"{super().cache_signature()} mp3_44100_128 gemini_adapter_v1"
+
+    def synthesize(self, voice, text, file_path):
+        api_key = getattr(settings, "GEMINI_API_KEY", "")
+        if not api_key:
+            raise RuntimeError("GEMINI_API_KEY is not configured.")
+        if not voice:
+            raise RuntimeError("No Gemini voice is configured for this role.")
+        payload = {
+            "model": self.model,
+            "input": [
+                {
+                    "type": "user_input",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": text,
+                            "annotations": [{"type": "speech_metadata", "style": self.effective_instructions}],
+                        }
+                    ],
+                }
+            ],
+            "response_format": {"type": "audio", "mime_type": "audio/wav"},
+            "generation_config": {"speech_config": [{"voice": voice}]},
+        }
+        response = self._request(payload, api_key)
+        try:
+            data = response.json()
+            audio_blocks = [
+                part
+                for step in data.get("steps", [])
+                if step.get("type") == "model_output"
+                for part in step.get("content", [])
+                if part.get("type") == "audio"
+            ]
+            if not audio_blocks:
+                raise RuntimeError("Gemini returned no audio.")
+            audio = base64.b64decode(audio_blocks[-1].get("data", ""), validate=True)
+            if len(audio) <= 44 or audio[:4] != b"RIFF" or audio[8:12] != b"WAVE":
+                raise RuntimeError("Gemini returned empty or invalid WAV audio.")
+        except (ValueError, TypeError, AttributeError, binascii.Error) as exc:
+            raise RuntimeError("Gemini returned an invalid audio response.") from exc
+
+        directory = os.path.dirname(os.path.abspath(file_path))
+        os.makedirs(directory, exist_ok=True)
+        # Publish atomically, leaving no partial cache file after any failure.
+        with tempfile.TemporaryDirectory(prefix="gemini-", dir=directory) as temp:
+            wav_path = os.path.join(temp, "input.wav")
+            mp3_path = os.path.join(temp, "output.mp3")
+            with open(wav_path, "wb") as handle:
+                handle.write(audio)
+            try:
+                result = subprocess.run(
+                    [
+                        "ffmpeg",
+                        "-y",
+                        "-i",
+                        wav_path,
+                        "-ac",
+                        "1",
+                        "-ar",
+                        "44100",
+                        "-c:a",
+                        "libmp3lame",
+                        "-b:a",
+                        "128k",
+                        mp3_path,
+                    ],
+                    capture_output=True,
+                    text=True,
+                    timeout=120,
+                )
+            except (OSError, subprocess.TimeoutExpired) as exc:
+                raise RuntimeError("Gemini audio conversion could not run.") from exc
+            if result.returncode or not os.path.isfile(mp3_path) or not os.path.getsize(mp3_path):
+                raise RuntimeError("Gemini WAV-to-MP3 conversion failed.")
+            os.replace(mp3_path, file_path)
+        return []
+
+    def _request(self, payload, api_key):
+        retries = max(0, min(int(getattr(settings, "GEMINI_TTS_MAX_RETRIES", 2)), 5))
+        for attempt in range(retries + 1):
+            try:
+                response = requests.post(
+                    self.endpoint,
+                    headers={"x-goog-api-key": api_key, "Content-Type": "application/json"},
+                    json=payload,
+                    timeout=getattr(settings, "GEMINI_TTS_TIMEOUT", 180),
+                )
+            except (requests.ConnectionError, requests.Timeout) as exc:
+                if attempt == retries:
+                    raise RuntimeError("Gemini TTS request failed or timed out.") from exc
+            else:
+                if response.status_code < 400:
+                    return response
+                if response.status_code not in {429, 500, 502, 503, 504} or attempt == retries:
+                    # Vendor bodies can contain request data; never persist them.
+                    raise RuntimeError(f"Gemini TTS request failed (HTTP {response.status_code}).")
+            time.sleep(min(2**attempt, 30))
 
 
 class FishAudioTTSProvider(BaseTTSProvider):
@@ -332,7 +684,9 @@ class FishAudioTTSProvider(BaseTTSProvider):
 
 
 _PROVIDERS = {
+    GeminiTTSProvider.name: GeminiTTSProvider,
     OpenAITTSProvider.name: OpenAITTSProvider,
+    ElevenLabsTTSProvider.name: ElevenLabsTTSProvider,
     FishAudioTTSProvider.name: FishAudioTTSProvider,
 }
 

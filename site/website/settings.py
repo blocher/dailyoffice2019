@@ -366,7 +366,7 @@ EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")  # 587
 OPENAI_API_KEY = env("OPENAI_API_KEY")
 
 # --- Text-to-speech (liturgy audio) -----------------------------------------
-# Which backend generates office audio: "openai" or "fish" (Fish Audio).
+# Which backend generates office audio: "openai", "elevenlabs", "gemini", or "fish".
 # The adapters live in office/api/views/tts.py; each reads its own settings
 # below so the model and voices can be switched without code changes.
 TTS_PROVIDER = env("TTS_PROVIDER", default="openai")
@@ -389,6 +389,41 @@ TTS_INSTRUCTIONS = env(
         "read prayerfully, clearly, and naturally. Pronounce 'Amen' as 'ah-men'."
     ),
 )
+
+# ElevenLabs TTS. ELEVENLABS_TTS_MODEL options:
+#   eleven_multilingual_v2  default; stable long-form (no IPA)
+#   eleven_flash_v2_5       fast multilingual (alias dictionaries only)
+#   eleven_flash_v2         English; SSML IPA/CMU phoneme tags
+#   eleven_v3               expressive; native /IPA/ in the text
+# Leader/leader_dialogue share one voice,
+# congregation/congregation_dialogue share one voice, and each newly generated
+# reader block randomly chooses from the comma-separated list (maximum 10).
+ELEVENLABS_API_KEY = env("ELEVENLABS_API_KEY", default="")
+ELEVENLABS_TTS_MODEL = env("ELEVENLABS_TTS_MODEL", default="eleven_multilingual_v2")
+ELEVENLABS_TTS_SPEED = env.float("ELEVENLABS_TTS_SPEED", default=1.0)
+ELEVENLABS_TTS_VOICE_LEADER = env("ELEVENLABS_TTS_VOICE_LEADER", default="")
+ELEVENLABS_TTS_VOICE_CONGREGATION = env("ELEVENLABS_TTS_VOICE_CONGREGATION", default="")
+ELEVENLABS_TTS_VOICES_READER = env.list("ELEVENLABS_TTS_VOICES_READER", default=[])
+ELEVENLABS_TTS_TIMEOUT = env.int("ELEVENLABS_TTS_TIMEOUT", default=120)
+ELEVENLABS_TTS_MAX_RETRIES = env.int("ELEVENLABS_TTS_MAX_RETRIES", default=4)
+# v2 cannot use IPA. Create a dictionary of alias rules (Amen -> "ahmén")
+# with `setup_elevenlabs_pronunciation` and paste the printed IDs here.
+ELEVENLABS_PRONUNCIATION_DICTIONARY_ID = env("ELEVENLABS_PRONUNCIATION_DICTIONARY_ID", default="")
+ELEVENLABS_PRONUNCIATION_DICTIONARY_VERSION_ID = env("ELEVENLABS_PRONUNCIATION_DICTIONARY_VERSION_ID", default="")
+
+# Gemini 3.8 TTS via the Gemini API; restart after changing provider settings.
+GEMINI_API_KEY = env("GEMINI_API_KEY", default="")
+GEMINI_TTS_MODEL = env("GEMINI_TTS_MODEL", default="gemini-3.8-flash-tts")
+GEMINI_TTS_ALIGNMENT = env.bool("GEMINI_TTS_ALIGNMENT", default=True)
+GEMINI_TRANSCRIBE_MODEL = env("GEMINI_TRANSCRIBE_MODEL", default="gemini-3.5-transcribe")
+GEMINI_TTS_STYLE = env("GEMINI_TTS_STYLE", default="")
+GEMINI_TTS_VOICE_LEADER = env("GEMINI_TTS_VOICE_LEADER", default="Kore")
+GEMINI_TTS_VOICE_CONGREGATION = env("GEMINI_TTS_VOICE_CONGREGATION", default="Sulafat")
+# Optional reader pool; blank falls back to the single reader voice below.
+GEMINI_TTS_VOICES_READER = env.list("GEMINI_TTS_VOICES_READER", default=[])
+GEMINI_TTS_VOICE_READER = env("GEMINI_TTS_VOICE_READER", default="Charon")
+GEMINI_TTS_TIMEOUT = env.int("GEMINI_TTS_TIMEOUT", default=180)
+GEMINI_TTS_MAX_RETRIES = env.int("GEMINI_TTS_MAX_RETRIES", default=2)
 
 # Fish Audio TTS (https://fish.audio). Voices are `reference_id` values that
 # point at voice models in the Fish Audio library; browse them at

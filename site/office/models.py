@@ -730,11 +730,17 @@ class PronunciationOverride(models.Model):
     "this sounds wrong" reports are a data edit rather than a code change.
     """
 
-    CACHE_KEY = "tts_pronunciation_overrides_v1"
+    CACHE_KEY = "tts_pronunciation_overrides_v2"
 
     match = models.CharField(max_length=255, help_text="Text (or regex) to find in the TTS input before synthesis.")
     replacement = models.CharField(max_length=255, blank=True, default="", help_text="Replacement text.")
     is_regex = models.BooleanField(default=False, help_text="Treat 'match' as a regular expression.")
+    providers = models.CharField(
+        max_length=128,
+        blank=True,
+        default="",
+        help_text="Comma-separated TTS providers this rule applies to (e.g. openai). Leave blank for all.",
+    )
     order = models.PositiveIntegerField(default=0, help_text="Lower numbers are applied first.")
     enabled = models.BooleanField(default=True)
     note = models.CharField(max_length=255, blank=True, default="")
@@ -768,16 +774,21 @@ class PronunciationOverride(models.Model):
         rules = cache.get(cls.CACHE_KEY)
         if rules is None:
             rules = list(
-                cls.objects.filter(enabled=True).order_by("order", "id").values("match", "replacement", "is_regex")
+                cls.objects.filter(enabled=True)
+                .order_by("order", "id")
+                .values("match", "replacement", "is_regex", "providers")
             )
             cache.set(cls.CACHE_KEY, rules, 60)
         return rules
 
     @classmethod
-    def apply(cls, text):
+    def apply(cls, text, provider=None):
         if not text:
             return text
         for rule in cls.cached_rules():
+            allowed = [name.strip().lower() for name in (rule.get("providers") or "").split(",") if name.strip()]
+            if allowed and (not provider or provider.lower() not in allowed):
+                continue
             if rule["is_regex"]:
                 text = re.sub(rule["match"], rule["replacement"], text)
             else:
@@ -801,13 +812,19 @@ class AudioClip(BaseModel):
 
     key = models.CharField(max_length=64, unique=True, db_index=True, help_text="uuid5 stem / filename base.")
     filename = models.CharField(max_length=128)
-    text = models.TextField(blank=True, default="", help_text="Normalized text sent to OpenAI.")
+    text = models.TextField(blank=True, default="", help_text="Normalized text sent to the TTS provider.")
     line_type = models.CharField(max_length=64, blank=True, default="")
+    provider = models.CharField(max_length=32, blank=True, default="", db_index=True)
     voice = models.CharField(max_length=32, blank=True, default="", db_index=True)
     model = models.CharField(max_length=32, blank=True, default="")
     speed = models.FloatField(default=1.0)
     kind = models.CharField(max_length=16, choices=KINDS, default="line")
     duration = models.FloatField(null=True, blank=True, help_text="Length in seconds (via mutagen).")
+    word_timing = models.JSONField(
+        blank=True,
+        default=list,
+        help_text="Provider word alignment relative to the beginning of this clip.",
+    )
 
     class Meta:
         ordering = ("line_type", "voice", "text")
@@ -829,6 +846,9 @@ class AudioClip(BaseModel):
         try:
             if self.filename and os.path.isfile(self.file_path):
                 os.remove(self.file_path)
+                sidecar = f"{self.file_path}.json"
+                if os.path.isfile(sidecar):
+                    os.remove(sidecar)
                 return True
         except OSError:
             pass

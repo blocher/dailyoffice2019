@@ -3,15 +3,13 @@ import os
 from django.conf import settings
 from django.core.cache import cache
 from django.http import FileResponse
-from django.http import HttpResponse
-from django.http import HttpResponseNotFound
-from django.http import StreamingHttpResponse
 from django.utils import timezone
 from mutagen.mp3 import MP3
 from rest_framework.renderers import BaseRenderer, BrowsableAPIRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from churchcal.audio_streaming import audio_file_response
 from churchcal.api.permissions import ReadOnly
 from churchcal.api.serializer import DaySerializer
 from churchcal.calculations import get_calendar_date, ChurchYear, CalendarYear
@@ -113,52 +111,26 @@ class AudioTrackView(APIView):
 
     def get(self, request, *args, **kwargs):
         filename = kwargs["track"]
-        # `track` may include a provider subfolder (e.g. "fish/<uuid>.mp3").
-        # Normalize and confine to MEDIA_ROOT to prevent path traversal.
-        safe_rel = os.path.normpath(filename).lstrip("/\\")
-        media_root = os.path.abspath(settings.MEDIA_ROOT)
-        file_path = os.path.abspath(os.path.join(media_root, safe_rel))
-
-        if os.path.commonpath([media_root, file_path]) != media_root:
-            return HttpResponseNotFound("Audio file not found.")
-
-        if not os.path.exists(file_path) or os.path.getsize(file_path) == 0:
-            return HttpResponseNotFound("Audio file not found.")
+        response = audio_file_response(
+            settings.MEDIA_ROOT,
+            filename,
+            range_header=request.META.get("HTTP_RANGE", ""),
+            if_range=request.META.get("HTTP_IF_RANGE", ""),
+        )
+        if response.status_code not in (200, 206):
+            return response
 
         try:
-            audio = MP3(file_path)
-            duration = int(audio.info.length)  # Duration in seconds
+            audio = MP3(os.path.join(settings.MEDIA_ROOT, filename))
+            duration = int(audio.info.length)
         except Exception:
-            duration = "Unknown"  # Fallback if metadata cannot be read
+            duration = "Unknown"
 
-        file_size = os.path.getsize(file_path)
-        range_header = request.META.get("HTTP_RANGE", "").strip()
-        start, end = self._parse_range(range_header, file_size)
-
-        # Log an approximate "audio loaded" event on the initial request only
-        # (no range, or a range that starts at byte 0) so seeks don't recount.
+        # Preserve initial-load accounting; later byte ranges are seeks/resumes.
         from analytics.utils import record_audio_loaded
 
-        record_audio_loaded(request, is_initial_request=(start is None or start == 0))
-
-        if start is not None:
-            # Partial content: browsers require this to seek/"Jump To". We stream
-            # only the requested byte window and advertise the range so the
-            # <audio> element can map a timestamp to a byte offset.
-            length = end - start + 1
-            response = StreamingHttpResponse(
-                self._iter_file(file_path, start, length),
-                status=206,
-                content_type="audio/mpeg",
-            )
-            response["Content-Range"] = f"bytes {start}-{end}/{file_size}"
-            response["Content-Length"] = str(length)
-        else:
-            response = FileResponse(open(file_path, "rb"), content_type="audio/mpeg")
-            response["Content-Length"] = str(file_size)
-
-        # Advertise range support on every response so the client knows it can seek.
-        response["Accept-Ranges"] = "bytes"
+        initial_request = response.status_code == 200 or response.get("Content-Range", "").startswith("bytes 0-")
+        record_audio_loaded(request, is_initial_request=initial_request)
 
         # Set Content-Disposition for inline playback
         response["Content-Disposition"] = f'inline; filename="{filename}"'
@@ -169,46 +141,3 @@ class AudioTrackView(APIView):
         response["X-Audio-Duration"] = str(duration)  # Add duration in seconds
 
         return response
-
-    @staticmethod
-    def _parse_range(range_header, file_size):
-        """Parse a single-range "bytes=start-end" header.
-
-        Returns (start, end) inclusive byte offsets, or (None, None) when there
-        is no usable range so the caller serves the full file.
-        """
-        if not range_header.startswith("bytes="):
-            return None, None
-        spec = range_header[len("bytes=") :].split(",")[0].strip()
-        if "-" not in spec:
-            return None, None
-        start_str, end_str = spec.split("-", 1)
-        try:
-            if start_str:
-                start = int(start_str)
-                end = int(end_str) if end_str else file_size - 1
-            else:
-                # Suffix range: last N bytes.
-                if not end_str:
-                    return None, None
-                length = int(end_str)
-                start = max(file_size - length, 0)
-                end = file_size - 1
-        except ValueError:
-            return None, None
-        if start > end or start >= file_size:
-            return None, None
-        end = min(end, file_size - 1)
-        return start, end
-
-    @staticmethod
-    def _iter_file(file_path, start, length, chunk_size=8192):
-        with open(file_path, "rb") as f:
-            f.seek(start)
-            remaining = length
-            while remaining > 0:
-                chunk = f.read(min(chunk_size, remaining))
-                if not chunk:
-                    break
-                remaining -= len(chunk)
-                yield chunk
