@@ -33,6 +33,7 @@ from churchcal.api.permissions import ReadOnly
 from churchcal.api.serializer import DaySerializer, CommemorationSerializer
 from churchcal.calculations import get_calendar_date, get_church_year
 from churchcal.models import Commemoration
+from office.audio_ceremony import INTERCESSION_INVITATION, INTERCESSION_MODULE, frame_tracks
 from office.api.line import Line
 from office.api.serializers import UpdateNoticeSerializer, SiteMessageSerializer
 from office.api.translations import get_csv_suffix, is_chinese
@@ -1761,6 +1762,8 @@ class EPGreatLitany(GreatLitany):
 
 
 class MorningPrayer(Office):
+    name = "Morning Prayer"
+
     def get_modules(self):
         litany = MPGreatLitany(self)
         modules = [
@@ -2311,6 +2314,8 @@ class FamilyCloseOfDayCollect(Module):
 
 
 class FamilyMorningPrayer(Office):
+    name = "Family Prayer in the Morning"
+
     def get_modules(self):
         return [
             FamilyRubricSection(self),
@@ -2326,6 +2331,8 @@ class FamilyMorningPrayer(Office):
 
 
 class FamilyMiddayPrayer(Office):
+    name = "Family Prayer at Midday"
+
     def get_modules(self):
         return [
             FamilyRubricSection(self),
@@ -2339,6 +2346,8 @@ class FamilyMiddayPrayer(Office):
 
 
 class FamilyEarlyEveningPrayer(Office):
+    name = "Family Prayer in the Early Evening"
+
     def get_modules(self):
         return [
             FamilyRubricSection(self),
@@ -2354,6 +2363,8 @@ class FamilyEarlyEveningPrayer(Office):
 
 
 class FamilyCloseOfDayPrayer(Office):
+    name = "Family Prayer at the Close of Day"
+
     def get_modules(self):
         return [
             FamilyRubricSection(self),
@@ -2371,6 +2382,8 @@ class FamilyCloseOfDayPrayer(Office):
 
 
 class EveningPrayer(Office):
+    name = "Evening Prayer"
+
     def get_modules(self):
         litany = EPGreatLitany(self)
         modules = [
@@ -2617,6 +2630,8 @@ class MiddayConclusion(Module):
 
 
 class MiddayPrayer(Office):
+    name = "Midday Prayer"
+
     def get_modules(self):
         return [
             MiddayInvitatory(self),
@@ -2970,6 +2985,8 @@ class ComplineConclusion(Module):
 
 
 class Compline(Office):
+    name = "Compline"
+
     def get_modules(self):
         return [
             ComplineOpeningSentence(self),
@@ -3109,23 +3126,31 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 os.remove(temp_sidecar)
 
     @staticmethod
-    def get_clip_word_timing(path):
+    def get_clip_word_timing(path, text=None):
         """Load clip-relative word timing from the DB, then its sidecar."""
         if not path:
             return []
+
+        def fill_gaps(timing):
+            if text is not None and TTS_PROVIDER.name == "gemini":
+                from office.gemini_alignment import interpolate_short_gaps
+
+                return interpolate_short_gaps(GenericDailyOfficeSerializer.normalize_tts_text(text), timing)
+            return timing
+
         filename = path.removeprefix(settings.MEDIA_URL).lstrip("/")
         try:
             from office.models import AudioClip
 
             timing = AudioClip.objects.filter(filename=filename).values_list("word_timing", flat=True).first()
             if timing:
-                return timing
+                return fill_gaps(timing)
         except Exception:
             pass
         sidecar = GenericDailyOfficeSerializer.word_timing_sidecar(os.path.join(settings.MEDIA_ROOT, filename))
         try:
             with open(sidecar, encoding="utf-8") as handle:
-                return json.load(handle)
+                return fill_gaps(json.load(handle))
         except (OSError, ValueError, TypeError):
             return []
 
@@ -3168,6 +3193,10 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         Raises on failure and never leaves a partial file behind.
         """
         word_timing = TTS_PROVIDER.synthesize(voice, text, file_path) or []
+        if TTS_PROVIDER.name == "gemini":
+            from office.gemini_alignment import align_clip
+
+            word_timing = align_clip(TTS_PROVIDER, text, file_path)
         GenericDailyOfficeSerializer.save_word_timing(file_path, word_timing)
         return word_timing
 
@@ -3181,6 +3210,14 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         normalized = GenericDailyOfficeSerializer.normalize_tts_text(content)
         reusable_reader = GenericDailyOfficeSerializer.find_reusable_reader(normalized, line_type)
         if reusable_reader:
+            if not no_generate and not reusable_reader.word_timing and TTS_PROVIDER.name == "gemini":
+                from office.gemini_alignment import align_clip
+
+                timing = align_clip(TTS_PROVIDER, normalized, reusable_reader.file_path)
+                if timing:
+                    reusable_reader.word_timing = timing
+                    reusable_reader.save(update_fields=["word_timing", "updated"])
+                    GenericDailyOfficeSerializer.save_word_timing(reusable_reader.file_path, timing)
             path = settings.MEDIA_URL + reusable_reader.filename
             file_url = f"{audio_base_url()}{path}"
             return file_url, path
@@ -3196,6 +3233,11 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         file_url = f"{audio_base_url()}{path}"
         if exists:
             word_timing = GenericDailyOfficeSerializer.get_clip_word_timing(path)
+            if not word_timing and not no_generate and TTS_PROVIDER.name == "gemini":
+                from office.gemini_alignment import align_clip
+
+                word_timing = align_clip(TTS_PROVIDER, normalized, file_path)
+                GenericDailyOfficeSerializer.save_word_timing(file_path, word_timing)
             GenericDailyOfficeSerializer.record_audio_clip(
                 key,
                 filename,
@@ -3311,7 +3353,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 lines.append(f"<span data-line-id='{id}'></span>{paragraph}")
                 word_timing = [
                     {**word, "id": id, "speaker": "reader"}
-                    for word in GenericDailyOfficeSerializer.get_clip_word_timing(path)
+                    for word in GenericDailyOfficeSerializer.get_clip_word_timing(path, text_without_verses)
                 ]
                 audio_files.append(
                     {
@@ -3342,7 +3384,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
 
         tracks = [
             {
-                "path": f"{settings.BASE_DIR}{track['path']}",
+                "path": os.path.join(settings.MEDIA_ROOT, track["path"].removeprefix(settings.MEDIA_URL).lstrip("/")),
                 "name": track["module"],
                 "id": track["line_id"],
                 "member_ids": track.get("member_ids") or [track["line_id"]],
@@ -3350,6 +3392,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 "word_timing": track.get("word_timing") or [],
                 "silence_before": track.get("silence_before") or 0,
                 "silence_after": track.get("silence_after") or 0,
+                "skip_gap_before": track.get("skip_gap_before", False),
             }
             for track in tracks
             if track.get("path")
@@ -3392,7 +3435,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         first = True
         for track in mp3_files:
             is_new_module = track["name"] != name
-            if not first:
+            if not first and not track["skip_gap_before"]:
                 # A bare "Amen"/"Alleluia" should reply almost immediately, so it
                 # overrides the usual group/module pause with a short breath.
                 if is_immediate_response(track.get("text")):
@@ -3418,8 +3461,11 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             if is_new_module:
                 name = track["name"]
                 track_list.append({"name": track["name"], "start_time": start_time})
+            clip_duration = get_audio_duration(track["path"])
             for member_id in track["member_ids"]:
-                short_track_list.append({"id": member_id, "start_time": start_time})
+                short_track_list.append(
+                    {"id": member_id, "start_time": start_time, "end_time": start_time + clip_duration}
+                )
             for word in track["word_timing"]:
                 word_track_list.append(
                     {
@@ -3430,7 +3476,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                         "end_time": start_time + word["end_time"],
                     }
                 )
-            start_time += get_audio_duration(track["path"])
+            start_time += clip_duration
             sa_clip, sa_dur = silence_pad(track["silence_after"])
             if sa_clip:
                 concat_paths.append(os.path.abspath(sa_clip))
@@ -3451,6 +3497,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 segment["start_time"] *= scale
             for segment in short_track_list:
                 segment["start_time"] *= scale
+                segment["end_time"] *= scale
             for word in word_track_list:
                 word["start_time"] *= scale
                 word["end_time"] *= scale
@@ -3532,6 +3579,22 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         ):
             return []
         modules = self.get_modules(obj)
+        if TTS_PROVIDER.name == "gemini":
+            # Copy only the audio representation; printed prayer text is unchanged.
+            modules = [
+                {
+                    **module,
+                    "lines": [
+                        (
+                            {**line, "content": INTERCESSION_INVITATION, "silence_after": 0, "audio_break_after": True}
+                            if module["name"] == INTERCESSION_MODULE and line["line_type"] == "speaker"
+                            else line
+                        )
+                        for line in module["lines"]
+                    ],
+                }
+                for module in modules
+            ]
         spoken_types = [
             "reader",
             "leader",
@@ -3593,7 +3656,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     search_from = end
 
                 word_timing = []
-                for word in self.get_clip_word_timing(path):
+                for word in self.get_clip_word_timing(path, normalized_merged):
                     char_start = word.get("char_start", 0)
                     line_id = member_ranges[-1][2]
                     for start, end, member_id in member_ranges:
@@ -3683,7 +3746,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     group_buffer.append(line)
                     # A line requesting silence after it ends the clip here so the
                     # pause follows it (rather than a later line in the group).
-                    if line_silence(line, "silence_after") > 0:
+                    if line_silence(line, "silence_after") > 0 or line.get("audio_break_after"):
                         flush_group(group_buffer, module["name"])
                 else:
                     # Any other non-spoken line (rubric, spacer, citation, ...)
@@ -3695,6 +3758,8 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
 
         tracks = [track for track in tracks if track]
         headings = [heading for heading in headings if heading]
+        if TTS_PROVIDER.name == "gemini":
+            tracks = frame_tracks(obj, tracks, self, audio_base_url())
         single_track = self.get_single_track(tracks)
 
         return {"tracks": tracks, "headings": headings, "single_track": single_track}

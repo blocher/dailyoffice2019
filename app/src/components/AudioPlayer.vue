@@ -249,6 +249,8 @@ export default {
       detailedSegments: [],
       wordSegments: [],
       activeWordIndex: -1,
+      highlightSegments: [],
+      lastFollowScrollAt: -Infinity,
       loading: true,
       audioElement: null,
       playbackSpeed: '1.0x',
@@ -489,7 +491,7 @@ export default {
       if (!this.audioElement) return;
 
       this.currentTime = this.audioElement.currentTime;
-      if (this.wordSegments.length) {
+      if (this.highlightSegments.length) {
         this.updateActiveWord(this.currentTime);
         return;
       }
@@ -518,7 +520,10 @@ export default {
     },
     wordContainerForAnchor(anchor) {
       if (!anchor) return null;
-      if (anchor.nextElementSibling) return anchor.nextElementSibling;
+      if (anchor.nextElementSibling) {
+        const sibling = anchor.nextElementSibling;
+        return sibling.querySelector('.column.right p') || sibling;
+      }
       const parent = anchor.parentElement;
       if (!parent) return null;
       return Array.from(parent.children).find((element) =>
@@ -526,7 +531,10 @@ export default {
       );
     },
     prepareWordElements() {
-      if (!this.wordSegments.length) return;
+      if (!this.wordSegments.length) {
+        this.prepareHighlightSegments();
+        return;
+      }
       const segmentsByLine = new Map();
       this.wordSegments.forEach((segment, index) => {
         if (!segment.id) return;
@@ -589,7 +597,7 @@ export default {
             ) {
               cursor += 1;
             }
-            tokenIndex = cursor < tokens.length ? cursor : -1;
+            tokenIndex = -1;
           }
           if (tokenIndex >= 0) {
             matches.push({ ...tokens[tokenIndex], index: segment.index });
@@ -618,65 +626,222 @@ export default {
             });
         });
       });
+      this.prepareHighlightSegments();
+    },
+    prepareHighlightSegments() {
+      this.highlightSegments = [];
+      const byLine = new Map();
+      this.wordSegments.forEach((word, index) => {
+        if (!byLine.has(word.id)) byLine.set(word.id, []);
+        byLine.get(word.id).push({ ...word, index });
+      });
+      // Shared clip boundaries can cover several lines. Distribute fallback
+      // timing by text length, then retain measured word anchors where present.
+      const clips = new Map();
+      this.detailedSegments.forEach((segment) => {
+        if (!clips.has(segment.start_time)) clips.set(segment.start_time, []);
+        clips.get(segment.start_time).push(segment);
+      });
+      const starts = Array.from(clips.keys()).sort((a, b) => a - b);
+      starts.forEach((start, clipIndex) => {
+        const members = clips
+          .get(start)
+          .map((segment) => {
+            const container = this.wordContainerForAnchor(
+              this.findLineAnchor(segment.id)
+            );
+            return {
+              ...segment,
+              weight: container?.textContent.trim().length || 0,
+            };
+          })
+          .filter((segment) => segment.weight);
+        const total = members.reduce((sum, member) => sum + member.weight, 0);
+        const end =
+          members[0]?.end_time ?? starts[clipIndex + 1] ?? start + total / 12;
+        let cursor = start;
+        members.forEach((member) => {
+          const next = cursor + ((end - start) * member.weight) / total;
+          if (!byLine.has(member.id)) {
+            byLine.set(member.id, [
+              { start_time: cursor, end_time: next, estimated: true },
+            ]);
+          }
+          cursor = next;
+        });
+      });
+      byLine.forEach((words, id) => {
+        const container = this.wordContainerForAnchor(this.findLineAnchor(id));
+        if (!container) return;
+        const text = container.textContent;
+        const isLongReading =
+          words.some((word) => word.speaker === 'reader') && text.length > 180;
+        if (
+          isLongReading &&
+          !container.querySelector('[data-audio-sentence]')
+        ) {
+          const sentences = Array.from(
+            new Intl.Segmenter('en', { granularity: 'sentence' }).segment(text)
+          );
+          const walker = document.createTreeWalker(
+            container,
+            window.NodeFilter.SHOW_TEXT
+          );
+          const nodes = [];
+          let offset = 0;
+          let node;
+          while ((node = walker.nextNode())) {
+            nodes.push({ node, offset });
+            offset += node.length;
+          }
+          // Wrap each text-node fragment separately to preserve inline markup.
+          nodes.forEach(({ node, offset }) => {
+            sentences
+              .slice()
+              .reverse()
+              .forEach((sentence, reverseIndex) => {
+                const start = Math.max(0, sentence.index - offset);
+                const end = Math.min(
+                  node.length,
+                  sentence.index + sentence.segment.length - offset
+                );
+                if (start >= end) return;
+                const range = document.createRange();
+                range.setStart(node, start);
+                range.setEnd(node, end);
+                const span = document.createElement('span');
+                span.dataset.audioSentence = String(
+                  sentences.length - reverseIndex - 1
+                );
+                range.surroundContents(span);
+              });
+          });
+        }
+        const groups = new Map();
+        words.forEach((word) => {
+          const element = document.querySelector(
+            `[data-audio-word-index='${word.index}']`
+          );
+          const sentence = element?.querySelector('[data-audio-sentence]')
+            ?.dataset.audioSentence;
+          const key = isLongReading ? sentence : 'line';
+          if (key === undefined) return;
+          if (!groups.has(key)) groups.set(key, []);
+          groups.get(key).push(word);
+        });
+        groups.forEach((anchors, key) => {
+          const index = this.highlightSegments.length;
+          // Highlight inline content so hanging indents follow each rendered
+          // line instead of painting the paragraph's rectangular box.
+          if (
+            key === 'line' &&
+            !container.querySelector('[data-audio-line-content]')
+          ) {
+            const content = document.createElement('span');
+            content.dataset.audioLineContent = '';
+            while (container.firstChild)
+              content.appendChild(container.firstChild);
+            container.appendChild(content);
+          }
+          const elements =
+            key === 'line'
+              ? [container.querySelector('[data-audio-line-content]')]
+              : container.querySelectorAll(`[data-audio-sentence='${key}']`);
+          elements.forEach((element) => {
+            element.dataset.audioHighlightIndex = String(index);
+            element.classList.add('audio-line');
+          });
+          this.highlightSegments.push({
+            index,
+            estimated: anchors[0].estimated,
+            start_time: anchors[0].start_time,
+            end_time: anchors[anchors.length - 1].end_time,
+          });
+        });
+      });
+      this.highlightSegments.sort((a, b) => a.start_time - b.start_time);
     },
     activeWordAt(time) {
-      let low = 0;
-      let high = this.wordSegments.length - 1;
-      let candidate = -1;
-      while (low <= high) {
-        const middle = Math.floor((low + high) / 2);
-        if (this.wordSegments[middle].start_time <= time) {
-          candidate = middle;
-          low = middle + 1;
-        } else {
-          high = middle - 1;
-        }
+      let candidate = null;
+      for (const segment of this.highlightSegments) {
+        if (segment.start_time > time) break;
+        candidate = segment;
       }
-      if (
-        candidate >= 0 &&
-        time <= this.wordSegments[candidate].end_time + 0.08
-      ) {
-        return candidate;
-      }
-      return -1;
+      // Hold through short gaps, but clear during bells and extended silence.
+      return candidate &&
+        time <= candidate.end_time + (candidate.estimated ? 0 : 2)
+        ? candidate.index
+        : -1;
     },
     clearActiveWord() {
-      if (this.activeWordIndex < 0) return;
-      const previous = document.querySelector(
-        `[data-audio-word-index='${this.activeWordIndex}']`
-      );
-      previous?.classList.remove('audio-word--active');
-      previous?.removeAttribute('aria-current');
+      document.querySelectorAll('.audio-line--active').forEach((element) => {
+        element.classList.remove('audio-line--active');
+        element.removeAttribute('aria-current');
+      });
       this.activeWordIndex = -1;
     },
     updateActiveWord(time) {
       const nextIndex = this.activeWordAt(time);
-      if (nextIndex === this.activeWordIndex) return;
-      this.clearActiveWord();
-      if (nextIndex < 0) return;
-
-      this.activeWordIndex = nextIndex;
+      if (nextIndex !== this.activeWordIndex) {
+        this.clearActiveWord();
+        if (nextIndex >= 0) {
+          this.activeWordIndex = nextIndex;
+          const elements = document.querySelectorAll(
+            `[data-audio-highlight-index='${nextIndex}']`
+          );
+          elements.forEach((element) =>
+            element.classList.add('audio-line--active')
+          );
+          elements[0]?.setAttribute('aria-current', 'true');
+        }
+      }
+      if (nextIndex < 0 || !this.enableScrolling || !this.isPlaying) return;
       const active = document.querySelector(
-        `[data-audio-word-index='${nextIndex}']`
+        `[data-audio-highlight-index='${nextIndex}']`
       );
-      if (!active) {
-        this.scrollToSegment(this.wordSegments[nextIndex].id);
-        return;
+      if (!active) return;
+      // Follow measured words even while the sentence highlight stays unchanged.
+      // Missing timing falls back to the highlighted text rather than another line.
+      let wordIndex = -1;
+      let low = 0;
+      let high = this.wordSegments.length - 1;
+      while (low <= high) {
+        const middle = Math.floor((low + high) / 2);
+        if (this.wordSegments[middle].start_time <= time) {
+          wordIndex = middle;
+          low = middle + 1;
+        } else high = middle - 1;
       }
-      active.classList.add('audio-word--active');
-      active.setAttribute('aria-current', 'true');
-      if (this.enableScrolling && this.isPlaying) {
-        this.followActiveWord(active);
-      }
+      const word = document.querySelector(
+        `[data-audio-word-index='${wordIndex}']`
+      );
+      const belongsToHighlight =
+        word &&
+        (word.closest(`[data-audio-highlight-index='${nextIndex}']`) ||
+          word.querySelector(`[data-audio-highlight-index='${nextIndex}']`));
+      this.followActiveWord(belongsToHighlight ? word : active);
     },
     followActiveWord(element) {
       const rect = element.getBoundingClientRect();
       const controlsHeight =
         this.$el?.querySelector('.controls.fixed-controls')?.offsetHeight || 0;
-      const safeTop = window.innerHeight * 0.24;
-      const safeBottom = window.innerHeight - controlsHeight - 48;
-      if (rect.top < safeTop || rect.bottom > safeBottom) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const readingHeight = window.innerHeight - controlsHeight;
+      const center = (rect.top + rect.bottom) / 2;
+      const now = window.performance.now();
+      // A middle-third dead band and cooldown avoid restarting smooth scrolling
+      // for every word or reacting to intermediate positions during an animation.
+      if (
+        (center < readingHeight / 3 || center > (readingHeight * 2) / 3) &&
+        now - this.lastFollowScrollAt >= 800
+      ) {
+        this.lastFollowScrollAt = now;
+        element.scrollIntoView({
+          behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)')
+            .matches
+            ? 'auto'
+            : 'smooth',
+          block: 'center',
+        });
       }
     },
     scrollToSegment(segmentId) {
@@ -1617,10 +1782,12 @@ button,
   font-variant-numeric: tabular-nums;
 }
 
-:global(.audio-word) {
+:global(.audio-line) {
   position: relative;
-  margin-inline: -0.015em;
-  padding-inline: 0.015em;
+  /* Paint breathing room without changing text width or punctuation spacing. */
+  padding: 0;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
   border-radius: 0.2em;
   transition:
     color 100ms ease,
@@ -1628,16 +1795,28 @@ button,
     box-shadow 140ms ease;
 }
 
-:global(.audio-word--active) {
+:global(.audio-line--active) {
   background: color-mix(in srgb, var(--accent-color) 22%, transparent);
   box-shadow:
-    0 0 0 0.13em color-mix(in srgb, var(--accent-color) 22%, transparent),
-    inset 0 -0.08em 0 color-mix(in srgb, var(--accent-color) 65%, transparent);
+    -0.12em 0 0 0.035em color-mix(in srgb, var(--accent-color) 22%, transparent),
+    0.12em 0 0 0.035em color-mix(in srgb, var(--accent-color) 22%, transparent);
   color: color-mix(in srgb, var(--color-text) 88%, var(--accent-color));
 }
 
+/* Sentence fragments meet at word and markup boundaries. Do not extend
+   translucent paint across those boundaries: overlapping paint creates seams. */
+:global([data-audio-sentence].audio-line) {
+  padding-block: 0;
+  border-radius: 0;
+}
+
+:global([data-audio-sentence].audio-line--active) {
+  background: color-mix(in srgb, var(--accent-color) 22%, var(--color-bg));
+  box-shadow: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  :global(.audio-word),
+  :global(.audio-line),
   .primary-play-button {
     transition: none;
   }

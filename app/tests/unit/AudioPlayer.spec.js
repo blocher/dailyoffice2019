@@ -52,11 +52,11 @@ const audio = [
   ],
 ];
 
-const mountPlayer = () =>
+const mountPlayer = (source = audio) =>
   mount(AudioPlayer, {
     attachTo: document.body,
     props: {
-      audio,
+      audio: source,
       audioReady: true,
       office: 'morning_prayer',
       isEsvOrKjv: true,
@@ -92,23 +92,44 @@ describe('AudioPlayer word synchronization', () => {
     vi.unstubAllGlobals();
   });
 
-  it('wraps rendered words and precisely activates the currently spoken word', async () => {
+  it('holds a whole line through short timing gaps and clears during silence', async () => {
+    content.innerHTML = "<span data-line-id='line-one'></span><p>The merciful Lord speaks.</p>";
     const wrapper = mountPlayer();
     await wrapper.vm.$nextTick();
-
-    const words = content.querySelectorAll('.audio-word');
-    expect(words).toHaveLength(3);
-
-    wrapper.vm.audioElement.currentTime = 0.15;
-    wrapper.vm.handleTimeUpdate();
-    expect(words[0].classList.contains('audio-word--active')).toBe(true);
-
-    wrapper.vm.audioElement.currentTime = 0.5;
-    wrapper.vm.handleTimeUpdate();
-    expect(words[0].classList.contains('audio-word--active')).toBe(false);
-    expect(words[1].classList.contains('audio-word--active')).toBe(true);
-
+    const line = content.querySelector('[data-audio-line-content]');
+    expect(line.tagName).toBe('SPAN');
+    expect(line.parentElement.tagName).toBe('P');
+    for (const time of [0.15, 0.5, 1.8]) {
+      wrapper.vm.updateActiveWord(time);
+      expect(line.classList.contains('audio-line--active')).toBe(true);
+      expect(line.textContent).toBe('The merciful Lord speaks.');
+    }
+    wrapper.vm.updateActiveWord(4);
+    expect(line.classList.contains('audio-line--active')).toBe(false);
     wrapper.unmount();
+  });
+
+  it('highlights complete sentences in long readings and preserves markup', async () => {
+    const first = 'The Lord speaks with mercy and kindness to all who seek him in prayer and thanksgiving every morning. ';
+    const second = 'We give thanks for the blessings of this day and ask for guidance as we go about our work in peace.';
+    content.innerHTML = `<span data-line-id="line-one"></span><p>${first}<em>${second}</em></p>`;
+    const source = [...audio];
+    source[4] = [
+      { id: 'line-one', speaker: 'reader', word: 'The', start_time: 0.1, end_time: 0.4 },
+      { id: 'line-one', speaker: 'reader', word: 'We', start_time: 1.5, end_time: 2 },
+    ];
+    const wrapper = mountPlayer(source);
+    await wrapper.vm.$nextTick();
+    const highlighted = () => Array.from(content.querySelectorAll('.audio-line--active')).map(e => e.textContent).join('');
+    wrapper.vm.updateActiveWord(0.5);
+    expect(highlighted()).toBe(first);
+    wrapper.vm.updateActiveWord(1.6);
+    expect(highlighted()).toBe(second);
+    expect(content.querySelector('em').textContent).toBe(second);
+    wrapper.vm.updateActiveWord(0.2);
+    expect(highlighted()).toBe(first);
+    wrapper.unmount();
+    expect(content.querySelector('.audio-line--active')).toBeNull();
   });
 
   it('auto-scrolls when the active word leaves the readable viewport', async () => {
@@ -129,6 +150,43 @@ describe('AudioPlayer word synchronization', () => {
       behavior: 'smooth',
       block: 'center',
     });
+    wrapper.unmount();
+  });
+
+  it('follows later words in the same sentence only outside the middle third', async () => {
+    const wrapper = mountPlayer();
+    await wrapper.vm.$nextTick();
+    wrapper.vm.isPlaying = true;
+    const words = content.querySelectorAll('.audio-word');
+    words[0].getBoundingClientRect = () => ({ top: 350, bottom: 380 });
+    words[0].scrollIntoView = vi.fn();
+    words[1].getBoundingClientRect = () => ({ top: 900, bottom: 930 });
+    words[1].scrollIntoView = vi.fn();
+    wrapper.vm.updateActiveWord(0.15);
+    expect(words[0].scrollIntoView).not.toHaveBeenCalled();
+    wrapper.vm.updateActiveWord(0.5);
+    expect(words[1].scrollIntoView).toHaveBeenCalledTimes(1);
+    wrapper.vm.updateActiveWord(0.55);
+    expect(words[1].scrollIntoView).toHaveBeenCalledTimes(1);
+    expect(content.querySelector('.audio-line--active').textContent).toBe('The Lord speaks.');
+    wrapper.vm.enableScrolling = false;
+    wrapper.vm.lastFollowScrollAt = -Infinity;
+    wrapper.vm.updateActiveWord(0.6);
+    expect(words[1].scrollIntoView).toHaveBeenCalledTimes(1);
+    wrapper.unmount();
+  });
+
+  it('uses clip timings for dialogue with no matching words, excluding the role label', async () => {
+    content.innerHTML = `<span data-line-id="line-one"></span><div class="row"><div class="column left"><p>People</p></div><div class="column right"><p>And our mouth shall proclaim your praise.</p></div></div>`;
+    const source = [...audio];
+    source[3] = [{ id: 'line-one', start_time: 1, end_time: 5 }];
+    source[4] = [];
+    const wrapper = mountPlayer(source);
+    await wrapper.vm.$nextTick();
+    wrapper.vm.updateActiveWord(3);
+    expect(content.querySelector('.audio-line--active')?.textContent).toBe('And our mouth shall proclaim your praise.');
+    wrapper.vm.updateActiveWord(6);
+    expect(content.querySelector('.audio-line--active')).toBeNull();
     wrapper.unmount();
   });
 

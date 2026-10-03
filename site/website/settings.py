@@ -414,6 +414,8 @@ ELEVENLABS_PRONUNCIATION_DICTIONARY_VERSION_ID = env("ELEVENLABS_PRONUNCIATION_D
 # Gemini 3.8 TTS via the Gemini API; restart after changing provider settings.
 GEMINI_API_KEY = env("GEMINI_API_KEY", default="")
 GEMINI_TTS_MODEL = env("GEMINI_TTS_MODEL", default="gemini-3.8-flash-tts")
+GEMINI_TTS_ALIGNMENT = env.bool("GEMINI_TTS_ALIGNMENT", default=True)
+GEMINI_TRANSCRIBE_MODEL = env("GEMINI_TRANSCRIBE_MODEL", default="gemini-3.5-transcribe")
 GEMINI_TTS_STYLE = env("GEMINI_TTS_STYLE", default="")
 GEMINI_TTS_VOICE_LEADER = env("GEMINI_TTS_VOICE_LEADER", default="Kore")
 GEMINI_TTS_VOICE_CONGREGATION = env("GEMINI_TTS_VOICE_CONGREGATION", default="Sulafat")
