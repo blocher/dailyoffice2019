@@ -384,7 +384,7 @@ class GeminiTTSProvider(BaseTTSProvider):
             configured = configured.split(",")
         reader = tuple(voice.strip() for voice in configured if voice.strip())
         if not reader:
-            reader = (getattr(settings, "GEMINI_TTS_VOICE_READER", "") or "Charon",)
+            reader = ("Algieba",)
         return {
             "leader": getattr(settings, "GEMINI_TTS_VOICE_LEADER", "") or "Kore",
             "congregation": getattr(settings, "GEMINI_TTS_VOICE_CONGREGATION", "") or "Sulafat",
