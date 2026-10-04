@@ -69,6 +69,8 @@ logger = logging.getLogger(__name__)
 # Per-execution context: a batch must report missing clips as failures, without
 # changing the web player's optional-clip fallback in another thread.
 AUDIO_GENERATION_REQUIRED = ContextVar("audio_generation_required", default=False)
+# Set only by the separate offline batch planner, never by HTTP input.
+AUDIO_CLIP_COLLECTOR = ContextVar("audio_clip_collector", default=None)
 # Natural silence (seconds) inserted when concatenating clips, encoded as mono
 # mp3 at the provider's output sample rate so the final concat re-encode stays
 # consistent.
@@ -3151,7 +3153,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
     @staticmethod
     def get_clip_word_timing(path, text=None):
         """Load clip-relative word timing from the DB, then its sidecar."""
-        if not path:
+        if not path or AUDIO_CLIP_COLLECTOR.get() is not None:
             return []
 
         def fill_gaps(timing):
@@ -3233,6 +3235,9 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         """
         raise_on_error = raise_on_error or AUDIO_GENERATION_REQUIRED.get()
         normalized = GenericDailyOfficeSerializer.normalize_tts_text(content)
+        collector = AUDIO_CLIP_COLLECTOR.get()
+        if collector is not None:
+            return collector(normalized, line_type, kind, no_generate=no_generate)
         reusable_reader = GenericDailyOfficeSerializer.find_reusable_reader(normalized, line_type)
         if reusable_reader:
             if not no_generate and not reusable_reader.word_timing and TTS_PROVIDER.name == "gemini":
@@ -3787,6 +3792,11 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
 
         tracks = [track for track in tracks if track]
         headings = [heading for heading in headings if heading]
+        if AUDIO_CLIP_COLLECTOR.get() is not None:
+            from office.audio_ceremony import announcement
+
+            self.get_or_create_clip(announcement(obj), "speaker")
+            return {"tracks": tracks, "headings": headings, "single_track": None}
         if TTS_PROVIDER.name == "gemini":
             tracks = frame_tracks(obj, tracks, self, audio_base_url())
         single_track = self.get_single_track(tracks)

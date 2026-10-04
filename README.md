@@ -129,3 +129,56 @@ project
 - For bug reports, please submit an issue and label it "bug"
 - Email the original creator Ben @ feedback@dailyoffice2019.com
 - Join the Facebook discussion at: https://www.facebook.com/groups/dailyoffice/
+
+### Initial seven-day Gemini audio batch
+
+`batch_audio_files` is an unscheduled bootstrap command, separate from
+`update_audio_files` and on-demand synthesis. It uses Google's asynchronous
+[Batch API](https://ai.google.dev/gemini-api/docs/batch-api), with the configured
+Gemini 3.8 TTS model, style, and voices. Set `TTS_PROVIDER=gemini` and
+`GEMINI_API_KEY` in the command environment. The batch has its own quotas;
+it does not guarantee capacity. `ffmpeg` is required for import.
+
+Run from `site/`, using the project's Python environment:
+
+```sh
+TTS_PROVIDER=gemini python manage.py batch_audio_files prepare --manifest /absolute/path/initial-audio.json
+TTS_PROVIDER=gemini python manage.py batch_audio_files submit --manifest /absolute/path/initial-audio.json
+TTS_PROVIDER=gemini python manage.py batch_audio_files status --manifest /absolute/path/initial-audio.json
+TTS_PROVIDER=gemini python manage.py batch_audio_files import --manifest /absolute/path/initial-audio.json
+```
+
+- `prepare` makes no Google requests. It plans today through six days ahead in
+  Django's configured timezone; `--start-date YYYY-MM-DD` and `--days` override
+  this. It covers all eight offices, both language styles, the base settings and
+  each variation used by the scheduled warmer. It captures the serializer's
+  actual grouped prayers, reading paragraphs, and announcements, deduplicates
+  them, and skips existing clips. It is not every possible settings combination.
+- `submit` creates paid Google batch jobs for the missing clips in chunks of 50
+  (set `--batch-size` during preparation to change this, up to 100). Keep the
+  manifest: it saves each accepted job so rerunning submission resumes safely.
+- `status` checks once; it does not wait or import. Google targets completion
+  within 24 hours. Repeat `import` later to import newly completed batches.
+- `import` converts successful WAV responses to the same atomic MP3 files and
+  `AudioClip` records used by playback. Repeating it preserves existing files.
+  Per-clip failures remain listed in the manifest and cause a nonzero exit;
+  successful clips are retained. Local conversion or DB failures can be retried
+  by importing again. For Google generation failures, finish importing the other
+  jobs, then prepare a new manifest for the same date range; cached successes
+  will be skipped. Do not prepare duplicate jobs while the originals are pending.
+
+The manifest must be used with the original model/style configuration. A second
+process cannot submit/import the same manifest concurrently. An HTTP quota
+rejection leaves that chunk ready to submit again later. After an ambiguous
+network failure or interruption during submission, the command refuses to submit
+that chunk again automatically. Find its matching `dailyoffice-<date>-<manifest
+stem>-<chunk>` display name in Google, then recover it with:
+
+```sh
+TTS_PROVIDER=gemini python manage.py batch_audio_files attach --manifest /absolute/path/initial-audio.json --chunk 0 --job batches/JOB_ID
+```
+
+Import fills the speech-clip cache only. Word alignment, recorded bells, and
+assembled full-office tracks continue to use the existing playback pipeline;
+the batch does not send synchronous alignment requests. Keep the manifest outside
+public media storage. No API key is stored in it.

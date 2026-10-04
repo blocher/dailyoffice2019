@@ -453,6 +453,13 @@ class GeminiTTSProvider(BaseTTSProvider):
         except (ValueError, TypeError, AttributeError, binascii.Error) as exc:
             raise RuntimeError("Gemini returned an invalid audio response.") from exc
 
+        return self.write_wav(audio, file_path)
+
+    @staticmethod
+    def write_wav(audio, file_path):
+        """Publish a complete WAV response as the shared seekable MP3 format."""
+        if len(audio) <= 44 or audio[:4] != b"RIFF" or audio[8:12] != b"WAVE":
+            raise RuntimeError("Gemini returned empty or invalid WAV audio.")
         directory = os.path.dirname(os.path.abspath(file_path))
         os.makedirs(directory, exist_ok=True)
         # Publish atomically, leaving no partial cache file after any failure.
