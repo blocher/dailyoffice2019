@@ -12,7 +12,92 @@ from office.api.views.tts import ElevenLabsTTSProvider
 from office.models import AudioClip, PronunciationOverride
 
 
+@override_settings(ELEVENLABS_PRONUNCIATION_DICTIONARY_ID="", ELEVENLABS_PRONUNCIATION_DICTIONARY_VERSION_ID="")
 class ElevenLabsTTSProviderTests(SimpleTestCase):
+    def test_reader_reuse_rejects_previous_pacing_or_model(self):
+        provider = ElevenLabsTTSProvider()
+        stale = MagicMock(key="old-signature", voice="reader", file_path="clip.mp3")
+        with (
+            patch.object(index, "TTS_PROVIDER", provider),
+            patch.object(AudioClip.objects, "filter") as clips,
+            patch.object(index.os.path, "isfile", return_value=True),
+            patch.object(index.os.path, "getsize", return_value=100),
+        ):
+            clips.return_value.order_by.return_value = [stale]
+            self.assertIsNone(index.GenericDailyOfficeSerializer.find_reusable_reader("Amen", "reader"))
+            stale.key = index.GenericDailyOfficeSerializer.tts_clip_key("reader", "Amen")
+            self.assertIs(index.GenericDailyOfficeSerializer.find_reusable_reader("Amen", "reader"), stale)
+
+    def test_elevenlabs_persists_direct_timings_without_google_alignment(self):
+        provider = ElevenLabsTTSProvider()
+        timing = [{"word": "Amen", "start_time": 0.1, "end_time": 0.8}]
+        with (
+            patch.object(index, "TTS_PROVIDER", provider),
+            patch.object(provider, "synthesize", return_value=timing),
+            patch.object(index.GenericDailyOfficeSerializer, "save_word_timing") as save,
+            patch("office.gemini_alignment.align_clip") as google_align,
+        ):
+            result = index.GenericDailyOfficeSerializer.synthesize_speech("voice", "Amen", "clip.mp3")
+        self.assertEqual(result, timing)
+        save.assert_called_once_with("clip.mp3", timing)
+        google_align.assert_not_called()
+
+    @override_settings(
+        ELEVENLABS_TTS_MODEL="eleven_v4",
+        ELEVENLABS_TTS_WORDS_PER_MINUTE=125,
+        ELEVENLABS_TTS_INSTRUCTIONS="calm, reverent, measured delivery",
+        ELEVENLABS_TTS_AMEN_IPA="ɑːˈmɛn",
+    )
+    def test_v4_steering_ipa_and_original_word_offsets(self):
+        provider = ElevenLabsTTSProvider()
+        original = "Amen, amen! Amend this. AMEN."
+        submitted, positions = provider.prepare_text(original)
+        self.assertIn("125 words per minute", submitted)
+        self.assertEqual(submitted.count("/ɑːˈmɛn/"), 3)
+        self.assertIn("Amend this", submitted)
+        alignment = {
+            "characters": list(submitted),
+            "character_start_times_seconds": [i / 10 for i in range(len(submitted))],
+            "character_end_times_seconds": [(i + 1) / 10 for i in range(len(submitted))],
+        }
+        words = provider.original_word_alignment(alignment, original, submitted, positions)
+        self.assertEqual([w["word"] for w in words], ["Amen", "amen", "Amend", "this", "AMEN"])
+        for word in words:
+            self.assertEqual(original[word["char_start"] : word["char_end"]], word["word"])
+        self.assertEqual(words[0]["start_time"], submitted.index("/ɑːˈmɛn/") / 10)
+        self.assertAlmostEqual(words[0]["end_time"] - words[0]["start_time"], len("/ɑːˈmɛn/") / 10)
+        signature = provider.cache_signature()
+        with override_settings(ELEVENLABS_TTS_WORDS_PER_MINUTE=70):
+            self.assertNotEqual(signature, provider.cache_signature())
+        with override_settings(ELEVENLABS_TTS_AMEN_IPA="different"):
+            self.assertNotEqual(signature, provider.cache_signature())
+        alignment["characters"][0] = "?"
+        self.assertEqual(provider.original_word_alignment(alignment, original, submitted, positions), [])
+
+    @override_settings(ELEVENLABS_TTS_MODEL="eleven_multilingual_v2")
+    def test_legacy_model_keeps_text_unchanged(self):
+        provider = ElevenLabsTTSProvider()
+        self.assertEqual(provider.prepare_text("Amen."), ("Amen.", list(range(5))))
+        self.assertEqual(provider.effective_instructions, "")
+
+    @override_settings(ELEVENLABS_TTS_MODEL="eleven_v4", ELEVENLABS_API_KEY="test-key", ELEVENLABS_TTS_MAX_RETRIES=0)
+    @patch("office.api.views.tts.requests.post")
+    def test_v4_synthesis_sends_prepared_text_and_preserves_alignment(self, post):
+        provider = ElevenLabsTTSProvider()
+        submitted, _ = provider.prepare_text("Amen.")
+        post.return_value.json.return_value = {
+            "audio_base64": base64.b64encode(b"audio").decode(),
+            "alignment": {
+                "characters": list(submitted),
+                "character_start_times_seconds": [0.0] * len(submitted),
+                "character_end_times_seconds": [1.0] * len(submitted),
+            },
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            words = provider.synthesize("voice", "Amen.", os.path.join(directory, "test.mp3"))
+        self.assertEqual(post.call_args.kwargs["json"]["text"], submitted)
+        self.assertEqual([w["word"] for w in words], ["Amen"])
+
     @override_settings(
         ELEVENLABS_TTS_VOICE_LEADER="leader-id",
         ELEVENLABS_TTS_VOICE_CONGREGATION="people-id",
@@ -139,7 +224,9 @@ class ElevenLabsClipReuseTests(TestCase):
             with open(file_path, "wb") as handle:
                 handle.write(b"existing-audio")
             AudioClip.objects.create(
-                key="existing",
+                key=index.generate_uuid_from_string(
+                    f"old-reader {ElevenLabsTTSProvider().cache_signature()} The Word of the Lord."
+                ),
                 filename=filename,
                 text="The Word of the Lord.",
                 line_type="reader",
@@ -199,7 +286,7 @@ class PronunciationOverrideProviderTests(TestCase):
         self.assertEqual(PronunciationOverride.apply("Amen."), "Amen.")
 
 
-class CombinedTrackTimingTests(TestCase):
+class CombinedTrackTimingTests(SimpleTestCase):
     def test_word_timing_preserves_module_pause_offsets(self):
         with tempfile.TemporaryDirectory() as directory:
             os.makedirs(os.path.join(directory, "elevenlabs"))
@@ -292,6 +379,7 @@ class CombinedTrackTimingTests(TestCase):
         self.assertEqual(result[2][1]["start_time"], 2.35)
         self.assertEqual(result[4][0]["start_time"], 0.1)
         self.assertEqual(result[4][0]["speaker"], "leader")
+        self.assertEqual(result[4][0]["provider"], "elevenlabs")
         self.assertAlmostEqual(result[4][1]["start_time"], 2.55)
         self.assertAlmostEqual(result[4][1]["end_time"], 2.95)
 

@@ -3199,6 +3199,12 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 text=normalized,
             ).order_by("-updated")
             for clip in clips:
+                # Preserve reader voice reuse, but never reuse ElevenLabs audio
+                # from a different model, pronunciation, or pacing configuration.
+                if TTS_PROVIDER.name == "elevenlabs" and str(clip.key) != str(
+                    GenericDailyOfficeSerializer.tts_clip_key(clip.voice, normalized)
+                ):
+                    continue
                 if os.path.isfile(clip.file_path) and os.path.getsize(clip.file_path) > 0:
                     return clip
         except Exception:
@@ -3527,6 +3533,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     {
                         "id": word["id"],
                         "speaker": word.get("speaker"),
+                        "provider": TTS_PROVIDER.name,
                         "word": word["word"],
                         "start_time": start_time + word["start_time"],
                         "end_time": start_time + word["end_time"],

@@ -396,7 +396,9 @@ TTS_INSTRUCTIONS = env(
 )
 
 # ElevenLabs TTS. ELEVENLABS_TTS_MODEL options:
-#   eleven_multilingual_v2  default; stable long-form (no IPA)
+#   eleven_v4              recommended; delivery tags and native IPA
+#   eleven_v4_turbo        delivery tags; audition pronunciation separately
+#   eleven_multilingual_v2  legacy default; stable long-form (no IPA)
 #   eleven_flash_v2_5       fast multilingual (alias dictionaries only)
 #   eleven_flash_v2         English; SSML IPA/CMU phoneme tags
 #   eleven_v3               expressive; native /IPA/ in the text
@@ -406,6 +408,11 @@ TTS_INSTRUCTIONS = env(
 ELEVENLABS_API_KEY = env("ELEVENLABS_API_KEY", default="")
 ELEVENLABS_TTS_MODEL = env("ELEVENLABS_TTS_MODEL", default="eleven_multilingual_v2")
 ELEVENLABS_TTS_SPEED = env.float("ELEVENLABS_TTS_SPEED", default=1.0)
+# v4 audio tags guide delivery; Words per minute is a cue, not an exact timing guarantee.
+ELEVENLABS_TTS_INSTRUCTIONS = env("ELEVENLABS_TTS_INSTRUCTIONS", default="calm, reverent, measured delivery")
+ELEVENLABS_TTS_WORDS_PER_MINUTE = env.int("ELEVENLABS_TTS_WORDS_PER_MINUTE", default=125)
+# Regular v4 automatically speaks standalone Amen as ah-MEN; empty disables it.
+ELEVENLABS_TTS_AMEN_IPA = env("ELEVENLABS_TTS_AMEN_IPA", default="ɑːˈmɛn")
 ELEVENLABS_TTS_VOICE_LEADER = env("ELEVENLABS_TTS_VOICE_LEADER", default="")
 ELEVENLABS_TTS_VOICE_CONGREGATION = env("ELEVENLABS_TTS_VOICE_CONGREGATION", default="")
 ELEVENLABS_TTS_VOICES_READER = env.list("ELEVENLABS_TTS_VOICES_READER", default=[])

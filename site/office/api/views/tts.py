@@ -190,7 +190,7 @@ class OpenAITTSProvider(BaseTTSProvider):
 
 
 class ElevenLabsTTSProvider(BaseTTSProvider):
-    """ElevenLabs v2/v3 TTS with character alignment grouped into words."""
+    """ElevenLabs TTS with original-text word alignment, including v4 steering."""
 
     name = "elevenlabs"
     ENDPOINT = "https://api.elevenlabs.io/v1/text-to-speech/{voice_id}/with-timestamps"
@@ -203,11 +203,88 @@ class ElevenLabsTTSProvider(BaseTTSProvider):
         "eleven_flash_v2_5",
         "eleven_flash_v2",
         "eleven_v3",
+        "eleven_v4",
+        "eleven_v4_turbo",
     )
 
     @property
     def model(self):
         return getattr(settings, "ELEVENLABS_TTS_MODEL", "eleven_multilingual_v2")
+
+    @property
+    def effective_instructions(self):
+        if self.model not in ("eleven_v4", "eleven_v4_turbo"):
+            return ""
+        style = getattr(settings, "ELEVENLABS_TTS_INSTRUCTIONS", "calm, reverent, measured delivery")
+        wpm = getattr(settings, "ELEVENLABS_TTS_WORDS_PER_MINUTE", 125)
+        if wpm <= 0:
+            raise ValueError("ELEVENLABS_TTS_WORDS_PER_MINUTE must be positive.")
+        # A delivery cue, not an exact timing or musical-beat guarantee.
+        return f"[{style}; steady spoken cadence at approximately {wpm} words per minute; natural speech, not singing]"
+
+    @property
+    def amen_ipa(self):
+        if self.model != "eleven_v4":
+            return ""
+        return getattr(settings, "ELEVENLABS_TTS_AMEN_IPA", "ɑːˈmɛn")
+
+    def prepare_text(self, text):
+        """Return API text and a character map back to the unmodified transcript.
+
+        Native IPA is documented for regular v4. Do not assume Turbo has the
+        same pronunciation support. Dictionary locators remain available for both.
+        """
+        prefix = f"{self.effective_instructions}\n" if self.effective_instructions else ""
+        parts, positions = [prefix], [None] * len(prefix)
+        cursor = 0
+        for match in re.finditer(r"\bamen\b", text, re.IGNORECASE) if self.amen_ipa else ():
+            parts.append(text[cursor : match.start()])
+            positions.extend(range(cursor, match.start()))
+            replacement = f"/{self.amen_ipa}/"
+            parts.append(replacement)
+            positions.extend([match.start()] * len(replacement))
+            cursor = match.end()
+        parts.append(text[cursor:])
+        positions.extend(range(cursor, len(text)))
+        return "".join(parts), positions
+
+    def original_word_alignment(self, alignment, original, submitted, positions):
+        """Exclude directions and map IPA durations back to the original word.
+
+        Unknown normalization cannot safely supply character offsets; omit
+        highlighting rather than silently assigning timings to the wrong words.
+        """
+        if not alignment:
+            return []
+        characters = alignment.get("characters") or []
+        starts = alignment.get("character_start_times_seconds") or []
+        ends = alignment.get("character_end_times_seconds") or []
+        if not characters or not (len(characters) == len(starts) == len(ends)):
+            return []
+        aligned = "".join(characters)
+        if aligned == original:
+            return self.words_from_alignment(alignment)
+        if aligned != submitted:
+            return []
+        timings = {}
+        for position, start, end in zip(positions, starts, ends):
+            if position is not None:
+                previous = timings.get(position, (start, end))
+                timings[position] = (min(previous[0], start), max(previous[1], end))
+        words = []
+        for match in re.finditer(r"[\w]+(?:[’'][\w]+)*", original, flags=re.UNICODE):
+            times = [timings[i] for i in range(match.start(), match.end()) if i in timings]
+            if times:
+                words.append(
+                    {
+                        "word": match.group(),
+                        "start_time": min(t[0] for t in times),
+                        "end_time": max(t[1] for t in times),
+                        "char_start": match.start(),
+                        "char_end": match.end(),
+                    }
+                )
+        return words
 
     @property
     def speed(self):
@@ -246,7 +323,10 @@ class ElevenLabsTTSProvider(BaseTTSProvider):
         locator_key = " ".join(
             f"{item.get('pronunciation_dictionary_id', '')}:{item.get('version_id', '')}" for item in locators
         )
-        return f"{self.model} {self.speed} {locator_key}"
+        signature = f"{self.model} {self.speed} {locator_key}"
+        if self.effective_instructions or self.amen_ipa:
+            signature += f" {self.effective_instructions} amen-ipa={self.amen_ipa}"
+        return signature
 
     def pronunciation_locators(self):
         dictionary_id = getattr(settings, "ELEVENLABS_PRONUNCIATION_DICTIONARY_ID", "")
@@ -278,8 +358,9 @@ class ElevenLabsTTSProvider(BaseTTSProvider):
         if not voice:
             raise RuntimeError("No ElevenLabs voice configured for this role.")
 
+        submitted, positions = self.prepare_text(text)
         payload = {
-            "text": text,
+            "text": submitted,
             "model_id": self.model,
             "voice_settings": {"speed": self.speed},
             "apply_text_normalization": "auto",
@@ -314,7 +395,7 @@ class ElevenLabsTTSProvider(BaseTTSProvider):
                         os.remove(tmp_path)
                     raise
                 alignment = data.get("alignment") or data.get("normalized_alignment")
-                return self.words_from_alignment(alignment)
+                return self.original_word_alignment(alignment, text, submitted, positions)
             except requests.HTTPError as exc:
                 status = exc.response.status_code if exc.response is not None else None
                 if status not in self._RETRY_STATUSES or attempt >= max_attempts:

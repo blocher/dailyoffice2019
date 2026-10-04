@@ -110,6 +110,29 @@ describe('AudioPlayer word synchronization', () => {
     wrapper.unmount();
   });
 
+  it('traces individual ElevenLabs words using direct start and end times', async () => {
+    content.innerHTML = '<span data-line-id="line-one"></span><p>The <em>Lord</em> speaks.</p>';
+    const source = [...audio];
+    source[4] = audio[4].map((word) => ({ ...word, provider: 'elevenlabs' }));
+    const wrapper = mountPlayer(source);
+    await wrapper.vm.$nextTick();
+    const highlighted = () => Array.from(content.querySelectorAll('.audio-line--active')).map(e => e.textContent).join('');
+    wrapper.vm.updateActiveWord(0.15);
+    expect(highlighted()).toBe('The');
+    wrapper.vm.updateActiveWord(0.5);
+    expect(highlighted()).toBe('Lord');
+    wrapper.vm.updateActiveWord(0.68);
+    expect(highlighted()).toBe('');
+    wrapper.vm.updateActiveWord(0.8);
+    expect(highlighted()).toBe('speaks');
+    wrapper.vm.updateActiveWord(1.1);
+    expect(highlighted()).toBe('');
+    wrapper.vm.updateActiveWord(0.2);
+    expect(highlighted()).toBe('The');
+    expect(content.querySelector('em').textContent).toBe('Lord');
+    wrapper.unmount();
+  });
+
   it('highlights complete sentences in long readings and preserves markup', async () => {
     const first = 'The Lord speaks with mercy and kindness to all who seek him in prayer and thanksgiving every morning. ';
     const second = 'We give thanks for the blessings of this day and ask for guidance as we go about our work in peace.';

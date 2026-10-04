@@ -899,6 +899,30 @@ export default {
       byLine.forEach((words, id) => {
         const container = this.wordContainerForAnchor(this.findLineAnchor(id));
         if (!container) return;
+        // ElevenLabs supplies direct character timestamps. Trace each measured
+        // word instead of grouping these reliable anchors into a sentence.
+        if (
+          words.every(
+            (word) => word.provider === 'elevenlabs' && !word.estimated
+          )
+        ) {
+          words.forEach((word) => {
+            const element = document.querySelector(
+              `[data-audio-word-index='${word.index}']`
+            );
+            if (!element) return;
+            const index = this.highlightSegments.length;
+            element.dataset.audioHighlightIndex = String(index);
+            element.classList.add('audio-line');
+            this.highlightSegments.push({
+              index,
+              exactWord: true,
+              start_time: word.start_time,
+              end_time: word.end_time,
+            });
+          });
+          return;
+        }
         const text = container.textContent;
         const isLongReading =
           words.some((word) => word.speaker === 'reader') && text.length > 180;
@@ -995,7 +1019,9 @@ export default {
       }
       // Hold through short gaps, but clear during bells and extended silence.
       return candidate &&
-        time <= candidate.end_time + (candidate.estimated ? 0 : 2)
+        time <=
+          candidate.end_time +
+            (candidate.estimated || candidate.exactWord ? 0 : 2)
         ? candidate.index
         : -1;
     },
