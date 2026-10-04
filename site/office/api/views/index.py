@@ -1,4 +1,5 @@
 import csv
+import bugsnag
 import datetime
 import json
 import logging
@@ -3225,13 +3226,34 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
 
     @staticmethod
     def get_or_create_clip(content, line_type, kind="line", no_generate=False, raise_on_error=False):
+        """Isolate clip failures and report them without aborting office assembly."""
+        try:
+            return GenericDailyOfficeSerializer._get_or_create_clip(
+                content, line_type, kind, no_generate, raise_on_error=True
+            )
+        except Exception as exc:
+            try:
+                bugsnag.notify(
+                    exc,
+                    context="office_audio_clip",
+                    severity="error",
+                    metadata={"audio": {"provider": TTS_PROVIDER.name, "kind": kind, "line_type": line_type}},
+                )
+            except Exception:
+                logger.exception("Bugsnag notification failed for an audio clip")
+            if raise_on_error:
+                raise
+            logger.warning("Skipping failed audio clip (provider=%s, kind=%s)", TTS_PROVIDER.name, kind)
+            return None, None
+
+    @staticmethod
+    def _get_or_create_clip(content, line_type, kind="line", no_generate=False, raise_on_error=False):
         """Normalize -> hash -> reuse-or-generate a TTS clip; record it in the DB.
 
         Returns (file_url, media_relative_path) or (None, None) when the line is
         not spoken or generation fails. Required clips can opt into propagating
         the original synthesis error instead of treating it as missing audio.
         """
-        raise_on_error = raise_on_error or AUDIO_GENERATION_REQUIRED.get()
         normalized = GenericDailyOfficeSerializer.normalize_tts_text(content)
         reusable_reader = GenericDailyOfficeSerializer.find_reusable_reader(normalized, line_type)
         if reusable_reader:
@@ -3608,7 +3630,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         ):
             return []
         modules = self.get_modules(obj)
-        if TTS_PROVIDER.name == "gemini":
+        if TTS_PROVIDER.name in {"gemini", "elevenlabs"}:
             # Copy only the audio representation; printed prayer text is unchanged.
             modules = [
                 {
@@ -3787,7 +3809,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
 
         tracks = [track for track in tracks if track]
         headings = [heading for heading in headings if heading]
-        if TTS_PROVIDER.name == "gemini":
+        if TTS_PROVIDER.name in {"gemini", "elevenlabs"}:
             tracks = frame_tracks(obj, tracks, self, audio_base_url())
         single_track = self.get_single_track(tracks)
 

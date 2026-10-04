@@ -102,12 +102,7 @@ def frame_tracks(office, tracks, serializer, base_url):
     if not tracks:
         return tracks
     text = announcement(office)
-    try:
-        url, path = serializer.get_or_create_clip(text, "speaker", kind="line", raise_on_error=True)
-    except Exception as exc:
-        raise RuntimeError("Unable to generate the office announcement.") from exc
-    if not path:
-        raise RuntimeError("Unable to generate the office announcement.")
+    url, path = serializer.get_or_create_clip(text, "speaker", kind="line")
     intro = {
         "line_id": "audio_office_announcement",
         "module": "Opening",
@@ -118,7 +113,9 @@ def frame_tracks(office, tracks, serializer, base_url):
         "silence_after": 0,
         "word_timing": [],
     }
-    framed = [intro, bell_track("church_bells", "Opening", "audio_opening_bells", base_url, after=2.5)]
+    framed = ([intro] if path else []) + [
+        bell_track("church_bells", "Opening", "audio_opening_bells", base_url, after=2.5)
+    ]
     for position, original in enumerate(tracks):
         track = dict(original)
         if position == 0:

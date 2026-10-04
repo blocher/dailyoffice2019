@@ -15,6 +15,39 @@ def annotation(word, start, end):
 
 @override_settings(GEMINI_TTS_ALIGNMENT=True, GEMINI_API_KEY="test")
 class GeminiAlignmentTests(SimpleTestCase):
+    def test_all_providers_report_failure_and_continue_to_next_clip(self):
+        for name in ("openai", "gemini", "elevenlabs"):
+            provider = Mock(name=name)
+            provider.name = name
+            error = RuntimeError("provider failed")
+            with (
+                self.subTest(provider=name),
+                patch.object(index, "TTS_PROVIDER", provider),
+                patch.object(
+                    index.GenericDailyOfficeSerializer, "_get_or_create_clip", side_effect=[error, ("url", "path")]
+                ),
+                patch.object(index.bugsnag, "notify") as notify,
+            ):
+                token = index.AUDIO_GENERATION_REQUIRED.set(True)
+                try:
+                    self.assertEqual(
+                        index.GenericDailyOfficeSerializer.get_or_create_clip("First", "leader"), (None, None)
+                    )
+                    self.assertEqual(
+                        index.GenericDailyOfficeSerializer.get_or_create_clip("Second", "leader"), ("url", "path")
+                    )
+                finally:
+                    index.AUDIO_GENERATION_REQUIRED.reset(token)
+                self.assertIs(notify.call_args.args[0], error)
+                self.assertEqual(notify.call_args.kwargs["metadata"]["audio"]["provider"], name)
+
+    def test_reporting_outage_does_not_abort_office(self):
+        with (
+            patch.object(index.GenericDailyOfficeSerializer, "_get_or_create_clip", side_effect=RuntimeError("tts")),
+            patch.object(index.bugsnag, "notify", side_effect=RuntimeError("reporting")),
+        ):
+            self.assertEqual(index.GenericDailyOfficeSerializer.get_or_create_clip("Amen", "leader"), (None, None))
+
     def test_original_text_offsets_and_repetitions(self):
         text = "O Lord, our Lord. Amen."
         words = match_words(
