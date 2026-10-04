@@ -170,7 +170,9 @@ class BatchLifecycleTests(BatchSetup, SimpleTestCase):
             request["request"]["contents"][0]["parts"][0]["speechMetadata"]["style"],
             self.active.effective_instructions,
         )
-        self.assertEqual(request["request"]["generationConfig"]["responseFormat"]["audio"]["mimeType"], "AUDIO_WAV")
+        # Live batch regression: explicit WAV/INLINE responseFormat was rejected
+        # with INVALID_ARGUMENT; the same request without it returned WAV audio.
+        self.assertNotIn("responseFormat", request["request"]["generationConfig"])
 
     def test_uncertain_submit_is_not_automatically_retried(self):
         client = Mock()
@@ -251,6 +253,17 @@ class BatchLifecycleTests(BatchSetup, SimpleTestCase):
         importer.assert_called_once()
         client.results.return_value = [{"metadata": {"key": self.key}, "error": {"code": 8}}]
         self.assertEqual(batch.refresh(self.path, saved, client, True), 2)
+
+    def test_completed_batch_reports_individual_request_failures(self):
+        client = self.operation([{"metadata": {"key": self.key}, "error": {"code": 3}}])
+        client.get.return_value["metadata"]["batchStats"] = {"requestCount": "1", "failedRequestCount": "1"}
+        self.assertEqual(batch.refresh(self.path, self.manifest, client, False), 1)
+        client.results.assert_not_called()
+        progress = Mock()
+        self.assertEqual(batch.refresh(self.path, self.manifest, client, True, progress), 1)
+        self.assertIn("0 succeeded, 1 failed, 0 pending", progress.call_args.args[0])
+        saved = batch.load_manifest(self.path)
+        self.assertEqual(saved["chunks"][0]["failures"][self.key], "Gemini per-clip error: INVALID_ARGUMENT (code 3).")
 
     @patch.object(batch, "import_clip")
     def test_running_job_never_imports(self, importer):

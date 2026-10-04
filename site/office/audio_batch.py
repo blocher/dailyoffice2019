@@ -235,12 +235,14 @@ def prepare(start, days=7, batch_size=50, progress=None):
 
 
 def batch_request(clip, style):
+    # Gemini 3.8 batch TTS returns WAV by default. Explicit responseFormat
+    # currently causes per-request INVALID_ARGUMENT, even though the generic
+    # generateContent schema lists it. Verified against a live diagnostic batch.
     return {
         "contents": [{"role": "user", "parts": [{"text": clip["text"], "speechMetadata": {"style": style}}]}],
         "generationConfig": {
             "responseModalities": ["AUDIO"],
             "speechConfig": {"voiceConfig": {"voice": clip["voice"]}},
-            "responseFormat": {"audio": {"mimeType": "AUDIO_WAV", "delivery": "INLINE"}},
         },
     }
 
@@ -397,9 +399,16 @@ def refresh(path, manifest, client, import_results=False, progress=None):
         operation = client.get(chunk["job"])
         state = operation.get("metadata", {}).get("state", "UNKNOWN")
         chunk["state"] = state
+        stats = operation.get("metadata", {}).get("batchStats", {})
+        chunk["stats"] = stats
         save_manifest(path, manifest)
         if progress:
-            progress(f"Chunk {number}: {chunk['job']} {state}")
+            progress(
+                f"Chunk {number}: {chunk['job']} {state}; "
+                f"{stats.get('successfulRequestCount', 0)} succeeded, "
+                f"{stats.get('failedRequestCount', 0)} failed, "
+                f"{stats.get('pendingRequestCount', 0)} pending requests"
+            )
         if operation.get("error") or state in {
             "JOB_STATE_FAILED",
             "JOB_STATE_CANCELLED",
@@ -410,7 +419,10 @@ def refresh(path, manifest, client, import_results=False, progress=None):
         }:
             problems += 1
             continue
-        if not import_results or not operation.get("done"):
+        if not import_results:
+            problems += int(stats.get("failedRequestCount", 0))
+            continue
+        if not operation.get("done"):
             continue
         expected = set(chunk["keys"])
         seen, failed = set(), {}
@@ -421,7 +433,9 @@ def refresh(path, manifest, client, import_results=False, progress=None):
             seen.add(key)
             try:
                 if result.get("error"):
-                    raise ValueError("Gemini returned a per-clip error.")
+                    code = result["error"].get("code", "unknown")
+                    label = {3: "INVALID_ARGUMENT", 7: "PERMISSION_DENIED", 8: "RESOURCE_EXHAUSTED"}.get(code, "ERROR")
+                    raise ValueError(f"Gemini per-clip error: {label} (code {code}).")
                 import_clip(key, manifest["clips"][key], result.get("response", {}))
             except (ValueError, RuntimeError, OSError) as exc:
                 failed[key] = str(exc)
