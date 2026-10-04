@@ -141,9 +141,7 @@ class AudioCeremonyTests(SimpleTestCase):
                 sum(MP3(Path(directory) / t["path"].removeprefix("/uploads/")).info.length for t in tracks) + 29.5
             )
             self.assertAlmostEqual(MP3(combined).info.length, expected, delta=0.5)
-            serializer.get_or_create_clip.assert_called_once_with(
-                announcement(self.office()), "speaker", kind="line", raise_on_error=True
-            )
+            serializer.get_or_create_clip.assert_called_once_with(announcement(self.office()), "speaker", kind="line")
 
     def test_serializer_inserts_ceremony_without_changing_display_modules(self):
         from office.api.views import index
@@ -175,15 +173,45 @@ class AudioCeremonyTests(SimpleTestCase):
         self.assertEqual(audio["tracks"][3]["silence_after"], 25)
         self.assertEqual(generate.call_args_list[0].args[:2], (INTERCESSION_INVITATION, "speaker"))
 
+    def test_elevenlabs_inserts_same_ceremony_without_changing_display_modules(self):
+        from office.api.views import index
+        from office.api.views.tts import ElevenLabsTTSProvider
+
+        modules = [
+            {
+                "name": "Intercessions, Thanksgivings, and Praise",
+                "lines": [
+                    {"id": "invitation", "line_type": "speaker", "content": "Old invitation", "silence_after": 10}
+                ],
+            }
+        ]
+        serializer = GenericDailyOfficeSerializer()
+        office = self.office()
+        office.settings = {}
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            override_settings(MEDIA_ROOT=directory),
+            patch.object(index, "TTS_PROVIDER", ElevenLabsTTSProvider()),
+            patch.object(serializer, "get_modules", return_value=modules),
+            patch.object(serializer, "get_or_create_clip", return_value=("/clip", "/uploads/clip.mp3")) as generate,
+            patch.object(serializer, "get_clip_word_timing", return_value=[]),
+            patch.object(serializer, "get_single_track", return_value=[]),
+        ):
+            audio = serializer.get_audio(office)
+        self.assertEqual(modules[0]["lines"][0]["content"], "Old invitation")
+        self.assertEqual(audio["tracks"][2]["text"], INTERCESSION_INVITATION)
+        self.assertEqual(audio["tracks"][3]["silence_after"], 25)
+        self.assertEqual(generate.call_args_list[0].args[:2], (INTERCESSION_INVITATION, "speaker"))
+
     def test_empty_audio_does_not_create_bells_only_office(self):
         serializer = Mock()
         self.assertEqual(frame_tracks(self.office(), [], serializer, ""), [])
         serializer.get_or_create_clip.assert_not_called()
 
-    def test_announcement_error_preserves_provider_cause(self):
+    def test_missing_announcement_preserves_remaining_office(self):
         serializer = Mock()
-        error = RuntimeError("Gemini TTS request failed (HTTP 429).")
-        serializer.get_or_create_clip.side_effect = error
-        with self.assertRaisesRegex(RuntimeError, "office announcement") as raised:
-            frame_tracks(self.office(), [{"text": "Prayer"}], serializer, "")
-        self.assertIs(raised.exception.__cause__, error)
+        serializer.get_or_create_clip.return_value = (None, None)
+        with tempfile.TemporaryDirectory() as directory, override_settings(MEDIA_ROOT=directory):
+            tracks = frame_tracks(self.office(), [{"text": "Prayer"}], serializer, "")
+        self.assertTrue(any(track.get("text") == "Prayer" for track in tracks))
+        self.assertFalse(any(track.get("line_id") == "audio_office_announcement" for track in tracks))

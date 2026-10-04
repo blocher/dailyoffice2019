@@ -34,6 +34,8 @@ def wav_bytes():
 class GeminiProviderTests(SimpleTestCase):
     def setUp(self):
         self.provider = GeminiTTSProvider()
+        self.enterContext(patch.object(index.bugsnag, "notify"))
+        self.enterContext(patch("office.gemini_alignment.align_clip", return_value=[]))
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.output = os.path.join(self.temp.name, "clip.mp3")
@@ -194,6 +196,8 @@ class GeminiProviderTests(SimpleTestCase):
 @override_settings(GEMINI_TTS_VOICE_LEADER="Kore", GEMINI_TTS_STYLE="", GEMINI_TTS_MODEL="gemini-3.8-flash-tts")
 class GeminiClipTests(TestCase):
     def setUp(self):
+        self.enterContext(patch.object(index.bugsnag, "notify"))
+        self.enterContext(patch("office.gemini_alignment.align_clip", return_value=[]))
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.provider = GeminiTTSProvider()
@@ -237,12 +241,15 @@ class GeminiClipTests(TestCase):
         self.assertIs(raised.exception, error)
         self.assertFalse(AudioClip.objects.exists())
 
-    def test_batch_does_not_silently_skip_failed_optional_clips(self):
+    def test_batch_reports_failed_clips_and_continues(self):
         token = index.AUDIO_GENERATION_REQUIRED.set(True)
         try:
             with patch.object(self.provider, "synthesize", side_effect=RuntimeError("provider unavailable")):
-                with self.assertRaisesRegex(RuntimeError, "provider unavailable"):
-                    index.GenericDailyOfficeSerializer.get_or_create_clip("Amen.", "leader")
+                with patch.object(index.bugsnag, "notify") as notify:
+                    self.assertEqual(
+                        index.GenericDailyOfficeSerializer.get_or_create_clip("Amen.", "leader"), (None, None)
+                    )
+                    notify.assert_called_once()
         finally:
             index.AUDIO_GENERATION_REQUIRED.reset(token)
 
