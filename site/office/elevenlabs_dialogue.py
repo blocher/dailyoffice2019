@@ -14,6 +14,21 @@ import requests
 from django.conf import settings
 
 
+class DialogueTimingError(ValueError):
+    """Keep numeric failure evidence without logging prayer text or credentials."""
+
+    def __init__(self, reason, input_index, word_index, start, end, previous_end):
+        super().__init__("Dialogue word timings overlap or are out of order")
+        self.timing_details = {
+            "reason": reason,
+            "input_index": input_index,
+            "word_index": word_index,
+            "start": repr(start),
+            "end": repr(end),
+            "previous_end": repr(previous_end),
+        }
+
+
 class DialogueSession:
     """Never share stitching state between offices or concurrent requests."""
 
@@ -75,13 +90,53 @@ class DialogueSession:
                     exc,
                     severity="error",
                     context="office_audio_dialogue",
-                    metadata={"audio": {"provider": "elevenlabs", "lines": len(lines)}},
+                    metadata={
+                        "audio": {
+                            "provider": "elevenlabs",
+                            "lines": len(lines),
+                            **getattr(exc, "timing_details", {}),
+                        }
+                    },
                 )
             except Exception:
                 import logging
 
                 logging.getLogger(__name__).exception("Bugsnag dialogue reporting failed")
             return None, []
+
+    def _timing(self, alignment, segments, speaking_turns, prepared):
+        """Validate one complete alignment in script order; never sort or invent times."""
+        timing = []
+        previous_end = 0
+        previous_character = 0
+        for i, turn in enumerate(speaking_turns):
+            matching = [segment for segment in segments if segment["dialogue_input_index"] == i]
+            first = min(segment["character_start_index"] for segment in matching)
+            last = max(segment["character_end_index"] for segment in matching)
+            if first < previous_character or last <= first:
+                raise ValueError("Dialogue speaking turns overlap or are out of order")
+            previous_character = last
+            sliced = {
+                k: alignment.get(k, [])[first:last]
+                for k in ("characters", "character_start_times_seconds", "character_end_times_seconds")
+            }
+            words = self.provider.original_word_alignment(sliced, *prepared[i])
+            if not words:
+                raise ValueError("Dialogue transcript could not be matched to the prayer")
+            for word_index, word in enumerate(words):
+                start, end = word["start_time"], word["end_time"]
+                reason = None
+                if not (math.isfinite(start) and math.isfinite(end)):
+                    reason = "non_finite"
+                elif start < 0 or end <= start:
+                    reason = "invalid_duration"
+                elif start < previous_end - 0.02:
+                    reason = "overlap_or_out_of_order"
+                if reason:
+                    raise DialogueTimingError(reason, i, word_index, start, end, previous_end)
+                previous_end = end
+                timing.append({**word, "input_index": i})
+        return timing
 
     def _clip(self, lines):
         turns = []
@@ -150,35 +205,16 @@ class DialogueSession:
                 segments = data.get("voice_segments", [])
                 if {segment.get("dialogue_input_index") for segment in segments} != set(range(len(turns))):
                     raise ValueError("Dialogue response omitted one or more speaking turns")
-                timing = []
                 alignment = data.get("alignment") or data.get("normalized_alignment") or {}
-                previous_end = 0
-                previous_character = 0
-                for i, turn in enumerate(speaking_turns):
-                    matching = [segment for segment in segments if segment["dialogue_input_index"] == i]
-                    first = min(segment["character_start_index"] for segment in matching)
-                    last = max(segment["character_end_index"] for segment in matching)
-                    if first < previous_character or last <= first:
-                        raise ValueError("Dialogue speaking turns overlap or are out of order")
-                    previous_character = last
-                    sliced = {
-                        k: alignment.get(k, [])[first:last]
-                        for k in ("characters", "character_start_times_seconds", "character_end_times_seconds")
-                    }
-                    words = self.provider.original_word_alignment(sliced, *prepared[i])
-                    if not words:
-                        raise ValueError("Dialogue transcript could not be matched to the prayer")
-                    for word in words:
-                        start, end = word["start_time"], word["end_time"]
-                        if not (
-                            math.isfinite(start)
-                            and math.isfinite(end)
-                            and start >= previous_end - 0.02
-                            and end > start
-                        ):
-                            raise ValueError("Dialogue word timings overlap or are out of order")
-                        previous_end = end
-                        timing.append({**word, "input_index": i})
+                try:
+                    timing = self._timing(alignment, segments, speaking_turns, prepared)
+                except ValueError:
+                    normalized = data.get("normalized_alignment") or {}
+                    # Voice segment indices cannot safely be reused if normalization
+                    # changes the character sequence (numbers, IPA, etc.).
+                    if not normalized or normalized.get("characters") != alignment.get("characters"):
+                        raise
+                    timing = self._timing(normalized, segments, speaking_turns, prepared)
                 # Publish only complete audio; cache contains no office-specific line IDs.
                 with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as handle:
                     handle.write(audio)
