@@ -122,16 +122,20 @@ def audio_base_url():
     return settings.SITE_ADDRESS.rstrip("/")
 
 
-def provider_media_name(filename):
+def provider_media_name(filename, create_directory=True):
     """Media-relative name for a generated file under the active provider's
-    subfolder, e.g. ``fish/<uuid>.mp3``. Ensures the folder exists.
+    subfolder, e.g. ``fish/<uuid>.mp3``.
+
+    Cache-only lookups set create_directory=False so rendering an office does
+    not require write access to the provider folder.
 
     The returned name is what we store on AudioClip.filename and append to
     MEDIA_URL / MEDIA_ROOT, so per-provider audio is neatly grouped and can be
     cleared by simply removing (or targeting) that one subfolder.
     """
     subdir = TTS_PROVIDER.media_subdir
-    os.makedirs(os.path.join(settings.MEDIA_ROOT, subdir), exist_ok=True)
+    if create_directory:
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, subdir), exist_ok=True)
     return f"{subdir}/{filename}"
 
 
@@ -3311,7 +3315,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         if not voice:
             return None, None
         key = GenericDailyOfficeSerializer.tts_clip_key(voice, normalized)
-        filename = provider_media_name(f"{key}.mp3")
+        filename = provider_media_name(f"{key}.mp3", create_directory=not no_generate)
         file_path = os.path.join(settings.MEDIA_ROOT, filename)
         exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
         path = settings.MEDIA_URL + filename
