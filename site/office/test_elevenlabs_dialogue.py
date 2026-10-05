@@ -1,4 +1,6 @@
 import base64
+from copy import deepcopy
+from pathlib import Path
 import tempfile
 from unittest.mock import Mock, patch
 
@@ -125,6 +127,99 @@ class DialogueTests(SimpleTestCase):
         ):
             self.assertEqual(DialogueSession(ElevenLabsTTSProvider()).clip(self.lines()), (None, []))
             notify.assert_called_once()
+
+    def test_invalid_raw_timings_use_valid_normalized_alignment_and_cache(self):
+        for failure in ("overlap", "zero_duration", "non_finite"):
+            with self.subTest(failure=failure):
+                response = self.response()
+                data = response.json.return_value
+                data["normalized_alignment"] = deepcopy(data["alignment"])
+                if failure == "overlap":
+                    data["alignment"]["character_start_times_seconds"][5] = 0.3
+                elif failure == "zero_duration":
+                    data["alignment"]["character_end_times_seconds"][4] = 0
+                else:
+                    data["alignment"]["character_start_times_seconds"][0] = float("nan")
+                with (
+                    tempfile.TemporaryDirectory() as directory,
+                    override_settings(MEDIA_ROOT=directory),
+                    patch("office.elevenlabs_dialogue.requests.post", return_value=response) as post,
+                    patch("office.elevenlabs_dialogue.bugsnag.notify") as notify,
+                ):
+                    session = DialogueSession(ElevenLabsTTSProvider())
+                    path, timing = session.clip(self.lines())
+                    self.assertIsNotNone(path)
+                    self.assertEqual([word["id"] for word in timing], ["one", "two"])
+                    self.assertEqual([word["start_time"] for word in timing], [0, 0.5])
+                    self.assertEqual(session.clip(self.lines()), (path, timing))
+                    self.assertEqual(post.call_count, 1)
+                    notify.assert_not_called()
+
+    def test_normalized_fallback_cannot_change_segment_character_offsets(self):
+        response = self.response()
+        data = response.json.return_value
+        data["normalized_alignment"] = deepcopy(data["alignment"])
+        data["normalized_alignment"]["characters"] = list("HelloAmén")
+        data["alignment"]["character_start_times_seconds"][5] = 0.3
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            override_settings(MEDIA_ROOT=directory),
+            patch("office.elevenlabs_dialogue.requests.post", return_value=response),
+            patch("office.elevenlabs_dialogue.bugsnag.notify") as notify,
+        ):
+            self.assertEqual(DialogueSession(ElevenLabsTTSProvider()).clip(self.lines()), (None, []))
+            self.assertEqual(notify.call_args.kwargs["metadata"]["audio"]["reason"], "overlap_or_out_of_order")
+            self.assertFalse(list(Path(directory).rglob("*.mp3")))
+            self.assertFalse(list(Path(directory).rglob("*.dialogue.json")))
+
+    def test_both_invalid_alignments_reject_and_report_numeric_evidence(self):
+        for start, end, reason in (
+            (0.3, 0.9, "overlap_or_out_of_order"),
+            (0.5, 0.5, "invalid_duration"),
+            (float("inf"), 0.9, "non_finite"),
+            (-0.01, 0.9, "invalid_duration"),
+        ):
+            with self.subTest(reason=reason, start=start):
+                response = self.response()
+                data = response.json.return_value
+                data["alignment"]["character_start_times_seconds"][5] = start
+                data["alignment"]["character_end_times_seconds"][8] = end
+                data["normalized_alignment"] = deepcopy(data["alignment"])
+                with (
+                    tempfile.TemporaryDirectory() as directory,
+                    override_settings(MEDIA_ROOT=directory),
+                    patch("office.elevenlabs_dialogue.requests.post", return_value=response),
+                    patch("office.elevenlabs_dialogue.bugsnag.notify") as notify,
+                ):
+                    session = DialogueSession(ElevenLabsTTSProvider())
+                    session.previous = [("context", 1)]
+                    self.assertEqual(session.clip(self.lines()), (None, []))
+                    self.assertEqual(session.previous, [])
+                    notify.assert_called_once()
+                    details = notify.call_args.kwargs["metadata"]["audio"]
+                    self.assertEqual(details["reason"], reason)
+                    self.assertEqual((details["input_index"], details["word_index"]), (1, 0))
+                    self.assertEqual(details["start"], repr(start))
+                    self.assertEqual(details["previous_end"], "0.5")
+                    self.assertNotIn("Hello", str(details))
+                    self.assertFalse(list(Path(directory).rglob("*.mp3")))
+                    self.assertFalse(list(Path(directory).rglob("*.dialogue.json")))
+
+    def test_valid_raw_alignment_remains_preferred(self):
+        response = self.response()
+        data = response.json.return_value
+        data["normalized_alignment"] = deepcopy(data["alignment"])
+        data["normalized_alignment"]["character_start_times_seconds"][5] = 0.3
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            override_settings(MEDIA_ROOT=directory),
+            patch("office.elevenlabs_dialogue.requests.post", return_value=response),
+            patch("office.elevenlabs_dialogue.bugsnag.notify") as notify,
+        ):
+            path, timing = DialogueSession(ElevenLabsTTSProvider()).clip(self.lines())
+            self.assertIsNotNone(path)
+            self.assertEqual(timing[1]["start_time"], 0.5)
+            notify.assert_not_called()
 
     def test_consecutive_printed_lines_form_one_turn_and_keep_line_ids(self):
         lines = [
