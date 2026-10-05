@@ -5048,7 +5048,7 @@ class NoondayPrayerDisplayView(OfficeAPIView):
         return HttpResponse(json_modules_to_html(serializer.data["modules"], request), content_type="text/html")
 
 
-class EmailSignupView(OfficeAPIView):
+class EmailSignupView(APIView):
     permission_classes = [AllowAny]
 
     @csrf_exempt
