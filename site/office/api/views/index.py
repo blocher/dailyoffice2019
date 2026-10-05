@@ -173,7 +173,7 @@ class Settings(dict):
         settings["extra_collects"] = self._get_extra_collects(request)
         super().__init__(**settings)
 
-    def _default_settings(self):
+    def _setting_options(self):
         settings = (
             Setting.objects.order_by("site", "setting_type", "order")
             .prefetch_related(
@@ -181,8 +181,7 @@ class Settings(dict):
             )
             .all()
         )
-        defaults = {setting.name: setting.options[0].value for setting in settings}
-        return defaults
+        return {setting.name: [option.value for option in setting.options] for setting in settings}
 
     def _get_extra_collects(self, request):
         try:
@@ -198,11 +197,21 @@ class Settings(dict):
         return extra_collects
 
     def _get_settings(self, request):
-        settings = self._default_settings().copy()
-        specified_settings = {k: v for (k, v) in request.query_params.items() if k in settings.keys()}
-        for k, v in settings.items():
-            if k in specified_settings.keys():
-                settings[k] = specified_settings[k]
+        options = self._setting_options()
+        settings = {name: values[0] for name, values in options.items()}
+        for name, value in request.query_params.items():
+            if name not in options:
+                continue
+            # Some clients join repeated scalar settings with commas. Preserve
+            # a declared option verbatim, otherwise use the last supported value.
+            if value in options[name]:
+                settings[name] = value
+                continue
+            for candidate in reversed(value.split(",")):
+                candidate = candidate.strip()
+                if candidate in options[name]:
+                    settings[name] = candidate
+                    break
         return settings
 
 
