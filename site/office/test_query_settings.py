@@ -19,7 +19,12 @@ class QuerySettingsTests(SimpleTestCase):
 
     def settings(self, query):
         request = SimpleNamespace(query_params=QueryDict(query))
-        with patch.object(Settings, "_setting_options", return_value=self.options):
+        rows = [
+            SimpleNamespace(name=name, options=[SimpleNamespace(value=value) for value in values])
+            for name, values in self.options.items()
+        ]
+        with patch("office.api.views.index.Setting.objects") as manager:
+            manager.order_by.return_value.prefetch_related.return_value.all.return_value = rows
             return Settings(request)
 
     def test_comma_joined_settings_produce_a_valid_reading(self):
