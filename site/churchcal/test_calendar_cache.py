@@ -15,7 +15,7 @@ class CalendarCacheFailureTests(SimpleTestCase):
                 with (
                     patch.object(calculations, "cache") as cache,
                     patch.object(calculations, "ChurchYear", return_value=calendar) as church_year,
-                    patch.object(calculations.logger, "warning") as warning,
+                    patch("logging.Logger.warning") as warning,
                 ):
                     cache.get.side_effect = error
                     self.assertIs(calculations.get_church_year("2026-10-05"), calendar)
@@ -37,7 +37,7 @@ class CalendarCacheFailureTests(SimpleTestCase):
         with (
             patch.object(calculations, "cache") as cache,
             patch.object(calculations, "ChurchYear", return_value=calendar),
-            patch.object(calculations.logger, "warning") as warning,
+            patch("logging.Logger.warning") as warning,
         ):
             cache.get.return_value = None
             cache.set.side_effect = ConnectionResetError("reset")
