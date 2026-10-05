@@ -342,6 +342,7 @@ export default {
   },
   beforeUnmount() {
     this.destroyed = true;
+    this.stopHighlightClock();
     this.cancelTrackSeek?.();
     this.playbackRequested = false;
     document.removeEventListener(
@@ -432,9 +433,26 @@ export default {
       this.updateMediaPosition();
       this.clearActiveWord();
     },
+    startHighlightClock() {
+      this.stopHighlightClock();
+      const tick = () => {
+        if (this.destroyed || !this.isPlaying || !this.audioElement) return;
+        if (document.visibilityState !== 'hidden') {
+          this.updateActiveWord(this.audioElement.currentTime);
+        }
+        this.highlightFrame = window.requestAnimationFrame(tick);
+      };
+      this.highlightFrame = window.requestAnimationFrame(tick);
+    },
+    stopHighlightClock() {
+      if (this.highlightFrame != null)
+        window.cancelAnimationFrame(this.highlightFrame);
+      this.highlightFrame = null;
+    },
     handlePlay() {
       this.playbackRequested = true;
       this.isPlaying = true;
+      this.startHighlightClock();
       this.isPaused = false;
       this.updateMediaPosition();
     },
@@ -448,6 +466,7 @@ export default {
       this.playbackError = '';
     },
     handlePause() {
+      this.stopHighlightClock();
       this.cancelTrackSeek?.();
       this.isPlaying = false;
       this.isPaused = true;
@@ -733,11 +752,17 @@ export default {
       }
     },
     normalizeWord(word) {
-      return String(word || '')
-        .normalize('NFKD')
-        .replace(/\p{M}/gu, '')
-        .toLocaleLowerCase()
-        .replace(/[^\p{L}\p{N}]/gu, '');
+      return (
+        String(word || '')
+          .normalize('NFKD')
+          .replace(/\p{M}/gu, '')
+          .toLocaleLowerCase()
+          // The psalter prints the divine name using Unicode small-cap letters.
+          .replace(/ᴏ/g, 'o')
+          .replace(/ʀ/g, 'r')
+          .replace(/ᴅ/g, 'd')
+          .replace(/[^\p{L}\p{N}]/gu, '')
+      );
     },
     findLineAnchor(lineId) {
       return Array.from(document.querySelectorAll('[data-line-id]')).find(

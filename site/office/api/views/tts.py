@@ -215,12 +215,15 @@ class ElevenLabsTTSProvider(BaseTTSProvider):
     def effective_instructions(self):
         if self.model not in ("eleven_v4", "eleven_v4_turbo"):
             return ""
-        style = getattr(settings, "ELEVENLABS_TTS_INSTRUCTIONS", "calm, reverent, measured delivery")
-        wpm = getattr(settings, "ELEVENLABS_TTS_WORDS_PER_MINUTE", 125)
-        if wpm <= 0:
-            raise ValueError("ELEVENLABS_TTS_WORDS_PER_MINUTE must be positive.")
-        # A delivery cue, not an exact timing or musical-beat guarantee.
-        return f"[{style}; steady spoken cadence at approximately {wpm} words per minute; natural speech, not singing]"
+        style = getattr(settings, "ELEVENLABS_TTS_INSTRUCTIONS", "[calm]")
+        # Long prose inside a tag was consuming seconds of generated audio on
+        # every turn. Use concise delivery tags; pacing belongs in voice settings.
+        if style == "calm, reverent, measured delivery":
+            style = "[calm]"
+        # Preserve the prior setting's interpretation as a cue, not spoken text.
+        if style and not style.lstrip().startswith("["):
+            style = f"[{style}]"
+        return style
 
     @property
     def amen_ipa(self):

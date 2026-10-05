@@ -8,10 +8,12 @@ Both are mono 44.1 kHz MP3s, reduced in volume for spoken-prayer playback.
 
 import hashlib
 import os
+import re
 import tempfile
 from pathlib import Path
 
 from django.conf import settings
+from num2words import num2words
 
 INTERCESSION_INVITATION = "Let us unite our prayers and thanksgivings with those of the whole church."
 INTERCESSION_MODULE = "Intercessions, Thanksgivings, and Praise"
@@ -63,12 +65,21 @@ def announcement(office):
         "Family Prayer at the Close of Day",
     }
     commemorations = office.date.all_evening if evening else office.date.all
-    names = " and ".join(commemoration.name for commemoration in commemorations)
+    # Expand historical years before the TTS pipeline expands ordinary quantities.
+    names = " and ".join(
+        re.sub(
+            r"(?<![\w,])(?:\d{3,4}|\d,\d{3})(?![\w]|,\d)",
+            lambda match: num2words(int(match.group().replace(",", "")), to="year", lang="en"),
+            commemoration.name,
+        )
+        for commemoration in commemorations
+    )
     name = {"Morning Prayer": "Daily Morning Prayer", "Evening Prayer": "Daily Evening Prayer"}.get(
         office.name, office.name
     )
     day = office.date.date
-    return f"{name} for {day:%A}, {day:%B} {spoken_day(day.day)}, {day.year}: {names}."
+    year = num2words(day.year, to="year", lang="en")
+    return f"{name} for {day:%A}, {day:%B} {spoken_day(day.day)}, {year}: {names}."
 
 
 def bell_track(asset, module, identifier, base_url, before=0, after=0):

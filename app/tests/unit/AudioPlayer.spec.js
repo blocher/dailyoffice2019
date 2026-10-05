@@ -93,8 +93,62 @@ describe('AudioPlayer word synchronization', () => {
     vi.unstubAllGlobals();
   });
 
+  it('highlights short words between sparse media timeupdate events', async () => {
+    let frame;
+    vi.stubGlobal(
+      'requestAnimationFrame',
+      vi.fn((callback) => {
+        frame = callback;
+        return 1;
+      })
+    );
+    vi.stubGlobal('cancelAnimationFrame', vi.fn());
+    const source = [...audio];
+    source[4] = audio[4].map((word, index) => ({
+      ...word,
+      provider: 'elevenlabs',
+      start_time: index * 0.08,
+      end_time: (index + 1) * 0.08,
+    }));
+    const wrapper = mountPlayer(source);
+    await wrapper.vm.$nextTick();
+    wrapper.vm.enableScrolling = false;
+    wrapper.vm.handlePlay();
+    expect(frame).toBeTypeOf('function');
+    for (const [time, word] of [
+      [0.03, 'The'],
+      [0.11, 'Lord'],
+      [0.19, 'speaks'],
+    ]) {
+      wrapper.vm.audioElement.currentTime = time;
+      frame();
+      expect(content.querySelector('.audio-line--active')?.textContent).toBe(
+        word
+      );
+    }
+    wrapper.vm.handlePause();
+    expect(cancelAnimationFrame).toHaveBeenCalled();
+    wrapper.unmount();
+  });
+
+  it('matches the printed small-cap divine name to spoken Lord', async () => {
+    content.innerHTML =
+      "<span data-line-id='line-one'></span><p>The Lᴏʀᴅ speaks.</p>";
+    const source = [...audio];
+    source[4] = audio[4].map((word) => ({ ...word, provider: 'elevenlabs' }));
+    const wrapper = mountPlayer(source);
+    await wrapper.vm.$nextTick();
+    expect(content.querySelectorAll('.audio-word')).toHaveLength(3);
+    wrapper.vm.updateActiveWord(0.4);
+    expect(content.querySelector('.audio-line--active')?.textContent).toBe(
+      'Lᴏʀᴅ'
+    );
+    wrapper.unmount();
+  });
+
   it('holds a whole line through short timing gaps and clears during silence', async () => {
-    content.innerHTML = "<span data-line-id='line-one'></span><p>The merciful Lord speaks.</p>";
+    content.innerHTML =
+      "<span data-line-id='line-one'></span><p>The merciful Lord speaks.</p>";
     const wrapper = mountPlayer();
     await wrapper.vm.$nextTick();
     const line = content.querySelector('[data-audio-line-content]');
@@ -111,12 +165,16 @@ describe('AudioPlayer word synchronization', () => {
   });
 
   it('traces individual ElevenLabs words using direct start and end times', async () => {
-    content.innerHTML = '<span data-line-id="line-one"></span><p>The <em>Lord</em> speaks.</p>';
+    content.innerHTML =
+      '<span data-line-id="line-one"></span><p>The <em>Lord</em> speaks.</p>';
     const source = [...audio];
     source[4] = audio[4].map((word) => ({ ...word, provider: 'elevenlabs' }));
     const wrapper = mountPlayer(source);
     await wrapper.vm.$nextTick();
-    const highlighted = () => Array.from(content.querySelectorAll('.audio-line--active')).map(e => e.textContent).join('');
+    const highlighted = () =>
+      Array.from(content.querySelectorAll('.audio-line--active'))
+        .map((e) => e.textContent)
+        .join('');
     wrapper.vm.updateActiveWord(0.15);
     expect(highlighted()).toBe('The');
     wrapper.vm.updateActiveWord(0.5);
@@ -134,17 +192,34 @@ describe('AudioPlayer word synchronization', () => {
   });
 
   it('highlights complete sentences in long readings and preserves markup', async () => {
-    const first = 'The Lord speaks with mercy and kindness to all who seek him in prayer and thanksgiving every morning. ';
-    const second = 'We give thanks for the blessings of this day and ask for guidance as we go about our work in peace.';
+    const first =
+      'The Lord speaks with mercy and kindness to all who seek him in prayer and thanksgiving every morning. ';
+    const second =
+      'We give thanks for the blessings of this day and ask for guidance as we go about our work in peace.';
     content.innerHTML = `<span data-line-id="line-one"></span><p>${first}<em>${second}</em></p>`;
     const source = [...audio];
     source[4] = [
-      { id: 'line-one', speaker: 'reader', word: 'The', start_time: 0.1, end_time: 0.4 },
-      { id: 'line-one', speaker: 'reader', word: 'We', start_time: 1.5, end_time: 2 },
+      {
+        id: 'line-one',
+        speaker: 'reader',
+        word: 'The',
+        start_time: 0.1,
+        end_time: 0.4,
+      },
+      {
+        id: 'line-one',
+        speaker: 'reader',
+        word: 'We',
+        start_time: 1.5,
+        end_time: 2,
+      },
     ];
     const wrapper = mountPlayer(source);
     await wrapper.vm.$nextTick();
-    const highlighted = () => Array.from(content.querySelectorAll('.audio-line--active')).map(e => e.textContent).join('');
+    const highlighted = () =>
+      Array.from(content.querySelectorAll('.audio-line--active'))
+        .map((e) => e.textContent)
+        .join('');
     wrapper.vm.updateActiveWord(0.5);
     expect(highlighted()).toBe(first);
     wrapper.vm.updateActiveWord(1.6);
@@ -192,7 +267,9 @@ describe('AudioPlayer word synchronization', () => {
     expect(words[1].scrollIntoView).toHaveBeenCalledTimes(1);
     wrapper.vm.updateActiveWord(0.55);
     expect(words[1].scrollIntoView).toHaveBeenCalledTimes(1);
-    expect(content.querySelector('.audio-line--active').textContent).toBe('The Lord speaks.');
+    expect(content.querySelector('.audio-line--active').textContent).toBe(
+      'The Lord speaks.'
+    );
     wrapper.vm.enableScrolling = false;
     wrapper.vm.lastFollowScrollAt = -Infinity;
     wrapper.vm.updateActiveWord(0.6);
@@ -208,7 +285,9 @@ describe('AudioPlayer word synchronization', () => {
     const wrapper = mountPlayer(source);
     await wrapper.vm.$nextTick();
     wrapper.vm.updateActiveWord(3);
-    expect(content.querySelector('.audio-line--active')?.textContent).toBe('And our mouth shall proclaim your praise.');
+    expect(content.querySelector('.audio-line--active')?.textContent).toBe(
+      'And our mouth shall proclaim your praise.'
+    );
     wrapper.vm.updateActiveWord(6);
     expect(content.querySelector('.audio-line--active')).toBeNull();
     wrapper.unmount();

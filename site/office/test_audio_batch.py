@@ -113,6 +113,21 @@ class BatchPlanningTests(BatchSetup, SimpleTestCase):
                 batch.prepare(date(2026, 10, 3))
         self.assertIsNone(index.AUDIO_CLIP_COLLECTOR.get())
 
+    @patch.object(batch.SERIALIZER, "find_reusable_reader")
+    def test_prepare_preserves_explicit_reading_voice(self, reuse):
+        def view(request):
+            for voice in ("Kore", "Charon"):
+                batch.SERIALIZER.get_or_create_clip("The Word of the Lord.", "reader", voice=voice)
+            return SimpleNamespace(status_code=200)
+
+        with (
+            patch.object(batch, "office_requests", return_value=[("/office", {})]),
+            patch.object(batch, "resolve", return_value=SimpleNamespace(func=view, args=(), kwargs={})),
+        ):
+            manifest = batch.prepare(date(2026, 10, 3))
+        self.assertEqual({clip["voice"] for clip in manifest["clips"].values()}, {"Kore", "Charon"})
+        reuse.assert_not_called()
+
     def test_serializer_collects_groups_readings_and_announcement_without_assembly(self):
         obj = SimpleNamespace(settings={})
         serializer = batch.SERIALIZER()

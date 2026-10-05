@@ -48,11 +48,11 @@ class MasterAudioIntegrationTests(TestCase):
     def test_pronunciation_overrides_run_before_number_expansion(self):
         from unittest.mock import patch
 
-        from office.api.views.index import GenericDailyOfficeSerializer
+        from office.api.views.index import GenericDailyOfficeSerializer, TTS_PROVIDER
 
         with patch("office.models.PronunciationOverride.apply", return_value="12 baskets * remain") as override:
             result = GenericDailyOfficeSerializer.normalize_tts_text("a dozen baskets * remain")
-        override.assert_called_once_with("a dozen baskets * remain")
+        override.assert_called_once_with("a dozen baskets * remain", provider=TTS_PROVIDER.name)
         self.assertEqual(result, "twelve baskets remain")
 
     def test_paragraph_grouping_and_display_are_preserved(self):
@@ -62,15 +62,20 @@ class MasterAudioIntegrationTests(TestCase):
         from office.api.views.index import GenericDailyOfficeSerializer
 
         html = '<p><span class="chapternum">4 </span><sup class="verse-num">2</sup>35,000 men. 3.5 measures.</p>'
-        with patch.object(
-            GenericDailyOfficeSerializer,
-            "get_or_create_clip",
-            return_value=("https://example.com/uploads/abc123.mp3", "/uploads/abc123.mp3"),
-        ) as generate:
+        with (
+            patch.object(GenericDailyOfficeSerializer, "reading_voice", return_value="assigned-reader"),
+            patch.object(
+                GenericDailyOfficeSerializer,
+                "get_or_create_clip",
+                return_value=("https://example.com/uploads/abc123.mp3", "/uploads/abc123.mp3"),
+            ) as generate,
+        ):
             rendered = GenericDailyOfficeSerializer.handle_html(
                 html, html=True, no_generate=True, id="reading_original"
             )
-        generate.assert_called_once_with("35,000 men. 3.5 measures.", "reader", kind="reader", no_generate=True)
+        generate.assert_called_once_with(
+            "35,000 men. 3.5 measures.", "reader", kind="reader", no_generate=True, voice="assigned-reader"
+        )
         self.assertEqual(re.sub(r"<span data-line-id='[^']*'></span>", "", rendered), html)
 
     def test_clip_synthesis_receives_words_and_cache_key_changes(self):

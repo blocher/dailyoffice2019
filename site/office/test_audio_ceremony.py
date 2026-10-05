@@ -43,7 +43,7 @@ class AudioCeremonyTests(SimpleTestCase):
         for name in ["Morning Prayer", "Midday Prayer", "Family Prayer in the Morning", "Family Prayer at Midday"]:
             self.assertEqual(
                 announcement(self.office(name)),
-                f"{'Daily Morning Prayer' if name == 'Morning Prayer' else name} for Saturday, October third, 2026: Morning Saint and Second Saint.",
+                f"{'Daily Morning Prayer' if name == 'Morning Prayer' else name} for Saturday, October third, twenty twenty-six: Morning Saint and Second Saint.",
             )
         for name in [
             "Evening Prayer",
@@ -51,7 +51,32 @@ class AudioCeremonyTests(SimpleTestCase):
             "Family Prayer in the Early Evening",
             "Family Prayer at the Close of Day",
         ]:
-            self.assertIn("2026: Evening Saint.", announcement(self.office(name)))
+            self.assertIn("twenty twenty-six: Evening Saint.", announcement(self.office(name)))
+
+    def test_commemoration_years_survive_tts_number_expansion(self):
+        for year, spoken in [
+            ("1255", "twelve fifty-five"),
+            ("1,255", "twelve fifty-five"),
+            ("604", "six oh-four"),
+            ("1900", "nineteen hundred"),
+            ("1905", "nineteen oh-five"),
+            ("2000", "two thousand"),
+            ("2005", "two thousand and five"),
+            ("2019", "twenty nineteen"),
+            ("c. 1255", "c. twelve fifty-five"),
+            ("1255–1300", "twelve fifty-five–thirteen hundred"),
+        ]:
+            for office_name in ("Morning Prayer", "Evening Prayer"):
+                with self.subTest(year=year, office=office_name):
+                    office = self.office(office_name)
+                    original = f"Example Saint, Bishop, {year}"
+                    commemoration = SimpleNamespace(name=original)
+                    office.date.all = office.date.all_evening = [commemoration]
+                    text = announcement(office)
+                    self.assertIn(f"Example Saint, Bishop, {spoken}.", text)
+                    normalized = GenericDailyOfficeSerializer.normalize_tts_text(text)
+                    self.assertIn(spoken, normalized)
+                    self.assertEqual(commemoration.name, original)
 
     def test_actual_api_office_classes_supply_announcement_names(self):
         from office.api.views import index
@@ -173,6 +198,7 @@ class AudioCeremonyTests(SimpleTestCase):
         self.assertEqual(audio["tracks"][3]["silence_after"], 25)
         self.assertEqual(generate.call_args_list[0].args[:2], (INTERCESSION_INVITATION, "speaker"))
 
+    @override_settings(ELEVENLABS_TTS_MODEL="eleven_multilingual_v2")
     def test_elevenlabs_inserts_same_ceremony_without_changing_display_modules(self):
         from office.api.views import index
         from office.api.views.tts import ElevenLabsTTSProvider

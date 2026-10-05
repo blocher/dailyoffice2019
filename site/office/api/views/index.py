@@ -809,7 +809,8 @@ class ReadingModule(Module):
 
         text = getattr(text, translation)
         text = self.remove_headings_if_needed(text)
-        text = GenericDailyOfficeSerializer.handle_html(text, html=True, no_generate=True)
+        voice = GenericDailyOfficeSerializer.reading_voice(text)
+        text = GenericDailyOfficeSerializer.handle_html(text, html=True, no_generate=True, voice=voice)
 
         lines = [
             Line(citation, "subheading"),
@@ -821,6 +822,9 @@ class ReadingModule(Module):
             Line(self.closing(reading.testament), "reader", silence_before=1.3),
             Line(self.closing_response(reading.testament), "congregation"),
         ]
+        for line in lines:
+            if line and line["line_type"] in {"reader", "html"}:
+                line["audio_voice"] = voice
         return [line for line in lines if line and (line["content"] or line["line_type"] == "spacer")]
 
     def get_reading(self, field, abbreviated=False, translation="esv", text_only=False):
@@ -861,8 +865,13 @@ class ReadingModule(Module):
 
         text = self.remove_headings_if_needed(text)
 
+        voice = GenericDailyOfficeSerializer.reading_voice(text)
         text = GenericDailyOfficeSerializer.handle_html(
-            text, html=True, no_generate=True, id=f"{self.get_safe_name()}_ad0aad27-4e5d-5ce3-8947-2bef1e5a5586"
+            text,
+            html=True,
+            no_generate=True,
+            id=f"{self.get_safe_name()}_ad0aad27-4e5d-5ce3-8947-2bef1e5a5586",
+            voice=voice,
         )
 
         if text_only:
@@ -881,6 +890,9 @@ class ReadingModule(Module):
             Line(closing, "reader"),
             Line(closing_response, "congregation"),
         ]
+        for line in lines:
+            if line and line["line_type"] in {"reader", "html"}:
+                line["audio_voice"] = voice
         return [line for line in lines if line and (line["content"] or line["line_type"] == "spacer")]
 
     def get_mass_reading(self, number):
@@ -3058,6 +3070,18 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
     def get_modules(self, obj):
         modules = [module.json for module in obj.get_modules()]
         modules = [module for module in modules if module and module["lines"]]
+        if TTS_PROVIDER.name in {"elevenlabs", "gemini"}:
+            # Midday and Compline have short, plain-text Scripture modules.
+            for module in modules:
+                if module["name"] == "Scripture":
+                    reading_lines = [
+                        line
+                        for line in module["lines"]
+                        if line["line_type"] in {"leader", "leader_dialogue", "reader"}
+                    ]
+                    voice = self.reading_voice(" ".join(line["content"] for line in reading_lines))
+                    for line in reading_lines:
+                        line["audio_voice"] = voice
         return modules
 
     # Anglican pointing / breath marks used in the psalter and canticles. They
@@ -3233,11 +3257,11 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         return word_timing
 
     @staticmethod
-    def get_or_create_clip(content, line_type, kind="line", no_generate=False, raise_on_error=False):
+    def get_or_create_clip(content, line_type, kind="line", no_generate=False, raise_on_error=False, voice=None):
         """Isolate clip failures and report them without aborting office assembly."""
         try:
             return GenericDailyOfficeSerializer._get_or_create_clip(
-                content, line_type, kind, no_generate, raise_on_error=True
+                content, line_type, kind, no_generate, raise_on_error=True, voice=voice
             )
         except Exception as exc:
             try:
@@ -3255,7 +3279,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             return None, None
 
     @staticmethod
-    def _get_or_create_clip(content, line_type, kind="line", no_generate=False, raise_on_error=False):
+    def _get_or_create_clip(content, line_type, kind="line", no_generate=False, raise_on_error=False, voice=None):
         """Normalize -> hash -> reuse-or-generate a TTS clip; record it in the DB.
 
         Returns (file_url, media_relative_path) or (None, None) when the line is
@@ -3265,8 +3289,11 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         normalized = GenericDailyOfficeSerializer.normalize_tts_text(content)
         collector = AUDIO_CLIP_COLLECTOR.get()
         if collector is not None:
-            return collector(normalized, line_type, kind, no_generate=no_generate)
-        reusable_reader = GenericDailyOfficeSerializer.find_reusable_reader(normalized, line_type)
+            kwargs = {"no_generate": no_generate}
+            if voice:
+                kwargs["voice"] = voice
+            return collector(normalized, line_type, kind, **kwargs)
+        reusable_reader = None if voice else GenericDailyOfficeSerializer.find_reusable_reader(normalized, line_type)
         if reusable_reader:
             if not no_generate and not reusable_reader.word_timing and TTS_PROVIDER.name == "gemini":
                 from office.gemini_alignment import align_clip
@@ -3280,7 +3307,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             file_url = f"{audio_base_url()}{path}"
             return file_url, path
 
-        voice = TTS_PROVIDER.voice_for_text(line_type, normalized)
+        voice = voice or TTS_PROVIDER.voice_for_text(line_type, normalized)
         if not voice:
             return None, None
         key = GenericDailyOfficeSerializer.tts_clip_key(voice, normalized)
@@ -3337,7 +3364,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
     @staticmethod
     def get_line_audio_file(line, no_generate=False):
         return GenericDailyOfficeSerializer.get_or_create_clip(
-            line["content"], line["line_type"], kind="line", no_generate=no_generate
+            line["content"], line["line_type"], kind="line", no_generate=no_generate, voice=line.get("audio_voice")
         )
 
     @staticmethod
@@ -3379,7 +3406,34 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         return file_path
 
     @staticmethod
-    def handle_html(line, html=False, no_generate=False, id=None, module="Reading"):
+    def reading_voice(text):
+        """Assign one persistent reader to the complete passage per provider."""
+        if TTS_PROVIDER.name not in {"elevenlabs", "gemini"}:
+            return None
+        import hashlib
+        import fcntl
+        from pathlib import Path
+        from office.audio_text import reading_text
+
+        text = GenericDailyOfficeSerializer.normalize_tts_text(reading_text(text))
+        if not text.strip():
+            return None
+        key = hashlib.sha256(text.encode()).hexdigest()
+        path = Path(settings.MEDIA_ROOT) / TTS_PROVIDER.media_subdir / f"reading_{key}.voice.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with open(str(path) + ".lock", "a") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            if path.exists():
+                return json.loads(path.read_text())["voice"]
+            voice = TTS_PROVIDER.voice_for_text("reader", text)
+            if voice:
+                temporary = path.with_suffix(".part")
+                temporary.write_text(json.dumps({"voice": voice}))
+                os.replace(temporary, path)
+            return voice
+
+    @staticmethod
+    def handle_html(line, html=False, no_generate=False, id=None, module="Reading", voice=None):
         import re
         from office.audio_text import reading_text
 
@@ -3394,6 +3448,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         # Group readings by paragraph (not per-sentence) for a smoother, more
         # natural read. Split after each closing </p> and keep the delimiters so
         # the concatenated display HTML is preserved exactly.
+        voice = voice or GenericDailyOfficeSerializer.reading_voice(line)
         paragraphs = re.split(r"(?<=</p>)", line)
         for paragraph in paragraphs:
             if not paragraph.strip():
@@ -3404,7 +3459,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 lines.append(paragraph)
                 continue
             url, path = GenericDailyOfficeSerializer.get_or_create_clip(
-                text_without_verses, "reader", kind="reader", no_generate=no_generate
+                text_without_verses, "reader", kind="reader", no_generate=no_generate, voice=voice
             )
             if url:
                 uuid_match = re.search(r"/uploads/(?:[^/]+/)?([0-9a-fA-F-]+)\.mp3", url)
@@ -3673,6 +3728,11 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         # produce audio (rubrics, spacers, headings, ...) plus explicit
         # silence_before values, to be prepended to the next real track.
         pending_before = [0.0]
+        dialogue = None
+        if TTS_PROVIDER.name == "elevenlabs" and TTS_PROVIDER.model in {"eleven_v4", "eleven_v4_turbo"}:
+            from office.elevenlabs_dialogue import DialogueSession
+
+            dialogue = DialogueSession(TTS_PROVIDER)
 
         def line_silence(line, key):
             try:
@@ -3689,6 +3749,40 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             """
             if not group_buffer:
                 return
+            if dialogue is not None:
+                try:
+                    chunks = list(dialogue.chunks(group_buffer, self.normalize_tts_text))
+                except Exception as exc:
+                    try:
+                        bugsnag.notify(exc, severity="error", context="office_audio_dialogue")
+                    except Exception:
+                        logger.exception("Bugsnag dialogue reporting failed")
+                    dialogue.reset()
+                    chunks = []
+                for position, chunk in enumerate(chunks):
+                    path, timing = dialogue.clip(chunk)
+                    if path:
+                        tracks.append(
+                            {
+                                "line_id": chunk[0]["id"],
+                                "member_ids": list(dict.fromkeys(line["id"] for line in chunk)),
+                                "module": module_name,
+                                "text": " ".join(line["content"] for line in chunk),
+                                "url": f"{audio_base_url()}{path}",
+                                "path": path,
+                                "word_timing": timing,
+                                "silence_before": pending_before[0]
+                                + (line_silence(group_buffer[0], "silence_before") if position == 0 else 0),
+                                "silence_after": (
+                                    line_silence(group_buffer[-1], "silence_after")
+                                    if position == len(chunks) - 1
+                                    else 0
+                                ),
+                            }
+                        )
+                        pending_before[0] = 0
+                group_buffer.clear()
+                return
             # Join consecutive same-speaker lines with spaces (not newlines) and
             # collapse any internal line breaks so blocks like the confession are
             # synthesized as one flowing request instead of feeling chopped.
@@ -3702,7 +3796,9 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             # into the leading pad so it lands right before this clip.
             silence_before = pending_before[0] + line_silence(group_buffer[0], "silence_before")
             silence_after = line_silence(group_buffer[-1], "silence_after")
-            url, path = self.get_or_create_clip(merged_text, line_type, kind=kind)
+            url, path = self.get_or_create_clip(
+                merged_text, line_type, kind=kind, voice=group_buffer[0].get("audio_voice")
+            )
             if path:
                 # Associate each aligned word with the rendered source line.
                 # This preserves precise highlighting even when several
@@ -3756,10 +3852,13 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             group_buffer = []
             for i, line in enumerate(module["lines"]):
                 if line["line_type"] in ["heading"]:
-                    # A heading starts a new subsection; close any open group.
-                    flush_group(group_buffer, module["name"])
+                    # Dialogue retains context across headings within a module.
+                    if dialogue is None:
+                        flush_group(group_buffer, module["name"])
                     j = i
                     look_ahead_line = module["lines"][j + 1] if j + 1 < len(module["lines"]) else None
+                    if look_ahead_line is None:
+                        continue
                     while j + 1 < len(module["lines"]) and (
                         look_ahead_line["line_type"] not in spoken_types + ["html"]
                         or "iframe" in look_ahead_line["content"]
@@ -3781,8 +3880,12 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     continue
                 if line["line_type"] == "html":
                     flush_group(group_buffer, module["name"])
+                    if dialogue is not None:
+                        dialogue.reset()
                     temp_id = "_".join([line["id"].split("_")[0], line["id"].split("_")[-1]])
-                    html_tracks = self.handle_html(line["content"], id=temp_id, module=module["name"])
+                    html_tracks = self.handle_html(
+                        line["content"], id=temp_id, module=module["name"], voice=line.get("audio_voice")
+                    )
                     if html_tracks:
                         # Pad the first/last reading clip; fold in pending silence.
                         html_tracks[0]["silence_before"] = (
@@ -3799,7 +3902,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                         pending_before[0] += line_silence(line, "silence_before") + line_silence(line, "silence_after")
                 elif line["line_type"] in spoken_types:
                     role = TTS_PROVIDER.role_for_line_type(line["line_type"])
-                    same_role = (
+                    same_role = dialogue is not None or (
                         bool(group_buffer) and TTS_PROVIDER.role_for_line_type(group_buffer[0]["line_type"]) == role
                     )
                     # A line requesting silence before it starts a fresh clip so
@@ -3815,7 +3918,8 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     # Any other non-spoken line (rubric, spacer, citation, ...)
                     # separates speaker turns and gets its own natural pause. Its
                     # silence padding accrues to the next real track.
-                    flush_group(group_buffer, module["name"])
+                    if dialogue is None or line_silence(line, "silence_before") or line_silence(line, "silence_after"):
+                        flush_group(group_buffer, module["name"])
                     pending_before[0] += line_silence(line, "silence_before") + line_silence(line, "silence_after")
             flush_group(group_buffer, module["name"])
 

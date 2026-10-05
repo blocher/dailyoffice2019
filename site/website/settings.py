@@ -408,9 +408,8 @@ TTS_INSTRUCTIONS = env(
 ELEVENLABS_API_KEY = env("ELEVENLABS_API_KEY", default="")
 ELEVENLABS_TTS_MODEL = env("ELEVENLABS_TTS_MODEL", default="eleven_multilingual_v2")
 ELEVENLABS_TTS_SPEED = env.float("ELEVENLABS_TTS_SPEED", default=1.0)
-# v4 audio tags guide delivery; Words per minute is a cue, not an exact timing guarantee.
-ELEVENLABS_TTS_INSTRUCTIONS = env("ELEVENLABS_TTS_INSTRUCTIONS", default="calm, reverent, measured delivery")
-ELEVENLABS_TTS_WORDS_PER_MINUTE = env.int("ELEVENLABS_TTS_WORDS_PER_MINUTE", default=125)
+# Keep v4 delivery cues concise. Use ELEVENLABS_TTS_SPEED for pacing.
+ELEVENLABS_TTS_INSTRUCTIONS = env("ELEVENLABS_TTS_INSTRUCTIONS", default="[calm]")
 # Regular v4 automatically speaks standalone Amen as ah-MEN; empty disables it.
 ELEVENLABS_TTS_AMEN_IPA = env("ELEVENLABS_TTS_AMEN_IPA", default="ɑːˈmɛn")
 ELEVENLABS_TTS_VOICE_LEADER = env("ELEVENLABS_TTS_VOICE_LEADER", default="")

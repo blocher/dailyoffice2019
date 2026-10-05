@@ -8,12 +8,152 @@ from django.core.management import call_command
 from django.test import SimpleTestCase, TestCase, override_settings
 
 from office.api.views import index
-from office.api.views.tts import ElevenLabsTTSProvider
+from office.api.views.tts import ElevenLabsTTSProvider, GeminiTTSProvider
 from office.models import AudioClip, PronunciationOverride
+
+
+class ReadingVoiceTests(SimpleTestCase):
+    @override_settings(
+        ELEVENLABS_TTS_MODEL="eleven_v4",
+        ELEVENLABS_TTS_VOICES_READER=("reader-one", "reader-two"),
+        ELEVENLABS_PRONUNCIATION_DICTIONARY_ID="",
+        GEMINI_TTS_VOICES_READER=("Kore", "Charon"),
+    )
+    def test_complete_reading_keeps_one_voice_through_audio_assembly(self):
+        from types import SimpleNamespace
+        from office.elevenlabs_dialogue import DialogueSession
+
+        for provider in (ElevenLabsTTSProvider(), GeminiTTSProvider()):
+            with self.subTest(provider=provider.name), tempfile.TemporaryDirectory() as directory:
+                module = SimpleNamespace(
+                    office=SimpleNamespace(
+                        office_readings=SimpleNamespace(reading="Genesis 1:1-2", reading_testament="OT"),
+                        readings={"Genesis 1:1-2": SimpleNamespace(esv="<p>In the beginning.</p><p>The earth.</p>")},
+                    ),
+                    language="english",
+                    remove_headings_if_needed=lambda text: text,
+                    get_safe_name=lambda: "firstreading",
+                    audio=lambda *args: None,
+                    closing=index.ReadingModule.closing,
+                    closing_response=index.ReadingModule.closing_response,
+                )
+                serializer = index.GenericDailyOfficeSerializer()
+                voices = []
+
+                def clip(content, line_type, **kwargs):
+                    if line_type == "reader" and not kwargs.get("no_generate"):
+                        voices.append(kwargs.get("voice"))
+                    return "/uploads/11111111-1111-1111-1111-111111111111.mp3", "/uploads/reader.mp3"
+
+                def dialogue_clip(session, lines):
+                    voices.extend(line.get("audio_voice") for line in lines if line["line_type"] == "reader")
+                    return "/uploads/dialogue.mp3", []
+
+                with (
+                    override_settings(MEDIA_ROOT=directory),
+                    patch.object(index, "TTS_PROVIDER", provider),
+                    patch.object(serializer, "normalize_tts_text", side_effect=lambda text: text),
+                    patch.object(
+                        index.GenericDailyOfficeSerializer, "normalize_tts_text", side_effect=lambda text: text
+                    ),
+                    patch.object(index.GenericDailyOfficeSerializer, "get_or_create_clip", side_effect=clip),
+                    patch.object(index.GenericDailyOfficeSerializer, "get_clip_word_timing", return_value=[]),
+                    patch.object(DialogueSession, "clip", dialogue_clip),
+                    patch.object(index, "frame_tracks", side_effect=lambda office, tracks, *args: tracks),
+                    patch.object(serializer, "get_single_track", return_value=[]),
+                ):
+                    lines = index.ReadingModule.get_reading(module, "reading")
+                    for position, line in enumerate(lines):
+                        line["id"] = f"firstreading_{position}"
+                    with patch.object(
+                        serializer, "get_modules", return_value=[{"name": "First Reading", "lines": lines}]
+                    ):
+                        serializer.get_audio(SimpleNamespace(settings={}))
+                self.assertEqual(len(voices), 4)
+                self.assertNotIn(None, voices)
+                self.assertEqual(len(set(voices)), 1)
+
+    def test_explicit_reading_voice_bypasses_other_cached_readers(self):
+        with (
+            patch.object(index.GenericDailyOfficeSerializer, "normalize_tts_text", side_effect=lambda text: text),
+            patch.object(index.GenericDailyOfficeSerializer, "find_reusable_reader") as reusable,
+            patch.object(index.os.path, "isfile", return_value=False),
+            patch.object(index.TTS_PROVIDER, "voice_for_text") as choose_voice,
+        ):
+            _, path = index.GenericDailyOfficeSerializer._get_or_create_clip(
+                "The Word of the Lord.", "reader", voice="assigned-reader", no_generate=True
+            )
+            key = index.GenericDailyOfficeSerializer.tts_clip_key("assigned-reader", "The Word of the Lord.")
+        self.assertIn(str(key), path)
+        reusable.assert_not_called()
+        choose_voice.assert_not_called()
 
 
 @override_settings(ELEVENLABS_PRONUNCIATION_DICTIONARY_ID="", ELEVENLABS_PRONUNCIATION_DICTIONARY_VERSION_ID="")
 class ElevenLabsTTSProviderTests(SimpleTestCase):
+    @override_settings(ELEVENLABS_TTS_VOICES_READER=("reader-one", "reader-two"))
+    def test_reading_paragraphs_share_one_explicit_voice(self):
+        provider = ElevenLabsTTSProvider()
+        with (
+            patch.object(index, "TTS_PROVIDER", provider),
+            patch.object(index.GenericDailyOfficeSerializer, "get_or_create_clip", return_value=(None, None)) as clip,
+        ):
+            index.GenericDailyOfficeSerializer.handle_html(
+                "<p>First paragraph.</p><p>Second paragraph.</p>", voice="reader-two"
+            )
+        self.assertEqual(clip.call_count, 2)
+        self.assertTrue(all(call.kwargs["voice"] == "reader-two" for call in clip.call_args_list))
+
+    @override_settings(ELEVENLABS_TTS_VOICES_READER=("reader-one", "reader-two"))
+    def test_complete_reading_assigns_intro_body_and_closing_one_reader(self):
+        from types import SimpleNamespace
+
+        provider = ElevenLabsTTSProvider()
+        module = SimpleNamespace(
+            office=SimpleNamespace(
+                office_readings=SimpleNamespace(reading="Genesis 1:1-2", reading_testament="OT"),
+                readings={
+                    "Genesis 1:1-2": SimpleNamespace(esv="<p>In the beginning.</p><p>The earth was without form.</p>")
+                },
+            ),
+            language="english",
+            remove_headings_if_needed=lambda text: text,
+            get_safe_name=lambda: "firstreading",
+            audio=lambda *args: None,
+            closing=index.ReadingModule.closing,
+            closing_response=index.ReadingModule.closing_response,
+        )
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            override_settings(MEDIA_ROOT=directory),
+            patch.object(index, "TTS_PROVIDER", provider),
+            patch.object(index.GenericDailyOfficeSerializer, "normalize_tts_text", side_effect=lambda text: text),
+            patch.object(index.GenericDailyOfficeSerializer, "get_or_create_clip", return_value=(None, None)) as clip,
+        ):
+            lines = index.ReadingModule.get_reading(module, "reading")
+            assigned = {line["audio_voice"] for line in lines if line["line_type"] in {"reader", "html"}}
+            self.assertEqual(len(assigned), 1)
+            voice = assigned.pop()
+            self.assertTrue(all(call.kwargs["voice"] == voice for call in clip.call_args_list))
+            reader_lines = [line for line in lines if line["line_type"] == "reader"]
+            self.assertEqual(len(reader_lines), 2)
+            self.assertEqual(reader_lines[-1]["content"], "The Word of the Lord.")
+            self.assertNotIn("audio_voice", next(line for line in lines if line["line_type"] == "congregation"))
+
+    @override_settings(ELEVENLABS_TTS_VOICES_READER=("reader-one", "reader-two"))
+    def test_reading_assignment_varies_by_passage_and_survives_pool_changes(self):
+        provider = ElevenLabsTTSProvider()
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            override_settings(MEDIA_ROOT=directory),
+            patch.object(index, "TTS_PROVIDER", provider),
+            patch.object(index.GenericDailyOfficeSerializer, "normalize_tts_text", side_effect=lambda text: text),
+        ):
+            voices = [index.GenericDailyOfficeSerializer.reading_voice(f"Passage {i}") for i in range(20)]
+            self.assertEqual(set(voices), {"reader-one", "reader-two"})
+            with override_settings(ELEVENLABS_TTS_VOICES_READER=("different",)):
+                self.assertEqual(index.GenericDailyOfficeSerializer.reading_voice("Passage 0"), voices[0])
+
     def test_reader_reuse_rejects_previous_pacing_or_model(self):
         provider = ElevenLabsTTSProvider()
         stale = MagicMock(key="old-signature", voice="reader", file_path="clip.mp3")
@@ -44,7 +184,6 @@ class ElevenLabsTTSProviderTests(SimpleTestCase):
 
     @override_settings(
         ELEVENLABS_TTS_MODEL="eleven_v4",
-        ELEVENLABS_TTS_WORDS_PER_MINUTE=125,
         ELEVENLABS_TTS_INSTRUCTIONS="calm, reverent, measured delivery",
         ELEVENLABS_TTS_AMEN_IPA="ɑːˈmɛn",
     )
@@ -52,7 +191,7 @@ class ElevenLabsTTSProviderTests(SimpleTestCase):
         provider = ElevenLabsTTSProvider()
         original = "Amen, amen! Amend this. AMEN."
         submitted, positions = provider.prepare_text(original)
-        self.assertIn("125 words per minute", submitted)
+        self.assertTrue(submitted.startswith("[calm]\n"))
         self.assertEqual(submitted.count("/ɑːˈmɛn/"), 3)
         self.assertIn("Amend this", submitted)
         alignment = {
@@ -67,8 +206,6 @@ class ElevenLabsTTSProviderTests(SimpleTestCase):
         self.assertEqual(words[0]["start_time"], submitted.index("/ɑːˈmɛn/") / 10)
         self.assertAlmostEqual(words[0]["end_time"] - words[0]["start_time"], len("/ɑːˈmɛn/") / 10)
         signature = provider.cache_signature()
-        with override_settings(ELEVENLABS_TTS_WORDS_PER_MINUTE=70):
-            self.assertNotEqual(signature, provider.cache_signature())
         with override_settings(ELEVENLABS_TTS_AMEN_IPA="different"):
             self.assertNotEqual(signature, provider.cache_signature())
         alignment["characters"][0] = "?"

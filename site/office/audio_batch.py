@@ -181,21 +181,21 @@ def prepare(start, days=7, batch_size=50, progress=None):
     active = provider()
     clips, resolved = {}, {}
 
-    def collect(text, line_type, kind, no_generate=False):
+    def collect(text, line_type, kind, no_generate=False, voice=None):
         if no_generate:
             # HTML decoration asks for IDs for optional text, not synthesis.
-            voice = active.voice_for_text(line_type, text)
+            voice = voice or active.voice_for_text(line_type, text)
             if not voice:
                 return None, None
             key = SERIALIZER.tts_clip_key(voice, text)
             path = settings.MEDIA_URL + f"gemini/{key}.mp3"
             return f"{index.audio_base_url()}{path}", path
         role = active.role_for_line_type(line_type)
-        identity = (role, text)
+        identity = (role, text, voice)
         if identity in resolved:
             return resolved[identity]
-        reusable = SERIALIZER.find_reusable_reader(text, line_type)
-        voice = active.voice_for_text(line_type, text)
+        reusable = None if voice else SERIALIZER.find_reusable_reader(text, line_type)
+        voice = voice or active.voice_for_text(line_type, text)
         if not voice or not text.strip():
             return None, None
         key = str(SERIALIZER.tts_clip_key(voice, text))
