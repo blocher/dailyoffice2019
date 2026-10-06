@@ -8,10 +8,27 @@ import math
 import tempfile
 import time
 from pathlib import Path
+from email.utils import parsedate_to_datetime
 
 import bugsnag
 import requests
 from django.conf import settings
+
+
+class DialogueRequestError(RuntimeError):
+    """Report retry decisions without recording vendor bodies or request data."""
+
+    def __init__(self, status, attempts, reason, waited, retry_after):
+        message = f"ElevenLabs dialogue failed (HTTP {status})" if status else "ElevenLabs dialogue connection failed"
+        super().__init__(message)
+        self.retry_details = {
+            "http_status": status,
+            "attempts": attempts,
+            "retry_stop_reason": reason,
+            "retry_wait_seconds": waited,
+            "retry_after_seconds": retry_after if retry_after is None or math.isfinite(retry_after) else None,
+            "retry_after_exceeds_budget": retry_after is not None and retry_after > 30,
+        }
 
 
 class DialogueSession:
@@ -75,13 +92,76 @@ class DialogueSession:
                     exc,
                     severity="error",
                     context="office_audio_dialogue",
-                    metadata={"audio": {"provider": "elevenlabs", "lines": len(lines)}},
+                    metadata={
+                        "audio": {
+                            "provider": "elevenlabs",
+                            "lines": len(lines),
+                            **getattr(exc, "retry_details", {}),
+                        }
+                    },
                 )
             except Exception:
                 import logging
 
                 logging.getLogger(__name__).exception("Bugsnag dialogue reporting failed")
             return None, []
+
+    @staticmethod
+    def _retry_after(response):
+        """Accept RFC 9110 seconds or HTTP-date; never expose the raw header."""
+        value = response.headers.get("Retry-After")
+        if not isinstance(value, str) or not value.strip():
+            return None
+        value = value.strip()
+        try:
+            if value.isascii() and value.isdecimal():
+                return float(value)  # Overflow to infinity still means do not retry early.
+            else:
+                date = parsedate_to_datetime(value)
+                if date.tzinfo is None:
+                    return None
+                delay = max(0.0, date.timestamp() - time.time())
+            return delay if math.isfinite(delay) else None
+        except (TypeError, ValueError, OverflowError):
+            return None
+
+    def _request(self, payload, api_key):
+        """At most five attempts and 30 seconds of retry sleeps per clip.
+
+        If provider guidance cannot fit the sleep budget, stop instead of
+        shortening it and retrying before the provider permits. Request timeouts
+        remain separate from this sleep budget.
+        """
+        max_retries = min(max(self.provider.max_retries, 0), 4)
+        waited = 0
+        for attempt in range(max_retries + 1):
+            status, retry_after = None, None
+            try:
+                response = requests.post(
+                    "https://api.elevenlabs.io/v1/text-to-dialogue/with-timestamps",
+                    headers={"xi-api-key": api_key},
+                    json=payload,
+                    params={"output_format": "mp3_44100_128"},
+                    timeout=self.provider.timeout,
+                )
+                status = response.status_code
+                if status < 400:
+                    return response
+                retry_after = self._retry_after(response)
+            except (requests.ConnectionError, requests.Timeout):
+                pass
+            reason = None
+            if status is not None and status not in self.provider._RETRY_STATUSES:
+                reason = "non_retryable_status"
+            elif attempt == max_retries:
+                reason = "attempts_exhausted"
+            delay = max(2**attempt, retry_after or 0)
+            if reason is None and waited + delay > 30:
+                reason = "sleep_budget_exceeded"
+            if reason:
+                raise DialogueRequestError(status, attempt + 1, reason, waited, retry_after) from None
+            time.sleep(delay)
+            waited += delay
 
     def _clip(self, lines):
         turns = []
@@ -121,28 +201,7 @@ class DialogueSession:
                 recent = [rid for rid, created in self.previous if time.time() - created < 7200]
                 if recent:
                     payload["previous_request_ids"] = recent[-3:]
-                for attempt in range(self.provider.max_retries + 1):
-                    try:
-                        response = requests.post(
-                            "https://api.elevenlabs.io/v1/text-to-dialogue/with-timestamps",
-                            headers={"xi-api-key": api_key},
-                            json=payload,
-                            params={"output_format": "mp3_44100_128"},
-                            timeout=self.provider.timeout,
-                        )
-                        if response.status_code >= 400:
-                            if (
-                                response.status_code in self.provider._RETRY_STATUSES
-                                and attempt < self.provider.max_retries
-                            ):
-                                time.sleep(min(2**attempt, 30))
-                                continue
-                            raise RuntimeError(f"ElevenLabs dialogue failed (HTTP {response.status_code})")
-                        break
-                    except (requests.ConnectionError, requests.Timeout):
-                        if attempt == self.provider.max_retries:
-                            raise RuntimeError("ElevenLabs dialogue connection failed") from None
-                        time.sleep(min(2**attempt, 30))
+                response = self._request(payload, api_key)
                 data = response.json()
                 audio = base64.b64decode(data["audio_base64"], validate=True)
                 if not audio:
