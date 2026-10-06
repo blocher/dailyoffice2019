@@ -1,5 +1,8 @@
 import base64
 import tempfile
+from pathlib import Path
+
+import requests
 from unittest.mock import Mock, patch
 
 from django.test import SimpleTestCase, override_settings
@@ -74,6 +77,122 @@ class DialogueTests(SimpleTestCase):
             self.assertEqual(session.clip(self.lines("Failure")), (None, []))
             notify.assert_called_once()
             self.assertEqual(session.previous, [])
+
+    def test_retry_after_seconds_and_http_date_before_success(self):
+        for header in ("7", "Thu, 01 Jan 1970 00:16:47 GMT"):
+            with (
+                self.subTest(header=header),
+                tempfile.TemporaryDirectory() as directory,
+                override_settings(MEDIA_ROOT=directory, ELEVENLABS_TTS_MAX_RETRIES=4),
+                patch("office.elevenlabs_dialogue.time.time", return_value=1000),
+                patch("office.elevenlabs_dialogue.time.sleep") as sleep,
+                patch(
+                    "office.elevenlabs_dialogue.requests.post",
+                    side_effect=[Mock(status_code=429, headers={"Retry-After": header}), self.response()],
+                ) as post,
+                patch("office.elevenlabs_dialogue.bugsnag.notify") as notify,
+            ):
+                session = DialogueSession(ElevenLabsTTSProvider())
+                path, timing = session.clip(self.lines())
+                self.assertIsNotNone(path)
+                self.assertEqual(len(list(Path(directory).rglob("*.mp3"))), 1)
+                self.assertEqual([word["id"] for word in timing], ["one", "two"])
+                sleep.assert_called_once_with(7)
+                self.assertEqual(post.call_count, 2)
+                self.assertEqual(session.previous, [("previous", 1000)])
+                notify.assert_not_called()
+
+    def test_missing_invalid_or_past_retry_after_uses_backoff(self):
+        for header in (None, "", "bad", "-1", "1.5", "NaN", "Infinity", "Thu, 01 Jan 1970 00:00:00 GMT", "0"):
+            with (
+                self.subTest(header=header),
+                override_settings(ELEVENLABS_TTS_MAX_RETRIES=4),
+                patch("office.elevenlabs_dialogue.time.sleep") as sleep,
+                patch(
+                    "office.elevenlabs_dialogue.requests.post",
+                    side_effect=[Mock(status_code=429, headers={"Retry-After": header}), self.response()],
+                ) as post,
+            ):
+                session = DialogueSession(ElevenLabsTTSProvider())
+                session._request({}, "test")
+                sleep.assert_called_once_with(1)
+                self.assertEqual(post.call_count, 2)
+
+    def test_retry_sleep_budget_does_not_shorten_provider_guidance(self):
+        for headers, attempts, waited in ((["31"], 1, 0), (["9" * 400], 1, 0), (["20", "20"], 2, 20)):
+            with (
+                self.subTest(headers=headers),
+                tempfile.TemporaryDirectory() as directory,
+                override_settings(MEDIA_ROOT=directory, ELEVENLABS_TTS_MAX_RETRIES=4),
+                patch("office.elevenlabs_dialogue.time.sleep") as sleep,
+                patch(
+                    "office.elevenlabs_dialogue.requests.post",
+                    side_effect=[
+                        Mock(status_code=429, headers={"Retry-After": header}, text="private vendor body")
+                        for header in headers
+                    ],
+                ) as post,
+                patch("office.elevenlabs_dialogue.bugsnag.notify") as notify,
+            ):
+                session = DialogueSession(ElevenLabsTTSProvider())
+                session.previous = [("private-request-id", 9999999999)]
+                self.assertEqual(session.clip(self.lines()), (None, []))
+                self.assertEqual(post.call_count, attempts)
+                self.assertEqual(session.previous, [])
+                self.assertEqual(list(Path(directory).rglob("*.mp3")), [])
+                self.assertEqual(list(Path(directory).rglob("*.json")), [])
+                self.assertEqual(sum(call.args[0] for call in sleep.call_args_list), waited)
+                details = notify.call_args.kwargs["metadata"]["audio"]
+                self.assertEqual(details["http_status"], 429)
+                self.assertEqual(details["attempts"], attempts)
+                self.assertEqual(details["retry_stop_reason"], "sleep_budget_exceeded")
+                self.assertEqual(details["retry_wait_seconds"], waited)
+                report = str(notify.call_args)
+                for private in ("private vendor body", "private-request-id", "Hello", "Amen", "xi-api-key"):
+                    self.assertNotIn(private, report)
+
+    def test_retry_attempt_limit_and_exhaustion_diagnostics(self):
+        for configured, attempts in ((0, 1), (2, 3), (100, 5), (-1, 1)):
+            with (
+                self.subTest(configured=configured),
+                tempfile.TemporaryDirectory() as directory,
+                override_settings(MEDIA_ROOT=directory, ELEVENLABS_TTS_MAX_RETRIES=configured),
+                patch("office.elevenlabs_dialogue.time.sleep") as sleep,
+                patch(
+                    "office.elevenlabs_dialogue.requests.post", return_value=Mock(status_code=429, headers={})
+                ) as post,
+                patch("office.elevenlabs_dialogue.bugsnag.notify") as notify,
+            ):
+                self.assertEqual(DialogueSession(ElevenLabsTTSProvider()).clip(self.lines()), (None, []))
+                self.assertEqual(post.call_count, attempts)
+                self.assertEqual([call.args[0] for call in sleep.call_args_list], [1, 2, 4, 8][: attempts - 1])
+                details = notify.call_args.kwargs["metadata"]["audio"]
+                self.assertEqual(details["attempts"], attempts)
+                self.assertEqual(details["retry_stop_reason"], "attempts_exhausted")
+
+    def test_transport_and_other_http_failures_keep_retry_policy(self):
+        for failure, attempts in (
+            (requests.Timeout("private"), 3),
+            (requests.ConnectionError("private"), 3),
+            (Mock(status_code=503, headers={}), 3),
+            (Mock(status_code=400, headers={}), 1),
+        ):
+            with (
+                self.subTest(failure=failure),
+                tempfile.TemporaryDirectory() as directory,
+                override_settings(MEDIA_ROOT=directory, ELEVENLABS_TTS_MAX_RETRIES=2),
+                patch("office.elevenlabs_dialogue.time.sleep") as sleep,
+                patch(
+                    "office.elevenlabs_dialogue.requests.post",
+                    side_effect=failure if isinstance(failure, Exception) else None,
+                    return_value=failure,
+                ) as post,
+                patch("office.elevenlabs_dialogue.bugsnag.notify") as notify,
+            ):
+                self.assertEqual(DialogueSession(ElevenLabsTTSProvider()).clip(self.lines()), (None, []))
+                self.assertEqual(post.call_count, attempts)
+                self.assertEqual(sleep.call_count, attempts - 1)
+                self.assertNotIn("private", str(notify.call_args))
 
     def test_serializer_groups_dialogue_by_module(self):
         from office.api.views import index
