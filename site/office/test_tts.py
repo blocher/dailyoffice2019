@@ -4,12 +4,166 @@ import tempfile
 from io import StringIO
 from unittest.mock import MagicMock, patch
 
+import requests
+
 from django.core.management import call_command
 from django.test import SimpleTestCase, TestCase, override_settings
 
 from office.api.views import index
-from office.api.views.tts import ElevenLabsTTSProvider, GeminiTTSProvider
+from office.api.views.tts import ElevenLabsRequestError, ElevenLabsTTSProvider, GeminiTTSProvider
 from office.models import AudioClip, PronunciationOverride
+
+
+@override_settings(ELEVENLABS_API_KEY="synthetic-key", ELEVENLABS_TTS_MAX_RETRIES=4)
+class ElevenLabsRetryTests(SimpleTestCase):
+    @staticmethod
+    def failure(status=429, header=None):
+        response = requests.Response()
+        response.status_code = status
+        response.url = "https://example.invalid/private-voice"
+        response._content = b"private vendor body"
+        if header is not None:
+            response.headers["Retry-After"] = header
+        return response
+
+    @staticmethod
+    def success():
+        response = MagicMock()
+        response.json.return_value = {"audio_base64": base64.b64encode(b"synthetic mp3").decode()}
+        return response
+
+    def test_seconds_and_http_date_preserve_audio_and_alignment(self):
+        for header in (
+            "7",
+            "Thu, 01 Jan 1970 00:16:47 GMT",
+            "Thursday, 01-Jan-70 00:16:47 GMT",
+            "Thu Jan  1 00:16:47 1970",
+        ):
+            with (
+                self.subTest(header=header),
+                tempfile.TemporaryDirectory() as directory,
+                patch("office.api.views.tts.time.time", return_value=1000),
+                patch("office.api.views.tts.time.sleep") as sleep,
+                patch(
+                    "office.api.views.tts.requests.post", side_effect=[self.failure(header=header), self.success()]
+                ) as post,
+                patch.object(
+                    ElevenLabsTTSProvider, "original_word_alignment", return_value=[{"word": "Peace"}]
+                ) as alignment,
+            ):
+                path = os.path.join(directory, "clip.mp3")
+                self.assertEqual(ElevenLabsTTSProvider().synthesize("reader", "Peace", path), [{"word": "Peace"}])
+                with open(path, "rb") as handle:
+                    self.assertEqual(handle.read(), b"synthetic mp3")
+                self.assertEqual(os.listdir(directory), ["clip.mp3"])
+                alignment.assert_called_once()
+                sleep.assert_called_once_with(7)
+                self.assertEqual(post.call_count, 2)
+                self.assertIn("/text-to-speech/reader/with-timestamps", post.call_args.args[0])
+
+    def test_invalid_missing_past_or_zero_guidance_uses_backoff(self):
+        for header in (
+            None,
+            "",
+            "bad",
+            "-1",
+            "1.5",
+            "NaN",
+            "Infinity",
+            "0",
+            "Thu, 01 Jan 1970 00:00:00 GMT",
+            "Thu, 01 Jan 1970 00:00:00",
+        ):
+            with (
+                self.subTest(header=header),
+                tempfile.TemporaryDirectory() as directory,
+                patch("office.api.views.tts.time.sleep") as sleep,
+                patch("office.api.views.tts.requests.post", side_effect=[self.failure(header=header), self.success()]),
+            ):
+                ElevenLabsTTSProvider().synthesize("reader", "Peace", os.path.join(directory, "clip.mp3"))
+                sleep.assert_called_once_with(1)
+
+    def test_provider_guidance_is_never_shortened_to_fit_sleep_budget(self):
+        for headers, attempts, waited in ((["31"], 1, 0), (["9" * 400], 1, 0), (["20", "20"], 2, 20)):
+            with (
+                self.subTest(headers=headers),
+                tempfile.TemporaryDirectory() as directory,
+                patch("office.api.views.tts.time.sleep") as sleep,
+                patch(
+                    "office.api.views.tts.requests.post", side_effect=[self.failure(header=h) for h in headers]
+                ) as post,
+            ):
+                with self.assertRaises(ElevenLabsRequestError) as error:
+                    ElevenLabsTTSProvider().synthesize("reader", "Peace", os.path.join(directory, "clip.mp3"))
+                self.assertEqual(os.listdir(directory), [])
+                self.assertEqual(post.call_count, attempts)
+                self.assertEqual(sum(call.args[0] for call in sleep.call_args_list), waited)
+                self.assertEqual(error.exception.retry_details["retry_stop_reason"], "sleep_budget_exceeded")
+
+    def test_exact_sleep_budget_can_succeed(self):
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            patch("office.api.views.tts.time.sleep") as sleep,
+            patch("office.api.views.tts.requests.post", side_effect=[self.failure(header="30"), self.success()]),
+        ):
+            ElevenLabsTTSProvider().synthesize("reader", "Peace", os.path.join(directory, "clip.mp3"))
+            sleep.assert_called_once_with(30)
+
+    def test_attempt_limits_and_sanitized_clip_diagnostics_without_cache(self):
+        for configured, attempts in ((-1, 1), (0, 1), (2, 3), (100, 5)):
+            with (
+                self.subTest(configured=configured),
+                tempfile.TemporaryDirectory() as directory,
+                override_settings(ELEVENLABS_TTS_MAX_RETRIES=configured),
+                patch("office.api.views.tts.time.sleep") as sleep,
+                patch("office.api.views.tts.requests.post", return_value=self.failure()) as post,
+                patch.object(index, "TTS_PROVIDER", ElevenLabsTTSProvider()),
+                patch.object(
+                    index.GenericDailyOfficeSerializer,
+                    "_get_or_create_clip",
+                    side_effect=lambda *a, **kw: ElevenLabsTTSProvider().synthesize(
+                        "private-voice", "private transcript", os.path.join(directory, "clip.mp3")
+                    ),
+                ),
+                patch.object(index.bugsnag, "notify") as notify,
+            ):
+                self.assertEqual(
+                    index.GenericDailyOfficeSerializer.get_or_create_clip("private transcript", "reader"), (None, None)
+                )
+                self.assertEqual(os.listdir(directory), [])
+                self.assertEqual(post.call_count, attempts)
+                self.assertEqual([call.args[0] for call in sleep.call_args_list], [1, 2, 4, 8][: attempts - 1])
+                details = notify.call_args.kwargs["metadata"]["audio"]
+                self.assertEqual(details["attempts"], attempts)
+                self.assertEqual(details["http_status"], 429)
+                self.assertEqual(details["retry_stop_reason"], "attempts_exhausted")
+                for private in ("private-voice", "private transcript", "private vendor body", "synthetic-key"):
+                    self.assertNotIn(private, str(notify.call_args))
+
+    def test_transport_and_http_failures_preserve_retry_classification(self):
+        for failure, attempts in (
+            (requests.Timeout("private"), 3),
+            (requests.ConnectionError("private"), 3),
+            (self.failure(503), 3),
+            (self.failure(400, "30"), 1),
+        ):
+            with (
+                self.subTest(failure=failure),
+                tempfile.TemporaryDirectory() as directory,
+                override_settings(ELEVENLABS_TTS_MAX_RETRIES=2),
+                patch("office.api.views.tts.time.sleep") as sleep,
+                patch(
+                    "office.api.views.tts.requests.post",
+                    side_effect=failure if isinstance(failure, Exception) else None,
+                    return_value=failure,
+                ) as post,
+            ):
+                with self.assertRaises(ElevenLabsRequestError) as error:
+                    ElevenLabsTTSProvider().synthesize("reader", "Peace", os.path.join(directory, "clip.mp3"))
+                self.assertEqual(post.call_count, attempts)
+                self.assertEqual(sleep.call_count, attempts - 1)
+                self.assertEqual(os.listdir(directory), [])
+                self.assertNotIn("private", str(error.exception))
 
 
 class ReadingVoiceTests(SimpleTestCase):

@@ -3269,7 +3269,14 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     exc,
                     context="office_audio_clip",
                     severity="error",
-                    metadata={"audio": {"provider": TTS_PROVIDER.name, "kind": kind, "line_type": line_type}},
+                    metadata={
+                        "audio": {
+                            "provider": TTS_PROVIDER.name,
+                            "kind": kind,
+                            "line_type": line_type,
+                            **getattr(exc, "retry_details", {}),
+                        }
+                    },
                 )
             except Exception:
                 logger.exception("Bugsnag notification failed for an audio clip")

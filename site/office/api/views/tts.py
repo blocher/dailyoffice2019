@@ -17,12 +17,15 @@ import base64
 import binascii
 import hashlib
 import logging
+import math
 import os
 import random
 import re
 import time
 import subprocess
 import tempfile
+from email.utils import parsedate_to_datetime
+from datetime import timezone
 
 import requests
 from django.conf import settings
@@ -30,6 +33,21 @@ from django.conf import settings
 from office.voice_style import GEMINI_PRAYER_STYLE
 
 logger = logging.getLogger(__name__)
+
+
+class ElevenLabsRequestError(RuntimeError):
+    """Safe retry diagnostics without vendor bodies, URLs or request data."""
+
+    def __init__(self, status, attempts, reason, waited, retry_after):
+        message = f"ElevenLabs TTS failed (HTTP {status})" if status else "ElevenLabs TTS connection failed"
+        super().__init__(message)
+        self.retry_details = {
+            "http_status": status,
+            "attempts": attempts,
+            "retry_stop_reason": reason,
+            "retry_wait_seconds": waited,
+            "retry_after_seconds": retry_after if retry_after is None or math.isfinite(retry_after) else None,
+        }
 
 
 class BaseTTSProvider:
@@ -354,6 +372,27 @@ class ElevenLabsTTSProvider(BaseTTSProvider):
         digest = hashlib.sha256(text.encode("utf-8")).digest()
         return readers[int.from_bytes(digest[:8], "big") % len(readers)]
 
+    @staticmethod
+    def _retry_after(response):
+        """Parse seconds or an HTTP-date without exposing the raw header."""
+        value = response.headers.get("Retry-After") if response is not None else None
+        if not isinstance(value, str) or not value.strip():
+            return None
+        value = value.strip()
+        try:
+            if value.isascii() and value.isdecimal():
+                return float(value)  # Infinity still means do not retry early.
+            date = parsedate_to_datetime(value)
+            if date.tzinfo is None:
+                # The obsolete asctime HTTP-date has no zone but implies GMT.
+                if not re.fullmatch(r"[A-Za-z]{3} [A-Za-z]{3} [ 0-9][0-9] [0-9]{2}:[0-9]{2}:[0-9]{2} [0-9]{4}", value):
+                    return None
+                date = date.replace(tzinfo=timezone.utc)
+            delay = max(0.0, date.timestamp() - time.time())
+            return delay if math.isfinite(delay) else None
+        except (TypeError, ValueError, OverflowError):
+            return None
+
     def synthesize(self, voice, text, file_path):
         api_key = getattr(settings, "ELEVENLABS_API_KEY", "")
         if not api_key:
@@ -375,8 +414,12 @@ class ElevenLabsTTSProvider(BaseTTSProvider):
             "xi-api-key": api_key,
             "Content-Type": "application/json",
         }
-        max_attempts = max(1, self.max_retries + 1)
+        # Bound retry sleeps separately from request timeouts. Never shorten
+        # provider guidance to fit the budget; fail the clip instead.
+        max_attempts = min(5, max(1, self.max_retries + 1))
+        waited = 0
         for attempt in range(1, max_attempts + 1):
+            status, retry_after = None, None
             try:
                 response = requests.post(
                     self.ENDPOINT.format(voice_id=voice),
@@ -401,20 +444,25 @@ class ElevenLabsTTSProvider(BaseTTSProvider):
                 return self.original_word_alignment(alignment, text, submitted, positions)
             except requests.HTTPError as exc:
                 status = exc.response.status_code if exc.response is not None else None
-                if status not in self._RETRY_STATUSES or attempt >= max_attempts:
-                    raise
+                retry_after = self._retry_after(exc.response)
+                if status not in self._RETRY_STATUSES:
+                    raise ElevenLabsRequestError(
+                        status, attempt, "non_retryable_status", waited, retry_after
+                    ) from None
             except (requests.ConnectionError, requests.Timeout):
-                if attempt >= max_attempts:
-                    raise
+                pass
 
-            delay = min(2 ** (attempt - 1), 30)
-            logger.warning(
-                "ElevenLabs TTS retry (attempt %d/%d) in %ds",
-                attempt,
-                max_attempts,
-                delay,
-            )
+            delay = max(2 ** (attempt - 1), retry_after or 0)
+            reason = None
+            if attempt == max_attempts:
+                reason = "attempts_exhausted"
+            elif waited + delay > 30:
+                reason = "sleep_budget_exceeded"
+            if reason:
+                raise ElevenLabsRequestError(status, attempt, reason, waited, retry_after) from None
+            logger.warning("ElevenLabs TTS retry (attempt %d/%d) in %ss", attempt, max_attempts, delay)
             time.sleep(delay)
+            waited += delay
 
         return []
 
