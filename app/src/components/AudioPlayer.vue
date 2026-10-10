@@ -143,7 +143,7 @@
               </div>
             </div>
 
-            <div v-if="trackSegments.length" class="utility-controls">
+            <div class="utility-controls">
               <el-select
                 v-model="playbackSpeed"
                 class="speed-selector"
@@ -177,6 +177,18 @@
                   <span class="seeking-text">Jumping…</span>
                 </div>
               </div>
+              <label class="highlight-control flex min-w-0 items-center gap-2">
+                <span>Highlight</span>
+                <select
+                  :value="highlightMode"
+                  class="min-h-11 min-w-0 rounded-xl border px-2 text-base focus-visible:outline-2 focus-visible:outline-offset-2"
+                  @change="changeHighlightMode($event.target.value)"
+                >
+                  <option value="word">Word by word</option>
+                  <option value="sentence">Sentence by sentence</option>
+                  <option value="off">Off</option>
+                </select>
+              </label>
               <button
                 class="scroll-control"
                 :class="{ 'scroll-control--active': enableScrolling }"
@@ -201,6 +213,8 @@
 
 <script>
 import Loading from '@/components/Loading.vue';
+import { DynamicStorage } from '@/helpers/storage';
+
 import {
   faBackwardStep,
   faChevronDown,
@@ -212,6 +226,9 @@ import {
   faVolumeMute,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
+
+const HIGHLIGHT_STORAGE_KEY = 'audioHighlightMode';
+const highlightModes = ['word', 'sentence', 'off'];
 
 export default {
   name: 'AudioPlayer',
@@ -254,6 +271,8 @@ export default {
       wordSegments: [],
       activeWordIndex: -1,
       highlightSegments: [],
+      highlightMode: 'word',
+      highlightModeChanged: false,
       lastFollowScrollAt: -Infinity,
       loading: true,
       audioElement: null,
@@ -289,6 +308,10 @@ export default {
     };
   },
   mounted() {
+    DynamicStorage.getItem(HIGHLIGHT_STORAGE_KEY).then((value) => {
+      if (this.destroyed || this.highlightModeChanged) return;
+      this.highlightMode = highlightModes.includes(value) ? value : 'word';
+    });
     // Check if mobile on mount
     this.checkMobile();
     window.addEventListener('resize', this.checkMobile);
@@ -879,7 +902,23 @@ export default {
       });
       this.prepareHighlightSegments();
     },
+    changeHighlightMode(value) {
+      this.highlightModeChanged = true;
+      this.highlightMode = highlightModes.includes(value) ? value : 'word';
+      // Storage may be unavailable; playback and the current choice still work.
+      DynamicStorage.setItem(HIGHLIGHT_STORAGE_KEY, this.highlightMode).catch(
+        () => {}
+      );
+    },
     prepareHighlightSegments() {
+      this.clearActiveWord();
+      document
+        .querySelectorAll('[data-audio-highlight-index]')
+        .forEach((element) => {
+          element.removeAttribute('data-audio-highlight-index');
+          element.classList.remove('audio-line');
+          element.removeAttribute('aria-current');
+        });
       this.highlightSegments = [];
       const byLine = new Map();
       this.wordSegments.forEach((word, index) => {
@@ -927,6 +966,7 @@ export default {
         // ElevenLabs supplies direct character timestamps. Trace each measured
         // word instead of grouping these reliable anchors into a sentence.
         if (
+          this.highlightMode !== 'sentence' &&
           words.every(
             (word) => word.provider === 'elevenlabs' && !word.estimated
           )
@@ -950,14 +990,20 @@ export default {
         }
         const text = container.textContent;
         const isLongReading =
-          words.some((word) => word.speaker === 'reader') && text.length > 180;
+          this.highlightMode === 'sentence' ||
+          (words.some((word) => word.speaker === 'reader') &&
+            text.length > 180);
+        const sentences = isLongReading
+          ? Array.from(
+              new Intl.Segmenter('en', { granularity: 'sentence' }).segment(
+                text
+              )
+            )
+          : [];
         if (
           isLongReading &&
           !container.querySelector('[data-audio-sentence]')
         ) {
-          const sentences = Array.from(
-            new Intl.Segmenter('en', { granularity: 'sentence' }).segment(text)
-          );
           const walker = document.createTreeWalker(
             container,
             window.NodeFilter.SHOW_TEXT
@@ -997,13 +1043,33 @@ export default {
           const element = document.querySelector(
             `[data-audio-word-index='${word.index}']`
           );
-          const sentence = element?.querySelector('[data-audio-sentence]')
-            ?.dataset.audioSentence;
+          const sentence = (
+            element?.closest('[data-audio-sentence]') ||
+            element?.querySelector('[data-audio-sentence]')
+          )?.dataset.audioSentence;
           const key = isLongReading ? sentence : 'line';
           if (key === undefined) return;
           if (!groups.has(key)) groups.set(key, []);
           groups.get(key).push(word);
         });
+        // Without word anchors, retain the existing clip estimate. Sentence
+        // boundaries divide that estimate by text length, never precise words.
+        if (isLongReading && words.every((word) => word.estimated)) {
+          const start = words[0].start_time;
+          const duration = words[words.length - 1].end_time - start;
+          sentences.forEach((sentence, index) => {
+            groups.set(String(index), [
+              {
+                estimated: true,
+                start_time: start + (duration * sentence.index) / text.length,
+                end_time:
+                  start +
+                  (duration * (sentence.index + sentence.segment.length)) /
+                    text.length,
+              },
+            ]);
+          });
+        }
         groups.forEach((anchors, key) => {
           const index = this.highlightSegments.length;
           // Highlight inline content so hanging indents follow each rendered
@@ -1059,7 +1125,9 @@ export default {
     },
     updateActiveWord(time) {
       const nextIndex = this.activeWordAt(time);
-      if (nextIndex !== this.activeWordIndex) {
+      if (this.highlightMode === 'off') {
+        if (this.activeWordIndex >= 0) this.clearActiveWord();
+      } else if (nextIndex !== this.activeWordIndex) {
         this.clearActiveWord();
         if (nextIndex >= 0) {
           this.activeWordIndex = nextIndex;
@@ -1202,6 +1270,11 @@ export default {
     },
   },
   watch: {
+    highlightMode() {
+      this.prepareHighlightSegments();
+      this.updateActiveWord(this.audioElement?.currentTime ?? this.currentTime);
+      this.$nextTick(() => this.emitVisibility());
+    },
     isPlaying(newVal) {
       // Auto-expand when audio starts playing (mobile only)
       if (newVal && !this.isExpanded && this.isMobile) {
@@ -1989,6 +2062,28 @@ button,
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
+  flex-wrap: wrap;
+}
+
+.highlight-control {
+  color: var(--color-text, var(--font-color));
+}
+
+.highlight-control select {
+  background: var(--color-bg);
+  color: var(--color-text, var(--font-color));
+  border-color: color-mix(
+    in srgb,
+    var(--color-text, var(--font-color)) 35%,
+    transparent
+  );
+  outline-color: var(--accent-color);
+  max-width: 100%;
+}
+
+.highlight-control select:focus-visible {
+  outline: 2px solid var(--accent-color) !important;
+  outline-offset: 2px;
 }
 
 .utility-controls .speed-selector {
@@ -2150,6 +2245,17 @@ button,
     display: grid;
     grid-template-columns: 72px minmax(0, 1fr) auto;
     width: 100%;
+  }
+
+  .highlight-control {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: space-between;
+  }
+
+  .highlight-control select {
+    flex: 1;
+    max-width: 230px;
   }
 
   .utility-controls .speed-selector {

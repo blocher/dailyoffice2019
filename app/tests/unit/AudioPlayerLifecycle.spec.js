@@ -2,6 +2,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { shallowMount } from '@vue/test-utils';
 import AudioPlayer from '@/components/AudioPlayer.vue';
 
+vi.mock('@/helpers/storage', () => ({
+  DynamicStorage: {
+    getItem: vi.fn().mockResolvedValue(null),
+    setItem: vi.fn().mockResolvedValue(),
+  },
+}));
+
 class FakeAudio extends window.EventTarget {
   constructor() {
     super();
@@ -89,6 +96,36 @@ afterEach(() => {
 });
 
 describe('AudioPlayer playback lifecycle', () => {
+  it.each([true, false])(
+    'preserves media position and lifecycle when playing=%s during mode changes',
+    async (playing) => {
+      const vm = mountPlayer();
+      audio.currentTime = 307;
+      if (playing) {
+        vm.startAudio();
+        audio.paused = false;
+        audio.emit('playing');
+      } else {
+        audio.emit('pause');
+      }
+      const plays = audio.play.mock.calls.length;
+      const pauses = audio.pause.mock.calls.length;
+      const loads = audio.load.mock.calls.length;
+      for (const mode of ['sentence', 'off', 'word', 'off', 'sentence']) {
+        vm.changeHighlightMode(mode);
+        await vm.$nextTick();
+        expect(audio.currentTime).toBe(307);
+        expect(vm.isPlaying).toBe(playing);
+        expect(audio.play).toHaveBeenCalledTimes(plays);
+        expect(audio.pause).toHaveBeenCalledTimes(pauses);
+        expect(audio.load).toHaveBeenCalledTimes(loads);
+      }
+      vm.seekTo(100);
+      expect(audio.currentTime).toBe(100);
+      expect(vm.highlightMode).toBe('sentence');
+    }
+  );
+
   it('sets preload and waits for real playback state', () => {
     const vm = mountPlayer();
     expect(audio.preload).toBe('auto');
