@@ -8,6 +8,7 @@ from unittest.mock import MagicMock, patch
 
 from django.core.management import call_command
 from django.test import SimpleTestCase, TestCase, override_settings
+from django.urls import Resolver404, resolve
 
 from office.management.commands.cleanup_full_audio_files import Command as CleanupFullAudioCommand
 from office.models import Scripture
@@ -363,3 +364,13 @@ class EmbeddedGreatLitanyTests(SimpleTestCase):
                     self.assertEqual(texts[0], texts[1])
                     self.assertIn("A Prayer for Mission", texts[1])
                     self.assertIn("Extra", texts[1])
+
+
+class DebugToolbarURLTests(SimpleTestCase):
+    @override_settings(DEBUG=True)
+    def test_debug_toolbar_routes_are_absent_when_app_is_excluded_from_tests(self):
+        from django.conf import settings
+
+        self.assertNotIn("debug_toolbar", settings.INSTALLED_APPS)
+        with self.assertRaises(Resolver404):
+            resolve("/__debug__/history_sidebar/")

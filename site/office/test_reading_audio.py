@@ -190,6 +190,9 @@ class ReadingAudioCompletenessTests(SimpleTestCase):
                 with (
                     self.subTest(day=day, translation=translation),
                     patch.object(index, "TTS_PROVIDER", ElevenLabsTTSProvider()),
+                    patch(
+                        "office.elevenlabs_dialogue.DialogueSession.clip", return_value=(self.clip[1], [])
+                    ) as dialogue_clips,
                     patch.object(
                         index.GenericDailyOfficeSerializer, "get_or_create_clip", return_value=self.clip
                     ) as clips,
@@ -207,6 +210,16 @@ class ReadingAudioCompletenessTests(SimpleTestCase):
                 prefix = "Fallback" if translation == "esv" else "Legacy"
                 self.assertEqual(spoken, [f"{prefix} first verse.", f"{prefix} second verse."])
                 self.assertEqual(len(audio["tracks"]), 4)  # Introduction, two paragraphs, closing.
+                self.assertEqual(
+                    [line["content"] for call in dialogue_clips.call_args_list for line in call.args[0]],
+                    [
+                        index.passage_to_citation(
+                            self.deuterocanonical_office(day, translation).office_readings.ep_reading_1
+                        ),
+                        "Here ends the Reading.",
+                    ],
+                )
+                self.assertEqual(audio["tracks"][-1]["text"], "Here ends the Reading.")
                 self.assertEqual(audio["single_track"], ["complete.mp3"])
 
     def test_deuterocanonical_fallback_failure_rejects_the_audio_response(self):
@@ -218,6 +231,7 @@ class ReadingAudioCompletenessTests(SimpleTestCase):
 
         with (
             patch.object(index, "TTS_PROVIDER", ElevenLabsTTSProvider()),
+            patch("office.elevenlabs_dialogue.DialogueSession.clip", return_value=(self.clip[1], [])),
             patch.object(index.GenericDailyOfficeSerializer, "get_or_create_clip", side_effect=clip),
             patch.object(index, "frame_tracks") as frame,
             patch.object(index.GenericDailyOfficeSerializer, "get_single_track") as assemble,
