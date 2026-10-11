@@ -282,7 +282,7 @@ export default {
     const queryString = Object.keys(settings)
       .map((key) => key + '=' + settings[key])
       .join('&');
-    let data = null;
+    let data;
     const office_url =
       `${import.meta.env.VITE_API_URL}api/v1/${this.serviceType}/${this.office}/` +
       today_str +
