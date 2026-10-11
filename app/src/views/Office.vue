@@ -28,7 +28,7 @@
 
           <div v-if="!loading" class="office-display-settings">
             <DisplaySettingsModule
-              :show-audio-controls="true"
+              :show-audio-controls="audioLoadingEnabled"
               v-model:audio-enabled="audioEnabled"
               :collapsible="false"
             />
@@ -87,6 +87,7 @@
   <AudioPlayer
     v-if="
       !loading &&
+      audioLoadingEnabled &&
       audioEnabled &&
       audioReady &&
       audioLinks &&
@@ -106,6 +107,7 @@
   <AudioPlayerMessage
     v-if="
       !loading &&
+      audioLoadingEnabled &&
       audioEnabled &&
       (!isWithinSevenDays ||
         !isEsvOrKjv ||
@@ -200,6 +202,10 @@ export default {
     };
   },
   computed: {
+    audioLoadingEnabled() {
+      // Set VITE_FETCH_AUDIO_ON=false to avoid on-demand generation in dev.
+      return import.meta.env.VITE_FETCH_AUDIO_ON !== 'false';
+    },
     isWithinSevenDays() {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -313,7 +319,12 @@ export default {
     );
     await this.$nextTick();
     await this.applyStoredFontSize();
-    if (this.isWithinSevenDays && this.isEsvOrKjv && this.isEnglish) {
+    if (
+      this.audioLoadingEnabled &&
+      this.isWithinSevenDays &&
+      this.isEsvOrKjv &&
+      this.isEnglish
+    ) {
       this.audioLinks = await this.setAudioLinks(office_url);
     }
     this.audioReady = true;
@@ -398,6 +409,7 @@ export default {
       );
     },
     async setAudioLinks(url) {
+      if (import.meta.env.VITE_FETCH_AUDIO_ON === 'false') return [];
       if (!this.isWithinSevenDays) return [];
       url = `${url}&include_audio_links=true`;
       try {
@@ -430,6 +442,7 @@ export default {
       return links;
     },
     async getAudioLinkForLine(line) {
+      if (import.meta.env.VITE_FETCH_AUDIO_ON === 'false') return null;
       if (!('content' in line) || !line.content) {
         return null;
       }

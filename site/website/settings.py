@@ -96,7 +96,6 @@ INSTALLED_APPS = [
     # "address",
     "array_tags",
     "django_distill",
-    "webpack_loader",
     "robots",
     "standrew",
     "patrons",
@@ -240,16 +239,6 @@ DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": show_toolbar, "IS_RUNNING_TESTS
 
 DISTILL_DIR = "{}/../static_export".format(BASE_DIR)
 
-WEBPACK_LOADER = {
-    "DEFAULT": {
-        "CACHE": False,
-        "BUNDLE_DIR_NAME": "office/js/",  # must end with slash
-        "STATS_FILE": os.path.join(BASE_DIR, "webpack-stats.json"),
-        "POLL_INTERVAL": 0.1,
-        "TIMEOUT": None,
-        "IGNORE": [r".+\.hot-update.js", r".+\.map"],
-    }
-}
 
 if DEBUG:
     CACHES = {

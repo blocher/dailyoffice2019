@@ -10,7 +10,6 @@ from office.api.views.index import (
     MorningPrayerView,
     AvailableSettings,
     SiteMessageViewSet,
-    MorningPrayerDisplayView,
     EveningPrayerView,
     MiddayPrayerView,
     EmailSignupView,
@@ -180,11 +179,6 @@ urlpatterns = [
         r"api/v1/email_signup",
         EmailSignupView.as_view(),
         name="email_signup",
-    ),
-    path(
-        r"new/office/morning_prayer/<int:year>-<int:month>-<int:day>",
-        MorningPrayerDisplayView.as_view(),
-        name="morning_prayer_display_view",
     ),
     path(
         r"api/v1/bible/<str:passage>/<str:version>",

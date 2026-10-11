@@ -1,14 +1,18 @@
 from datetime import datetime, timedelta, date
+import logging
 
 from dateutil.parser import parse
+from django.conf import settings
 from django.core.cache import cache
+from pymemcache.exceptions import MemcacheError
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from indexed import IndexedOrderedDict
 
 from churchcal.models import Commemoration, FerialCommemoration, Proper, Season, Calendar, CommemorationRank
-from website import settings
 from .utils import advent, week_days, easter
+
+logger = logging.getLogger(__name__)
 
 
 class CalendarDate(object):
@@ -860,10 +864,21 @@ def get_church_year(date_string):
     date = to_date(date_string)
     advent_start = advent(date.year)
     year = date.year if date >= advent_start else date.year - 1
-    church_year = cache.get(str(year)) if settings.USE_CALENDAR_CACHE else None
+    cache_available = settings.USE_CALENDAR_CACHE
+    church_year = None
+    if cache_available:
+        try:
+            church_year = cache.get(str(year))
+        except (OSError, MemcacheError):
+            logger.warning("Calendar cache read failed for year %s; computing without cache", year, exc_info=True)
+            cache_available = False
     if not church_year:
         church_year = ChurchYear(year)
-        cache.set(str(year), church_year, 60 * 60 * 12)
+        if cache_available:
+            try:
+                cache.set(str(year), church_year, 60 * 60 * 12)
+            except (OSError, MemcacheError):
+                logger.warning("Calendar cache write failed for year %s; using computed calendar", year, exc_info=True)
     return church_year
 
 

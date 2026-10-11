@@ -2,7 +2,29 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import Office from '@/views/Office.vue';
 
 describe('office audio date window', () => {
-  afterEach(() => vi.useRealTimers());
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllEnvs();
+  });
+
+  it('skips eligible office and line audio requests when disabled by the environment', async () => {
+    vi.stubEnv('VITE_FETCH_AUDIO_ON', 'false');
+    const get = vi.fn();
+    const post = vi.fn();
+    const context = { isWithinSevenDays: true, $http: { get, post } };
+    expect(Office.computed.audioLoadingEnabled()).toBe(false);
+    expect(await Office.methods.setAudioLinks.call(context, '/office?test=1')).toEqual([]);
+    expect(await Office.methods.getAudioLinkForLine.call(context, {
+      content: 'Test prayer', line_type: 'leader',
+    })).toBeNull();
+    expect(get).not.toHaveBeenCalled();
+    expect(post).not.toHaveBeenCalled();
+  });
+
+  it.each(['true', undefined])('allows audio when the environment value is %s', (value) => {
+    vi.stubEnv('VITE_FETCH_AUDIO_ON', value);
+    expect(Office.computed.audioLoadingEnabled()).toBe(true);
+  });
 
   it('includes all of the boundary days and excludes dates beyond them', () => {
     vi.useFakeTimers();
@@ -30,6 +52,7 @@ describe('office audio date window', () => {
   });
 
   it('still fetches audio for an eligible office', async () => {
+    vi.stubEnv('VITE_FETCH_AUDIO_ON', 'true');
     const get = vi.fn().mockResolvedValue({ data: { audio: { single_track: [] } } });
     await Office.methods.setAudioLinks.call(
       { audioEnabled: true, isWithinSevenDays: true, $http: { get } }, '/office?test=1'

@@ -26,7 +26,7 @@ This project is a full-stack application divided into a modern Vue frontend and 
   
 - **`site/`**: The main Django project directory (Backend).
   - Contains standard Django apps (like `website/`) holding core logic, models, views, and custom management commands.
-  - Also contains a classic frontend build pipeline (Webpack, Babel, SCSS) for older/legacy server-rendered views or emails. Ignore this as it is no longer used.
+  - Backend pages use standalone assets or Python-provided admin/editor/API-doc assets. The retired legacy prayer display and HTML 404 no longer require npm or Webpack. Preserve collectstatic, static serving, and email CSS.
 
 ## 💻 Vue Frontend Standards (`app/`)
 
@@ -49,3 +49,4 @@ This project is a full-stack application divided into a modern Vue frontend and 
 - **Explore First**: Use your read and search tools to understand the existing patterns in both `app/` and `site/` before creating new files or modifying existing ones.
 - **Match Style**: Always match the existing coding style of the file you are editing.
 - **Verify**: After making changes, run relevant tests and **always run `pre-commit run`**.
+- **Deploying**: `master` is the only long-lived branch; deploy with `make deploy` (see "Deploying" in README.md). There are no deploy branches.

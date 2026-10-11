@@ -22,3 +22,6 @@ site/website/.env
 dailyofficelocalapi/
 site/env_test/
 .voice-auditions/
+
+# Frontend dependencies are installed from the app lockfile.
+**/node_modules/

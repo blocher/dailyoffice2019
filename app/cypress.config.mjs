@@ -9,7 +9,7 @@ export default defineConfig({
     },
     specPattern: 'tests/e2e/**/*.{js,jsx,ts,tsx}',
     supportFile: 'tests/e2e/support/index.js',
-    baseUrl: 'http://localhost:5173/',
+    baseUrl: 'http://localhost:5176/',
     retryOnNetworkFailure: true,
     retryOnStatusCodeFailure: true,
     experimentalSourceRewriting: true,

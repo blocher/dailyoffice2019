@@ -15,17 +15,14 @@ from distutils.util import strtobool
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.db.models import Prefetch, Q
-from django.http import HttpResponse
 from django.utils import timezone
-from django.template.loader import render_to_string
 from django.utils.functional import cached_property
-from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import TemplateResponseMixin
 from mailchimp_marketing.api_client import ApiClientError
 from mutagen.mp3 import MP3
 from rest_framework import serializers, mixins, viewsets
-from rest_framework.exceptions import PermissionDenied, ValidationError
+from rest_framework.exceptions import APIException, PermissionDenied, ValidationError
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -59,6 +56,13 @@ from office.models import (
 )
 from office.utils import passage_to_citation, get_client_ip, generate_uuid_from_string
 from psalter.utils import get_psalms
+
+
+class ReadingAudioUnavailable(APIException):
+    status_code = 503
+    default_detail = "Complete Scripture audio is unavailable. Please try again later."
+    default_code = "reading_audio_unavailable"
+
 
 # --- Text-to-speech configuration -------------------------------------------
 # The active backend (OpenAI, Fish Audio, ...) is selected by the TTS_PROVIDER
@@ -123,16 +127,20 @@ def audio_base_url():
     return settings.SITE_ADDRESS.rstrip("/")
 
 
-def provider_media_name(filename):
+def provider_media_name(filename, create_directory=True):
     """Media-relative name for a generated file under the active provider's
-    subfolder, e.g. ``fish/<uuid>.mp3``. Ensures the folder exists.
+    subfolder, e.g. ``fish/<uuid>.mp3``.
+
+    Cache-only lookups set create_directory=False so rendering an office does
+    not require write access to the provider folder.
 
     The returned name is what we store on AudioClip.filename and append to
     MEDIA_URL / MEDIA_ROOT, so per-provider audio is neatly grouped and can be
     cleared by simply removing (or targeting) that one subfolder.
     """
     subdir = TTS_PROVIDER.media_subdir
-    os.makedirs(os.path.join(settings.MEDIA_ROOT, subdir), exist_ok=True)
+    if create_directory:
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, subdir), exist_ok=True)
     return f"{subdir}/{filename}"
 
 
@@ -174,7 +182,7 @@ class Settings(dict):
         settings["extra_collects"] = self._get_extra_collects(request)
         super().__init__(**settings)
 
-    def _default_settings(self):
+    def _setting_options(self):
         settings = (
             Setting.objects.order_by("site", "setting_type", "order")
             .prefetch_related(
@@ -182,8 +190,7 @@ class Settings(dict):
             )
             .all()
         )
-        defaults = {setting.name: setting.options[0].value for setting in settings}
-        return defaults
+        return {setting.name: [option.value for option in setting.options] for setting in settings}
 
     def _get_extra_collects(self, request):
         try:
@@ -199,11 +206,21 @@ class Settings(dict):
         return extra_collects
 
     def _get_settings(self, request):
-        settings = self._default_settings().copy()
-        specified_settings = {k: v for (k, v) in request.query_params.items() if k in settings.keys()}
-        for k, v in settings.items():
-            if k in specified_settings.keys():
-                settings[k] = specified_settings[k]
+        options = self._setting_options()
+        settings = {name: values[0] for name, values in options.items()}
+        for name, value in request.query_params.items():
+            if name not in options:
+                continue
+            # Some clients join repeated scalar settings with commas. Preserve
+            # a declared option verbatim, otherwise use the last supported value.
+            if value in options[name]:
+                settings[name] = value
+                continue
+            for candidate in reversed(value.split(",")):
+                candidate = candidate.strip()
+                if candidate in options[name]:
+                    settings[name] = candidate
+                    break
         return settings
 
 
@@ -324,7 +341,7 @@ class MPOpeningSentence(Module):
         if self.office.date.date.weekday() == 0:
             return {
                 "sentence": "I was glad when they said unto me, “We will go into the house of the Lord.",
-                "traditional": "I was glad when they said unto me, We will go into the house ofthe Lord.",
+                "traditional": "I was glad when they said unto me, We will go into the house of the Lord.",
                 "citation": "PSALM 122:1",
             }
 
@@ -3263,7 +3280,14 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     exc,
                     context="office_audio_clip",
                     severity="error",
-                    metadata={"audio": {"provider": TTS_PROVIDER.name, "kind": kind, "line_type": line_type}},
+                    metadata={
+                        "audio": {
+                            "provider": TTS_PROVIDER.name,
+                            "kind": kind,
+                            "line_type": line_type,
+                            **getattr(exc, "retry_details", {}),
+                        }
+                    },
                 )
             except Exception:
                 logger.exception("Bugsnag notification failed for an audio clip")
@@ -3305,7 +3329,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         if not voice:
             return None, None
         key = GenericDailyOfficeSerializer.tts_clip_key(voice, normalized)
-        filename = provider_media_name(f"{key}.mp3")
+        filename = provider_media_name(f"{key}.mp3", create_directory=not no_generate)
         file_path = os.path.join(settings.MEDIA_ROOT, filename)
         exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
         path = settings.MEDIA_URL + filename
@@ -3428,6 +3452,12 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
 
     @staticmethod
     def handle_html(line, html=False, no_generate=False, id=None, module="Reading", voice=None):
+        """Render reading markers or require every spoken paragraph for playback.
+
+        Display/cache planning may use prospective clip URLs. Playback must fail
+        before assembling an office when any paragraph cannot be supplied; clips
+        already cached remain available for a subsequent request.
+        """
         import re
         from office.audio_text import reading_text
 
@@ -3452,9 +3482,22 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             if not text_without_verses:
                 lines.append(paragraph)
                 continue
-            url, path = GenericDailyOfficeSerializer.get_or_create_clip(
-                text_without_verses, "reader", kind="reader", no_generate=no_generate, voice=voice
-            )
+            required = not html and not no_generate
+            try:
+                url, path = GenericDailyOfficeSerializer.get_or_create_clip(
+                    text_without_verses,
+                    "reader",
+                    kind="reader",
+                    no_generate=no_generate,
+                    raise_on_error=required,
+                    voice=voice,
+                )
+            except Exception as exc:
+                if required:
+                    raise ReadingAudioUnavailable() from exc
+                raise
+            if required and (not url or not path):
+                raise ReadingAudioUnavailable()
             if url:
                 uuid_match = re.search(r"/uploads/(?:[^/]+/)?([0-9a-fA-F-]+)\.mp3", url)
                 if uuid_match:
@@ -4859,102 +4902,7 @@ class SiteMessageViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return queryset.order_by("order", "-created")
 
 
-# heading
-# subheading
-# citation
-# html
-# leader
-# congregation
-# rubric
-# leader_dialogue
-# congregation_dialogue
-
-
-def heading(content):
-    return "<h2>{}</h2>".format(content)
-
-
-def subheading(content):
-    return "<h4>{}</h4>".format(content)
-
-
-def citation(content):
-    return "<h5>{}</h5>".format(content)
-
-
-def html_content(content):
-    return content
-
-
-def leader(content, indented=False):
-    if indented:
-        return "<p class='indent'>{}</p>".format(content)
-    return "<p class='handing-indent'>{}</p>".format(content)
-
-
-def congregation(content, indented=False):
-    if indented:
-        return "<p class='indent'><strong>{}</strong></p>".format(content)
-    return "<p class='handing-indent'><strong>{}</strong></p>".format(content)
-
-
-def rubric(content):
-    return "<p><em>{}</em></p>".format(content)
-
-
-def leader_dialogue(content, indented=False):
-    return leader(content, indented)
-
-
-def congregation_dialogue(content, indented=False):
-    return congregation(content, indented)
-
-
-def line_to_html(line):
-    if line["line_type"] == "heading":
-        return heading(line["content"])
-    if line["line_type"] == "subheading":
-        return subheading(line["content"])
-    if line["line_type"] == "citation":
-        return citation(line["content"])
-    if line["line_type"] == "html":
-        return html_content(line["content"])
-    if line["line_type"] == "leader":
-        return leader(line["content"], line["indented"])
-    if line["line_type"] == "congregation":
-        return congregation(line["content"], line["indented"])
-    if line["line_type"] == "rubric":
-        return rubric(line["content"])
-    if line["line_type"] == "leader_dialogue":
-        return leader_dialogue(line["content"], line["indented"])
-    if line["line_type"] == "congregation_dialogue":
-        return congregation_dialogue(line["content"], line["indented"])
-    return line["content"]
-
-
-def json_modules_to_html(modules, request=None):
-    html = ""
-    for module in modules:
-        for line in module["lines"]:
-            html += line_to_html(line)
-    return render_to_string("display_base.html", {"content": mark_safe(html)})
-
-
-class MorningPrayerDisplayView(OfficeAPIView):
-    def get(self, request, year, month, day):
-        office = MorningPrayer(request, year, month, day)
-        serializer = OfficeSerializer(office)
-        return HttpResponse(json_modules_to_html(serializer.data["modules"], request), content_type="text/html")
-
-
-class NoondayPrayerDisplayView(OfficeAPIView):
-    def get(self, request, year, month, day):
-        office = MorningPrayer(request, year, month, day)
-        serializer = OfficeSerializer(office)
-        return HttpResponse(json_modules_to_html(serializer.data["modules"], request), content_type="text/html")
-
-
-class EmailSignupView(OfficeAPIView):
+class EmailSignupView(APIView):
     permission_classes = [AllowAny]
 
     @csrf_exempt
