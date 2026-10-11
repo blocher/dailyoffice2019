@@ -221,7 +221,8 @@ This PR edits repository install scripts but does not deploy or modify server in
 Existing parent ranges and peers are preserved. Migrate the named owners and validate runtime/tooling
 behavior before lifting those constraints. Direct exceptions are explained above. A blank cell means
 no below-tag version in the app lockfile. “None reported” refers only to the registry audit and is not a
-security guarantee. For names with multiple parents, example constraints are shown.
+security guarantee. Owning range examples refer only to the remaining app dependency tree;
+removed site npm owners are excluded. For names with multiple parents, example constraints are shown.
 
 | Package | App versions | Latest tag | Owning range examples | Reported impact |
 | --- | --- | --- | --- | --- |
@@ -263,7 +264,7 @@ security guarantee. For names with multiple parents, example constraints are sho
 | `@ionic/utils-stream` | 3.1.6 | 3.1.7 | app: @ionic/utils-subprocess 3.1.6 | none reported |
 | `@ionic/utils-subprocess` | 2.1.14 | 3.0.1 | app: @capacitor/cli ^2.1.11, app: @trapezedev/project ^2.1.8 | none reported |
 | `@ionic/utils-terminal` | 2.3.4 | 2.3.5 | app: @capacitor/cli ^2.3.3, app: @ionic/utils-process 2.3.4 | none reported |
-| `@jridgewell/gen-mapping` | 0.4.0-beta.0 | 0.3.13 | app: @babel/generator 0.4.0-beta.0, site: @babel/generator 0.4.0-beta.0 | none reported |
+| `@jridgewell/gen-mapping` | 0.4.0-beta.0 | 0.3.13 | app: @babel/generator 0.4.0-beta.0 | none reported |
 | `@keyv/bigmap` | 1.3.1 | 6.1.0 | app: @cacheable/memory ^1.3.1 | none reported |
 | `@napi-rs/wasm-runtime` | 1.1.4 | 1.2.5 | app: @tailwindcss/oxide-wasm32-wasi ^1.1.4 | none reported |
 | `@nodelib/fs.scandir` | 2.1.5 | 4.0.1 | app: @nodelib/fs.walk 2.1.5 | none reported |
@@ -274,20 +275,20 @@ security guarantee. For names with multiple parents, example constraints are sho
 | `@testing-library/dom` | 9.3.4 | 10.4.2 | app: @testing-library/vue ^9.3.3 | none reported |
 | `@tybys/wasm-util` | 0.10.2 | 0.10.4 | app: @napi-rs/wasm-runtime ^0.10.1, app: @tailwindcss/oxide-wasm32-wasi ^0.10.2 | none reported |
 | `@types/fs-extra` | 8.1.5 | 11.0.4 | app: @ionic/utils-fs ^8.0.0 | none reported |
-| `@types/jsesc` | 2.5.1 | 3.0.3 | app: @babel/generator ^2.5.0, site: @babel/generator ^2.5.0 | none reported |
+| `@types/jsesc` | 2.5.1 | 3.0.3 | app: @babel/generator ^2.5.0 | none reported |
 | `@types/sinonjs__fake-timers` | 8.1.1 | 15.0.1 | app: cypress 8.1.1 | none reported |
 | `@types/slice-ansi` | 4.0.0 | 7.1.0 | app: @ionic/utils-terminal ^4.0.0 | none reported |
 | `@vue/cli-shared-utils` | 4.5.19 | 5.0.9 | app: vue-cli-plugin-capacitor ^4.5.4 | moderate |
 | `@vue/devtools-api` | 6.6.4 | 8.2.1 | app: vuex ^6.0.0-beta.11 | none reported |
 | `address` | 1.2.2 | 2.0.3 | app: vue-cli-plugin-capacitor ^1.0.3 | none reported |
-| `agent-base` | 6.0.2 | 9.0.0 | app: https-proxy-agent 6, site: https-proxy-agent 6 | none reported |
+| `agent-base` | 6.0.2 | 9.0.0 | app: https-proxy-agent 6 | none reported |
 | `ajv` | 6.15.0 | 8.20.0 | app: @eslint/eslintrc ^6.14.0, app: eslint ^6.14.0 | none reported |
 | `ansi-regex` | 4.1.1, 5.0.1 | 6.4.0 | app: pretty-format ^5.0.1, app: strip-ansi ^4.1.0 | none reported |
 | `ansi-styles` | 3.2.1, 4.3.0, 5.2.0, 6.2.3 | 7.0.0 | app: chalk ^3.2.1, app: chalk ^4.1.0 | none reported |
-| `argparse` | 2.0.1 | 3.0.2 | app: js-yaml ^2.0.1, site: js-yaml ^2.0.1 | none reported |
+| `argparse` | 2.0.1 | 3.0.2 | app: js-yaml ^2.0.1 | none reported |
 | `aria-query` | 5.1.3 | 5.3.2 | app: @testing-library/dom 5.1.3 | none reported |
 | `ast-kit` | 2.2.0 | 3.0.0 | app: @vue-macros/common ^2.1.2 | none reported |
-| `asynckit` | 0.4.0 | 0.5.0 | app: form-data ^0.4.0, site: form-data ^0.4.0 | none reported |
+| `asynckit` | 0.4.0 | 0.5.0 | app: form-data ^0.4.0 | none reported |
 | `balanced-match` | 1.0.2 | 4.0.4 | app: brace-expansion ^1.0.0 | none reported |
 | `birpc` | 2.9.0 | 4.2.0 | app: @vue/devtools-kit ^2.6.1 | none reported |
 | `bl` | 4.1.0 | 7.0.12 | app: ora ^4.1.0, app: tar-stream ^4.0.3 | none reported |
@@ -297,7 +298,7 @@ security guarantee. For names with multiple parents, example constraints are sho
 | `brace-expansion` | 1.1.21, 2.1.7 | 5.0.12 | app: minimatch ^1.1.7, app: minimatch ^2.0.1 | none reported |
 | `buffer` | 5.7.1 | 6.0.3 | app: bl ^5.5.0, app: cypress ^5.7.1 | none reported |
 | `buffer-crc32` | 0.2.13 | 1.0.0 | app: yauzl ~0.2.3 | none reported |
-| `callsites` | 3.1.0 | 4.2.0 | app: parent-module ^3.0.0, site: parent-module ^3.0.0 | none reported |
+| `callsites` | 3.1.0 | 4.2.0 | app: parent-module ^3.0.0 | none reported |
 | `chalk` | 2.4.2, 4.1.2 | 6.0.1 | app: @capacitor-community/electron ^4.1.2, app: @testing-library/dom ^4.1.0 | none reported |
 | `chevrotain` | 7.1.1 | 13.2.0 | app: @xml-tools/parser 7.1.1 | none reported |
 | `chownr` | 1.1.4, 2.0.0 | 3.0.0 | app: tar ^2.0.0, app: tar-fs ^1.1.1 | none reported |
@@ -336,8 +337,8 @@ security guarantee. For names with multiple parents, example constraints are sho
 | `electron-is-dev` | 2.0.0 | 3.0.1 | app: @capacitor-community/electron ~2.0.0 | none reported |
 | `emoji-regex` | 10.6.0, 8.0.0 | 11.0.0 | app: string-width ^10.3.0, app: string-width ^8.0.0 | none reported |
 | `entities` | 2.2.0, 7.0.1 | 8.1.0 | app: @vue/compiler-core ^7.0.1, app: dom-serializer ^2.0.0 | none reported |
-| `env-paths` | 2.2.1 | 4.0.0 | app: @capacitor/cli ^2.2.0, site: cosmiconfig ^2.2.1 | none reported |
-| `es-module-lexer` | 2.3.2 | 3.0.3 | app: vitest ^2.3.2, site: webpack ^2.1.0 | none reported |
+| `env-paths` | 2.2.1 | 4.0.0 | app: @capacitor/cli ^2.2.0 | none reported |
+| `es-module-lexer` | 2.3.2 | 3.0.3 | app: vitest ^2.3.2 | none reported |
 | `escape-string-regexp` | 1.0.5, 4.0.0 | 5.0.0 | app: chalk ^1.0.5, app: eslint ^4.0.0 | none reported |
 | `eslint-visitor-keys` | 3.4.3, 4.2.1 | 5.0.1 | app: @eslint-community/eslint-utils ^3.4.3, app: espree ^4.2.1 | none reported |
 | `espree` | 10.4.0 | 11.2.0 | app: @eslint/eslintrc ^10.0.1, app: vue-eslint-parser ^10.3.0 // ^11.0.0 | none reported |
@@ -348,7 +349,7 @@ security guarantee. For names with multiple parents, example constraints are sho
 | `extsprintf` | 1.3.0 | 1.4.1 | app: jsprim 1.3.0, app: verror ^1.2.0 | none reported |
 | `fast-levenshtein` | 2.0.6 | 3.0.0 | app: optionator ^2.0.6 | none reported |
 | `filter-obj` | 1.1.0 | 6.1.0 | app: query-string ^1.1.0 | none reported |
-| `find-up` | 5.0.0 | 8.0.0 | app: eslint ^5.0.0, site: babel-loader ^5.0.0 | none reported |
+| `find-up` | 5.0.0 | 8.0.0 | app: eslint ^5.0.0 | none reported |
 | `firebase` | 12.19.0 | 13.0.0 | app: @capacitor-firebase/analytics ^12.6.0, app: app direct ^12.19.0 | high |
 | `form-data` | 2.3.3 | 4.0.6 | app: request ~2.3.2 | critical |
 | `fs-extra` | 10.1.0, 11.1.1, 9.1.0 | 11.4.1 | app: @capacitor-community/electron ~11.1.1, app: @capacitor/assets 10.1.0 | none reported |
@@ -366,13 +367,13 @@ security guarantee. For names with multiple parents, example constraints are sho
 | `hookified` | 1.15.1, 2.2.0 | 3.0.4 | app: @cacheable/memory ^1.15.1, app: @keyv/bigmap ^1.15.0 | none reported |
 | `hosted-git-info` | 2.8.9 | 10.1.1 | app: normalize-package-data ^2.1.4 | none reported |
 | `http-signature` | 1.2.0 | 1.4.0 | app: request ~1.2.0 | none reported |
-| `https-proxy-agent` | 5.0.1 | 9.1.0 | app: axios ^5.0.1, site: axios ^5.0.1 | none reported |
+| `https-proxy-agent` | 5.0.1 | 9.1.0 | app: axios ^5.0.1 | none reported |
 | `human-signals` | 1.1.1 | 8.0.1 | app: execa ^1.1.1 | none reported |
 | `idb` | 7.1.1 | 8.0.4 | app: @firebase/app 7.1.1, app: @firebase/installations 7.1.1 | none reported |
 | `ignore` | 5.3.2 | 7.0.12 | app: @eslint/eslintrc ^5.2.0, app: eslint ^5.2.0 | none reported |
-| `import-fresh` | 3.3.1 | 4.0.1 | app: @eslint/eslintrc ^3.2.1, site: cosmiconfig ^3.3.0 | none reported |
+| `import-fresh` | 3.3.1 | 4.0.1 | app: @eslint/eslintrc ^3.2.1 | none reported |
 | `ini` | 1.3.8, 2.0.0, 4.1.3 | 7.0.0 | app: @trapezedev/project ^2.0.0, app: config-chain ^1.3.4 | none reported |
-| `is-arrayish` | 0.2.1 | 0.3.4 | app: error-ex ^0.2.1, site: error-ex ^0.2.1 | none reported |
+| `is-arrayish` | 0.2.1 | 0.3.4 | app: error-ex ^0.2.1 | none reported |
 | `is-docker` | 2.2.1 | 4.0.0 | app: is-wsl ^2.0.0, app: open ^2.1.1 | none reported |
 | `is-fullwidth-code-point` | 3.0.0 | 5.1.0 | app: slice-ansi ^3.0.0, app: string-width ^3.0.0 | none reported |
 | `is-installed-globally` | 0.4.0 | 1.0.1 | app: cypress ~0.4.0 | none reported |
@@ -381,13 +382,13 @@ security guarantee. For names with multiple parents, example constraints are sho
 | `is-stream` | 1.1.0, 2.0.1 | 4.0.1 | app: execa ^1.1.0, app: execa ^2.0.0 | none reported |
 | `is-unicode-supported` | 0.1.0 | 2.1.0 | app: log-symbols ^0.1.0, app: ora ^0.1.0 | none reported |
 | `is-wsl` | 1.1.0, 2.2.0 | 3.1.1 | app: open ^1.1.0, app: open ^2.2.0 | none reported |
-| `isexe` | 2.0.0 | 4.0.0 | app: which ^2.0.0, site: which ^2.0.0 | none reported |
+| `isexe` | 2.0.0 | 4.0.0 | app: which ^2.0.0 | none reported |
 | `js-message` | 1.0.7 | 3.1.1 | app: @achrinza/node-ipc 1.0.7 | none reported |
-| `js-tokens` | 4.0.0 | 10.0.0 | app: @babel/code-frame ^4.0.0, site: @babel/code-frame ^4.0.0 | none reported |
-| `js-yaml` | 4.3.2 | 5.4.3 | app: @eslint/eslintrc ^4.3.2, site: cosmiconfig ^4.1.0 | none reported |
+| `js-tokens` | 4.0.0 | 10.0.0 | app: @babel/code-frame ^4.0.0 | none reported |
+| `js-yaml` | 4.3.2 | 5.4.3 | app: @eslint/eslintrc ^4.3.2 | none reported |
 | `jsbn` | 0.1.1 | 1.1.0 | app: ecc-jsbn ~0.1.0, app: sshpk ~0.1.0 | none reported |
-| `json-parse-even-better-errors` | 2.3.1 | 6.0.0 | app: parse-json ^2.3.0, site: parse-json ^2.3.0 | none reported |
-| `json-schema-traverse` | 0.4.1 | 1.0.0 | app: ajv ^0.4.1, site: ajv ^0.4.1 | none reported |
+| `json-parse-even-better-errors` | 2.3.1 | 6.0.0 | app: parse-json ^2.3.0 | none reported |
+| `json-schema-traverse` | 0.4.1 | 1.0.0 | app: ajv ^0.4.1 | none reported |
 | `jsprim` | 1.4.2 | 2.0.2 | app: http-signature ^1.2.2 | none reported |
 | `keyv` | 4.5.4, 5.6.0 | 6.1.0 | app: @cacheable/memory ^5.6.0, app: @cacheable/utils ^5.6.0 | none reported |
 | `kleur` | 3.0.3 | 4.1.5 | app: prompts ^3.0.3 | none reported |
@@ -403,16 +404,16 @@ security guarantee. For names with multiple parents, example constraints are sho
 | `lightningcss-linux-x64-musl` | 1.32.0 | 1.33.0 | app: lightningcss 1.32.0 | none reported |
 | `lightningcss-win32-arm64-msvc` | 1.32.0 | 1.33.0 | app: lightningcss 1.32.0 | none reported |
 | `lightningcss-win32-x64-msvc` | 1.32.0 | 1.33.0 | app: lightningcss 1.32.0 | none reported |
-| `lines-and-columns` | 1.2.4 | 2.0.4 | app: parse-json ^1.1.6, site: parse-json ^1.1.6 | none reported |
+| `lines-and-columns` | 1.2.4 | 2.0.4 | app: parse-json ^1.1.6 | none reported |
 | `listr2` | 9.0.5 | 11.1.1 | app: cypress ^9.0.5 | none reported |
-| `locate-path` | 6.0.0 | 8.0.0 | app: find-up ^6.0.0, site: find-up ^5.0.0 | none reported |
+| `locate-path` | 6.0.0 | 8.0.0 | app: find-up ^6.0.0 | none reported |
 | `log-symbols` | 2.2.0, 4.1.0 | 7.0.1 | app: cypress ^4.0.0, app: ora ^2.2.0 | none reported |
 | `log-update` | 6.1.0 | 8.0.0 | app: listr2 ^6.1.0 | none reported |
 | `lru-cache` | 10.4.3, 5.1.1 | 11.5.3 | app: @vue/cli-shared-utils ^5.1.1, app: path-scurry ^10.2.0 | none reported |
 | `magic-string` | 0.30.21 | 1.4.3 | app: @tailwindcss/node ^0.30.21, app: @vue/compiler-sfc ^0.30.21 | none reported |
 | `magic-string-ast` | 1.0.3 | 2.1.1 | app: @vue-macros/common ^1.0.2 | none reported |
 | `mdn-data` | 2.27.1 | 2.37.2 | app: css-tree 2.27.1 | none reported |
-| `mime-db` | 1.52.0 | 1.54.0 | app: mime-types 1.52.0, site: mime-types 1.52.0 | none reported |
+| `mime-db` | 1.52.0 | 1.54.0 | app: mime-types 1.52.0 | none reported |
 | `mime-types` | 2.1.35 | 3.0.2 | app: @capacitor-community/electron ~2.1.35, app: @cypress/request ~2.1.19 | none reported |
 | `mimic-fn` | 1.2.0, 2.1.0 | 5.0.0 | app: onetime ^1.0.0, app: onetime ^2.1.0 | none reported |
 | `mimic-response` | 3.1.0 | 4.0.0 | app: decompress-response ^3.1.0 | none reported |
@@ -421,7 +422,7 @@ security guarantee. For names with multiple parents, example constraints are sho
 | `minizlib` | 2.1.2 | 3.1.0 | app: tar ^2.1.1 | none reported |
 | `mkdirp` | 1.0.4 | 3.0.1 | app: tar ^1.0.3 | none reported |
 | `ms` | 2.0.0, 2.1.2 | 2.1.3 | app: debug 2.0.0, app: debug 2.1.2 | none reported |
-| `nanoid` | 3.3.20 | 6.0.2 | app: postcss ^3.3.19, site: postcss ^3.3.19 | none reported |
+| `nanoid` | 3.3.20 | 6.0.2 | app: postcss ^3.3.19 | none reported |
 | `nice-try` | 1.0.5 | 5.0.0 | app: cross-spawn ^1.0.4 | none reported |
 | `node-abi` | 3.98.0 | 4.37.0 | app: prebuild-install ^3.3.0 | none reported |
 | `node-addon-api` | 6.1.0, 7.1.1 | 8.9.2 | app: @parcel/watcher ^7.0.0, app: sharp ^6.1.0 | none reported |
@@ -435,11 +436,11 @@ security guarantee. For names with multiple parents, example constraints are sho
 | `open` | 6.4.0, 8.4.2 | 11.0.4 | app: @capacitor/cli ^8.4.0, app: @vue/cli-shared-utils ^6.3.0 | none reported |
 | `ora` | 3.4.0, 5.4.1 | 9.4.1 | app: @capacitor-community/electron ^5.4.1, app: @vue/cli-shared-utils ^3.4.0 | none reported |
 | `p-finally` | 1.0.0 | 3.0.0 | app: execa ^1.0.0 | none reported |
-| `p-limit` | 3.1.0 | 7.3.3 | app: p-locate ^3.0.2, site: p-locate ^2.2.0 | none reported |
-| `p-locate` | 5.0.0 | 7.0.0 | app: locate-path ^5.0.0, site: locate-path ^4.1.0 | none reported |
-| `parent-module` | 1.0.1 | 3.2.0 | app: import-fresh ^1.0.0, site: import-fresh ^1.0.0 | none reported |
-| `parse-json` | 5.2.0 | 8.3.0 | app: read-pkg ^5.0.0, site: cosmiconfig ^5.2.0 | none reported |
-| `path-exists` | 4.0.0 | 5.0.0 | app: find-up ^4.0.0, site: find-up ^4.0.0 | none reported |
+| `p-limit` | 3.1.0 | 7.3.3 | app: p-locate ^3.0.2 | none reported |
+| `p-locate` | 5.0.0 | 7.0.0 | app: locate-path ^5.0.0 | none reported |
+| `parent-module` | 1.0.1 | 3.2.0 | app: import-fresh ^1.0.0 | none reported |
+| `parse-json` | 5.2.0 | 8.3.0 | app: read-pkg ^5.0.0 | none reported |
+| `path-exists` | 4.0.0 | 5.0.0 | app: find-up ^4.0.0 | none reported |
 | `path-is-absolute` | 1.0.1 | 2.0.0 | app: glob ^1.0.0 | none reported |
 | `path-key` | 2.0.1, 3.1.1 | 4.0.0 | app: cross-spawn ^2.0.1, app: cross-spawn ^3.1.0 | none reported |
 | `path-scurry` | 1.11.1 | 2.0.2 | app: glob ^1.6.1 | none reported |
@@ -460,7 +461,7 @@ security guarantee. For names with multiple parents, example constraints are sho
 | `react-is` | 17.0.2 | 19.3.0 | app: pretty-format ^17.0.1 | none reported |
 | `read-pkg` | 5.2.0 | 10.1.0 | app: @vue/cli-shared-utils ^5.1.1 | none reported |
 | `readable-stream` | 3.6.2 | 4.8.0 | app: bl ^3.4.0, app: tar-stream ^3.1.1 | none reported |
-| `resolve-from` | 4.0.0 | 5.0.0 | app: import-fresh ^4.0.0, site: import-fresh ^4.0.0 | none reported |
+| `resolve-from` | 4.0.0 | 5.0.0 | app: import-fresh ^4.0.0 | none reported |
 | `restore-cursor` | 2.0.0, 3.1.0 | 5.1.0 | app: cli-cursor ^2.0.0, app: cli-cursor ^3.1.0 | none reported |
 | `rimraf` | 4.4.1 | 6.1.3 | app: @capacitor/cli ^4.4.1 | none reported |
 | `sax` | 1.1.4, 1.2.4 | 1.6.1 | app: elementtree 1.1.4, app: stylus ~1.2.4 | none reported |
@@ -496,7 +497,7 @@ security guarantee. For names with multiple parents, example constraints are sho
 | `tweetnacl` | 0.14.5 | 1.0.3 | app: bcrypt-pbkdf ^0.14.3, app: sshpk ~0.14.0 | none reported |
 | `type-fest` | 0.6.0, 0.8.1 | 5.10.0 | app: hasha ^0.8.0, app: read-pkg ^0.6.0 | none reported |
 | `typescript` | 6.0.3 | 7.0.2 | app: @typescript-eslint/eslint-plugin >=4.8.4 <6.1.0, app: @typescript-eslint/parser >=4.8.4 <6.1.0 | none reported |
-| `undici-types` | 8.9.0 | 8.11.2 | app: @types/node ~8.9.0, site: @types/node ~8.9.0 | none reported |
+| `undici-types` | 8.9.0 | 8.11.2 | app: @types/node ~8.9.0 | none reported |
 | `unimport` | 6.5.0 | 7.0.2 | app: unplugin-auto-import ^6.4.0 | none reported |
 | `untildify` | 4.0.0 | 6.0.0 | app: @ionic/utils-terminal ^4.0.0, app: cypress ^4.0.0 | none reported |
 | `uuid` | 3.4.0, 7.0.3 | 14.0.3 | app: request ^3.3.2, app: xcode ^7.0.3 | moderate |
@@ -516,7 +517,7 @@ security guarantee. For names with multiple parents, example constraints are sho
 | `yargs` | 17.7.2 | 18.2.0 | app: @capacitor/assets 17.7.2, app: @grpc/proto-loader ^17.7.2 | none reported |
 | `yargs-parser` | 21.1.1 | 22.0.0 | app: yargs ^21.1.1 | none reported |
 | `yauzl` | 2.10.0 | 3.4.0 | app: native-run ^2.10.0 | none reported |
-| `yocto-queue` | 0.1.0 | 1.2.2 | app: p-limit ^0.1.0, site: p-limit ^0.1.0 | none reported |
+| `yocto-queue` | 0.1.0 | 1.2.2 | app: p-limit ^0.1.0 | none reported |
 
 </details>
 
