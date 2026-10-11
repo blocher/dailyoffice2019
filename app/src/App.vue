@@ -152,6 +152,7 @@
     <Loading v-if="loading" />
     <!--    <BetaNote/>-->
     <el-alert v-if="error" :title="error" type="error" />
+    <SiteMessages v-if="!loading" />
     <router-view v-if="!loading" :key="routeKey" />
     <footer
       v-if="showLinks"
@@ -211,6 +212,7 @@ import { useRoute } from 'vue-router';
 import AdditionalLinks from '@/components/AdditionalLinks.vue';
 import { ArrowDown } from '@element-plus/icons-vue';
 import DonationPrompt from '@/components/DonationPrompt.vue';
+import SiteMessages from '@/components/SiteMessages.vue';
 import { DynamicStorage } from '@/helpers/storage.js';
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
@@ -222,6 +224,7 @@ export default {
     AdditionalLinks,
     ArrowDown,
     DonationPrompt,
+    SiteMessages,
   },
   setup() {
     const route = useRoute();
@@ -586,9 +589,13 @@ export default {
 }
 
 * {
+  /* Adobe Caslon Pro lacks curly quotes (U+2018/U+2019). Georgia/Times supply
+     them at normal width before the CJK serifs, whose fullwidth glyphs would
+     otherwise leave a large gap after apostrophes. */
   font-family:
-    'Adobe Caslon Pro', 'Noto Serif SC', 'Noto Serif TC', 'Source Han Serif SC',
-    'Source Han Serif TC', '宋体', '明體', serif;
+    'Adobe Caslon Pro', Georgia, 'Times New Roman', Times, 'Noto Serif SC',
+    'Noto Serif TC', 'Source Han Serif SC', 'Source Han Serif TC', '宋体',
+    '明體', serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -1017,8 +1024,9 @@ body {
 
   p {
     font-family:
-      'Adobe Caslon Pro', 'Noto Serif SC', 'Noto Serif TC',
-      'Source Han Serif SC', 'Source Han Serif TC', '宋体', '明體', serif;
+      'Adobe Caslon Pro', Georgia, 'Times New Roman', Times, 'Noto Serif SC',
+      'Noto Serif TC', 'Source Han Serif SC', 'Source Han Serif TC', '宋体',
+      '明體', serif;
     font-display: swap;
     font-weight: 300;
     font-style: normal;

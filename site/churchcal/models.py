@@ -93,6 +93,12 @@ class Commemoration(BaseModel):
     ai_lesser_feasts_and_fasts = models.TextField(null=True, blank=True)
     ai_martyrology = models.TextField(null=True, blank=True)
     ai_butler = models.TextField(null=True, blank=True)
+    ai_generation_instructions = models.TextField(
+        null=True,
+        blank=True,
+        help_text="Extra instructions appended to every AI regeneration prompt for this feast "
+        "(e.g. do not confuse with another saint).",
+    )
 
     @property
     def name_no_tags(self):

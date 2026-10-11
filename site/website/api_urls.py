@@ -9,6 +9,7 @@ from churchcal.api.views import DayView, MonthView, YearView, AudioTrackView, Ca
 from office.api.views.index import (
     MorningPrayerView,
     AvailableSettings,
+    SiteMessageViewSet,
     MorningPrayerDisplayView,
     EveningPrayerView,
     MiddayPrayerView,
@@ -31,6 +32,7 @@ from office.api.views.resources import (
     ScriptureViewSet,
     GroupedCollectsViewSet,
 )
+from analytics.views import AnalyticsEventView
 from patrons import views as patron_views
 
 schema_view = get_schema_view(
@@ -48,6 +50,7 @@ schema_view = get_schema_view(
 
 router_v1 = routers.DefaultRouter()
 router_v1.register(r"available_settings", AvailableSettings)
+router_v1.register(r"site_messages", SiteMessageViewSet, basename="site_messages")
 router_v1.register(r"psalms", PsalmsViewSet, basename="psalms")
 router_v1.register(r"scripture", ScriptureViewSet, basename="scripture2")
 
@@ -76,7 +79,8 @@ urlpatterns = [
     path(r"api/v1/litany", GreatLitanyView.as_view(), name="litany"),
     path(r"api/v1/calendar/<int:year>-<int:month>", MonthView.as_view(), name="month_view"),
     path(r"api/v1/calendar/<int:year>", YearView.as_view(), name="month_view"),
-    path(r"api/v1/audio_track/<str:track>", AudioTrackView.as_view(), name="audio_track"),
+    path(r"api/v1/audio_track/<path:track>", AudioTrackView.as_view(), name="audio_track"),
+    path(r"api/v1/analytics/event", AnalyticsEventView.as_view(), name="analytics_event"),
     path(
         r"api/v1/audio",
         AudioViewSet.as_view({"post": "retrieve"}),

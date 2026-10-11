@@ -3,13 +3,13 @@ import os
 from django.conf import settings
 from django.core.cache import cache
 from django.http import FileResponse
-from django.http import HttpResponseNotFound
 from django.utils import timezone
 from mutagen.mp3 import MP3
 from rest_framework.renderers import BaseRenderer, BrowsableAPIRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from churchcal.audio_streaming import audio_file_response
 from churchcal.api.permissions import ReadOnly
 from churchcal.api.serializer import DaySerializer
 from churchcal.calculations import get_calendar_date, ChurchYear, CalendarYear
@@ -111,23 +111,26 @@ class AudioTrackView(APIView):
 
     def get(self, request, *args, **kwargs):
         filename = kwargs["track"]
-        file_path = os.path.join(settings.MEDIA_ROOT, filename)
-        print(file_path)
-
-        if not os.path.exists(file_path) or os.path.getsize(file_path) == 0:
-            return HttpResponseNotFound("Audio file not found.")
+        response = audio_file_response(
+            settings.MEDIA_ROOT,
+            filename,
+            range_header=request.META.get("HTTP_RANGE", ""),
+            if_range=request.META.get("HTTP_IF_RANGE", ""),
+        )
+        if response.status_code not in (200, 206):
+            return response
 
         try:
-            audio = MP3(file_path)
-            duration = int(audio.info.length)  # Duration in seconds
+            audio = MP3(os.path.join(settings.MEDIA_ROOT, filename))
+            duration = int(audio.info.length)
         except Exception:
-            duration = "Unknown"  # Fallback if metadata cannot be read
+            duration = "Unknown"
 
-        # Open the file in binary mode
-        audio_file = open(file_path, "rb")
+        # Preserve initial-load accounting; later byte ranges are seeks/resumes.
+        from analytics.utils import record_audio_loaded
 
-        # Create a streaming response. Django's FileResponse automatically handles Range requests.
-        response = FileResponse(audio_file, content_type="audio/mpeg")
+        initial_request = response.status_code == 200 or response.get("Content-Range", "").startswith("bytes 0-")
+        record_audio_loaded(request, is_initial_request=initial_request)
 
         # Set Content-Disposition for inline playback
         response["Content-Disposition"] = f'inline; filename="{filename}"'

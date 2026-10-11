@@ -1,21 +1,49 @@
 from datetime import timedelta
 
 import kronos
-from django.core.management.base import BaseCommand
+import bugsnag
+from django.core.management.base import BaseCommand, CommandError
 from django.test import RequestFactory
 from django.urls import resolve
 from django.utils import timezone
+from office.api.views.index import AUDIO_GENERATION_REQUIRED
 
 
 @kronos.register("55 9 * * *")
 class Command(BaseCommand):
-    help = "My shiny new management command."
+    help = "Pre-warm generated office audio for a range of days."
+
+    DEFAULT_DAYS = 9
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--days",
+            type=int,
+            default=self.DEFAULT_DAYS,
+            help=(
+                f"Number of days to warm (default: {self.DEFAULT_DAYS}). Counting starts "
+                "yesterday, or today when --skip-yesterday is set."
+            ),
+        )
+        parser.add_argument(
+            "--skip-yesterday",
+            action="store_true",
+            help="Start warming from today instead of including yesterday.",
+        )
 
     def handle(self, *args, **options):
 
+        days = options["days"]
+        if days < 1:
+            raise CommandError("--days must be at least 1.")
+        skip_yesterday = options["skip_yesterday"]
+        completed = 0
+        failures = 0
+        reported_errors = set()
+
         now = timezone.now()
-        start_date = now - timedelta(days=1)
-        date_list = [(start_date + timedelta(days=i)) for i in range(9)]
+        start_date = now if skip_yesterday else now - timedelta(days=1)
+        date_list = [(start_date + timedelta(days=i)) for i in range(days)]
 
         for day in date_list:
 
@@ -130,17 +158,56 @@ class Command(BaseCommand):
                         # Create the mock request
                         factory = RequestFactory()
                         request = factory.get(base_url, data=newest_params)
-                        print(base_url, newest_params)
+                        # This trusted, sequential job may warm its full requested
+                        # range, independently of the public API's date window.
+                        request._audio_prewarm = True
+                        label = f"{base_url} {style['language_style']} {change}"
+                        self.stdout.write(f"Warming {label}")
                         # Resolve the view based on the URL
                         match = resolve(base_url)
 
                         # Call the resolved view with the mock request
-                        response = match.func(request, *match.args, **match.kwargs)
+                        token = AUDIO_GENERATION_REQUIRED.set(True)
+                        try:
+                            response = match.func(request, *match.args, **match.kwargs)
+                            if hasattr(response, "render") and callable(response.render):
+                                response = response.render()
+                            if response.status_code >= 400:
+                                raise RuntimeError(f"Office audio returned HTTP {response.status_code}.")
+                        except Exception as exc:
+                            failures += 1
+                            causes = []
+                            cause = exc
+                            while cause is not None:
+                                causes.append(f"{type(cause).__name__}: {cause}")
+                                cause = cause.__cause__
+                            self.stderr.write(f"FAILED {label}: {' <- '.join(causes)}")
+                            error_key = tuple(causes)
+                            if error_key in reported_errors:
+                                continue
+                            try:
+                                bugsnag.notify(
+                                    exc,
+                                    context="update_audio_files",
+                                    metadata={
+                                        "audio_batch": {
+                                            "office": office,
+                                            "date": day.date().isoformat(),
+                                            "style": style["language_style"],
+                                            "variation": change,
+                                        }
+                                    },
+                                )
+                                reported_errors.add(error_key)
+                            except Exception:
+                                self.stderr.write("Bugsnag notification failed; continuing audio batch.")
+                            continue
+                        finally:
+                            AUDIO_GENERATION_REQUIRED.reset(token)
+                        completed += 1
+                        self.stdout.write(f"Completed {label}")
 
-                        # Check if the response is a TemplateResponse
-                        if hasattr(response, "render") and callable(response.render):
-                            response = response.render()  # Render the TemplateResponse explicitly
-
-                        # Print the response content
-                        print(response.content)
-                        print(response.status_code)
+        summary = f"Audio warming finished: {completed} succeeded, {failures} failed."
+        self.stdout.write(summary)
+        if failures:
+            raise CommandError(summary)

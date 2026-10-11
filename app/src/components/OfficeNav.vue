@@ -71,7 +71,7 @@
         v-for="link in dayLinks"
         :key="link.text"
         :to="link.to"
-        :v-on:click="scrollToTop"
+        @click="scrollToTop"
         class="block"
       >
         <div
@@ -104,6 +104,14 @@
         </div>
       </router-link>
     </div>
+    <router-link
+      v-if="!isViewingToday"
+      :to="todayLink"
+      class="block w-fit mx-auto text-xs font-medium text-gray-500 dark:text-gray-400 underline underline-offset-4 decoration-gray-300 dark:decoration-gray-600 hover:text-gray-800 dark:hover:text-gray-200"
+      @click="scrollToTop"
+    >
+      Back to today
+    </router-link>
   </div>
 </template>
 
@@ -152,6 +160,21 @@ export default {
           ? 'Full Daily Office'
           : 'Short Family Prayer';
       return `Switch to ${targetMode}`;
+    },
+    isViewingToday() {
+      const today = new Date();
+      return (
+        this.calendarDate.getFullYear() === today.getFullYear() &&
+        this.calendarDate.getMonth() === today.getMonth() &&
+        this.calendarDate.getDate() === today.getDate()
+      );
+    },
+    todayLink() {
+      const today = new Date();
+      const servicePart = this.currentServiceType === 'family' ? '/family' : '';
+      return `${servicePart}/${this.selectedOffice}/${today.getFullYear()}/${
+        today.getMonth() + 1
+      }/${today.getDate()}`;
     },
   },
   async created() {
@@ -247,7 +270,7 @@ export default {
         to: `${servicePart}/${this.selectedOffice}/${yesterday.getFullYear()}/${
           yesterday.getMonth() + 1
         }/${yesterday.getDate()}`,
-        text: 'Yesterday',
+        text: 'Previous',
         icon: 'left',
         selected: false,
       },
@@ -255,7 +278,7 @@ export default {
         to: `${servicePart}/${this.selectedOffice}/${this.calendarDate.getFullYear()}/${
           this.calendarDate.getMonth() + 1
         }/${this.calendarDate.getDate()}`,
-        text: 'Today',
+        text: 'Selected day',
         icon: '',
         selected: true,
       },
@@ -263,7 +286,7 @@ export default {
         to: `${servicePart}/${this.selectedOffice}/${tomorrow.getFullYear()}/${
           tomorrow.getMonth() + 1
         }/${tomorrow.getDate()}`,
-        text: 'Tomorrow',
+        text: 'Next',
         icon: 'right',
         selected: false,
       },

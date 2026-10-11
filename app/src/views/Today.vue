@@ -1,40 +1,5 @@
 <template>
   <div>
-    <div
-      v-if="showCalendarAppNudge"
-      class="mx-auto mt-2 mb-3 max-w-[700px] px-4 sm:mt-3 sm:mb-4 sm:px-5"
-    >
-      <div
-        class="flex flex-wrap items-center gap-2 rounded-lg border border-slate-200/90 bg-slate-50/90 px-3 py-2.5 text-left text-slate-600 shadow-sm dark:border-slate-600/50 dark:bg-slate-800/40 dark:text-slate-300 sm:gap-3"
-        role="region"
-        aria-label="New feature"
-      >
-        <span
-          class="inline-flex shrink-0 items-center rounded-md bg-emerald-100/90 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200"
-        >
-          New
-        </span>
-        <p class="m-0 min-w-0 flex-1 text-xs leading-snug sm:text-sm">
-          <router-link
-            class="font-medium text-(--accent-color) underline decoration-(--accent-color)/30 underline-offset-2 transition hover:decoration-(--accent-color)"
-            :to="{
-              path: '/calendar',
-              query: { subscribe: '1', panel: 'quick' },
-            }"
-          >
-            Add the liturgical calendar to your calendar app
-          </router-link>
-        </p>
-        <button
-          type="button"
-          class="ml-auto shrink-0 rounded-md px-2 py-1 text-sm leading-none text-slate-400 transition hover:bg-slate-200/80 hover:text-slate-700 dark:hover:bg-slate-700/60 dark:hover:text-slate-200"
-          aria-label="Dismiss"
-          @click="dismissCalendarAppNudge"
-        >
-          ×
-        </button>
-      </div>
-    </div>
     <Office
       v-if="office && !notFound"
       :key="key"
@@ -71,14 +36,7 @@ export default {
       calendarDate: null,
       currentServiceType: 'office',
       notFound: false,
-      calendarAppNudgeDismissed: false,
     };
-  },
-
-  computed: {
-    showCalendarAppNudge() {
-      return this.$route.name === 'Home' && !this.calendarAppNudgeDismissed;
-    },
   },
 
   watch: {
@@ -111,10 +69,6 @@ export default {
       this.currentServiceType =
         (await DynamicStorage.getItem('serviceType')) || 'office';
     }
-    if (typeof window !== 'undefined' && window.localStorage) {
-      this.calendarAppNudgeDismissed =
-        window.localStorage.getItem('homeCalendarAppNudgeDismissed') === '1';
-    }
     this.setDate();
   },
   properties: {
@@ -126,12 +80,6 @@ export default {
     },
   },
   methods: {
-    dismissCalendarAppNudge() {
-      this.calendarAppNudgeDismissed = true;
-      if (typeof window !== 'undefined' && window.localStorage) {
-        window.localStorage.setItem('homeCalendarAppNudgeDismissed', '1');
-      }
-    },
     setCurrentOffice() {
       const now = new Date();
       const hour = now.getHours();
