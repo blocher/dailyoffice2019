@@ -24,6 +24,7 @@ import re
 import time
 import subprocess
 import tempfile
+import uuid
 from email.utils import parsedate_to_datetime
 from datetime import timezone
 
@@ -431,15 +432,25 @@ class ElevenLabsTTSProvider(BaseTTSProvider):
                 response.raise_for_status()
                 data = response.json()
                 audio = base64.b64decode(data["audio_base64"])
-                tmp_path = f"{file_path}.part"
+                # Each writer owns its temp file; a shared .part path races
+                # when concurrent requests publish the same cached clip.
+                tmp_path = None
                 try:
-                    with open(tmp_path, "wb") as handle:
+                    temporary = os.path.join(
+                        os.path.dirname(os.path.abspath(file_path)), f"tts-{uuid.uuid4().hex}.part"
+                    )
+                    # Exclusive creation retains normal cache-file permissions
+                    # while ensuring cleanup can only touch our own file.
+                    with open(temporary, "xb") as handle:
+                        tmp_path = temporary
                         handle.write(audio)
                     os.replace(tmp_path, file_path)
-                except Exception:
-                    if os.path.exists(tmp_path):
-                        os.remove(tmp_path)
-                    raise
+                finally:
+                    if tmp_path is not None:
+                        try:
+                            os.unlink(tmp_path)
+                        except FileNotFoundError:
+                            pass  # Successful publication already moved it.
                 alignment = data.get("alignment") or data.get("normalized_alignment")
                 return self.original_word_alignment(alignment, text, submitted, positions)
             except requests.HTTPError as exc:
@@ -796,24 +807,28 @@ class FishAudioTTSProvider(BaseTTSProvider):
                 time.sleep(delay)
 
     def _synthesize_once(self, payload, headers, file_path):
-        """One synthesis attempt. Streams to a sidecar temp file and atomically
-        renames so a failed or interrupted request never leaves a truncated mp3
+        """One synthesis attempt. Streams to a unique same-directory temp file
+        and atomically renames so a failed or interrupted request never leaves a truncated mp3
         that would be treated as a valid cached clip."""
-        tmp_path = f"{file_path}.part"
+        tmp_path = None
         try:
             with requests.post(
                 self.ENDPOINT, json=payload, headers=headers, stream=True, timeout=self.timeout
             ) as response:
                 response.raise_for_status()
-                with open(tmp_path, "wb") as handle:
+                temporary = os.path.join(os.path.dirname(os.path.abspath(file_path)), f"tts-{uuid.uuid4().hex}.part")
+                with open(temporary, "xb") as handle:
+                    tmp_path = temporary
                     for chunk in response.iter_content(chunk_size=8192):
                         if chunk:
                             handle.write(chunk)
             os.replace(tmp_path, file_path)
-        except Exception:
-            if os.path.exists(tmp_path):
-                os.remove(tmp_path)
-            raise
+        finally:
+            if tmp_path is not None:
+                try:
+                    os.unlink(tmp_path)
+                except FileNotFoundError:
+                    pass  # Successful publication already moved it.
 
     def _backoff_delay(self, attempt, retry_after):
         """Seconds to wait before the next attempt. Honors a server-provided
