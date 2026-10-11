@@ -20,18 +20,10 @@ cd site
 echo "======Installing Requirements======"
 pip install -r requirements.txt --no-cache-dir
 
-echo "======Installing Yarn Requirements and updating browserslist======"
-rm -rf node_modules
-npm install
-yes | npx update-browserslist-db@latest
-
 echo "======Migrating Database======"
 python3.13 manage.py migrate --no-input
 
 echo "======Collecting Static Files======"
-# enable corepack
-#mkdir -p static
-#npx webpack
 python3.13 manage.py collectstatic --noinput --clear
 
 echo "======Clearing Memcached======"

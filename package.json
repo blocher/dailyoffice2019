@@ -1,9 +1,0 @@
-{
-  "dependencies": {
-    "@capacitor/browser": "^8.0.5",
-    "@element-plus/icons-vue": "^2.3.2"
-  },
-  "engines": {
-    "node": "^22.22.2 || >=24.15.0"
-  }
-}

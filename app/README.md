@@ -2,12 +2,12 @@
 
 ## Project setup
 ```
-npm install
+npm ci
 ```
 
 ### Compiles and hot-reloads for development
 ```
-npm run serve
+npm run dev
 ```
 
 ### Compiles and minifies for production
@@ -38,7 +38,7 @@ Native iOS and Android builds use [`@capacitor-firebase/analytics`](https://www.
 
 1. Install the plugin and its peer dependency:
    ```bash
-   npm install @capacitor-firebase/analytics firebase@11.10.0
+   npm install @capacitor-firebase/analytics firebase@12.19.0
    ```
 2. Add your Firebase configuration files:
    - `android/app/google-services.json`
@@ -58,4 +58,4 @@ Native iOS and Android builds use [`@capacitor-firebase/analytics`](https://www.
 All route changes in the native apps automatically log detailed `screen_view` events and print success or error messages to the console for debugging.
 
 ### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+See [Vite configuration](https://vite.dev/config/).

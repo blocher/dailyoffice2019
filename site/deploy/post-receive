@@ -20,16 +20,13 @@ CFLAGS="-Wno-narrowing" pip install cld2-cffi  --no-cache-dir
 echo "======Installing Requirements======"
 pip install -r requirements.txt --no-cache-dir
 
-echo "======Installing Yarn Requirements and updating browserslist======"
-rm -rf node_modules
-yarn install
-yes | npx browserslist@latest --update-db
+echo "======Installing legacy asset dependencies======"
+npm ci --include=dev
 
 echo "======Migrating Database======"
 python manage.py migrate --no-input
 
 echo "======Running Webpack and Collceting Static Files======"
-enable corepack
 mkdir -p static
 npx webpack
 python manage.py collectstatic --noinput --clear
