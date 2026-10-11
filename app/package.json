@@ -11,18 +11,16 @@
     "test:e2e": "cypress run",
     "test:e2e:open": "cypress open",
     "lint": "eslint .",
-    "capacitor:build": "vue-cli-service capacitor:build",
-    "capacitor:serve": "vue-cli-service capacitor:serve",
-    "ios": "npm run build && npx cap sync && npx cap build ios && npx cap run ios",
+    "capacitor:build": "npm run build && cap sync && cap build",
+    "capacitor:serve": "npm run build && cap run",
+    "ios": "npm run capacitor:serve -- ios",
     "typecheck": "tsc --noEmit",
     "test:config": "node --test scripts/capacitor-config.check.mjs"
   },
   "dependencies": {
-    "@achrinza/node-ipc": "^10.1.11",
     "@capacitor-community/electron": "^5.0.1",
     "@capacitor-firebase/analytics": "^8.5.2",
     "@capacitor/app": "^8.1.2",
-    "@capacitor/assets": "^3.0.5",
     "@capacitor/browser": "^8.0.5",
     "@capacitor/clipboard": "^8.0.1",
     "@capacitor/core": "^8.5.3",
@@ -106,9 +104,9 @@
     "typescript": "^7.0.2",
     "vite": "^8.3.4",
     "vitest": "^5.0.3",
-    "vue-cli-plugin-capacitor": "^2.0.1",
     "vue-eslint-parser": "^10.4.1",
-    "@babel/core": "^8.0.7"
+    "@babel/core": "^8.0.7",
+    "@capacitor/assets": "^3.0.5"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.64.5"
@@ -119,6 +117,9 @@
   "overrides": {
     "@capacitor-firebase/analytics": {
       "firebase": "$firebase"
+    },
+    "@capacitor/assets": {
+      "sharp": "0.35.5"
     }
   }
 }
