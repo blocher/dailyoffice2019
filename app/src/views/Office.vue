@@ -1,96 +1,161 @@
 <template>
   <div class="home office">
     <div class="small-container">
-      <PageNotFound v-if="notFound"/>
-      <div v-if="!notFound">
-        <Loading v-if="loading"/>
-        <CalendarCard
-            v-if="!loading"
+      <PageNotFound v-if="notFound" />
+      <div v-if="!notFound" class="space-y-6">
+        <Loading v-if="loading" />
+
+        <!-- Header Section -->
+        <header class="office-header mb-8">
+          <CalendarCard
             :office="office"
             :calendar-date="calendarDate"
             :card="card"
             :service-type="serviceType"
-        />
-        <el-alert
-            v-if="error" :title="error"
+          />
+          <el-alert
+            v-if="error"
+            :title="error"
             type="error"
-        />
-        <OfficeNav
+            show-icon
+            class="my-4"
+          />
+          <OfficeNav
             :calendar-date="calendarDate"
             :selected-office="office"
             :service-type="serviceType"
-        />
-        <FontSizer v-if="readyToSetFontSize"/>
-      </div>
-    </div>
-    <div id="main">
-      <div
-          v-for="module in modules" :key="module.name"
-      >
-        <div
-            v-for="line in module.lines" :key="line.content"
-        >
-          <OfficeHeading
-              v-if="line.line_type == 'heading'" :line="line"
-          />
-          <OfficeSubheading
-              v-if="line.line_type == 'subheading'"
-              :line="line"
-          />
-          <OfficeCitation
-              v-if="line.line_type == 'citation'" :line="line"
-          />
-          <OfficeHTML
-              v-if="line.line_type == 'html'" :line="line"
-          />
-          <OfficeLeader
-              v-if="line.line_type == 'leader'" :line="line"
-          />
-          <OfficeLeaderDialogue
-              v-if="line.line_type == 'leader_dialogue'"
-              :line="line"
-          />
-          <OfficeCongregation
-              v-if="line.line_type == 'congregation'"
-              :line="line"
-          />
-          <OfficeCongregationDialogue
-              v-if="line.line_type == 'congregation_dialogue'"
-              :line="line"
           />
 
-          <OfficeRubric
-              v-if="line.line_type == 'rubric'" :line="line"
+          <div v-if="!loading" class="office-display-settings">
+            <DisplaySettingsModule
+              :show-audio-controls="audioLoadingEnabled"
+              v-model:audio-enabled="audioEnabled"
+              :collapsible="false"
+            />
+          </div>
+        </header>
+      </div>
+    </div>
+
+    <!-- Main Content (Book Style) -->
+    <div id="main" class="book-content">
+      <div v-for="module in modules" :key="module.name">
+        <div
+          v-for="line in module.lines.filter((l) => l.line_type !== 'speaker')"
+          :key="line.content"
+        >
+          <OfficeHeading v-if="line.line_type === 'heading'" :line="line" />
+          <OfficeSubheading
+            v-if="line.line_type === 'subheading'"
+            :line="line"
           />
-          <OfficeSpacer v-if="line.line_type == 'spacer'"/>
+          <OfficeCitation v-if="line.line_type === 'citation'" :line="line" />
+          <OfficeHTML
+            v-if="line.line_type === 'html' || line.line_type === 'audio'"
+            :line="line"
+          />
+          <OfficeLeader
+            v-if="line.line_type === 'leader' || line.line_type === 'reader'"
+            :line="line"
+          />
+          <OfficeLeaderDialogue
+            v-if="line.line_type === 'leader_dialogue'"
+            :line="line"
+          />
+          <OfficeCongregation
+            v-if="line.line_type === 'congregation'"
+            :line="line"
+          />
+
+          <OfficeCongregationDialogue
+            v-if="line.line_type === 'congregation_dialogue'"
+            :line="line"
+          />
+
+          <OfficeRubric v-if="line.line_type === 'rubric'" :line="line" />
+          <OfficeSpacer v-if="line.line_type === 'spacer'" />
         </div>
       </div>
     </div>
+
+    <!-- Footer Section -->
+    <footer class="office-footer mt-12 pb-24">
+      <!-- DonationPrompt removed to avoid duplication with App.vue footer -->
+    </footer>
   </div>
+
+  <AudioPlayer
+    v-if="
+      !loading &&
+      audioLoadingEnabled &&
+      audioEnabled &&
+      audioReady &&
+      audioLinks &&
+      audioLinks.length &&
+      isWithinSevenDays &&
+      isEsvOrKjv &&
+      isEnglish
+    "
+    :audio="audioLinks"
+    :audioReady="audioReady"
+    :office="office"
+    :isEsvOrKjv="isEsvOrKjv"
+    :isWithinSevenDays="isWithinSevenDays"
+    @dismiss-audio="confirmDismissAudio"
+    @audio-play="onAudioPlay"
+  />
+  <AudioPlayerMessage
+    v-if="
+      !loading &&
+      audioLoadingEnabled &&
+      audioEnabled &&
+      (!isWithinSevenDays ||
+        !isEsvOrKjv ||
+        !isEnglish ||
+        !audioLinks ||
+        !audioLinks.length ||
+        !audioReady)
+    "
+    :isEsvOrKjv="isEsvOrKjv"
+    :isEnglish="isEnglish"
+    :isWithinSevenDays="isWithinSevenDays"
+    :audioReady="audioReady"
+    :hasAudioLinks="!!(audioLinks && audioLinks.length)"
+    @dismiss-audio="confirmDismissAudio"
+  />
 </template>
 
 <script>
 // @ is an alias to /src
-import OfficeHeading from "@/components/OfficeHeading";
-import OfficeSubheading from "@/components/OfficeSubheading";
-import OfficeCitation from "@/components/OfficeCitation";
-import OfficeHTML from "@/components/OfficeHTML";
-import OfficeCongregation from "@/components/OfficeCongregation";
-import OfficeLeader from "@/components/OfficeLeader";
-import OfficeCongregationDialogue from "@/components/OfficeCongregationDialogue";
-import OfficeLeaderDialogue from "@/components/OfficeLeaderDialogue";
-import OfficeRubric from "@/components/OfficeRubric";
-import OfficeSpacer from "@/components/OfficeSpacer";
-import Loading from "@/components/Loading";
-import CalendarCard from "@/components/CalendarCard";
-import OfficeNav from "@/components/OfficeNav";
-import PageNotFound from "@/views/PageNotFound";
-import FontSizer from "@/components/FontSizer";
-import {DynamicStorage} from "@/helpers/storage";
+import OfficeHeading from '@/components/OfficeHeading.vue';
+import OfficeSubheading from '@/components/OfficeSubheading.vue';
+import OfficeCitation from '@/components/OfficeCitation.vue';
+import OfficeHTML from '@/components/OfficeHTML.vue';
+import OfficeCongregation from '@/components/OfficeCongregation.vue';
+import OfficeLeader from '@/components/OfficeLeader.vue';
+import OfficeCongregationDialogue from '@/components/OfficeCongregationDialogue.vue';
+import OfficeLeaderDialogue from '@/components/OfficeLeaderDialogue.vue';
+import OfficeRubric from '@/components/OfficeRubric.vue';
+import OfficeSpacer from '@/components/OfficeSpacer.vue';
+import Loading from '@/components/Loading.vue';
+import CalendarCard from '@/components/CalendarCard.vue';
+import OfficeNav from '@/components/OfficeNav.vue';
+import PageNotFound from '@/views/PageNotFound.vue';
+import { DynamicStorage } from '@/helpers/storage';
+import AudioPlayer from '@/components/AudioPlayer.vue';
+import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue';
+import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
+import { ElMessageBox } from 'element-plus';
+import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
+import { trackEvent } from '@/helpers/analytics';
+import { getCachedClientId } from '@/helpers/clientId';
 
 export default {
-  name: "Office",
+  name: 'Office',
   components: {
+    AudioPlayerMessage,
+    AudioPlayer,
+    DisplaySettingsModule,
     OfficeHeading,
     OfficeSubheading,
     OfficeCitation,
@@ -105,7 +170,6 @@ export default {
     CalendarCard,
     OfficeNav,
     PageNotFound,
-    FontSizer,
   },
   props: {
     office: {
@@ -115,7 +179,7 @@ export default {
       type: Date,
     },
     serviceType: {
-      default: "office",
+      default: 'office',
       type: String,
     },
   },
@@ -124,90 +188,351 @@ export default {
       counter: 0,
       modules: null,
       loading: true,
-      readyToSetFontSize: false,
       error: false,
-      card: "",
+      card: '',
       notFound: false,
+      audioLinks: [],
+      audioReady: false,
+      audioEnabled: true,
+      isEsvOrKjv: false,
+      isEnglish: false,
+      officeDateStr: null,
+      bibleTranslation: null,
+      audioPlayTracked: false,
     };
   },
+  computed: {
+    audioLoadingEnabled() {
+      // Set VITE_FETCH_AUDIO_ON=false to avoid on-demand generation in dev.
+      return import.meta.env.VITE_FETCH_AUDIO_ON !== 'false';
+    },
+    isWithinSevenDays() {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 3);
+      const sevenDaysFromNow = new Date(today);
+      sevenDaysFromNow.setDate(today.getDate() + 9);
+      sevenDaysFromNow.setHours(23, 59, 59, 999);
+
+      return (
+        this.calendarDate >= yesterday && this.calendarDate <= sevenDaysFromNow
+      );
+    },
+  },
+  watch: {
+    async audioEnabled(newVal) {
+      await DynamicStorage.setItem('audioEnabled', newVal ? 'true' : 'false');
+    },
+  },
   async mounted() {
-    await DynamicStorage.setItem("serviceType", "office");
+    await DynamicStorage.setItem('serviceType', this.serviceType);
+    const audioEnabledString = await DynamicStorage.getItem(
+      'audioEnabled',
+      'true'
+    );
+    this.audioEnabled =
+      audioEnabledString === 'true' ||
+      audioEnabledString === true ||
+      audioEnabledString === null ||
+      audioEnabledString === undefined;
   },
 
   async created() {
     const valid_daily_offices = [
-      "morning_prayer",
-      "midday_prayer",
-      "evening_prayer",
-      "compline",
+      'morning_prayer',
+      'midday_prayer',
+      'evening_prayer',
+      'compline',
     ];
     const valid_family_offices = [
-      "morning_prayer",
-      "midday_prayer",
-      "early_evening_prayer",
-      "close_of_day_prayer",
+      'morning_prayer',
+      'midday_prayer',
+      'early_evening_prayer',
+      'close_of_day_prayer',
     ];
     const valid_offices =
-        this.serviceType == "office" ? valid_daily_offices : valid_family_offices;
+      this.serviceType == 'office' ? valid_daily_offices : valid_family_offices;
     if (!valid_offices.includes(this.$props.office)) {
       this.notFound = true;
       return;
     }
     const today_str =
-        this.calendarDate.getFullYear() +
-        "-" +
-        (this.calendarDate.getMonth() + 1) +
-        "-" +
-        this.calendarDate.getDate();
+      this.calendarDate.getFullYear() +
+      '-' +
+      (this.calendarDate.getMonth() + 1) +
+      '-' +
+      this.calendarDate.getDate();
     this.availableSettings = await this.$store.state.availableSettings;
     await this.$store.dispatch('initializeSettings');
     const settings = await this.$store.state.settings;
+    if (
+      !Object.prototype.hasOwnProperty.call(settings, 'bible_translation') ||
+      !settings.bible_translation
+    ) {
+      settings.bible_translation = 'esv';
+    }
+    this.isEsvOrKjv = ['esv', 'kjv'].includes(settings.bible_translation);
+    const displayLanguage =
+      Object.prototype.hasOwnProperty.call(settings, 'display_language') &&
+      settings.display_language
+        ? settings.display_language
+        : 'english';
+    this.isEnglish = displayLanguage === 'english';
     const queryString = Object.keys(settings)
-        .map((key) => key + "=" + settings[key])
-        .join("&");
+      .map((key) => key + '=' + settings[key])
+      .join('&');
     let data = null;
+    const office_url =
+      `${import.meta.env.VITE_API_URL}api/v1/${this.serviceType}/${this.office}/` +
+      today_str +
+      '?' +
+      queryString +
+      '&extra_collects=' +
+      (await this.extraCollects());
     try {
-      data = await this.$http.get(
-          `${process.env.VUE_APP_API_URL}api/v1/${this.serviceType}/${this.office}/` +
-          today_str +
-          "?" +
-          queryString
-          + "&extra_collects="
-          + await this.extraCollects()
-      );
-    } catch (e) {
-      console.log(e);
+      data = await this.$http.get(office_url);
+    } catch {
       this.error =
-          "There was an error retrieving the office. Please try again.";
+        'There was an error retrieving the office. Please try again.';
       this.loading = false;
       return;
     }
     this.modules = data.data.modules;
     this.card = data.data.calendar_day;
+    this.applySeasonAccentFromCard(this.card);
     this.error = false;
     this.loading = false;
+    // Fire once, on the text request only, so the include_audio_links request
+    // below is never double-counted. Backend logs the view; GA gets the mirror.
+    this.officeDateStr = today_str;
+    this.bibleTranslation = settings.bible_translation;
+    trackEvent(
+      'office_view',
+      {
+        service_type: this.serviceType,
+        office: this.office,
+        office_date: today_str,
+        translation: settings.bible_translation,
+      },
+      { toBackend: false, toGA: true }
+    );
     await this.$nextTick();
-    this.readyToSetFontSize = true;
-  },
-  methods: {
-    async extraCollects() {
-      if (this.serviceType != "office") {
-        return ""
-      }
-      const full_office_name = this.office.replace("_", " ").toLowerCase().split(' ').map((s) => s.charAt(0).toUpperCase() + s.substring(1)).join(' ');
-      const extraCollects = JSON.parse(await DynamicStorage.getItem('extraCollects')) || "";
-      if (!extraCollects) {
-        return ""
-      }
-      const office_extra_collects = Object.prototype.hasOwnProperty.call(extraCollects, full_office_name) ? extraCollects[full_office_name].join(",") : [];
-      return office_extra_collects
+    await this.applyStoredFontSize();
+    if (
+      this.audioLoadingEnabled &&
+      this.isWithinSevenDays &&
+      this.isEsvOrKjv &&
+      this.isEnglish
+    ) {
+      this.audioLinks = await this.setAudioLinks(office_url);
     }
+    this.audioReady = true;
+  },
+
+  methods: {
+    async confirmDismissAudio() {
+      try {
+        await ElMessageBox.confirm(
+          'You can re-enable audio controls at any time from Display Settings at the top of this page.',
+          'Hide Audio Controls?',
+          {
+            confirmButtonText: 'Hide',
+            cancelButtonText: 'Cancel',
+            type: 'info',
+          }
+        );
+        this.audioEnabled = false;
+      } catch {
+        // user cancelled — do nothing
+      }
+    },
+    async applyStoredFontSize() {
+      const storedFontSize = parseInt(
+        (await DynamicStorage.getItem('fontSize')) || '24',
+        10
+      );
+      const fontSize = Number.isNaN(storedFontSize) ? 24 : storedFontSize;
+      this.applyFontSizeToMain(fontSize);
+    },
+    applyFontSizeToMain(value) {
+      document.documentElement.style.setProperty(
+        '--main-font-size',
+        `${value}px`
+      );
+      document.documentElement.style.setProperty(
+        '--main-line-height',
+        `${value * 1.6}px`
+      );
+    },
+    applySeasonAccentFromCard(card) {
+      const liturgicalColor = resolveColorFromCard(card, this.office);
+      if (liturgicalColor) {
+        setSeasonAccent(liturgicalColor);
+      }
+    },
+    resolveAudioUrl(rawUrl) {
+      // The backend builds the track URL from Django's Site.domain (e.g.
+      // "example.com"), which is not reachable from the client. Resolve it
+      // against the same API host the office was fetched from so audio works
+      // in every environment.
+      if (!rawUrl) {
+        return rawUrl;
+      }
+      try {
+        const path = new window.URL(rawUrl, window.location.origin).pathname;
+        const base = (import.meta.env.VITE_API_URL || '/').replace(/\/$/, '');
+        // Append the anonymous client id so the backend can attribute the
+        // "audio loaded" event (the <audio> element can't send custom headers).
+        const clientId = getCachedClientId();
+        const query = clientId ? `?cid=${encodeURIComponent(clientId)}` : '';
+        return `${base}/${path.replace(/^\//, '')}${query}`;
+      } catch {
+        return rawUrl;
+      }
+    },
+    onAudioPlay() {
+      // First real play per office load; the player guards repeat presses too.
+      if (this.audioPlayTracked) {
+        return;
+      }
+      this.audioPlayTracked = true;
+      trackEvent(
+        'audio_play',
+        {
+          service_type: this.serviceType,
+          office: this.office,
+          office_date: this.officeDateStr,
+          translation: this.bibleTranslation,
+        },
+        { toBackend: true, toGA: true }
+      );
+    },
+    async setAudioLinks(url) {
+      if (import.meta.env.VITE_FETCH_AUDIO_ON === 'false') return [];
+      if (!this.isWithinSevenDays) return [];
+      url = `${url}&include_audio_links=true`;
+      try {
+        const data = await this.$http.get(url);
+        const singleTrack = data.data.audio.single_track;
+        if (Array.isArray(singleTrack) && singleTrack.length) {
+          singleTrack[0] = this.resolveAudioUrl(singleTrack[0]);
+        }
+        this.audioLinks = singleTrack;
+        return singleTrack;
+      } catch {
+        return [];
+      }
+    },
+    async setAudioLinksBak() {
+      const audio_links = [];
+      for (const module of this.modules) {
+        audio_links.push(...(await this.getAudioLinksForModule(module)));
+      }
+      return audio_links;
+    },
+    async getAudioLinksForModule(module) {
+      const links = [];
+      for (const line of module.lines) {
+        const url = await this.getAudioLinkForLine(line);
+        if (url) {
+          links.push(url);
+        }
+      }
+      return links;
+    },
+    async getAudioLinkForLine(line) {
+      if (import.meta.env.VITE_FETCH_AUDIO_ON === 'false') return null;
+      if (!('content' in line) || !line.content) {
+        return null;
+      }
+
+      if (!('line_type' in line) || !line.line_type) {
+        return null;
+      }
+
+      if (
+        ![
+          'html',
+          'audio',
+          'congregation',
+          'leader',
+          'leader_dialogue',
+          'congregation_dialogue',
+          'reader',
+          'speaker',
+        ].includes(line.line_type)
+      ) {
+        return null;
+      }
+
+      const data = await this.$http.post(
+        `${import.meta.env.VITE_API_URL}api/v1/audio`,
+        {
+          content: line.content,
+          line_type: line.line_type,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      try {
+        return data.data.path;
+      } catch {
+        return null;
+      }
+    },
+    async extraCollects() {
+      if (this.serviceType !== 'office') {
+        return '';
+      }
+      const full_office_name = this.office
+        .replace('_', ' ')
+        .toLowerCase()
+        .split(' ')
+        .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
+        .join(' ');
+      const extraCollects =
+        JSON.parse(await DynamicStorage.getItem('extraCollects')) || '';
+      if (!extraCollects) {
+        return '';
+      }
+      return Object.prototype.hasOwnProperty.call(
+        extraCollects,
+        full_office_name
+      )
+        ? extraCollects[full_office_name].join(',')
+        : [];
+    },
   },
 };
 </script>
 
 <style scoped>
-.el-alert {
-  margin-top: 2em;
+.office-header {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.office-display-settings {
+  width: min(100%, 34rem);
+  margin: 0.75rem auto 0;
+}
+
+/* Ensure main content is centered and readable on large screens */
+#main {
+  max-width: 65ch;
+  margin: 0 auto;
+  padding: 0 var(--main-content-gutter);
+}
+
+@media (max-width: 768px) {
+  .office-display-settings {
+    width: 100%;
+    margin-top: 0.65rem;
+  }
 }
 </style>

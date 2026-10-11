@@ -1,0 +1,306 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE crossway-bible SYSTEM "schema/crossway.bibles.dtd">
+<crossway-bible translation="English Standard Version" revision="2025-02-02" xmlns="http://www.crosswaybibles.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="schema/crossway.bibles.xsd">
+<book title="1 John" num="62">
+  <marker class="begin-verse" mid="v62001001"/>
+  <chapter num="1">
+    <heading>The Word of Life</heading>
+    <begin-paragraph/>
+    <verse num="1"><crossref let="a" cid="c62001001.1"/>That which was <crossref let="b" cid="c62001001.2"/>from the beginning, <crossref let="c" cid="c62001001.3"/>which we have heard, <crossref let="d" cid="c62001001.4"/>which we have seen with our eyes, <crossref let="e" cid="c62001001.5"/>which we looked upon and <crossref let="f" cid="c62001001.6"/>have touched with our hands, concerning the word<note nid="n62001001.1"/> of life&emdash;</verse>
+    <marker class="begin-verse" mid="v62001002"/>
+    <verse num="2"><crossref let="g" cid="c62001002.1"/>the life <crossref let="h" cid="c62001002.2"/>was made manifest, and we have seen it, and <crossref let="i" cid="c62001002.3"/>testify to it and proclaim to you the eternal life, <crossref let="a" cid="c62001002.4"/>which was with the Father and <crossref let="h" cid="c62001002.5"/>was made manifest to us&emdash;</verse>
+    <marker class="begin-verse" mid="v62001003"/>
+    <verse num="3"><crossref let="c" cid="c62001003.1"/>that which we have seen and heard we proclaim also to you, so that you too may have fellowship with us; and indeed <crossref let="j" cid="c62001003.2"/>our fellowship is with the Father and with his Son Jesus Christ.</verse>
+    <marker class="begin-verse" mid="v62001004"/>
+    <verse num="4">And we are writing these things so <crossref let="k" cid="c62001004.1"/>that our<note nid="n62001004.1"/> joy may be complete.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v62001005"/>
+    <heading>Walking in the Light</heading>
+    <begin-paragraph/>
+    <verse num="5"><crossref let="l" cid="c62001005.1"/>This is the message we have heard from him and proclaim to you, that <crossref let="m" cid="c62001005.2"/>God is light, and in him is no darkness at all.</verse>
+    <marker class="begin-verse" mid="v62001006"/>
+    <verse num="6"><crossref let="n" cid="c62001006.1"/>If we say we have fellowship with him while we walk in darkness, we lie and <crossref let="o" cid="c62001006.2"/>do not practice the truth.</verse>
+    <marker class="begin-verse" mid="v62001007"/>
+    <verse num="7">But <crossref let="p" cid="c62001007.1"/>if we walk in the light, <crossref let="q" cid="c62001007.2"/>as he is in the light, we have fellowship with one another, and <crossref let="r" cid="c62001007.3"/>the blood of Jesus his Son cleanses us from all sin.</verse>
+    <marker class="begin-verse" mid="v62001008"/>
+    <verse num="8"><crossref let="s" cid="c62001008.1"/>If we say we have no sin, we deceive ourselves, and <crossref let="t" cid="c62001008.2"/>the truth is not in us.</verse>
+    <marker class="begin-verse" mid="v62001009"/>
+    <verse num="9"><crossref let="u" cid="c62001009.1"/>If we confess our sins, he is <crossref let="v" cid="c62001009.2"/>faithful and just to forgive us our sins and <crossref let="r" cid="c62001009.3"/>to cleanse us from all unrighteousness.</verse>
+    <marker class="begin-verse" mid="v62001010"/>
+    <verse num="10">If we say we have not sinned, <crossref let="w" cid="c62001010.1"/>we make him a liar, and <crossref let="x" cid="c62001010.2"/>his word is not in us.</verse>
+    <end-paragraph/>
+  </chapter>
+  <marker class="begin-verse" mid="v62002001"/>
+  <chapter num="2">
+    <heading>Christ Our Advocate</heading>
+    <begin-paragraph/>
+    <verse num="1">My little children, I am writing these things to you so that you may not sin. But if anyone does sin, <crossref let="y" cid="c62002001.1"/>we have an advocate with the Father, Jesus Christ the righteous.</verse>
+    <marker class="begin-verse" mid="v62002002"/>
+    <verse num="2"><crossref let="z" cid="c62002002.1"/>He is the propitiation for our sins, and not for ours only but <crossref let="a" cid="c62002002.2"/>also for the sins of the whole world.</verse>
+    <marker class="begin-verse" mid="v62002003"/>
+    <verse num="3">And by this we know that we have come to know him, if we <crossref let="b" cid="c62002003.1"/>keep his commandments.</verse>
+    <marker class="begin-verse" mid="v62002004"/>
+    <verse num="4">Whoever says <q class="begin-double" qid="62002004.1" from="62002004.1" to="62002004.2"/>I know him<q class="end-double" qid="62002004.2" from="62002004.1" to="62002004.2"/> but does not keep his commandments <crossref let="c" cid="c62002004.1"/>is a liar, and <crossref let="c" cid="c62002004.2"/>the truth is not in him,</verse>
+    <marker class="begin-verse" mid="v62002005"/>
+    <verse num="5">but whoever <crossref let="d" cid="c62002005.1"/>keeps his word, in him truly <crossref let="e" cid="c62002005.2"/>the love of God is perfected. <crossref let="f" cid="c62002005.3"/>By this we may know that we are in him:</verse>
+    <marker class="begin-verse" mid="v62002006"/>
+    <verse num="6">whoever says he <crossref let="g" cid="c62002006.1"/>abides in him <crossref let="h" cid="c62002006.2"/>ought to walk in the same way in which he walked.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v62002007"/>
+    <heading>The New Commandment</heading>
+    <begin-paragraph/>
+    <verse num="7">Beloved, I am writing you <crossref let="i" cid="c62002007.1"/>no new commandment, but <crossref let="j" cid="c62002007.2"/>an old commandment <crossref let="k" cid="c62002007.3"/>that you had from the beginning. The old commandment is the word that you have heard.</verse>
+    <marker class="begin-verse" mid="v62002008"/>
+    <verse num="8">At the same time, it is <crossref let="l" cid="c62002008.1"/>a new commandment that I am writing to you, which is true in him and in you, because<note nid="n62002008.1"/> <crossref let="m" cid="c62002008.2"/>the darkness is passing away and <crossref let="n" cid="c62002008.3"/>the true light is already shining.</verse>
+    <marker class="begin-verse" mid="v62002009"/>
+    <verse num="9">Whoever says he is in the light and <crossref let="o" cid="c62002009.1"/>hates his brother is still in darkness.</verse>
+    <marker class="begin-verse" mid="v62002010"/>
+    <verse num="10">Whoever loves his brother abides in the light, and in him<note nid="n62002010.1"/> there is no <crossref let="p" cid="c62002010.1"/>cause for stumbling.</verse>
+    <marker class="begin-verse" mid="v62002011"/>
+    <verse num="11">But whoever hates his brother is in the darkness and <crossref let="q" cid="c62002011.1"/>walks in the darkness, and does not know where he is going, because the darkness has blinded his eyes.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v62002012"/>
+    <begin-block-indent/>
+    <begin-paragraph class="line-group"/>
+    <verse num="12">
+        <begin-line/>I am writing to you, little children,<end-line class="br"/>
+        <begin-line class="indent"/>because <crossref let="r" cid="c62002012.1"/>your sins are forgiven for his name&apos;s sake.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v62002013"/>
+    <verse num="13">
+        <begin-line/>I am writing to you, fathers,<end-line class="br"/>
+        <begin-line class="indent"/>because you know <crossref let="s" cid="c62002013.1"/>him who is from the beginning.<end-line class="br"/>
+        <begin-line/>I am writing to you, young men,<end-line class="br"/>
+        <begin-line class="indent"/>because <crossref let="t" cid="c62002013.2"/>you have overcome the evil one.<end-line class="br"/>
+        <begin-line/>I write to you, children,<end-line class="br"/>
+        <begin-line class="indent"/>because <crossref let="u" cid="c62002013.3"/>you know the Father.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v62002014"/>
+    <verse num="14">
+        <begin-line/>I write to you, fathers,<end-line class="br"/>
+        <begin-line class="indent"/>because you know <crossref let="s" cid="c62002014.1"/>him who is from the beginning.<end-line class="br"/>
+        <begin-line/>I write to you, young men,<end-line class="br"/>
+        <begin-line class="indent"/>because <crossref let="t" cid="c62002014.2"/>you are strong,<end-line class="br"/>
+        <begin-line class="indent"/>and the word of God abides in you,<end-line class="br"/>
+        <begin-line class="indent"/>and you have overcome the evil one.<end-line/>
+    </verse>
+    <end-paragraph/>
+    <end-block-indent/>
+    <marker class="begin-verse" mid="v62002015"/>
+    <heading>Do Not Love the World</heading>
+    <begin-paragraph/>
+    <verse num="15"><crossref let="v" cid="c62002015.1"/>Do not love the world or the things in the world. <crossref let="w" cid="c62002015.2"/>If anyone loves the world, the love of the Father is not in him.</verse>
+    <marker class="begin-verse" mid="v62002016"/>
+    <verse num="16">For all that is in the world&emdash;<crossref let="x" cid="c62002016.1"/>the desires of the flesh and <crossref let="y" cid="c62002016.2"/>the desires of the eyes and pride of life<note nid="n62002016.1"/>&emdash;is not from the Father but is from the world.</verse>
+    <marker class="begin-verse" mid="v62002017"/>
+    <verse num="17">And <crossref let="z" cid="c62002017.1"/>the world is passing away along with its desires, but whoever does the will of God abides forever.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v62002018"/>
+    <heading>Warning Concerning Antichrists</heading>
+    <begin-paragraph/>
+    <verse num="18">Children, <crossref let="a" cid="c62002018.1"/>it is the last hour, and as you have heard that <crossref let="b" cid="c62002018.2"/>antichrist is coming, so now <crossref let="c" cid="c62002018.3"/>many antichrists have come. <crossref let="d" cid="c62002018.4"/>Therefore we know that it is the last hour.</verse>
+    <marker class="begin-verse" mid="v62002019"/>
+    <verse num="19"><crossref let="e" cid="c62002019.1"/>They went out from us, but they were not of us; for <crossref let="f" cid="c62002019.2"/>if they had been of us, they would have continued with us. But they went out, <crossref let="g" cid="c62002019.3"/>that it might become plain that they all are not of us.</verse>
+    <marker class="begin-verse" mid="v62002020"/>
+    <verse num="20">But you have been <crossref let="h" cid="c62002020.1"/>anointed by <crossref let="i" cid="c62002020.2"/>the Holy One, and <crossref let="j" cid="c62002020.3"/>you all have knowledge.<note nid="n62002020.1"/></verse>
+    <marker class="begin-verse" mid="v62002021"/>
+    <verse num="21">I write to you, not because you do not know the truth, but because you know it, and because no lie is of the truth.</verse>
+    <marker class="begin-verse" mid="v62002022"/>
+    <verse num="22">Who is the liar but <crossref let="k" cid="c62002022.1"/>he who denies that Jesus is the Christ? This is <crossref let="b" cid="c62002022.2"/>the antichrist, he who denies the Father and the Son.</verse>
+    <marker class="begin-verse" mid="v62002023"/>
+    <verse num="23"><crossref let="l" cid="c62002023.1"/>No one who denies the Son has the Father. Whoever confesses the Son has the Father also.</verse>
+    <marker class="begin-verse" mid="v62002024"/>
+    <verse num="24">Let <crossref let="m" cid="c62002024.1"/>what you heard from the beginning abide in you. If what you heard from the beginning abides in you, then <crossref let="n" cid="c62002024.2"/>you too will abide in the Son and in the Father.</verse>
+    <marker class="begin-verse" mid="v62002025"/>
+    <verse num="25">And this is the promise that he made to us<note nid="n62002025.1"/>&emdash;<crossref let="o" cid="c62002025.1"/>eternal life.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v62002026"/>
+    <begin-paragraph/>
+    <verse num="26">I write these things to you about <crossref let="p" cid="c62002026.1"/>those who are trying to deceive you.</verse>
+    <marker class="begin-verse" mid="v62002027"/>
+    <verse num="27">But <crossref let="q" cid="c62002027.1"/>the anointing that you received from him abides in you, and <crossref let="r" cid="c62002027.2"/>you have no need that anyone should teach you. But as his anointing teaches you about everything, and <crossref let="s" cid="c62002027.3"/>is true, and is no lie&emdash;just as it has taught you, abide in him.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v62002028"/>
+    <heading>Children of God</heading>
+    <begin-paragraph/>
+    <verse num="28">And now, little children, abide in him, so that <crossref let="t" cid="c62002028.1"/>when he appears <crossref let="u" cid="c62002028.2"/>we may have confidence and not shrink from him in shame at his <crossref let="v" cid="c62002028.3"/>coming.</verse>
+    <marker class="begin-verse" mid="v62002029"/>
+    <verse num="29">If you know that <crossref let="w" cid="c62002029.1"/>he is righteous, you may be sure that <crossref let="x" cid="c62002029.2"/>everyone who practices righteousness has been born of him.</verse>
+    <end-paragraph/>
+  </chapter>
+  <marker class="begin-verse" mid="v62003001"/>
+  <chapter num="3">
+    <begin-paragraph/>
+    <verse num="1">See <crossref let="y" cid="c62003001.1"/>what kind of love the Father has given to us, that we should be called <crossref let="z" cid="c62003001.2"/>children of God; and so we are. The reason why <crossref let="a" cid="c62003001.3"/>the world does not know us is that <crossref let="b" cid="c62003001.4"/>it did not know him.</verse>
+    <marker class="begin-verse" mid="v62003002"/>
+    <verse num="2">Beloved, we are <crossref let="z" cid="c62003002.1"/>God&apos;s children <crossref let="c" cid="c62003002.2"/>now, and what we will be <crossref let="d" cid="c62003002.3"/>has not yet appeared; but we know that <crossref let="e" cid="c62003002.4"/>when he appears<note nid="n62003002.1"/> <crossref let="f" cid="c62003002.5"/>we shall be like him, because <crossref let="g" cid="c62003002.6"/>we shall see him as he is.</verse>
+    <marker class="begin-verse" mid="v62003003"/>
+    <verse num="3">And everyone who <crossref let="h" cid="c62003003.1"/>thus hopes in him <crossref let="i" cid="c62003003.2"/>purifies himself as he is pure.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v62003004"/>
+    <begin-paragraph/>
+    <verse num="4">Everyone who makes a practice of sinning also practices lawlessness; <crossref let="j" cid="c62003004.1"/>sin is lawlessness.</verse>
+    <marker class="begin-verse" mid="v62003005"/>
+    <verse num="5">You know that <crossref let="k" cid="c62003005.1"/>he appeared in order to <crossref let="l" cid="c62003005.2"/>take away sins, and <crossref let="m" cid="c62003005.3"/>in him there is no sin.</verse>
+    <marker class="begin-verse" mid="v62003006"/>
+    <verse num="6">No one who abides in him keeps on sinning; <crossref let="n" cid="c62003006.1"/>no one who keeps on sinning has either seen him or known him.</verse>
+    <marker class="begin-verse" mid="v62003007"/>
+    <verse num="7">Little children, <crossref let="o" cid="c62003007.1"/>let no one deceive you. <crossref let="p" cid="c62003007.2"/>Whoever practices righteousness is righteous, as he is righteous.</verse>
+    <marker class="begin-verse" mid="v62003008"/>
+    <verse num="8"><crossref let="q" cid="c62003008.1"/>Whoever makes a practice of sinning is of the devil, for the devil has been sinning from the beginning. The reason the Son of God appeared was <crossref let="r" cid="c62003008.2"/>to destroy the works of the devil.</verse>
+    <marker class="begin-verse" mid="v62003009"/>
+    <verse num="9"><crossref let="s" cid="c62003009.1"/>No one born of God makes a practice of sinning, for God&apos;s<note nid="n62003009.1"/> seed abides in him; and he cannot keep on sinning, because he has been born of God.</verse>
+    <marker class="begin-verse" mid="v62003010"/>
+    <verse num="10">By this it is evident who are the children of God, and who are the children of the devil: whoever does not practice righteousness is not of God, <crossref let="t" cid="c62003010.1"/>nor is the one who <crossref let="u" cid="c62003010.2"/>does not love his brother.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v62003011"/>
+    <heading>Love One Another</heading>
+    <begin-paragraph/>
+    <verse num="11">For <crossref let="v" cid="c62003011.1"/>this is the message that you have heard from the beginning, <crossref let="w" cid="c62003011.2"/>that we should love one another.</verse>
+    <marker class="begin-verse" mid="v62003012"/>
+    <verse num="12">We should not be like <crossref let="x" cid="c62003012.1"/>Cain, who was of the evil one and murdered his brother. And why did he murder him? <crossref let="y" cid="c62003012.2"/>Because his own deeds were evil and his brother&apos;s righteous.</verse>
+    <marker class="begin-verse" mid="v62003013"/>
+    <verse num="13">Do not be surprised, brothers,<note nid="n62003013.1"/> <crossref let="z" cid="c62003013.1"/>that the world hates you.</verse>
+    <marker class="begin-verse" mid="v62003014"/>
+    <verse num="14">We know that <crossref let="a" cid="c62003014.1"/>we have passed out of death into life, because we love the brothers. Whoever does not love abides in death.</verse>
+    <marker class="begin-verse" mid="v62003015"/>
+    <verse num="15"><crossref let="b" cid="c62003015.1"/>Everyone who hates his brother is a murderer, and you know that <crossref let="c" cid="c62003015.2"/>no murderer has eternal life abiding in him.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v62003016"/>
+    <begin-paragraph/>
+    <verse num="16">By this we know love, that <crossref let="d" cid="c62003016.1"/>he laid down his life for us, and <crossref let="e" cid="c62003016.2"/>we ought to lay down our lives for the brothers.</verse>
+    <marker class="begin-verse" mid="v62003017"/>
+    <verse num="17">But <crossref let="f" cid="c62003017.1"/>if anyone has the world&apos;s goods and sees his brother in need, yet <crossref let="g" cid="c62003017.2"/>closes his heart against him, <crossref let="h" cid="c62003017.3"/>how does God&apos;s love abide in him?</verse>
+    <marker class="begin-verse" mid="v62003018"/>
+    <verse num="18">Little children, let us not <crossref let="i" cid="c62003018.1"/>love in word or talk but in deed and <crossref let="j" cid="c62003018.2"/>in truth.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v62003019"/>
+    <begin-paragraph/>
+    <verse num="19">By this we shall know that we are of the truth and reassure our heart before him;</verse>
+    <marker class="begin-verse" mid="v62003020"/>
+    <verse num="20">for whenever our heart condemns us, God is greater than our heart, and he knows everything.</verse>
+    <marker class="begin-verse" mid="v62003021"/>
+    <verse num="21">Beloved, <crossref let="k" cid="c62003021.1"/>if our heart does not condemn us, <crossref let="l" cid="c62003021.2"/>we have confidence before God;</verse>
+    <marker class="begin-verse" mid="v62003022"/>
+    <verse num="22">and <crossref let="m" cid="c62003022.1"/>whatever we ask we receive from him, because we keep his commandments and <crossref let="n" cid="c62003022.2"/>do what pleases him.</verse>
+    <marker class="begin-verse" mid="v62003023"/>
+    <verse num="23">And this is his commandment, <crossref let="o" cid="c62003023.1"/>that we believe in the name of his Son Jesus Christ and <crossref let="p" cid="c62003023.2"/>love one another, <crossref let="q" cid="c62003023.3"/>just as he has commanded us.</verse>
+    <marker class="begin-verse" mid="v62003024"/>
+    <verse num="24"><crossref let="r" cid="c62003024.1"/>Whoever keeps his commandments abides in God,<note nid="n62003024.1"/> and God<note nid="n62003024.2"/> in him. And <crossref let="s" cid="c62003024.2"/>by this we know that he abides in us, by the Spirit whom he has given us.</verse>
+    <end-paragraph/>
+  </chapter>
+  <marker class="begin-verse" mid="v62004001"/>
+  <chapter num="4">
+    <heading>Test the Spirits</heading>
+    <begin-paragraph/>
+    <verse num="1">Beloved, <crossref let="t" cid="c62004001.1"/>do not believe every spirit, but <crossref let="u" cid="c62004001.2"/>test the spirits to see whether they are from God, for <crossref let="v" cid="c62004001.3"/>many <crossref let="w" cid="c62004001.4"/>false prophets <crossref let="x" cid="c62004001.5"/>have gone out into the world.</verse>
+    <marker class="begin-verse" mid="v62004002"/>
+    <verse num="2">By this you know the Spirit of God: <crossref let="y" cid="c62004002.1"/>every spirit that confesses that <crossref let="z" cid="c62004002.2"/>Jesus Christ has come in the flesh is from God,</verse>
+    <marker class="begin-verse" mid="v62004003"/>
+    <verse num="3">and every spirit <crossref let="a" cid="c62004003.1"/>that does not confess Jesus is not from God. This is the spirit of the antichrist, which you heard was coming and <crossref let="b" cid="c62004003.2"/>now is in the world already.</verse>
+    <marker class="begin-verse" mid="v62004004"/>
+    <verse num="4">Little children, you are from God and have overcome them, for <crossref let="c" cid="c62004004.1"/>he who is in you is greater than <crossref let="d" cid="c62004004.2"/>he who is in the world.</verse>
+    <marker class="begin-verse" mid="v62004005"/>
+    <verse num="5"><crossref let="e" cid="c62004005.1"/>They are from the world; therefore they speak from the world, and <crossref let="f" cid="c62004005.2"/>the world listens to them.</verse>
+    <marker class="begin-verse" mid="v62004006"/>
+    <verse num="6">We are from God. <crossref let="g" cid="c62004006.1"/>Whoever knows God listens to us; whoever is not from God does not listen to us. By this we know <crossref let="h" cid="c62004006.2"/>the Spirit of truth and <crossref let="i" cid="c62004006.3"/>the spirit of error.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v62004007"/>
+    <heading>God Is Love</heading>
+    <begin-paragraph/>
+    <verse num="7">Beloved, <crossref let="j" cid="c62004007.1"/>let us love one another, for love is from God, and <crossref let="k" cid="c62004007.2"/>whoever loves has been born of God and knows God.</verse>
+    <marker class="begin-verse" mid="v62004008"/>
+    <verse num="8"><crossref let="l" cid="c62004008.1"/>Anyone who does not love does not know God, because <crossref let="m" cid="c62004008.2"/>God is love.</verse>
+    <marker class="begin-verse" mid="v62004009"/>
+    <verse num="9">In this the love of God was made manifest among us, that <crossref let="n" cid="c62004009.1"/>God sent his only Son into the world, so that we might live through him.</verse>
+    <marker class="begin-verse" mid="v62004010"/>
+    <verse num="10">In this is love, <crossref let="o" cid="c62004010.1"/>not that we have loved God <crossref let="n" cid="c62004010.2"/>but that he loved us and sent his Son to be <crossref let="p" cid="c62004010.3"/>the propitiation for our sins.</verse>
+    <marker class="begin-verse" mid="v62004011"/>
+    <verse num="11">Beloved, if God so loved us, we also ought to love one another.</verse>
+    <marker class="begin-verse" mid="v62004012"/>
+    <verse num="12"><crossref let="q" cid="c62004012.1"/>No one has ever seen God; if we love one another, God abides in us and <crossref let="r" cid="c62004012.2"/>his love is perfected in us.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v62004013"/>
+    <begin-paragraph/>
+    <verse num="13"><crossref let="s" cid="c62004013.1"/>By this we know that we abide in him and he in us, because he has given us of his Spirit.</verse>
+    <marker class="begin-verse" mid="v62004014"/>
+    <verse num="14">And <crossref let="t" cid="c62004014.1"/>we have seen and testify that <crossref let="u" cid="c62004014.2"/>the Father has sent his Son to be the Savior of <crossref let="v" cid="c62004014.3"/>the world.</verse>
+    <marker class="begin-verse" mid="v62004015"/>
+    <verse num="15"><crossref let="w" cid="c62004015.1"/>Whoever confesses that Jesus is the Son of God, God abides in him, and he in God.</verse>
+    <marker class="begin-verse" mid="v62004016"/>
+    <verse num="16">So <crossref let="x" cid="c62004016.1"/>we have come to know and to believe the love that God has for us. <crossref let="y" cid="c62004016.2"/>God is love, and <crossref let="z" cid="c62004016.3"/>whoever abides in love abides in God, and God abides in him.</verse>
+    <marker class="begin-verse" mid="v62004017"/>
+    <verse num="17">By this <crossref let="a" cid="c62004017.1"/>is love perfected with us, so that <crossref let="b" cid="c62004017.2"/>we may have confidence for the day of judgment, because <crossref let="c" cid="c62004017.3"/>as he is so also are we in this world.</verse>
+    <marker class="begin-verse" mid="v62004018"/>
+    <verse num="18">There is no fear in love, but <crossref let="d" cid="c62004018.1"/>perfect love casts out fear. For fear has to do with punishment, and whoever fears has not <crossref let="a" cid="c62004018.2"/>been perfected in love.</verse>
+    <marker class="begin-verse" mid="v62004019"/>
+    <verse num="19"><crossref let="e" cid="c62004019.1"/>We love because he first loved us.</verse>
+    <marker class="begin-verse" mid="v62004020"/>
+    <verse num="20"><crossref let="f" cid="c62004020.1"/>If anyone says, <q class="begin-double" qid="62004020.1" from="62004020.1" to="62004020.2"/>I love God,<q class="end-double" qid="62004020.2" from="62004020.1" to="62004020.2"/> and <crossref let="g" cid="c62004020.2"/>hates his brother, he is a liar; for he who does not love his brother whom he has seen cannot<note nid="n62004020.1"/> love God <crossref let="h" cid="c62004020.3"/>whom he has not seen.</verse>
+    <marker class="begin-verse" mid="v62004021"/>
+    <verse num="21">And <crossref let="i" cid="c62004021.1"/>this commandment we have from him: <crossref let="j" cid="c62004021.2"/>whoever loves God must also love his brother.</verse>
+    <end-paragraph/>
+  </chapter>
+  <marker class="begin-verse" mid="v62005001"/>
+  <chapter num="5">
+    <heading>Overcoming the World</heading>
+    <begin-paragraph/>
+    <verse num="1"><crossref let="k" cid="c62005001.1"/>Everyone who believes that <crossref let="l" cid="c62005001.2"/>Jesus is the Christ has been born of God, and <crossref let="m" cid="c62005001.3"/>everyone who loves the Father loves whoever has been born of him.</verse>
+    <marker class="begin-verse" mid="v62005002"/>
+    <verse num="2"><crossref let="n" cid="c62005002.1"/>By this we know that we love the children of God, when we love God and obey his commandments.</verse>
+    <marker class="begin-verse" mid="v62005003"/>
+    <verse num="3">For <crossref let="o" cid="c62005003.1"/>this is the love of God, that we <crossref let="p" cid="c62005003.2"/>keep his commandments. And <crossref let="q" cid="c62005003.3"/>his commandments are not burdensome.</verse>
+    <marker class="begin-verse" mid="v62005004"/>
+    <verse num="4">For <crossref let="r" cid="c62005004.1"/>everyone who has been born of God overcomes the world. And this is the victory that has overcome the world&emdash;<crossref let="s" cid="c62005004.2"/>our faith.</verse>
+    <marker class="begin-verse" mid="v62005005"/>
+    <verse num="5">Who is it that overcomes the world except the one who believes <crossref let="t" cid="c62005005.1"/>that Jesus is the Son of God?</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v62005006"/>
+    <heading>Testimony Concerning the Son of God</heading>
+    <begin-paragraph/>
+    <verse num="6">This is he who came <crossref let="u" cid="c62005006.1"/>by water and blood&emdash;Jesus Christ; not by the water only but by the water and the blood. And <crossref let="v" cid="c62005006.2"/>the Spirit is the one who testifies, because <crossref let="w" cid="c62005006.3"/>the Spirit is the truth.</verse>
+    <marker class="begin-verse" mid="v62005007"/>
+    <verse num="7">For there are three that testify:</verse>
+    <marker class="begin-verse" mid="v62005008"/>
+    <verse num="8">the Spirit and the water and the blood; and these three agree.</verse>
+    <marker class="begin-verse" mid="v62005009"/>
+    <verse num="9"><crossref let="x" cid="c62005009.1"/>If we receive the testimony of men, the testimony of God is greater, for this is the testimony of God <crossref let="y" cid="c62005009.2"/>that he has borne concerning his Son.</verse>
+    <marker class="begin-verse" mid="v62005010"/>
+    <verse num="10">Whoever believes in the Son of God <crossref let="z" cid="c62005010.1"/>has the testimony in himself. Whoever does not believe God <crossref let="a" cid="c62005010.2"/>has made him a liar, <crossref let="b" cid="c62005010.3"/>because he has not believed in the testimony that God has borne concerning his Son.</verse>
+    <marker class="begin-verse" mid="v62005011"/>
+    <verse num="11">And this is the testimony, that God gave us <crossref let="c" cid="c62005011.1"/>eternal life, and <crossref let="d" cid="c62005011.2"/>this life is in his Son.</verse>
+    <marker class="begin-verse" mid="v62005012"/>
+    <verse num="12"><crossref let="e" cid="c62005012.1"/>Whoever has the Son has life; whoever does not have the Son of God does not have life.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v62005013"/>
+    <heading>That You May Know</heading>
+    <begin-paragraph/>
+    <verse num="13">I write <crossref let="f" cid="c62005013.1"/>these things to you who <crossref let="g" cid="c62005013.2"/>believe in the name of the Son of God, that you may know that you have eternal life.</verse>
+    <marker class="begin-verse" mid="v62005014"/>
+    <verse num="14">And this is <crossref let="h" cid="c62005014.1"/>the confidence that we have toward him, that <crossref let="i" cid="c62005014.2"/>if we ask anything according to his will he hears us.</verse>
+    <marker class="begin-verse" mid="v62005015"/>
+    <verse num="15">And if we know that he hears us in whatever we ask, we know that we have the requests that we have asked of him.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v62005016"/>
+    <begin-paragraph/>
+    <verse num="16">If anyone sees his brother committing a sin not leading to death, he shall ask, and <crossref let="j" cid="c62005016.1"/>God<note nid="n62005016.1"/> will give him life&emdash;to those who commit sins that do not lead to death. <crossref let="k" cid="c62005016.2"/>There is sin that leads to death; <crossref let="l" cid="c62005016.3"/>I do not say that one should pray for that.</verse>
+    <marker class="begin-verse" mid="v62005017"/>
+    <verse num="17"><crossref let="m" cid="c62005017.1"/>All wrongdoing is sin, but there is sin that does not lead to death.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v62005018"/>
+    <begin-paragraph/>
+    <verse num="18">We know that <crossref let="n" cid="c62005018.1"/>everyone who has been born of God does not keep on sinning, but <crossref let="o" cid="c62005018.2"/>he who was born of God <crossref let="p" cid="c62005018.3"/>protects him, and the evil one does not touch him.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v62005019"/>
+    <begin-paragraph/>
+    <verse num="19">We know that we are from God, and <crossref let="q" cid="c62005019.1"/>the whole world lies in the power of the evil one.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v62005020"/>
+    <begin-paragraph/>
+    <verse num="20">And we know that the Son of God has come and <crossref let="r" cid="c62005020.1"/>has given us understanding, so that we may know <crossref let="s" cid="c62005020.2"/>him who is true; and we are in him who is true, in his Son Jesus Christ. He is the true God and <crossref let="t" cid="c62005020.3"/>eternal life.</verse>
+    <marker class="begin-verse" mid="v62005021"/>
+    <verse num="21">Little children, <crossref let="u" cid="c62005021.1"/>keep yourselves from idols.</verse>
+    <end-paragraph/>
+  </chapter>
+</book>
+</crossway-bible>

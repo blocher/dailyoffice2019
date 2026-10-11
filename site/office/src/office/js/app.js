@@ -1,9 +1,9 @@
-import { Plugins } from "@capacitor/core";
-const { App } = Plugins;
+import { App } from "@capacitor/app";
+import { FirebaseAnalytics } from "@capacitor-community/firebase-analytics";
 
 const analytics = () => {
-  if (window.mode == "app") {
-    Plugins.CapacitorFirebaseAnalytics.setScreenName({
+  if (window.mode === "app") {
+    FirebaseAnalytics.setScreenName({
       screenName: document.title,
       screenClassOverride: document.title,
     });
@@ -11,7 +11,7 @@ const analytics = () => {
 };
 
 const deepLinks = () => {
-  if (window.mode == "app") {
+  if (window.mode === "app") {
     App.addListener("appUrlOpen", (data) => {
       let path = data.url.split(".com").pop();
       if (path.indexOf("?")) {

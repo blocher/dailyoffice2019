@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.5;
+            color: #333;
+            background-color: #f8f8f8;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
+        h1, h2, h3, h4, h5 {
+            color: #222;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 28px;
+        }
+
+        h2 {
+            font-size: 24px;
+        }
+
+        h3 {
+            font-size: 20px;
+        }
+
+        h4 {
+            font-size: 18px;
+        }
+
+        h5 {
+            font-size: 16px;
+        }
+
+        img {
+            width: 100%;
+            height: auto;
+            display: block;
+            max-width: 600px;
+        }
+
+        p {
+            font-size: 12px;
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            background: #fff;
+            margin: 20px 0;
+        }
+
+        .details {
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 4px;
+            background: #f9f9f9;
+            margin-top: 10px;
+        }
+
+        .callout {
+            padding: 15px;
+            border-left: 5px solid #0073e6;
+            background: #eef6ff;
+            font-style: italic;
+            margin: 20px 0;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #0073e6;
+            border-radius: 12px;
+            text-transform: uppercase;
+            margin: 5px 5px 10px 0;
+        }
+
+        .pre-header {
+            background-color: #fff9c4;
+            padding: 10px 15px;
+            font-size: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            line-height: 11px;
+        }
+
+        .inline-list {
+            display: block;
+            padding: 0;
+            list-style: disc;
+        }
+
+        .inline-list li {
+            display: inline;
+            margin-right: 3px;
+            font-size: 9px;
+        }
+
+
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <div class="pre-header">
+        <p>Below is the study guide for the upcoming <strong>St. Andrew's Bible Study</strong>. This includes:
+            <ul class="inline-list">
+            <li> &bull; full text of the passage;</li>
+            <li> &bull; a summary of the corresponding chapter in the <em>Jesus Storybook Bible</em>;</li>
+            <li> &bull; the four senses of scriptural interpretation;</li>
+            <li> &bull; background information;</li>
+            <li> &bull; study questions;</li>
+            <li> &bull; practical questions;</li>
+            <li> &bull; a reflection, and</li>
+            <li> &bull; options for further reading.</li>
+            </ul>
+        </p>
+        <p><em><small>Much of this content was generated with carefully crafted AI prompts and citations are provided. Nonetheless, please double check all facts.</small></em></p>
+        <p><a href="https://api.dailyoffice2019.com/bible_study/{{ id }}" target="_blank">View as an interactive website.</a></p>
+    </div>
+    {{ content|safe }}
+</div>
+</body>
+</html>

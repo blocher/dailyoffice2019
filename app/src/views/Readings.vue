@@ -1,169 +1,212 @@
 <template>
   <div class="small-container home office">
-    <Loading v-if="loading &&!notFound"/>
-    <PageNotFound v-if="notFound"/>
-    <el-alert
-        v-if="error" :title="error"
-        type="error"
-    />
-    <div v-if="!loading && !notFound" id="readings">
-      <CalendarCard
+    <Loading v-if="loading && !notFound" />
+    <PageNotFound v-if="notFound" />
+    <el-alert v-if="error" :title="error" type="error" />
+
+    <div v-if="!loading && !notFound" class="space-y-6">
+      <!-- Header Section -->
+      <header class="office-header mb-8">
+        <CalendarCard
           v-if="!error"
           :calendar-date="calendarDate"
           :card="card"
           service-type="readings"
           office="readings"
-      />
-      <OfficeNav
-          :calendar-date="calendarDate"
-          selected-office="readings"
-      />
+        />
 
-      <h1>Readings</h1>
+        <OfficeNav :calendar-date="calendarDate" selected-office="readings" />
 
-      <el-divider/>
-
-      <el-row class="mt-2 content-stretch">
-        <el-col :span="24">
-          <h4 class="text-left mt-4">Daily Offices</h4>
-          <div v-for="service in dailyOfficeData" :key="service.name">
-            <div class="grid grid-cols-12 gap-3 even:bg-grey mb-2">
-              <div class="m-auto">
-                <font-awesome-icon v-if="service.active" :icon="['fad', 'fa-octagon-check']"/>
-              </div>
-              <div class="col-span-11">
-                <span v-if="service.active" v-html="service.name"></span>
-                <span v-if="!service.active"><a
-                    :href="serviceLink(service.name)"
-                    @click.prevent="changeService(service.name)"
-                    v-html="service.name"></a></span>
-              </div>
-            </div>
+        <div
+          id="readings-settings"
+          class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-100 dark:border-gray-700 shadow-sm mt-6"
+        >
+          <!-- Service Selection -->
+          <div class="mb-4">
+            <h4
+              class="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-2"
+            >
+              Service
+            </h4>
+            <el-select
+              v-model="service"
+              class="w-full"
+              size="large"
+              @change="changeService"
+            >
+              <el-option-group label="Daily Offices">
+                <el-option
+                  v-for="item in daily_office"
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item.name"
+                />
+              </el-option-group>
+              <el-option-group label="Holy Eucharist">
+                <el-option
+                  v-for="item in holy_eucharist"
+                  :key="item.name"
+                  :label="item.name"
+                  :value="item.name"
+                />
+              </el-option-group>
+            </el-select>
           </div>
 
-          <h4 class="text-left mt-4">Holy Eucharist</h4>
-          <div v-for="service in eucharistData" :key="service.name">
-            <div class="grid grid-cols-12 gap-3 even:bg-grey  mb-6">
-              <div class="m-auto">
-                <font-awesome-icon v-if="service.active" :icon="['fad', 'fa-octagon-check']"/>
-              </div>
-              <div class="col-span-11">
-                <span v-if="service.active" v-html="service.name"></span>
-                <span v-if="!service.active"><a
-                    :href="serviceLink(service.name)"
-                    @click.prevent="changeService(service.name)"
-                    v-html="service.name"></a></span>
-              </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Psalter Version -->
+            <div>
+              <h4
+                class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2"
+              >
+                Psalter
+              </h4>
+              <el-select
+                v-model="psalmsTranslation"
+                class="w-full"
+                size="large"
+                @change="changeTranslation"
+              >
+                <el-option
+                  v-for="item in psalmsTranslations"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </div>
+
+            <!-- Translation -->
+            <div>
+              <h4
+                class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2"
+              >
+                Translation
+              </h4>
+              <el-select
+                v-model="translation"
+                class="w-full"
+                size="large"
+                @change="changeTranslation"
+              >
+                <el-option
+                  v-for="item in translations"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </div>
+
+            <!-- Psalm Style -->
+            <div>
+              <h4
+                class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2"
+              >
+                Style
+              </h4>
+              <el-select
+                v-model="psalmStyle"
+                class="w-full"
+                size="large"
+                @change="changeStyle"
+              >
+                <el-option
+                  v-for="item in psalmStyles"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
             </div>
           </div>
-        </el-col>
-      </el-row>
+        </div>
 
-      <el-divider/>
-
-      <el-row :gutter="20">
-        <el-col :span="12">
-          <h4>Psalter Version</h4>
-          <el-select
-              v-model="psalmsTranslation" class="m-1 full-width" placeholder="Select"
-              size="large" @change="changeTranslation()">
-            <el-option
-                v-for="item in psalmsTranslations"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-            />
-          </el-select>
-        </el-col>
-        <el-col :span="12">
-          <h4>Translation</h4>
-          <el-select
-              v-model="translation" class="m-1 full-width" placeholder="Select" size="large"
-              @change="changeTranslation()">
-            <el-option
-                v-for="item in translations"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-            />
-          </el-select>
-        </el-col>
-      </el-row>
-
-      <div class="flow-root">
-        <!--        <div class="mt-1 sm:float-left">-->
-        <!--          <el-radio-group-->
-        <!--              v-model="psalmsTranslation" size="small"-->
-        <!--              @change="changeTranslation()">-->
-        <!--            <el-radio-button size="small" name="psalmsTranslation" label="contemporary">Contemporary Psalms-->
-        <!--            </el-radio-button>-->
-        <!--            <el-radio-button size="small" name="psalmsTranslation" label="traditional">Traditional Psalms-->
-        <!--            </el-radio-button>-->
-        <!--          </el-radio-group>-->
-        <!--        </div>-->
-        <!--        <div class="mt-1 sm:float-right">-->
-        <!--          <el-radio-group v-model="translation" size="small" @change="changeTranslation()">-->
-        <!--            <el-radio-button size="small" name="translation" label="esv">ESV</el-radio-button>-->
-        <!--            <el-radio-button size="small" name="translation" label="kjv">KJV</el-radio-button>-->
-        <!--            <el-radio-button size="small" name="translation" label="rsv">RSV</el-radio-button>-->
-
-        <!--            <el-radio-button size="small" name="translation" label="nasb">NASB</el-radio-button>-->
-        <!--            <el-radio-button size="small" name="translation" label="niv">NIV</el-radio-button>-->
-        <!--            <el-radio-button size="small" name="translation" label="nrsvce">NRSV</el-radio-button>-->
-        <!--            <el-radio-button size="small" name="translation" label="nabre">NAB-RE</el-radio-button>-->
-        <!--          </el-radio-group>-->
-        <!--        </div>-->
-      </div>
-      <Loading v-if="readingsLoading"/>
-      <FontSizer/>
+        <DisplaySettingsModule
+          v-if="!loading && !notFound && !error"
+          class="mt-6"
+        />
+      </header>
     </div>
   </div>
-  <div id="main" class="readingsPanel" :v-if="!readingsLoading">
-    <div class="mt-6">
-      <h2 mt-2 pt-0>{{ service }}</h2>
-      <CitationGroup
+
+  <div
+    class="readingsPanel book-content transition-opacity duration-200"
+    :class="{ 'opacity-50 pointer-events-none': readingsLoading }"
+  >
+    <div id="main" v-if="!loading && !notFound">
+      <div class="mt-6">
+        <h2 class="mt-2 pt-0 text-center">{{ service }}</h2>
+        <CitationGroup
           v-for="(readings, number) in groupedReadings"
-          :key="number" :readings="readings"
-          @readingLinkClick="handleReadingLinkClick"/>
+          :key="number"
+          :readings="readings"
+          @reading-link-click="handleReadingLinkClick"
+        />
+      </div>
+
+      <Collects
+        v-if="showCollects && !loading"
+        :collects="collectsToShow"
+        :style="'Contemporary'"
+      />
+      <Collects
+        v-if="showTraditionalCollects && !loading"
+        :collects="traditionalCollectsToShow"
+        :style="'Traditional'"
+      />
+      <template v-if="!loading">
+        <Reading
+          v-for="(reading, index) in readingsToShow"
+          :id="readingName(index)"
+          :key="index"
+          :reading="reading"
+          :psalm-cycle="psalmCycle"
+          :length="reading.length"
+          :translation="translation"
+          :psalms-translation="psalmsTranslation"
+          @cycle-60="setCycle60"
+          @cycle-30="setCycle30"
+        />
+      </template>
+      <p class="text-center mt-6" v-if="!loading">
+        <a href="https://www.esv.org/">
+          Scripture quotations are from the ESV® Bible (The Holy Bible, English
+          Standard Version®), copyright © 2001 by Crossway, a publishing
+          ministry of Good News Publishers. Used by permission. All rights
+          reserved.
+        </a>
+      </p>
     </div>
-
-    <Collects v-if="showCollects" :collects="collectsToShow" :style="'Contemporary'"/>
-    <Collects v-if="showTraditionalCollects" :collects="traditionalCollectsToShow" :style="'Traditional'"/>
-    <Reading
-        v-for="(reading, index) in readingsToShow" :id="readingName(index)" :key="index" :reading="reading"
-        :psalm-cycle="psalmCycle" :length="reading.length" :translation="translation"
-        :psalms-translation="psalmsTranslation" @cycle-60="setCycle60"
-        @cycle-30="setCycle30"/>
   </div>
-
-
 </template>
 
 <script>
 // @ is an alias to /src
-import {nextTick} from 'vue'
-import Loading from "@/components/Loading";
-import setCalendarDate from "@/helpers/setCalendarDate";
-import CalendarCard from "@/components/CalendarCard";
-import OfficeNav from "@/components/OfficeNav";
-import Reading from "@/components/Reading";
-import Collects from "@/components/Collects";
-import CitationGroup from "@/components/CitationGroup";
-import FontSizer from "@/components/FontSizer";
-import PageNotFound from "@/views/PageNotFound";
-import {DynamicStorage} from "@/helpers/storage";
+import OfficeNav from '@/components/OfficeNav.vue';
+import CalendarCard from '@/components/CalendarCard.vue';
+import PageNotFound from '@/views/PageNotFound.vue';
+import Loading from '@/components/Loading.vue';
+import setCalendarDate from '@/helpers/setCalendarDate';
+import CitationGroup from '@/components/CitationGroup.vue';
+import Reading from '@/components/Reading.vue';
+import Collects from '@/components/Collects.vue';
+import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
+import { DynamicStorage } from '@/helpers/storage';
+import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
+import { nextTick } from 'vue';
 
 export default {
-  name: "Readings",
+  name: 'Readings',
   components: {
-    Loading,
-    CalendarCard,
     OfficeNav,
+    CalendarCard,
+    PageNotFound,
+    Loading,
+    CitationGroup,
     Reading,
     Collects,
-    CitationGroup,
-    PageNotFound,
-    FontSizer,
+    DisplaySettingsModule,
   },
   props: {},
   data() {
@@ -181,59 +224,64 @@ export default {
       service: null,
       readings: null,
       full: true,
-      psalmCycle: "30",
+      psalmCycle: '30',
       readingsToShow: [],
-      translation: "esv",
+      translation: 'esv',
       translations: [
-        {value: "esv", label: "ESV: English Standard Version"},
-        {value: "kjv", label: "KJV: King James Version"},
-        {value: "rsv", label: "RSV: Revised Standard Version"},
-        {value: "nasb", label: "NASB: New American Standard Bible"},
-        {value: "niv", label: "NIV: New International Version"},
-        {value: "nrsvce", label: "NRSV: New Revised Standard Version"},
-        {value: "nabre", label: "NAB-RE: New American Bible Revised Edition"},
+        { value: 'esv', label: 'ESV: English Standard Version' },
+        { value: 'kjv', label: 'KJV: King James Version' },
+        { value: 'rsv', label: 'RSV: Revised Standard Version' },
+        { value: 'nasb', label: 'NASB: New American Standard Bible' },
+        { value: 'niv', label: 'NIV: New International Version' },
+        { value: 'nrsvce', label: 'NRSV: New Revised Standard Version' },
+        { value: 'nabre', label: 'NAB-RE: New American Bible Revised Edition' },
+        { value: 'cuvs', label: 'CUVS: 和合本（简体）' },
+        { value: 'cuv', label: 'CUV: 和合本（繁體）' },
+        { value: 'znsigao', label: '思高本（简体）' },
+        { value: 'sigao', label: '思高本（繁體）' },
+        { value: 'nvi', label: 'NVI: Nueva Versión Internacional' },
+        { value: 'rv1960', label: 'RVR1960: Reina-Valera 1960' },
       ],
-      psalmsTranslation: "contemporary",
+      psalmsTranslation: 'contemporary',
       psalmsTranslations: [
         {
-          label: "Contemporary Psalms",
-          value: "contemporary",
+          label: 'Contemporary Psalms',
+          value: 'contemporary',
         },
         {
-          label: "Traditional Psalms",
-          value: "traditional",
+          label: 'Traditional Psalms',
+          value: 'traditional',
+        },
+      ],
+      psalmStyle: 'whole_verse',
+      psalmStyles: [
+        {
+          label: 'Antiphonally by Whole Verse',
+          value: 'whole_verse',
+        },
+        {
+          label: 'Antiphonally by Half Verse',
+          value: 'half_verse',
+        },
+        {
+          label: 'In Unison',
+          value: 'unison',
         },
       ],
       notFound: false,
-      activeIndex: "1",
+      activeIndex: '1',
       uniqueOpened: true,
       ellipsis: false,
     };
   },
   computed: {
-    dailyOfficeData: function () {
-      return this.daily_office.map((service) => {
-        return {
-          active: service.name === this.service,
-          name: service.name,
-        };
-      });
-    },
-    eucharistData: function () {
-      return this.holy_eucharist.map((service) => {
-        return {
-          active: service.name === this.service,
-          name: service.name,
-        };
-      });
-    },
     groupedReadings: function () {
-      const groups = {}
-      this.readingsToShow.forEach(reading => {
+      const groups = {};
+      this.readingsToShow.forEach((reading) => {
         if (reading.full.reading_number in groups) {
-          groups[reading.full.reading_number].push(reading)
+          groups[reading.full.reading_number].push(reading);
         } else {
-          groups[reading.full.reading_number] = [reading]
+          groups[reading.full.reading_number] = [reading];
         }
       });
       return groups;
@@ -241,43 +289,94 @@ export default {
     collectsToShow: function () {
       if (this.service) {
         let serviceItems = this.services[this.service];
-        let collects = serviceItems['collects']
-        collects = collects.map(collect => {
-          return collect.replace(" Amen.", "")
+        let collects = serviceItems['collects'];
+        collects = collects.map((collect) => {
+          return collect.replace(' Amen.', '');
         });
-        return collects
+        return collects;
       }
       return [];
     },
     showCollects: function () {
-      return this.collectsToShow.length > 0
+      return this.collectsToShow.length > 0;
     },
     traditionalCollectsToShow: function () {
       if (this.service) {
         let serviceItems = this.services[this.service];
-        let collects = []
+        let collects = [];
         try {
-          collects = serviceItems['traditional_collects']
-        } catch (e) {
-          return []
+          collects = serviceItems['traditional_collects'];
+        } catch {
+          return [];
         }
-        collects = collects.map(collect => {
-          return collect.replace(" Amen.", "")
+        collects = collects.map((collect) => {
+          return collect.replace(' Amen.', '');
         });
-        return collects
+        return collects;
       }
       return [];
     },
     showTraditionalCollects: function () {
-      return this.traditionalCollectsToShow.length > 0
+      return this.traditionalCollectsToShow.length > 0;
+    },
+  },
+  watch: {
+    '$route.params': {
+      handler(newParams, oldParams) {
+        if (this.$route.name && this.$route.name.startsWith('readings')) {
+          if (
+            newParams.service !== oldParams?.service ||
+            newParams.position !== oldParams?.position
+          ) {
+            // Handle native route changes without reloading data
+            if (this.services) {
+              if (newParams.service) {
+                const serviceRaw = newParams.service
+                  .toLowerCase()
+                  .replace('-', '_');
+                const position = parseInt(newParams.position || 0);
+
+                if (
+                  serviceRaw === 'morning_prayer' &&
+                  this.morning_prayer[position]
+                ) {
+                  this.service = this.morning_prayer[position].name;
+                } else if (
+                  serviceRaw === 'evening_prayer' &&
+                  this.evening_prayer[position]
+                ) {
+                  this.service = this.evening_prayer[position].name;
+                } else if (
+                  serviceRaw === 'daily_office' &&
+                  this.daily_office[position]
+                ) {
+                  this.service = this.daily_office[position].name;
+                } else if (
+                  serviceRaw === 'holy_eucharist' &&
+                  this.holy_eucharist[position]
+                ) {
+                  this.service = this.holy_eucharist[position].name;
+                }
+              }
+              this.activeIndex = this.serviceLink(this.service);
+              this.setReadingsToShow();
+            }
+          }
+        }
+      },
+      deep: true,
     },
   },
   async created() {
     this.calendarDate = setCalendarDate(this.$route);
+    await this.$store.dispatch('initializeSettings');
+
     let translation = await DynamicStorage.getItem('readings_translation');
-    if (!translation) {
-      const settings = this.$store.state.settings;
-      translation = settings["bible_translation"];
+    if (!translation || translation === 'undefined') {
+      translation = this.$store.state.settings['bible_translation'];
+    }
+    if (!translation || translation === 'undefined') {
+      translation = 'esv';
     }
     await DynamicStorage.setItem('readings_translation', translation);
     this.translation = translation;
@@ -285,189 +384,259 @@ export default {
     let psalmsTranslation = await DynamicStorage.getItem('psalms_translation');
     if (!psalmsTranslation) {
       const settings = this.$store.state.settings;
-      psalmsTranslation = settings["language_style"];
+      psalmsTranslation = settings['language_style'];
     }
     await DynamicStorage.setItem('psalms_translation', psalmsTranslation);
     this.psalmsTranslation = psalmsTranslation;
 
-    await this.initialize();
+    let psalmCycle = await DynamicStorage.getItem('psalter');
+    if (!psalmCycle) {
+      const settings = this.$store.state.settings;
+      psalmCycle = settings['psalter'];
+    }
+    await DynamicStorage.setItem('psalter', psalmCycle);
+    this.psalmCycle = psalmCycle;
 
+    let psalmStyle = await DynamicStorage.getItem('psalm_style');
+    if (!psalmStyle) {
+      const settings = this.$store.state.settings;
+      psalmStyle = settings['psalm_style'];
+    }
+    await DynamicStorage.setItem('psalm_style', psalmStyle);
+    this.psalmStyle = psalmStyle;
+
+    await this.initialize();
   },
   methods: {
+    applySeasonAccentFromCard(card) {
+      const liturgicalColor = resolveColorFromCard(card, 'readings');
+      if (liturgicalColor) {
+        setSeasonAccent(liturgicalColor);
+      }
+    },
     initialize: async function () {
       this.readingsLoading = true;
       let data = null;
       try {
-
-              this.availableSettings = await this.$store.state.availableSettings;
-    await this.$store.dispatch('initializeSettings');
-    const settings = await this.$store.state.settings;
-    const queryString = Object.keys(settings)
-        .map((key) => key + "=" + settings[key])
-        .join("&");
-
+        this.availableSettings = await this.$store.state.availableSettings;
+        await this.$store.dispatch('initializeSettings');
+        const settings = await this.$store.state.settings;
+        const queryString = Object.keys(settings)
+          .map((key) => key + '=' + settings[key])
+          .join('&');
 
         const today_str =
-            this.calendarDate.getFullYear() +
-            "-" +
-            (this.calendarDate.getMonth() + 1) +
-            "-" +
-            this.calendarDate.getDate();
+          this.calendarDate.getFullYear() +
+          '-' +
+          (this.calendarDate.getMonth() + 1) +
+          '-' +
+          this.calendarDate.getDate();
         data = await this.$http.get(
-            `${process.env.VUE_APP_API_URL}api/v1/readings/${today_str}?translation=${this.translation}&psalms=${this.psalmsTranslation}&`  + queryString
+          `${import.meta.env.VITE_API_URL}api/v1/readings/${today_str}?translation=${this.translation}&psalms=${this.psalmsTranslation}&style=${this.psalmStyle}&` +
+            queryString
         );
-
-      } catch (e) {
+      } catch {
         this.error =
-            "There was an error retrieving the readings. Please try again.";
+          'There was an error retrieving the readings. Please try again.';
         this.loading = false;
         this.readingsLoading = false;
         return;
       }
-      this.card = data.data.calendarDate
-      this.services = data.data.services
+      this.card = data.data.calendarDate;
+      this.applySeasonAccentFromCard(this.card);
+      this.services = data.data.services;
       // iterate through keys and values of this.services
       this.morning_prayer = [];
       this.evening_prayer = [];
       this.daily_office = [];
       this.holy_eucharist = [];
       for (const [key, value] of Object.entries(this.services)) {
-        if (value.type == "daily_office") {
-          this.daily_office.push(value)
-        } else if (value.type == "mass") {
-          this.holy_eucharist.push(value)
+        if (value.type == 'daily_office') {
+          this.daily_office.push(value);
+        } else if (value.type == 'mass') {
+          this.holy_eucharist.push(value);
         }
-        if (key.includes("Morning Prayer")) {
-          this.morning_prayer.push(value)
-        } else if (key.includes("Evening Prayer")) {
-          this.evening_prayer.push(value)
+        if (key.includes('Morning Prayer')) {
+          this.morning_prayer.push(value);
+        } else if (key.includes('Evening Prayer')) {
+          this.evening_prayer.push(value);
         }
       }
       if (this.$route.params.service) {
         try {
-          const service = this.$route.params.service.toLowerCase().replace("-", "_");
+          const service = this.$route.params.service
+            .toLowerCase()
+            .replace('-', '_');
           const position = parseInt(this.$route.params.position || 0);
-          if (service == "morning_prayer") {
+          if (service == 'morning_prayer') {
             this.service = this.morning_prayer[position].name;
-          } else if (service == "evening_prayer") {
+          } else if (service == 'evening_prayer') {
             this.service = this.evening_prayer[position].name;
-          } else if (service == "daily_office") {
+          } else if (service == 'daily_office') {
             this.service = this.daily_office[position].name;
-          } else if (service == "holy_eucharist") {
+          } else if (service == 'holy_eucharist') {
             this.service = this.holy_eucharist[position].name;
-            this.activeIndex = "2"
+            this.activeIndex = '2';
           } else {
-            this.service = this.morning_prayer[position].name
+            this.service = this.morning_prayer[position].name;
           }
-        } catch (e) {
+        } catch {
           this.notFound = true;
         }
       } else {
-        this.service = this.morning_prayer[0].name
+        this.service = this.morning_prayer[0].name;
       }
-      this.activeIndex = this.serviceLink(this.service)
-      this.setReadingsToShow()
+      this.activeIndex = this.serviceLink(this.service);
+      this.setReadingsToShow();
       this.error = false;
       this.loading = false;
       this.readingsLoading = false;
     },
     readingID: function (reading) {
-      const readingId = reading.citation.replace(/[\W_]+/g, "_")
+      const readingId = reading.citation.replace(/[\W_]+/g, '_');
       return `reading_${readingId}`.toLowerCase();
     },
     changeTranslation: async function () {
-      await DynamicStorage.setItem('psalms_translation', this.psalmsTranslation);
+      await DynamicStorage.setItem(
+        'psalms_translation',
+        this.psalmsTranslation
+      );
       await DynamicStorage.setItem('readings_translation', this.translation);
-      this.initialize();
+      await this.initialize();
+    },
+    changeStyle: async function () {
+      await DynamicStorage.setItem('psalm_style', this.psalmStyle);
+      await this.initialize();
     },
     serviceLink: function (service) {
-      let position = 0
-      let service_name = ""
-      if (service.includes("Morning Prayer")) {
-        service_name = "morning_prayer"
-        position = this.morning_prayer.findIndex(p => p.name == service);
-      } else if (service.includes("Evening Prayer")) {
-        service_name = "evening_prayer"
-        position = this.evening_prayer.findIndex(p => p.name == service);
+      let serviceValues = this.getPositionAndServiceName(service);
+      let link = '';
+      if (serviceValues.position > 0) {
+        link = `/readings/${serviceValues.service_name}/${serviceValues.position}/${this.calendarDate.getFullYear()}/${
+          this.calendarDate.getMonth() + 1
+        }/${this.calendarDate.getDate()}`;
       } else {
-        service_name = "holy_eucharist"
-        position = this.holy_eucharist.findIndex(p => p.name == service);
-      }
-      let link = ""
-      if (position > 0) {
-        link = `/readings/${service_name}/${position}/${this.calendarDate.getFullYear()}/${
-            this.calendarDate.getMonth() + 1
-        }/${this.calendarDate.getDate()}`
-
-      } else {
-        link = `/readings/${service_name}/${this.calendarDate.getFullYear()}/${
-            this.calendarDate.getMonth() + 1
-        }/${this.calendarDate.getDate()}`
-
+        link = `/readings/${serviceValues.service_name}/${this.calendarDate.getFullYear()}/${
+          this.calendarDate.getMonth() + 1
+        }/${this.calendarDate.getDate()}`;
       }
       return link;
     },
-    changeService: function (service) {
-      this.service = service
-      const link = this.serviceLink(service)
-      history.pushState(
-          {},
-          null,
-          link
-      )
-      this.setReadingsToShow()
+    getPositionAndServiceName: function (service) {
+      let position = 0;
+      let service_name = '';
+      if (service.includes('Morning Prayer')) {
+        service_name = 'morning_prayer';
+        position = this.morning_prayer.findIndex((p) => p.name == service);
+      } else if (service.includes('Evening Prayer')) {
+        service_name = 'evening_prayer';
+        position = this.evening_prayer.findIndex((p) => p.name == service);
+      } else {
+        service_name = 'holy_eucharist';
+        position = this.holy_eucharist.findIndex((p) => p.name == service);
+      }
+      return { position: position, service_name: service_name };
+    },
+    changeService: async function (service) {
+      this.service = service;
+      let serviceValues = this.getPositionAndServiceName(service);
+      let routeName = 'readingsByServiceAndDate';
+      if (serviceValues.position > 0) {
+        routeName = 'readingsByServicePositionAndDate';
+      }
+
+      // Use route params if available, otherwise use calendarDate
+      const year = this.$route.params.year || this.calendarDate.getFullYear();
+      const month =
+        this.$route.params.month || this.calendarDate.getMonth() + 1;
+      const day = this.$route.params.day || this.calendarDate.getDate();
+
+      // Only push route if it's changing
+      if (
+        this.$route.name !== routeName ||
+        this.$route.params.service !== serviceValues.service_name ||
+        this.$route.params.position !== serviceValues.position
+      ) {
+        window.sessionStorage.setItem('preventScroll', 'true');
+        await this.$router.push({
+          name: routeName,
+          params: {
+            service: serviceValues.service_name,
+            year: year,
+            month: month,
+            day: day,
+            position: serviceValues.position,
+          },
+        });
+      }
+
+      // No need to call initialize() here manually since we added a route watcher
+      // that will fire when the route changes. If the route didn't change (rare),
+      // we still need to update the view.
+      this.setReadingsToShow();
+
+      await nextTick();
+      this.goto('readings-settings');
     },
     setReadingsToShow: function () {
       if (this.service) {
         let serviceItems = this.services[this.service];
         this.readingsToShow = serviceItems['readings'].map((reading) => {
           return reading;
-        })
+        });
         return;
       }
       this.readingsToShow = [];
     },
     handleReadingLinkClick: async function (data) {
       this.readingsToShow = this.readingsToShow.map((reading) => {
-        if (reading.full.citation == data.reading.citation && data.length == "full") {
-          reading.length = data.length
+        if (
+          reading.full.citation == data.reading.citation &&
+          data.length == 'full'
+        ) {
+          reading.length = data.length;
         }
-        if (reading.abbreviated.citation == data.reading.citation && data.length == "abbreviated") {
-          reading.length = data.length
+        if (
+          reading.abbreviated.citation == data.reading.citation &&
+          data.length == 'abbreviated'
+        ) {
+          reading.length = data.length;
         }
         return reading;
-      })
-      if (data.reading.cycle == "60") {
-        this.setCycle60()
+      });
+      if (data.reading.cycle == '60') {
+        this.setCycle60();
       }
-      if (data.reading.cycle == "30") {
-        this.setCycle30()
+      if (data.reading.cycle == '30') {
+        this.setCycle30();
       }
       await nextTick();
-      this.goto(this.readingID(data.reading))
+      this.goto(this.readingID(data.reading));
     },
     readingName: function (index) {
       return `reading_${index}`;
     },
     goto(id) {
-      const menu = document.getElementById('topMenu')
-      const menuHeight = menu ? menu.offsetHeight : 0
+      const menu = document.getElementById('topMenu');
+      const menuHeight = menu ? menu.offsetHeight : 0;
       const element = document.getElementById(id);
-      const top = element.offsetTop;
+      if (!element) return;
+      const top = element.getBoundingClientRect().top + window.scrollY;
       window.scrollTo({
-        top: top - menuHeight - 5,
+        top: top - menuHeight - 15,
         left: 0,
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     },
-    setCycle30: function () {
-      this.psalmCycle = "30";
+    setCycle30: async function () {
+      this.psalmCycle = '30';
+      await DynamicStorage.setItem('psalter', this.psalmCycle);
     },
-    setCycle60: function () {
-      this.psalmCycle = "60";
+    setCycle60: async function () {
+      this.psalmCycle = '60';
+      await DynamicStorage.setItem('psalter', this.psalmCycle);
     },
   },
-
 };
 </script>
 <style scoped lang="scss">
@@ -489,15 +658,14 @@ h3 {
   width: 100%;
 }
 
-
 .collectsWrapper {
   padding: 1rem;
   border: 1px solid var(--font-color);
-  border-radius: .25rem;
+  border-radius: 0.25rem;
   margin: 1rem 0;
 }
 
-.flex-grow {
+.grow {
   flex-grow: 1;
 }
 </style>

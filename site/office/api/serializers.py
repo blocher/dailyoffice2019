@@ -1,7 +1,7 @@
 # Serializers define the API representation.
 from rest_framework import serializers
 
-from office.models import UpdateNotice, Collect, AboutItem, CollectTag, CollectTagCategory, Scripture
+from office.models import UpdateNotice, Collect, AboutItem, CollectTag, CollectTagCategory, Scripture, SiteMessage
 from psalter.models import Psalm, PsalmVerse, PsalmTopic
 
 
@@ -9,6 +9,20 @@ class UpdateNoticeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = UpdateNotice
         fields = ["uuid", "notice", "app_mode", "web_mode", "version"]
+
+
+class SiteMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SiteMessage
+        fields = [
+            "uuid",
+            "tag_text",
+            "tag_color",
+            "text",
+            "link",
+            "dismissible",
+            "dismiss_permanent",
+        ]
 
 
 class AboutItemSerializer(serializers.HyperlinkedModelSerializer):

@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes'?>
+<!DOCTYPE crossway-bible SYSTEM "schema/crossway.bibles.dtd">
+<crossway-bible xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" translation="English Standard Version" revision="2018-3-26" xmlns="http://www.crosswaybibles.org" xsi:schemaLocation="schema/crossway.bibles.xsd">
+  <book title="Psalm 151" num="84">
+    <marker class="begin-verse" mid="v84001001"/>
+    <chapter num="1">
+      <subheading class="psalm-title">This psalm is ascribed to David as his own composition (though it is outside the number<note nid="n84001001.1"/>), after he had fought in single combat with Goliath.</subheading>
+      <begin-block-indent/>
+      <begin-paragraph class="line-group"/>
+      <verse num="1"><begin-line/>I was small among my brothers<end-line class="br"/><begin-line class="indent"/>and youngest in my father<q class="end-single" qid="84001001.1"/>s house;<end-line class="br"/><begin-line/>I tended my father<q class="end-single" qid="84001001.2"/>s sheep.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v84001002"/>
+      <verse num="2"><begin-line/>My hands made a harp,<end-line class="br"/><begin-line class="indent"/>my fingers fashioned a lyre.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v84001003"/>
+      <verse num="3"><begin-line/>And who will declare it to my Lord?<end-line class="br"/><begin-line class="indent"/>The Lord himself; he himself listens.<note nid="n84001003.1"/><end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v84001004"/>
+      <verse num="4"><begin-line/>It was he who sent his messenger<note nid="n84001004.1"/><end-line class="br"/><begin-line class="indent"/>and took me from my father<q class="end-single" qid="84001004.1"/>s sheep<end-line class="br"/><begin-line class="indent"/>and anointed me with his anointing oil.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v84001005"/>
+      <verse num="5"><begin-line/>My brothers were handsome and tall,<end-line class="br"/><begin-line class="indent"/>but the Lord was not satisfied with them.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v84001006"/>
+      <verse num="6"><begin-line/>I went out to meet the Philistine,<note nid="n84001006.1"/><end-line class="br"/><begin-line class="indent"/>and he cursed me by his idols.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v84001007"/>
+      <verse num="7"><begin-line/>But I drew his own sword;<end-line class="br"/><begin-line class="indent"/>I beheaded him and removed reproach from the children of Israel.<end-line/></verse>
+      <end-paragraph/>
+      <end-block-indent/>
+    </chapter>
+  </book>
+</crossway-bible>

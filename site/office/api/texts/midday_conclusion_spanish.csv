@@ -1,0 +1,6 @@
+"La Despedida", "heading",
+"Bendigamos al Señor. {{ alleluia }}", "leader_dialogue"
+"Gracias a Dios. {{ alleluia }}", "congregation_dialogue",
+"El Oficiante concluye con lo siguiente", "rubric",
+"La gracia de nuestro Señor Jesucristo y el amor de Dios Padre, y la comunión del Espíritu Santo, esté por siempre con todos nosotros.", "leader",
+"Amén.", "congregation"

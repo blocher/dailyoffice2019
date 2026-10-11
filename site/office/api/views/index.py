@@ -1,47 +1,160 @@
 import csv
+import bugsnag
 import datetime
 import json
+import logging
 import os
+import re
+import subprocess
 from collections import defaultdict
-from distutils.util import strtobool
+from contextvars import ContextVar
 from urllib.parse import quote
 
 import mailchimp_marketing as MailchimpMarketing
+from distutils.util import strtobool
 from django.conf import settings
-from django.db.models import Prefetch
-from django.http import HttpResponse
-from django.template.loader import render_to_string
+from django.contrib.sites.models import Site
+from django.db.models import Prefetch, Q
+from django.utils import timezone
 from django.utils.functional import cached_property
-from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import TemplateResponseMixin
 from mailchimp_marketing.api_client import ApiClientError
+from mutagen.mp3 import MP3
 from rest_framework import serializers, mixins, viewsets
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import APIException, PermissionDenied, ValidationError
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import ViewSet
 
 from churchcal.api.permissions import ReadOnly
-from churchcal.api.serializer import DaySerializer
-from churchcal.calculations import get_church_year
-from office.api.serializers import UpdateNoticeSerializer
-from office.api.views import Module, Line
+from churchcal.api.serializer import DaySerializer, CommemorationSerializer
+from churchcal.calculations import get_calendar_date, get_church_year
+from churchcal.models import Commemoration
+from office.audio_ceremony import INTERCESSION_INVITATION, INTERCESSION_MODULE, frame_tracks
+from office.api.line import Line
+from office.api.serializers import UpdateNoticeSerializer, SiteMessageSerializer
+from office.api.translations import get_csv_suffix, is_chinese
+from office.api.views import Module
 from office.api.views.ep import EPOpeningSentence
+from office.api.views.tts import get_tts_provider
 from office.canticles import DefaultCanticles, BCP1979CanticleTable, REC2011CanticleTable, EP2, EP1, S8
 from office.models import (
     UpdateNotice,
     HolyDayOfficeDay,
+    OfficeDay,
     StandardOfficeDay,
     ThirtyDayPsalterDay,
     Setting,
     SettingOption,
     Collect,
     Scripture,
+    SiteMessage,
 )
-from office.utils import passage_to_citation, get_client_ip
+from office.utils import passage_to_citation, get_client_ip, generate_uuid_from_string
 from psalter.utils import get_psalms
+
+
+class ReadingAudioUnavailable(APIException):
+    status_code = 503
+    default_detail = "Complete Scripture audio is unavailable. Please try again later."
+    default_code = "reading_audio_unavailable"
+
+
+# --- Text-to-speech configuration -------------------------------------------
+# The active backend (OpenAI, Fish Audio, ...) is selected by the TTS_PROVIDER
+# setting and encapsulates everything that affects the generated audio: model,
+# speed, per-role voices, steering, and output sample rate. Keeping that on the
+# provider means the clip cache key and AudioClip rows stay in sync no matter
+# which service is used. See office/api/views/tts.py.
+TTS_PROVIDER = get_tts_provider()
+logger = logging.getLogger(__name__)
+# Per-execution context: a batch must report missing clips as failures, without
+# changing the web player's optional-clip fallback in another thread.
+AUDIO_GENERATION_REQUIRED = ContextVar("audio_generation_required", default=False)
+# Set only by the separate offline batch planner, never by HTTP input.
+AUDIO_CLIP_COLLECTOR = ContextVar("audio_clip_collector", default=None)
+# Natural silence (seconds) inserted when concatenating clips, encoded as mono
+# mp3 at the provider's output sample rate so the final concat re-encode stays
+# consistent.
+TTS_GAP_GROUP = 0.5  # between speaker turns within a module
+TTS_GAP_MODULE = 1.35  # between modules
+# Short "breath" before a bare Amen/Alleluia response so it lands as an
+# immediate, natural reply to the preceding line instead of after a full
+# speaker-turn pause. Set to 0 to remove the gap entirely.
+TTS_GAP_AMEN = 0.03
+TTS_SILENCE_SAMPLE_RATE = TTS_PROVIDER.output_sample_rate
+TTS_SILENCE_BITRATE = "160k"
+
+# Bare congregational responses that should follow the previous line almost
+# immediately. Compared against normalized text (lowercased, punctuation
+# stripped, "ah-men" folded to "amen"), so "Amen.", "Ah-men.", "Alleluia.",
+# "Amen. Alleluia." and "Ah-men. Alleluia." all match.
+_IMMEDIATE_RESPONSE_TEXTS = frozenset(
+    {
+        "amen",
+        "alleluia",
+        "amen alleluia",
+    }
+)
+
+
+def is_immediate_response(text):
+    """True when ``text`` is a bare Amen/Alleluia response (see the set above)."""
+    if not text:
+        return False
+    normalized = text.lower().replace("ah-men", "amen").replace("ah men", "amen")
+    normalized = re.sub(r"[^a-z ]+", " ", normalized)
+    normalized = re.sub(r"\s+", " ", normalized).strip()
+    return normalized in _IMMEDIATE_RESPONSE_TEXTS
+
+
+def voice_for_line_type(line_type):
+    """Map a liturgical line_type to a voice for the active TTS provider."""
+    return TTS_PROVIDER.voice_for_line_type(line_type)
+
+
+def audio_base_url():
+    """Absolute base URL for serving audio, resolved per environment.
+
+    Uses SITE_ADDRESS (e.g. https://127.0.0.1:8000 in dev, the real domain in
+    production) rather than the django.contrib.sites domain, which always points
+    at production and therefore breaks local playback of freshly generated clips.
+    """
+    return settings.SITE_ADDRESS.rstrip("/")
+
+
+def provider_media_name(filename, create_directory=True):
+    """Media-relative name for a generated file under the active provider's
+    subfolder, e.g. ``fish/<uuid>.mp3``.
+
+    Cache-only lookups set create_directory=False so rendering an office does
+    not require write access to the provider folder.
+
+    The returned name is what we store on AudioClip.filename and append to
+    MEDIA_URL / MEDIA_ROOT, so per-provider audio is neatly grouped and can be
+    cleared by simply removing (or targeting) that one subfolder.
+    """
+    subdir = TTS_PROVIDER.media_subdir
+    if create_directory:
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, subdir), exist_ok=True)
+    return f"{subdir}/{filename}"
+
+
+# Audio is only ever generated or served for English offices read from an ESV or
+# KJV text -- the only combination the recorded voices and pronunciation
+# overrides are tuned for. Everything else must never hit the TTS backend.
+AUDIO_BIBLE_TRANSLATIONS = ("esv", "kjv")
+AUDIO_DISPLAY_LANGUAGE = "english"
+
+
+def audio_available(bible_translation, display_language):
+    """Whether audio may be generated/served for this translation + language."""
+    return (bible_translation or "").lower() in AUDIO_BIBLE_TRANSLATIONS and (
+        display_language or ""
+    ).lower() == AUDIO_DISPLAY_LANGUAGE
 
 
 class UpdateNoticeView(TemplateResponseMixin, ListAPIView):
@@ -68,7 +181,7 @@ class Settings(dict):
         settings["extra_collects"] = self._get_extra_collects(request)
         super().__init__(**settings)
 
-    def _default_settings(self):
+    def _setting_options(self):
         settings = (
             Setting.objects.order_by("site", "setting_type", "order")
             .prefetch_related(
@@ -76,8 +189,7 @@ class Settings(dict):
             )
             .all()
         )
-        defaults = {setting.name: setting.options[0].value for setting in settings}
-        return defaults
+        return {setting.name: [option.value for option in setting.options] for setting in settings}
 
     def _get_extra_collects(self, request):
         try:
@@ -93,11 +205,21 @@ class Settings(dict):
         return extra_collects
 
     def _get_settings(self, request):
-        settings = self._default_settings().copy()
-        specified_settings = {k: v for (k, v) in request.query_params.items() if k in settings.keys()}
-        for k, v in settings.items():
-            if k in specified_settings.keys():
-                settings[k] = specified_settings[k]
+        options = self._setting_options()
+        settings = {name: values[0] for name, values in options.items()}
+        for name, value in request.query_params.items():
+            if name not in options:
+                continue
+            # Some clients join repeated scalar settings with commas. Preserve
+            # a declared option verbatim, otherwise use the last supported value.
+            if value in options[name]:
+                settings[name] = value
+                continue
+            for candidate in reversed(value.split(",")):
+                candidate = candidate.strip()
+                if candidate in options[name]:
+                    settings[name] = candidate
+                    break
         return settings
 
 
@@ -110,32 +232,6 @@ class Settings(dict):
 # rubric
 # leader_dialogue
 # congregation_dialogue
-
-
-def file_to_lines(filename):
-    def process_row(row):
-        result = {"content": row[0]}
-        if len(row) > 1 and row[1]:
-            result["line_type"] = row[1]
-        result["indented"] = False
-        if len(row) > 2:
-            if row[2].lower() == "true":
-                result["indented"] = "indent"
-            else:
-                result["indented"] = row[2]
-
-        if len(row) > 3:
-            if not row[3]:
-                result["extra_space_before"] = False
-            else:
-                result["extra_space_before"] = bool(strtobool(row[3].lower()))
-        return result
-
-    filename = "{}.csv".format(filename.replace(".csv", ""))
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    with open("{}/../texts/{}".format(dir_path, filename), encoding="utf-8") as csvfile:
-        reader = csv.reader(csvfile, quotechar='"', delimiter=",", quoting=csv.QUOTE_ALL, skipinitialspace=True)
-        return [Line(**process_row(row)) for row in reader]
 
 
 class MPOpeningSentence(Module):
@@ -244,7 +340,7 @@ class MPOpeningSentence(Module):
         if self.office.date.date.weekday() == 0:
             return {
                 "sentence": "I was glad when they said unto me, “We will go into the house of the Lord.",
-                "traditional": "I was glad when they said unto me, We will go into the house ofthe Lord.",
+                "traditional": "I was glad when they said unto me, We will go into the house of the Lord.",
                 "citation": "PSALM 122:1",
             }
 
@@ -286,9 +382,12 @@ class MPOpeningSentence(Module):
     def get_lines(self):
         sentence = self.get_sentence()
         style = self.office.settings["language_style"]
+        text = sentence["traditional"] if style == "traditional" else sentence["sentence"]
+        # Translate the opening sentence if Chinese is selected
+        text = self.t(text)
         return [
             Line("Opening Sentence", "heading"),
-            Line(sentence["traditional"] if style == "traditional" else sentence["sentence"], "leader"),
+            Line(text, "leader"),
             Line(sentence["citation"], "citation"),
         ]
 
@@ -297,7 +396,6 @@ class Office(object):
     tag = "office"
 
     def __init__(self, request, year, month, day):
-        from churchcal.calculations import get_calendar_date
 
         self.settings = Settings(request)
 
@@ -305,7 +403,7 @@ class Office(object):
 
         try:
             self.office_readings = HolyDayOfficeDay.objects.get(commemoration=self.date.primary)
-        except HolyDayOfficeDay.DoesNotExist:
+        except (HolyDayOfficeDay.DoesNotExist, ValueError):
             self.office_readings = StandardOfficeDay.objects.get(month=self.date.date.month, day=self.date.date.day)
 
         self.thirty_day_psalter_day = ThirtyDayPsalterDay.objects.get(day=self.date.date.day)
@@ -338,18 +436,20 @@ class Confession(Module):
         long = (setting == "long") or (setting == "long-on-fast" and fast)
         if long:
             return (
-                file_to_lines("confession_intro_long_traditional") + [Line("", "spacer")]
+                self._ftl("confession_intro_long_traditional") + [Line("", "spacer")]
                 if language_style == "traditional"
-                else file_to_lines("confession_intro_long") + [Line("", "spacer")]
+                else self._ftl("confession_intro_long") + [Line("", "spacer")]
             )
-        return file_to_lines("confession_intro_short") + [Line("", "spacer")]
+        return self._ftl("confession_intro_short") + [
+            Line("Silence is kept. All kneeling, the Officiant and People say", "rubric", silence_after=6)
+        ]
 
     def get_body_lines(self):
         language_style = self.office.settings["language_style"]
         return (
-            file_to_lines("confession_body_traditional")
+            self._ftl("confession_body_traditional")
             if language_style == "traditional"
-            else file_to_lines("confession_body")
+            else self._ftl("confession_body")
         )
 
     def get_absolution_lines(self):
@@ -357,23 +457,23 @@ class Confession(Module):
         lay = self.office.settings["absolution"] == "lay"
         if lay:
             return (
-                file_to_lines("confession_absolution_lay_traditional")
+                self._ftl("confession_absolution_lay_traditional")
                 if language_style == "traditional"
-                else file_to_lines("confession_absolution_lay")
+                else self._ftl("confession_absolution_lay")
             )
         setting = self.office.settings["confession"]
         fast = self.office.date.fast_day
         long = (setting == "long") or (setting == "long-on-fast" and fast)
         if long:
             return (
-                file_to_lines("confession_absolution_long_traditional")
+                self._ftl("confession_absolution_long_traditional")
                 if language_style == "traditional"
-                else file_to_lines("confession_absolution_long")
+                else self._ftl("confession_absolution_long")
             )
         return (
-            file_to_lines("confession_absolution_short_traditional")
+            self._ftl("confession_absolution_short_traditional")
             if language_style == "traditional"
-            else file_to_lines("confession_absolution_short")
+            else self._ftl("confession_absolution_short")
         )
 
     def get_lines(self):
@@ -392,7 +492,7 @@ class Preces(Module):
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         file = "preces_traditional" if language_style == "traditional" else "preces"
-        return file_to_lines(file)
+        return self._ftl(file)
 
 
 class MPInvitatory(Module):
@@ -661,7 +761,7 @@ class MPInvitatory(Module):
         if filename != "pascha_nostrum":
             first_line_field = "first_line_traditional" if language_style == "traditional" else "first_line"
             second_line_field = "second_line_traditional" if language_style == "traditional" else "second_line"
-            canticle = file_to_lines(filename)
+            canticle = self._ftl(filename)
             canticle_heading = canticle[:3]
             canticle_body = canticle[3:]
             return (
@@ -670,14 +770,16 @@ class MPInvitatory(Module):
                 + canticle_body
                 + [Line(self.antiphon[first_line_field], "leader"), Line(self.antiphon[second_line_field])]
             )
-        return file_to_lines(filename)
+        return self._ftl(filename)
 
 
 class EPInvitatory(Module):
+    name = "Invitatory"
+
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         file = "phos_hilaron_traditional" if language_style == "traditional" else "phos_hilaron"
-        return file_to_lines(file)
+        return self._ftl(file)
 
 
 class ReadingModule(Module):
@@ -712,37 +814,46 @@ class ReadingModule(Module):
         return self.office.date.primary.rank.precedence_rank <= 4
 
     def get_mass_reading_lines(self, reading):
-        translation = self.office.settings["bible_translation"]
+        translation = self.bible_translation
         abbreviated = self.office.settings["reading_length"] == "abbreviated"
         if abbreviated or not reading.short_text:
             text = Scripture.objects.get(passage=reading.long_citation)
             citation = reading.long_citation
         else:
+            print(reading.long_citation, reading.short_citation)
             text = Scripture.objects.get(passage=reading.short_citation)
             citation = reading.short_citation
 
         text = getattr(text, translation)
         text = self.remove_headings_if_needed(text)
+        voice = GenericDailyOfficeSerializer.reading_voice(text)
+        text = GenericDailyOfficeSerializer.handle_html(text, html=True, no_generate=True, voice=voice)
 
         lines = [
             Line(citation, "subheading"),
             Line(self.audio(citation, reading.testament), "html"),
-            Line(passage_to_citation(citation), "leader"),
+            Line(passage_to_citation(citation, language=self.language), "reader"),
             Line("", "spacer"),
-            Line(text, "html", "leader"),
+            Line(text, "html", silence_before=1.3),
             Line("", "spacer"),
-            Line(self.closing(reading.testament), "leader"),
+            Line(self.closing(reading.testament), "reader", silence_before=1.3),
             Line(self.closing_response(reading.testament), "congregation"),
         ]
+        for line in lines:
+            if line and line["line_type"] in {"reader", "html"}:
+                line["audio_voice"] = voice
         return [line for line in lines if line and (line["content"] or line["line_type"] == "spacer")]
 
-    def get_reading(self, field, abbreviated=False, translation="esv"):
+    def get_reading(self, field, abbreviated=False, translation="esv", text_only=False):
         subheading = getattr(self.office.office_readings, field)
         passage = getattr(self.office.office_readings, field)
-        citation = passage_to_citation(getattr(self.office.office_readings, field))
+        citation = passage_to_citation(getattr(self.office.office_readings, field), language=self.language)
         text_obj = self.office.readings[passage]
         text = getattr(text_obj, translation)
-        if text in ["-", "<html><head></head><body>-</body></html>"]:
+        if text in ["-", "<html><head></head><body>-</body></html>", ""]:
+            fallback = OfficeDay.TRANSLATION_FALLBACKS.get(translation, "nrsvce")
+            text = getattr(text_obj, fallback, None)
+        if not text or text in ["-", "<html><head></head><body>-</body></html>", ""]:
             text = getattr(text_obj, "nrsvce")
         closing = self.closing(getattr(self.office.office_readings, "{}_testament".format(field)))
         closing_response = self.closing_response(getattr(self.office.office_readings, "{}_testament".format(field)))
@@ -758,24 +869,47 @@ class ReadingModule(Module):
             if has_abbreviated:
                 subheading = getattr(self.office.office_readings, "{}_abbreviated".format(field))
                 passage = getattr(self.office.office_readings, "{}_abbreviated".format(field))
-                citation = passage_to_citation(getattr(self.office.office_readings, "{}_abbreviated".format(field)))
+                citation = passage_to_citation(
+                    getattr(self.office.office_readings, "{}_abbreviated".format(field)), language=self.language
+                )
                 text = self.office.readings[passage]
                 text = getattr(text, translation)
                 if text in ["-", "<html><head></head><body>-</body></html>"]:
+                    fallback = OfficeDay.TRANSLATION_FALLBACKS.get(translation, "nrsvce")
+                    text = getattr(text_obj, fallback, None)
+                if not text or text in ["-", "<html><head></head><body>-</body></html>"]:
                     text = getattr(text_obj, "nrsvce")
 
         text = self.remove_headings_if_needed(text)
 
+        voice = GenericDailyOfficeSerializer.reading_voice(text)
+        text = GenericDailyOfficeSerializer.handle_html(
+            text,
+            html=True,
+            no_generate=True,
+            id=f"{self.get_safe_name()}_ad0aad27-4e5d-5ce3-8947-2bef1e5a5586",
+            voice=voice,
+        )
+
+        if text_only:
+            return text
+
         lines = [
             Line(subheading, "subheading"),
             Line(self.audio(passage, testament), "html"),
-            Line(citation, "leader"),
+            Line(citation, "reader"),
             Line("", "spacer"),
-            Line(text, "html", "leader"),
+            Line(
+                text,
+                "html",
+            ),
             Line("", "spacer"),
-            Line(closing, "leader"),
+            Line(closing, "reader"),
             Line(closing_response, "congregation"),
         ]
+        for line in lines:
+            if line and line["line_type"] in {"reader", "html"}:
+                line["audio_voice"] = voice
         return [line for line in lines if line and (line["content"] or line["line_type"] == "spacer")]
 
     def get_mass_reading(self, number):
@@ -802,7 +936,7 @@ class ReadingModule(Module):
         reading_cycle = self.office.settings["reading_cycle"]
         reading_length = self.office.settings["reading_length"]
         lectionary = self.office.settings["lectionary"]
-        translation = self.office.settings["bible_translation"]
+        translation = self.bible_translation
         if lectionary == "mass-readings" and self.has_mass_reading:
             return (
                 self.abbreviated_mass_reading(number)
@@ -915,7 +1049,7 @@ class CanticleModule(Module):
             return []
         language_style = self.office.settings["language_style"]
         file = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
-        return file_to_lines(file)
+        return self._ftl(file)
 
     def get_canticle(self, data, antiphon=False, as_psalm=False):
         # check if data is a tuple
@@ -941,9 +1075,9 @@ class CanticleModule(Module):
                     ]
                     + [Line(antiphon, "congregation")]
                     + [Line("", "spacer")]
-                    + file_to_lines(template)
+                    + self._ftl(template)
                     + [
-                        Line(data.citation, "citation"),
+                        Line(self.t(data.citation), "citation"),
                     ]
                     + self.gloria_lines(data, as_psalm=as_psalm)
                     + [Line("", "spacer")]
@@ -956,9 +1090,9 @@ class CanticleModule(Module):
                 Line(data.english_name, "subheading"),
                 self.rubric(),
             ]
-            + file_to_lines(template)
+            + self._ftl(template)
             + [
-                Line(data.citation, "citation"),
+                Line(self.t(data.citation), "citation"),
             ]
             + self.gloria_lines(data, as_psalm=as_psalm)
         )
@@ -991,20 +1125,18 @@ class MPPsalms(CanticleModule, ReadingModule):
         pass
 
     def thirty_days(self):
-        from psalter.utils import get_psalms
-
         psalms = getattr(self.office.thirty_day_psalter_day, self.attribute)
         citations = psalms.split(",")
         heading = self.heading(citations)
         language_style = self.office.settings["psalm_translation"]
         psalm_style = self.office.settings["psalm_style"]
-        psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style)
+        psalms = get_psalms(
+            psalms, api=True, language_style=language_style, headings=psalm_style, display_language=self.language
+        )
 
         return [Line(heading, "heading"), Line("Thirty Day Cycle", "subheading")] + psalms
 
     def sixty_days(self):
-        from psalter.utils import get_psalms
-
         psalms = getattr(self.office.office_readings, self.attribute)
         psalms = psalms.split("or")
 
@@ -1020,13 +1152,13 @@ class MPPsalms(CanticleModule, ReadingModule):
         heading = self.heading(citations)
         language_style = self.office.settings["psalm_translation"]
         psalm_style = self.office.settings["psalm_style"]
-        psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style)
+        psalms = get_psalms(
+            psalms, api=True, language_style=language_style, headings=psalm_style, display_language=self.language
+        )
 
         return [Line(heading, "heading"), Line("Sixty Day Cycle", "subheading")] + psalms
 
     def mass_psalms(self):
-        from psalter.utils import get_psalms
-
         mass_psalm = None
         for reading in self.office.date.mass_readings:
             if reading.reading_type == "psalm":
@@ -1044,7 +1176,9 @@ class MPPsalms(CanticleModule, ReadingModule):
         heading = self.heading(mass_psalm)
         language_style = self.office.settings["psalm_translation"]
         psalm_style = self.office.settings["psalm_style"]
-        psalms = get_psalms(mass_psalm, api=True, language_style=language_style, headings=psalm_style)
+        psalms = get_psalms(
+            mass_psalm, api=True, language_style=language_style, headings=psalm_style, display_language=self.language
+        )
         return [Line(heading, "heading"), Line("Sunday & Holy Day Psalms", "subheading")] + psalms
 
     def get_psalm_lines(self):
@@ -1062,7 +1196,7 @@ class MPPsalms(CanticleModule, ReadingModule):
     def gloria_patri(self):
         language_style = self.office.settings["language_style"]
         file = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
-        return [Line("", "spacer")] + file_to_lines(file)
+        return [Line("", "spacer")] + self._ftl(file)
 
     def get_lines(self):
         return self.get_psalm_lines() + self.gloria_patri()
@@ -1180,7 +1314,7 @@ class Creed(Module):
         return [
             Line("The Apostles' Creed", "heading"),
             Line("Officiant and People together, all standing", "rubric"),
-        ] + file_to_lines(file)
+        ] + self._ftl(file)
 
 
 class Prayers(Module):
@@ -1232,7 +1366,7 @@ class Prayers(Module):
             pater_file = "pater_contemporary.csv"
 
         pronoun = "thy" if language_style == "traditional" else "your"
-        suffrages = file_to_lines(self.get_suffrages_file_name())
+        suffrages = self._ftl(self.get_suffrages_file_name())
         suffrages = self.add_names(suffrages)
         return (
             [
@@ -1242,9 +1376,9 @@ class Prayers(Module):
                 Line("Let us pray.", "leader_dialogue", preface="Officiant"),
                 Line("The People kneel or stand.", "rubric"),
             ]
-            + file_to_lines(kyrie_file)
+            + self._ftl(kyrie_file)
             + [Line("Officiant and People", "rubric")]
-            + file_to_lines(pater_file)
+            + self._ftl(pater_file)
             + suffrages
         )
 
@@ -1257,6 +1391,16 @@ class MPCollectOfTheDay(Module):
     def get_collect(self, commemoration):
         style = self.office.settings["language_style"]
         collect = getattr(commemoration, self.attribute)
+        lang = self.language
+        # Use Chinese/Spanish text if available
+        if (
+            lang in ("chinese-traditional", "chinese-simplified")
+            and hasattr(collect, "chinese_text_no_tags")
+            and collect.chinese_text_no_tags
+        ):
+            return collect.chinese_text_no_tags
+        if lang == "spanish" and hasattr(collect, "spanish_text_no_tags") and collect.spanish_text_no_tags:
+            return collect.spanish_text_no_tags
         text = collect.traditional_text_no_tags if style == "traditional" else collect.text_no_tags
         text = adapt_christmas_collect(text, commemoration)
         return text
@@ -1284,6 +1428,10 @@ class EPCollectOfTheDay(MPCollectOfTheDay):
 class AdditionalCollects(Module):
     name = "Additional Collects"
 
+    def __init__(self, office=None, include_mission=True):
+        super().__init__(office)
+        self.include_mission = include_mission
+
     def get_collects(self):
         return {}
 
@@ -1291,11 +1439,13 @@ class AdditionalCollects(Module):
         lines = []
         weekly_collect = self.pick_weekly_collect()
         weekly_collect["weekly"] = True
-        collects = (weekly_collect,) + (self.pick_mission_collect(),) + self.get_extra_collects()
+        collects = (weekly_collect,) + self.get_mission_collects() + self.get_extra_collects()
         language_style = self.office.settings["language_style"]
         for collect in collects:
             text = collect["traditional"] if language_style == "traditional" else collect["contemporary"]
-            lines.append(Line(collect["title"], "heading"))
+            text = self.t(text)
+            title = self.t(collect["title"])
+            lines.append(Line(title, "heading"))
             if "weekly" in collect.keys() and collect["weekly"]:
                 lines.append(Line(self.office.date.date.strftime("%A"), "subheading"))
             lines.append(Line(text, "leader"))
@@ -1306,9 +1456,11 @@ class AdditionalCollects(Module):
         lines = []
         language_style = self.office.settings["language_style"]
 
-        for collect in self.pick_fixed_collects() + (self.pick_mission_collect(),) + self.get_extra_collects():
+        for collect in self.pick_fixed_collects() + self.get_mission_collects() + self.get_extra_collects():
             text = collect["traditional"] if language_style == "traditional" else collect["contemporary"]
-            lines.append(Line(collect["title"], "heading"))
+            text = self.t(text)
+            title = self.t(collect["title"])
+            lines.append(Line(title, "heading"))
             lines.append(Line(text, "leader"))
             lines.append(Line("Amen.", "congregation"))
 
@@ -1347,6 +1499,12 @@ class AdditionalCollects(Module):
     def possible_mission_collects(self):
         results, mission_collects = self.all_possible_collects
         return mission_collects
+
+    def get_mission_collects(self):
+        # The Litany replaces the Prayer for Mission (BCP 2019, pp. 24 and 50).
+        if not self.include_mission:
+            return ()
+        return (self.pick_mission_collect(),)
 
     def pick_mission_collect(self):
         day_of_year = self.office.date.date.timetuple().tm_yday
@@ -1443,6 +1601,7 @@ class Intercessions(Module):
             Line("Intercessions, Thanksgivings, and Praise", "heading"),
             Line("The Officiant may invite the People to offer intercessions and thanksgivings.", "rubric"),
             Line("A hymn or anthem may be sung.", "rubric"),
+            Line("Let us pause to offer our own intercessions and thanksgivings.", "speaker", silence_after=10),
         ]
 
 
@@ -1465,7 +1624,7 @@ class FinalPrayers(Module):
                     Line("The General Thanksgiving", "heading"),
                     Line("Officiant and People", "rubric"),
                 ]
-                + file_to_lines(file)
+                + self._ftl(file)
             )
 
         language_style = self.office.settings["language_style"]
@@ -1477,7 +1636,7 @@ class FinalPrayers(Module):
                 + [
                     Line("A Prayer of St. John Chrysostom", "heading"),
                 ]
-                + file_to_lines(file)
+                + self._ftl(file)
             )
 
         return lines
@@ -1527,8 +1686,8 @@ class Dismissal(Module):
         people = "Thanks be to God."
 
         if easter:
-            officiant = "{} Alleluia, alleluia.".format(officiant)
-            people = "{} Alleluia, alleluia.".format(people)
+            officiant = "Alleluia, alleluia. {}".format(officiant)
+            people = "Alleluia, alleluia. {} ".format(people)
 
         lines = [
             Line("Dismissal and Grace", "heading"),
@@ -1548,9 +1707,9 @@ class Dismissal(Module):
             lines
             + [Line("", "spacer")]
             + [
-                Line(grace[part], "leader"),
-                Line("Amen.", "congregation"),
-                Line(grace["citation"], "citation"),
+                Line(self.t(grace[part]), "leader"),
+                Line(self.t("Amen."), "congregation"),
+                Line(self.t(grace["citation"]), "citation"),
             ]
         )
 
@@ -1568,30 +1727,51 @@ class GreatLitany(ShowGreatLitanyMixin, Module):
     def get_leaders(self):
         setting = self.office.settings["national_holidays"]
         if setting == "us":
-            return "your servant Joe Biden, the President of the United States of America, "
+            return "your servant Donald Trump, the President of the United States of America, "
         if setting == "canada":
-            return "your servants His Majesty King Charles, the Sovereign, and Justin Trudeau, the Prime Minister of Canada, "
-        return "your servant Joe Biden, the President of the United States of America, your servants His Majesty King Charles, the Sovereign, and Justin Trudeau, the Prime Minister of Canada, Andrés Manuel López Obrador, the president of Mexico, "
+            return "your servants His Majesty King Charles, the Sovereign, and Mark Carney, the Prime Minister of Canada, "
+        return "your servant Donald Trump, the President of the United States of America, your servants His Majesty King Charles, the Sovereign, and Mark Carney, the Prime Minister of Canada, Claudia Sheinbaum Pardo, the president of Mexico, "
+
+    def get_ending(self, style):
+        # The Supplication replaces the versicle and collect, not the whole
+        # conclusion (BCP 2019, pp. 97-98). Keep the existing full form default.
+        if self.office.settings.get("great_litany_ending", "supplication") == "litany":
+            template = (
+                "great_litany_short_ending_traditional" if style == "traditional" else "great_litany_short_ending"
+            )
+            lines = self._ftl(template)
+            if self.office.settings.get("chrysostom", "off") == "on":
+                chrysostom_template = "chrysostom_traditional" if style == "traditional" else "chrysostom"
+                chrysostom = (
+                    [Line("A Prayer of St. John Chrysostom", "heading")]
+                    + self._ftl(chrysostom_template)
+                    + [Line("Amen.", "congregation")]
+                )
+                grace_index = max(index for index, line in enumerate(lines) if line.get("line_type") == "rubric") + 1
+                lines[grace_index:grace_index] = chrysostom
+            return lines
+
+        template = "supplication_traditional" if style == "traditional" else "supplication"
+        lines = self._ftl(template)
+        if self.office.settings.get("chrysostom", "off") == "on":
+            template = "supplication_optional_traditional" if style == "traditional" else "supplication_optional"
+            lines += self._ftl(template)
+        return lines
 
     def get_lines(self):
         if self.show_great_litany:
             style = self.office.settings["language_style"]
-            kyrie = (
-                file_to_lines("kyrie_contemporary") if style == "contemporary" else file_to_lines("kyrie_traditional")
-            )
-            pater = (
-                file_to_lines("pater_contemporary") if style == "contemporary" else file_to_lines("pater_traditional")
-            )
+            kyrie = self._ftl("kyrie_contemporary") if style == "contemporary" else self._ftl("kyrie_traditional")
+            pater = self._ftl("pater_contemporary") if style == "contemporary" else self._ftl("pater_traditional")
             template = "great_litany_traditional" if style == "traditional" else "great_litany"
-            supplication_template = "supplication_traditional" if style == "traditional" else "supplication"
             lines = (
-                file_to_lines(template)
+                self._ftl(template)
                 + [Line("", "spacer")]
                 + kyrie
                 + [Line("", "spacer")]
                 + pater
                 + [Line("", "spacer")]
-                + file_to_lines(supplication_template)
+                + self.get_ending(style)
             )
             for line in lines:
                 line["content"] = line["content"].replace("[_____________ and] ", self.get_names())
@@ -1608,16 +1788,23 @@ class GreatLitany(ShowGreatLitanyMixin, Module):
 
 
 class MPGreatLitany(GreatLitany):
+    name = "Great Litany"
+
     office_name = "morning_prayer"
 
 
 class EPGreatLitany(GreatLitany):
+    name = "Great Litany"
+
     office_name = "evening_prayer"
 
 
 class MorningPrayer(Office):
+    name = "Morning Prayer"
+
     def get_modules(self):
-        return [
+        litany = MPGreatLitany(self)
+        modules = [
             MPOpeningSentence(self),
             Confession(self),
             Preces(self),
@@ -1631,8 +1818,13 @@ class MorningPrayer(Office):
             Creed(self),
             Prayers(self),
             MPCollectOfTheDay(self),
-            MPAdditionalCollects(self),
-            MPGreatLitany(self),
+            MPAdditionalCollects(self, include_mission=not litany.show_great_litany),
+            litany,
+        ]
+        # When used here, the Litany concludes the Office (BCP 2019, pp. 24/50).
+        if litany.show_great_litany:
+            return modules
+        return modules + [
             Intercessions(self),
             FinalPrayers(self),
             Dismissal(self),
@@ -1656,6 +1848,8 @@ class FamilyRubricSection(Module):
 
 
 class FamilyMorningOpeningSentence(Module):
+    name = "Opening Sentence"
+
     def get_lines(self):
         setting = self.office.settings["family-opening-sentence"]
         language_style = self.office.settings["language_style"]
@@ -1674,6 +1868,8 @@ class FamilyMorningOpeningSentence(Module):
 
 
 class FamilyMiddayOpeningSentence(Module):
+    name = "Opening Sentence"
+
     def get_lines(self):
         setting = self.office.settings["family-opening-sentence"]
         if setting == "family-opening-sentence-fixed":
@@ -1694,13 +1890,17 @@ class FamilyMiddayOpeningSentence(Module):
 
 
 class FamilyEarlyEveningHymn(Module):
+    name = "Hymn"
+
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         filename = "phos_hilaron_traditional" if language_style == "traditional" else "phos_hilaron"
-        return file_to_lines(filename)
+        return self._ftl(filename)
 
 
 class FamilyCloseOfDayHymn(Module):
+    name = "Hymn"
+
     def get_lines(self):
         canticle = CanticleModule(self.office).get_canticle(EP2)
         canticle = [line for line in canticle if line["line_type"] != "rubric"]
@@ -1708,6 +1908,8 @@ class FamilyCloseOfDayHymn(Module):
 
 
 class FamilyCloseOfDayClosingSentence(Module):
+    name = "Closing Sentence"
+
     def get_lines(self):
         return [
             Line("Closing Sentence", "heading"),
@@ -1720,6 +1922,8 @@ class FamilyCloseOfDayClosingSentence(Module):
 
 
 class FamilyEarlyEveningOpeningSentence(Module):
+    name = "Opening Sentence"
+
     def get_lines(self):
         setting = self.office.settings["family-opening-sentence"]
         language_style = self.office.settings["language_style"]
@@ -1740,6 +1944,8 @@ class FamilyEarlyEveningOpeningSentence(Module):
 
 
 class FamilyCloseOfDayOpeningSentence(Module):
+    name = "Opening Sentence"
+
     def get_lines(self):
         setting = self.office.settings["family-opening-sentence"]
         language_style = self.office.settings["language_style"]
@@ -1760,42 +1966,64 @@ class FamilyCloseOfDayOpeningSentence(Module):
 
 
 class FamilyMorningPsalm(Module):
+    name = "Psalm"
+
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         gloria_patri = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
         psalm_style = self.office.settings["psalm_style"]
         return (
-            get_psalms("51:10-12", api=True, language_style=language_style, headings=psalm_style)
+            get_psalms(
+                "51:10-12",
+                api=True,
+                language_style=language_style,
+                headings=psalm_style,
+                display_language=self.language,
+            )
             + [Line("", "spacer")]
-            + file_to_lines(gloria_patri)
+            + self._ftl(gloria_patri)
         )
 
 
 class FamilyMiddayPsalm(Module):
+    name = "Psalm"
+
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         gloria_patri = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
         psalm_style = self.office.settings["psalm_style"]
         return (
-            get_psalms("113:1-4", api=True, language_style=language_style, headings=psalm_style)
+            get_psalms(
+                "113:1-4",
+                api=True,
+                language_style=language_style,
+                headings=psalm_style,
+                display_language=self.language,
+            )
             + [Line("", "spacer")]
-            + file_to_lines(gloria_patri)
+            + self._ftl(gloria_patri)
         )
 
 
 class FamilyCloseOfDayPsalm(Module):
+    name = "Psalm"
+
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         gloria_patri = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
         psalm_style = self.office.settings["psalm_style"]
         return (
-            get_psalms("134", api=True, language_style=language_style, headings=psalm_style)
+            get_psalms(
+                "134", api=True, language_style=language_style, headings=psalm_style, display_language=self.language
+            )
             + [Line("", "spacer")]
-            + file_to_lines(gloria_patri)
+            + self._ftl(gloria_patri)
         )
 
 
 class FamilyReadingModule(ReadingModule):
+    name = "Reading"
+
     def get_lines(self):
         setting = self.office.settings["family_readings"]
         audio_setting = self.office.settings["family_reading_audio"]
@@ -1803,10 +2031,18 @@ class FamilyReadingModule(ReadingModule):
             scripture = self.get_long()
             audio = self.audio(scripture["passage"], "NT")
             return [
-                Line("A READING FROM HOLY SCRIPTURE", "heading"),
+                Line("A Reading from Holy Scripture", "heading"),
                 Line(scripture["passage"], "subheading"),
                 Line(audio, "html") if audio and audio_setting == "on" else Line("", "html"),
-                Line(self.remove_headings_if_needed(scripture["text"]), "html"),
+                Line(
+                    GenericDailyOfficeSerializer.handle_html(
+                        self.remove_headings_if_needed(scripture["text"]),
+                        html=True,
+                        no_generate=True,
+                        id=f"{self.get_safe_name()}_ad0aad27-4e5d-5ce3-8947-2bef1e5a5586",
+                    ),
+                    "html",
+                ),
                 Line("A period of silence may follow.", "rubric"),
             ]
         scripture = self.get_scripture()
@@ -1814,24 +2050,34 @@ class FamilyReadingModule(ReadingModule):
         passage = scripture["traditional"] if language_style == "traditional" else scripture["sentence"]
         audio = self.audio(scripture["citation"], "NT")
         return [
-            Line("A READING FROM HOLY SCRIPTURE", "heading"),
+            Line("A Reading from Holy Scripture", "heading"),
             Line(scripture["citation"], "subheading"),
             Line(audio, "html") if audio and audio_setting == "on" else Line("", "html"),
-            Line(passage, "html"),
+            Line(
+                GenericDailyOfficeSerializer.handle_html(
+                    passage,
+                    html=True,
+                    no_generate=True,
+                    id=f"{self.get_safe_name()}_ad0aad27-4e5d-5ce3-8947-2bef1e5a5586",
+                ),
+                "html",
+            ),
             Line("A period of silence may follow.", "rubric"),
         ]
 
 
 class FamilyMorningScripture(FamilyReadingModule):
+    name = "Reading"
+
     def get_long(self):
-        translation = self.office.settings["bible_translation"]
+        translation = self.bible_translation
         return {
-            "passage": self.office.office_readings.mp_reading_1_abbreviated
-            if self.office.office_readings.mp_reading_1_abbreviated
-            else self.office.office_readings.mp_reading_1,
-            "text": getattr(self.office.readings[self.office.office_readings.mp_reading_1_abbreviated], translation)
-            if self.office.office_readings.mp_reading_1_abbreviated_text
-            else getattr(self.office.readings[self.office.office_readings.mp_reading_1], translation),
+            "passage": (
+                self.office.office_readings.mp_reading_1_abbreviated
+                if self.office.office_readings.mp_reading_1_abbreviated
+                else self.office.office_readings.mp_reading_1
+            ),
+            "text": self.get_reading("mp_reading_1", True, translation, text_only=True),
             "testament": self.office.office_readings.mp_reading_1_testament,
         }
 
@@ -1861,11 +2107,13 @@ class FamilyMorningScripture(FamilyReadingModule):
 
 
 class FamilyMiddayScripture(FamilyReadingModule):
+    name = "Reading"
+
     def get_long(self):
-        translation = self.office.settings["bible_translation"]
+        translation = self.bible_translation
         return {
             "passage": self.office.office_readings.mp_reading_2,
-            "text": getattr(self.office.readings[self.office.office_readings.mp_reading_2], translation),
+            "text": self.get_reading("mp_reading_2", True, translation, text_only=True),
             "testament": self.office.office_readings.mp_reading_2_testament,
         }
 
@@ -1890,15 +2138,17 @@ class FamilyMiddayScripture(FamilyReadingModule):
 
 
 class FamilyEarlyEveningScripture(FamilyReadingModule):
+    name = "Reading"
+
     def get_long(self):
-        translation = self.office.settings["bible_translation"]
+        translation = self.bible_translation
         return {
-            "passage": self.office.office_readings.ep_reading_1_abbreviated
-            if self.office.office_readings.ep_reading_1_abbreviated
-            else self.office.office_readings.ep_reading_1,
-            "text": getattr(self.office.readings[self.office.office_readings.ep_reading_1_abbreviated], translation)
-            if self.office.office_readings.ep_reading_1_abbreviated_text
-            else getattr(self.office.readings[self.office.office_readings.ep_reading_1], translation),
+            "passage": (
+                self.office.office_readings.ep_reading_1_abbreviated
+                if self.office.office_readings.ep_reading_1_abbreviated
+                else self.office.office_readings.ep_reading_1
+            ),
+            "text": self.get_reading("ep_reading_1", True, translation, text_only=True),
             "testament": self.office.office_readings.ep_reading_1_testament,
         }
 
@@ -1928,11 +2178,13 @@ class FamilyEarlyEveningScripture(FamilyReadingModule):
 
 
 class FamilyCloseOfDayScripture(FamilyReadingModule):
+    name = "Reading"
+
     def get_long(self):
-        translation = self.office.settings["bible_translation"]
+        translation = self.bible_translation
         return {
             "passage": self.office.office_readings.ep_reading_2,
-            "text": getattr(self.office.readings[self.office.office_readings.ep_reading_2], translation),
+            "text": self.get_reading("ep_reading_2", True, translation, text_only=True),
             "testament": self.office.office_readings.ep_reading_2_testament,
         }
 
@@ -1992,7 +2244,7 @@ class FamilyCredo(Module):
             file = "creed_traditional" if language_style == "traditional" else "creed"
             return [
                 Line("The Apostles' Creed", "heading"),
-            ] + file_to_lines(file)
+            ] + self._ftl(file)
         return []
 
 
@@ -2005,7 +2257,7 @@ class FamilyPater(Module):
             filename = "pater_traditional"
         return [
             Line("The Lord's Prayer", "heading"),
-        ] + file_to_lines(filename)
+        ] + self._ftl(filename)
 
 
 class FamilyMorningCollect(Module):
@@ -2100,6 +2352,8 @@ class FamilyCloseOfDayCollect(Module):
 
 
 class FamilyMorningPrayer(Office):
+    name = "Family Prayer in the Morning"
+
     def get_modules(self):
         return [
             FamilyRubricSection(self),
@@ -2115,6 +2369,8 @@ class FamilyMorningPrayer(Office):
 
 
 class FamilyMiddayPrayer(Office):
+    name = "Family Prayer at Midday"
+
     def get_modules(self):
         return [
             FamilyRubricSection(self),
@@ -2128,6 +2384,8 @@ class FamilyMiddayPrayer(Office):
 
 
 class FamilyEarlyEveningPrayer(Office):
+    name = "Family Prayer in the Early Evening"
+
     def get_modules(self):
         return [
             FamilyRubricSection(self),
@@ -2143,6 +2401,8 @@ class FamilyEarlyEveningPrayer(Office):
 
 
 class FamilyCloseOfDayPrayer(Office):
+    name = "Family Prayer at the Close of Day"
+
     def get_modules(self):
         return [
             FamilyRubricSection(self),
@@ -2160,8 +2420,11 @@ class FamilyCloseOfDayPrayer(Office):
 
 
 class EveningPrayer(Office):
+    name = "Evening Prayer"
+
     def get_modules(self):
-        return [
+        litany = EPGreatLitany(self)
+        modules = [
             EPOpeningSentence(self),
             Confession(self),
             Preces(self),
@@ -2175,8 +2438,13 @@ class EveningPrayer(Office):
             Creed(self),
             Prayers(self),
             EPCollectOfTheDay(self),
-            EPAdditionalCollects(self),
-            EPGreatLitany(self),
+            EPAdditionalCollects(self, include_mission=not litany.show_great_litany),
+            litany,
+        ]
+        # When used here, the Litany concludes the Office (BCP 2019, pp. 24/50).
+        if litany.show_great_litany:
+            return modules
+        return modules + [
             Intercessions(self),
             FinalPrayers(self),
             Dismissal(self),
@@ -2200,7 +2468,7 @@ class MiddayInvitatory(Module):
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         file_name = "midday_invitatory_traditional" if language_style == "traditional" else "midday_invitatory"
-        lines = file_to_lines(file_name)
+        lines = self._ftl(file_name)
         return [self.add_alleluia((line)) for line in lines]
 
 
@@ -2212,8 +2480,10 @@ class MiddayPsalms(Module):
         language_style = self.office.settings["language_style"]
         file_name = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
         psalm_style = self.office.settings["psalm_style"]
-        lines = file_to_lines(file_name)
-        psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style)
+        lines = self._ftl(file_name)
+        psalms = get_psalms(
+            psalms, api=True, language_style=language_style, headings=psalm_style, display_language=self.language
+        )
 
         return [Line("The Psalms", "heading")] + psalms + lines
 
@@ -2334,16 +2604,16 @@ class MiddayPrayers(Module):
             if language_style == "traditional" or pater_style == "traditional"
             else "pater_contemporary"
         )
-        kyrie = file_to_lines(kyrie_file)
-        pater = file_to_lines(pater_file)
+        kyrie = self._ftl(kyrie_file)
+        pater = self._ftl(pater_file)
         suffrages_1_file_name = (
             "midday_suffrages_1_traditional" if language_style == "traditional" else "midday_suffrages_1"
         )
         suffrages_2_file_name = (
             "midday_suffrages_2_traditional" if language_style == "traditional" else "midday_suffrages_2"
         )
-        suffrages_1 = file_to_lines(suffrages_1_file_name)
-        suffrages_2 = file_to_lines(suffrages_2_file_name)
+        suffrages_1 = self._ftl(suffrages_1_file_name)
+        suffrages_2 = self._ftl(suffrages_2_file_name)
         return (
             [
                 Line("The Prayers", "heading"),
@@ -2393,11 +2663,13 @@ class MiddayConclusion(Module):
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         file_name = "midday_conclusion_traditional" if language_style == "traditional" else "midday_conclusion"
-        lines = file_to_lines(file_name)
+        lines = self._ftl(file_name)
         return [self.add_alleluia((line)) for line in lines]
 
 
 class MiddayPrayer(Office):
+    name = "Midday Prayer"
+
     def get_modules(self):
         return [
             MiddayInvitatory(self),
@@ -2458,9 +2730,9 @@ class ComplineConfession(Module):
                 Line("Confession of Sin", "heading"),
                 Line("The Officiant continues", "rubric"),
                 Line("Let us humbly confess our sins unto Almighty God.", "leader_dialogue"),
-                Line("Silence may be kept. The Officiant and People then say", "rubric"),
+                Line("Silence may be kept. The Officiant and People then say", "rubric", silence_after=6),
             ]
-            + file_to_lines(file_name)
+            + self._ftl(file_name)
             + [
                 Line("The Officiant alone says", "rubric"),
                 Line(
@@ -2513,13 +2785,15 @@ class ComplinePsalms(Module):
     def gloria_patri(self):
         language_style = self.office.settings["language_style"]
         file = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
-        return [Line("", "spacer")] + file_to_lines(file)
+        return [Line("", "spacer")] + self._ftl(file)
 
     def get_lines(self):
         psalms = "4,31:1-6,91,134"
         language_style = self.office.settings["language_style"]
         psalm_style = self.office.settings["psalm_style"]
-        psalms = get_psalms(psalms, api=True, language_style=language_style, headings=psalm_style)
+        psalms = get_psalms(
+            psalms, api=True, language_style=language_style, headings=psalm_style, display_language=self.language
+        )
 
         return [Line("The Psalms", "heading")] + psalms + self.gloria_patri()
 
@@ -2653,8 +2927,8 @@ class ComplinePrayers(AdditionalCollects):
         else:
             kyrie_file = "kyrie_contemporary"
             pater_file = "pater_contemporary"
-        kyrie = file_to_lines(kyrie_file)
-        pater = file_to_lines(pater_file)
+        kyrie = self._ftl(kyrie_file)
+        pater = self._ftl(pater_file)
         dialogue = [
             Line("The Prayers", "heading"),
             Line("Into your hands, O Lord, I commend my spirit;", "leader_dialogue"),
@@ -2695,6 +2969,8 @@ class ComplinePrayers(AdditionalCollects):
 
 
 class ComplineCanticle(Module):
+    name = "Nunc Dimittis"
+
     @property
     def antiphon(self):
         return "Guide us waking, O Lord, and guard us sleeping; that awake we may watch with Christ, and asleep we may rest in peace.{}".format(
@@ -2709,11 +2985,11 @@ class ComplineCanticle(Module):
     def get_lines(self):
         language_style = self.office.settings["language_style"]
         filename = "ep2_traditional" if language_style == "traditional" else "ep2"
-        canticle = file_to_lines(filename)
+        canticle = self._ftl(filename)
         gloria_patri_filename = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
         return (
             [
-                Line("NUNC DIMITTIS", "heading"),
+                Line("Nunc Dimittis", "heading"),
                 Line("The Song of Simeon", "subheading"),
                 Line(
                     "The Officiant and People say or sing the Song of Simeon with this Antiphon, all standing",
@@ -2723,10 +2999,10 @@ class ComplineCanticle(Module):
                 Line("", "spacer"),
             ]
             + canticle
-            + file_to_lines(gloria_patri_filename)
+            + self._ftl(gloria_patri_filename)
             + [Line("", "spacer"), Line(self.antiphon, "congregation")]
         )
-        return file_to_lines(filename)
+        return self._ftl(filename)
 
 
 class ComplineConclusion(Module):
@@ -2734,7 +3010,7 @@ class ComplineConclusion(Module):
 
     def get_lines(self):
         return [
-            Line("THE DISMISSAL", "heading"),
+            Line("The Dismissal", "heading"),
             Line("Let us bless the Lord.", "leader_dialogue"),
             Line("Thanks be to God.", "congregation_dialogue"),
             Line("The Officiant concludes with the following", "rubric"),
@@ -2747,6 +3023,8 @@ class ComplineConclusion(Module):
 
 
 class Compline(Office):
+    name = "Compline"
+
     def get_modules(self):
         return [
             ComplineOpeningSentence(self),
@@ -2761,20 +3039,18 @@ class Compline(Office):
 
 
 class Readings(Module):
-    def __init__(self, request, year, month, day, translation="esv", psalms="contemporary"):
-        from churchcal.calculations import get_calendar_date
-
+    def __init__(self, request, year, month, day, translation="esv", psalms="contemporary", style="whole_verse"):
         self.settings = Settings(request)
 
         self.date = get_calendar_date("{}-{}-{}".format(year, month, day))
         self.mass_year = get_church_year("{}-{}-{}".format(year, month, day)).mass_year
         self.translation = translation
         self.psalms = psalms
+        self.style = style
 
         try:
             self.holy_day_readings = HolyDayOfficeDay.objects.get(commemoration=self.date.primary)
-            self.holy_day_scriptures = Scripture.objects.get
-        except HolyDayOfficeDay.DoesNotExist:
+        except (HolyDayOfficeDay.DoesNotExist, ValueError):
             self.holy_day_readings = None
 
         self.standard_readings = StandardOfficeDay.objects.get(month=self.date.date.month, day=self.date.date.day)
@@ -2784,6 +3060,22 @@ class Readings(Module):
 
 class OfficeAPIView(APIView):
     permission_classes = [ReadOnly]
+
+    def initial(self, request, *args, **kwargs):
+        super().initial(request, *args, **kwargs)
+        # Only the in-process management command can set this attribute;
+        # query parameters and HTTP headers cannot bypass the web date window.
+        if not request.GET.get("include_audio_links") or getattr(request, "_audio_prewarm", False) is True:
+            return
+        try:
+            requested_date = datetime.date(kwargs["year"], kwargs["month"], kwargs["day"])
+        except (KeyError, TypeError, ValueError):
+            raise ValidationError("Invalid office date.")
+        today = timezone.localdate()
+        if not today - datetime.timedelta(days=3) <= requested_date <= today + datetime.timedelta(days=9):
+            raise PermissionDenied(
+                "Audio is available from three days ago through nine days ahead.", code="audio_date_unavailable"
+            )
 
     def get(self, request, year, month, day):
         raise NotImplementedError("You must implement this method.")
@@ -2795,12 +3087,906 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
     def get_modules(self, obj):
         modules = [module.json for module in obj.get_modules()]
         modules = [module for module in modules if module and module["lines"]]
+        if TTS_PROVIDER.name in {"elevenlabs", "gemini"}:
+            # Midday and Compline have short, plain-text Scripture modules.
+            for module in modules:
+                if module["name"] == "Scripture":
+                    reading_lines = [
+                        line
+                        for line in module["lines"]
+                        if line["line_type"] in {"leader", "leader_dialogue", "reader"}
+                    ]
+                    voice = self.reading_voice(" ".join(line["content"] for line in reading_lines))
+                    for line in reading_lines:
+                        line["audio_voice"] = voice
         return modules
+
+    # Anglican pointing / breath marks used in the psalter and canticles. They
+    # are visual reading cues (e.g. the mid-verse asterisk) and must never be
+    # spoken, or the voice literally says "asterisk".
+    _TTS_POINTING_RE = re.compile(r"[ \t]*[*\u2020\u2021\u2051][ \t]*")
+
+    @staticmethod
+    def normalize_tts_text(content):
+        """Prepare text for synthesis: apply admin-editable pronunciation
+        overrides and strip liturgical pointing marks. Affects TTS input (and
+        the clip hash) only, never the text shown to the user."""
+        from office.models import PronunciationOverride
+        from office.audio_text import expand_spoken_numbers
+
+        try:
+            content = PronunciationOverride.apply(content, provider=TTS_PROVIDER.name)
+        except Exception:
+            # Never let a bad override break audio; fall back to the raw text.
+            pass
+        # Replace pointing marks (and any spaces hugging them) with a single
+        # space so the surrounding words don't run together.
+        content = GenericDailyOfficeSerializer._TTS_POINTING_RE.sub(" ", content)
+        return expand_spoken_numbers(content)
+
+    @staticmethod
+    def record_audio_clip(
+        key,
+        filename,
+        text,
+        line_type,
+        voice,
+        kind,
+        file_path,
+        word_timing=None,
+    ):
+        """Ensure an AudioClip row exists for a generated file (backfill-friendly)."""
+        try:
+            from office.models import AudioClip
+
+            try:
+                duration = MP3(file_path).info.length
+            except Exception:
+                duration = None
+            clip, created = AudioClip.objects.get_or_create(
+                key=key,
+                defaults={
+                    "filename": filename,
+                    "text": text,
+                    "line_type": line_type,
+                    "provider": TTS_PROVIDER.name,
+                    "voice": voice,
+                    "model": TTS_PROVIDER.model,
+                    "speed": TTS_PROVIDER.speed,
+                    "kind": kind,
+                    "duration": duration,
+                    "word_timing": word_timing or [],
+                },
+            )
+            if not created:
+                update_fields = []
+                if not clip.provider:
+                    clip.provider = TTS_PROVIDER.name
+                    update_fields.append("provider")
+                if word_timing and not clip.word_timing:
+                    clip.word_timing = word_timing
+                    clip.duration = duration
+                    update_fields.extend(("word_timing", "duration"))
+                if update_fields:
+                    clip.save(update_fields=(*update_fields, "updated"))
+        except Exception:
+            # DB tracking is best-effort; audio generation must not depend on it.
+            pass
+
+    @staticmethod
+    def word_timing_sidecar(file_path):
+        return f"{file_path}.json"
+
+    @staticmethod
+    def save_word_timing(file_path, word_timing):
+        """Persist alignment beside audio so it survives DB row maintenance."""
+        if not word_timing:
+            return
+        sidecar = GenericDailyOfficeSerializer.word_timing_sidecar(file_path)
+        temp_sidecar = f"{sidecar}.part"
+        try:
+            with open(temp_sidecar, "w", encoding="utf-8") as handle:
+                json.dump(word_timing, handle, separators=(",", ":"))
+            os.replace(temp_sidecar, sidecar)
+        except Exception:
+            if os.path.exists(temp_sidecar):
+                os.remove(temp_sidecar)
+
+    @staticmethod
+    def get_clip_word_timing(path, text=None):
+        """Load clip-relative word timing from the DB, then its sidecar."""
+        if not path or AUDIO_CLIP_COLLECTOR.get() is not None:
+            return []
+
+        def fill_gaps(timing):
+            if text is not None and TTS_PROVIDER.name == "gemini":
+                from office.gemini_alignment import interpolate_short_gaps
+
+                return interpolate_short_gaps(GenericDailyOfficeSerializer.normalize_tts_text(text), timing)
+            return timing
+
+        filename = path.removeprefix(settings.MEDIA_URL).lstrip("/")
+        try:
+            from office.models import AudioClip
+
+            timing = AudioClip.objects.filter(filename=filename).values_list("word_timing", flat=True).first()
+            if timing:
+                return fill_gaps(timing)
+        except Exception:
+            pass
+        sidecar = GenericDailyOfficeSerializer.word_timing_sidecar(os.path.join(settings.MEDIA_ROOT, filename))
+        try:
+            with open(sidecar, encoding="utf-8") as handle:
+                return fill_gaps(json.load(handle))
+        except (OSError, ValueError, TypeError):
+            return []
+
+    @staticmethod
+    def find_reusable_reader(normalized, line_type):
+        """Return an existing provider reader clip regardless of its voice.
+
+        Reader voices are intentionally randomized only when a passage is first
+        generated. Once exact normalized text exists, changing or reordering the
+        configured reader list must not synthesize it again.
+        """
+        if TTS_PROVIDER.name not in {"elevenlabs", "gemini"} or TTS_PROVIDER.role_for_line_type(line_type) != "reader":
+            return None
+        try:
+            from office.models import AudioClip
+
+            clips = AudioClip.objects.filter(
+                filename__startswith=f"{TTS_PROVIDER.media_subdir}/",
+                line_type__in=("reader", "html"),
+                text=normalized,
+            ).order_by("-updated")
+            for clip in clips:
+                # Preserve reader voice reuse, but never reuse ElevenLabs audio
+                # from a different model, pronunciation, or pacing configuration.
+                if TTS_PROVIDER.name == "elevenlabs" and str(clip.key) != str(
+                    GenericDailyOfficeSerializer.tts_clip_key(clip.voice, normalized)
+                ):
+                    continue
+                if os.path.isfile(clip.file_path) and os.path.getsize(clip.file_path) > 0:
+                    return clip
+        except Exception:
+            pass
+        return None
+
+    @staticmethod
+    def tts_clip_key(voice, normalized):
+        """Deterministic cache key. Includes every input that affects the audio
+        (voice, model, speed, steering instructions, text) so any config change
+        regenerates the clip."""
+        return generate_uuid_from_string(f"{voice} {TTS_PROVIDER.cache_signature()} {normalized}")
+
+    @staticmethod
+    def synthesize_speech(voice, text, file_path):
+        """Synthesize a line via the active TTS provider and write it to disk.
+
+        Raises on failure and never leaves a partial file behind.
+        """
+        word_timing = TTS_PROVIDER.synthesize(voice, text, file_path) or []
+        if TTS_PROVIDER.name == "gemini":
+            from office.gemini_alignment import align_clip
+
+            word_timing = align_clip(TTS_PROVIDER, text, file_path)
+        GenericDailyOfficeSerializer.save_word_timing(file_path, word_timing)
+        return word_timing
+
+    @staticmethod
+    def get_or_create_clip(content, line_type, kind="line", no_generate=False, raise_on_error=False, voice=None):
+        """Isolate clip failures and report them without aborting office assembly."""
+        try:
+            return GenericDailyOfficeSerializer._get_or_create_clip(
+                content, line_type, kind, no_generate, raise_on_error=True, voice=voice
+            )
+        except Exception as exc:
+            try:
+                bugsnag.notify(
+                    exc,
+                    context="office_audio_clip",
+                    severity="error",
+                    metadata={
+                        "audio": {
+                            "provider": TTS_PROVIDER.name,
+                            "kind": kind,
+                            "line_type": line_type,
+                            **getattr(exc, "retry_details", {}),
+                        }
+                    },
+                )
+            except Exception:
+                logger.exception("Bugsnag notification failed for an audio clip")
+            if raise_on_error:
+                raise
+            logger.warning("Skipping failed audio clip (provider=%s, kind=%s)", TTS_PROVIDER.name, kind)
+            return None, None
+
+    @staticmethod
+    def _get_or_create_clip(content, line_type, kind="line", no_generate=False, raise_on_error=False, voice=None):
+        """Normalize -> hash -> reuse-or-generate a TTS clip; record it in the DB.
+
+        Returns (file_url, media_relative_path) or (None, None) when the line is
+        not spoken or generation fails. Required clips can opt into propagating
+        the original synthesis error instead of treating it as missing audio.
+        """
+        normalized = GenericDailyOfficeSerializer.normalize_tts_text(content)
+        collector = AUDIO_CLIP_COLLECTOR.get()
+        if collector is not None:
+            kwargs = {"no_generate": no_generate}
+            if voice:
+                kwargs["voice"] = voice
+            return collector(normalized, line_type, kind, **kwargs)
+        reusable_reader = None if voice else GenericDailyOfficeSerializer.find_reusable_reader(normalized, line_type)
+        if reusable_reader:
+            if not no_generate and not reusable_reader.word_timing and TTS_PROVIDER.name == "gemini":
+                from office.gemini_alignment import align_clip
+
+                timing = align_clip(TTS_PROVIDER, normalized, reusable_reader.file_path)
+                if timing:
+                    reusable_reader.word_timing = timing
+                    reusable_reader.save(update_fields=["word_timing", "updated"])
+                    GenericDailyOfficeSerializer.save_word_timing(reusable_reader.file_path, timing)
+            path = settings.MEDIA_URL + reusable_reader.filename
+            file_url = f"{audio_base_url()}{path}"
+            return file_url, path
+
+        voice = voice or TTS_PROVIDER.voice_for_text(line_type, normalized)
+        if not voice:
+            return None, None
+        key = GenericDailyOfficeSerializer.tts_clip_key(voice, normalized)
+        filename = provider_media_name(f"{key}.mp3", create_directory=not no_generate)
+        file_path = os.path.join(settings.MEDIA_ROOT, filename)
+        exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
+        path = settings.MEDIA_URL + filename
+        file_url = f"{audio_base_url()}{path}"
+        if exists:
+            word_timing = GenericDailyOfficeSerializer.get_clip_word_timing(path)
+            if not word_timing and not no_generate and TTS_PROVIDER.name == "gemini":
+                from office.gemini_alignment import align_clip
+
+                word_timing = align_clip(TTS_PROVIDER, normalized, file_path)
+                GenericDailyOfficeSerializer.save_word_timing(file_path, word_timing)
+            GenericDailyOfficeSerializer.record_audio_clip(
+                key,
+                filename,
+                normalized,
+                line_type,
+                voice,
+                kind,
+                file_path,
+                word_timing,
+            )
+            return file_url, path
+        if no_generate:
+            return file_url, path
+        try:
+            word_timing = GenericDailyOfficeSerializer.synthesize_speech(voice, normalized, file_path)
+        except Exception:
+            if raise_on_error:
+                raise
+            logger.warning(
+                "Audio clip generation failed (provider=%s, kind=%s)", TTS_PROVIDER.name, kind, exc_info=True
+            )
+            return None, None
+        if not (os.path.isfile(file_path) and os.path.getsize(file_path) > 0):
+            if raise_on_error:
+                raise RuntimeError("Audio synthesis returned without a nonempty clip.")
+            return None, None
+        GenericDailyOfficeSerializer.record_audio_clip(
+            key,
+            filename,
+            normalized,
+            line_type,
+            voice,
+            kind,
+            file_path,
+            word_timing,
+        )
+        return file_url, path
+
+    @staticmethod
+    def get_line_audio_file(line, no_generate=False):
+        return GenericDailyOfficeSerializer.get_or_create_clip(
+            line["content"], line["line_type"], kind="line", no_generate=no_generate, voice=line.get("audio_voice")
+        )
+
+    @staticmethod
+    def get_silence_clip(seconds):
+        """Return the path to a cached mono silence mp3 at the provider's sample
+        rate. The sample rate is part of the filename so switching TTS providers
+        (and thus output rates) never reuses a mismatched cached gap clip."""
+        ms = int(round(seconds * 1000))
+        sr = TTS_SILENCE_SAMPLE_RATE
+        filename = provider_media_name(f"silence_{ms}ms_{sr}.mp3")
+        file_path = os.path.join(settings.MEDIA_ROOT, filename)
+        if os.path.isfile(file_path) and os.path.getsize(file_path) > 0:
+            return file_path
+        cmd = [
+            "ffmpeg",
+            "-y",
+            "-f",
+            "lavfi",
+            "-i",
+            f"anullsrc=r={TTS_SILENCE_SAMPLE_RATE}:cl=mono",
+            "-t",
+            str(seconds),
+            "-c:a",
+            "libmp3lame",
+            "-b:a",
+            TTS_SILENCE_BITRATE,
+            "-ar",
+            str(TTS_SILENCE_SAMPLE_RATE),
+            "-ac",
+            "1",
+            file_path,
+        ]
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if result.returncode != 0 or not os.path.isfile(file_path):
+            return None
+        GenericDailyOfficeSerializer.record_audio_clip(
+            f"silence_{TTS_PROVIDER.media_subdir}_{ms}ms_{sr}", filename, "", "silence", "", "silence", file_path
+        )
+        return file_path
+
+    @staticmethod
+    def reading_voice(text):
+        """Assign one persistent reader to the complete passage per provider."""
+        if TTS_PROVIDER.name not in {"elevenlabs", "gemini"}:
+            return None
+        import hashlib
+        import fcntl
+        from pathlib import Path
+        from office.audio_text import reading_text
+
+        text = GenericDailyOfficeSerializer.normalize_tts_text(reading_text(text))
+        if not text.strip():
+            return None
+        key = hashlib.sha256(text.encode()).hexdigest()
+        path = Path(settings.MEDIA_ROOT) / TTS_PROVIDER.media_subdir / f"reading_{key}.voice.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with open(str(path) + ".lock", "a") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            if path.exists():
+                return json.loads(path.read_text())["voice"]
+            voice = TTS_PROVIDER.voice_for_text("reader", text)
+            if voice:
+                temporary = path.with_suffix(".part")
+                temporary.write_text(json.dumps({"voice": voice}))
+                os.replace(temporary, path)
+            return voice
+
+    @staticmethod
+    def handle_html(line, html=False, no_generate=False, id=None, module="Reading", voice=None):
+        """Render reading markers or require every spoken paragraph for playback.
+
+        Display/cache planning may use prospective clip URLs. Playback must fail
+        before assembling an office when any paragraph cannot be supplied; clips
+        already cached remain available for a subsequent request.
+        """
+        import re
+        from office.audio_text import reading_text
+
+        if "<iframe" in line and html:
+            return line
+        if "<iframe" in line and not html:
+            return []
+
+        lines = []
+        audio_files = []
+
+        # Group readings by paragraph (not per-sentence) for a smoother, more
+        # natural read. Split after each closing </p> and keep the delimiters so
+        # the concatenated display HTML is preserved exactly.
+        voice = voice or GenericDailyOfficeSerializer.reading_voice(line)
+        paragraphs = re.split(r"(?<=</p>)", line)
+        for paragraph in paragraphs:
+            if not paragraph.strip():
+                lines.append(paragraph)
+                continue
+            text_without_verses = reading_text(paragraph)
+            if not text_without_verses:
+                lines.append(paragraph)
+                continue
+            required = not html and not no_generate
+            try:
+                url, path = GenericDailyOfficeSerializer.get_or_create_clip(
+                    text_without_verses,
+                    "reader",
+                    kind="reader",
+                    no_generate=no_generate,
+                    raise_on_error=required,
+                    voice=voice,
+                )
+            except Exception as exc:
+                if required:
+                    raise ReadingAudioUnavailable() from exc
+                raise
+            if required and (not url or not path):
+                raise ReadingAudioUnavailable()
+            if url:
+                uuid_match = re.search(r"/uploads/(?:[^/]+/)?([0-9a-fA-F-]+)\.mp3", url)
+                if uuid_match:
+                    uuid = uuid_match.group(1)
+                if id is not None:
+                    id = re.sub(r"_[^_]+$", f"_{uuid}", id)
+                lines.append(f"<span data-line-id='{id}'></span>{paragraph}")
+                word_timing = [
+                    {**word, "id": id, "speaker": "reader"}
+                    for word in GenericDailyOfficeSerializer.get_clip_word_timing(path, text_without_verses)
+                ]
+                audio_files.append(
+                    {
+                        "line_id": id,
+                        "url": url,
+                        "path": path,
+                        "module": module,
+                        "word_timing": word_timing,
+                    }
+                )
+            else:
+                lines.append(paragraph)
+        result = "".join(lines)
+
+        if html:
+            result = result.replace("--end of footnotes-->", "").replace("--end of crossrefs-->", "")
+            result = result.strip()
+            return result
+
+        return audio_files
+
+    @staticmethod
+    def get_single_track(tracks):
+
+        def get_audio_duration(file_path):
+            audio = MP3(file_path)
+            return audio.info.length
+
+        tracks = [
+            {
+                "path": os.path.join(settings.MEDIA_ROOT, track["path"].removeprefix(settings.MEDIA_URL).lstrip("/")),
+                "name": track["module"],
+                "id": track["line_id"],
+                "member_ids": track.get("member_ids") or [track["line_id"]],
+                "text": track.get("text"),
+                "word_timing": track.get("word_timing") or [],
+                "silence_before": track.get("silence_before") or 0,
+                "silence_after": track.get("silence_after") or 0,
+                "skip_gap_before": track.get("skip_gap_before", False),
+            }
+            for track in tracks
+            if track.get("path")
+        ]
+        mp3_files = [track for track in tracks if os.path.exists(track["path"])]
+
+        # No usable source clips (e.g. TTS synthesis failed): don't advertise a
+        # combined track that would 404 and crash the player. Returning an empty
+        # list makes the client treat audio as unavailable and hide the player.
+        if not mp3_files:
+            return []
+
+        def silence_pad(seconds):
+            """(clip_path, duration) for an arbitrary silence length, or (None, 0)."""
+            if not seconds or seconds <= 0:
+                return None, 0
+            clip = GenericDailyOfficeSerializer.get_silence_clip(seconds)
+            dur = get_audio_duration(clip) if clip and os.path.exists(clip) else 0
+            return clip, dur
+
+        # Cached silence clips inserted between speaker groups (short) and modules
+        # (longer) for more natural pacing. They share the TTS output sample rate
+        # and channel layout so ffmpeg can still concatenate with `-c copy`.
+        gap_group_clip = GenericDailyOfficeSerializer.get_silence_clip(TTS_GAP_GROUP)
+        gap_module_clip = GenericDailyOfficeSerializer.get_silence_clip(TTS_GAP_MODULE)
+        gap_group_dur = get_audio_duration(gap_group_clip) if gap_group_clip and os.path.exists(gap_group_clip) else 0
+        gap_module_dur = (
+            get_audio_duration(gap_module_clip) if gap_module_clip and os.path.exists(gap_module_clip) else 0
+        )
+        # Optional near-zero gap used only before a bare Amen/Alleluia response.
+        gap_amen_clip = GenericDailyOfficeSerializer.get_silence_clip(TTS_GAP_AMEN) if TTS_GAP_AMEN > 0 else None
+        gap_amen_dur = get_audio_duration(gap_amen_clip) if gap_amen_clip and os.path.exists(gap_amen_clip) else 0
+
+        concat_paths = []
+        track_list = []
+        short_track_list = []
+        word_track_list = []
+        start_time = 0
+        name = ""
+        first = True
+        for track in mp3_files:
+            is_new_module = track["name"] != name
+            if not first and not track["skip_gap_before"]:
+                # A bare "Amen"/"Alleluia" should reply almost immediately, so it
+                # overrides the usual group/module pause with a short breath.
+                if is_immediate_response(track.get("text")):
+                    gap_clip = gap_amen_clip
+                    gap_dur = gap_amen_dur
+                elif is_new_module:
+                    gap_clip = gap_module_clip
+                    gap_dur = gap_module_dur
+                else:
+                    gap_clip = gap_group_clip
+                    gap_dur = gap_group_dur
+                if gap_clip:
+                    concat_paths.append(os.path.abspath(gap_clip))
+                    start_time += gap_dur
+            first = False
+            # Explicit per-item silence padding (decimals allowed), added on top
+            # of the normal pacing gap. Applied even to the first track.
+            sb_clip, sb_dur = silence_pad(track["silence_before"])
+            if sb_clip:
+                concat_paths.append(os.path.abspath(sb_clip))
+                start_time += sb_dur
+            concat_paths.append(os.path.abspath(track["path"]))
+            if is_new_module:
+                name = track["name"]
+                track_list.append({"name": track["name"], "start_time": start_time})
+            clip_duration = get_audio_duration(track["path"])
+            for member_id in track["member_ids"]:
+                short_track_list.append(
+                    {"id": member_id, "start_time": start_time, "end_time": start_time + clip_duration}
+                )
+            for word in track["word_timing"]:
+                word_track_list.append(
+                    {
+                        "id": word["id"],
+                        "speaker": word.get("speaker"),
+                        "provider": TTS_PROVIDER.name,
+                        "word": word["word"],
+                        "start_time": start_time + word["start_time"],
+                        "end_time": start_time + word["end_time"],
+                    }
+                )
+            start_time += clip_duration
+            sa_clip, sa_dur = silence_pad(track["silence_after"])
+            if sa_clip:
+                concat_paths.append(os.path.abspath(sa_clip))
+                start_time += sa_dur
+
+        # Segment start_times are summed from each source clip's reported length,
+        # but the concatenated file is re-encoded (see below) and ends up a hair
+        # shorter per clip; over a whole office that drift makes "jump to" land a
+        # few seconds late. Rescale the timeline to the actual output duration so
+        # timestamps line up with what the browser actually plays.
+        computed_total = start_time
+
+        def rescale_segments(actual_total):
+            if not (computed_total and actual_total and actual_total > 0):
+                return
+            scale = actual_total / computed_total
+            for segment in track_list:
+                segment["start_time"] *= scale
+            for segment in short_track_list:
+                segment["start_time"] *= scale
+                segment["end_time"] *= scale
+            for word in word_track_list:
+                word["start_time"] *= scale
+                word["end_time"] *= scale
+
+        # The silence entries are part of the concat list, so the hash naturally
+        # changes when gaps change and the concatenated file is rebuilt. The
+        # "cbr1" marker also busts the cache for the re-encode change below.
+        full_string = "cbr1 " + " ".join(concat_paths)
+        audio_id = generate_uuid_from_string(full_string)
+        filename = provider_media_name(f"{audio_id}.mp3")
+        file_path = os.path.join(settings.MEDIA_ROOT, filename)
+        exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
+        path = settings.MEDIA_URL + filename
+        file_url = f"{audio_base_url()}/api/v1/audio_track/{filename}"
+
+        if exists:
+            rescale_segments(get_audio_duration(file_path))
+            return file_url, path, track_list, short_track_list, word_track_list
+
+        temp_file_list = os.path.join(settings.MEDIA_ROOT, f"{filename}.txt")
+        with open(temp_file_list, "w") as f:
+            for concat_path in concat_paths:
+                f.write(f"file '{concat_path}'\n")
+
+        # Re-encode (rather than `-c copy`) to a single constant-bitrate mp3 with
+        # a proper header. The per-clip sources vary in bitrate (gpt-4o-mini-tts
+        # ~128k vs the silence clips), and a stream-copied VBR mp3 with no Xing
+        # header is not reliably seekable in browsers (seeks snap to the start).
+        # A uniform CBR encode restores accurate time-based seeking.
+        ffmpeg_cmd = [
+            "ffmpeg",
+            "-y",
+            "-f",
+            "concat",
+            "-safe",
+            "0",
+            "-i",
+            temp_file_list,
+            "-c:a",
+            "libmp3lame",
+            "-b:a",
+            "160k",
+            "-ar",
+            str(TTS_SILENCE_SAMPLE_RATE),
+            "-ac",
+            "1",
+            file_path,
+        ]
+
+        result = subprocess.run(ffmpeg_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+        if result.returncode != 0:
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            print(f"ffmpeg failed with return code {result.returncode}: {result.stderr}")
+        elif os.path.isfile(file_path):
+            rescale_segments(get_audio_duration(file_path))
+
+        # Cleanup temp file list
+        if os.path.exists(temp_file_list):
+            os.remove(temp_file_list)
+
+        # Only advertise the combined track if it was actually produced. If
+        # ffmpeg failed (or produced nothing), return empty so the client hides
+        # the player instead of loading a 404 and throwing NotSupportedError.
+        if not (os.path.isfile(file_path) and os.path.getsize(file_path) > 0):
+            return []
+
+        return file_url, path, track_list, short_track_list, word_track_list
+
+    def get_audio(self, obj):
+        # Never synthesize/serve audio outside the supported English + ESV/KJV
+        # combination. obj.settings is a dict, so read the keys (the old
+        # attribute check silently never fired).
+        office_settings = getattr(obj, "settings", None) or {}
+        if not audio_available(
+            office_settings.get("bible_translation", "esv"),
+            office_settings.get("display_language", "english"),
+        ):
+            return []
+        modules = self.get_modules(obj)
+        if TTS_PROVIDER.name in {"gemini", "elevenlabs"}:
+            # Copy only the audio representation; printed prayer text is unchanged.
+            modules = [
+                {
+                    **module,
+                    "lines": [
+                        (
+                            {**line, "content": INTERCESSION_INVITATION, "silence_after": 0, "audio_break_after": True}
+                            if module["name"] == INTERCESSION_MODULE and line["line_type"] == "speaker"
+                            else line
+                        )
+                        for line in module["lines"]
+                    ],
+                }
+                for module in modules
+            ]
+        spoken_types = [
+            "reader",
+            "leader",
+            "congregation",
+            "leader_dialogue",
+            "congregation_dialogue",
+            # Audio-only narration in the leader voice; never rendered visually.
+            "speaker",
+        ]
+        tracks = []
+        headings = []
+        # Extra silence (seconds) accumulated from lines that do not themselves
+        # produce audio (rubrics, spacers, headings, ...) plus explicit
+        # silence_before values, to be prepended to the next real track.
+        pending_before = [0.0]
+        dialogue = None
+        if TTS_PROVIDER.name == "elevenlabs" and TTS_PROVIDER.model in {"eleven_v4", "eleven_v4_turbo"}:
+            from office.elevenlabs_dialogue import DialogueSession
+
+            dialogue = DialogueSession(TTS_PROVIDER)
+
+        def line_silence(line, key):
+            try:
+                return float(line.get(key) or 0)
+            except (TypeError, ValueError):
+                return 0.0
+
+        def flush_group(group_buffer, module_name):
+            """Synthesize a run of consecutive same-voice lines as one clip.
+
+            Grouping keeps blocks like the confession from sounding disjointed.
+            Every constituent line id is kept so the player can still scroll to
+            the block (all pointing at the group's start time).
+            """
+            if not group_buffer:
+                return
+            if dialogue is not None:
+                try:
+                    chunks = list(dialogue.chunks(group_buffer, self.normalize_tts_text))
+                except Exception as exc:
+                    try:
+                        bugsnag.notify(exc, severity="error", context="office_audio_dialogue")
+                    except Exception:
+                        logger.exception("Bugsnag dialogue reporting failed")
+                    dialogue.reset()
+                    chunks = []
+                for position, chunk in enumerate(chunks):
+                    path, timing = dialogue.clip(chunk)
+                    if path:
+                        tracks.append(
+                            {
+                                "line_id": chunk[0]["id"],
+                                "member_ids": list(dict.fromkeys(line["id"] for line in chunk)),
+                                "module": module_name,
+                                "text": " ".join(line["content"] for line in chunk),
+                                "url": f"{audio_base_url()}{path}",
+                                "path": path,
+                                "word_timing": timing,
+                                "silence_before": pending_before[0]
+                                + (line_silence(group_buffer[0], "silence_before") if position == 0 else 0),
+                                "silence_after": (
+                                    line_silence(group_buffer[-1], "silence_after")
+                                    if position == len(chunks) - 1
+                                    else 0
+                                ),
+                            }
+                        )
+                        pending_before[0] = 0
+                group_buffer.clear()
+                return
+            # Join consecutive same-speaker lines with spaces (not newlines) and
+            # collapse any internal line breaks so blocks like the confession are
+            # synthesized as one flowing request instead of feeling chopped.
+            merged_text = " ".join(line["content"] for line in group_buffer)
+            merged_text = re.sub(r"\s+", " ", merged_text).strip()
+            line_type = group_buffer[0]["line_type"]
+            kind = "group" if len(group_buffer) > 1 else "line"
+            normalized_merged = self.normalize_tts_text(merged_text)
+            # silence_before of the first line and silence_after of the last line
+            # bracket the whole group; any accumulated pending silence is folded
+            # into the leading pad so it lands right before this clip.
+            silence_before = pending_before[0] + line_silence(group_buffer[0], "silence_before")
+            silence_after = line_silence(group_buffer[-1], "silence_after")
+            url, path = self.get_or_create_clip(
+                merged_text, line_type, kind=kind, voice=group_buffer[0].get("audio_voice")
+            )
+            if path:
+                # Associate each aligned word with the rendered source line.
+                # This preserves precise highlighting even when several
+                # same-role lines are synthesized as one natural-flowing clip.
+                member_ranges = []
+                search_from = 0
+                for line in group_buffer:
+                    normalized_line = self.normalize_tts_text(line["content"])
+                    start = normalized_merged.find(normalized_line, search_from)
+                    if start < 0:
+                        start = search_from
+                    end = start + len(normalized_line)
+                    member_ranges.append((start, end, line["id"]))
+                    search_from = end
+
+                word_timing = []
+                for word in self.get_clip_word_timing(path, normalized_merged):
+                    char_start = word.get("char_start", 0)
+                    line_id = member_ranges[-1][2]
+                    for start, end, member_id in member_ranges:
+                        if start <= char_start < end:
+                            line_id = member_id
+                            break
+                    word_timing.append(
+                        {
+                            **word,
+                            "id": line_id,
+                            "speaker": TTS_PROVIDER.role_for_line_type(line_type),
+                        }
+                    )
+                pending_before[0] = 0.0
+                tracks.append(
+                    {
+                        "line_id": group_buffer[0]["id"],
+                        "member_ids": [line["id"] for line in group_buffer],
+                        "module": module_name,
+                        "text": merged_text,
+                        "url": url,
+                        "path": path,
+                        "word_timing": word_timing,
+                        "silence_before": silence_before,
+                        "silence_after": silence_after,
+                    }
+                )
+            else:
+                # Clip generation failed: keep the silence so it is not lost.
+                pending_before[0] = silence_before + silence_after
+            group_buffer.clear()
+
+        for module in modules:
+            group_buffer = []
+            for i, line in enumerate(module["lines"]):
+                if line["line_type"] in ["heading"]:
+                    # Dialogue retains context across headings within a module.
+                    if dialogue is None:
+                        flush_group(group_buffer, module["name"])
+                    j = i
+                    look_ahead_line = module["lines"][j + 1] if j + 1 < len(module["lines"]) else None
+                    if look_ahead_line is None:
+                        continue
+                    while j + 1 < len(module["lines"]) and (
+                        look_ahead_line["line_type"] not in spoken_types + ["html"]
+                        or "iframe" in look_ahead_line["content"]
+                    ):
+                        look_ahead_line = module["lines"][j + 1]
+                        j = j + 1
+                    if (
+                        look_ahead_line["line_type"] not in spoken_types + ["html"]
+                        or "iframe" in look_ahead_line["content"]
+                    ):
+                        continue
+                    headings.append({"heading": line["content"], "next_id": look_ahead_line["id"]})
+
+                if line["line_type"] == "html" and "<iframe" in line["content"]:
+                    flush_group(group_buffer, module["name"])
+                    # An iframe produces no audio; carry any requested silence
+                    # forward to the next real track.
+                    pending_before[0] += line_silence(line, "silence_before") + line_silence(line, "silence_after")
+                    continue
+                if line["line_type"] == "html":
+                    flush_group(group_buffer, module["name"])
+                    if dialogue is not None:
+                        dialogue.reset()
+                    temp_id = "_".join([line["id"].split("_")[0], line["id"].split("_")[-1]])
+                    html_tracks = self.handle_html(
+                        line["content"], id=temp_id, module=module["name"], voice=line.get("audio_voice")
+                    )
+                    if html_tracks:
+                        # Pad the first/last reading clip; fold in pending silence.
+                        html_tracks[0]["silence_before"] = (
+                            (html_tracks[0].get("silence_before") or 0)
+                            + pending_before[0]
+                            + line_silence(line, "silence_before")
+                        )
+                        html_tracks[-1]["silence_after"] = (html_tracks[-1].get("silence_after") or 0) + line_silence(
+                            line, "silence_after"
+                        )
+                        pending_before[0] = 0.0
+                        tracks = tracks + html_tracks
+                    else:
+                        pending_before[0] += line_silence(line, "silence_before") + line_silence(line, "silence_after")
+                elif line["line_type"] in spoken_types:
+                    role = TTS_PROVIDER.role_for_line_type(line["line_type"])
+                    same_role = dialogue is not None or (
+                        bool(group_buffer) and TTS_PROVIDER.role_for_line_type(group_buffer[0]["line_type"]) == role
+                    )
+                    # A line requesting silence before it starts a fresh clip so
+                    # the pause can be placed at exactly that point.
+                    if group_buffer and (not same_role or line_silence(line, "silence_before") > 0):
+                        flush_group(group_buffer, module["name"])
+                    group_buffer.append(line)
+                    # A line requesting silence after it ends the clip here so the
+                    # pause follows it (rather than a later line in the group).
+                    if line_silence(line, "silence_after") > 0 or line.get("audio_break_after"):
+                        flush_group(group_buffer, module["name"])
+                else:
+                    # Any other non-spoken line (rubric, spacer, citation, ...)
+                    # separates speaker turns and gets its own natural pause. Its
+                    # silence padding accrues to the next real track.
+                    if dialogue is None or line_silence(line, "silence_before") or line_silence(line, "silence_after"):
+                        flush_group(group_buffer, module["name"])
+                    pending_before[0] += line_silence(line, "silence_before") + line_silence(line, "silence_after")
+            flush_group(group_buffer, module["name"])
+
+        tracks = [track for track in tracks if track]
+        headings = [heading for heading in headings if heading]
+        if AUDIO_CLIP_COLLECTOR.get() is not None:
+            from office.audio_ceremony import announcement
+
+            self.get_or_create_clip(announcement(obj), "speaker")
+            return {"tracks": tracks, "headings": headings, "single_track": None}
+        if TTS_PROVIDER.name in {"gemini", "elevenlabs"}:
+            tracks = frame_tracks(obj, tracks, self, audio_base_url())
+        single_track = self.get_single_track(tracks)
+
+        return {"tracks": tracks, "headings": headings, "single_track": single_track}
 
 
 class OfficeSerializer(GenericDailyOfficeSerializer):
     calendar_day = DaySerializer(source="date")
     modules = serializers.SerializerMethodField()
+
+
+class OfficeAudioSerializer(GenericDailyOfficeSerializer):
+    audio = serializers.SerializerMethodField()
 
 
 def reading_format(name, citation, text, testament, cycle=None, reading_number=None):
@@ -2828,7 +4014,8 @@ def morning_prayer_30_day_psalms(obj):
             obj.thirty_day_psalter_day.mp_psalms,
             simplified_citations=True,
             language_style=obj.psalms,
-            headings=psalm_style,
+            headings=obj.style,
+            display_language=obj.settings.get("display_language", "english"),
         ),
         testament="OT",
         cycle="30",
@@ -2855,7 +4042,8 @@ def evening_prayer_30_day_psalms(obj):
             obj.thirty_day_psalter_day.ep_psalms,
             simplified_citations=True,
             language_style=obj.psalms,
-            headings=psalm_style,
+            headings=obj.style,
+            display_language=obj.settings.get("display_language", "english"),
         ),
         testament="OT",
         cycle="30",
@@ -2879,7 +4067,7 @@ def standard_morning_prayer_60_day_psalms(obj):
         name=name,
         citation=citation,
         text=get_psalms(
-            obj.standard_readings.mp_psalms, simplified_citations=True, language_style=obj.psalms, headings=psalm_style
+            obj.standard_readings.mp_psalms, simplified_citations=True, language_style=obj.psalms, headings=obj.style
         ),
         testament="OT",
         cycle="60",
@@ -2903,7 +4091,7 @@ def standard_evening_prayer_60_day_psalms(obj):
         name=name,
         citation=citation,
         text=get_psalms(
-            obj.standard_readings.ep_psalms, simplified_citations=True, language_style=obj.psalms, headings=psalm_style
+            obj.standard_readings.ep_psalms, simplified_citations=True, language_style=obj.psalms, headings=obj.style
         ),
         testament="OT",
         cycle="60",
@@ -2927,7 +4115,7 @@ def holy_day_morning_prayer_60_day_psalms(obj):
         name=name,
         citation=citation,
         text=get_psalms(
-            obj.holy_day_readings.mp_psalms, simplified_citations=True, language_style=obj.psalms, headings=psalm_style
+            obj.holy_day_readings.mp_psalms, simplified_citations=True, language_style=obj.psalms, headings=obj.style
         ),
         testament="OT",
         cycle="60",
@@ -2951,7 +4139,7 @@ def holy_day_evening_prayer_60_day_psalms(obj):
         name=name,
         citation=citation,
         text=get_psalms(
-            obj.holy_day_readings.ep_psalms, simplified_citations=True, language_style=obj.psalms, headings=psalm_style
+            obj.holy_day_readings.ep_psalms, simplified_citations=True, language_style=obj.psalms, headings=obj.style
         ),
         testament="OT",
         cycle="60",
@@ -3186,7 +4374,9 @@ def service_readings_to_citations(readings):
     return groups
 
 
-def mass_readings(commemoration, mass_year, calendar_date, translation="esv", psalm_style="contemporary"):
+def mass_readings(
+    commemoration, mass_year, calendar_date, translation="esv", psalm_style="contemporary", display_language="english"
+):
     readings = commemoration.get_all_mass_readings_for_year(mass_year)
     passages = []
     for reading in readings:
@@ -3200,13 +4390,16 @@ def mass_readings(commemoration, mass_year, calendar_date, translation="esv", ps
         full = reading_format(
             name=name,
             citation=reading.long_citation,
-            text=getattr(reading.long_scripture, translation)
-            if "psalm" not in reading.long_citation.lower()
-            else get_psalms(
-                reading.long_citation.replace("Psalms", ""),
-                simplified_citations=True,
-                language_style=psalm_style,
-                headings="none",
+            text=(
+                getattr(reading.long_scripture, translation)
+                if "psalm" not in reading.long_citation.lower()
+                else get_psalms(
+                    reading.long_citation.replace("Psalms", ""),
+                    simplified_citations=True,
+                    language_style=psalm_style,
+                    headings="none",
+                    display_language=display_language,
+                )
             ),
             testament=reading.testament,
             reading_number=reading.reading_number,
@@ -3216,13 +4409,16 @@ def mass_readings(commemoration, mass_year, calendar_date, translation="esv", ps
             abbreviated = reading_format(
                 name=name,
                 citation=reading.short_citation,
-                text=getattr(reading.short_scripture, translation)
-                if "psalm" not in reading.short_citation.lower()
-                else get_psalms(
-                    reading.short_citation.replace("Psalms", ""),
-                    simplified_citations=True,
-                    language_style=psalm_style,
-                    headings="none",
+                text=(
+                    getattr(reading.short_scripture, translation)
+                    if "psalm" not in reading.short_citation.lower()
+                    else get_psalms(
+                        reading.short_citation.replace("Psalms", ""),
+                        simplified_citations=True,
+                        language_style=psalm_style,
+                        headings="none",
+                        display_language=display_language,
+                    )
                 ),
                 testament=reading.testament,
             )
@@ -3305,7 +4501,14 @@ class ReadingsSerializer(serializers.Serializer):
         ferias = {}
         non_ferias = {}
         for commemoration in obj.date.morning_and_evening:
-            masses = mass_readings(commemoration, obj.mass_year, obj.date, obj.translation, obj.psalms)
+            masses = mass_readings(
+                commemoration,
+                obj.mass_year,
+                obj.date,
+                obj.translation,
+                obj.psalms,
+                display_language=obj.settings.get("display_language", "english"),
+            )
             for mass, readings in masses.items():
                 name = f"{commemoration.name} ({mass}) " if mass not in ["", "-"] else f"{commemoration.name}"
                 if "FERIA" in commemoration.rank.name:
@@ -3321,68 +4524,145 @@ class ReadingsSerializer(serializers.Serializer):
         return services
 
 
+class AudioViewSet(ViewSet):
+    permission_classes = [AllowAny]
+
+    @csrf_exempt
+    def retrieve(self, request):
+        data = json.loads(request.body)
+        content = data.get("content", None)
+        if not content:
+            return Response({"path": ""})
+        # Only English ESV/KJV offices ever get audio; honor the office's
+        # translation/language when the caller supplies them.
+        if not audio_available(
+            data.get("bible_translation", "esv"),
+            data.get("display_language", "english"),
+        ):
+            return Response({"path": ""})
+        line_type = data.get("line_type", "leader")
+        # Shares the same voice map, pronunciation normalization, hashing, and DB
+        # tracking as the batch path so identical text yields identical clips.
+        normalized = GenericDailyOfficeSerializer.normalize_tts_text(content)
+        reusable_reader = GenericDailyOfficeSerializer.find_reusable_reader(normalized, line_type)
+        if reusable_reader:
+            return Response({"path": request.build_absolute_uri(settings.MEDIA_URL + reusable_reader.filename)})
+        voice = TTS_PROVIDER.voice_for_text(line_type, normalized)
+        if not voice:
+            return Response({"path": ""})
+        key = GenericDailyOfficeSerializer.tts_clip_key(voice, normalized)
+        filename = provider_media_name(f"{key}.mp3")
+        file_path = os.path.join(settings.MEDIA_ROOT, filename)
+        exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
+        file_url = request.build_absolute_uri(settings.MEDIA_URL + filename)
+        if exists:
+            GenericDailyOfficeSerializer.record_audio_clip(
+                key, filename, normalized, line_type, voice, "line", file_path
+            )
+            return Response({"path": file_url})
+        try:
+            GenericDailyOfficeSerializer.synthesize_speech(voice, normalized, file_path)
+        except Exception as e:
+            return Response({"error": str(e)})
+        GenericDailyOfficeSerializer.record_audio_clip(key, filename, normalized, line_type, voice, "line", file_path)
+        return Response({"path": file_url})
+
+
 class MorningPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
+
         office = MorningPrayer(request, year, month, day)
-        serializer = OfficeSerializer(office)
+        if request.GET.get("include_audio_links"):
+            serializer = OfficeAudioSerializer(office)
+        else:
+            serializer = OfficeSerializer(office)
         return Response(serializer.data)
 
 
 class FamilyMorningPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
         office = FamilyMorningPrayer(request, year, month, day)
-        serializer = OfficeSerializer(office)
+        if request.GET.get("include_audio_links"):
+            serializer = OfficeAudioSerializer(office)
+        else:
+            serializer = OfficeSerializer(office)
         return Response(serializer.data)
 
 
 class FamilyMiddayPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
         office = FamilyMiddayPrayer(request, year, month, day)
-        serializer = OfficeSerializer(office)
+        if request.GET.get("include_audio_links"):
+            serializer = OfficeAudioSerializer(office)
+        else:
+            serializer = OfficeSerializer(office)
         return Response(serializer.data)
 
 
 class FamilyEarlyEveningPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
         office = FamilyEarlyEveningPrayer(request, year, month, day)
-        serializer = OfficeSerializer(office)
+        if request.GET.get("include_audio_links"):
+            serializer = OfficeAudioSerializer(office)
+        else:
+            serializer = OfficeSerializer(office)
         return Response(serializer.data)
 
 
 class FamilyCloseOfDayPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
         office = FamilyCloseOfDayPrayer(request, year, month, day)
-        serializer = OfficeSerializer(office)
+        if request.GET.get("include_audio_links"):
+            serializer = OfficeAudioSerializer(office)
+        else:
+            serializer = OfficeSerializer(office)
         return Response(serializer.data)
 
 
 class EveningPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
         office = EveningPrayer(request, year, month, day)
-        serializer = OfficeSerializer(office)
+        if request.GET.get("include_audio_links"):
+            serializer = OfficeAudioSerializer(office)
+        else:
+            serializer = OfficeSerializer(office)
         return Response(serializer.data)
 
 
 class MiddayPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
         office = MiddayPrayer(request, year, month, day)
-        serializer = OfficeSerializer(office)
+        if request.GET.get("include_audio_links"):
+            serializer = OfficeAudioSerializer(office)
+        else:
+            serializer = OfficeSerializer(office)
         return Response(serializer.data)
 
 
 class ComplineView(OfficeAPIView):
     def get(self, request, year, month, day):
         office = Compline(request, year, month, day)
-        serializer = OfficeSerializer(office)
+        if request.GET.get("include_audio_links"):
+            serializer = OfficeAudioSerializer(office)
+        else:
+            serializer = OfficeSerializer(office)
         return Response(serializer.data)
 
 
 class ReadingsView(OfficeAPIView):
     def get(self, request, year, month, day):
-        translation = request.GET.get("translation", "esv")
+        translation = Scripture.normalize_bible_translation(request.GET.get("translation", "esv"))
         psalms = request.GET.get("psalms", "contemporary")
-        office = Readings(request, year, month, day, translation, psalms)
+        style = request.GET.get("style", "whole_verse")
+        office = Readings(request, year, month, day, translation, psalms, style)
         serializer = ReadingsSerializer(office)
+        return Response(serializer.data)
+
+
+class CommemorationsView(OfficeAPIView):
+    def get(self, request, uuid):
+        commemoration = Commemoration.objects.get(pk=uuid)
+        serializer = CommemorationSerializer(commemoration)
         return Response(serializer.data)
 
 
@@ -3413,8 +4693,8 @@ class GreatLitanyAloneModule(Module):
 
     def get_lines(self):
         style = self.style
-        kyrie = file_to_lines("kyrie_contemporary") if style == "contemporary" else file_to_lines("kyrie_traditional")
-        pater = file_to_lines("pater_contemporary") if style == "contemporary" else file_to_lines("pater_traditional")
+        kyrie = self._ftl("kyrie_contemporary") if style == "contemporary" else self._ftl("kyrie_traditional")
+        pater = self._ftl("pater_contemporary") if style == "contemporary" else self._ftl("pater_traditional")
         template = "great_litany_traditional" if style == "traditional" else "great_litany"
         supplication_template = "supplication_traditional" if style == "traditional" else "supplication"
         supplication_optional_template = (
@@ -3426,27 +4706,27 @@ class GreatLitanyAloneModule(Module):
 
         if self.portion == "both":
             return (
-                file_to_lines(template)
+                self._ftl(template)
                 + [Line("", "spacer")]
                 + kyrie
                 + [Line("", "spacer")]
                 + pater
                 + [Line("", "spacer")]
-                + file_to_lines(supplication_template)
-                + file_to_lines(supplication_optional_template)
+                + self._ftl(supplication_template)
+                + self._ftl(supplication_optional_template)
             )
         if self.portion == "litany":
             return (
-                file_to_lines(template)
+                self._ftl(template)
                 + [Line("", "spacer")]
                 + kyrie
                 + [Line("", "spacer")]
                 + pater
                 + [Line("", "spacer")]
-                + file_to_lines(short_ending_template)
+                + self._ftl(short_ending_template)
             )
         if self.portion == "supplication":
-            return file_to_lines(supplication_template) + file_to_lines(supplication_optional_template)
+            return self._ftl(supplication_template) + self._ftl(supplication_optional_template)
 
 
 class GreatLitanyModuleCollection:
@@ -3467,6 +4747,159 @@ class GreatLitanyView(OfficeAPIView):
         return Response(serializer.data)
 
 
+SETTING_UI_METADATA = {
+    "psalter": {
+        "ui_category": "Readings",
+        "ui_priority": 10,
+        "ui_keywords": ["psalms", "cycle", "morning prayer", "evening prayer"],
+    },
+    "reading_cycle": {
+        "ui_category": "Readings",
+        "ui_priority": 20,
+        "ui_keywords": ["lectionary", "one year", "two year"],
+    },
+    "reading_length": {
+        "ui_category": "Readings",
+        "ui_priority": 30,
+        "ui_keywords": ["abbreviated", "full readings"],
+    },
+    "reading_audio": {
+        "ui_category": "Audio",
+        "ui_priority": 40,
+        "ui_keywords": ["esv", "scripture audio", "player"],
+        "ui_help_short": "Controls whether scripture content audio is included.",
+    },
+    "canticle_rotation": {
+        "ui_category": "Prayer",
+        "ui_priority": 50,
+        "ui_keywords": ["canticles", "seasonal", "traditional"],
+    },
+    "lectionary": {
+        "ui_category": "Calendar",
+        "ui_priority": 180,
+        "ui_keywords": ["sunday", "holy day", "eucharistic readings"],
+    },
+    "confession": {
+        "ui_category": "Prayer",
+        "ui_priority": 190,
+        "ui_keywords": ["intro", "exhortation"],
+    },
+    "absolution": {
+        "ui_category": "Prayer",
+        "ui_priority": 200,
+        "ui_keywords": ["priest", "lay", "deacon"],
+    },
+    "morning_prayer_invitatory": {
+        "ui_category": "Prayer",
+        "ui_priority": 210,
+        "ui_keywords": ["venite", "jubilate", "pascha nostrum"],
+    },
+    "reading_headings": {
+        "ui_category": "Readings",
+        "ui_priority": 220,
+        "ui_keywords": ["esv headings", "headings"],
+    },
+    "display_language": {
+        "ui_category": "Language",
+        "ui_priority": 5,
+        "ui_keywords": ["language", "chinese", "english", "中文", "简体", "繁體"],
+        "ui_help_short": "Choose the display language for prayers and liturgical text.",
+    },
+    "bible_translation": {
+        "ui_category": "Language",
+        "ui_priority": 6,
+        "ui_keywords": ["bible", "translation", "esv", "kjv", "rsv", "chinese", "和合本", "思高"],
+        "ui_help_short": "The Bible translation used for scripture readings.",
+    },
+    "language_style": {
+        "ui_category": "Language",
+        "ui_priority": 230,
+        "ui_keywords": ["traditional", "contemporary", "our father", "kyrie"],
+    },
+    "national_holidays": {
+        "ui_category": "Calendar",
+        "ui_priority": 240,
+        "ui_keywords": ["us", "canada", "holiday collects"],
+    },
+    "suffrages": {
+        "ui_category": "Prayer",
+        "ui_priority": 250,
+        "ui_keywords": ["evening prayer", "set a", "set b"],
+    },
+    "collects": {
+        "ui_category": "Prayer",
+        "ui_priority": 260,
+        "ui_keywords": ["additional collects", "fixed", "rotating"],
+    },
+    "pandemic_prayers": {
+        "ui_category": "Prayer",
+        "ui_priority": 270,
+        "ui_keywords": ["pandemic", "special collects"],
+    },
+    "mp_great_litany": {
+        "ui_category": "Litany",
+        "ui_priority": 280,
+        "ui_keywords": ["morning prayer litany", "wednesday", "friday", "sunday"],
+    },
+    "ep_great_litany": {
+        "ui_category": "Litany",
+        "ui_priority": 290,
+        "ui_keywords": ["evening prayer litany", "wednesday", "friday", "sunday"],
+    },
+    "great_litany_ending": {
+        "ui_category": "Litany",
+        "ui_priority": 295,
+        "ui_keywords": ["supplication", "short ending", "litany conclusion"],
+    },
+    "general_thanksgiving": {
+        "ui_category": "Conclusion",
+        "ui_priority": 300,
+        "ui_keywords": ["thanksgiving"],
+    },
+    "chrysostom": {
+        "ui_category": "Conclusion",
+        "ui_priority": 310,
+        "ui_keywords": ["group prayer", "st john chrysostom"],
+    },
+    "grace": {
+        "ui_category": "Conclusion",
+        "ui_priority": 320,
+        "ui_keywords": ["conclusion", "rotating grace"],
+    },
+    "o_antiphons": {
+        "ui_category": "Calendar",
+        "ui_priority": 330,
+        "ui_keywords": ["advent", "seasonal", "o come o come emmanuel"],
+    },
+    "family_readings": {
+        "ui_category": "Readings",
+        "ui_priority": 10,
+        "ui_keywords": ["family prayer", "brief", "long"],
+    },
+    "family_reading_audio": {
+        "ui_category": "Audio",
+        "ui_priority": 40,
+        "ui_keywords": ["family prayer audio", "esv"],
+        "ui_help_short": "Controls whether scripture content audio is included.",
+    },
+    "family_collect": {
+        "ui_category": "Prayer",
+        "ui_priority": 50,
+        "ui_keywords": ["collect", "time of day", "day of week", "day of year"],
+    },
+    "family-opening-sentence": {
+        "ui_category": "Prayer",
+        "ui_priority": 190,
+        "ui_keywords": ["opening sentence", "seasonal"],
+    },
+    "family-creed": {
+        "ui_category": "Prayer",
+        "ui_priority": 200,
+        "ui_keywords": ["apostles creed"],
+    },
+}
+
+
 class SettingOptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = SettingOption
@@ -3476,6 +4909,7 @@ class SettingOptionSerializer(serializers.ModelSerializer):
             "description",
             "value",
             "order",
+            "abbreviation",
         )
 
 
@@ -3483,6 +4917,10 @@ class SettingSerializer(serializers.ModelSerializer):
     options = SettingOptionSerializer(many=True, source="settingoption_set")
     site_name = serializers.SerializerMethodField()
     setting_type_name = serializers.SerializerMethodField()
+    ui_category = serializers.SerializerMethodField()
+    ui_priority = serializers.SerializerMethodField()
+    ui_keywords = serializers.SerializerMethodField()
+    ui_help_short = serializers.SerializerMethodField()
 
     def get_site_name(self, obj):
         sites = dict(Setting.SETTING_SITES)
@@ -3491,6 +4929,21 @@ class SettingSerializer(serializers.ModelSerializer):
     def get_setting_type_name(self, obj):
         setting_types = dict(Setting.SETTING_TYPES)
         return setting_types[obj.setting_type]
+
+    def _get_ui_metadata(self, obj):
+        return SETTING_UI_METADATA.get(obj.name, {})
+
+    def get_ui_category(self, obj):
+        return self._get_ui_metadata(obj).get("ui_category")
+
+    def get_ui_priority(self, obj):
+        return self._get_ui_metadata(obj).get("ui_priority")
+
+    def get_ui_keywords(self, obj):
+        return self._get_ui_metadata(obj).get("ui_keywords")
+
+    def get_ui_help_short(self, obj):
+        return self._get_ui_metadata(obj).get("ui_help_short")
 
     class Meta:
         model = Setting
@@ -3504,6 +4957,11 @@ class SettingSerializer(serializers.ModelSerializer):
             "setting_type",
             "setting_type_name",
             "order",
+            "setting_string_order",
+            "ui_category",
+            "ui_priority",
+            "ui_keywords",
+            "ui_help_short",
             "options",
         )
 
@@ -3519,102 +4977,26 @@ class AvailableSettings(mixins.ListModelMixin, viewsets.GenericViewSet):
     )
 
 
-# heading
-# subheading
-# citation
-# html
-# leader
-# congregation
-# rubric
-# leader_dialogue
-# congregation_dialogue
+class SiteMessageViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = SiteMessageSerializer
+    queryset = SiteMessage.objects.all()
+
+    def get_queryset(self):
+        now = timezone.now()
+        queryset = SiteMessage.objects.filter(active=True).filter(
+            Q(expiration_date__isnull=True) | Q(expiration_date__gt=now)
+        )
+        platform = (self.request.query_params.get("platform") or "").strip().lower()
+        if platform == "ios":
+            queryset = queryset.filter(show_on_ios=True)
+        elif platform == "android":
+            queryset = queryset.filter(show_on_android=True)
+        elif platform == "web":
+            queryset = queryset.filter(show_on_web=True)
+        return queryset.order_by("order", "-created")
 
 
-def heading(content):
-    return "<h2>{}</h2>".format(content)
-
-
-def subheading(content):
-    return "<h4>{}</h4>".format(content)
-
-
-def citation(content):
-    return "<h5>{}</h5>".format(content)
-
-
-def html_content(content):
-    return content
-
-
-def leader(content, indented=False):
-    if indented:
-        return "<p class='indent'>{}</p>".format(content)
-    return "<p class='handing-indent'>{}</p>".format(content)
-
-
-def congregation(content, indented=False):
-    if indented:
-        return "<p class='indent'><strong>{}</strong></p>".format(content)
-    return "<p class='handing-indent'><strong>{}</strong></p>".format(content)
-
-
-def rubric(content):
-    return "<p><em>{}</em></p>".format(content)
-
-
-def leader_dialogue(content, indented=False):
-    return leader(content, indented)
-
-
-def congregation_dialogue(content, indented=False):
-    return congregation(content, indented)
-
-
-def line_to_html(line):
-    if line["line_type"] == "heading":
-        return heading(line["content"])
-    if line["line_type"] == "subheading":
-        return subheading(line["content"])
-    if line["line_type"] == "citation":
-        return citation(line["content"])
-    if line["line_type"] == "html":
-        return html_content(line["content"])
-    if line["line_type"] == "leader":
-        return leader(line["content"], line["indented"])
-    if line["line_type"] == "congregation":
-        return congregation(line["content"], line["indented"])
-    if line["line_type"] == "rubric":
-        return rubric(line["content"])
-    if line["line_type"] == "leader_dialogue":
-        return leader_dialogue(line["content"], line["indented"])
-    if line["line_type"] == "congregation_dialogue":
-        return congregation_dialogue(line["content"], line["indented"])
-    return line["content"]
-
-
-def json_modules_to_html(modules, request=None):
-    html = ""
-    for module in modules:
-        for line in module["lines"]:
-            html += line_to_html(line)
-    return render_to_string("display_base.html", {"content": mark_safe(html)})
-
-
-class MorningPrayerDisplayView(OfficeAPIView):
-    def get(self, request, year, month, day):
-        office = MorningPrayer(request, year, month, day)
-        serializer = OfficeSerializer(office)
-        return HttpResponse(json_modules_to_html(serializer.data["modules"], request), content_type="text/html")
-
-
-class NoondayPrayerDisplayView(OfficeAPIView):
-    def get(self, request, year, month, day):
-        office = MorningPrayer(request, year, month, day)
-        serializer = OfficeSerializer(office)
-        return HttpResponse(json_modules_to_html(serializer.data["modules"], request), content_type="text/html")
-
-
-class EmailSignupView(OfficeAPIView):
+class EmailSignupView(APIView):
     permission_classes = [AllowAny]
 
     @csrf_exempt

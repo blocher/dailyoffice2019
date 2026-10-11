@@ -5,11 +5,11 @@ from rest_framework import permissions
 from rest_framework import routers
 
 from bible.api.BiblePassageView import BiblePassageView
-from churchcal.api.views import DayView, MonthView, YearView
+from churchcal.api.views import DayView, MonthView, YearView, AudioTrackView, CalendarFeedView
 from office.api.views.index import (
     MorningPrayerView,
     AvailableSettings,
-    MorningPrayerDisplayView,
+    SiteMessageViewSet,
     EveningPrayerView,
     MiddayPrayerView,
     EmailSignupView,
@@ -20,6 +20,8 @@ from office.api.views.index import (
     FamilyCloseOfDayPrayerView,
     ReadingsView,
     GreatLitanyView,
+    AudioViewSet,
+    CommemorationsView,
 )
 from office.api.views.resources import (
     CollectsViewSet,
@@ -29,6 +31,8 @@ from office.api.views.resources import (
     ScriptureViewSet,
     GroupedCollectsViewSet,
 )
+from analytics.views import AnalyticsEventView
+from patrons import views as patron_views
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -45,19 +49,42 @@ schema_view = get_schema_view(
 
 router_v1 = routers.DefaultRouter()
 router_v1.register(r"available_settings", AvailableSettings)
+router_v1.register(r"site_messages", SiteMessageViewSet, basename="site_messages")
 router_v1.register(r"psalms", PsalmsViewSet, basename="psalms")
 router_v1.register(r"scripture", ScriptureViewSet, basename="scripture2")
 
 router_v1.register(r"collect_categories", CollectCategoryViewSet, basename="collect_category")
 
 urlpatterns = [
+    path("api/patrons/message/today", patron_views.message_today, name="patrons_message_today"),
+    path("api/patrons/message/tomorrow", patron_views.message_tomorrow, name="patrons_message_tomorrow"),
+    path(
+        "api/patrons/message/date/<int:year>-<int:month>-<int:day>",
+        patron_views.message_date,
+        name="patrons_message_date",
+    ),
     re_path(r"^api/v1/", include(router_v1.urls)),
     path("api/v1/api-auth/", include("rest_framework.urls")),
+    path(r"api/v1/calendar/feed/<str:scope>.ics", CalendarFeedView.as_view(), name="calendar_feed"),
+    path(
+        r"api/v1/calendar/feed/<str:scope>/cancel.ics",
+        CalendarFeedView.as_view(),
+        {"canceled": True},
+        name="calendar_feed_cancel",
+    ),
     path(r"api/v1/calendar/<int:year>-<int:month>-<int:day>", DayView.as_view(), name="day_view"),
     path(r"api/v1/readings/<int:year>-<int:month>-<int:day>", ReadingsView.as_view(), name="readings"),
+    path(r"api/v1/commemorations/<uuid:uuid>", CommemorationsView.as_view(), name="commemoration"),
     path(r"api/v1/litany", GreatLitanyView.as_view(), name="litany"),
     path(r"api/v1/calendar/<int:year>-<int:month>", MonthView.as_view(), name="month_view"),
     path(r"api/v1/calendar/<int:year>", YearView.as_view(), name="month_view"),
+    path(r"api/v1/audio_track/<path:track>", AudioTrackView.as_view(), name="audio_track"),
+    path(r"api/v1/analytics/event", AnalyticsEventView.as_view(), name="analytics_event"),
+    path(
+        r"api/v1/audio",
+        AudioViewSet.as_view({"post": "retrieve"}),
+        name="audio_view",
+    ),
     path(
         r"api/v1/office/morning_prayer/<int:year>-<int:month>-<int:day>",
         MorningPrayerView.as_view(),
@@ -99,6 +126,41 @@ urlpatterns = [
         name="family_close_of_day_view",
     ),
     path(
+        r"api/v1/office/evening_prayer/<int:year>-<int:month>-<int:day>/audio",
+        EveningPrayerView.as_view(),
+        name="evening_prayer_audio_view",
+    ),
+    path(
+        r"api/v1/office/midday_prayer/<int:year>-<int:month>-<int:day>/audio",
+        MiddayPrayerView.as_view(),
+        name="midday_audio_view",
+    ),
+    path(
+        r"api/v1/office/compline/<int:year>-<int:month>-<int:day>/audio",
+        ComplineView.as_view(),
+        name="compline_audio_view",
+    ),
+    path(
+        r"api/v1/family/morning_prayer/<int:year>-<int:month>-<int:day>/audio",
+        FamilyMorningPrayerView.as_view(),
+        name="family_morning_prayer_audio_view",
+    ),
+    path(
+        r"api/v1/family/early_evening_prayer/<int:year>-<int:month>-<int:day>/audio",
+        FamilyEarlyEveningPrayerView.as_view(),
+        name="family_early_evening_prayer_audio_view",
+    ),
+    path(
+        r"api/v1/family/midday_prayer/<int:year>-<int:month>-<int:day>/audio",
+        FamilyMiddayPrayerView.as_view(),
+        name="family_midday_audio_view",
+    ),
+    path(
+        r"api/v1/family/close_of_day_prayer/<int:year>-<int:month>-<int:day>/audio",
+        FamilyCloseOfDayPrayerView.as_view(),
+        name="family_close_of_day_audio_view",
+    ),
+    path(
         r"api/v1/collects",
         CollectsViewSet.as_view({"get": "list"}),
         name="collects_view",
@@ -119,14 +181,14 @@ urlpatterns = [
         name="email_signup",
     ),
     path(
-        r"new/office/morning_prayer/<int:year>-<int:month>-<int:day>",
-        MorningPrayerDisplayView.as_view(),
-        name="morning_prayer_display_view",
-    ),
-    path(
         r"api/v1/bible/<str:passage>/<str:version>",
         BiblePassageView.as_view(),
         name="bible_passage_view",
+    ),
+    path(
+        r"api/v1/psalms",
+        PsalmsViewSet.as_view({"get": "list"}),
+        name="psalms_view",
     ),
     re_path(r"^api/openapi(?P<format>\.json|\.yaml)$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
     re_path(r"^api/$", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),

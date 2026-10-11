@@ -1,0 +1,926 @@
+<?xml version='1.0' standalone='no'?>
+<!DOCTYPE crossway-bible SYSTEM "schema/crossway.bibles.dtd">
+<crossway-bible xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.crosswaybibles.org" translation="English Standard Version" revision="2018-3-26" xsi:schemaLocation="schema/crossway.bibles.xsd">
+  <book title="Judith" num="71">
+    <marker class="begin-verse" mid="v71001001"/>
+    <chapter num="1">
+      <heading>Arphaxad Fortifies Ecbatana</heading>
+      <begin-paragraph/>
+      <verse num="1">In the twelfth year of the reign of Nebuchadnezzar, who ruled over the Assyrians in the great city of Nineveh, in the days of Arphaxad, who ruled over the Medes in Ecbatana&emdash;</verse>
+      <marker class="begin-verse" mid="v71001002"/>
+      <verse num="2">he is the king who built walls about Ecbatana with hewn stones three cubits thick and six cubits long; he made the walls seventy cubits high and fifty cubits wide;</verse>
+      <marker class="begin-verse" mid="v71001003"/>
+      <verse num="3">at the gates he built towers a hundred cubits high and sixty cubits wide at the foundations;</verse>
+      <marker class="begin-verse" mid="v71001004"/>
+      <verse num="4">and he made its gates, which were seventy cubits high and forty cubits wide, so that his armies could march out in force and his infantry form their ranks&emdash;</verse>
+      <marker class="begin-verse" mid="v71001005"/>
+      <verse num="5">it was in those days that King Nebuchadnezzar made war against King Arphaxad in the great plain that is on the borders of Ragae.</verse>
+      <marker class="begin-verse" mid="v71001006"/>
+      <verse num="6">He was joined by all the people of the hill country and all those who lived along the Euphrates and the Tigris and the Hydaspes and in the plain of King Arioch of the Elymeans. Many nations joined the forces of the Chaldeans.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71001007"/>
+      <heading>Nebuchadnezzar Issues an Ultimatum</heading>
+      <begin-paragraph/>
+      <verse num="7">Then King Nebuchadnezzar of the Assyrians sent to all who lived in Persia and to all who lived in the west, those who lived in Cilicia and Damascus and Lebanon and Antilebanon and all who lived along the seacoast</verse>
+      <marker class="begin-verse" mid="v71001008"/>
+      <verse num="8">and those among the nations of Carmel and Gilead and Upper Galilee and the great Plain of Esdraelon</verse>
+      <marker class="begin-verse" mid="v71001009"/>
+      <verse num="9">and all who were in Samaria and its surrounding towns and beyond the Jordan as far as Jerusalem and Bethany and Chelous and Kadesh and the river of Egypt and Tahpanhes and Raamses and the whole land of Goshen,</verse>
+      <marker class="begin-verse" mid="v71001010"/>
+      <verse num="10">even beyond Tanis and Memphis and all who lived in Egypt as far as the borders of Ethiopia.</verse>
+      <marker class="begin-verse" mid="v71001011"/>
+      <verse num="11">But all who lived in the whole region disregarded the orders of King Nebuchadnezzar of the Assyrians and refused to join him in the war; for they were not afraid of him, but looked upon him as only one<note nid="n71001011.1"/> man, and they sent back his messengers empty-handed and shamefaced.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71001012"/>
+      <heading>Arphaxad Is Defeated</heading>
+      <begin-paragraph/>
+      <verse num="12">Then Nebuchadnezzar was very angry with this whole region and swore by his throne and kingdom that he would surely take revenge on the whole territory of Cilicia and Damascus and Syria, that he would kill them by the sword and also all the inhabitants of the land of Moab and the people of Ammon and all Judea and everyone in Egypt, as far as the coasts of the two seas.</verse>
+      <marker class="begin-verse" mid="v71001013"/>
+      <verse num="13">In the seventeenth year he led his forces against King Arphaxad and defeated him in battle and overthrew the whole army of Arphaxad and all his cavalry and all his chariots.</verse>
+      <marker class="begin-verse" mid="v71001014"/>
+      <verse num="14">Thus he took possession of his cities and came to Ecbatana, captured its towers, plundered its markets, and turned its beauty into shame.</verse>
+      <marker class="begin-verse" mid="v71001015"/>
+      <verse num="15">He captured Arphaxad in the mountains of Ragae and struck him down with his spears; and he utterly destroyed him, to this day.</verse>
+      <marker class="begin-verse" mid="v71001016"/>
+      <verse num="16">Then he returned with them to Nineveh, he and all his combined forces, a vast body of troops; and there he and his forces rested and feasted for 120 days.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v71002001"/>
+    <chapter num="2">
+      <heading>Expedition against the West</heading>
+      <begin-paragraph/>
+      <verse num="1">In the eighteenth year, on the twenty-second day of the first month, there was talk in the palace of King Nebuchadnezzar of the Assyrians about carrying out his revenge on the whole region, just as he had said.</verse>
+      <marker class="begin-verse" mid="v71002002"/>
+      <verse num="2">He called together all his officers and all his nobles and set forth to them his secret plan and recounted fully, with his own lips, all the wickedness of the region;<note nid="n71002002.1"/></verse>
+      <marker class="begin-verse" mid="v71002003"/>
+      <verse num="3">and it was decided that everyone who had not obeyed his command should be destroyed.</verse>
+      <marker class="begin-verse" mid="v71002004"/>
+      <verse num="4">When he had finished setting forth his plan, King Nebuchadnezzar of the Assyrians called Holofernes, the chief general of his army, second only to himself, and said to him:</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71002005"/>
+      <begin-paragraph/>
+      <verse num="5"><q class="begin-double" qid="71002005.1" from="71002005.1" to="71002013.1"/>Thus says the great king, the lord of the whole earth: When you leave my presence, take with you men confident in their strength, to the number of 120,000 foot soldiers and 12,000 cavalry.</verse>
+      <marker class="begin-verse" mid="v71002006"/>
+      <verse num="6">Go and attack the whole west country, because they disobeyed my orders.</verse>
+      <marker class="begin-verse" mid="v71002007"/>
+      <verse num="7">Tell them to prepare earth and water, for I am coming against them in my anger and will cover the whole face of the earth with the feet of my army and will hand them over to be plundered by my troops,<note nid="n71002007.1"/></verse>
+      <marker class="begin-verse" mid="v71002008"/>
+      <verse num="8">till their wounded shall fill their valleys, and every brook and river shall be filled with their dead and overflow;</verse>
+      <marker class="begin-verse" mid="v71002009"/>
+      <verse num="9">and I will lead them away captive to the ends of the whole earth.</verse>
+      <marker class="begin-verse" mid="v71002010"/>
+      <verse num="10">You shall go and seize all their territory for me in advance. They will yield themselves to you, and you shall hold them for me till the day of their punishment.</verse>
+      <marker class="begin-verse" mid="v71002011"/>
+      <verse num="11">But if they refuse, your eye shall not spare, and you shall hand them over to slaughter and plunder throughout your whole region.</verse>
+      <marker class="begin-verse" mid="v71002012"/>
+      <verse num="12">For as I live and by the power of my kingdom, what I have spoken my hand will execute.</verse>
+      <marker class="begin-verse" mid="v71002013"/>
+      <verse num="13">And you&emdash;take care not to transgress any of your sovereign&apos;s commands, but be sure to carry them out just as I have ordered you; and do not delay about it.<q class="end-double" qid="71002013.1" from="71002005.1" to="71002013.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71002014"/>
+      <heading>Campaign of Holofernes</heading>
+      <begin-paragraph/>
+      <verse num="14">So Holofernes left the presence of his master and called together all the commanders, generals, and officers of the Assyrian army</verse>
+      <marker class="begin-verse" mid="v71002015"/>
+      <verse num="15">and mustered the picked troops by divisions as his lord had ordered him to do, 120,000 of them, together with 12,000 archers on horseback,</verse>
+      <marker class="begin-verse" mid="v71002016"/>
+      <verse num="16">and he organized them as a great army is marshaled for a campaign.</verse>
+      <marker class="begin-verse" mid="v71002017"/>
+      <verse num="17">He collected a vast number of camels and donkeys and mules for transport and innumerable sheep and oxen and goats for provision;</verse>
+      <marker class="begin-verse" mid="v71002018"/>
+      <verse num="18">also plenty of food for every man and a huge amount of gold and silver from the royal palace.</verse>
+      <marker class="begin-verse" mid="v71002019"/>
+      <verse num="19">So he set out with his whole army, to go ahead of King Nebuchadnezzar and to cover the whole face of the earth to the west with their chariots and horsemen and picked troops of infantry.</verse>
+      <marker class="begin-verse" mid="v71002020"/>
+      <verse num="20">Along with them went a mixed crowd like a swarm of locusts, like the dust of the earth&emdash;a multitude that could not be counted.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71002021"/>
+      <begin-paragraph/>
+      <verse num="21">They marched for three days from Nineveh to the plain of Bectileth and camped opposite Bectileth near the mountain that is to the north of Upper Cilicia.</verse>
+      <marker class="begin-verse" mid="v71002022"/>
+      <verse num="22">From there Holofernes<note nid="n71002022.1"/> took his whole army, his infantry, cavalry, and chariots and went up into the hill country</verse>
+      <marker class="begin-verse" mid="v71002023"/>
+      <verse num="23">and ravaged Put and Lud and plundered all the people of Rassis and the Ishmaelites who lived along the desert, south of the country of the Chelleans.</verse>
+      <marker class="begin-verse" mid="v71002024"/>
+      <verse num="24">Then he followed<note nid="n71002024.1"/> the Euphrates and passed through Mesopotamia and destroyed all the hilltop cities along the brook Abron, as far as the sea.</verse>
+      <marker class="begin-verse" mid="v71002025"/>
+      <verse num="25">He also seized the territory of Cilicia and killed everyone who resisted him and came to the southern borders of Japheth, fronting toward Arabia.</verse>
+      <marker class="begin-verse" mid="v71002026"/>
+      <verse num="26">He surrounded all the Midianites and burned their tents and plundered their sheepfolds.</verse>
+      <marker class="begin-verse" mid="v71002027"/>
+      <verse num="27">Then he went down into the plain of Damascus during the wheat harvest and burned all their fields and destroyed their flocks and herds and sacked their cities and ravaged their lands and put to death all their young men with the edge of the sword.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71002028"/>
+      <begin-paragraph/>
+      <verse num="28">So fear and terror of him fell upon all the people who lived along the seacoast, at Sidon and Tyre, and those who lived in Sur and Ocina and all who lived in Jamnia. Those who lived in Azotus and Ascalon feared him exceedingly.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v71003001"/>
+    <chapter num="3">
+      <heading>Entreaties for Peace</heading>
+      <begin-paragraph/>
+      <verse num="1">So they sent messengers to sue for peace and said,</verse>
+      <marker class="begin-verse" mid="v71003002"/>
+      <verse num="2"><q class="begin-double" qid="71003002.1" from="71003002.1" to="71003004.1"/>Behold, we the servants of Nebuchadnezzar, the great king, lie prostrate before you. Do with us whatever you will.</verse>
+      <marker class="begin-verse" mid="v71003003"/>
+      <verse num="3">Behold, our buildings and all our land and all our wheat fields and our flocks and herds and all our sheepfolds with their tents lie before you; do with them whatever you please.</verse>
+      <marker class="begin-verse" mid="v71003004"/>
+      <verse num="4">Our cities also and their inhabitants are your slaves; come and deal with them in any way that seems good to you.<q class="end-double" qid="71003004.1" from="71003002.1" to="71003004.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71003005"/>
+      <begin-paragraph/>
+      <verse num="5">The men came to Holofernes and told him all this.</verse>
+      <marker class="begin-verse" mid="v71003006"/>
+      <verse num="6">Then he went down to the seacoast with his army and stationed garrisons in the hilltop cities and took picked men from them as his allies.</verse>
+      <marker class="begin-verse" mid="v71003007"/>
+      <verse num="7">And these people and all in the country round about welcomed him with garlands and dances and tambourines.</verse>
+      <marker class="begin-verse" mid="v71003008"/>
+      <verse num="8">And he demolished all their shrines<note nid="n71003008.1"/> and cut down their sacred groves; for it had been given to him to destroy all the gods of the land, so that all nations should worship only Nebuchadnezzar, and all their tongues and tribes should call upon him as god.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71003009"/>
+      <begin-paragraph/>
+      <verse num="9">Then he came to the edge of Esdraelon, near Dothan, fronting the great ridge of Judea;</verse>
+      <marker class="begin-verse" mid="v71003010"/>
+      <verse num="10">here he camped between Geba and Scythopolis and remained for a whole month in order to assemble all the supplies for his army.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v71004001"/>
+    <chapter num="4">
+      <heading>Judea on Alert</heading>
+      <begin-paragraph/>
+      <verse num="1">By this time the people of Israel living in Judea heard of everything that Holofernes, the general of King Nebuchadnezzar of the Assyrians, had done to the nations and how he had plundered and destroyed all their temples;</verse>
+      <marker class="begin-verse" mid="v71004002"/>
+      <verse num="2">they were therefore very greatly terrified at his approach and were alarmed both for Jerusalem and for the temple of the Lord their God.</verse>
+      <marker class="begin-verse" mid="v71004003"/>
+      <verse num="3">For they had only recently returned from the captivity, and all the people of Judea were newly gathered together, and the sacred vessels and the altar and the temple had been consecrated after their profanation.</verse>
+      <marker class="begin-verse" mid="v71004004"/>
+      <verse num="4">So they sent to every district of Samaria and to Kona and Beth-horon and Belmain and Jericho and to Choba and Aesora and the valley of Salem</verse>
+      <marker class="begin-verse" mid="v71004005"/>
+      <verse num="5">and immediately seized all the high hilltops and fortified the villages on them and stored up food in preparation for war&emdash;since their fields had recently been harvested.</verse>
+      <marker class="begin-verse" mid="v71004006"/>
+      <verse num="6">And Joakim, the high priest, who was in Jerusalem at that time, wrote to the people of Bethulia and Betomesthaim, which faces Esdraelon opposite the plain near Dothan,</verse>
+      <marker class="begin-verse" mid="v71004007"/>
+      <verse num="7">ordering them to seize the passes up into the hills, since by them Judea could be invaded, and it was easy to stop any who tried to enter, for the approach was narrow, wide enough for only two men at the most.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71004008"/>
+      <heading>Prayer and Penance</heading>
+      <begin-paragraph/>
+      <verse num="8">So the Israelites did as Joakim the high priest and the senate of the whole people of Israel, in session at Jerusalem, had given order.</verse>
+      <marker class="begin-verse" mid="v71004009"/>
+      <verse num="9">And every man of Israel cried out to God with great fervor, and they humbled themselves with much fasting.</verse>
+      <marker class="begin-verse" mid="v71004010"/>
+      <verse num="10">They and their wives and their children and their cattle and every resident alien and hired laborer and purchased slave&emdash;they all girded themselves with sackcloth.</verse>
+      <marker class="begin-verse" mid="v71004011"/>
+      <verse num="11">And all the men and women of Israel, and their children, living at Jerusalem, prostrated themselves before the temple and put ashes on their heads and spread out their sackcloth before the Lord.</verse>
+      <marker class="begin-verse" mid="v71004012"/>
+      <verse num="12">They even surrounded the altar with sackcloth and cried out in unison, praying earnestly to the God of Israel not to give up their infants as prey and their wives as booty and the cities they had inherited to be destroyed and the sanctuary to be profaned and desecrated to the malicious joy of the Gentiles.</verse>
+      <marker class="begin-verse" mid="v71004013"/>
+      <verse num="13">So the Lord heard their prayers and looked upon their affliction; for the people fasted many days throughout Judea and in Jerusalem before the sanctuary of the Lord Almighty.</verse>
+      <marker class="begin-verse" mid="v71004014"/>
+      <verse num="14">And Joakim the high priest and all the priests who stood before the Lord and ministered to the Lord, with their loins girded with sackcloth, offered the continual whole burnt offering and the vows and voluntary gifts of the people.</verse>
+      <marker class="begin-verse" mid="v71004015"/>
+      <verse num="15">With ashes upon their turbans, they cried out to the Lord with all their might to look with favor upon the whole house of Israel.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v71005001"/>
+    <chapter num="5">
+      <heading>Council against the Israelites</heading>
+      <begin-paragraph/>
+      <verse num="1">It was reported to Holofernes, the general of the Assyrian army, that the people of Israel had prepared for war and had closed the passes in the hills and had fortified all the high hilltops and set up barricades in the plains.</verse>
+      <marker class="begin-verse" mid="v71005002"/>
+      <verse num="2">He was very angry, so he called together all the princes of Moab and the commanders of Ammon and all the governors of the coastland</verse>
+      <marker class="begin-verse" mid="v71005003"/>
+      <verse num="3">and said to them, <q class="begin-double" qid="71005003.1" from="71005003.1" to="71005004.1"/>Tell me, you Canaanites, what people is this that lives in the hill country? What cities do they inhabit? How large is their army, and in what does their power or strength consist? Who rules over them as king, leading their army?</verse>
+      <marker class="begin-verse" mid="v71005004"/>
+      <verse num="4">And why have they alone, of all who live in the west, refused to come out and meet me?<q class="end-double" qid="71005004.1" from="71005003.1" to="71005004.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71005005"/>
+      <heading>Achior&apos;s Report</heading>
+      <begin-paragraph/>
+      <verse num="5">Then Achior, the leader of all the Ammonites, said to him, <q class="begin-double" qid="71005005.1" from="71005005.1" to="71005021.1"/>Let my lord now hear a word from the mouth of your servant, and I will tell you the truth about this people that dwells in the nearby mountain district. No falsehood shall come from your servant&apos;s mouth.</verse>
+      <marker class="begin-verse" mid="v71005006"/>
+      <verse num="6">This people is descended from the Chaldeans.</verse>
+      <marker class="begin-verse" mid="v71005007"/>
+      <verse num="7">At one time they lived in Mesopotamia, because they would not follow the gods of their fathers who were in Chaldea.</verse>
+      <marker class="begin-verse" mid="v71005008"/>
+      <verse num="8">For they had left the ways of their ancestors, and they worshiped the God of heaven, the God they had come to know; hence they drove them out from the presence of their gods; and they fled to Mesopotamia and lived there for a long time.</verse>
+      <marker class="begin-verse" mid="v71005009"/>
+      <verse num="9">Then their God commanded them to leave the place where they were living and go to the land of Canaan. There they settled and prospered, with much gold and silver and very many cattle.</verse>
+      <marker class="begin-verse" mid="v71005010"/>
+      <verse num="10">When a famine spread over Canaan they went down to Egypt and lived there as long as they had food; and there they became a great multitude&emdash;so great that they could not be counted.</verse>
+      <marker class="begin-verse" mid="v71005011"/>
+      <verse num="11">So the king of Egypt became hostile to them; he took advantage of them and set them to making bricks and humbled them and made slaves of them.</verse>
+      <marker class="begin-verse" mid="v71005012"/>
+      <verse num="12">Then they cried out to their God, and he afflicted the whole land of Egypt with incurable plagues; and so the Egyptians drove them out of their sight.</verse>
+      <marker class="begin-verse" mid="v71005013"/>
+      <verse num="13">Then God dried up the Red Sea before them,</verse>
+      <marker class="begin-verse" mid="v71005014"/>
+      <verse num="14">and he led them by the way of Sinai and Kadesh-barnea and drove out all the people of the wilderness.</verse>
+      <marker class="begin-verse" mid="v71005015"/>
+      <verse num="15">So they lived in the land of the Amorites and by their might destroyed all the inhabitants of Heshbon; and crossing over the Jordan they took possession of all the hill country.</verse>
+      <marker class="begin-verse" mid="v71005016"/>
+      <verse num="16">And they drove out before them the Canaanites and the Perizzites and the Jebusites and the Shechemites and all the Gergesites and lived there a long time.</verse>
+      <marker class="begin-verse" mid="v71005017"/>
+      <verse num="17">As long as they did not sin against their God they prospered, for the God who hates iniquity is with them.</verse>
+      <marker class="begin-verse" mid="v71005018"/>
+      <verse num="18">But when they departed from the way that he had appointed for them, they were utterly defeated in very many battles and were led away captive to a foreign country; the temple of their God was razed to the ground, and their cities were captured by their enemies.</verse>
+      <marker class="begin-verse" mid="v71005019"/>
+      <verse num="19">But now they have returned to their God and have come back from the places to which they were scattered and have occupied Jerusalem, where their sanctuary is, and have settled in the hill country, because it was uninhabited.</verse>
+      <marker class="begin-verse" mid="v71005020"/>
+      <verse num="20">Now therefore, my master and lord, if there is any unwitting error in this people and they sin against their God and we find out their offense, then we will go up and defeat them.</verse>
+      <marker class="begin-verse" mid="v71005021"/>
+      <verse num="21">But if there is no transgression in their nation, then let my lord pass them by; for their Lord will defend them, and their God will protect them, and we shall be put to shame before all the earth.<q class="end-double" qid="71005021.1" from="71005005.1" to="71005021.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71005022"/>
+      <begin-paragraph/>
+      <verse num="22">When Achior had finished saying this, all the men standing around the tent began to complain; Holofernes&apos; officers and all the men from the seacoast and from Moab insisted that he must be put to death.</verse>
+      <marker class="begin-verse" mid="v71005023"/>
+      <verse num="23"><q class="begin-double" qid="71005023.1" from="71005023.1" to="71005023.2"/>For,<q class="end-double" qid="71005023.2" from="71005023.1" to="71005023.2"/> they said, <q class="begin-double" qid="71005023.3" from="71005023.3" to="71005024.1"/>we will not be afraid of the Israelites; they are a people with no strength or power for making war.</verse>
+      <marker class="begin-verse" mid="v71005024"/>
+      <verse num="24">Therefore let us go up, Lord Holofernes, and they will be devoured by your vast army.<q class="end-double" qid="71005024.1" from="71005023.3" to="71005024.1"/></verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v71006001"/>
+    <chapter num="6">
+      <heading>Achior Handed over to the Israelites</heading>
+      <begin-paragraph/>
+      <verse num="1">When the disturbance made by the men outside the council died down, Holofernes, the commander of the Assyrian army, said to Achior and all the Moabites in the presence of all the foreign contingents:</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71006002"/>
+      <begin-paragraph/>
+      <verse num="2"><q class="begin-double" qid="71006002.1" from="71006002.1" to="71006009.1"/>And who are you, Achior, and you hirelings of Ephraim, to prophesy among us as you have done today and tell us not to make war against the people of Israel because their God will defend them? Who is God except Nebuchadnezzar? He will send his forces and will destroy them from the face of the earth, and their God will not deliver them&emdash;</verse>
+      <marker class="begin-verse" mid="v71006003"/>
+      <verse num="3">we the king&apos;s servants<note nid="n71006003.1"/> will destroy them as one man. They cannot resist the might of our cavalry.</verse>
+      <marker class="begin-verse" mid="v71006004"/>
+      <verse num="4">We will overwhelm them with them, and their mountains will be drunk with their blood, and their fields will be full of their dead. Their footprints cannot withstand our attack, but will utterly perish. So says King Nebuchadnezzar, the lord of the whole earth. For he has spoken; none of his words shall be in vain.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71006005"/>
+      <begin-paragraph/>
+      <verse num="5"><q class="continue-double" qid="71006005.1" from="71006002.1" to="71006009.1"/>But you, Achior, you Ammonite hireling, who has said these words on the day of your iniquity, you shall not see my face again from this day until I take revenge on this race that came out of Egypt.</verse>
+      <marker class="begin-verse" mid="v71006006"/>
+      <verse num="6">Then the sword of my army and the spear<note nid="n71006006.1"/> of my servants shall pierce your sides, and you shall fall among their wounded, when I return.</verse>
+      <marker class="begin-verse" mid="v71006007"/>
+      <verse num="7">Now my slaves are going to take you back into the hill country and put you in one of the cities beside the passes,</verse>
+      <marker class="begin-verse" mid="v71006008"/>
+      <verse num="8">and you will not die until you perish along with them.</verse>
+      <marker class="begin-verse" mid="v71006009"/>
+      <verse num="9">If you really hope in your heart that they will not be taken, do not look downcast! I have spoken and none of my words shall fail.<q class="end-double" qid="71006009.1" from="71006002.1" to="71006009.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71006010"/>
+      <begin-paragraph/>
+      <verse num="10">Then Holofernes ordered his slaves, who waited on him in his tent, to seize Achior and take him to Bethulia and hand him over to the Israelites.</verse>
+      <marker class="begin-verse" mid="v71006011"/>
+      <verse num="11">So his slaves took him and led him out of the camp into the plain, and from the plain they went up into the hill country and came to the springs below Bethulia.</verse>
+      <marker class="begin-verse" mid="v71006012"/>
+      <verse num="12">When the men of the city saw them on the top of the hill, they caught up their weapons and ran out of the city to the top of the hill, and all the slingers kept them from coming up by casting stones at them.</verse>
+      <marker class="begin-verse" mid="v71006013"/>
+      <verse num="13">However, they got under the shelter of the hill, and they bound Achior and left him thrown at the foot of the hill and returned to their master.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71006014"/>
+      <begin-paragraph/>
+      <verse num="14">Then the Israelites came down from their city and found him; and they untied him and brought him into Bethulia and placed him before the magistrates of their city,</verse>
+      <marker class="begin-verse" mid="v71006015"/>
+      <verse num="15">who in those days were Uzziah son of Micah, of the tribe of Simeon, and Chabris son of Gothoniel and Charmis son of Melchiel.</verse>
+      <marker class="begin-verse" mid="v71006016"/>
+      <verse num="16">They called together all the elders of the city, and all their young men and their women ran to the assembly; and they set Achior in the midst of all their people, and Uzziah asked him what had happened.</verse>
+      <marker class="begin-verse" mid="v71006017"/>
+      <verse num="17">He answered and told them what had taken place at the council of Holofernes and all that he had said in the presence of the Assyrian leaders and all that Holofernes had said so boastfully against the house of Israel.</verse>
+      <marker class="begin-verse" mid="v71006018"/>
+      <verse num="18">Then the people fell down and worshiped God and cried out to him and said:</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71006019"/>
+      <begin-paragraph/>
+      <verse num="19"><q class="begin-double" qid="71006019.1" from="71006019.1" to="71006019.2"/>O Lord God of heaven, note their arrogance and have pity on the humiliation of our people and look this day upon the faces of those who are consecrated to you.<q class="end-double" qid="71006019.2" from="71006019.1" to="71006019.2"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71006020"/>
+      <begin-paragraph/>
+      <verse num="20">Then they consoled Achior and praised him greatly.</verse>
+      <marker class="begin-verse" mid="v71006021"/>
+      <verse num="21">And Uzziah took him from the assembly to his own house and gave a banquet for the elders; and all that night they called on the God of Israel for help.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v71007001"/>
+    <chapter num="7">
+      <heading>Campaign against Bethulia</heading>
+      <begin-paragraph/>
+      <verse num="1">The next day Holofernes ordered his whole army and all the allies who had joined him to break camp and move against Bethulia and to seize the passes up into the hill country and make war on the Israelites.</verse>
+      <marker class="begin-verse" mid="v71007002"/>
+      <verse num="2">So all their warriors moved their camp that day; their force of men of war was 170,000 infantry and 12,000 cavalry, together with the baggage and the foot soldiers handling it, a very great multitude.</verse>
+      <marker class="begin-verse" mid="v71007003"/>
+      <verse num="3">They encamped in the valley near Bethulia, beside the spring, and they spread out in breadth over Dothan as far as Balbaim and in length from Bethulia to Cyamon, which faces Esdraelon.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71007004"/>
+      <begin-paragraph/>
+      <verse num="4">When the Israelites saw their vast numbers they were greatly terrified, and everyone said to his neighbor, <q class="begin-double" qid="71007004.1" from="71007004.1" to="71007004.2"/>These men will now lick up the face of the whole land; neither the high mountains nor the valleys nor the hills will bear their weight.<q class="end-double" qid="71007004.2" from="71007004.1" to="71007004.2"/></verse>
+      <marker class="begin-verse" mid="v71007005"/>
+      <verse num="5">Then each man took up his weapons, and when they had kindled fires on their towers they remained on guard all that night.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71007006"/>
+      <begin-paragraph/>
+      <verse num="6">On the second day Holofernes led out all his cavalry in full view of the Israelites in Bethulia</verse>
+      <marker class="begin-verse" mid="v71007007"/>
+      <verse num="7">and examined the approaches to their city and visited the springs that supplied their water and seized them and set guards of soldiers over them and then returned to his army.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71007008"/>
+      <begin-paragraph/>
+      <verse num="8">Then all the chieftains of the people of Esau and all the leaders of the Moabites and the commanders of the coastland came to him and said,</verse>
+      <marker class="begin-verse" mid="v71007009"/>
+      <verse num="9"><q class="begin-double" qid="71007009.1" from="71007009.1" to="71007015.1"/>Let our lord hear a word, lest his army be defeated.</verse>
+      <marker class="begin-verse" mid="v71007010"/>
+      <verse num="10">For these people, the Israelites, do not rely on their spears but on the height of the mountains where they live, for it is not easy to reach the tops of their mountains.</verse>
+      <marker class="begin-verse" mid="v71007011"/>
+      <verse num="11">Therefore, my lord, do not fight against them in battle array, and not a man of your army will fall.</verse>
+      <marker class="begin-verse" mid="v71007012"/>
+      <verse num="12">Remain in your camp and keep all the men in your forces with you; only, let your servants take possession of the spring of water that flows from the foot of the mountain&emdash;</verse>
+      <marker class="begin-verse" mid="v71007013"/>
+      <verse num="13">for this is where all the people of Bethulia get their water. So thirst will destroy them, and they will give up their city. We and our people will go up to the tops of the nearby mountains and camp there to keep watch that not a man gets out of the city.</verse>
+      <marker class="begin-verse" mid="v71007014"/>
+      <verse num="14">They and their wives and children will waste away with famine, and before the sword reaches them they will be strewn about in the streets where they live.</verse>
+      <marker class="begin-verse" mid="v71007015"/>
+      <verse num="15">So you will pay them back with evil, because they rebelled and did not receive you peaceably.<q class="end-double" qid="71007015.1" from="71007009.1" to="71007015.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71007016"/>
+      <begin-paragraph/>
+      <verse num="16">These words pleased Holofernes and all his servants, and he gave orders to do as they had said.</verse>
+      <marker class="begin-verse" mid="v71007017"/>
+      <verse num="17">So the army of the Ammonites moved forward, together with 5,000 Assyrians, and they encamped in the valley and seized the water supply and the springs of the Israelites.</verse>
+      <marker class="begin-verse" mid="v71007018"/>
+      <verse num="18">And the sons of Esau and the sons of Ammon went up and encamped in the hill country opposite Dothan; and they sent some of their men toward the south and the east, toward Acraba, which is near Chusi beside the brook Mochmur. The rest of the Assyrian army encamped in the plain and covered the whole face of the land, and their tents and supply trains spread out in great number, and they formed a vast multitude.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71007019"/>
+      <heading>Distress of the Israelites</heading>
+      <begin-paragraph/>
+      <verse num="19">The people of Israel cried out to the Lord their God, for their courage failed, because all their enemies had surrounded them and there was no way of escape from them.</verse>
+      <marker class="begin-verse" mid="v71007020"/>
+      <verse num="20">The whole Assyrian army, their infantry, chariots, and cavalry, surrounded them for thirty-four days, until all the vessels of water belonging to every inhabitant of Bethulia were empty;</verse>
+      <marker class="begin-verse" mid="v71007021"/>
+      <verse num="21">their cisterns were going dry, and they did not have enough water to drink their fill for a single day, because it was measured out to them to drink.</verse>
+      <marker class="begin-verse" mid="v71007022"/>
+      <verse num="22">Their children lost heart, and the women and young men fainted from thirst and fell down in the streets of the city and in the passages through the gates; there was no strength left in them any longer.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71007023"/>
+      <begin-paragraph/>
+      <verse num="23">Then all the people, the young men, the women, and the children, gathered about Uzziah and the rulers of the city and cried out with a loud voice and said before all the elders,</verse>
+      <marker class="begin-verse" mid="v71007024"/>
+      <verse num="24"><q class="begin-double" qid="71007024.1" from="71007024.1" to="71007028.1"/>God be judge between you and us! For you have done us a great injury in not making peace with the Assyrians.</verse>
+      <marker class="begin-verse" mid="v71007025"/>
+      <verse num="25">For now we have no one to help us; God has sold us into their hands, to strew us on the ground before them with thirst and utter destruction.</verse>
+      <marker class="begin-verse" mid="v71007026"/>
+      <verse num="26">Now call them in and surrender the whole city to the army of Holofernes and to all his forces, to be plundered.</verse>
+      <marker class="begin-verse" mid="v71007027"/>
+      <verse num="27">For it would be better for us to be captured by them; for we will be slaves, but our lives will be spared, and we shall not witness the death of our infants before our eyes or see our wives and children draw their last breath.</verse>
+      <marker class="begin-verse" mid="v71007028"/>
+      <verse num="28">We call to witness against you heaven and earth and our God, the Lord of our fathers, who punishes us according to our sins and the sins of our fathers. Let him not do this day the things that we have described!<q class="end-double" qid="71007028.1" from="71007024.1" to="71007028.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71007029"/>
+      <begin-paragraph/>
+      <verse num="29">Then great and general lamentation arose throughout the assembly, and they cried out to the Lord God with a loud voice.</verse>
+      <marker class="begin-verse" mid="v71007030"/>
+      <verse num="30">And Uzziah said to them, <q class="begin-double" qid="71007030.1" from="71007030.1" to="71007031.1"/>Have courage, my brothers! Let us hold out for five more days; by that time the Lord our God will restore to us his mercy, for he will not forsake us utterly.</verse>
+      <marker class="begin-verse" mid="v71007031"/>
+      <verse num="31">But if these days pass by and no help comes for us, I will do what you say.<q class="end-double" qid="71007031.1" from="71007030.1" to="71007031.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71007032"/>
+      <begin-paragraph/>
+      <verse num="32">Then he dismissed the people to their various posts, and they went up on the walls and towers of their city. The women and children he sent home. And they were greatly depressed in the city.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v71008001"/>
+    <chapter num="8">
+      <heading>Character of Judith</heading>
+      <begin-paragraph/>
+      <verse num="1">At that time Judith heard about these things: she was the daughter of Merari son of Ox, son of Joseph, son of Oziel, son of Elkiah, son of Ananias, son of Gideon, son of Raphaim, son of Ahitub, son of Elijah, son of Hilkiah, son of Eliab, son of Nathanael, son of Salamiel, son of Sarasadai, son of Israel.</verse>
+      <marker class="begin-verse" mid="v71008002"/>
+      <verse num="2">Her husband Manasseh, who belonged to her tribe and family, had died during the barley harvest.</verse>
+      <marker class="begin-verse" mid="v71008003"/>
+      <verse num="3">For as he stood overseeing the men who were binding sheaves in the field, he was overcome by the burning heat and took to his bed and died in Bethulia his city. So they buried him with his fathers in the field between Dothan and Balamon.</verse>
+      <marker class="begin-verse" mid="v71008004"/>
+      <verse num="4">Judith had lived at home as a widow for three years and four months.</verse>
+      <marker class="begin-verse" mid="v71008005"/>
+      <verse num="5">She set up a tent for herself on the roof of her house and girded sackcloth about her loins and wore the garments of her widowhood.</verse>
+      <marker class="begin-verse" mid="v71008006"/>
+      <verse num="6">She fasted all the days of her widowhood, except the day before the Sabbath and the Sabbath itself, the day before the new moon and the day of the new moon, and the feasts and days of rejoicing of the house of Israel.</verse>
+      <marker class="begin-verse" mid="v71008007"/>
+      <verse num="7">She was beautiful in appearance and had a very lovely face; and her husband Manasseh had left her gold and silver and men and women slaves and cattle and fields; and she maintained this estate.</verse>
+      <marker class="begin-verse" mid="v71008008"/>
+      <verse num="8">No one spoke ill of her, for she feared God with great devotion.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71008009"/>
+      <heading>Judith and the Elders</heading>
+      <begin-paragraph/>
+      <verse num="9">When Judith heard the wicked words spoken by the people against the ruler, because they were faint for lack of water, and when she heard all that Uzziah said to them and how he promised them under oath to surrender the city to the Assyrians after five days,</verse>
+      <marker class="begin-verse" mid="v71008010"/>
+      <verse num="10">she sent her maid, who was in charge of all she possessed, to summon Uzziah and Chabris and Charmis, the elders of her city.</verse>
+      <marker class="begin-verse" mid="v71008011"/>
+      <verse num="11">They came to her, and she said to them:<end-paragraph/><begin-paragraph/><q class="begin-double" qid="71008011.1" from="71008011.1" to="71008027.1"/>Listen to me, rulers of the people of Bethulia! What you have said to the people today is not right; you have even sworn and pronounced this oath between God and you, promising to surrender the city to our enemies unless the Lord turns and helps us within so many days.</verse>
+      <marker class="begin-verse" mid="v71008012"/>
+      <verse num="12">Who are you, who have put God to the test this day and are setting yourselves up in the place of<note nid="n71008012.1"/> God among the sons of men?</verse>
+      <marker class="begin-verse" mid="v71008013"/>
+      <verse num="13">You are questioning the Lord Almighty&emdash;but you will never know anything!</verse>
+      <marker class="begin-verse" mid="v71008014"/>
+      <verse num="14">You cannot plumb the depths of the human heart or find out what a man is thinking; how do you expect to search out God, who made all these things, and find out his mind or comprehend his thought? No, my brothers, do not provoke the Lord our God to anger.</verse>
+      <marker class="begin-verse" mid="v71008015"/>
+      <verse num="15">For if he does not choose to help us within these five days, he has power to protect us within any time he pleases or even to destroy us in the presence of our enemies.</verse>
+      <marker class="begin-verse" mid="v71008016"/>
+      <verse num="16">Do not try to bind the purposes of the Lord our God; for God is not like man, to be threatened, or like a human being, to be won over by pleading.</verse>
+      <marker class="begin-verse" mid="v71008017"/>
+      <verse num="17">Therefore, while we wait for his deliverance, let us call upon him to help us, and he will hear our voice, if it pleases him.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71008018"/>
+      <begin-paragraph/>
+      <verse num="18"><q class="continue-double" qid="71008018.1" from="71008011.1" to="71008027.1"/>For never in our generation or in these present days has there been any tribe or family or people or city of ours that worshiped gods made with hands, as was done in days gone by&emdash;</verse>
+      <marker class="begin-verse" mid="v71008019"/>
+      <verse num="19">and that was why our fathers were handed over to the sword and to be plundered, and so they suffered a great catastrophe before our enemies.</verse>
+      <marker class="begin-verse" mid="v71008020"/>
+      <verse num="20">But we know no other God but him, and therefore we hope that he will not disdain us or any of our nation.</verse>
+      <marker class="begin-verse" mid="v71008021"/>
+      <verse num="21">For if we are captured, all Judea will fall and our sanctuary will be plundered; and he will exact of us<note nid="n71008021.1"/> the penalty for its desecration.</verse>
+      <marker class="begin-verse" mid="v71008022"/>
+      <verse num="22">And the slaughter of our brothers and the captivity of the land and the desolation of our inheritance&emdash;all this he will bring upon our heads among the Gentiles, wherever we serve as slaves; and we shall be an offense and a reproach in the eyes of those who acquire us.</verse>
+      <marker class="begin-verse" mid="v71008023"/>
+      <verse num="23">For our slavery will not bring us into favor, but the Lord our God will turn it to dishonor.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71008024"/>
+      <begin-paragraph/>
+      <verse num="24"><q class="continue-double" qid="71008024.1" from="71008011.1" to="71008027.1"/>Now therefore, brothers, let us set an example to our brothers, for their lives depend upon us, and the sanctuary and the temple and the altar rest upon us.</verse>
+      <marker class="begin-verse" mid="v71008025"/>
+      <verse num="25">In spite of everything let us give thanks to the Lord our God, who is putting us to the test as he did our ancestors.</verse>
+      <marker class="begin-verse" mid="v71008026"/>
+      <verse num="26">Remember what he did with Abraham and how he tested Isaac and what happened to Jacob in Mesopotamia in Syria, while he was keeping the sheep of Laban, his mother&apos;s brother.</verse>
+      <marker class="begin-verse" mid="v71008027"/>
+      <verse num="27">For he has not tried us with fire, as he did them, to search their hearts, nor has he taken revenge upon us; but the Lord scourges those who draw near to him, in order to admonish them.<q class="end-double" qid="71008027.1" from="71008011.1" to="71008027.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71008028"/>
+      <begin-paragraph/>
+      <verse num="28">Then Uzziah said to her, <q class="begin-double" qid="71008028.1" from="71008028.1" to="71008031.1"/>All that you have said has been spoken out of a true heart, and there is no one who can deny your words.</verse>
+      <marker class="begin-verse" mid="v71008029"/>
+      <verse num="29">Today is not the first time your wisdom has been shown, but from the beginning of your life all the people have recognized your understanding, for your heart&apos;s disposition is right.</verse>
+      <marker class="begin-verse" mid="v71008030"/>
+      <verse num="30">But the people were very thirsty, and they compelled us to do for them what we have promised and made us take an oath that we cannot break.</verse>
+      <marker class="begin-verse" mid="v71008031"/>
+      <verse num="31">So pray for us, since you are a devout woman, and the Lord will send us rain to fill our cisterns and we will no longer be faint.<q class="end-double" qid="71008031.1" from="71008028.1" to="71008031.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71008032"/>
+      <begin-paragraph/>
+      <verse num="32">Judith said to them, <q class="begin-double" qid="71008032.1" from="71008032.1" to="71008034.1"/>Listen to me. I am about to do a thing that will go down through all generations of our descendants.</verse>
+      <marker class="begin-verse" mid="v71008033"/>
+      <verse num="33">Stand at the city gate tonight, and I will go out with my maid; and within the days after which you have promised to surrender the city to our enemies, the Lord will deliver Israel by my hand.</verse>
+      <marker class="begin-verse" mid="v71008034"/>
+      <verse num="34">Only, do not try to find out what I plan; for I will not tell you until I have finished what I am about to do.<q class="end-double" qid="71008034.1" from="71008032.1" to="71008034.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71008035"/>
+      <begin-paragraph/>
+      <verse num="35">Uzziah and the rulers said to her, <q class="begin-double" qid="71008035.1" from="71008035.1" to="71008035.2"/>Go in peace, and may the Lord God go before you, to take revenge upon our enemies.<q class="end-double" qid="71008035.2" from="71008035.1" to="71008035.2"/></verse>
+      <marker class="begin-verse" mid="v71008036"/>
+      <verse num="36">So they returned from the tent and went to their posts.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v71009001"/>
+    <chapter num="9">
+      <heading>Prayer of Judith</heading>
+      <begin-paragraph/>
+      <verse num="1">Then Judith fell upon her face and put ashes on her head and uncovered the sackcloth she was wearing; and at the very time when that evening&apos;s incense was being offered in the house of God in Jerusalem, Judith cried out to the Lord with a loud voice and said:</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71009002"/>
+      <begin-paragraph/>
+      <verse num="2"><q class="begin-double" qid="71009002.1" from="71009002.1" to="71009014.1"/>O Lord God of my father Simeon, to whom you gave a sword to take revenge on the strangers who had loosed the womb of a virgin to defile her and uncovered her thigh to put her to shame and polluted her womb to disgrace her; for you have said, <q class="begin-single" qid="71009002.2" from="71009002.2" to="71009002.3"/>It shall not be done<q class="end-single" qid="71009002.3" from="71009002.2" to="71009002.3"/>&emdash;yet they did it.</verse>
+      <marker class="begin-verse" mid="v71009003"/>
+      <verse num="3">So you gave up their rulers to be slain and their bed, which was ashamed of the deceit they had practiced, to be stained with blood, and you struck down slaves along with princes, and princes on their thrones;</verse>
+      <marker class="begin-verse" mid="v71009004"/>
+      <verse num="4">and you gave their wives for a prey and their daughters to captivity and all their booty to be divided among your beloved sons, who were zealous for you and abhorred the pollution of their blood and called on you for help&emdash;O God, my God, hear me also, a widow.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71009005"/>
+      <begin-paragraph/>
+      <verse num="5"><q class="continue-double" qid="71009005.1" from="71009002.1" to="71009014.1"/>For you have done these things and those that went before and those that followed; you have designed the things that are now and those that are to come. Yea, the things you intended came to pass,</verse>
+      <marker class="begin-verse" mid="v71009006"/>
+      <verse num="6">and the things you decided presented themselves and said, <q class="begin-single" qid="71009006.1" from="71009006.1" to="71009006.2"/>Lo, we are here<q class="end-single" qid="71009006.2" from="71009006.1" to="71009006.2"/>; for all your ways are prepared in advance, and your judgment is with foreknowledge.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71009007"/>
+      <begin-paragraph/>
+      <verse num="7"><q class="continue-double" qid="71009007.1" from="71009002.1" to="71009014.1"/>Behold now, the Assyrians are increased in their might; they are exalted, with their horses and riders; they glory in the strength of their foot soldiers; they trust in shield and spear, in bow and sling, and know not that you are the Lord who crushes wars; the Lord is your name.</verse>
+      <marker class="begin-verse" mid="v71009008"/>
+      <verse num="8">Break their strength by your might and bring down their power in your anger; for they intend to defile your sanctuary and to pollute the tabernacle where your glorious name rests and to cast down the horn of your altar with the sword.</verse>
+      <marker class="begin-verse" mid="v71009009"/>
+      <verse num="9">Note their pride and send your wrath upon their heads; give to me, a widow, the strength to do what I plan.</verse>
+      <marker class="begin-verse" mid="v71009010"/>
+      <verse num="10">By the deceit of my lips strike down the slave with the prince and the prince with his servant; crush their arrogance by the hand of a woman.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71009011"/>
+      <begin-paragraph/>
+      <verse num="11"><q class="continue-double" qid="71009011.1" from="71009002.1" to="71009014.1"/>For your power depends not upon numbers, or your might upon men of strength; for you are God of the lowly, helper of the oppressed, upholder of the weak, protector of the forlorn, Savior of those without hope.</verse>
+      <marker class="begin-verse" mid="v71009012"/>
+      <verse num="12">Hear, O hear me, God of my father, God of the inheritance of Israel, Lord of heaven and earth, Creator of the waters, King of all your creation, hear my prayer!</verse>
+      <marker class="begin-verse" mid="v71009013"/>
+      <verse num="13">Make my deceitful words to be their wound and stripe, for they have planned cruel things against your covenant and against your consecrated house and against the top of Zion and against the house possessed by your children.</verse>
+      <marker class="begin-verse" mid="v71009014"/>
+      <verse num="14">And cause your whole nation and every tribe to know and understand that you are God, the God of all power and might and that there is no other who protects the people of Israel but you alone!<q class="end-double" qid="71009014.1" from="71009002.1" to="71009014.1"/></verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v71010001"/>
+    <chapter num="10">
+      <heading>Judith Prepares to Go to Holofernes</heading>
+      <begin-paragraph/>
+      <verse num="1">When Judith<note nid="n71010001.1"/> had ceased crying out to the God of Israel and had ended all these words,</verse>
+      <marker class="begin-verse" mid="v71010002"/>
+      <verse num="2">she rose from where she lay prostrate and called her maid and went down into the house where she lived on Sabbaths and on her feast days;</verse>
+      <marker class="begin-verse" mid="v71010003"/>
+      <verse num="3">and she removed the sackcloth that she had been wearing and took off her widow&apos;s garments and bathed her body with water and anointed herself with thick ointment and put her hair in order and put on a tiara and arrayed herself in her festive apparel, which she used to wear while her husband Manasseh was living.</verse>
+      <marker class="begin-verse" mid="v71010004"/>
+      <verse num="4">And she put sandals on her feet and put on her anklets and bracelets and rings and her earrings and all her ornaments and made herself very beautiful, to entice the eyes of all men who might see her.</verse>
+      <marker class="begin-verse" mid="v71010005"/>
+      <verse num="5">And she gave her maid a bottle of wine and a flask of oil and filled a bag with parched grain and a cake of dried fruit and fine bread; and she wrapped up all her vessels and gave them to her to carry.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71010006"/>
+      <begin-paragraph/>
+      <verse num="6">Then they went out to the city gate of Bethulia and found Uzziah standing there with the elders of the city, Chabris and Charmis.</verse>
+      <marker class="begin-verse" mid="v71010007"/>
+      <verse num="7">When they saw her and noted how her face was altered and her clothing changed, they greatly admired her beauty and said to her,</verse>
+      <marker class="begin-verse" mid="v71010008"/>
+      <verse num="8"><q class="begin-double" qid="71010008.1" from="71010008.1" to="71010008.2"/>May the God of our fathers grant you favor and fulfill your plans, that the people of Israel may glory and Jerusalem may be exalted.<q class="end-double" qid="71010008.2" from="71010008.1" to="71010008.2"/> And she<note nid="n71010008.1"/> worshiped God.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71010009"/>
+      <begin-paragraph/>
+      <verse num="9">Then she said to them, <q class="begin-double" qid="71010009.1" from="71010009.1" to="71010009.2"/>Order the gate of the city to be opened for me, and I will go out and accomplish the things about which you spoke with me.<q class="end-double" qid="71010009.2" from="71010009.1" to="71010009.2"/> So they ordered the young men to open the gate for her, as she had said.</verse>
+      <marker class="begin-verse" mid="v71010010"/>
+      <verse num="10">When they had done this, Judith went out, she and her maid with her; and the men of the city watched her until she had gone down the mountain and passed through the valley and they could no longer see her.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71010011"/>
+      <heading>Judith Is Captured</heading>
+      <begin-paragraph/>
+      <verse num="11">The women<note nid="n71010011.1"/> went straight on through the valley; and an Assyrian patrol met her</verse>
+      <marker class="begin-verse" mid="v71010012"/>
+      <verse num="12">and took her into custody and asked her, <q class="begin-double" qid="71010012.1" from="71010012.1" to="71010012.2"/>To what people do you belong and where are you coming from and where are you going?<q class="end-double" qid="71010012.2" from="71010012.1" to="71010012.2"/> She replied, <q class="begin-double" qid="71010012.3" from="71010012.3" to="71010013.1"/>I am a daughter of the Hebrews, but I am fleeing from them, for they are about to be handed over to you to be devoured.</verse>
+      <marker class="begin-verse" mid="v71010013"/>
+      <verse num="13">I am on my way to the presence of Holofernes the commander of your army, to give him a true report; and I will show him a way by which he can go and capture all the hill country without losing one of his men, captured or slain.<q class="end-double" qid="71010013.1" from="71010012.3" to="71010013.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71010014"/>
+      <begin-paragraph/>
+      <verse num="14">When the men heard her words and observed her face&emdash;she was in their eyes marvelously beautiful&emdash;they said to her,</verse>
+      <marker class="begin-verse" mid="v71010015"/>
+      <verse num="15"><q class="begin-double" qid="71010015.1" from="71010015.1" to="71010016.1"/>You have saved your life by hurrying down to the presence of our lord. Go at once to his tent; some of us will escort you and hand you over to him.</verse>
+      <marker class="begin-verse" mid="v71010016"/>
+      <verse num="16">And when you stand before him, do not be afraid in your heart, but tell him just what you have said, and he will treat you well.<q class="end-double" qid="71010016.1" from="71010015.1" to="71010016.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71010017"/>
+      <begin-paragraph/>
+      <verse num="17">They chose from their number 100 men to accompany her and her maid, and they brought them to the tent of Holofernes.</verse>
+      <marker class="begin-verse" mid="v71010018"/>
+      <verse num="18">There was great excitement in the whole camp, for her arrival was reported from tent to tent, and they came and stood around her as she waited outside the tent of Holofernes while they told him about her.</verse>
+      <marker class="begin-verse" mid="v71010019"/>
+      <verse num="19">And they marveled at her beauty and admired the Israelites, judging them by her, and everyone said to his neighbor, <q class="begin-double" qid="71010019.1" from="71010019.1" to="71010019.2"/>Who can despise these people, who have women like this among them? Surely not a man of them had better be left alive, for if we let them go they will be able to ensnare the whole world!<q class="end-double" qid="71010019.2" from="71010019.1" to="71010019.2"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71010020"/>
+      <heading>Judith Is Brought before Holofernes</heading>
+      <begin-paragraph/>
+      <verse num="20">Then Holofernes&apos; companions and all his servants came out and led her into the tent.</verse>
+      <marker class="begin-verse" mid="v71010021"/>
+      <verse num="21">Holofernes was resting on his bed, under a canopy that was woven with purple and gold and emeralds and precious stones.</verse>
+      <marker class="begin-verse" mid="v71010022"/>
+      <verse num="22">When they told him of her he came forward to the front of the tent, with silver lamps carried before him.</verse>
+      <marker class="begin-verse" mid="v71010023"/>
+      <verse num="23">And when Judith came into the presence of Holofernes<note nid="n71010023.1"/> and his servants, they all marveled at the beauty of her face; and she prostrated herself and made obeisance to him, and his slaves raised her up.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v71011001"/>
+    <chapter num="11">
+      <begin-paragraph/>
+      <verse num="1">Then Holofernes said to her, <q class="begin-double" qid="71011001.1" from="71011001.1" to="71011004.1"/>Take courage, woman, and do not be afraid in your heart, for I have never hurt anyone who chose to serve Nebuchadnezzar, the king of all the earth.</verse>
+      <marker class="begin-verse" mid="v71011002"/>
+      <verse num="2">And even now, if your people who live in the hill country had not slighted me, I would never have lifted my spear against them; but they have brought all this on themselves.</verse>
+      <marker class="begin-verse" mid="v71011003"/>
+      <verse num="3">And now tell me why you have fled from them and have come over to us&emdash;since you have come to safety. Have courage; you will live, tonight and from now on.</verse>
+      <marker class="begin-verse" mid="v71011004"/>
+      <verse num="4">No one will hurt you, but all will treat you well, as they do the servants of my lord King Nebuchadnezzar.<q class="end-double" qid="71011004.1" from="71011001.1" to="71011004.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71011005"/>
+      <heading>Judith Explains Her Presence</heading>
+      <begin-paragraph/>
+      <verse num="5">Judith replied to him, <q class="begin-double" qid="71011005.1" from="71011005.1" to="71011019.1"/>Accept the words of your servant and let your maidservant speak in your presence, and I will tell nothing false to my lord this night.</verse>
+      <marker class="begin-verse" mid="v71011006"/>
+      <verse num="6">And if you follow out the words of your maidservant, God will fully accomplish something through you, and my lord will not fail to achieve his purposes.</verse>
+      <marker class="begin-verse" mid="v71011007"/>
+      <verse num="7">Nebuchadnezzar the king of the whole earth lives, and as his power endures, who had sent you to direct every living soul, not only do men serve him because of you, but also the beasts of the field and the cattle and the birds of the air will live by your power under Nebuchadnezzar and all his house.</verse>
+      <marker class="begin-verse" mid="v71011008"/>
+      <verse num="8">For we have heard of your wisdom and skill, and it is reported throughout the whole world that you are the one good man in the whole kingdom, thoroughly informed and marvelous in military strategy.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71011009"/>
+      <begin-paragraph/>
+      <verse num="9"><q class="continue-double" qid="71011009.1" from="71011005.1" to="71011019.1"/>Now as for the things Achior said in your council, we have heard his words, for the men of Bethulia spared him and he told them all he had said to you.</verse>
+      <marker class="begin-verse" mid="v71011010"/>
+      <verse num="10">Therefore, my lord and master, do not disregard what he said, but keep it in your mind, for it is true: our nation cannot be punished, nor can the sword prevail against them, unless they sin against their God.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71011011"/>
+      <begin-paragraph/>
+      <verse num="11"><q class="continue-double" qid="71011011.1" from="71011005.1" to="71011019.1"/>And now, in order that my lord may not be defeated and his purpose frustrated, death will fall upon them, for a sin has overtaken them by which they are about to provoke their God to anger when they do what is wrong.</verse>
+      <marker class="begin-verse" mid="v71011012"/>
+      <verse num="12">Since their food supply is exhausted and all their water has almost given out, they have planned to kill their cattle and have determined to use all that God by his laws has forbidden them to eat.</verse>
+      <marker class="begin-verse" mid="v71011013"/>
+      <verse num="13">They have decided to consume the firstfruits of the grain and the tithes of the wine and oil, which they had consecrated and set aside for the priests who minister in the presence of our God at Jerusalem&emdash;although it is not lawful for any of the people so much as to touch these things with their hands.</verse>
+      <marker class="begin-verse" mid="v71011014"/>
+      <verse num="14">They have sent men to Jerusalem, because even the people living there have been doing this, to bring back to them permission from the senate.</verse>
+      <marker class="begin-verse" mid="v71011015"/>
+      <verse num="15">When the word reaches them and they proceed to do this, on that very day they will be handed over to you to be destroyed.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71011016"/>
+      <begin-paragraph/>
+      <verse num="16"><q class="continue-double" qid="71011016.1" from="71011005.1" to="71011019.1"/>Therefore, when I, your servant, learned all this, I fled from them; and God has sent me to accomplish with you things that will astonish the whole world, as many as shall hear about them.</verse>
+      <marker class="begin-verse" mid="v71011017"/>
+      <verse num="17">For your servant is pious and serves the God of heaven day and night; therefore, my lord, I will remain with you, and every night your servant will go out into the valley, and I will pray to God and he will tell me when they have committed their sins.</verse>
+      <marker class="begin-verse" mid="v71011018"/>
+      <verse num="18">And I will come and tell you, and then you shall go out with your whole army, and not one of them will withstand you.</verse>
+      <marker class="begin-verse" mid="v71011019"/>
+      <verse num="19">Then I will lead you through the middle of Judea, till you come to Jerusalem; and I will set your couch<note nid="n71011019.1"/> in the midst of it; and you will lead them like sheep that have no shepherd, and not a dog will so much as open its mouth to growl at you. For this has been told me, by my foreknowledge; it was announced to me, and I was sent to tell you.<q class="end-double" qid="71011019.1" from="71011005.1" to="71011019.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71011020"/>
+      <begin-paragraph/>
+      <verse num="20">Her words pleased Holofernes and all his servants, and they marveled at her wisdom and said,</verse>
+      <marker class="begin-verse" mid="v71011021"/>
+      <verse num="21"><q class="begin-double" qid="71011021.1" from="71011021.1" to="71011021.2"/>There is not such a woman from one end of the earth to the other, either for beauty of face or wisdom of speech!<q class="end-double" qid="71011021.2" from="71011021.1" to="71011021.2"/></verse>
+      <marker class="begin-verse" mid="v71011022"/>
+      <verse num="22">And Holofernes said to her, <q class="begin-double" qid="71011022.1" from="71011022.1" to="71011023.1"/>God has done well to send you before the people, to lend strength to our hands and to bring destruction upon those who have slighted my lord.</verse>
+      <marker class="begin-verse" mid="v71011023"/>
+      <verse num="23">You are not only beautiful in appearance, but wise in speech; and if you do as you have said, your God shall be my God, and you shall be seated in the house of King Nebuchadnezzar and be renowned throughout the whole world.<q class="end-double" qid="71011023.1" from="71011022.1" to="71011023.1"/></verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v71012001"/>
+    <chapter num="12">
+      <heading>Judith as a Guest of Holofernes</heading>
+      <begin-paragraph/>
+      <verse num="1">Then he commanded them to bring her in where his silver dishes were kept and ordered them to set a table for her with some of his own food and to serve her with his own wine.</verse>
+      <marker class="begin-verse" mid="v71012002"/>
+      <verse num="2">But Judith said, <q class="begin-double" qid="71012002.1" from="71012002.1" to="71012002.2"/>I cannot eat it, lest it be an offense; but I will be provided from the things I have brought with me.<q class="end-double" qid="71012002.2" from="71012002.1" to="71012002.2"/></verse>
+      <marker class="begin-verse" mid="v71012003"/>
+      <verse num="3">Holofernes said to her, <q class="begin-double" qid="71012003.1" from="71012003.1" to="71012003.2"/>If your supply runs out, where will we get more like it for you? For none of your people is here with us.<q class="end-double" qid="71012003.2" from="71012003.1" to="71012003.2"/></verse>
+      <marker class="begin-verse" mid="v71012004"/>
+      <verse num="4">Judith replied, <q class="begin-double" qid="71012004.1" from="71012004.1" to="71012004.2"/>As your soul lives, my lord, your servant will not use up the things I have with me before the Lord carries out by my hand what he has determined to do.<q class="end-double" qid="71012004.2" from="71012004.1" to="71012004.2"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71012005"/>
+      <begin-paragraph/>
+      <verse num="5">Then the servants of Holofernes brought her into the tent, and she slept until midnight. Along toward the morning watch she arose</verse>
+      <marker class="begin-verse" mid="v71012006"/>
+      <verse num="6">and sent to Holofernes and said, <q class="begin-double" qid="71012006.1" from="71012006.1" to="71012006.2"/>Let my lord now command that your servant be permitted to go out and pray.<q class="end-double" qid="71012006.2" from="71012006.1" to="71012006.2"/></verse>
+      <marker class="begin-verse" mid="v71012007"/>
+      <verse num="7">So Holofernes commanded his bodyguards not to hinder her. And she remained in the camp for three days and went out each night to the valley of Bethulia and bathed at the spring in the camp.</verse>
+      <marker class="begin-verse" mid="v71012008"/>
+      <verse num="8">When she came up from the spring she prayed the Lord God of Israel to direct her way for the raising up of her people.</verse>
+      <marker class="begin-verse" mid="v71012009"/>
+      <verse num="9">So she returned clean and stayed in the tent until she ate her food toward evening.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71012010"/>
+      <heading>Judith Attends Holofernes&apos; Banquet</heading>
+      <begin-paragraph/>
+      <verse num="10">On the fourth day Holofernes held a wine party for his slaves only and did not invite any of those on duty.</verse>
+      <marker class="begin-verse" mid="v71012011"/>
+      <verse num="11">And he said to Bagoas, the eunuch who had charge of all his personal affairs, <q class="begin-double" qid="71012011.1" from="71012011.1" to="71012012.1"/>Go now and persuade the Hebrew woman who is in your care to join us and eat and drink with us.</verse>
+      <marker class="begin-verse" mid="v71012012"/>
+      <verse num="12">For it will be a disgrace if we let such a woman go without enjoying her company, for if we do not embrace her she will laugh at us.<q class="end-double" qid="71012012.1" from="71012011.1" to="71012012.1"/></verse>
+      <marker class="begin-verse" mid="v71012013"/>
+      <verse num="13">So Bagoas went out from the presence of Holofernes and approached her and said, <q class="begin-double" qid="71012013.1" from="71012013.1" to="71012013.2"/>This beautiful maidservant will please come to my lord and be honored in his presence and drink wine and be merry with us and become today like one of the daughters of the Assyrians who serve in the house of Nebuchadnezzar.<q class="end-double" qid="71012013.2" from="71012013.1" to="71012013.2"/></verse>
+      <marker class="begin-verse" mid="v71012014"/>
+      <verse num="14">And Judith said, <q class="begin-double" qid="71012014.1" from="71012014.1" to="71012014.2"/>Who am I, to refuse my lord? Surely whatever pleases him I will do at once, and it will be a joy to me until the day of my death!<q class="end-double" qid="71012014.2" from="71012014.1" to="71012014.2"/></verse>
+      <marker class="begin-verse" mid="v71012015"/>
+      <verse num="15">So she got up and arrayed herself in all her woman&apos;s finery, and her maid went and spread on the ground for her before Holofernes the soft fleeces that she had received from Bagoas for her daily use, so that she might recline on them when she ate.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71012016"/>
+      <begin-paragraph/>
+      <verse num="16">Then Judith came in and lay down, and Holofernes&apos; heart was ravished with her and he was moved with great desire to possess her; for he had been waiting for an opportunity to deceive her, ever since the day he first saw her.</verse>
+      <marker class="begin-verse" mid="v71012017"/>
+      <verse num="17">So Holofernes said to her, <q class="begin-double" qid="71012017.1" from="71012017.1" to="71012017.2"/>Drink now and be merry with us!<q class="end-double" qid="71012017.2" from="71012017.1" to="71012017.2"/></verse>
+      <marker class="begin-verse" mid="v71012018"/>
+      <verse num="18">Judith said, <q class="begin-double" qid="71012018.1" from="71012018.1" to="71012018.2"/>I will drink now, my lord, because my life means more to me today than in all the days since I was born.<q class="end-double" qid="71012018.2" from="71012018.1" to="71012018.2"/></verse>
+      <marker class="begin-verse" mid="v71012019"/>
+      <verse num="19">Then she took and ate and drank before him what her maid had prepared.</verse>
+      <marker class="begin-verse" mid="v71012020"/>
+      <verse num="20">And Holofernes was greatly pleased with her and drank a great quantity of wine, much more than he had ever drunk in any one day since he was born.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v71013001"/>
+    <chapter num="13">
+      <heading>Judith Beheads Holofernes</heading>
+      <begin-paragraph/>
+      <verse num="1">When evening came, his slaves quickly withdrew, and Bagoas closed the tent from outside and shut out the attendants from his master&apos;s presence; and they went to bed, for they all were weary because the wine party had lasted long.</verse>
+      <marker class="begin-verse" mid="v71013002"/>
+      <verse num="2">So Judith was left alone in the tent, with Holofernes stretched out on his bed, for he was overcome with wine.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71013003"/>
+      <begin-paragraph/>
+      <verse num="3">Now Judith had told her maid to stand outside the bedchamber and to wait for her to come out, as she did every day; for she said she would be going out for her prayers. And she had said the same thing to Bagoas.</verse>
+      <marker class="begin-verse" mid="v71013004"/>
+      <verse num="4">So everyone went out, and no one, either small or great, was left in the bedchamber. Then Judith, standing beside his bed, said in her heart, <q class="begin-double" qid="71013004.1" from="71013004.1" to="71013005.1"/>O Lord God of all might, look in this hour upon the work of my hands for the exaltation of Jerusalem.</verse>
+      <marker class="begin-verse" mid="v71013005"/>
+      <verse num="5">For now is the time to help your inheritance and to carry out my undertaking for the destruction of the enemies who have risen up against us.<q class="end-double" qid="71013005.1" from="71013004.1" to="71013005.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71013006"/>
+      <begin-paragraph/>
+      <verse num="6">She went up to the post at the end of the bed, above Holofernes&apos; head and took down his sword from it.</verse>
+      <marker class="begin-verse" mid="v71013007"/>
+      <verse num="7">She came close to his bed and took hold of the hair of his head and said, <q class="begin-double" qid="71013007.1" from="71013007.1" to="71013007.2"/>Give me strength this day, O Lord God of Israel!<q class="end-double" qid="71013007.2" from="71013007.1" to="71013007.2"/></verse>
+      <marker class="begin-verse" mid="v71013008"/>
+      <verse num="8">And she struck his neck twice with all her might and severed his head from his body.</verse>
+      <marker class="begin-verse" mid="v71013009"/>
+      <verse num="9">Then she tumbled his body off the bed and pulled down the canopy from the posts; after a moment she went out and gave Holofernes&apos; head to her maid,</verse>
+      <marker class="begin-verse" mid="v71013010"/>
+      <verse num="10">who placed it in her food bag.
+        <end-paragraph/>
+        <heading>Judith Returns to Bethulia</heading>
+        <begin-paragraph/>Then the two of them went out together, as they were accustomed to go for prayer; and they passed through the camp and circled around the valley and went up the mountain to Bethulia and came to its gates.
+      </verse>
+      <marker class="begin-verse" mid="v71013011"/>
+      <verse num="11">Judith called out from afar to the watchmen at the gates, <q class="begin-double" qid="71013011.1" from="71013011.1" to="71013011.2"/>Open, open the gate! God, our God, is still with us, to show his power in Israel and his strength against our enemies, even as he has done this day!<q class="end-double" qid="71013011.2" from="71013011.1" to="71013011.2"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71013012"/>
+      <begin-paragraph/>
+      <verse num="12">When the men of her city heard her voice, they hurried down to the city gate and called together the elders of the city.</verse>
+      <marker class="begin-verse" mid="v71013013"/>
+      <verse num="13">They all ran together, both small and great, for it was unbelievable that she had returned; they opened the gate and admitted them, and they kindled a fire for light and gathered around them.</verse>
+      <marker class="begin-verse" mid="v71013014"/>
+      <verse num="14">Then she said to them with a loud voice, <q class="begin-double" qid="71013014.1" from="71013014.1" to="71013014.2"/>Praise God, O praise him! Praise God, who has not withdrawn his mercy from the house of Israel, but has destroyed our enemies by my hand this very night!<q class="end-double" qid="71013014.2" from="71013014.1" to="71013014.2"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71013015"/>
+      <begin-paragraph/>
+      <verse num="15">Then she took the head out of the bag and showed it to them and said, <q class="begin-double" qid="71013015.1" from="71013015.1" to="71013016.1"/>See, here is the head of Holofernes, the commander of the Assyrian army, and here is the canopy beneath which he lay in his drunken stupor. The Lord has struck him down by the hand of a woman.</verse>
+      <marker class="begin-verse" mid="v71013016"/>
+      <verse num="16">As the Lord lives, who has protected me in the way I went, it was my face that tricked him to his destruction, and yet he committed no act of sin with me, to defile and shame me.<q class="end-double" qid="71013016.1" from="71013015.1" to="71013016.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71013017"/>
+      <begin-paragraph/>
+      <verse num="17">All the people were greatly astonished and bowed down and worshiped God and said with one accord, <q class="begin-double" qid="71013017.1" from="71013017.1" to="71013017.2"/>Blessed are you, our God, who has brought into contempt this day the enemies of your people.<q class="end-double" qid="71013017.2" from="71013017.1" to="71013017.2"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71013018"/>
+      <begin-paragraph/>
+      <verse num="18">And Uzziah said to her, <q class="begin-double" qid="71013018.1" from="71013018.1" to="71013020.1"/>O daughter, you are blessed by the Most High God above all women on earth; and blessed be the Lord God, who created the heavens and the earth, who has guided you to strike the head of the leader of our enemies.</verse>
+      <marker class="begin-verse" mid="v71013019"/>
+      <verse num="19">Your hope will never depart from the hearts of men, as they remember the power of God.</verse>
+      <marker class="begin-verse" mid="v71013020"/>
+      <verse num="20">May God grant this to be a perpetual honor to you and may he visit you with blessings, because you did not spare your own life when our nation was brought low, but have avenged our ruin, walking in the straight path before our God.<q class="end-double" qid="71013020.1" from="71013018.1" to="71013020.1"/> And all the people said, <q class="begin-double" qid="71013020.2" from="71013020.2" to="71013020.3"/>So be it, so be it!<q class="end-double" qid="71013020.3" from="71013020.2" to="71013020.3"/></verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v71014001"/>
+    <chapter num="14">
+      <heading>Judith&apos;s Counsel</heading>
+      <begin-paragraph/>
+      <verse num="1">Then Judith said to them, <q class="begin-double" qid="71014001.1" from="71014001.1" to="71014005.1"/>Listen to me, my brothers, and take this head and hang it upon the parapet of your wall.</verse>
+      <marker class="begin-verse" mid="v71014002"/>
+      <verse num="2">And as soon as morning comes and the sun rises, let every valiant man take his weapons and go out of the city and set a captain over them, as if you were going down to the plain against the Assyrian outpost; only do not go down.</verse>
+      <marker class="begin-verse" mid="v71014003"/>
+      <verse num="3">Then they will seize their arms and go into their camp and rouse the officers of the Assyrian army; and they will rush into the tent of Holofernes and will not find him. Then fear will come over them, and they will flee before you,</verse>
+      <marker class="begin-verse" mid="v71014004"/>
+      <verse num="4">and taking pursuit, you and all who live within the borders of Israel cut them down as they flee.</verse>
+      <marker class="begin-verse" mid="v71014005"/>
+      <verse num="5">But before you do all this, bring Achior the Ammonite to me, and let him see and recognize the man who despised the house of Israel and sent him to us as if to his death.<q class="end-double" qid="71014005.1" from="71014001.1" to="71014005.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71014006"/>
+      <begin-paragraph/>
+      <verse num="6">So they summoned Achior from the house of Uzziah. And when he came and saw the head of Holofernes in the hand of one of the men at the gathering of the people, he fell down on his face and his spirit failed him.</verse>
+      <marker class="begin-verse" mid="v71014007"/>
+      <verse num="7">And when they raised him up he fell at Judith&apos;s feet and knelt before her and said, <q class="begin-double" qid="71014007.1" from="71014007.1" to="71014008.1"/>Blessed are you in every tent of Judah! In every nation those who hear your name will be alarmed.</verse>
+      <marker class="begin-verse" mid="v71014008"/>
+      <verse num="8">Now tell me what you have done during these days.<q class="end-double" qid="71014008.1" from="71014007.1" to="71014008.1"/><end-paragraph/><begin-paragraph/>Then Judith described to him in the presence of the people all that she had done, from the day she left until the moment of her speaking to them.</verse>
+      <marker class="begin-verse" mid="v71014009"/>
+      <verse num="9">And when she had finished speaking, the people raised a great shout and made a joyful noise in their city.</verse>
+      <marker class="begin-verse" mid="v71014010"/>
+      <verse num="10">And when Achior saw all that the God of Israel had done, he believed firmly in God and was circumcised and joined the house of Israel, remaining so to this day.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71014011"/>
+      <heading>Holofernes&apos; Death Is Discovered</heading>
+      <begin-paragraph/>
+      <verse num="11">As soon as it was dawn they hung the head of Holofernes on the wall, and every man took his weapons, and they went out in companies to the passes in the mountains.</verse>
+      <marker class="begin-verse" mid="v71014012"/>
+      <verse num="12">And when the Assyrians saw them they sent word to their commanders, and they went to the generals and the captains and to all their officers.</verse>
+      <marker class="begin-verse" mid="v71014013"/>
+      <verse num="13">So they came to Holofernes&apos; tent and said to the steward in charge of all his personal affairs, <q class="begin-double" qid="71014013.1" from="71014013.1" to="71014013.2"/>Wake up our lord, for the slaves have been so bold as to come down against us to give battle, in order to be destroyed completely.<q class="end-double" qid="71014013.2" from="71014013.1" to="71014013.2"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71014014"/>
+      <begin-paragraph/>
+      <verse num="14">So Bagoas went in and knocked at the curtain of the tent, for he supposed that he was sleeping with Judith.</verse>
+      <marker class="begin-verse" mid="v71014015"/>
+      <verse num="15">But when no one answered, he drew it aside and went into the bedchamber and found him thrown down on the footstool dead, with his head cut off.</verse>
+      <marker class="begin-verse" mid="v71014016"/>
+      <verse num="16">And he cried out with a loud voice and wept and groaned and shouted and rent his garments.</verse>
+      <marker class="begin-verse" mid="v71014017"/>
+      <verse num="17">Then he went to the tent where Judith had stayed, and when he did not find her he rushed out to the people and shouted,</verse>
+      <marker class="begin-verse" mid="v71014018"/>
+      <verse num="18"><q class="begin-double" qid="71014018.1" from="71014018.1" to="71014018.2"/>The slaves have tricked us! One Hebrew woman has brought disgrace upon the house of King Nebuchadnezzar! For look, Holofernes is lying on the ground, and his head is not on him!<q class="end-double" qid="71014018.2" from="71014018.1" to="71014018.2"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71014019"/>
+      <begin-paragraph/>
+      <verse num="19">When the leaders of the Assyrian army heard this, they rent their tunics and were greatly dismayed, and their cries and shouts were very loud in the midst of the camp.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v71015001"/>
+    <chapter num="15">
+      <heading>Assyrians Flee in Panic</heading>
+      <begin-paragraph/>
+      <verse num="1">When the men in the tents heard it, they were amazed at what had happened.</verse>
+      <marker class="begin-verse" mid="v71015002"/>
+      <verse num="2">Fear and trembling came over them, so that they did not wait for one another, but with one impulse all rushed out and fled by every path across the plain and through the hill country.</verse>
+      <marker class="begin-verse" mid="v71015003"/>
+      <verse num="3">Those who had camped in the hills around Bethulia also took to flight. Then the Israelites, everyone that was a soldier, rushed out upon them.</verse>
+      <marker class="begin-verse" mid="v71015004"/>
+      <verse num="4">And Uzziah sent men to Betomasthaim and Bebai and Chobai and Kola and to all the frontiers of Israel to tell what had taken place and to urge all to rush out upon their enemies to destroy them.</verse>
+      <marker class="begin-verse" mid="v71015005"/>
+      <verse num="5">And when the Israelites heard it, with one accord they fell upon the enemy<note nid="n71015005.1"/> and cut them down as far as Choba. Likewise those in Jerusalem and all the hill country also came, for they were told what had happened in the camp of the enemy; and those in Gilead and in Galilee outflanked them with great slaughter, until they came to Damascus and its borders.</verse>
+      <marker class="begin-verse" mid="v71015006"/>
+      <verse num="6">The rest of the people of Bethulia fell upon the Assyrian camp and plundered it and were greatly enriched.</verse>
+      <marker class="begin-verse" mid="v71015007"/>
+      <verse num="7">And the Israelites, when they returned from the slaughter, took control of what remained, and the villages and towns in the hill country and in the plain took possession of a great amount of booty, for there was a vast quantity of it.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71015008"/>
+      <heading>Israelites Celebrate Their Victory</heading>
+      <begin-paragraph/>
+      <verse num="8">Then Joakim the high priest and the senate of the people of Israel who lived at Jerusalem came to witness the good things that the Lord had done for Israel and to see Judith and to greet her.</verse>
+      <marker class="begin-verse" mid="v71015009"/>
+      <verse num="9">And when they met her they all blessed her with one accord and said to her, <q class="begin-double" qid="71015009.1" from="71015009.1" to="71015010.1"/>You are the exaltation of Jerusalem, you are the great glory of Israel, you are the great pride of our nation!</verse>
+      <marker class="begin-verse" mid="v71015010"/>
+      <verse num="10">You have done all this single-handed; you have done great good to Israel, and God is well pleased with it. May the almighty Lord bless you forever!<q class="end-double" qid="71015010.1" from="71015009.1" to="71015010.1"/> And all the people said, <q class="begin-double" qid="71015010.2" from="71015010.2" to="71015010.3"/>So be it!<q class="end-double" qid="71015010.3" from="71015010.2" to="71015010.3"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71015011"/>
+      <begin-paragraph/>
+      <verse num="11">So all the people plundered the camp for thirty days. They gave Judith the tent of Holofernes and all his silver dishes and his beds and his bowls and all his furniture; and she took them and loaded her mule and hitched up her carts and piled the things on them.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71015012"/>
+      <begin-paragraph/>
+      <verse num="12">Then all the women of Israel gathered to see her and blessed her, and some of them performed a dance for her; and she took branches in her hands and gave them to the women who were with her;</verse>
+      <marker class="begin-verse" mid="v71015013"/>
+      <verse num="13">and they crowned themselves with olive wreaths, she and those who were with her; and she went before all the people in the dance, leading all the women, while all the men of Israel followed, bearing their arms and wearing garlands and with songs on their lips.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71015014"/>
+      <heading>Judith&apos;s Hymn of Praise</heading>
+      <begin-paragraph/>
+      <verse num="14">Then Judith began this thanksgiving before all Israel, and all the people loudly sang this song of praise. </verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v71016001"/>
+    <chapter num="16">
+      <begin-paragraph/>
+      <verse num="1">And Judith said:<end-paragraph/><begin-block-indent/><begin-paragraph class="line-group"/><begin-line/>Begin a song to my God with tambourines,<end-line class="br"/><begin-line class="indent"/>sing to my Lord with cymbals.<end-line class="br"/><begin-line/>Raise to him a new psalm;<note nid="n71016001.1"/><end-line class="br"/><begin-line class="indent"/>exalt him and call upon his name.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v71016002"/>
+      <verse num="2"><begin-line/>For God is the Lord who crushes wars;<end-line class="br"/><begin-line class="indent"/>for into his camp, in the midst of the people<end-line class="br"/><begin-line class="indent"/>he delivered me out of the hands of my pursuers.<end-line/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71016003"/>
+      <begin-paragraph class="line-group"/>
+      <verse num="3"><begin-line/>The Assyrian came down from the mountains of the north;<end-line class="br"/><begin-line class="indent"/>he came with myriads of his army;<end-line class="br"/><begin-line/>their multitude blocked up the valleys,<end-line class="br"/><begin-line class="indent"/>their cavalry covered the hills.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v71016004"/>
+      <verse num="4"><begin-line/>He said he would burn up my territory<end-line class="br"/><begin-line class="indent"/>and kill my young men with the sword<end-line class="br"/><begin-line/>and put my infants on the ground<end-line class="br"/><begin-line class="indent"/>and hand over my children as prey<end-line class="br"/><begin-line class="indent"/>and take my virgins as booty.<end-line/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71016005"/>
+      <begin-paragraph class="line-group"/>
+      <verse num="5"><begin-line/>But the Lord Almighty has foiled them<end-line class="br"/><begin-line class="indent"/>by the hand of a woman.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v71016006"/>
+      <verse num="6"><begin-line/>For their mighty one did not fall by the hands of the young men,<end-line class="br"/><begin-line class="indent"/>nor did the sons of the Titans strike him,<end-line class="br"/><begin-line class="indent"/>nor did tall giants set upon him;<end-line class="br"/><begin-line/>but Judith daughter of Merari undid him<end-line class="br"/><begin-line class="indent"/>with the beauty of her face.<end-line/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71016007"/>
+      <begin-paragraph class="line-group"/>
+      <verse num="7"><begin-line/>For she took off her widow&apos;s mourning<end-line class="br"/><begin-line class="indent"/>to exalt the oppressed in Israel.<end-line class="br"/><begin-line/>She anointed her face with ointment<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v71016008"/>
+      <verse num="8"><begin-line class="indent"/>and fastened her hair with a tiara<end-line class="br"/><begin-line class="indent"/>and put on a linen gown to deceive him.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v71016009"/>
+      <verse num="9"><begin-line/>Her sandal ravished his eyes,<end-line class="br"/><begin-line class="indent"/>her beauty captivated his mind,<end-line class="br"/><begin-line class="indent"/>and the sword severed his neck.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v71016010"/>
+      <verse num="10"><begin-line/>The Persians trembled at her boldness,<end-line class="br"/><begin-line class="indent"/>the Medes were daunted at her daring.<end-line/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71016011"/>
+      <begin-paragraph class="line-group"/>
+      <verse num="11"><begin-line/>Then my oppressed people raised the war cry;<end-line class="br"/><begin-line class="indent"/>my weak people shouted.<note nid="n71016011.1"/> And they trembled,<end-line class="br"/><begin-line class="indent"/>they raised their cry and turned to flight.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v71016012"/>
+      <verse num="12"><begin-line/>The sons of maidservants have pierced them through;<end-line class="br"/><begin-line class="indent"/>they wounded them like the children of fugitives,<end-line class="br"/><begin-line class="indent"/>they perished before the army of my Lord.<end-line/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71016013"/>
+      <begin-paragraph class="line-group"/>
+      <verse num="13"><begin-line/>I will sing to my God a new song:<end-line class="br"/><begin-line/>O Lord, you are great and glorious,<end-line class="br"/><begin-line class="indent"/>wonderful in strength, invincible.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v71016014"/>
+      <verse num="14"><begin-line/>Let all your creatures serve you,<end-line class="br"/><begin-line class="indent"/>for you spoke, and they were made.<end-line class="br"/><begin-line/>You sent forth your Spirit,<note nid="n71016014.1"/> and it formed them;<end-line class="br"/><begin-line class="indent"/>there is none that can resist your voice.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v71016015"/>
+      <verse num="15"><begin-line/>For the mountains shall be shaken to their foundations with the waters;<end-line class="br"/><begin-line class="indent"/>at your presence the rocks shall melt like wax,<end-line class="br"/><begin-line/>but to those who fear you<end-line class="br"/><begin-line class="indent"/>you will continue to show mercy.<end-line class="br"/></verse>
+      <marker class="begin-verse" mid="v71016016"/>
+      <verse num="16"><begin-line/>For every sacrifice as a fragrant offering is a small thing,<end-line class="br"/><begin-line class="indent"/>and all fat for whole burnt offerings to you is a very little thing,<end-line class="br"/><begin-line/>but he who fears the Lord shall be great forever.<end-line/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71016017"/>
+      <begin-paragraph class="line-group"/>
+      <verse num="17"><begin-line/>Woe to the nations that rise up against my people!<end-line class="br"/><begin-line class="indent"/>The Lord Almighty will take vengeance on them in the day of judgment;<end-line class="br"/><begin-line/>fire and worms he will give to their flesh;<end-line class="br"/><begin-line class="indent"/>they shall weep in pain forever.<end-line/></verse>
+      <end-paragraph/>
+      <end-block-indent/>
+      <marker class="begin-verse" mid="v71016018"/>
+      <begin-paragraph/>
+      <verse num="18">When they arrived at Jerusalem they worshiped God. As soon as the people were purified, they offered their whole burnt offerings, their freewill offerings, and their gifts.</verse>
+      <marker class="begin-verse" mid="v71016019"/>
+      <verse num="19">Judith also dedicated to God all the vessels of Holofernes, which the people had given her; and the canopy that she took for herself from his bedchamber she gave as a votive offering to the Lord.</verse>
+      <marker class="begin-verse" mid="v71016020"/>
+      <verse num="20">So the people continued feasting in Jerusalem before the sanctuary for three months, and Judith remained with them.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v71016021"/>
+      <heading>Renown and Death of Judith</heading>
+      <begin-paragraph/>
+      <verse num="21">After this everyone returned home to his own inheritance, and Judith went to Bethulia and remained on her estate and was honored in her time throughout the whole country.</verse>
+      <marker class="begin-verse" mid="v71016022"/>
+      <verse num="22">Many desired to marry her, but she remained a widow all the days of her life after Manasseh her husband died and was gathered to his people.</verse>
+      <marker class="begin-verse" mid="v71016023"/>
+      <verse num="23">She became more and more famous and grew old in her husband&apos;s house, until she was 105 years old. She set her maid free. She died in Bethulia, and they buried her in the cave of her husband Manasseh,</verse>
+      <marker class="begin-verse" mid="v71016024"/>
+      <verse num="24">and the house of Israel mourned for her seven days. Before she died she distributed her property to all those who were next of kin to her husband Manasseh and to her own nearest kinsmen.</verse>
+      <marker class="begin-verse" mid="v71016025"/>
+      <verse num="25">And no one ever again spread terror among the people of Israel in the days of Judith or for a long time after her death.</verse>
+      <end-paragraph/>
+    </chapter>
+  </book>
+</crossway-bible>

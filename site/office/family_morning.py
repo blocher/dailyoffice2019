@@ -75,12 +75,16 @@ class FMPsalms(OfficeSection):
 class FMScripture(OfficeSection):
     def get_long(self):
         return {
-            "passage": self.office_readings.mp_reading_1_abbreviated
-            if self.office_readings.mp_reading_1_abbreviated
-            else self.office_readings.mp_reading_1,
-            "text": self.office_readings.mp_reading_1_abbreviated_text
-            if self.office_readings.mp_reading_1_abbreviated_text
-            else self.office_readings.mp_reading_1_text,
+            "passage": (
+                self.office_readings.mp_reading_1_abbreviated
+                if self.office_readings.mp_reading_1_abbreviated
+                else self.office_readings.mp_reading_1
+            ),
+            "text": (
+                self.office_readings.mp_reading_1_abbreviated_text
+                if self.office_readings.mp_reading_1_abbreviated_text
+                else self.office_readings.mp_reading_1_text
+            ),
             "deuterocanon": self.office_readings.mp_reading_1_testament == "DC",
         }
 

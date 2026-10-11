@@ -10,6 +10,7 @@ from googleapiclient.errors import HttpError
 
 from churchcal.api.serializer import DaySerializer
 from churchcal.calculations import get_calendar_date
+from office.utils import title_case
 from standrew.utils import get_today
 from website.settings import GOOGLE_API_KEY, ZOOM_LINK
 
@@ -83,6 +84,7 @@ class LiturgicalCalendarSundayEmailModule(SundayEmailModule):
         return weekdays
 
     def render(self):
+        print(self.get_data())
         return render_to_string("emails/weekly_email/liturgical_celebrations.html", {"days": self.get_data()})
 
 
@@ -101,7 +103,7 @@ class BirthdayDecoratorMixin(object):
     def birthday_to_date(self, birthday):
         now = get_today()
         year = now.year
-        if now.month == 12 and birthday[2] == 1:
+        if now.month == 12 and int(birthday[2]) == 1:
             year = year + 1
         return datetime.strptime("{} {} {}".format(birthday[2], birthday[3], year), "%m %d %Y").date()
 
@@ -274,7 +276,7 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
     def cell_meeting_data(self, cell, meeting_day):
         cell = cell.replace("'", "").capitalize()
         SPREADSHEET_ID = "1lRsThD20a2thgtJk97J_bqEBxJBCqXPIg_UkFAqzMq8"
-        RANGE_NAME = "{}!A1:N100".format(cell)
+        RANGE_NAME = "{}!A1:N200".format(cell)
         service = build("sheets", "v4", developerKey=GOOGLE_API_KEY)
         sheet = service.spreadsheets()
         try:
@@ -300,11 +302,20 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
 
     def tuesday_subjects(self):
         tuesday_number = self.get_tuesday_number()
+        tuesday = self.get_tuesday()
+        if tuesday.year == 2024 and tuesday.month == 7 and tuesday.day == 30:
+            return ["CORRECTION: Full group meeting (Tue) (instead of the following week)"]
+        if tuesday.year == 2024 and tuesday.month == 8 and tuesday.day == 6:
+            return ["No Tuesday meeting this week (Was moved to last week)"]
         if tuesday_number in (1, 3):
             return ["Full group meeting (Tue)"]
         if tuesday_number == 2:
+            if tuesday.year == 2026 and tuesday.month == 1:
+                return ["Women's group (Tue) (swapped with Men's group)"]
             return ["Men's group (Tue)"]
         if tuesday_number == 4:
+            if tuesday.year == 2026 and tuesday.month == 1:
+                return ["Men's group (Tue) (swapped with Women's group)"]
             return ["Women's group (Tue)"]
 
         tuesday = self.get_tuesday()
@@ -348,7 +359,20 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
 
     def get_required(self):
         tuesday_number = self.get_tuesday_number()
-        if tuesday_number in (1, 3):
+        tuesday = self.get_tuesday()
+        if tuesday.year == 2024 and tuesday.month == 8 and tuesday.day == 6:
+            return [
+                {
+                    "title": "No Tuesday meeting this week (Was moved to last week)",
+                    "date": self.get_tuesday(),
+                    "time": "",
+                    "optional": False,
+                    "notes": self.get_notes(),
+                    "to_addresses": ["community-of-st-andrew-all@googlegroups.com"],
+                    "meeting": "both_cells",
+                },
+            ]
+        if tuesday_number in (1, 3) or (tuesday.year == 2024 and tuesday.month == 7 and tuesday.day == 30):
             results = [
                 # {
                 #     "title": "Morningside Cell Meeting",
@@ -375,15 +399,15 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                     "extra_fields": self.cell_meeting_data("ohara", self.get_tuesday()),
                 },
             ]
-            teusday_date = self.get_tuesday()
-            if teusday_date.month == 7 and teusday_date.year == 2021:
+            tuesday_date = self.get_tuesday()
+            if tuesday_date.month == 7 and tuesday_date.year == 2021:
                 return [results[1]]
             return results
         if tuesday_number == 4:
-            title = "Women's Discipleship Group"
             tuesday = self.get_tuesday()
-            if tuesday.year == 2021 and tuesday.month == 12 and tuesday.day == 28:
-                title = "CANCELED: Women's Discipleship Group"
+            title = "Women's Discipleship Group"
+            if tuesday.year == 2026 and tuesday.month == 1:
+                title = "Men's group (Tue) (Swapped with Women's group)"
             return [
                 {
                     "title": title,
@@ -392,20 +416,29 @@ class StAndrewScheduleSundayEmailModule(SundayEmailModule):
                     "zoom_link": ZOOM_LINK,
                     "optional": False,
                     "notes": self.get_notes(),
-                    "to_addresses": ["community-of-st-andrew-women@googlegroups.com"],
+                    "to_addresses": [
+                        "community-of-st-andrew-women@googlegroups.com",
+                        "community-of-st-andrew-men@googlegroups.com",
+                    ],
                     "meeting": "women",
                 },
             ]
         if tuesday_number == 2:
+            title = "Men's Discipleship Group"
+            if tuesday.year == 2026 and tuesday.month == 1:
+                title = "Women's Discipleship Group (Swapped with Men's group)"
             return [
                 {
-                    "title": "Men's Discipleship Group",
+                    "title": title,
                     "date": self.get_tuesday(),
                     "time": "7 to 9 pm",
                     "zoom_link": ZOOM_LINK,
                     "optional": False,
                     "notes": self.get_notes(),
-                    "to_addresses": ["community-of-st-andrew-men@googlegroups.com"],
+                    "to_addresses": [
+                        "community-of-st-andrew-men@googlegroups.com",
+                        "community-of-st-andrew-women@googlegroups.com",
+                    ],
                     "meeting": "men",
                 },
             ]

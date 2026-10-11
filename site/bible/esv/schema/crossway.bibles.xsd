@@ -1,0 +1,74 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.crosswaybibles.org"
+	xmlns="http://www.crosswaybibles.org"
+	>
+	<xsd:include schemaLocation="http://www.gnpcb.org/esv/share/schemas/crossway.base.xsd"/>
+
+	<xsd:complexType name="bookElement">
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:element name="chapter" type="chapterElement" minOccurs="1" maxOccurs="150"/>
+			<!-- only heading class="psalm-book" can appear here -->
+			<xsd:element name="heading"  type="headingElement"  minOccurs="0" maxOccurs="5"/>
+			<xsd:element name="marker"   type="markerElement"  minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:choice>
+		<xsd:attribute name="title" type="xsd:string" use="required"/>
+		<xsd:attribute name="num" use="required">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:positiveInteger">
+					<xsd:minInclusive value="1"/>
+					<xsd:maxInclusive value="66"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="chapterElement">
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:group   ref="blockElements" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="verse" type="verseElement" minOccurs="1" maxOccurs="176"/>
+		</xsd:choice>
+		<xsd:attribute name="num" use="required">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:positiveInteger">
+					<xsd:minInclusive value="1"/>
+					<xsd:maxInclusive value="150"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:element name="crossway-bible">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="book" type="bookElement" minOccurs="1" maxOccurs="66"/>
+			</xsd:sequence>
+			<xsd:attribute name="translation" type="xsd:string" use="required"/>
+			<xsd:attribute name="revision"    type="xsd:string" use="required"/>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:complexType name="verseElement" mixed="true">
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:group   ref="standardTextElements" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:group   ref="blockElements"        minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="woc"                 type="wocElement" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="selah"               type="selahElement" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="marker"              type="markerElement" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:choice>
+		<xsd:attribute name="num" use="required">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:integer">
+					<xsd:minInclusive value="1"/>
+					<xsd:maxInclusive value="176"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="class" use="optional">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string"> <!-- in case we want to add new classes -->
+					<xsd:enumeration value="woc"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+</xsd:schema>

@@ -21,6 +21,10 @@ class PsalmVerse(UUIDModel):
     second_half = models.CharField(max_length=1000, blank=False, null=False)
     first_half_tle = models.CharField(max_length=1000, blank=True, null=True)
     second_half_tle = models.CharField(max_length=1000, blank=True, null=True)
+    first_half_spanish = models.CharField(max_length=1000, blank=True, null=True)
+    second_half_spanish = models.CharField(max_length=1000, blank=True, null=True)
+    first_half_chinese = models.CharField(max_length=1000, blank=True, null=True)
+    second_half_chinese = models.CharField(max_length=1000, blank=True, null=True)
 
     def __str__(self):
         return f"Psalm {self.psalm.number}:{self.number}"
@@ -36,7 +40,7 @@ class PsalmTopic(UUIDModel):
 
     @property
     def psalm_list(self):
-        psalms = re.sub("[^\\d,]+", "", self.psalms)
+        psalms = re.sub(r"[^\\d,]+", "", self.psalms)
         return psalms.split(",")
 
     class Meta:
@@ -50,7 +54,7 @@ class PsalmTopicPsalm(UUIDModel):
 
     @property
     def psalm_list(self):
-        psalms = re.sub("[^\\d,]+", "", self.psalms)
+        psalms = re.sub(r"[^\\d,]+", "", self.psalms)
         return psalms.split(",")
 
     class Meta:

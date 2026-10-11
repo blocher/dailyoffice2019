@@ -1,0 +1,21 @@
+<!ELEMENT crossway-intros (book)+>
+<!ATTLIST crossway-intros  translation CDATA #REQUIRED
+                           edition CDATA #REQUIRED
+                           revision CDATA #REQUIRED>
+
+<!ELEMENT book (p)+>
+<!ATTLIST book  title CDATA #REQUIRED
+                num  CDATA #REQUIRED>
+
+<!ELEMENT p (#PCDATA|span)*>
+
+<!ELEMENT span (#PCDATA)*>
+<!ATTLIST span  class CDATA #REQUIRED>
+
+<!ENTITY ldblquot  "&#8220;">
+<!ENTITY rdblquot  "&#8221;">
+<!ENTITY lquot     "&#8216;">
+<!ENTITY rquot     "&#8217;">
+<!ENTITY emdash    "&#8212;">
+<!ENTITY endash    "&#8211;">
+<!ENTITY ellipsis  "&#160;.&#160;.&#160;.">

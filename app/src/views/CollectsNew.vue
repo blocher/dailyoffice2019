@@ -1,152 +1,234 @@
 <template>
-  <div class="small-container">
-    <Loading v-if="loading"/>
-    <div>
-      <h1>Collects</h1>
-      <div class="flex justify-center">
-        <el-checkbox-group v-model="selectedCollectTypes" size="large">
-          <el-checkbox
-              v-for="collectType in collects" :key="collectType.uuid" border
-              :label="collectType.uuid">
-            {{ collectType.name }}
-          </el-checkbox>
-        </el-checkbox-group>
+  <div class="collects-view">
+    <main v-cloak class="px-4 pt-8 pb-12 mx-auto max-w-6xl lg:pb-16">
+      <header class="text-center settings-hero">
+        <h1>Collects</h1>
+      </header>
+
+      <Loading v-if="loading" class="mt-8" />
+
+      <div v-if="!loading && !error">
+        <div
+          class="settings-search-top mb-6 bg-[var(--el-fill-color-blank)] border border-[var(--el-border-color-light)]"
+        >
+          <label class="settings-search-top__label"> Search & Filter </label>
+          <div class="flex flex-col gap-4">
+            <div class="flex flex-col gap-4 items-center w-full md:flex-row">
+              <el-input
+                id="collects-search"
+                v-model="search"
+                clearable
+                class="flex-1"
+                placeholder="Search by word or phrase"
+              >
+                <template #prefix>
+                  <el-icon><Search /></el-icon>
+                </template>
+              </el-input>
+
+              <div class="flex justify-end w-full shrink-0 md:w-auto">
+                <el-switch
+                  v-model="traditional"
+                  size="large"
+                  active-text="Traditional"
+                  inactive-text="Contemporary"
+                  @change="setTraditional"
+                />
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-4 items-center w-full md:flex-row">
+              <div class="flex-1 w-full">
+                <el-checkbox-group
+                  v-model="selectedCollectTypes"
+                  size="default"
+                  class="flex flex-wrap gap-2 m-0"
+                >
+                  <el-checkbox
+                    v-for="collectType in collects"
+                    :key="collectType.uuid"
+                    border
+                    :label="collectType.uuid"
+                    class="mr-0"
+                  >
+                    {{ collectType.name }}
+                  </el-checkbox>
+                </el-checkbox-group>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="mx-auto mb-8 settings-display-narrow"
+          style="width: min(100%, 58rem); max-width: none"
+        >
+          <DisplaySettingsModule />
+        </div>
+
+        <div class="flex flex-wrap gap-2 justify-end mb-6">
+          <el-button
+            size="small"
+            :disabled="buttonsDisabled"
+            @click="expandAll"
+          >
+            {{ showAllText }}
+          </el-button>
+          <el-button
+            size="small"
+            :disabled="buttonsDisabled"
+            @click="collapseAll"
+          >
+            {{ hideAllText }}
+          </el-button>
+          <el-button
+            size="small"
+            :disabled="buttonsDisabled"
+            @click="showOnlySelected"
+          >
+            {{ showOnlyText }}
+          </el-button>
+        </div>
+
+        <div id="main">
+          <div
+            v-if="collectCategoriesToShow.length === 0"
+            class="py-12 text-center text-gray-500"
+          >
+            <h3 class="mb-2 text-xl font-semibold">No results</h3>
+            <p>
+              <em
+                >There are no collects that match your search terms and
+                filters.</em
+              >
+            </p>
+          </div>
+
+          <div v-for="category in collectCategoriesToShow" :key="category.uuid">
+            <h3
+              class="text-2xl font-bold mb-4 mt-8 text-[var(--el-text-color-primary)]"
+            >
+              {{ category.name }}
+            </h3>
+            <div
+              v-for="subcategory in category.subcategories"
+              :key="subcategory.uuid"
+            >
+              <CollectsSubcategory
+                ref="subcategories"
+                :traditional="traditional"
+                :subcategory="subcategory"
+                :extra-collects="extraCollects"
+                @extra-collects-changed="setExtraCollects"
+              />
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="flex justify-center flex-wrap">
-        <el-button size="small" class="mb-1" :disabled='buttonsDisabled' @click="expandAll()">{{
-            showAllText
-          }}
-        </el-button>
-        <el-button size="small" class="mb-1" :disabled='buttonsDisabled' @click="collapseAll()">
-          {{ hideAllText }}
-        </el-button>
-        <el-button size="small" class="mb-1" :disabled='buttonsDisabled' @click="showOnlySelected">{{ showOnlyText }}
-        </el-button>
-
-      </div>
-      <div class="flex justify-center">
-
-
-      </div>
-      <FontSizer v-if="readyToSetFontSize"/>
-
-      <!--      <div class="flex justify-center full-width">-->
-      <!--        <el-input-->
-      <!--            v-model="search" class="full-width m-2" placeholder="Filter by word or phrase">-->
-      <!--          <template #prefix>-->
-      <!--            <el-icon class="el-input__icon">-->
-      <!--              <font-awesome-icon :icon="['fad', 'search']"/>-->
-      <!--            </el-icon>-->
-      <!--          </template>-->
-      <!--        </el-input>-->
-      <!--      </div>-->
-
-      <div class="flex justify-center full-width">
-        <el-switch
-            v-model="traditional"
-            size="large"
-            active-text="Traditional"
-            inactive-text="Contemporary"
-            class="align-center mt-4"
-            @change="setTraditional"
-        />
-      </div>
-      <el-alert
-          v-if="error" :title="error"
-          type="error"
-      />
+    </main>
+    <div class="px-4 mx-auto max-w-6xl">
+      <el-alert v-if="error" :title="error" type="error" />
     </div>
   </div>
-  <div v-if="!loading && !error" id="main">
-
-    <!--    <div v-if="displayedCollects.length < 1" class="h-96">-->
-    <!--      <h3>No results</h3>-->
-    <!--      <p class="text-center"><em>There are no collects that match your search terms and filters.</em></p>-->
-    <!--    </div>-->
-
-    <div v-for="category in collectCategoriesToShow" :key="category.uuid">
-      <h3>{{ category.name }}</h3>
-      <div v-for="subcategory in category.subcategories" :key="subcategory.uuid">
-        <CollectsSubcategory
-            ref="subcategories" :traditional="traditional" :subcategory="subcategory" :extra-collects="extraCollects"
-            @extra-collects-changed="setExtraCollects"
-        />
-      </div>
-    </div>
-
-  </div>
-
 </template>
 
 <script>
-import Loading from "@/components/Loading";
-import CollectsFilters from "@/components/CollectsFilters";
-import Collect from "@/components/Collect";
-import FontSizer from "@/components/FontSizer";
-import CollectsSubcategory from "@/components/CollectsSubcategory";
-import {DynamicStorage} from "@/helpers/storage";
+import Loading from '@/components/Loading.vue';
+import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
+import CollectsSubcategory from '@/components/CollectsSubcategory.vue';
+import { Search } from '@element-plus/icons-vue';
+import { DynamicStorage } from '@/helpers/storage';
 
 export default {
-  components: {Loading, CollectsFilters, Collect, FontSizer, CollectsSubcategory},
+  components: {
+    Loading,
+    DisplaySettingsModule,
+    CollectsSubcategory,
+    Search,
+  },
   data() {
     return {
       collects: null,
       loading: true,
       error: false,
       traditional: false,
-      search: "",
-      readyToSetFontSize: false,
+      search: '',
       selectedCollectTypes: [],
       allCollects: [],
       openedItems: [],
       defaultDict: {},
       checkList: [],
-      offices: ["Morning Prayer", "Midday Prayer", "Evening Prayer", "Compline"],
-      showAllText: "Expand All",
-      showAllDefaultText: "Expand All",
-      hideAllText: "Collapse All",
-      hideAllDefaultText: "Collapse All",
-      showOnlyText: "Expand Only Chosen Prayers",
-      showOnlyDefaultText: "Expand Only Chosen Prayers",
+      offices: [
+        'Morning Prayer',
+        'Midday Prayer',
+        'Evening Prayer',
+        'Compline',
+      ],
+      showAllText: 'Expand All',
+      showAllDefaultText: 'Expand All',
+      hideAllText: 'Collapse All',
+      hideAllDefaultText: 'Collapse All',
+      showOnlyText: 'Expand Only Chosen Prayers',
+      showOnlyDefaultText: 'Expand Only Chosen Prayers',
       extraCollects: {},
       buttonsDisabled: false,
     };
   },
   computed: {
     collectCategoriesToShow() {
-      return this.collects.filter((category) => {
-        return this.selectedCollectTypes.includes(category.uuid);
-      });
-    },
-  },
-  watch: {
-    // search(val, oldVal) {
-    //   this.filterCollects(this.categories);
-    // },
-    selectedCollectTypes() {
-      this.readyToSetFontSize = false;
-      this.$nextTick(() => {
-        this.readyToSetFontSize = true;
-      });
+      if (!this.collects) return [];
+      const searchQuery = this.search.toLowerCase().trim();
+
+      return this.collects
+        .filter((category) => this.selectedCollectTypes.includes(category.uuid))
+        .map((category) => {
+          const subcategories = category.subcategories
+            .map((sub) => {
+              const filteredCollects = sub.collects.filter((collect) => {
+                if (!searchQuery) return true;
+                const matchesTitle =
+                  collect.title &&
+                  collect.title.toLowerCase().includes(searchQuery);
+                const matchesText =
+                  collect.text &&
+                  collect.text.toLowerCase().includes(searchQuery);
+                const matchesTraditional =
+                  collect.traditional_text &&
+                  collect.traditional_text.toLowerCase().includes(searchQuery);
+                return matchesTitle || matchesText || matchesTraditional;
+              });
+
+              if (filteredCollects.length > 0) {
+                return { ...sub, collects: filteredCollects };
+              }
+              return null;
+            })
+            .filter((sub) => sub !== null);
+
+          if (subcategories.length > 0) {
+            return { ...category, subcategories };
+          }
+          return null;
+        })
+        .filter((cat) => cat !== null);
     },
   },
   async mounted() {
-    const traditional = await DynamicStorage.getItem("traditionalCollects", false);
-    if (traditional === "true" || traditional == true) {
-      this.traditional = true;
-    } else {
-      this.traditional = false;
-    }
+    const traditional = await DynamicStorage.getItem(
+      'traditionalCollects',
+      false
+    );
+    this.traditional = traditional === 'true' || traditional === true;
     this.setTraditional();
     let data = null;
 
     try {
       data = await this.$http.get(
-          `${process.env.VUE_APP_API_URL}api/v1/grouped_collects`
+        `${import.meta.env.VITE_API_URL}api/v1/grouped_collects`
       );
-    } catch (e) {
+    } catch {
       this.error =
-          "There was an error retrieving the collects. Please try again.";
+        'There was an error retrieving the collects. Please try again.';
       this.loading = false;
       return;
     }
@@ -158,92 +240,117 @@ export default {
         });
       });
     });
-    this.setDefaultFilter()
-    await this.setExtraCollects()
+    this.setDefaultFilter();
+    await this.setExtraCollects();
     this.error = false;
     this.loading = false;
-    this.readyToSetFontSize = true;
   },
   methods: {
     async setExtraCollects() {
-      this.extraCollects = JSON.parse(await DynamicStorage.getItem('extraCollects')) || this.defaultDict;
-      // this.offices.forEach((office) => {
-      //   if (extraCollects[office].includes(this.collect.uuid)) {
-      //     this.extraCollectsList.push(office)
-      //   }
-      // });
+      this.extraCollects =
+        JSON.parse(await DynamicStorage.getItem('extraCollects')) ||
+        this.defaultDict;
     },
     async setTraditional() {
-      await DynamicStorage.setItem("traditionalCollects", this.traditional);
+      await DynamicStorage.setItem('traditionalCollects', this.traditional);
     },
     setDefaultFilter() {
-      if (!this.selectedCollectTypes.length) {
-        this.selectedCollectTypes = this.collects.map((category) => category.uuid);
+      if (!this.selectedCollectTypes.length && this.collects) {
+        this.selectedCollectTypes = this.collects.map(
+          (category) => category.uuid
+        );
       }
     },
     async expandAll() {
       this.buttonsDisabled = true;
-      await this.$nextTick();
-      await this.$refs.subcategories.forEach((subcategory) => {
-        subcategory.expandAll();
-      });
-      await this.$nextTick();
+      if (this.$refs.subcategories) {
+        this.$refs.subcategories.forEach((subcategory) => {
+          subcategory.expandAll();
+        });
+      }
       this.buttonsDisabled = false;
     },
     async collapseAll() {
       this.buttonsDisabled = true;
-      await this.$nextTick();
-      await this.$refs.subcategories.forEach((subcategory) => {
-        subcategory.collapseAll();
-      });
-      await this.$nextTick();
+      if (this.$refs.subcategories) {
+        this.$refs.subcategories.forEach((subcategory) => {
+          subcategory.collapseAll();
+        });
+      }
       this.buttonsDisabled = false;
     },
     async showOnlySelected() {
       this.buttonsDisabled = true;
-      await this.$nextTick();
-      const defaultDict = {}
+      const defaultDict = {};
       this.offices.forEach((office) => {
-        defaultDict[office] = []
-      })
-      let checkList = []
-      const extraCollects = JSON.parse(await DynamicStorage.getItem('extraCollects')) || defaultDict;
+        defaultDict[office] = [];
+      });
+      let checkList = [];
+      const extraCollects =
+        JSON.parse(await DynamicStorage.getItem('extraCollects')) ||
+        defaultDict;
       this.offices.forEach((office) => {
-        checkList = checkList.concat(extraCollects[office])
+        checkList = checkList.concat(extraCollects[office]);
       });
-      this.$refs.subcategories.forEach((subcategory) => {
-        subcategory.showOnlySelected(checkList);
-      });
+      if (this.$refs.subcategories) {
+        this.$refs.subcategories.forEach((subcategory) => {
+          subcategory.showOnlySelected(checkList);
+        });
+      }
       this.buttonsDisabled = false;
-
-    }
+    },
   },
 };
 </script>
 
-<style scoped lang="scss">
-body h4 {
-  text-align: left;
-  margin: 2em 0;
+<style scoped>
+[v-cloak] {
+  display: none;
 }
 
-.upside-down span {
-  transform: scale(-1, 1);
+.settings-hero {
+  margin-bottom: 1rem;
 }
 
-.el-checkbox-group {
-  margin: 20px 0;
+.settings-hero__description {
+  margin: 0.55rem 0 0;
+  max-width: 62ch;
+  color: var(--el-text-color-secondary);
+  font-size: 0.97rem;
 }
 
-.el-checkbox {
-  @media (max-width: 675px) {
-    width: 100%;
-    margin-bottom: 10px;
+.settings-display-narrow {
+  width: min(100%, 58rem);
+}
+
+.settings-search-top {
+  border: 1px solid var(--el-border-color-light);
+  border-radius: 0.55rem;
+  background-color: var(--el-fill-color-blank);
+  padding: 0.58rem 0.66rem 0.66rem;
+  margin-bottom: 0.7rem;
+}
+
+.settings-search-top__label {
+  display: block;
+  margin-bottom: 0.26rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--el-text-color-secondary);
+}
+
+.el-checkbox-group.m-0 {
+  margin: 0 !important;
+}
+
+@media (max-width: 768px) {
+  .settings-hero__description {
+    font-size: 0.92rem;
   }
-}
-
-.el-collapse-item__header {
-  height: auto !important;
-  margin: 2px 0;
+  .settings-display-narrow {
+    width: 100%;
+  }
 }
 </style>

@@ -8,6 +8,9 @@ from html2text import html2text
 
 from psalter.utils import get_psalms
 
+# Import ESV XML adapter (avoid circular import by lazy loading)
+_ESVXMLAdapter = None
+
 
 class BibleSource(ABC):
     @abstractmethod
@@ -33,8 +36,15 @@ class BibleGateway(BibleSource):
         if self.version == "kjv":
             self.version = "akjv"
         # try:
-        self.reference = scriptures.extract(passage)[0]
-        self.passage = scriptures.reference_to_string(*self.reference)
+        self.references = scriptures.extract(passage)
+        if self.references:
+            self.reference = self.references[0]
+            # Use the original passage string to allow multiple ranges
+            self.passage = passage
+        else:
+            self.reference = None
+            self.passage = passage
+
         self.passage = self.passage.replace("III ", "3 ")
         self.passage = self.passage.replace("II ", "2 ")
         self.passage = self.passage.replace("I ", "1 ")
@@ -63,16 +73,17 @@ class BibleGateway(BibleSource):
 
     def _get_markup(self, passage=None):
         passage = passage if passage else self.passage
-        r = requests.get("https://beta.biblegateway.com/passage/?search={}&version={}".format(passage, self.version))
-        print("https://beta.biblegateway.com/passage/?search={}&version={}".format(passage, self.version))
+        r = requests.get("https://biblegateway.com/passage/?search={}&version={}".format(passage, self.version))
+        print("https://biblegateway.com/passage/?search={}&version={}".format(passage, self.version))
+        print(r)
         if r.status_code == 200:
             return r.text
         raise Exception("Error getting passage")
 
     def _set_text(self):
         try:
-            str = html2text(self.html).replace("\n", " ").replace("/\s\s+/", " ").strip()
-            str = re.sub(" +", " ", str)
+            str = html2text(self.html).replace("\n", " ").replace(r"/\s\s+/", " ").strip()
+            str = re.sub(r" +", " ", str)
             return str
         except Exception as e:
             print(e)
@@ -159,8 +170,14 @@ class OremusBibleBrowser(BibleSource):
     def __init__(self, passage, version="av"):
         self.version = version
 
-        self.reference = scriptures.extract(passage)[0]
-        self.passage = scriptures.reference_to_string(*self.reference)
+        self.references = scriptures.extract(passage)
+        if self.references:
+            self.reference = self.references[0]
+            self.passage = passage
+        else:
+            self.reference = None
+            self.passage = passage
+
         self.passage = self.passage.replace("III ", "3 ")
         self.passage = self.passage.replace("II ", "2 ")
         self.passage = self.passage.replace("I ", "1 ")
@@ -192,8 +209,8 @@ class OremusBibleBrowser(BibleSource):
 
     def _set_text(self):
         try:
-            str = html2text(self.html).replace("\n", " ").replace("/\s\s+/", " ").strip()
-            str = re.sub(" +", " ", str)
+            str = html2text(self.html).replace("\n", " ").replace(r"/\s\s+/", " ").strip()
+            str = re.sub(r" +", " ", str)
             return str
         except Exception as e:
             print(e)
@@ -264,9 +281,19 @@ class BCPPsalter(BibleSource):
 
     def _set_text(self):
         try:
-            str = html2text(self.html).replace("\n", " ").replace("/\s\s+/", " ").strip()
-            str = re.sub(" +", " ", str)
+            str = html2text(self.html).replace("\n", " ").replace(r"/\s\s+/", " ").strip()
+            str = re.sub(r" +", " ", str)
             return str
         except Exception as e:
             print(e)
             return None
+
+
+def get_esv_xml_adapter():
+    """Lazy loader for ESVXMLAdapter to avoid circular imports."""
+    global _ESVXMLAdapter
+    if _ESVXMLAdapter is None:
+        from bible.esv_xml_adapter import ESVXMLAdapter
+
+        _ESVXMLAdapter = ESVXMLAdapter
+    return _ESVXMLAdapter

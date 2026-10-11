@@ -1,25 +1,23 @@
 <template>
   <div class="small-container">
-    <PageNotFound v-if="notFound"/>
+    <PageNotFound v-if="notFound" />
     <div v-if="!notFound">
-      <Loading v-if="loading"/>
-      <div
-          v-if="error" class="alert-danger"
-      >
+      <Loading v-if="loading" />
+      <div v-if="error" class="alert-danger">
         {{ error }}
       </div>
-      <div
-          v-if="!loading" class="day"
-      >
+      <div v-if="!loading" class="day">
         <CalendarCard
-            v-if="!loading"
-            :calendar-date="calendarDate"
-            :card="card"
+          v-if="!loading"
+          :calendar-date="calendarDate"
+          :card="card"
         />
         <OfficeNav
-            :calendar-date="calendarDate" :service-type="currentServiceType"
-            :selected-office="'day'"
+          :calendar-date="calendarDate"
+          :service-type="currentServiceType"
+          :selected-office="'day'"
         />
+        <DisplaySettingsModule />
       </div>
     </div>
   </div>
@@ -27,19 +25,29 @@
 .el-row
 <script>
 // @ is an alias to /src
-import setCalendarDate from "@/helpers/setCalendarDate";
-import OfficeNav from "@/components/OfficeNav";
-import PageNotFound from "@/views/PageNotFound";
-import {DynamicStorage} from "@/helpers/storage";
+import setCalendarDate from '@/helpers/setCalendarDate';
+import OfficeNav from '@/components/OfficeNav.vue';
+import PageNotFound from '@/views/PageNotFound.vue';
+import { DynamicStorage } from '@/helpers/storage';
+import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
+import CalendarCard from '@/components/CalendarCard.vue';
+import Loading from '@/components/Loading.vue';
+import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
 
 export default {
-  name: "Calendar",
-  components: {OfficeNav, PageNotFound},
+  name: 'Calendar',
+  components: {
+    OfficeNav,
+    PageNotFound,
+    CalendarCard,
+    Loading,
+    DisplaySettingsModule,
+  },
   properties: {
     office: null,
     serviceType: {
       type: String,
-      default: "office",
+      default: 'office',
     },
   },
   data() {
@@ -54,18 +62,18 @@ export default {
       error: null,
       links: [],
       dayLinks: [],
-      currentServiceType: "office",
+      currentServiceType: 'office',
       notFound: false,
     };
   },
   watch: {
-    "$route.params.year": function () {
+    '$route.params.year': function () {
       this.setDay();
     },
-    "$route.params.month": function () {
+    '$route.params.month': function () {
       this.setDay();
     },
-    "$route.params.day": function () {
+    '$route.params.day': function () {
       this.setDay();
     },
   },
@@ -73,10 +81,10 @@ export default {
     if (this.$route.params.serviceType) {
       this.currentServiceType = this.$route.params.serviceType;
     } else if (!this.$route.params.office) {
-      this.currentServiceType = await DynamicStorage.getItem("serviceType") || "office";
+      this.currentServiceType =
+        (await DynamicStorage.getItem('serviceType')) || 'office';
     }
     await this.setDay();
-
   },
   methods: {
     scrollToTop() {
@@ -95,22 +103,29 @@ export default {
       let data = null;
       try {
         data = await this.$http.get(
-            `${process.env.VUE_APP_API_URL}api/v1/calendar/${this.year}-${this.month}-${this.day}`
+          `${import.meta.env.VITE_API_URL}api/v1/calendar/${this.year}-${this.month}-${this.day}`
         );
       } catch (e) {
-        if (e.response.status == "404") {
+        if (e.response.status == '404') {
           this.notFound = true;
           return;
         }
         this.error =
-            "There was an error retrieving this calendar. Please try again.";
+          'There was an error retrieving this calendar. Please try again.';
         this.loading = false;
         return;
       }
       this.card = data.data;
+      this.applySeasonAccentFromCard(this.card);
 
       this.scrollToTop();
       this.loading = false;
+    },
+    applySeasonAccentFromCard(card) {
+      const liturgicalColor = resolveColorFromCard(card, 'day');
+      if (liturgicalColor) {
+        setSeasonAccent(liturgicalColor);
+      }
     },
   },
 };

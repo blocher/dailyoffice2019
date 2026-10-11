@@ -1,9 +1,9 @@
-import { Preferences } from "@capacitor/preferences";
+import { Preferences } from '@capacitor/preferences';
 
 export const DynamicStorage = {
   setItem: async (key, value) => {
     // console.log("SET ITEM", key, value, typeof value);
-    if (typeof value === "number") {
+    if (typeof value === 'number') {
       value = value.toString();
     }
     await Preferences.set({
@@ -17,9 +17,9 @@ export const DynamicStorage = {
       const { value } = await Preferences.get({ key: key });
       // console.log("GET ITEM", key, value);
       return value;
-    } catch (error) {
+    } catch {
       // console.log("ERROR", error);
-      return "";
+      return '';
     }
   },
   deleteItem: async (key) => {

@@ -1,25 +1,52 @@
+import os
+
+from django.conf import settings
 from django.core.cache import cache
+from django.http import FileResponse
 from django.utils import timezone
+from mutagen.mp3 import MP3
+from rest_framework.renderers import BaseRenderer, BrowsableAPIRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from churchcal.audio_streaming import audio_file_response
 from churchcal.api.permissions import ReadOnly
 from churchcal.api.serializer import DaySerializer
 from churchcal.calculations import get_calendar_date, ChurchYear, CalendarYear
+from churchcal.calendar_feeds import (
+    ChurchCalendarFeedService,
+    get_calendar_feed_filename,
+    get_feed_scope_label,
+)
+from website import settings as site_settings
 
 
-def get_calendar_year(year):
+class CalendarFeedRenderer(BaseRenderer):
+    media_type = "text/calendar"
+    format = "ics"
+    charset = "utf-8"
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        if data is None:
+            return b""
+        if isinstance(data, bytes):
+            return data
+        return str(data).encode(self.charset)
+
+
+def get_calendar_year(year, calendar):
     year = int(year)
     first_year = year - 1
     second_year = year
-    first_church_year = cache.get(str(first_year))
+    print(calendar)
+    first_church_year = cache.get(f"{first_year}_{calendar}") if site_settings.USE_CALENDAR_CACHE else None
     if not first_church_year:
-        first_church_year = ChurchYear(first_year)
-        cache.set(str(first_year), first_church_year, 60 * 60 * 12)
-    second_church_year = cache.get(str(second_year))
+        first_church_year = ChurchYear(first_year, calendar)
+        cache.set(f"{first_year}_{calendar}", first_church_year, 60 * 60 * 12)
+    second_church_year = cache.get(f"{second_year}_{calendar}") if site_settings.USE_CALENDAR_CACHE else None
     if not second_church_year:
-        second_church_year = ChurchYear(second_year)
-    cache.set(str(second_year), second_church_year, 60 * 60 * 12)
+        second_church_year = ChurchYear(second_year, calendar)
+    cache.set(f"{second_year}_{calendar}", second_church_year, 60 * 60 * 12)
     return CalendarYear(year, first_church_year, second_church_year)
 
 
@@ -40,7 +67,7 @@ class MonthView(APIView):
     permission_classes = [ReadOnly]
 
     def get(self, request, year, month):
-        calendar_year = get_calendar_year(year)
+        calendar_year = get_calendar_year(year, request.GET.get("calendar", "ACNA_BCP2019"))
         serializer = DaySerializer(
             [date for date in calendar_year if date.date.month == month and date.date.year == year], many=True
         )
@@ -51,9 +78,66 @@ class YearView(APIView):
     permission_classes = [ReadOnly]
 
     def get(self, request, year):
-        church_year = cache.get(str(year))
+        calendar = request.GET.get("calendar", "ACNA_BCP2019")
+        church_year = cache.get(f"{year}_{calendar}") if site_settings.USE_CALENDAR_CACHE else None
         if not church_year:
-            church_year = ChurchYear(year)
-            cache.set(str(year), church_year, 60 * 60 * 12)
+            church_year = ChurchYear(year, calendar)
+            cache.set(f"{year}_{calendar}", church_year, 60 * 60 * 12)
         serializer = DaySerializer([date for date in church_year], many=True)
         return Response(serializer.data)
+
+
+class CalendarFeedView(APIView):
+    permission_classes = [ReadOnly]
+    renderer_classes = [CalendarFeedRenderer, JSONRenderer, BrowsableAPIRenderer]
+
+    def get(self, request, scope, canceled=False):
+        try:
+            feed_path = ChurchCalendarFeedService.get_feed_path(scope, canceled=canceled)
+            get_feed_scope_label(scope)
+        except ValueError:
+            return Response(status=404)
+
+        response = FileResponse(open(feed_path, "rb"), content_type="text/calendar; charset=utf-8")
+        disposition = "attachment" if request.GET.get("download") == "1" else "inline"
+        response["Content-Disposition"] = (
+            f'{disposition}; filename="{get_calendar_feed_filename(scope, canceled=canceled)}"'
+        )
+        return response
+
+
+class AudioTrackView(APIView):
+    permission_classes = [ReadOnly]
+
+    def get(self, request, *args, **kwargs):
+        filename = kwargs["track"]
+        response = audio_file_response(
+            settings.MEDIA_ROOT,
+            filename,
+            range_header=request.META.get("HTTP_RANGE", ""),
+            if_range=request.META.get("HTTP_IF_RANGE", ""),
+        )
+        if response.status_code not in (200, 206):
+            return response
+
+        try:
+            audio = MP3(os.path.join(settings.MEDIA_ROOT, filename))
+            duration = int(audio.info.length)
+        except Exception:
+            duration = "Unknown"
+
+        # Preserve initial-load accounting; later byte ranges are seeks/resumes.
+        from analytics.utils import record_audio_loaded
+
+        initial_request = response.status_code == 200 or response.get("Content-Range", "").startswith("bytes 0-")
+        record_audio_loaded(request, is_initial_request=initial_request)
+
+        # Set Content-Disposition for inline playback
+        response["Content-Disposition"] = f'inline; filename="{filename}"'
+
+        # Metadata (Adjust these as needed)
+        response["X-Audio-Title"] = "The Daily Office"
+        response["X-Audio-Year"] = "2025"
+        response["X-Audio-Duration"] = str(duration)  # Add duration in seconds
+
+        return response

@@ -1,0 +1,320 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE crossway-bible SYSTEM "schema/crossway.bibles.dtd">
+<crossway-bible translation="English Standard Version" revision="2025-02-02" xmlns="http://www.crosswaybibles.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="schema/crossway.bibles.xsd">
+<book title="1 Timothy" num="54">
+  <marker class="begin-verse" mid="v54001001"/>
+  <chapter num="1">
+    <heading>Greeting</heading>
+    <begin-paragraph/>
+    <verse num="1">Paul, <crossref let="a" cid="c54001001.1"/>an apostle of Christ Jesus <crossref let="b" cid="c54001001.2"/>by command of <crossref let="c" cid="c54001001.3"/>God our Savior and of Christ Jesus <crossref let="d" cid="c54001001.4"/>our hope,</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v54001002"/>
+    <begin-paragraph/>
+    <verse num="2">To Timothy, <crossref let="e" cid="c54001002.1"/>my true child in the faith:
+      <end-paragraph/>
+      <begin-paragraph/><crossref let="f" cid="c54001002.2"/>Grace, mercy, and peace from God the Father and Christ Jesus our Lord.
+    </verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v54001003"/>
+    <heading>Warning Against False Teachers</heading>
+    <begin-paragraph/>
+    <verse num="3"><crossref let="g" cid="c54001003.1"/>As I urged you when I was going to Macedonia, remain at Ephesus so that you may charge certain persons not <crossref let="h" cid="c54001003.2"/>to teach any different doctrine,</verse>
+    <marker class="begin-verse" mid="v54001004"/>
+    <verse num="4">nor <crossref let="i" cid="c54001004.1"/>to devote themselves to myths and endless <crossref let="j" cid="c54001004.2"/>genealogies, which promote <crossref let="k" cid="c54001004.3"/>speculations rather than the stewardship<note nid="n54001004.1"/> from God that is by faith.</verse>
+    <marker class="begin-verse" mid="v54001005"/>
+    <verse num="5">The aim of our charge is love <crossref let="l" cid="c54001005.1"/>that issues from a pure heart and <crossref let="m" cid="c54001005.2"/>a good conscience and <crossref let="n" cid="c54001005.3"/>a sincere faith.</verse>
+    <marker class="begin-verse" mid="v54001006"/>
+    <verse num="6">Certain persons, by <crossref let="o" cid="c54001006.1"/>swerving from these, have wandered away into <crossref let="p" cid="c54001006.2"/>vain discussion,</verse>
+    <marker class="begin-verse" mid="v54001007"/>
+    <verse num="7">desiring to be teachers of the law, <crossref let="q" cid="c54001007.1"/>without understanding either what they are saying or the things about which they make confident assertions.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v54001008"/>
+    <begin-paragraph/>
+    <verse num="8">Now we know that <crossref let="r" cid="c54001008.1"/>the law is good, if one uses it lawfully,</verse>
+    <marker class="begin-verse" mid="v54001009"/>
+    <verse num="9">understanding this, that the <crossref let="s" cid="c54001009.1"/>law is not laid down for the just but for the lawless and disobedient, for the ungodly and sinners, for the unholy and profane, for those who strike their fathers and mothers, for murderers,</verse>
+    <marker class="begin-verse" mid="v54001010"/>
+    <verse num="10">the sexually immoral, men who practice homosexuality, enslavers,<note nid="n54001010.1"/> liars, perjurers, and whatever else is contrary to <crossref let="t" cid="c54001010.1"/>sound<note nid="n54001010.2"/> doctrine,</verse>
+    <marker class="begin-verse" mid="v54001011"/>
+    <verse num="11">in accordance with <crossref let="u" cid="c54001011.1"/>the gospel of the glory of <crossref let="v" cid="c54001011.2"/>the blessed God <crossref let="w" cid="c54001011.3"/>with which I have been entrusted.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v54001012"/>
+    <heading>Christ Jesus Came to Save Sinners</heading>
+    <begin-paragraph/>
+    <verse num="12">I thank him <crossref let="x" cid="c54001012.1"/>who has given me strength, Christ Jesus our Lord, because he judged me faithful, <crossref let="y" cid="c54001012.2"/>appointing me to his service,</verse>
+    <marker class="begin-verse" mid="v54001013"/>
+    <verse num="13">though formerly I was a blasphemer, <crossref let="z" cid="c54001013.1"/>persecutor, and insolent opponent. But <crossref let="a" cid="c54001013.2"/>I received mercy <crossref let="b" cid="c54001013.3"/>because I had acted ignorantly in unbelief,</verse>
+    <marker class="begin-verse" mid="v54001014"/>
+    <verse num="14">and <crossref let="c" cid="c54001014.1"/>the grace of our Lord overflowed for me with the <crossref let="d" cid="c54001014.2"/>faith and love that are in Christ Jesus.</verse>
+    <marker class="begin-verse" mid="v54001015"/>
+    <verse num="15">The saying is <crossref let="e" cid="c54001015.1"/>trustworthy and deserving of full acceptance, that Christ Jesus <crossref let="f" cid="c54001015.2"/>came into the world to save sinners, <crossref let="g" cid="c54001015.3"/>of whom I am the foremost.</verse>
+    <marker class="begin-verse" mid="v54001016"/>
+    <verse num="16">But I received mercy for this reason, that in me, as the foremost, Jesus Christ might display his perfect patience as an example to those who were to believe in him for eternal life.</verse>
+    <marker class="begin-verse" mid="v54001017"/>
+    <verse num="17">To <crossref let="h" cid="c54001017.1"/>the King of the ages, <crossref let="i" cid="c54001017.2"/>immortal, <crossref let="j" cid="c54001017.3"/>invisible, <crossref let="k" cid="c54001017.4"/>the only God, <crossref let="l" cid="c54001017.5"/>be honor and glory forever and ever.<note nid="n54001017.1"/> Amen.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v54001018"/>
+    <begin-paragraph/>
+    <verse num="18">This charge <crossref let="m" cid="c54001018.1"/>I entrust to you, Timothy, my child, in accordance with <crossref let="n" cid="c54001018.2"/>the prophecies previously made about you, that by them you may <crossref let="o" cid="c54001018.3"/>wage the good warfare,</verse>
+    <marker class="begin-verse" mid="v54001019"/>
+    <verse num="19"><crossref let="p" cid="c54001019.1"/>holding faith and a good conscience. By rejecting this, some have <crossref let="q" cid="c54001019.2"/>made shipwreck of their faith,</verse>
+    <marker class="begin-verse" mid="v54001020"/>
+    <verse num="20">among whom are <crossref let="r" cid="c54001020.1"/>Hymenaeus and <crossref let="s" cid="c54001020.2"/>Alexander, whom I <crossref let="t" cid="c54001020.3"/>have handed over to Satan that they may learn not to <crossref let="u" cid="c54001020.4"/>blaspheme.</verse>
+    <end-paragraph/>
+  </chapter>
+  <marker class="begin-verse" mid="v54002001"/>
+  <chapter num="2">
+    <heading>Pray for All People</heading>
+    <begin-paragraph/>
+    <verse num="1">First of all, then, I urge that supplications, prayers, intercessions, and thanksgivings be made for all people,</verse>
+    <marker class="begin-verse" mid="v54002002"/>
+    <verse num="2"><crossref let="v" cid="c54002002.1"/>for kings and all who are in high positions, that we may lead a peaceful and quiet life, godly and <crossref let="w" cid="c54002002.2"/>dignified in every way.</verse>
+    <marker class="begin-verse" mid="v54002003"/>
+    <verse num="3">This is good, and <crossref let="x" cid="c54002003.1"/>it is pleasing in the sight of <crossref let="y" cid="c54002003.2"/>God our Savior,</verse>
+    <marker class="begin-verse" mid="v54002004"/>
+    <verse num="4">who desires <crossref let="z" cid="c54002004.1"/>all people to be saved and <crossref let="a" cid="c54002004.2"/>to come to <crossref let="b" cid="c54002004.3"/>the knowledge of the truth.</verse>
+    <marker class="begin-verse" mid="v54002005"/>
+    <verse num="5">For <crossref let="c" cid="c54002005.1"/>there is one God, and there is one mediator between God and men, the man<note nid="n54002005.1"/> Christ Jesus,</verse>
+    <marker class="begin-verse" mid="v54002006"/>
+    <verse num="6"><crossref let="d" cid="c54002006.1"/>who gave himself as a ransom for all, which is <crossref let="e" cid="c54002006.2"/>the testimony given <crossref let="f" cid="c54002006.3"/>at the proper time.</verse>
+    <marker class="begin-verse" mid="v54002007"/>
+    <verse num="7"><crossref let="g" cid="c54002007.1"/>For this I was appointed a preacher and an apostle (<crossref let="h" cid="c54002007.2"/>I am telling the truth, I am not lying), <crossref let="i" cid="c54002007.3"/>a teacher of the Gentiles in faith and truth.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v54002008"/>
+    <begin-paragraph/>
+    <verse num="8">I desire then that <crossref let="j" cid="c54002008.1"/>in every place the men should pray, <crossref let="k" cid="c54002008.2"/>lifting <crossref let="l" cid="c54002008.3"/>holy hands without anger or quarreling;</verse>
+    <marker class="begin-verse" mid="v54002009"/>
+    <verse num="9">likewise also <crossref let="m" cid="c54002009.1"/>that women should adorn themselves in respectable apparel, with modesty and self-control, not with braided hair and gold or pearls or costly attire,</verse>
+    <marker class="begin-verse" mid="v54002010"/>
+    <verse num="10"><crossref let="n" cid="c54002010.1"/>but with what is proper for women who profess godliness&emdash;with good works.</verse>
+    <marker class="begin-verse" mid="v54002011"/>
+    <verse num="11">Let a woman learn quietly <crossref let="o" cid="c54002011.1"/>with all submissiveness.</verse>
+    <marker class="begin-verse" mid="v54002012"/>
+    <verse num="12"><crossref let="p" cid="c54002012.1"/>I do not permit a woman to teach or to exercise authority over a man; rather, she is to remain quiet.</verse>
+    <marker class="begin-verse" mid="v54002013"/>
+    <verse num="13"><crossref let="q" cid="c54002013.1"/>For Adam was formed first, <crossref let="r" cid="c54002013.2"/>then Eve;</verse>
+    <marker class="begin-verse" mid="v54002014"/>
+    <verse num="14">and Adam was not deceived, but <crossref let="s" cid="c54002014.1"/>the woman was deceived and became a transgressor.</verse>
+    <marker class="begin-verse" mid="v54002015"/>
+    <verse num="15">Yet she will be saved through <crossref let="t" cid="c54002015.1"/>childbearing&emdash;if they continue in <crossref let="u" cid="c54002015.2"/>faith and love and holiness, with self-control.</verse>
+    <end-paragraph/>
+  </chapter>
+  <marker class="begin-verse" mid="v54003001"/>
+  <chapter num="3">
+    <heading>Qualifications for Overseers</heading>
+    <begin-paragraph/>
+    <verse num="1">The saying is <crossref let="v" cid="c54003001.1"/>trustworthy: If anyone aspires to <crossref let="w" cid="c54003001.2"/>the office of overseer, he desires a noble task.</verse>
+    <marker class="begin-verse" mid="v54003002"/>
+    <verse num="2">Therefore <crossref let="x" cid="c54003002.1"/>an overseer<note nid="n54003002.1"/> must be above reproach, <crossref let="y" cid="c54003002.2"/>the husband of one wife,<note nid="n54003002.2"/> <crossref let="z" cid="c54003002.3"/>sober-minded, self-controlled, respectable, <crossref let="a" cid="c54003002.4"/>hospitable, <crossref let="b" cid="c54003002.5"/>able to teach,</verse>
+    <marker class="begin-verse" mid="v54003003"/>
+    <verse num="3">not a drunkard, not violent but <crossref let="c" cid="c54003003.1"/>gentle, not quarrelsome, <crossref let="d" cid="c54003003.2"/>not a lover of money.</verse>
+    <marker class="begin-verse" mid="v54003004"/>
+    <verse num="4">He must manage his own household well, with all dignity <crossref let="e" cid="c54003004.1"/>keeping his children submissive,</verse>
+    <marker class="begin-verse" mid="v54003005"/>
+    <verse num="5">for if someone does not know how to manage his own household, how will he care for <crossref let="w" cid="c54003005.1"/>God&apos;s church?</verse>
+    <marker class="begin-verse" mid="v54003006"/>
+    <verse num="6">He must not be a recent convert, or he may <crossref let="f" cid="c54003006.1"/>become puffed up with conceit and fall into the condemnation of the devil.</verse>
+    <marker class="begin-verse" mid="v54003007"/>
+    <verse num="7">Moreover, he must be well thought of by <crossref let="g" cid="c54003007.1"/>outsiders, so that he may not fall into disgrace, into <crossref let="h" cid="c54003007.2"/>a snare of the devil.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v54003008"/>
+    <heading>Qualifications for Deacons</heading>
+    <begin-paragraph/>
+    <verse num="8"><crossref let="i" cid="c54003008.1"/>Deacons likewise must be dignified, not double-tongued,<note nid="n54003008.1"/> <crossref let="j" cid="c54003008.2"/>not addicted to much wine, <crossref let="k" cid="c54003008.3"/>not greedy for dishonest gain.</verse>
+    <marker class="begin-verse" mid="v54003009"/>
+    <verse num="9">They must <crossref let="l" cid="c54003009.1"/>hold the mystery of the faith with <crossref let="m" cid="c54003009.2"/>a clear conscience.</verse>
+    <marker class="begin-verse" mid="v54003010"/>
+    <verse num="10">And <crossref let="n" cid="c54003010.1"/>let them also be tested first; then let them serve as deacons if they prove themselves blameless.</verse>
+    <marker class="begin-verse" mid="v54003011"/>
+    <verse num="11"><crossref let="o" cid="c54003011.1"/>Their wives likewise<note nid="n54003011.1"/> must be dignified, not slanderers, but sober-minded, <crossref let="p" cid="c54003011.2"/>faithful in all things.</verse>
+    <marker class="begin-verse" mid="v54003012"/>
+    <verse num="12">Let deacons each be <crossref let="q" cid="c54003012.1"/>the husband of one wife, <crossref let="q" cid="c54003012.2"/>managing their children and their own households well.</verse>
+    <marker class="begin-verse" mid="v54003013"/>
+    <verse num="13">For <crossref let="r" cid="c54003013.1"/>those who serve well as deacons gain a good standing for themselves and also great confidence in the faith that is in Christ Jesus.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v54003014"/>
+    <heading>The Mystery of Godliness</heading>
+    <begin-paragraph/>
+    <verse num="14">I hope to come to you soon, but I am writing these things to you so that,</verse>
+    <marker class="begin-verse" mid="v54003015"/>
+    <verse num="15">if I delay, you may know how one ought to behave in the household of God, which is the church of the living God, a pillar and buttress of the truth.</verse>
+    <marker class="begin-verse" mid="v54003016"/>
+    <verse num="16">Great indeed, we confess, is the mystery of godliness:
+      <end-paragraph/>
+      <begin-block-indent/>
+      <begin-paragraph class="line-group"/>
+        <begin-line/><crossref let="s" cid="c54003016.1"/>He<note nid="n54003016.1"/> was manifested in the flesh,<end-line class="br"/>
+        <begin-line class="indent"/>vindicated<note nid="n54003016.2"/> by the Spirit,<note nid="n54003016.3"/><end-line class="br"/>
+        <begin-line class="indent-2"/><crossref let="t" cid="c54003016.2"/>seen by angels,<end-line class="br"/>
+        <begin-line/><crossref let="u" cid="c54003016.3"/>proclaimed among the nations,<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="v" cid="c54003016.4"/>believed on in the world,<end-line class="br"/>
+        <begin-line class="indent-2"/><crossref let="w" cid="c54003016.5"/>taken up in glory.<end-line/>
+    </verse>
+    <end-paragraph/>
+    <end-block-indent/>
+  </chapter>
+  <marker class="begin-verse" mid="v54004001"/>
+  <chapter num="4">
+    <heading>Some Will Depart from the Faith</heading>
+    <begin-paragraph/>
+    <verse num="1">Now <crossref let="x" cid="c54004001.1"/>the Spirit expressly says that <crossref let="y" cid="c54004001.2"/>in later times some will depart from the faith by devoting themselves to <crossref let="z" cid="c54004001.3"/>deceitful spirits and teachings of demons,</verse>
+    <marker class="begin-verse" mid="v54004002"/>
+    <verse num="2">through the insincerity of <crossref let="a" cid="c54004002.1"/>liars whose consciences are seared,</verse>
+    <marker class="begin-verse" mid="v54004003"/>
+    <verse num="3"><crossref let="b" cid="c54004003.1"/>who forbid marriage and <crossref let="c" cid="c54004003.2"/>require abstinence from foods <crossref let="d" cid="c54004003.3"/>that God created <crossref let="e" cid="c54004003.4"/>to be received with thanksgiving by those who believe and know the truth.</verse>
+    <marker class="begin-verse" mid="v54004004"/>
+    <verse num="4">For <crossref let="f" cid="c54004004.1"/>everything created by God is good, and <crossref let="g" cid="c54004004.2"/>nothing is to be rejected if it is <crossref let="e" cid="c54004004.3"/>received with thanksgiving,</verse>
+    <marker class="begin-verse" mid="v54004005"/>
+    <verse num="5">for it is made holy <crossref let="h" cid="c54004005.1"/>by the word of God and prayer.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v54004006"/>
+    <heading>A Good Servant of Christ Jesus</heading>
+    <begin-paragraph/>
+    <verse num="6"><crossref let="i" cid="c54004006.1"/>If you put these things before the brothers,<note nid="n54004006.1"/> you will be a good servant of Christ Jesus, being trained in the words of the faith and of the good doctrine that you have <crossref let="j" cid="c54004006.2"/>followed.</verse>
+    <marker class="begin-verse" mid="v54004007"/>
+    <verse num="7">Have nothing to do with irreverent, <crossref let="k" cid="c54004007.1"/>silly myths. Rather <crossref let="l" cid="c54004007.2"/>train yourself for godliness;</verse>
+    <marker class="begin-verse" mid="v54004008"/>
+    <verse num="8">for while <crossref let="m" cid="c54004008.1"/>bodily training is of some value, godliness <crossref let="n" cid="c54004008.2"/>is of value in every way, as <crossref let="o" cid="c54004008.3"/>it holds promise for the present life and also for the life to come.</verse>
+    <marker class="begin-verse" mid="v54004009"/>
+    <verse num="9">The saying is <crossref let="p" cid="c54004009.1"/>trustworthy and deserving of full acceptance.</verse>
+    <marker class="begin-verse" mid="v54004010"/>
+    <verse num="10">For to this end we toil and strive,<note nid="n54004010.1"/> because we have our hope set on the living God, <crossref let="q" cid="c54004010.1"/>who is the Savior of all people, especially of those who believe.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v54004011"/>
+    <begin-paragraph/>
+    <verse num="11">Command and teach <crossref let="r" cid="c54004011.1"/>these things.</verse>
+    <marker class="begin-verse" mid="v54004012"/>
+    <verse num="12"><crossref let="s" cid="c54004012.1"/>Let no one despise you for your youth, but set the believers <crossref let="t" cid="c54004012.2"/>an example in speech, in conduct, in love, in faith, in purity.</verse>
+    <marker class="begin-verse" mid="v54004013"/>
+    <verse num="13">Until I come, devote yourself to the public reading of Scripture, to exhortation, to teaching.</verse>
+    <marker class="begin-verse" mid="v54004014"/>
+    <verse num="14"><crossref let="u" cid="c54004014.1"/>Do not neglect the gift you have, which was given you <crossref let="v" cid="c54004014.2"/>by prophecy when the council of elders <crossref let="w" cid="c54004014.3"/>laid their hands on you.</verse>
+    <marker class="begin-verse" mid="v54004015"/>
+    <verse num="15">Practice these things, immerse yourself in them,<note nid="n54004015.1"/> so that <crossref let="x" cid="c54004015.1"/>all may see your progress.</verse>
+    <marker class="begin-verse" mid="v54004016"/>
+    <verse num="16"><crossref let="y" cid="c54004016.1"/>Keep a close watch on yourself and on the teaching. Persist in this, for by so doing you will save <crossref let="z" cid="c54004016.2"/>both yourself and <crossref let="a" cid="c54004016.3"/>your hearers.</verse>
+    <end-paragraph/>
+  </chapter>
+  <marker class="begin-verse" mid="v54005001"/>
+  <chapter num="5">
+    <heading>Instructions for the Church</heading>
+    <begin-paragraph/>
+    <verse num="1"><crossref let="b" cid="c54005001.1"/>Do not rebuke an older man but encourage him as you would a father, <crossref let="c" cid="c54005001.2"/>younger men as brothers,</verse>
+    <marker class="begin-verse" mid="v54005002"/>
+    <verse num="2">older women as mothers, younger women as sisters, in all purity.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v54005003"/>
+    <begin-paragraph/>
+    <verse num="3">Honor widows <crossref let="d" cid="c54005003.1"/>who are truly widows.</verse>
+    <marker class="begin-verse" mid="v54005004"/>
+    <verse num="4">But if a widow has children or grandchildren, let them first learn <crossref let="e" cid="c54005004.1"/>to show godliness to their own household and to make some return to their parents, for <crossref let="f" cid="c54005004.2"/>this is pleasing in the sight of God.</verse>
+    <marker class="begin-verse" mid="v54005005"/>
+    <verse num="5">She <crossref let="g" cid="c54005005.1"/>who is truly a widow, left all alone, has set her hope on God and <crossref let="h" cid="c54005005.2"/>continues in supplications and prayers night and day,</verse>
+    <marker class="begin-verse" mid="v54005006"/>
+    <verse num="6">but <crossref let="i" cid="c54005006.1"/>she who is self-indulgent is <crossref let="j" cid="c54005006.2"/>dead even while she lives.</verse>
+    <marker class="begin-verse" mid="v54005007"/>
+    <verse num="7"><crossref let="k" cid="c54005007.1"/>Command these things as well, so that they may be without reproach.</verse>
+    <marker class="begin-verse" mid="v54005008"/>
+    <verse num="8">But if anyone does not provide for his relatives, and especially for <crossref let="l" cid="c54005008.1"/>members of his household, he has <crossref let="m" cid="c54005008.2"/>denied the faith and is worse than an unbeliever.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v54005009"/>
+    <begin-paragraph/>
+    <verse num="9">Let a widow be enrolled if she is not less than sixty years of age, having been <crossref let="n" cid="c54005009.1"/>the wife of one husband,<note nid="n54005009.1"/></verse>
+    <marker class="begin-verse" mid="v54005010"/>
+    <verse num="10">and having a reputation for good works: if she has brought up children, has <crossref let="n" cid="c54005010.1"/>shown hospitality, <crossref let="o" cid="c54005010.2"/>has washed the feet of the saints, has <crossref let="p" cid="c54005010.3"/>cared for the afflicted, and has <crossref let="q" cid="c54005010.4"/>devoted herself to every good work.</verse>
+    <marker class="begin-verse" mid="v54005011"/>
+    <verse num="11">But refuse to enroll younger widows, for when <crossref let="r" cid="c54005011.1"/>their passions draw them away from Christ, they desire to marry</verse>
+    <marker class="begin-verse" mid="v54005012"/>
+    <verse num="12">and so incur condemnation for having abandoned their former faith.</verse>
+    <marker class="begin-verse" mid="v54005013"/>
+    <verse num="13">Besides that, they learn to be idlers, going about from house to house, and not only idlers, but also <crossref let="s" cid="c54005013.1"/>gossips and <crossref let="t" cid="c54005013.2"/>busybodies, saying what they should not.</verse>
+    <marker class="begin-verse" mid="v54005014"/>
+    <verse num="14">So I would have <crossref let="u" cid="c54005014.1"/>younger widows marry, bear children, <crossref let="v" cid="c54005014.2"/>manage their households, and <crossref let="w" cid="c54005014.3"/>give the adversary no occasion for slander.</verse>
+    <marker class="begin-verse" mid="v54005015"/>
+    <verse num="15"><crossref let="x" cid="c54005015.1"/>For some have already strayed after Satan.</verse>
+    <marker class="begin-verse" mid="v54005016"/>
+    <verse num="16">If any believing woman has relatives who are widows, let her care for them. Let the church not be burdened, so that it may care for those <crossref let="y" cid="c54005016.1"/>who are truly widows.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v54005017"/>
+    <begin-paragraph/>
+    <verse num="17">Let the elders <crossref let="z" cid="c54005017.1"/>who rule well be considered worthy of <crossref let="a" cid="c54005017.2"/>double honor, especially those who labor in preaching and teaching.</verse>
+    <marker class="begin-verse" mid="v54005018"/>
+    <verse num="18">For the Scripture says, <crossref let="b" cid="c54005018.1"/><crossref cid="t54005018.1"/><q class="begin-double" qid="54005018.1" from="54005018.1" to="54005018.2"/>You shall not muzzle an ox when it treads out the grain,<q class="end-double" qid="54005018.2" from="54005018.1" to="54005018.2"/> and, <woc><crossref let="c" cid="c54005018.2"/><q class="begin-double" qid="54005018.3" from="54005018.3" to="54005018.4"/>The laborer deserves his wages.<q class="end-double" qid="54005018.4" from="54005018.3" to="54005018.4"/></woc></verse>
+    <marker class="begin-verse" mid="v54005019"/>
+    <verse num="19">Do not admit a charge against an elder except <crossref let="d" cid="c54005019.1"/>on the evidence of two or three witnesses.</verse>
+    <marker class="begin-verse" mid="v54005020"/>
+    <verse num="20">As for those who persist in sin, <crossref let="e" cid="c54005020.1"/>rebuke them in the presence of all, <crossref let="f" cid="c54005020.2"/>so that the rest may stand in fear.</verse>
+    <marker class="begin-verse" mid="v54005021"/>
+    <verse num="21">In the presence of God and of Christ Jesus and of the elect angels <crossref let="g" cid="c54005021.1"/>I charge you to keep these rules without prejudging, <crossref let="h" cid="c54005021.2"/>doing nothing from partiality.</verse>
+    <marker class="begin-verse" mid="v54005022"/>
+    <verse num="22"><crossref let="i" cid="c54005022.1"/>Do not be hasty in the <crossref let="j" cid="c54005022.2"/>laying on of hands, nor <crossref let="k" cid="c54005022.3"/>take part in the sins of others; keep yourself pure.</verse>
+    <marker class="begin-verse" mid="v54005023"/>
+    <verse num="23">No longer drink only water, but <crossref let="l" cid="c54005023.1"/>use a little wine <crossref let="m" cid="c54005023.2"/>for the sake of your stomach and your frequent ailments.</verse>
+    <marker class="begin-verse" mid="v54005024"/>
+    <verse num="24">The sins of some people are conspicuous, going before them to judgment, but the sins of others appear later.</verse>
+    <marker class="begin-verse" mid="v54005025"/>
+    <verse num="25">So also good works are conspicuous, and <crossref let="n" cid="c54005025.1"/>even those that are not cannot remain hidden.</verse>
+    <end-paragraph/>
+  </chapter>
+  <marker class="begin-verse" mid="v54006001"/>
+  <chapter num="6">
+    <begin-paragraph/>
+    <verse num="1"><crossref let="o" cid="c54006001.1"/>Let all who are under a yoke as bondservants<note nid="n54006001.1"/> regard their own masters as worthy of all honor, <crossref let="p" cid="c54006001.2"/>so that the name of God and the teaching may not be reviled.</verse>
+    <marker class="begin-verse" mid="v54006002"/>
+    <verse num="2">Those who have believing masters must not be disrespectful on the ground that they are <crossref let="q" cid="c54006002.1"/>brothers; rather they must serve all the better since those who benefit by their good service are believers and beloved.
+    <end-paragraph/>
+    <heading>False Teachers and True Contentment</heading>
+    <begin-paragraph/>
+                   <crossref let="r" cid="c54006002.2"/>Teach and urge these things.</verse>
+    <marker class="begin-verse" mid="v54006003"/>
+    <verse num="3">If anyone <crossref let="s" cid="c54006003.1"/>teaches a different doctrine and does not agree with <crossref let="t" cid="c54006003.2"/>the sound<note nid="n54006003.1"/> words of our Lord Jesus Christ and the teaching <crossref let="u" cid="c54006003.3"/>that accords with godliness,</verse>
+    <marker class="begin-verse" mid="v54006004"/>
+    <verse num="4"><crossref let="v" cid="c54006004.1"/>he is puffed up with conceit and <crossref let="w" cid="c54006004.2"/>understands nothing. He has an unhealthy craving for <crossref let="x" cid="c54006004.3"/>controversy and for <crossref let="y" cid="c54006004.4"/>quarrels about words, which produce envy, dissension, slander, evil suspicions,</verse>
+    <marker class="begin-verse" mid="v54006005"/>
+    <verse num="5">and constant friction among people <crossref let="z" cid="c54006005.1"/>who are depraved in mind and deprived of the truth, <crossref let="a" cid="c54006005.2"/>imagining that godliness is a means of gain.</verse>
+    <marker class="begin-verse" mid="v54006006"/>
+    <verse num="6">But <crossref let="b" cid="c54006006.1"/>godliness <crossref let="c" cid="c54006006.2"/>with contentment is great gain,</verse>
+    <marker class="begin-verse" mid="v54006007"/>
+    <verse num="7">for <crossref let="d" cid="c54006007.1"/>we brought nothing into the world, and<note nid="n54006007.1"/> we cannot take anything out of the world.</verse>
+    <marker class="begin-verse" mid="v54006008"/>
+    <verse num="8">But <crossref let="e" cid="c54006008.1"/>if we have food and clothing, with these we will be content.</verse>
+    <marker class="begin-verse" mid="v54006009"/>
+    <verse num="9">But <crossref let="f" cid="c54006009.1"/>those who desire to be rich fall into temptation, <crossref let="g" cid="c54006009.2"/>into a snare, into many senseless and harmful desires that <crossref let="h" cid="c54006009.3"/>plunge people into ruin and destruction.</verse>
+    <marker class="begin-verse" mid="v54006010"/>
+    <verse num="10">For the love of money is a root of <crossref let="i" cid="c54006010.1"/>all kinds of evils. It is through this craving that some have wandered away from the faith and pierced themselves with many pangs.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v54006011"/>
+    <heading>Fight the Good Fight of Faith</heading>
+    <begin-paragraph/>
+    <verse num="11">But as for you, <crossref let="j" cid="c54006011.1"/>O man of God, <crossref let="k" cid="c54006011.2"/>flee these things. <crossref let="l" cid="c54006011.3"/>Pursue righteousness, godliness, faith, love, steadfastness, gentleness.</verse>
+    <marker class="begin-verse" mid="v54006012"/>
+    <verse num="12"><crossref let="m" cid="c54006012.1"/>Fight the good fight of the faith. <crossref let="n" cid="c54006012.2"/>Take hold of the eternal life <crossref let="o" cid="c54006012.3"/>to which you were called and about which you made <crossref let="p" cid="c54006012.4"/>the good confession in the presence of many witnesses.</verse>
+    <marker class="begin-verse" mid="v54006013"/>
+    <verse num="13"><crossref let="q" cid="c54006013.1"/>I charge you in the presence of God, who gives life to all things, and of Christ Jesus, <crossref let="r" cid="c54006013.2"/>who in his testimony before<note nid="n54006013.1"/> Pontius Pilate made <crossref let="p" cid="c54006013.3"/>the good confession,</verse>
+    <marker class="begin-verse" mid="v54006014"/>
+    <verse num="14">to keep the commandment unstained and free from reproach until <crossref let="s" cid="c54006014.1"/>the appearing of our Lord Jesus Christ,</verse>
+    <marker class="begin-verse" mid="v54006015"/>
+    <verse num="15">which he will display <crossref let="t" cid="c54006015.1"/>at the proper time&emdash;he who is <crossref let="u" cid="c54006015.2"/>the blessed and only Sovereign, <crossref let="v" cid="c54006015.3"/>the King of kings and Lord of lords,</verse>
+    <marker class="begin-verse" mid="v54006016"/>
+    <verse num="16"><crossref let="w" cid="c54006016.1"/>who alone has immortality, <crossref let="x" cid="c54006016.2"/>who dwells in <crossref let="y" cid="c54006016.3"/>unapproachable light, <crossref let="z" cid="c54006016.4"/>whom no one has ever seen or can see. To him be honor and eternal dominion. Amen.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v54006017"/>
+    <begin-paragraph/>
+    <verse num="17">As for the rich in <crossref let="a" cid="c54006017.1"/>this present age, charge them <crossref let="b" cid="c54006017.2"/>not to be haughty, nor <crossref let="c" cid="c54006017.3"/>to set their hopes on <crossref let="d" cid="c54006017.4"/>the uncertainty of riches, but on God, <crossref let="e" cid="c54006017.5"/>who richly provides us with everything to enjoy.</verse>
+    <marker class="begin-verse" mid="v54006018"/>
+    <verse num="18">They are to do good, <crossref let="f" cid="c54006018.1"/>to be rich in good works, to be generous and <crossref let="g" cid="c54006018.2"/>ready to share,</verse>
+    <marker class="begin-verse" mid="v54006019"/>
+    <verse num="19">thus <crossref let="h" cid="c54006019.1"/>storing up treasure for themselves as a good foundation for the future, so that they may <crossref let="i" cid="c54006019.2"/>take hold of <crossref let="j" cid="c54006019.3"/>that which is truly life.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v54006020"/>
+    <begin-paragraph/>
+    <verse num="20">O Timothy, guard the deposit entrusted to you. <crossref let="k" cid="c54006020.1"/>Avoid the <crossref let="l" cid="c54006020.2"/>irreverent babble and contradictions of what is falsely called <q class="begin-double" qid="54006020.1" from="54006020.1" to="54006020.2"/>knowledge,<q class="end-double" qid="54006020.2" from="54006020.1" to="54006020.2"/></verse>
+    <marker class="begin-verse" mid="v54006021"/>
+    <verse num="21">for by professing it some have swerved from the faith.
+      <end-paragraph/>
+      <begin-paragraph/><crossref let="m" cid="c54006021.1"/>Grace be with you.<note nid="n54006021.1"/>
+    </verse>
+    <end-paragraph/>
+  </chapter>
+</book>
+</crossway-bible>

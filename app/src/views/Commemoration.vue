@@ -1,0 +1,596 @@
+<template>
+  <div class="commemoration-view">
+    <main v-cloak class="px-4 pt-8 pb-12 mx-auto max-w-5xl lg:pb-16">
+      <div v-if="!loading && commemoration">
+        <header class="mb-8 text-center">
+          <h1
+            class="text-3xl md:text-4xl font-bold text-[var(--el-text-color-primary)] m-0 mb-2 p-0"
+          >
+            {{ commemoration.name }}
+          </h1>
+          <h3
+            v-if="commemoration.date_string"
+            class="text-lg md:text-xl text-[var(--el-text-color-secondary)] m-0 p-0 font-normal"
+          >
+            {{ commemoration.date_string }}
+          </h3>
+        </header>
+      </div>
+
+      <div class="mx-auto mb-6 max-w-2xl">
+        <el-alert type="warning" show-icon :closable="false">
+          <template #title>
+            <p class="m-0 leading-relaxed">
+              This is an <strong>experimental</strong> feature. The information
+              is compiled from <strong>unofficial</strong> sources, and was
+              built with assistance by AI. While we attempt to cite and link to
+              all original sources, there may still be errors. Please report any
+              factual or theological errors to
+              <a
+                href="mailto:feedback@dailyoffice2019.com"
+                class="text-[var(--accent-color)] hover:underline"
+                >feedback@dailyoffice2019.com</a
+              >
+              for correction.
+              <br /><br />
+              This behavior can be changed or disabled in
+              <a
+                href="/settings"
+                class="text-[var(--accent-color)] hover:underline"
+                >Settings</a
+              >
+              under <strong>Commemoration Info</strong>.
+            </p>
+          </template>
+        </el-alert>
+      </div>
+
+      <div
+        class="flex gap-4 justify-between items-center px-2 mx-auto mb-6 max-w-4xl text-sm font-semibold md:text-base"
+      >
+        <div class="flex-1 min-w-0 text-left">
+          <a
+            v-if="!loading && commemoration?.previous_commemoration"
+            :href="commemoration.previous_commemoration.uuid"
+            :title="commemoration.previous_commemoration.name"
+            class="flex items-center gap-2 hover:text-[var(--accent-color)] transition-colors no-underline w-full"
+          >
+            <font-awesome-icon :icon="['fad', 'left']" class="shrink-0" />
+            <span class="truncate">{{
+              commemoration.previous_commemoration.name
+            }}</span>
+          </a>
+        </div>
+        <div class="flex-1 min-w-0 text-right">
+          <a
+            v-if="!loading && commemoration?.next_commemoration"
+            :href="commemoration.next_commemoration.uuid"
+            :title="commemoration.next_commemoration.name"
+            class="flex items-center justify-end gap-2 hover:text-[var(--accent-color)] transition-colors no-underline w-full"
+          >
+            <span class="truncate">{{
+              commemoration.next_commemoration.name
+            }}</span>
+            <font-awesome-icon :icon="['fad', 'right']" class="shrink-0" />
+          </a>
+        </div>
+      </div>
+
+      <el-card
+        v-if="!loading && commemoration"
+        class="shadow-sm border border-[var(--el-border-color-light)] max-w-4xl mx-auto"
+      >
+        <template #header>
+          <div
+            class="flex flex-col gap-6 items-center sm:flex-row sm:items-start"
+          >
+            <div
+              v-if="validImages.ai_image_1"
+              class="shrink-0 w-full sm:w-[200px] flex justify-center"
+            >
+              <img
+                :src="commemoration.ai_image_1"
+                :alt="commemoration.name"
+                class="w-full max-w-[250px] sm:max-w-full h-auto rounded-lg object-contain shadow-sm"
+              />
+            </div>
+            <div
+              class="text-lg leading-relaxed italic text-[var(--el-text-color-regular)] self-center text-center sm:text-left"
+            >
+              <p class="m-0">{{ commemoration.ai_one_sentence }}</p>
+            </div>
+          </div>
+        </template>
+
+        <div v-if="validImages.image_link" class="flex justify-center mb-8">
+          <img
+            :src="commemoration.image_link"
+            class="max-w-full h-auto max-h-[400px] rounded-lg shadow-sm object-contain"
+          />
+        </div>
+
+        <div class="flex flex-col gap-8 space-y-8">
+          <el-alert
+            type="success"
+            :closable="false"
+            class="mb-8 season-alert"
+            :class="alertSeasonClass"
+          >
+            <template #title>
+              <div class="p-2 alert-text">
+                <p class="mb-2 leading-relaxed">
+                  <strong
+                    v-html="
+                      addCitations(
+                        commemoration.ai_quote,
+                        commemoration.ai_quote_citations
+                      )
+                    "
+                  ></strong>
+                </p>
+                <p
+                  v-if="commemoration.ai_quote_by"
+                  class="m-0 text-sm opacity-90"
+                >
+                  <em>— {{ commemoration.ai_quote_by }}</em>
+                </p>
+              </div>
+            </template>
+          </el-alert>
+
+          <div class="flex flex-col gap-8 lg:flex-row">
+            <div class="lg:w-1/3 shrink-0">
+              <el-card
+                class="bg-[var(--el-fill-color-light)] border-none shadow-none h-full"
+                body-style="padding: 1.5rem;"
+              >
+                <h4
+                  class="text-sm font-bold uppercase tracking-wider mb-4 text-[var(--el-text-color-secondary)] m-0 p-0 text-left"
+                >
+                  Key Facts
+                </h4>
+                <ul
+                  class="space-y-3 list-disc pl-5 text-[var(--el-text-color-regular)] m-0"
+                >
+                  <li
+                    v-for="(point, index) in commemoration.ai_bullet_points"
+                    :key="index"
+                    class="leading-snug"
+                    v-html="
+                      addCitations(
+                        point,
+                        commemoration.ai_bullet_points_citations
+                      )
+                    "
+                  ></li>
+                </ul>
+              </el-card>
+            </div>
+
+            <div class="lg:w-2/3">
+              <h3
+                class="text-2xl font-bold mb-4 text-[var(--el-text-color-primary)] m-0 p-0 text-left"
+              >
+                {{ commemoration.name }}
+              </h3>
+              <div
+                v-if="commemoration.ai_hagiography"
+                class="prose dark:prose-invert max-w-none text-[var(--el-text-color-regular)]"
+                v-html="
+                  addCitations(
+                    commemoration.ai_hagiography,
+                    commemoration.ai_hagiography_citations
+                  )
+                "
+              ></div>
+            </div>
+          </div>
+
+          <!-- <div v-if="commemoration.ai_legend">
+            <el-card
+              shadow="never"
+              class="border border-[var(--el-border-color-light)] bg-transparent"
+            >
+              <template #header>
+                <div
+                  class="font-bold text-lg text-[var(--el-text-color-primary)]"
+                >
+                  {{ commemoration.ai_legend_title }}:
+                  <span
+                    class="text-sm font-normal text-[var(--el-text-color-secondary)] block sm:inline sm:ml-2"
+                  >
+                    A Story from the Life of
+                    {{ commemoration.saint_name || commemoration.name }}
+                  </span>
+                </div>
+              </template>
+              <div
+                class="prose dark:prose-invert max-w-none text-[var(--el-text-color-regular)]"
+                v-html="
+                  addCitations(
+                    commemoration.ai_legend,
+                    commemoration.ai_legend_citations
+                  )
+                "
+              ></div>
+            </el-card>
+          </div> -->
+
+          <div
+            v-if="commemoration.collect"
+            class="bg-[var(--el-fill-color-light)] p-6 rounded-lg border border-[var(--el-border-color-light)]"
+          >
+            <h4
+              class="text-sm font-bold uppercase tracking-wider mb-3 text-[var(--el-text-color-secondary)] m-0 p-0 text-left"
+            >
+              Collect
+            </h4>
+            <p
+              class="text-lg leading-relaxed text-[var(--el-text-color-primary)] font-serif m-0"
+            >
+              {{ commemoration.collect }}
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div
+              v-if="
+                commemoration.ai_traditions &&
+                commemoration.ai_traditions.length
+              "
+            >
+              <el-card
+                shadow="never"
+                class="h-full border border-[var(--el-border-color-light)] bg-transparent"
+              >
+                <template #header>
+                  <div
+                    class="font-bold text-lg text-[var(--el-text-color-primary)]"
+                  >
+                    Traditions
+                  </div>
+                </template>
+                <ul
+                  class="space-y-3 list-disc pl-5 text-[var(--el-text-color-regular)] m-0"
+                >
+                  <li
+                    v-for="(point, index) in commemoration.ai_traditions"
+                    :key="index"
+                    v-html="
+                      addCitations(point, commemoration.ai_traditions_citations)
+                    "
+                  ></li>
+                </ul>
+              </el-card>
+            </div>
+
+            <div v-if="commemoration.ai_foods && commemoration.ai_foods.length">
+              <el-card
+                shadow="never"
+                class="h-full border border-[var(--el-border-color-light)] bg-transparent"
+              >
+                <template #header>
+                  <div
+                    class="font-bold text-lg text-[var(--el-text-color-primary)]"
+                  >
+                    Foods
+                  </div>
+                </template>
+                <ul
+                  class="space-y-3 list-disc pl-5 text-[var(--el-text-color-regular)] m-0"
+                >
+                  <li
+                    v-for="(point, index) in commemoration.ai_foods"
+                    :key="index"
+                    v-html="
+                      addCitations(point, commemoration.ai_foods_citations)
+                    "
+                  ></li>
+                </ul>
+              </el-card>
+            </div>
+          </div>
+
+          <el-alert
+            type="success"
+            :closable="false"
+            class="mt-8 season-alert"
+            :class="alertSeasonClass"
+          >
+            <template #title>
+              <div class="py-2 text-center alert-text">
+                <p
+                  class="mb-3 font-serif text-lg italic leading-relaxed md:text-xl"
+                >
+                  "{{ commemoration.ai_verse }}"
+                </p>
+                <p
+                  v-if="commemoration.ai_verse_citation"
+                  class="m-0 text-sm font-semibold tracking-wider uppercase opacity-90"
+                >
+                  — {{ commemoration.ai_verse_citation }}
+                </p>
+              </div>
+            </template>
+          </el-alert>
+        </div>
+      </el-card>
+
+      <Loading v-if="loading" class="mt-8" />
+
+      <div v-if="error" class="mx-auto mt-8 max-w-2xl">
+        <el-alert :title="error" type="error" :closable="false" show-icon />
+      </div>
+    </main>
+  </div>
+</template>
+
+<script>
+import Loading from '@/components/Loading.vue';
+import { ref } from 'vue';
+import DOMPurify from 'dompurify';
+import { icon } from '@fortawesome/fontawesome-svg-core';
+import { faArrowUpRightFromSquare } from '@fortawesome/pro-duotone-svg-icons';
+
+export default {
+  name: 'Commemoration',
+  components: {
+    Loading,
+  },
+  data() {
+    return {
+      commemoration: null,
+      loading: true,
+      error: null,
+      activeName: ref('first'),
+      linkIcon: icon(faArrowUpRightFromSquare).html[0],
+      validImages: {
+        ai_image_1: false,
+        image_link: false,
+      },
+    };
+  },
+  computed: {
+    alertSeasonClass() {
+      if (
+        !this.commemoration ||
+        !this.commemoration.colors ||
+        !this.commemoration.colors.length
+      ) {
+        return 'season-alert-green';
+      }
+      const color = this.commemoration.colors[0].toLowerCase();
+      const validColors = [
+        'red',
+        'green',
+        'white',
+        'purple',
+        'black',
+        'rose',
+        'blue',
+      ];
+      if (validColors.includes(color)) {
+        return `season-alert-${color}`;
+      }
+      return 'season-alert-green';
+    },
+  },
+  async mounted() {
+    await this.initialize();
+  },
+  methods: {
+    async initialize() {
+      this.loading = true;
+      this.error = null;
+      try {
+        const commemoration = await this.$http.get(
+          `${import.meta.env.VITE_API_URL}api/v1/commemorations/${this.$route.params.uuid}`
+        );
+        this.commemoration = commemoration.data;
+        this.checkImages();
+      } catch {
+        this.error =
+          'There was an error retrieving the commemoration. Please try again.';
+        this.loading = false;
+        return;
+      }
+      this.loading = false;
+    },
+    checkImages() {
+      if (this.commemoration.ai_image_1) {
+        this.validateImageUrl(this.commemoration.ai_image_1, 'ai_image_1');
+      }
+      if (this.commemoration.image_link) {
+        this.validateImageUrl(this.commemoration.image_link, 'image_link');
+      }
+    },
+    validateImageUrl(url, key) {
+      const img = new window.Image();
+      img.onload = () => {
+        this.validImages[key] = true;
+      };
+      img.onerror = () => {
+        this.validImages[key] = false;
+      };
+      img.src = url;
+    },
+    addCitations(text, citations) {
+      if (!text || !citations) return text;
+
+      let sanitizedText = DOMPurify.sanitize(text); // Removes any harmful scripts
+
+      return sanitizedText.replace(/\[(\d+)\]/g, (match, index) => {
+        index = parseInt(index, 10) - 1;
+        if (index >= 0 && index < citations.length) {
+          return `<sup class="inline-block ml-0.5"><a target="_blank" title="${citations[index]}" href="${citations[index]}" class="text-[var(--accent-color)] hover:opacity-80"> ${this.linkIcon} </a></sup>`;
+        }
+        return match;
+      });
+    },
+  },
+};
+</script>
+
+<style scoped>
+[v-cloak] {
+  display: none;
+}
+
+/* Base styles for prose content generated by AI */
+:deep(.prose) {
+  font-family: 'Adobe Caslon Pro', serif;
+  font-size: var(--main-font-size, 1.125rem);
+  line-height: var(--main-line-height, 1.7);
+}
+
+:deep(.prose p) {
+  margin-bottom: 1.25em;
+  margin-top: 0;
+}
+
+:deep(.prose h1),
+:deep(.prose h2),
+:deep(.prose h3),
+:deep(.prose h4) {
+  font-family: inherit;
+  font-weight: 700;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+:deep(.prose ul) {
+  list-style-type: disc;
+  padding-left: 1.5em;
+  margin-bottom: 1.25em;
+}
+
+:deep(.prose li) {
+  margin-bottom: 0.5em;
+}
+
+:deep(.prose a) {
+  color: var(--accent-color);
+  text-decoration: underline;
+}
+
+:deep(sup svg) {
+  height: 0.8em;
+  width: 0.8em;
+  vertical-align: baseline;
+}
+
+/* Seasonal Alert Styles */
+.season-alert {
+  border-width: 1px !important;
+  border-style: solid !important;
+}
+
+.season-alert :deep(.el-alert__content) {
+  width: 100%;
+}
+
+.season-alert-red {
+  background-color: rgba(194, 28, 19, 0.1) !important;
+  border-color: rgba(194, 28, 19, 0.3) !important;
+}
+:root.dark .season-alert-red {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+.season-alert-red .alert-text {
+  color: #991b1b;
+}
+:root.dark .season-alert-red .alert-text {
+  color: #fca5a5;
+}
+
+.season-alert-green {
+  background-color: rgba(7, 115, 57, 0.1) !important;
+  border-color: rgba(7, 115, 57, 0.3) !important;
+}
+:root.dark .season-alert-green {
+  background-color: rgba(16, 185, 129, 0.1) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+.season-alert-green .alert-text {
+  color: #065f46;
+}
+:root.dark .season-alert-green .alert-text {
+  color: #6ee7b7;
+}
+
+.season-alert-purple {
+  background-color: rgba(100, 20, 125, 0.1) !important;
+  border-color: rgba(100, 20, 125, 0.3) !important;
+}
+:root.dark .season-alert-purple {
+  background-color: rgba(168, 85, 247, 0.1) !important;
+  border-color: rgba(168, 85, 247, 0.3) !important;
+}
+.season-alert-purple .alert-text {
+  color: #581c87;
+}
+:root.dark .season-alert-purple .alert-text {
+  color: #d8b4fe;
+}
+
+.season-alert-white {
+  background-color: rgba(212, 175, 55, 0.1) !important;
+  border-color: rgba(212, 175, 55, 0.3) !important;
+}
+:root.dark .season-alert-white {
+  background-color: rgba(234, 179, 8, 0.1) !important;
+  border-color: rgba(234, 179, 8, 0.3) !important;
+}
+.season-alert-white .alert-text {
+  color: #854d0e;
+}
+:root.dark .season-alert-white .alert-text {
+  color: #fef08a;
+}
+
+.season-alert-black {
+  background-color: rgba(26, 26, 26, 0.1) !important;
+  border-color: rgba(26, 26, 26, 0.3) !important;
+}
+:root.dark .season-alert-black {
+  background-color: rgba(107, 114, 128, 0.1) !important;
+  border-color: rgba(107, 114, 128, 0.3) !important;
+}
+.season-alert-black .alert-text {
+  color: #1f2937;
+}
+:root.dark .season-alert-black .alert-text {
+  color: #d1d5db;
+}
+
+.season-alert-rose {
+  background-color: rgba(194, 65, 127, 0.1) !important;
+  border-color: rgba(194, 65, 127, 0.3) !important;
+}
+:root.dark .season-alert-rose {
+  background-color: rgba(236, 72, 153, 0.1) !important;
+  border-color: rgba(236, 72, 153, 0.3) !important;
+}
+.season-alert-rose .alert-text {
+  color: #9d174d;
+}
+:root.dark .season-alert-rose .alert-text {
+  color: #fbcfe8;
+}
+
+.season-alert-blue {
+  background-color: rgba(29, 78, 216, 0.1) !important;
+  border-color: rgba(29, 78, 216, 0.3) !important;
+}
+:root.dark .season-alert-blue {
+  background-color: rgba(59, 130, 246, 0.1) !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+}
+.season-alert-blue .alert-text {
+  color: #1e3a8a;
+}
+:root.dark .season-alert-blue .alert-text {
+  color: #bfdbfe;
+}
+</style>

@@ -9,14 +9,18 @@ https://docs.djangoproject.com/en/2.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
+
 import mimetypes
 import os
+import sys
 
 import environ
+from corsheaders.defaults import default_headers
 
 env = environ.Env(
     DEBUG=(bool, False),
     DEBUG_DATES=(bool, False),
+    USE_CALENDAR_CACHE=(bool, True),
     MODE=(str, "web"),
     SECURE_SSL_REDIRECT=(bool, False),
     EMAIL_USE_TLS=(bool, True),
@@ -42,6 +46,7 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", env("SECURE_PROXY_SSL_HEADE
 # Don't run with debug turned on in production!
 DEBUG = env("DEBUG")
 DEBUG_DATES = env("DEBUG_DATES")
+USE_CALENDAR_CACHE = env("USE_CALENDAR_CACHE")
 MODE = env("MODE")
 APP_VERSION = 1.1
 
@@ -62,19 +67,19 @@ INSTALLED_APPS = [
     "mathfilters",
     "drf_yasg",
     "corsheaders",
-    "ckeditor",
     "adminsortable2",
     "widget_tweaks",
     "django.contrib.admin",
     # "material.admin",
-    # "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.sites",
     "django.contrib.messages",
+    "django.contrib.postgres",
     "django.contrib.sitemaps",
     "django.contrib.staticfiles",
+    "django_ckeditor_5",
     "django_extensions",
     "django_inlinecss",
     "kronos",
@@ -91,14 +96,20 @@ INSTALLED_APPS = [
     # "address",
     "array_tags",
     "django_distill",
-    "webpack_loader",
     "robots",
     "standrew",
     "sslserver",
     "hymnal",
+    "patrons",
+    "analytics",
 ]
 
 if DEBUG:
+    RUNNING_TESTS = "test" in sys.argv
+else:
+    RUNNING_TESTS = False
+
+if DEBUG and not RUNNING_TESTS:
     INSTALLED_APPS = ["debug_toolbar"] + INSTALLED_APPS
 
 MIDDLEWARE = [
@@ -112,9 +123,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "analytics.middleware.AnalyticsMiddleware",
 ]
 
-if DEBUG:
+if DEBUG and not RUNNING_TESTS:
     MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE
 
 ROOT_URLCONF = "website.urls"
@@ -218,33 +230,32 @@ DJRICHTEXTFIELD_CONFIG = {
 }
 
 GOOGLE_API_KEY = env("GOOGLE_API_KEY")
+GOOGLE_CUSTOM_SEARCH_ENGINE_KEY = env("GOOGLE_CUSTOM_SEARCH_ENGINE_KEY")
 
 
 def show_toolbar(request):
     return True
 
 
-DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": show_toolbar}
+DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": show_toolbar, "IS_RUNNING_TESTS": False}
 
 DISTILL_DIR = "{}/../static_export".format(BASE_DIR)
 
-WEBPACK_LOADER = {
-    "DEFAULT": {
-        "CACHE": False,
-        "BUNDLE_DIR_NAME": "office/js/",  # must end with slash
-        "STATS_FILE": os.path.join(BASE_DIR, "webpack-stats.json"),
-        "POLL_INTERVAL": 0.1,
-        "TIMEOUT": None,
-        "IGNORE": [r".+\.hot-update.js", r".+\.map"],
-    }
-}
 
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
-        "LOCATION": "127.0.0.1:11211",
+if DEBUG:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "dailyoffice-dev",
+        }
     }
-}
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
+            "LOCATION": "127.0.0.1:11211",
+        }
+    }
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
@@ -301,15 +312,24 @@ ROBOTS_SITEMAP_URLS = ["https://www.dailyoffice2019.com/sitemap.xml"]
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"]
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"],
+    "DEFAULT_THROTTLE_RATES": {"analytics_event": "240/hour"},
 }
+# IS this right?
 
 CORS_ALLOW_ALL_ORIGINS = True
+# Custom analytics headers must be explicitly allowed even with allow-all origins.
+CORS_ALLOW_HEADERS = (*default_headers, "x-client-id", "x-client-platform")
 mimetypes.add_type("image/svg+xml", ".svg", True)
 
 SWAGGER_SETTINGS = {"USE_SESSION_AUTH": False}
 
-BUGSNAG = {"api_key": env("BUGSNAG_KEY"), "project_root": BASE_DIR}
+BUGSNAG = {
+    "api_key": env("BUGSNAG_KEY"),
+    "project_root": BASE_DIR,
+    "release_stage": "development" if DEBUG else "production",
+    "send_environment": False,
+}
 
 DEFAULT_FROM_EMAIL = "donotreply@mail.dailyoffice2019.com"
 DEFAULT_REPLY_TO_EMAIL = "feedback@dailyoffice2019.com"
@@ -339,6 +359,95 @@ EMAIL_PORT = env("EMAIL_PORT")  # 587
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")  # 587
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")  # 587
 
+OPENAI_API_KEY = env("OPENAI_API_KEY")
+
+# --- Text-to-speech (liturgy audio) -----------------------------------------
+# Which backend generates office audio: "openai", "elevenlabs", "gemini", or "fish".
+# The adapters live in office/api/views/tts.py; each reads its own settings
+# below so the model and voices can be switched without code changes.
+TTS_PROVIDER = env("TTS_PROVIDER", default="openai")
+
+# OpenAI TTS. Valid tts-1 / tts-1-hd voices: alloy, ash, coral, echo, fable,
+# onyx, nova, sage, shimmer. gpt-4o-mini-tts adds ballad, verse, marin, cedar
+# and supports the `instructions` steering prompt (tts-1 does not).
+TTS_MODEL = env("TTS_MODEL", default="tts-1")
+TTS_SPEED = env.float("TTS_SPEED", default=0.95)
+TTS_VOICE_LEADER = env("TTS_VOICE_LEADER", default="onyx")
+TTS_VOICE_CONGREGATION = env("TTS_VOICE_CONGREGATION", default="sage")
+TTS_VOICE_READER = env("TTS_VOICE_READER", default="alloy")
+TTS_INSTRUCTIONS = env(
+    "TTS_INSTRUCTIONS",
+    default=(
+        "You are reading the Anglican Daily Office aloud in a worship setting. "
+        "Speak in a calm, warm, reverent tone at a measured, unhurried pace. "
+        "Keep the pacing and delivery steady and consistent from line to line, "
+        "as if leading a congregation in prayer. Do not dramatize or add emotion; "
+        "read prayerfully, clearly, and naturally. Pronounce 'Amen' as 'ah-men'."
+    ),
+)
+
+# ElevenLabs TTS. ELEVENLABS_TTS_MODEL options:
+#   eleven_v4              recommended; delivery tags and native IPA
+#   eleven_v4_turbo        delivery tags; audition pronunciation separately
+#   eleven_multilingual_v2  legacy default; stable long-form (no IPA)
+#   eleven_flash_v2_5       fast multilingual (alias dictionaries only)
+#   eleven_flash_v2         English; SSML IPA/CMU phoneme tags
+#   eleven_v3               expressive; native /IPA/ in the text
+# Leader/leader_dialogue share one voice,
+# congregation/congregation_dialogue share one voice, and each newly generated
+# reader block randomly chooses from the comma-separated list (maximum 10).
+ELEVENLABS_API_KEY = env("ELEVENLABS_API_KEY", default="")
+ELEVENLABS_TTS_MODEL = env("ELEVENLABS_TTS_MODEL", default="eleven_multilingual_v2")
+ELEVENLABS_TTS_SPEED = env.float("ELEVENLABS_TTS_SPEED", default=1.0)
+# Keep v4 delivery cues concise. Use ELEVENLABS_TTS_SPEED for pacing.
+ELEVENLABS_TTS_INSTRUCTIONS = env("ELEVENLABS_TTS_INSTRUCTIONS", default="[calm]")
+# Regular v4 automatically speaks standalone Amen as ah-MEN; empty disables it.
+ELEVENLABS_TTS_AMEN_IPA = env("ELEVENLABS_TTS_AMEN_IPA", default="ɑːˈmɛn")
+ELEVENLABS_TTS_VOICE_LEADER = env("ELEVENLABS_TTS_VOICE_LEADER", default="")
+ELEVENLABS_TTS_VOICE_CONGREGATION = env("ELEVENLABS_TTS_VOICE_CONGREGATION", default="")
+ELEVENLABS_TTS_VOICES_READER = env.list("ELEVENLABS_TTS_VOICES_READER", default=[])
+ELEVENLABS_TTS_TIMEOUT = env.int("ELEVENLABS_TTS_TIMEOUT", default=120)
+ELEVENLABS_TTS_MAX_RETRIES = env.int("ELEVENLABS_TTS_MAX_RETRIES", default=4)
+# v2 cannot use IPA. Create a dictionary of alias rules (Amen -> "ahmén")
+# with `setup_elevenlabs_pronunciation` and paste the printed IDs here.
+ELEVENLABS_PRONUNCIATION_DICTIONARY_ID = env("ELEVENLABS_PRONUNCIATION_DICTIONARY_ID", default="")
+ELEVENLABS_PRONUNCIATION_DICTIONARY_VERSION_ID = env("ELEVENLABS_PRONUNCIATION_DICTIONARY_VERSION_ID", default="")
+
+# Gemini 3.8 TTS via the Gemini API; restart after changing provider settings.
+GEMINI_API_KEY = env("GEMINI_API_KEY", default="")
+GEMINI_TTS_MODEL = env("GEMINI_TTS_MODEL", default="gemini-3.8-flash-tts")
+GEMINI_TTS_ALIGNMENT = env.bool("GEMINI_TTS_ALIGNMENT", default=True)
+GEMINI_TRANSCRIBE_MODEL = env("GEMINI_TRANSCRIBE_MODEL", default="gemini-3.5-transcribe")
+GEMINI_TTS_STYLE = env("GEMINI_TTS_STYLE", default="")
+GEMINI_TTS_VOICE_LEADER = env("GEMINI_TTS_VOICE_LEADER", default="Kore")
+GEMINI_TTS_VOICE_CONGREGATION = env("GEMINI_TTS_VOICE_CONGREGATION", default="Sulafat")
+# Optional reader pool; blank falls back to the single reader voice below.
+GEMINI_TTS_VOICES_READER = env.list("GEMINI_TTS_VOICES_READER", default=["Algieba"])
+GEMINI_TTS_TIMEOUT = env.int("GEMINI_TTS_TIMEOUT", default=180)
+GEMINI_TTS_MAX_RETRIES = env.int("GEMINI_TTS_MAX_RETRIES", default=2)
+
+# Fish Audio TTS (https://fish.audio). Voices are `reference_id` values that
+# point at voice models in the Fish Audio library; browse them at
+# https://fish.audio/ or via the /model API. `s2.1-pro-free` is the free
+# developer tier. Set TTS_PROVIDER=fish to use these. `FISH_AUDIO_AI_KEY` is
+# the historical env spelling and is used as a fallback in the adapter.
+FISH_AUDIO_API_KEY = env("FISH_AUDIO_API_KEY", default=env("FISH_AUDIO_AI_KEY", default=""))
+FISH_AUDIO_AI_KEY = env("FISH_AUDIO_AI_KEY", default="")
+FISH_TTS_MODEL = env("FISH_TTS_MODEL", default="s2.1-pro-free")
+FISH_TTS_SPEED = env.float("FISH_TTS_SPEED", default=0.95)
+FISH_TTS_SAMPLE_RATE = env.int("FISH_TTS_SAMPLE_RATE", default=44100)  # mp3: 32000 or 44100
+FISH_TTS_MP3_BITRATE = env.int("FISH_TTS_MP3_BITRATE", default=128)  # 64, 128, or 192
+# Resilience for rate limits / transient errors (used during bulk pre-warming).
+FISH_TTS_TIMEOUT = env.int("FISH_TTS_TIMEOUT", default=120)  # per-request seconds
+FISH_TTS_MAX_RETRIES = env.int("FISH_TTS_MAX_RETRIES", default=4)  # retries after the first try
+FISH_TTS_BACKOFF_BASE = env.float("FISH_TTS_BACKOFF_BASE", default=1.0)  # seconds, doubled each retry
+FISH_TTS_BACKOFF_MAX = env.float("FISH_TTS_BACKOFF_MAX", default=30.0)  # cap per backoff wait
+# Recommended calm/reverent narration voices (see office management command
+# audition_tts_voices to preview and swap these).
+FISH_TTS_VOICE_LEADER = env("FISH_TTS_VOICE_LEADER", default="536d3a5e000945adb7038665781a4aca")  # "Ethan"
+FISH_TTS_VOICE_CONGREGATION = env("FISH_TTS_VOICE_CONGREGATION", default="e3cd384158934cc9a01029cd7d278634")  # "Laura"
+FISH_TTS_VOICE_READER = env("FISH_TTS_VOICE_READER", default="c5f56a6cc2ec4fa8920cb4c5889a3fb7")  # "Slax"
+
 OMDB_API_KEY = env("OMDB_API_KEY")
 UTELLY_API_KEY = env("UTELLY_API_KEY")
 IMDB_API_KEY = env("IMDB_API_KEY")
@@ -347,3 +456,122 @@ YOUTUBE_API_KEY = env("YOUTUBE_API_KEY")
 MAILCHIMP_API_KEY = env("MAILCHIMP_API_KEY")
 MAILCHIMP_PREFIX = env("MAILCHIMP_PREFIX")
 MAILCHIMP_LIST_ID = env("MAILCHIMP_LIST_ID")
+
+TWILIO_ACCOUNT_SID = env("TWILIO_ACCOUNT_SID", default="")
+TWILIO_AUTH_TOKEN = env("TWILIO_AUTH_TOKEN", default="")
+TWILIO_FROM_NUMBER = env("TWILIO_FROM_NUMBER", default="")
+PATRONS_SMS_ENABLED = env.bool("PATRONS_SMS_ENABLED", default=False)
+
+OPENVERSE_CLIENT_ID = env("OPENVERSE_CLIENT_ID")
+OPENVERSE_CLIENT_SECRET = env("OPENVERSE_CLIENT_SECRET")
+PERPLEXITY_API_KEY = env("PERPLEXITY_API_KEY")
+
+customColorPalette = [
+    {"color": "hsl(4, 90%, 58%)", "label": "Red"},
+    {"color": "hsl(340, 82%, 52%)", "label": "Pink"},
+    {"color": "hsl(291, 64%, 42%)", "label": "Purple"},
+    {"color": "hsl(262, 52%, 47%)", "label": "Deep Purple"},
+    {"color": "hsl(231, 48%, 48%)", "label": "Indigo"},
+    {"color": "hsl(207, 90%, 54%)", "label": "Blue"},
+]
+
+CKEDITOR_5_CONFIGS = {
+    "default": {
+        "toolbar": [
+            "heading",
+            "|",
+            "bold",
+            "italic",
+            "link",
+            "bulletedList",
+            "numberedList",
+            "blockQuote",
+            "imageUpload",
+        ],
+    },
+    "extends": {
+        "blockToolbar": [
+            "paragraph",
+            "heading1",
+            "heading2",
+            "heading3",
+            "|",
+            "bulletedList",
+            "numberedList",
+            "|",
+            "blockQuote",
+        ],
+        "toolbar": [
+            "heading",
+            "|",
+            "outdent",
+            "indent",
+            "|",
+            "bold",
+            "italic",
+            "link",
+            "underline",
+            "strikethrough",
+            "code",
+            "subscript",
+            "superscript",
+            "highlight",
+            "|",
+            "codeBlock",
+            "sourceEditing",
+            "insertImage",
+            "bulletedList",
+            "numberedList",
+            "todoList",
+            "|",
+            "blockQuote",
+            "imageUpload",
+            "|",
+            "fontSize",
+            "fontFamily",
+            "fontColor",
+            "fontBackgroundColor",
+            "mediaEmbed",
+            "removeFormat",
+            "insertTable",
+        ],
+        "image": {
+            "toolbar": [
+                "imageTextAlternative",
+                "|",
+                "imageStyle:alignLeft",
+                "imageStyle:alignRight",
+                "imageStyle:alignCenter",
+                "imageStyle:side",
+                "|",
+            ],
+            "styles": [
+                "full",
+                "side",
+                "alignLeft",
+                "alignRight",
+                "alignCenter",
+            ],
+        },
+        "table": {
+            "contentToolbar": ["tableColumn", "tableRow", "mergeTableCells", "tableProperties", "tableCellProperties"],
+            "tableProperties": {"borderColors": customColorPalette, "backgroundColors": customColorPalette},
+            "tableCellProperties": {"borderColors": customColorPalette, "backgroundColors": customColorPalette},
+        },
+        "heading": {
+            "options": [
+                {"model": "paragraph", "title": "Paragraph", "class": "ck-heading_paragraph"},
+                {"model": "heading1", "view": "h1", "title": "Heading 1", "class": "ck-heading_heading1"},
+                {"model": "heading2", "view": "h2", "title": "Heading 2", "class": "ck-heading_heading2"},
+                {"model": "heading3", "view": "h3", "title": "Heading 3", "class": "ck-heading_heading3"},
+            ]
+        },
+    },
+    "list": {
+        "properties": {
+            "styles": "true",
+            "startIndex": "true",
+            "reversed": "true",
+        }
+    },
+}

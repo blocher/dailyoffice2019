@@ -30,7 +30,7 @@ def clean(input):
     input = title_case(input)
     input = remove_smart_quotes(input)
     input = input.replace("\n", " ").replace("\r", "")
-    input = re.sub(" +", " ", input)
+    input = re.sub(r" +", " ", input)
     input = input.strip()
     return input
 
@@ -39,7 +39,7 @@ def clean_collect(input):
     input = remove_smart_quotes(input)
     input = input.replace("<strong>Amen.", "").replace("<strong> Amen.", "")
     input = input.replace("Amen.", "").replace("Amen", "")
-    input = re.sub(" +", " ", input)
+    input = re.sub(r" +", " ", input)
     input = input.strip()
     input = f"<p>{input} <strong>Amen.</strong></p>"
 
@@ -47,7 +47,7 @@ def clean_collect(input):
 
 
 def number(input):
-    input = re.sub("[^0-9]", "", input)
+    input = re.sub(r"[^0-9]", "", input)
     if input == "2323":
         input = "23"
     input = int(input)
@@ -55,7 +55,7 @@ def number(input):
 
 
 def remove_number(input):
-    input = re.sub("^[0-9]+\.", "", input)
+    input = re.sub(r"^[0-9]+\.", "", input)
     input = input.replace("Benedict of Nursia", "")
     input = input.strip()
     input = input.split("  ")

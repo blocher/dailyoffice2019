@@ -1,13 +1,18 @@
 from datetime import datetime, timedelta, date
+import logging
 
 from dateutil.parser import parse
+from django.conf import settings
 from django.core.cache import cache
+from pymemcache.exceptions import MemcacheError
 from django.utils.functional import cached_property
 from django.utils.safestring import mark_safe
 from indexed import IndexedOrderedDict
 
 from churchcal.models import Commemoration, FerialCommemoration, Proper, Season, Calendar, CommemorationRank
 from .utils import advent, week_days, easter
+
+logger = logging.getLogger(__name__)
 
 
 class CalendarDate(object):
@@ -29,6 +34,8 @@ class CalendarDate(object):
         if sunday_date.weekday() != 6:
             sun_offset = (sunday_date.weekday() - 6) % 7
             sunday_date = sunday_date - timedelta(days=sun_offset)
+        if hasattr(self.year, "proper_lookup"):
+            return self.year.proper_lookup.get((sunday_date.month, sunday_date.day))
         date = datetime.strptime("2019-{}-{}".format(sunday_date.month, sunday_date.day), "%Y-%m-%d").date()
         return Proper.objects.filter(calendar=self.calendar, start_date__lte=date, end_date__gte=date).first()
 
@@ -193,7 +200,10 @@ class CalendarDate(object):
             return []
 
         required = self.required.copy()
-        if self.season.name not in ("Advent", "Lent", "Holy Week", "Eastertide"):
+        if (
+            self.season.name not in ("Advent", "Lent", "Holy Week", "Eastertide")
+            and self.calendar.abbreviation == "ACNA_BCP2019"
+        ):
             if self.required[1].rank.precedence_rank < 4:
                 alternate_sunday = self.required[1].copy()
                 if alternate_sunday.rank.name != "SUNDAY":
@@ -247,6 +257,9 @@ class ChurchYearIterator:
         self._public_index = start_position
         if key:
             self.jump_by_key(key)
+
+    def __iter__(self):
+        return self
 
     def __next__(self):
         if self._index < len(self._church_year.dates):
@@ -330,18 +343,35 @@ class ChurchYear(object):
         commemorations = (
             Commemoration.objects.select_related(
                 "rank",
+                "collect_1",
+                "collect_2",
+                "collect_eve",
+                "sanctoralecommemoration__common",
+                "sanctoralecommemoration__common__collect_1",
+                "sanctoralecommemoration__common__collect_2",
+                "cannot_occur_after",
                 "cannot_occur_after__rank",
             )
             .filter(calendar=self.calendar)
             .all()
         )
+        commemorations = list(commemorations)
+        commemorations_by_pk = {commemoration.pk: commemoration for commemoration in commemorations}
+        for commemoration in commemorations:
+            if commemoration.cannot_occur_after_id and commemoration.cannot_occur_after_id in commemorations_by_pk:
+                commemoration._cannot_occur_after_subtype_cache = commemorations_by_pk[
+                    commemoration.cannot_occur_after_id
+                ]
         already_added = []
         for commemoration in commemorations:
             if not commemoration.can_occur_in_year(self.start_year):
                 continue
-
             try:
-                self.dates[commemoration.initial_date_string(self.start_year)].add_commemoration(commemoration)
+                if type(commemoration.initial_date_string(self.start_year)) == list:
+                    self.dates[commemoration.initial_date_string(self.start_year)[0]].add_commemoration(commemoration)
+                    self.dates[commemoration.initial_date_string(self.start_year)[1]].add_commemoration(commemoration)
+                else:
+                    self.dates[commemoration.initial_date_string(self.start_year)].add_commemoration(commemoration)
                 already_added.append(commemoration.pk)
 
             except KeyError:
@@ -366,6 +396,7 @@ class ChurchYear(object):
         self.end_year = year_of_advent + 1
 
         self.dates = IndexedOrderedDict()
+        self.proper_lookup = self._build_proper_lookup()
 
         start_date = advent(year_of_advent)
         end_date = advent(year_of_advent + 1) - timedelta(days=1)
@@ -397,7 +428,8 @@ class ChurchYear(object):
 
     def _get_seasons(self):
         seasons = (
-            Season.objects.filter(calendar=Calendar.objects.filter(abbreviation=self.calendar.abbreviation).get())
+            Season.objects.select_related("start_commemoration", "rank")
+            .filter(calendar=self.calendar)
             .order_by("order")
             .all()
         )
@@ -406,6 +438,16 @@ class ChurchYear(object):
             season_mapping[season.start_commemoration.name] = season
         self.seasons = season_mapping
         # print(self.seasons)
+
+    def _build_proper_lookup(self):
+        proper_lookup = {}
+        propers = Proper.objects.select_related("collect_1").filter(calendar=self.calendar).all()
+        for proper in propers:
+            current_date = proper.start_date
+            while current_date <= proper.end_date:
+                proper_lookup[(current_date.month, current_date.day)] = proper
+                current_date += timedelta(days=1)
+        return proper_lookup
 
     def _set_season(self, calendar_date):
         calendar_date.season = self.season_tracker
@@ -599,9 +641,9 @@ class SetNamesAndCollects(object):
             return
         if calendar_date.proper and calendar_date.proper.collect_1:
             commemoration.proper = calendar_date.proper
-            commemoration.morning_prayer_collect = (
-                commemoration.evening_prayer_collect
-            ) = calendar_date.proper.collect_1
+            commemoration.morning_prayer_collect = commemoration.evening_prayer_collect = (
+                calendar_date.proper.collect_1
+            )
             if commemoration.rank.name == "SUNDAY" or commemoration.name in ["The Day of Pentecost", "Trinity Sunday"]:
                 proper_string = " (Proper {})".format(calendar_date.proper.number)
                 commemoration.name = "{}{}".format(commemoration.name, proper_string)
@@ -822,10 +864,21 @@ def get_church_year(date_string):
     date = to_date(date_string)
     advent_start = advent(date.year)
     year = date.year if date >= advent_start else date.year - 1
-    church_year = cache.get(str(year))
+    cache_available = settings.USE_CALENDAR_CACHE
+    church_year = None
+    if cache_available:
+        try:
+            church_year = cache.get(str(year))
+        except (OSError, MemcacheError):
+            logger.warning("Calendar cache read failed for year %s; computing without cache", year, exc_info=True)
+            cache_available = False
     if not church_year:
         church_year = ChurchYear(year)
-        cache.set(str(year), church_year, 60 * 60 * 12)
+        if cache_available:
+            try:
+                cache.set(str(year), church_year, 60 * 60 * 12)
+            except (OSError, MemcacheError):
+                logger.warning("Calendar cache write failed for year %s; using computed calendar", year, exc_info=True)
     return church_year
 
 

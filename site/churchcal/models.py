@@ -1,9 +1,10 @@
 from builtins import NotImplementedError
 from datetime import date, timedelta
 
-from ckeditor.fields import RichTextField
+from django.contrib.postgres.fields.array import ArrayField
 from django.db import models
 from django.utils.functional import cached_property
+from django_ckeditor_5.fields import CKEditor5Field
 from model_utils.managers import InheritanceManager, InheritanceQuerySetMixin, InheritanceManagerMixin
 
 from churchcal.base_models import BaseModel
@@ -66,8 +67,38 @@ class Commemoration(BaseModel):
     link_1 = models.URLField(null=True, blank=True)
     link_2 = models.URLField(null=True, blank=True)
     link_3 = models.URLField(null=True, blank=True)
-    biography = RichTextField(blank=True, null=True)
+    biography = CKEditor5Field(blank=True, null=True)
     image_link = models.URLField(null=True, blank=True)
+
+    ai_one_sentence = models.TextField(null=True, blank=True)
+    ai_quote = models.TextField(null=True, blank=True)
+    ai_quote_by = models.TextField(null=True, blank=True)
+    ai_quote_citations = ArrayField(models.URLField(), null=True, blank=True)
+    ai_verse = models.TextField(null=True, blank=True)
+    ai_verse_citation = models.TextField(null=True, blank=True)
+    ai_hagiography = models.TextField(null=True, blank=True)
+    ai_hagiography_citations = ArrayField(models.URLField(), null=True, blank=True)
+    ai_legend = models.TextField(null=True, blank=True)
+    ai_legend_citations = ArrayField(models.URLField(), null=True, blank=True)
+    ai_legend_title = models.TextField(null=True, blank=True)
+    ai_bullet_points = models.TextField(null=True, blank=True)
+    ai_bullet_points_citations = ArrayField(models.URLField(), null=True, blank=True)
+    ai_traditions = models.TextField(null=True, blank=True)
+    ai_traditions_citations = ArrayField(models.URLField(), null=True, blank=True)
+    ai_foods = models.TextField(null=True, blank=True)
+    ai_foods_citations = ArrayField(models.URLField(), null=True, blank=True)
+    ai_image_1 = models.URLField(null=True, blank=True, max_length=1024)
+    ai_image_2 = models.URLField(null=True, blank=True, max_length=1024)
+
+    ai_lesser_feasts_and_fasts = models.TextField(null=True, blank=True)
+    ai_martyrology = models.TextField(null=True, blank=True)
+    ai_butler = models.TextField(null=True, blank=True)
+    ai_generation_instructions = models.TextField(
+        null=True,
+        blank=True,
+        help_text="Extra instructions appended to every AI regeneration prompt for this feast "
+        "(e.g. do not confuse with another saint).",
+    )
 
     @property
     def name_no_tags(self):
@@ -86,22 +117,34 @@ class Commemoration(BaseModel):
 
     def _year_from_advent_year(self, year, month, day):
         advent_date = advent(year)
+        advent_2_date = advent(year + 1)
+        after_advent = month > advent_date.month or (month == advent_date.month and day >= advent_date.day)
+        before_2_advent = month < advent_2_date.month or (month == advent_2_date.month and day < advent_2_date.day)
 
-        if month > advent_date.month or (month == advent_date.month and day >= advent_date.day):
+        if after_advent and before_2_advent:
+            return [year, year + 1]
+        elif after_advent:
             return year
         else:
             return year + 1
 
-    def initial_date(self, advent_year):
+    def initial_date(self, advent_year, calendar_year=None):
         raise NotImplementedError()
 
     @cached_property
     def cannot_occur_after_subtype(self):
+        if hasattr(self, "_cannot_occur_after_subtype_cache"):
+            return self._cannot_occur_after_subtype_cache
         if not self.cannot_occur_after:
             return None
         return Commemoration.objects.get(pk=self.cannot_occur_after.pk)
 
     def initial_date_string(self, advent_year):
+        if type(self.initial_date(advent_year)) != date:
+            return [
+                self.initial_date(advent_year)[0].strftime("%Y-%m-%d"),
+                self.initial_date(advent_year)[1].strftime("%Y-%m-%d"),
+            ]
         return self.initial_date(advent_year).strftime("%Y-%m-%d")
 
     def can_occur_in_year(self, advent_year):
@@ -124,9 +167,7 @@ class Commemoration(BaseModel):
         proper = (
             self.original_proper
             if hasattr(self, "original_proper") and self.original_proper
-            else self.proper
-            if hasattr(self, "proper") and self.proper
-            else None
+            else self.proper if hasattr(self, "proper") and self.proper else None
         )
         if proper:
             query = MassReading.objects.filter(years__contains=year, proper=proper).order_by("reading_number")
@@ -161,7 +202,7 @@ class Commemoration(BaseModel):
         if self.name in ["Eve of Palm Sunday", "Palm Sunday"]:
             query = query.filter(service="Liturgy of the Word")
 
-        return query.all()
+        return query.select_related("long_scripture", "short_scripture").all()
 
     def get_all_mass_readings_for_year(self, year):
         commemoration = (
@@ -172,9 +213,7 @@ class Commemoration(BaseModel):
         proper = (
             self.original_proper
             if hasattr(self, "original_proper") and self.original_proper
-            else self.proper
-            if hasattr(self, "proper") and self.proper
-            else None
+            else self.proper if hasattr(self, "proper") and self.proper else None
         )
         if hasattr(commemoration, "saint_type") and commemoration.saint_type:
             query = MassReading.objects.filter(common__abbreviation=commemoration.saint_type).order_by(
@@ -183,7 +222,7 @@ class Commemoration(BaseModel):
         elif proper:
             query = MassReading.objects.filter(years__contains=year, proper=proper).order_by("reading_number")
         else:
-            query = MassReading.objects.filter(years__contains=year, commemoration=commemoration).order_by(
+            query = MassReading.objects.filter(years__contains=year, commemoration__uuid=commemoration.uuid).order_by(
                 "reading_number"
             )
             if "Eve of" in commemoration.name:
@@ -193,7 +232,6 @@ class Commemoration(BaseModel):
 
         query = query.order_by("abbreviation", "reading_number", "order", "service")
         query = query.select_related("long_scripture", "short_scripture")
-        print(query.all())
         return query.all()
 
     def __repr__(self):
@@ -231,8 +269,10 @@ class SanctoraleCommemoration(Commemoration):
     saint_fill_in_the_blank = models.CharField(max_length=256, null=True, blank=True)
     common = models.ForeignKey("churchcal.Common", blank=True, null=True, on_delete=models.SET_NULL)
 
-    def initial_date(self, advent_year):
+    def initial_date(self, advent_year, calendar_year=None):
         year = self._year_from_advent_year(advent_year, self.month, self.day)
+        if type(year) == list:
+            return [date(year[0], self.month, self.day), date(year[1], self.month, self.day)]
 
         return date(year, self.month, self.day)
 
@@ -256,7 +296,8 @@ class SanctoraleCommemoration(Commemoration):
             return text.format(plural, self.saint_name)
 
         if self.saint_type in ["MISSIONARY", "PASTOR"]:
-            return text.format(plural, self.saint_name, self.saint_fill_in_the_blank).replace(" :", ":")
+            a = "" if not plural else "s"
+            return text.format(plural, self.saint_name, a, self.saint_fill_in_the_blank, plural).replace(" :", ":")
 
         if self.saint_type == "RENEWER":
             pronoun = "his" if self.saint_gender == "M" else "her" if self.saint_gender == "F" else "their"
@@ -300,7 +341,7 @@ class SanctoraleBasedCommemoration(Commemoration):
             return False
         return True
 
-    def initial_date(self, advent_year):
+    def initial_date(self, advent_year, calendar_year=None):
         early_year = weekday_after(
             weekday=self.weekday,
             month=self.month_after,
@@ -333,7 +374,7 @@ class SanctoraleBasedCommemoration(Commemoration):
 class TemporaleCommemoration(Commemoration):
     days_after_easter = models.SmallIntegerField()
 
-    def initial_date(self, advent_year):
+    def initial_date(self, advent_year, calendar_year=None):
         year = advent_year + 1
         easter_date = easter(year)
         return easter_date + timedelta(days=self.days_after_easter)
@@ -352,7 +393,7 @@ class FerialCommemoration(Commemoration):
         self.color = season.color
         self.alternate_color = season.alternate_color
 
-    def initial_date(self, advent_year):
+    def initial_date(self, advent_year, calendar_year=None):
         return self.date
 
 
@@ -366,7 +407,12 @@ class Proper(BaseModel):
     calendar = models.ForeignKey(Calendar, on_delete=models.CASCADE, null=False, blank=False)
 
     def get_mass_readings_for_year(self, year):
-        return MassReading.objects.filter(years__contains=year, proper=self).order_by("reading_number", "order").all()
+        return (
+            MassReading.objects.filter(years__contains=year, proper=self)
+            .order_by("reading_number", "order")
+            .select_related("long_scripture", "short_scripture")
+            .all()
+        )
 
     def __repr__(self):
         return str(self.number)

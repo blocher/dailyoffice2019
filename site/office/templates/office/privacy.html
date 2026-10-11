@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load render_bundle from webpack_loader %}
 
 
 {% block content %}
@@ -58,6 +57,13 @@
 <p>
     The site and app collects aggregate, anonymous statistics, such as the
     percentage of users who use particular features, to improve the app.
+</p>
+<p>
+    To measure aggregate usage (such as how often each office is viewed or its
+    audio played) and to distinguish unique visitors, we store a randomly
+    generated, anonymous identifier on your device. This identifier is not
+    linked to your name, email, or any personal information, and is removed if
+    you clear the app or site data.
 </p>
 <p>
     The app or site may use the following third party services for anonymous

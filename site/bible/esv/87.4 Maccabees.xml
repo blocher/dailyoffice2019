@@ -1,0 +1,1145 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes'?>
+<!DOCTYPE crossway-bible SYSTEM "schema/crossway.bibles.dtd">
+<crossway-bible xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" translation="English Standard Version" revision="2018-3-26" xmlns="http://www.crosswaybibles.org" xsi:schemaLocation="schema/crossway.bibles.xsd">
+  <book title="4 Maccabees" num="87">
+    <marker class="begin-verse" mid="v87001001"/>
+    <chapter num="1">
+      <heading>Author’s Task</heading>
+      <begin-paragraph/>
+      <verse num="1">The subject that I am about to discuss is most philosophical, that is, whether devout reason is sovereign over the emotions.<note nid="n87001001.1"/> So it is right for me to advise you to pay earnest attention to this philosophical inquiry.</verse>
+      <marker class="begin-verse" mid="v87001002"/>
+      <verse num="2">For the subject is essential to everyone who is seeking knowledge, and in addition it includes the praise of the highest virtue—I mean, of course, rational judgment.</verse>
+      <marker class="begin-verse" mid="v87001003"/>
+      <verse num="3">If, then, it is evident that reason rules over those emotions that hinder self-control, namely, gluttony and lust,</verse>
+      <marker class="begin-verse" mid="v87001004"/>
+      <verse num="4">it is also clear that it masters the emotions that hinder one from justice, such as malice, and those that stand in the way of courage, namely anger, fear, and pain.</verse>
+      <marker class="begin-verse" mid="v87001005"/>
+      <verse num="5">Some might perhaps ask, <q class="begin-double" qid="87001005.1" from="87001005.1" to="87001005.2"/>If reason rules the emotions, why is it not sovereign over forgetfulness and ignorance?<q class="end-double" qid="87001005.2" from="87001005.1" to="87001005.2"/> Their attempt at argument is ridiculous!<note nid="n87001005.1"/></verse>
+      <marker class="begin-verse" mid="v87001006"/>
+      <verse num="6">For reason does not rule its own emotions, but those that are opposed to justice, courage, and self-control;<note nid="n87001006.1"/> and it is not for the purpose of destroying them, but so that one may not give way to them.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87001007"/>
+      <begin-paragraph/>
+      <verse num="7">I could prove to you from many and various examples that reason<note nid="n87001007.1"/> is absolute master over the emotions,</verse>
+      <marker class="begin-verse" mid="v87001008"/>
+      <verse num="8">but I can demonstrate it best from the noble bravery of those who died for the sake of virtue, Eleazar and the seven brothers and their mother.</verse>
+      <marker class="begin-verse" mid="v87001009"/>
+      <verse num="9">All of these, by despising sufferings that bring death, demonstrated that reason controls the emotions.</verse>
+      <marker class="begin-verse" mid="v87001010"/>
+      <verse num="10">On this anniversary<note nid="n87001010.1"/> it is fitting for me to praise for their virtues those who, with their mother, died for the sake of nobility and goodness, and I would also call them blessed for the honor in which they are held.</verse>
+      <marker class="begin-verse" mid="v87001011"/>
+      <verse num="11">For all people, even their torturers, marveled at their courage and endurance, and they became the cause of the downfall of tyranny over their nation. By their endurance they conquered the tyrant, and thus their native land was purified through them.</verse>
+      <marker class="begin-verse" mid="v87001012"/>
+      <verse num="12">I shall shortly have an opportunity to speak of this; but, as my custom is, I shall begin by stating my main principle, and then I shall turn to their story, giving glory to the all-wise God.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87001013"/>
+      <heading>Supremacy of Reason</heading>
+      <begin-paragraph/>
+      <verse num="13">Our inquiry, accordingly, is whether reason is sovereign over the emotions.</verse>
+      <marker class="begin-verse" mid="v87001014"/>
+      <verse num="14">We shall decide just what reason is and what emotion is, how many kinds of emotions there are, and whether reason rules over all these.</verse>
+      <marker class="begin-verse" mid="v87001015"/>
+      <verse num="15">Now reason is the mind that with sound logic prefers the life of wisdom.</verse>
+      <marker class="begin-verse" mid="v87001016"/>
+      <verse num="16">Wisdom, next, is the knowledge of divine and human matters and the causes of these.</verse>
+      <marker class="begin-verse" mid="v87001017"/>
+      <verse num="17">This, in turn, is education in the law, by which we learn divine matters reverently and human affairs to our advantage.</verse>
+      <marker class="begin-verse" mid="v87001018"/>
+      <verse num="18">Now the kinds of wisdom are rational judgment, justice, courage, and self-control.</verse>
+      <marker class="begin-verse" mid="v87001019"/>
+      <verse num="19">Rational judgment is supreme over all of these, since by means of it reason rules over the emotions.</verse>
+      <marker class="begin-verse" mid="v87001020"/>
+      <verse num="20">The two most comprehensive types of the emotions are pleasure and pain; and each of these is by nature concerned with both body and soul.</verse>
+      <marker class="begin-verse" mid="v87001021"/>
+      <verse num="21">The emotions of both pleasure and pain have many attendants.</verse>
+      <marker class="begin-verse" mid="v87001022"/>
+      <verse num="22">Thus desire precedes pleasure and delight follows it.</verse>
+      <marker class="begin-verse" mid="v87001023"/>
+      <verse num="23">Fear precedes pain and sorrow comes after.</verse>
+      <marker class="begin-verse" mid="v87001024"/>
+      <verse num="24">Anger, as anyone will see if he reflects on this experience, is an emotion embracing pleasure and pain.</verse>
+      <marker class="begin-verse" mid="v87001025"/>
+      <verse num="25">In pleasure there exists even a malevolent tendency, which is the most complex of all the emotions.</verse>
+      <marker class="begin-verse" mid="v87001026"/>
+      <verse num="26">In the soul it is boastfulness, love of money, thirst for honor, rivalry, and malice;</verse>
+      <marker class="begin-verse" mid="v87001027"/>
+      <verse num="27">in the body, indiscriminate eating, gluttony, and solitary gormandizing.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87001028"/>
+      <begin-paragraph/>
+      <verse num="28">Just as pleasure and pain are two plants growing from the body and the soul, so there are many offshoots of these plants,<note nid="n87001028.1"/></verse>
+      <marker class="begin-verse" mid="v87001029"/>
+      <verse num="29">each of which the master cultivator—reason—weeds and prunes and ties up and waters and thoroughly irrigates and so tames the jungle of habits and emotions.</verse>
+      <marker class="begin-verse" mid="v87001030"/>
+      <verse num="30">For reason is the guide of the virtues, but over the emotions it is sovereign.<end-paragraph/><begin-paragraph/>Observe now first of all that rational judgment is sovereign over the emotions by virtue of the restraining power of self-control.</verse>
+      <marker class="begin-verse" mid="v87001031"/>
+      <verse num="31">Self-control, then, is mastery of the desires.</verse>
+      <marker class="begin-verse" mid="v87001032"/>
+      <verse num="32">Some desires are mental, others are physical, and reason evidently rules over both.</verse>
+      <marker class="begin-verse" mid="v87001033"/>
+      <verse num="33">Otherwise how is it that when we are attracted to forbidden foods we abstain from the pleasure to be had from them? Is it not because reason is able to rule over appetites? I for one think so.</verse>
+      <marker class="begin-verse" mid="v87001034"/>
+      <verse num="34">Therefore when we crave seafood and fowl and animals and all sorts of foods that are forbidden to us by the law, we abstain because of domination by reason.</verse>
+      <marker class="begin-verse" mid="v87001035"/>
+      <verse num="35">For the emotions of the appetites are restrained, checked by the temperate mind, and all the impulses of the body are bridled by reason.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v87002001"/>
+    <chapter num="2">
+      <heading>Compatibility of the Law with Reason</heading>
+      <begin-paragraph/>
+      <verse num="1">And why is it amazing that the desires of the soul for the enjoyment of beauty are rendered powerless?</verse>
+      <marker class="begin-verse" mid="v87002002"/>
+      <verse num="2">It is for this reason, certainly, that the temperate Joseph is praised, because by mental effort<note nid="n87002002.1"/> he overcame sexual desire.</verse>
+      <marker class="begin-verse" mid="v87002003"/>
+      <verse num="3">For when he was young and in his prime for intercourse, by reason he nullified the frenzy<note nid="n87002003.1"/> of the passions.</verse>
+      <marker class="begin-verse" mid="v87002004"/>
+      <verse num="4">Not only is reason proved to rule over the frenzied urge of sexual desire, but also over every desire.<note nid="n87002004.1"/></verse>
+      <marker class="begin-verse" mid="v87002005"/>
+      <verse num="5">Thus the law says, <q class="begin-double" qid="87002005.1" from="87002005.1" to="87002005.4"/>You shall not covet<note nid="n87002005.1"/> your neighbor<q class="end-single" qid="87002005.2"/>s wife or anything that is your neighbor<q class="end-single" qid="87002005.3"/>s.<q class="end-double" qid="87002005.4" from="87002005.1" to="87002005.4"/></verse>
+      <marker class="begin-verse" mid="v87002006"/>
+      <verse num="6">In fact, since the law has told us not to covet, I could prove to you all the more that reason is able to control desires.<end-paragraph/><begin-paragraph/>Just so it is with the emotions that hinder one from justice.</verse>
+      <marker class="begin-verse" mid="v87002007"/>
+      <verse num="7">Otherwise how could it be that someone who is habitually a solitary gormandizer, a glutton, or even a drunkard can learn a better way, unless reason is clearly lord of the emotions?</verse>
+      <marker class="begin-verse" mid="v87002008"/>
+      <verse num="8">Thus, as soon as a man adopts a way of life in accordance with the law, even though he is a lover of money, he is forced to act contrary to his natural ways and to lend without interest to those who ask and to cancel the debt when the seventh year arrives.</verse>
+      <marker class="begin-verse" mid="v87002009"/>
+      <verse num="9">If one is greedy, he is restrained by the law on account of reason so that he neither gleans his harvest nor gathers the last grapes from the vineyard.<end-paragraph/><begin-paragraph/>In all other matters we can recognize that reason rules the emotions.</verse>
+      <marker class="begin-verse" mid="v87002010"/>
+      <verse num="10">For the law prevails even over affection for parents, so that virtue is not abandoned for their sakes.</verse>
+      <marker class="begin-verse" mid="v87002011"/>
+      <verse num="11">It rules over love for one<q class="end-single" qid="87002011.1"/>s wife, so that one rebukes her when she breaks the law.</verse>
+      <marker class="begin-verse" mid="v87002012"/>
+      <verse num="12">It exercises lordship over love for children, so that one punishes them for misdeeds.</verse>
+      <marker class="begin-verse" mid="v87002013"/>
+      <verse num="13">It is sovereign over the relationship of friends, so that one rebukes friends when they act wickedly.</verse>
+      <marker class="begin-verse" mid="v87002014"/>
+      <verse num="14">Do not consider it paradoxical when reason, through the law, can prevail even over enmity. The fruit trees of the enemy are not cut down, but one preserves the property of enemies from the destroyers and helps raise up what has fallen.<note nid="n87002014.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87002015"/>
+      <begin-paragraph/>
+      <verse num="15">It is evident that reason rules even<note nid="n87002015.1"/> the more violent emotions: lust for power, vainglory, boasting, arrogance, and malice.</verse>
+      <marker class="begin-verse" mid="v87002016"/>
+      <verse num="16">For the temperate mind repels all these malicious emotions, just as it repels anger—for it is sovereign over even this.</verse>
+      <marker class="begin-verse" mid="v87002017"/>
+      <verse num="17">When Moses was angry with Dathan and Abiram he did nothing against them in anger, but controlled his anger by reason.</verse>
+      <marker class="begin-verse" mid="v87002018"/>
+      <verse num="18">For, as I have said, the temperate mind is able to get the better of the emotions, to correct some, and to render others powerless.</verse>
+      <marker class="begin-verse" mid="v87002019"/>
+      <verse num="19">Why else did Jacob, our wisest father, censure the households of Simeon and Levi for their irrational slaughter of the entire tribe of the Shechemites, saying, <q class="begin-double" qid="87002019.1" from="87002019.1" to="87002019.2"/>Cursed be their anger<q class="end-double" qid="87002019.2" from="87002019.1" to="87002019.2"/>?</verse>
+      <marker class="begin-verse" mid="v87002020"/>
+      <verse num="20">For if reason could not control anger, he would not have spoken thus.</verse>
+      <marker class="begin-verse" mid="v87002021"/>
+      <verse num="21">Now when God fashioned man, he planted in him emotions and inclinations,</verse>
+      <marker class="begin-verse" mid="v87002022"/>
+      <verse num="22">but at the same time he enthroned the mind among the senses as a sacred governor over them all.</verse>
+      <marker class="begin-verse" mid="v87002023"/>
+      <verse num="23">To the mind he gave the law; and one who lives subject to this will rule a kingdom that is temperate, just, good, and courageous.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87002024"/>
+      <begin-paragraph/>
+      <verse num="24">How is it then, one might say, that if reason is master of the emotions, it does not control forgetfulness and ignorance?</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v87003001"/>
+    <chapter num="3">
+      <begin-paragraph/>
+      <verse num="1">This notion is entirely ridiculous; for it is evident that reason rules not over its own emotions, but over those of the body.</verse>
+      <marker class="begin-verse" mid="v87003002"/>
+      <verse num="2">No one of us can eradicate that kind of desire, but reason can provide a way for us not to be enslaved by desire.</verse>
+      <marker class="begin-verse" mid="v87003003"/>
+      <verse num="3">No one of you can eradicate anger from the mind, but reason can help to deal with anger.</verse>
+      <marker class="begin-verse" mid="v87003004"/>
+      <verse num="4">No one of you can eradicate malice, but reason can fight at our side so that we are not overcome by malice.</verse>
+      <marker class="begin-verse" mid="v87003005"/>
+      <verse num="5">For reason does not uproot the emotions but is their antagonist.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87003006"/>
+      <heading>King David’s Thirst</heading>
+      <begin-paragraph/>
+      <verse num="6">Now this can be explained more clearly by the story of King David<q class="end-single" qid="87003006.1"/>s thirst.</verse>
+      <marker class="begin-verse" mid="v87003007"/>
+      <verse num="7">David had been attacking the Philistines all day long and together with the soldiers of his nation had slain many of them.</verse>
+      <marker class="begin-verse" mid="v87003008"/>
+      <verse num="8">Then when evening fell, he<note nid="n87003008.1"/> came, sweating and quite exhausted, to the royal tent, around which the whole army of our ancestors had encamped.</verse>
+      <marker class="begin-verse" mid="v87003009"/>
+      <verse num="9">Now all the rest were at supper,</verse>
+      <marker class="begin-verse" mid="v87003010"/>
+      <verse num="10">but the king was extremely thirsty, and although springs were plentiful there, he could not satisfy his thirst from them.</verse>
+      <marker class="begin-verse" mid="v87003011"/>
+      <verse num="11">But a certain irrational desire for the water in the enemy<q class="end-single" qid="87003011.1"/>s territory tormented and inflamed him, undid and consumed him.</verse>
+      <marker class="begin-verse" mid="v87003012"/>
+      <verse num="12">When his guards complained bitterly because of the king<q class="end-single" qid="87003012.1"/>s craving, two staunch young soldiers, respecting<note nid="n87003012.1"/> the king<q class="end-single" qid="87003012.2"/>s desire, armed themselves fully, and taking a pitcher climbed over the enemy<q class="end-single" qid="87003012.3"/>s ramparts.</verse>
+      <marker class="begin-verse" mid="v87003013"/>
+      <verse num="13">Eluding the sentinels at the gates, they went searching throughout the enemy camp</verse>
+      <marker class="begin-verse" mid="v87003014"/>
+      <verse num="14">and found the spring and from it boldly brought the king a drink.</verse>
+      <marker class="begin-verse" mid="v87003015"/>
+      <verse num="15">But David,<note nid="n87003015.1"/> although he was burning with thirst, considered it an altogether fearful danger to his soul to drink what was regarded as equivalent to blood.</verse>
+      <marker class="begin-verse" mid="v87003016"/>
+      <verse num="16">Therefore, opposing reason to desire, he poured out the drink as an offering to God.</verse>
+      <marker class="begin-verse" mid="v87003017"/>
+      <verse num="17">For the temperate mind can conquer the drives of the emotions and quench the flames of frenzied desires;</verse>
+      <marker class="begin-verse" mid="v87003018"/>
+      <verse num="18">it can overthrow bodily agonies even when they are extreme and by nobility of reason spurn all domination by the emotions.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87003019"/>
+      <heading>An Attempt on the Temple Treasury</heading>
+      <begin-paragraph/>
+      <verse num="19">The present occasion now invites us to a narrative demonstration of temperate reason.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87003020"/>
+      <begin-paragraph/>
+      <verse num="20">At a time when our fathers were enjoying profound peace because of their observance of the law and were prospering, so that even King Seleucus Nicanor of Asia had both appropriated money to them for the temple service and recognized their commonwealth—</verse>
+      <marker class="begin-verse" mid="v87003021"/>
+      <verse num="21">at just that time certain men attempted a revolution against the public harmony and caused many and various disasters.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v87004001"/>
+    <chapter num="4">
+      <begin-paragraph/>
+      <verse num="1">Now there was a certain Simon, a political opponent of the noble and good man, Onias, who then held the high priesthood for life. When he was unable to injure Onias despite bringing all manner of charges against him in the name of the state, he fled the country with the purpose of betraying it.</verse>
+      <marker class="begin-verse" mid="v87004002"/>
+      <verse num="2">So he came to Apollonius, governor of Syria, Phoenicia, and Cilicia, and said,</verse>
+      <marker class="begin-verse" mid="v87004003"/>
+      <verse num="3"><q class="begin-double" qid="87004003.1" from="87004003.1" to="87004003.3"/>I have come here because I am loyal to the king<q class="end-single" qid="87004003.2"/>s government, to report that in the Jerusalem treasuries there are deposited tens of thousands in private funds, which are not the property of the temple but are suitable for King Seleucus.<q class="end-double" qid="87004003.3" from="87004003.1" to="87004003.3"/></verse>
+      <marker class="begin-verse" mid="v87004004"/>
+      <verse num="4">When Apollonius learned the details of these things, he praised Simon for his service to the king and went up to Seleucus to inform him of the rich treasure.</verse>
+      <marker class="begin-verse" mid="v87004005"/>
+      <verse num="5">On receiving authority to deal with this matter, he proceeded quickly to our country accompanied by the accursed Simon and a very strong military force.</verse>
+      <marker class="begin-verse" mid="v87004006"/>
+      <verse num="6">He said that he had come with the king<q class="end-single" qid="87004006.1"/>s authority to seize the private funds in the treasury.</verse>
+      <marker class="begin-verse" mid="v87004007"/>
+      <verse num="7">The people indignantly protested his words, considering it outrageous that those who had committed deposits to the sacred treasury should be deprived of them, and did all that they could to prevent it.</verse>
+      <marker class="begin-verse" mid="v87004008"/>
+      <verse num="8">But, uttering threats, Apollonius went on to the temple.</verse>
+      <marker class="begin-verse" mid="v87004009"/>
+      <verse num="9">While the priests together with women and children were imploring God in the temple to shield the Holy Place that was being treated so contemptuously,</verse>
+      <marker class="begin-verse" mid="v87004010"/>
+      <verse num="10">and while Apollonius was going up with his armed forces to seize the money, angels on horseback with lightning flashing from their weapons appeared from heaven, instilling in them great fear and trembling.</verse>
+      <marker class="begin-verse" mid="v87004011"/>
+      <verse num="11">Then Apollonius fell down half dead in the temple court that was open to all peoples, stretched out his hands toward heaven, and with tears implored the Hebrews to pray for him and propitiate the wrath of the heavenly army.</verse>
+      <marker class="begin-verse" mid="v87004012"/>
+      <verse num="12">For he said that he had committed a sin deserving of death and that if he were delivered he would praise the blessedness of the Holy Place before all people.</verse>
+      <marker class="begin-verse" mid="v87004013"/>
+      <verse num="13">Moved by these words, Onias the high priest, though in another way taking care lest King Seleucus suppose that Apollonius had been overcome by human treachery and not by divine justice, prayed for him.</verse>
+      <marker class="begin-verse" mid="v87004014"/>
+      <verse num="14">So Apollonius, having been preserved beyond all expectations, went away to report to the king what had happened to him.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87004015"/>
+      <heading>Antiochus’ Persecution of the Jews</heading>
+      <begin-paragraph/>
+      <verse num="15">When King Seleucus died, his son Antiochus Epiphanes succeeded to the throne, an arrogant and terrible man</verse>
+      <marker class="begin-verse" mid="v87004016"/>
+      <verse num="16">who removed Onias from the priesthood and appointed Onias<q class="end-single" qid="87004016.1"/><note nid="n87004016.1"/> brother Jason as high priest.</verse>
+      <marker class="begin-verse" mid="v87004017"/>
+      <verse num="17">Jason<note nid="n87004017.1"/> agreed that if the office were conferred upon him he would pay the king 3,660 talents annually.</verse>
+      <marker class="begin-verse" mid="v87004018"/>
+      <verse num="18">So the king appointed him high priest and ruler of the nation.</verse>
+      <marker class="begin-verse" mid="v87004019"/>
+      <verse num="19">Jason changed the nation<q class="end-single" qid="87004019.1"/>s way of life and altered its form of government in complete violation of the law,</verse>
+      <marker class="begin-verse" mid="v87004020"/>
+      <verse num="20">so that not only was a gymnasium constructed at the very citadel<note nid="n87004020.1"/> of our native land, but also abolished the provisions for the care of the temple.</verse>
+      <marker class="begin-verse" mid="v87004021"/>
+      <verse num="21">The divine justice was angered by these acts and caused Antiochus himself to make war on them.</verse>
+      <marker class="begin-verse" mid="v87004022"/>
+      <verse num="22">For when he was warring against Ptolemy in Egypt, he heard that a rumor of his death had spread and that the people of Jerusalem had rejoiced greatly. He speedily marched against them,</verse>
+      <marker class="begin-verse" mid="v87004023"/>
+      <verse num="23">and after he had ravaged them he issued a decree that if any of them should be found observing the ancestral law they should die.</verse>
+      <marker class="begin-verse" mid="v87004024"/>
+      <verse num="24">When, by means of his decrees, he had not been able in any way to put an end to the people<q class="end-single" qid="87004024.1"/>s observance of the law, but saw that all his threats and punishments were being disregarded,</verse>
+      <marker class="begin-verse" mid="v87004025"/>
+      <verse num="25">even to the point that women, because they had circumcised their sons, were thrown headlong from heights along with their infants, though they had known beforehand that they would suffer this—</verse>
+      <marker class="begin-verse" mid="v87004026"/>
+      <verse num="26">when, then, his decrees were despised by the people, he himself, through torture, tried to compel everyone in the nation to renounce Judaism by eating defiling foods.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v87005001"/>
+    <chapter num="5">
+      <heading>Antiochus’ Encounter with Eleazar</heading>
+      <begin-paragraph/>
+      <verse num="1">The tyrant Antiochus, sitting in state with his counselors on a certain high place and with his armed soldiers standing about him,</verse>
+      <marker class="begin-verse" mid="v87005002"/>
+      <verse num="2">ordered the guards to seize each and every Hebrew and to compel them to eat pork and food sacrificed to idols.</verse>
+      <marker class="begin-verse" mid="v87005003"/>
+      <verse num="3">If any were not willing to eat defiling food, they were to be broken on the wheel and killed.</verse>
+      <marker class="begin-verse" mid="v87005004"/>
+      <verse num="4">And when many persons had been rounded up, one man, Eleazar by name, leader of the flock, was brought<note nid="n87005004.1"/> before the king. He was a man of priestly family, learned in the law, advanced in age, and known to many in the tyrant<q class="end-single" qid="87005004.1"/>s court because of his advanced age.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87005005"/>
+      <begin-paragraph/>
+      <verse num="5">When Antiochus saw him he said,</verse>
+      <marker class="begin-verse" mid="v87005006"/>
+      <verse num="6"><q class="begin-double" qid="87005006.1" from="87005006.1" to="87005013.1"/>Before I begin to torture you, old man, I would advise you to save yourself by eating pork,</verse>
+      <marker class="begin-verse" mid="v87005007"/>
+      <verse num="7">for I respect your age and your gray hairs. Although you have had them for so long a time, it does not seem to me that you are a philosopher when you observe the piety of the Jews.</verse>
+      <marker class="begin-verse" mid="v87005008"/>
+      <verse num="8">Why, when nature has granted it to us, should you abhor eating the very excellent meat of this animal?</verse>
+      <marker class="begin-verse" mid="v87005009"/>
+      <verse num="9">It is senseless not to enjoy delicious things that are not shameful, and wrong to spurn the gifts of nature.</verse>
+      <marker class="begin-verse" mid="v87005010"/>
+      <verse num="10">It seems to me that you will do something even more senseless if, by holding a vain opinion concerning the truth, you continue to despise me to your own hurt.</verse>
+      <marker class="begin-verse" mid="v87005011"/>
+      <verse num="11">Will you not awaken from your foolish philosophy, dispel your futile reasonings, adopt a mind appropriate to your years, philosophize according to the truth of what is beneficial,</verse>
+      <marker class="begin-verse" mid="v87005012"/>
+      <verse num="12">and have compassion on your old age by honoring my humane advice?</verse>
+      <marker class="begin-verse" mid="v87005013"/>
+      <verse num="13">For consider this, that if there is some power watching over this religion of yours, it may excuse you from any transgression that arises out of compulsion.<q class="end-double" qid="87005013.1" from="87005006.1" to="87005013.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87005014"/>
+      <begin-paragraph/>
+      <verse num="14">When the tyrant urged him in this fashion to eat meat unlawfully, Eleazar asked to have a word.</verse>
+      <marker class="begin-verse" mid="v87005015"/>
+      <verse num="15">When he had received permission to speak, he began to address the people as follows:</verse>
+      <marker class="begin-verse" mid="v87005016"/>
+      <verse num="16"><q class="begin-double" qid="87005016.1" from="87005016.1" to="87005038.1"/>We, O Antiochus, who have been persuaded to govern our lives by the divine law, think that there is no compulsion more powerful than our obedience to the law.</verse>
+      <marker class="begin-verse" mid="v87005017"/>
+      <verse num="17">Therefore we consider that we should not transgress it in any respect.</verse>
+      <marker class="begin-verse" mid="v87005018"/>
+      <verse num="18">Even if, as you suppose, our law were not truly divine and we were wrongly considering it to be divine, not even so would it be right for us to invalidate our reputation for piety.</verse>
+      <marker class="begin-verse" mid="v87005019"/>
+      <verse num="19">Therefore do not suppose that it would be a petty sin if we were to eat defiling food;</verse>
+      <marker class="begin-verse" mid="v87005020"/>
+      <verse num="20">to transgress the law in matters either small or great is of equal seriousness,</verse>
+      <marker class="begin-verse" mid="v87005021"/>
+      <verse num="21">for in either case the law is equally despised.</verse>
+      <marker class="begin-verse" mid="v87005022"/>
+      <verse num="22">You scoff at our philosophy as though living by it were irrational,</verse>
+      <marker class="begin-verse" mid="v87005023"/>
+      <verse num="23">but it teaches us self-control, so that we master all pleasures and desires, and it also trains us in courage, so that we endure any suffering willingly;</verse>
+      <marker class="begin-verse" mid="v87005024"/>
+      <verse num="24">it instructs us in justice, so that in all our dealings we act impartially,<note nid="n87005024.1"/> and it teaches us piety, so that with proper reverence we worship the only real God.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87005025"/>
+      <begin-paragraph/>
+      <verse num="25"><q class="continue-double" qid="87005025.1" from="87005016.1" to="87005038.1"/>Therefore we do not eat defiling food; for since we believe that the law was established by God, we know that the Creator of the cosmic order in giving us the law in accordance with nature has shown sympathy toward us.</verse>
+      <marker class="begin-verse" mid="v87005026"/>
+      <verse num="26">He has permitted us to eat what will be most suitable for our lives,<note nid="n87005026.1"/> but he has forbidden us to eat meats that would be contrary to this.</verse>
+      <marker class="begin-verse" mid="v87005027"/>
+      <verse num="27">It would be tyrannical for you to compel us not only to transgress the law, but also to eat in such a way that you may deride us for eating defiling foods, which are most hateful to us.</verse>
+      <marker class="begin-verse" mid="v87005028"/>
+      <verse num="28">But you shall have no such occasion to laugh at me,</verse>
+      <marker class="begin-verse" mid="v87005029"/>
+      <verse num="29">nor will I transgress the sacred oaths of my ancestors concerning the keeping of the law,</verse>
+      <marker class="begin-verse" mid="v87005030"/>
+      <verse num="30">not even if you gouge out my eyes and burn my entrails.</verse>
+      <marker class="begin-verse" mid="v87005031"/>
+      <verse num="31">I am not so old and cowardly as not to be young in reason on behalf of piety.</verse>
+      <marker class="begin-verse" mid="v87005032"/>
+      <verse num="32">Therefore get your torture wheels ready and fan the fire more vehemently!</verse>
+      <marker class="begin-verse" mid="v87005033"/>
+      <verse num="33">I do not so pity my old age as to destroy the ancestral law by my own act.</verse>
+      <marker class="begin-verse" mid="v87005034"/>
+      <verse num="34">I will not play false to you, O law that trained me, nor will I renounce you, beloved self-control.</verse>
+      <marker class="begin-verse" mid="v87005035"/>
+      <verse num="35">I will not put you to shame, philosophical reason, nor will I reject you, honored priesthood and knowledge of the law.</verse>
+      <marker class="begin-verse" mid="v87005036"/>
+      <verse num="36">You, O king,<note nid="n87005036.1"/> shall not defile the honorable mouth of my old age or my long life lived lawfully.</verse>
+      <marker class="begin-verse" mid="v87005037"/>
+      <verse num="37">The fathers will receive me as pure, as one who does not fear your violence even to death.</verse>
+      <marker class="begin-verse" mid="v87005038"/>
+      <verse num="38">You will tyrannize the ungodly, but you shall not dominate my religious principles either by words or by deeds.<q class="end-double" qid="87005038.1" from="87005016.1" to="87005038.1"/></verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v87006001"/>
+    <chapter num="6">
+      <heading>Martyrdom of Eleazar</heading>
+      <begin-paragraph/>
+      <verse num="1">When Eleazar in this manner had made eloquent response to the exhortations of the tyrant, the guards who were standing by dragged him violently to the instruments of torture.</verse>
+      <marker class="begin-verse" mid="v87006002"/>
+      <verse num="2">First they stripped the old man, who remained adorned with the gracefulness of his piety.</verse>
+      <marker class="begin-verse" mid="v87006003"/>
+      <verse num="3">And after they had tied his arms behind him they began to scourge him on either side,</verse>
+      <marker class="begin-verse" mid="v87006004"/>
+      <verse num="4">while a herald opposite him cried out, <q class="begin-double" qid="87006004.1" from="87006004.1" to="87006004.3"/>Obey the king<q class="end-single" qid="87006004.2"/>s commands!<q class="end-double" qid="87006004.3" from="87006004.1" to="87006004.3"/></verse>
+      <marker class="begin-verse" mid="v87006005"/>
+      <verse num="5">But the courageous and noble man, as a true Eleazar,<note nid="n87006005.1"/> was unmoved, as though being tortured in a dream;</verse>
+      <marker class="begin-verse" mid="v87006006"/>
+      <verse num="6">yet while the old man<q class="end-single" qid="87006006.1"/>s eyes were raised to heaven, his flesh was being torn by scourges, his blood flowing, and his sides were being cut to pieces.</verse>
+      <marker class="begin-verse" mid="v87006007"/>
+      <verse num="7">And though he fell to the ground because his body could not endure the agonies, he kept his reason upright and unswerving.</verse>
+      <marker class="begin-verse" mid="v87006008"/>
+      <verse num="8">One of the cruel guards rushed at him and began to kick him in the side to make him get up again after he fell.</verse>
+      <marker class="begin-verse" mid="v87006009"/>
+      <verse num="9">But he continued to bear the pains and scorn the punishment and endure the tortures.</verse>
+      <marker class="begin-verse" mid="v87006010"/>
+      <verse num="10">And like a noble athlete the old man, while being beaten, was victorious over his torturers;</verse>
+      <marker class="begin-verse" mid="v87006011"/>
+      <verse num="11">in fact, with his face bathed in sweat and gasping heavily for breath, he amazed even his torturers by his courageous spirit.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87006012"/>
+      <begin-paragraph/>
+      <verse num="12">At that point, partly out of pity for his old age,</verse>
+      <marker class="begin-verse" mid="v87006013"/>
+      <verse num="13">partly out of sympathy from their acquaintance with him, partly out of admiration for his endurance, some of the king<q class="end-single" qid="87006013.1"/>s retinue came to him and said,</verse>
+      <marker class="begin-verse" mid="v87006014"/>
+      <verse num="14"><q class="begin-double" qid="87006014.1" from="87006014.1" to="87006015.1"/>Eleazar, why are you so irrationally destroying yourself through these evil things?</verse>
+      <marker class="begin-verse" mid="v87006015"/>
+      <verse num="15">We will set before you some cooked meat; save yourself by pretending to eat pork.<q class="end-double" qid="87006015.1" from="87006014.1" to="87006015.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87006016"/>
+      <begin-paragraph/>
+      <verse num="16">But Eleazar, as though more bitterly tormented by this counsel, cried out:</verse>
+      <marker class="begin-verse" mid="v87006017"/>
+      <verse num="17"><q class="begin-double" qid="87006017.1" from="87006017.1" to="87006023.1"/>May we, the children<note nid="n87006017.1"/> of Abraham, never think so basely that out of cowardice we feign a role unbecoming to us!</verse>
+      <marker class="begin-verse" mid="v87006018"/>
+      <verse num="18">For it would be irrational if we, who have lived in accordance with truth to old age and have maintained in accordance with law the reputation of such a life, should now change our course</verse>
+      <marker class="begin-verse" mid="v87006019"/>
+      <verse num="19">and ourselves become a pattern of impiety to the young, so as to set an example of the eating of defiling food.</verse>
+      <marker class="begin-verse" mid="v87006020"/>
+      <verse num="20">It would be shameful if we should survive for a little while and during that time be a laughingstock to all for our cowardice</verse>
+      <marker class="begin-verse" mid="v87006021"/>
+      <verse num="21">and if we should be despised by the tyrant as unmanly and not protect our divine law even to death.</verse>
+      <marker class="begin-verse" mid="v87006022"/>
+      <verse num="22">Therefore, O children of Abraham, die nobly on behalf of piety!</verse>
+      <marker class="begin-verse" mid="v87006023"/>
+      <verse num="23">And you, guards of the tyrant, why do you delay?<q class="end-double" qid="87006023.1" from="87006017.1" to="87006023.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87006024"/>
+      <begin-paragraph/>
+      <verse num="24">When they saw that he was so courageous in the face of the afflictions and that he had not been changed by their compassion, the guards brought him to the fire.</verse>
+      <marker class="begin-verse" mid="v87006025"/>
+      <verse num="25">There they burned him with maliciously contrived instruments, threw him down, and poured stinking liquids into his nostrils.</verse>
+      <marker class="begin-verse" mid="v87006026"/>
+      <verse num="26">When he was now burned to his very bones and about to expire, he lifted up his eyes to God and said,</verse>
+      <marker class="begin-verse" mid="v87006027"/>
+      <verse num="27"><q class="begin-double" qid="87006027.1" from="87006027.1" to="87006029.1"/>You know, O God, that though I might have saved myself, I am dying in burning torments for the sake of the law.</verse>
+      <marker class="begin-verse" mid="v87006028"/>
+      <verse num="28">Be merciful to your people, and let our punishment on their behalf suffice.</verse>
+      <marker class="begin-verse" mid="v87006029"/>
+      <verse num="29">Make my blood their purification and take my life in exchange for theirs.<q class="end-double" qid="87006029.1" from="87006027.1" to="87006029.1"/></verse>
+      <marker class="begin-verse" mid="v87006030"/>
+      <verse num="30">And after he said this, the holy man died nobly in his tortures, and by reason he resisted even to the very tortures of death for the sake of the law.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87006031"/>
+      <begin-paragraph/>
+      <verse num="31">Admittedly, then, devout reason is sovereign over the emotions.</verse>
+      <marker class="begin-verse" mid="v87006032"/>
+      <verse num="32">For if the emotions had prevailed over reason, we would have testified to their domination.</verse>
+      <marker class="begin-verse" mid="v87006033"/>
+      <verse num="33">But now that reason has conquered the emotions, we properly attribute to it the power to govern.</verse>
+      <marker class="begin-verse" mid="v87006034"/>
+      <verse num="34">And it is right for us to acknowledge the dominance of reason when it masters even external agonies. It would be ridiculous to deny it.<note nid="n87006034.1"/></verse>
+      <marker class="begin-verse" mid="v87006035"/>
+      <verse num="35">And I have proved not only that reason has mastered agonies, but also that it masters pleasures and in no respect yields to them.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v87007001"/>
+    <chapter num="7">
+      <heading>Encomium on Eleazar</heading>
+      <begin-paragraph/>
+      <verse num="1">For like a most skillful pilot, the reason of our father Eleazar steered the ship of piety over the sea of the emotions,</verse>
+      <marker class="begin-verse" mid="v87007002"/>
+      <verse num="2">and though buffeted by the stormings of the tyrant and overwhelmed by the mighty waves of tortures,</verse>
+      <marker class="begin-verse" mid="v87007003"/>
+      <verse num="3">in no way did he turn the rudder of piety until he sailed into the haven of immortal victory.</verse>
+      <marker class="begin-verse" mid="v87007004"/>
+      <verse num="4">No city besieged with many ingenious war machines has ever held out as did that holiest man. Although his sacred life was consumed by tortures and racks, he conquered the besiegers by shielding piety with reason.</verse>
+      <marker class="begin-verse" mid="v87007005"/>
+      <verse num="5">For in setting his mind firm like a jutting cliff, our father Eleazar broke the maddening waves of the emotions.</verse>
+      <marker class="begin-verse" mid="v87007006"/>
+      <verse num="6">O priest, worthy of the priesthood, you neither defiled your sacred teeth nor profaned your stomach, which had room only for reverence and purity, by eating defiling foods.</verse>
+      <marker class="begin-verse" mid="v87007007"/>
+      <verse num="7">O man in harmony with the law and philosopher of divine life!</verse>
+      <marker class="begin-verse" mid="v87007008"/>
+      <verse num="8">Such should be those who are administrators of the law, shielding it with their own blood and noble sweat in sufferings even to death.</verse>
+      <marker class="begin-verse" mid="v87007009"/>
+      <verse num="9">You, father, strengthened our obedience to the law through your endurance unto glory, and you did not abandon the holiness that you praised, but by your deeds you made your words of divine<note nid="n87007009.1"/> philosophy credible.</verse>
+      <marker class="begin-verse" mid="v87007010"/>
+      <verse num="10">O aged man, more powerful than tortures; O elder, fiercer than fire; O supreme king over the passions, Eleazar!</verse>
+      <marker class="begin-verse" mid="v87007011"/>
+      <verse num="11">For just as our father Aaron, armed with the censer, ran through the multitude of the people and conquered the fiery<note nid="n87007011.1"/> angel,</verse>
+      <marker class="begin-verse" mid="v87007012"/>
+      <verse num="12">so the descendant of Aaron, Eleazar, though being consumed by the fire, remained unmoved in his reason.</verse>
+      <marker class="begin-verse" mid="v87007013"/>
+      <verse num="13">Most amazing, indeed, though he was an old man, his body no longer tense and firm,<note nid="n87007013.1"/> his muscles flabby, his sinews feeble, he became young again</verse>
+      <marker class="begin-verse" mid="v87007014"/>
+      <verse num="14">in spirit through reason; and by reason like that of Isaac he rendered the many-headed rack ineffective.</verse>
+      <marker class="begin-verse" mid="v87007015"/>
+      <verse num="15">O man of blessed age and of venerable gray hair and of law-abiding life, whom the faithful seal of death has perfected!</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87007016"/>
+      <begin-paragraph/>
+      <verse num="16">If, therefore, because of piety an aged man despised tortures even to death, most certainly devout reason is governor of the emotions.</verse>
+      <marker class="begin-verse" mid="v87007017"/>
+      <verse num="17">Some perhaps might say, <q class="begin-double" qid="87007017.1" from="87007017.1" to="87007017.2"/>Not everyone has full command of his emotions, because not everyone has prudent reason.<q class="end-double" qid="87007017.2" from="87007017.1" to="87007017.2"/></verse>
+      <marker class="begin-verse" mid="v87007018"/>
+      <verse num="18">But as many as attend to piety with a whole heart, these alone are able to control the passions of the flesh,</verse>
+      <marker class="begin-verse" mid="v87007019"/>
+      <verse num="19">since they believe that they, like our patriarchs Abraham and Isaac and Jacob, do not die to God, but live to God.</verse>
+      <marker class="begin-verse" mid="v87007020"/>
+      <verse num="20">No contradiction therefore arises when some persons appear to be dominated by their emotions because of the weakness of their reason.</verse>
+      <marker class="begin-verse" mid="v87007021"/>
+      <verse num="21">What person who lives as a philosopher by the whole rule of philosophy and trusts in God</verse>
+      <marker class="begin-verse" mid="v87007022"/>
+      <verse num="22">and knows that it is blessed to endure any suffering for the sake of virtue would not be able to overcome the emotions through godliness?</verse>
+      <marker class="begin-verse" mid="v87007023"/>
+      <verse num="23">For only the wise and courageous man is lord of his emotions.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v87008001"/>
+    <chapter num="8">
+      <heading>Seven Brothers Defy the Tyrant</heading>
+      <begin-paragraph/>
+      <verse num="1">For this is why even the very young, by following a philosophy in accordance with devout reason, have prevailed over the most painful instruments of torture.</verse>
+      <marker class="begin-verse" mid="v87008002"/>
+      <verse num="2">For when the tyrant was conspicuously defeated in his first attempt, being unable to compel an old man to eat defiling foods, then in violent rage he commanded that others of the Hebrew captives be brought and that any who ate defiling food should be freed after eating, but if any were to refuse, these should be tortured even more cruelly.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87008003"/>
+      <begin-paragraph/>
+      <verse num="3">When the tyrant had given these orders, seven brothers—handsome, modest, noble, and gifted in every way—were brought before him along with their aged mother.</verse>
+      <marker class="begin-verse" mid="v87008004"/>
+      <verse num="4">When the tyrant saw them, grouped about their mother as if in a chorus, he was pleased with them. And struck by their appearance and nobility, he smiled at them and summoned them nearer and said,</verse>
+      <marker class="begin-verse" mid="v87008005"/>
+      <verse num="5"><q class="begin-double" qid="87008005.1" from="87008005.1" to="87008011.1"/>Young men, I admire each and every one of you in a kindly manner and greatly respect the beauty and the number of such brothers. Not only do I advise you not to display the same madness as that of the old man who has just been tortured, but I also exhort you to yield to me and so enjoy my friendship.</verse>
+      <marker class="begin-verse" mid="v87008006"/>
+      <verse num="6">Just as I am able to punish those who disobey my orders, so I can be a benefactor to those who are disposed to obey me.</verse>
+      <marker class="begin-verse" mid="v87008007"/>
+      <verse num="7">Trust me, then, and you will receive positions of authority in my government after renouncing the ancestral tradition of your national life.</verse>
+      <marker class="begin-verse" mid="v87008008"/>
+      <verse num="8">And enjoy your youth by adopting the Greek way of life and by changing your manner of living.</verse>
+      <marker class="begin-verse" mid="v87008009"/>
+      <verse num="9">But if by disobedience you rouse my anger, you will compel me to destroy each and every one of you with dreadful punishments through tortures.</verse>
+      <marker class="begin-verse" mid="v87008010"/>
+      <verse num="10">Therefore take pity on yourselves. Even I, your enemy, have compassion for your youth and handsome appearance.</verse>
+      <marker class="begin-verse" mid="v87008011"/>
+      <verse num="11">Will you not consider this, that if you disobey, nothing remains for you but to die on the rack?<q class="end-double" qid="87008011.1" from="87008005.1" to="87008011.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87008012"/>
+      <begin-paragraph/>
+      <verse num="12">When he had said these things, he ordered the instruments of torture to be brought forward so as to persuade them out of fear to eat the defiling food.</verse>
+      <marker class="begin-verse" mid="v87008013"/>
+      <verse num="13">And when the guards had placed before them wheels and joint-dislocators, rack and hooks<note nid="n87008013.1"/> and catapults<note nid="n87008013.2"/> and caldrons, braziers and thumbscrews and iron claws and wedges and bellows, the tyrant resumed speaking:</verse>
+      <marker class="begin-verse" mid="v87008014"/>
+      <verse num="14"><q class="begin-double" qid="87008014.1" from="87008014.1" to="87008014.2"/>Be afraid, young fellows, and whatever justice you revere will be merciful to you when you transgress under compulsion.<q class="end-double" qid="87008014.2" from="87008014.1" to="87008014.2"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87008015"/>
+      <begin-paragraph/>
+      <verse num="15">But when they had heard the inducements and saw the dreadful devices, not only were they not afraid, but they also opposed the tyrant with their own philosophy and by their right reasoning nullified his tyranny.</verse>
+      <marker class="begin-verse" mid="v87008016"/>
+      <verse num="16">Let us consider, on the other hand, what arguments might have been used if some of them had been cowardly and unmanly. Would they not have been these?</verse>
+      <marker class="begin-verse" mid="v87008017"/>
+      <verse num="17"><q class="begin-double" qid="87008017.1" from="87008017.1" to="87008026.1"/>O wretches that we are and so senseless! Since the king has summoned and exhorted us to accept kind treatment if we obey him,</verse>
+      <marker class="begin-verse" mid="v87008018"/>
+      <verse num="18">why do we take pleasure in vain resolves and venture upon a disobedience that brings death?</verse>
+      <marker class="begin-verse" mid="v87008019"/>
+      <verse num="19">O men and brothers, should we not fear the instruments of torture and consider the threats of torments and give up this vain opinion and this arrogance that threatens to destroy us?</verse>
+      <marker class="begin-verse" mid="v87008020"/>
+      <verse num="20">Let us take pity on our youth and have compassion on our mother<q class="end-single" qid="87008020.1"/>s age;</verse>
+      <marker class="begin-verse" mid="v87008021"/>
+      <verse num="21">and let us seriously consider that if we disobey we are dead!</verse>
+      <marker class="begin-verse" mid="v87008022"/>
+      <verse num="22">Also, divine justice will excuse us for fearing the king when we are under compulsion.</verse>
+      <marker class="begin-verse" mid="v87008023"/>
+      <verse num="23">Why do we banish ourselves from this most pleasant life and deprive ourselves of this delightful world?</verse>
+      <marker class="begin-verse" mid="v87008024"/>
+      <verse num="24">Let us not struggle against compulsion<note nid="n87008024.1"/> or take hollow pride in being put to the rack.</verse>
+      <marker class="begin-verse" mid="v87008025"/>
+      <verse num="25">Not even the law itself would be inclined to slay us for fearing the instruments of torture.</verse>
+      <marker class="begin-verse" mid="v87008026"/>
+      <verse num="26">Why does such contentiousness excite us and such a fatal stubbornness please us, when we can live in peace if we obey the king?<q class="end-double" qid="87008026.1" from="87008017.1" to="87008026.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87008027"/>
+      <begin-paragraph/>
+      <verse num="27">But the youths, though about to be tortured, neither said any of these things nor even seriously considered them.</verse>
+      <marker class="begin-verse" mid="v87008028"/>
+      <verse num="28">For they were contemptuous of the emotions and sovereign over agonies,</verse>
+      <marker class="begin-verse" mid="v87008029"/>
+      <verse num="29">so that as soon as the tyrant had ceased counseling them to eat defiling food, all with one voice together, as from one mind, said:</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v87009001"/>
+    <chapter num="9">
+      <begin-paragraph/>
+      <verse num="1"><q class="begin-double" qid="87009001.1" from="87009001.1" to="87009009.1"/>Why do you delay, O tyrant? For we are ready to die rather than transgress our ancestral commandments;</verse>
+      <marker class="begin-verse" mid="v87009002"/>
+      <verse num="2">we are obviously putting our ancestors to shame unless we should practice ready obedience to the law and to Moses<note nid="n87009002.1"/> our counselor.</verse>
+      <marker class="begin-verse" mid="v87009003"/>
+      <verse num="3">Tyrant and counselor of lawlessness, in your hatred for us do not pity us more than we pity ourselves.<note nid="n87009003.1"/></verse>
+      <marker class="begin-verse" mid="v87009004"/>
+      <verse num="4">For we consider this pity of yours that insures our safety through transgression of the law to be more grievous than death itself.</verse>
+      <marker class="begin-verse" mid="v87009005"/>
+      <verse num="5">You are trying to terrify us by threatening us with death by torture, as though a short time ago you learned nothing from Eleazar.</verse>
+      <marker class="begin-verse" mid="v87009006"/>
+      <verse num="6">And if the aged men of the Hebrews for the sake of piety fulfilled their religious duty<note nid="n87009006.1"/> while enduring torture, it would be even more fitting that we young men should die despising your coercive tortures, which our aged instructor also overcame.</verse>
+      <marker class="begin-verse" mid="v87009007"/>
+      <verse num="7">Therefore, tyrant, put us to the test; and if you take our lives because of our religion, do not suppose that you can injure us by torturing us.</verse>
+      <marker class="begin-verse" mid="v87009008"/>
+      <verse num="8">For we, through this severe suffering and endurance, shall have the prizes of virtue and shall be with God, for whom we suffer;</verse>
+      <marker class="begin-verse" mid="v87009009"/>
+      <verse num="9">but you, because of your bloodthirstiness toward us, will deservedly undergo from the divine justice eternal torment by fire.<q class="end-double" qid="87009009.1" from="87009001.1" to="87009009.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87009010"/>
+      <heading>Torture of First Brother</heading>
+      <begin-paragraph/>
+      <verse num="10">When they had said these things the tyrant not only was angry, as at those who are disobedient, but also was enraged, as at those who are ungrateful.</verse>
+      <marker class="begin-verse" mid="v87009011"/>
+      <verse num="11">Then at his command the guards brought forward the eldest, and having torn off his tunic, they bound his hands and arms with thongs on each side.</verse>
+      <marker class="begin-verse" mid="v87009012"/>
+      <verse num="12">When they had worn themselves out beating him with scourges, without accomplishing anything, they placed him upon the wheel.</verse>
+      <marker class="begin-verse" mid="v87009013"/>
+      <verse num="13">When the noble youth was stretched out around this, his limbs were dislocated,</verse>
+      <marker class="begin-verse" mid="v87009014"/>
+      <verse num="14">and though broken in every member he denounced the tyrant, saying,</verse>
+      <marker class="begin-verse" mid="v87009015"/>
+      <verse num="15"><q class="begin-double" qid="87009015.1" from="87009015.1" to="87009015.2"/>Most abominable tyrant, enemy of heavenly justice, savage of mind, you are mangling me in this manner, not because I am a murderer or as one who acts impiously, but because I protect the divine law.<q class="end-double" qid="87009015.2" from="87009015.1" to="87009015.2"/></verse>
+      <marker class="begin-verse" mid="v87009016"/>
+      <verse num="16">And when the guards said, <q class="begin-double" qid="87009016.1" from="87009016.1" to="87009016.2"/>Agree to eat so that you may be released from the tortures,<q class="end-double" qid="87009016.2" from="87009016.1" to="87009016.2"/></verse>
+      <marker class="begin-verse" mid="v87009017"/>
+      <verse num="17">he replied, <q class="begin-double" qid="87009017.1" from="87009017.1" to="87009018.1"/>You abominable lackeys, your wheel is not so powerful as to strangle my reason. Cut my limbs, burn my flesh, and twist my joints.</verse>
+      <marker class="begin-verse" mid="v87009018"/>
+      <verse num="18">Through all these tortures I will convince you that sons of the Hebrews alone are invincible on behalf of virtue.<q class="end-double" qid="87009018.1" from="87009017.1" to="87009018.1"/></verse>
+      <marker class="begin-verse" mid="v87009019"/>
+      <verse num="19">While he was saying these things, they spread fire under him, and while fanning the flames<note nid="n87009019.1"/> they tightened the wheel further.</verse>
+      <marker class="begin-verse" mid="v87009020"/>
+      <verse num="20">The wheel was completely smeared with blood, and the heap of coals was being quenched by the drippings of gore, and pieces of flesh were falling off the axles of the machine.</verse>
+      <marker class="begin-verse" mid="v87009021"/>
+      <verse num="21">Although the ligaments joining his bones were already severed, the courageous youth, worthy<note nid="n87009021.1"/> of Abraham, did not groan,</verse>
+      <marker class="begin-verse" mid="v87009022"/>
+      <verse num="22">but as though transformed by fire into immortality he nobly endured the rackings.</verse>
+      <marker class="begin-verse" mid="v87009023"/>
+      <verse num="23"><q class="begin-double" qid="87009023.1" from="87009023.1" to="87009023.2"/>Imitate me, brothers,<q class="end-double" qid="87009023.2" from="87009023.1" to="87009023.2"/> he said. <q class="begin-double" qid="87009023.3" from="87009023.3" to="87009024.1"/>Do not leave your post in my struggle<note nid="n87009023.1"/> or renounce our courageous brotherhood.</verse>
+      <marker class="begin-verse" mid="v87009024"/>
+      <verse num="24">Fight the sacred and noble battle for piety. Thereby the just providence of our ancestors may become merciful to our nation and take vengeance on the accursed tyrant.<q class="end-double" qid="87009024.1" from="87009023.3" to="87009024.1"/></verse>
+      <marker class="begin-verse" mid="v87009025"/>
+      <verse num="25">When he had said this, the saintly youth broke the thread of life.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87009026"/>
+      <heading>Torture of Second Brother</heading>
+      <begin-paragraph/>
+      <verse num="26">While all were marveling at his courageous spirit, the guards brought the next eldest forward, and after fitting themselves with iron gauntlets having sharp hooks, they bound him to the torture machine and catapult.</verse>
+      <marker class="begin-verse" mid="v87009027"/>
+      <verse num="27">Before torturing him, they inquired if he were willing to eat, and they heard this noble decision.<note nid="n87009027.1"/></verse>
+      <marker class="begin-verse" mid="v87009028"/>
+      <verse num="28">These leopardlike beasts tore out his sinews with the iron hands, flayed all his flesh up to his chin, and tore away his scalp. But he steadfastly endured this agony and said,</verse>
+      <marker class="begin-verse" mid="v87009029"/>
+      <verse num="29"><q class="begin-double" qid="87009029.1" from="87009029.1" to="87009029.2"/>How sweet is any kind of death for the sake of our ancestral piety!<q class="end-double" qid="87009029.2" from="87009029.1" to="87009029.2"/></verse>
+      <marker class="begin-verse" mid="v87009030"/>
+      <verse num="30">To the tyrant he said, <q class="begin-double" qid="87009030.1" from="87009030.1" to="87009032.1"/>Do you not think, you most savage tyrant, that you are being tortured more than I, as you see the arrogant design of your tyranny being defeated by our endurance for the sake of piety?</verse>
+      <marker class="begin-verse" mid="v87009031"/>
+      <verse num="31">I lighten my pain by the joys that come from virtue,</verse>
+      <marker class="begin-verse" mid="v87009032"/>
+      <verse num="32">but you suffer torture by the threats that come from impiety. You will not escape, most abominable tyrant, the punishments of the divine wrath.<q class="end-double" qid="87009032.1" from="87009030.1" to="87009032.1"/></verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v87010001"/>
+    <chapter num="10">
+      <heading>Torture of Third Brother</heading>
+      <begin-paragraph/>
+      <verse num="1">When he too had endured a glorious death, the third was led forward, and many repeatedly urged him to save himself by tasting the meat.</verse>
+      <marker class="begin-verse" mid="v87010002"/>
+      <verse num="2">But he shouted, <q class="begin-double" qid="87010002.1" from="87010002.1" to="87010003.1"/>Do you not know that the same father begot me and those who died and the same mother bore me and that I was brought up on the same teachings?</verse>
+      <marker class="begin-verse" mid="v87010003"/>
+      <verse num="3">I do not renounce the noble kinship that binds me to my brothers.<q class="end-double" qid="87010003.1" from="87010002.1" to="87010003.1"/><note nid="n87010003.1"/></verse>
+      <marker class="begin-verse" mid="v87010005"/>
+      <verse num="5">Enraged by the man<q class="end-single" qid="87010005.1"/>s boldness, they disjointed his hands and feet with their instruments, dismembering him by prying his limbs from their sockets</verse>
+      <marker class="begin-verse" mid="v87010006"/>
+      <verse num="6">and breaking his fingers and arms and legs and elbows.</verse>
+      <marker class="begin-verse" mid="v87010007"/>
+      <verse num="7">Since they were unable in any way to break his spirit,<note nid="n87010007.1"/> they abandoned the instruments<note nid="n87010007.2"/> and scalped him with their fingernails in Scythian fashion.</verse>
+      <marker class="begin-verse" mid="v87010008"/>
+      <verse num="8">They immediately brought him to the wheel, and while his vertebrae were being dislocated upon it he saw his own flesh torn all around and drops of blood flowing from his entrails.</verse>
+      <marker class="begin-verse" mid="v87010009"/>
+      <verse num="9">When he was about to die, he said,</verse>
+      <marker class="begin-verse" mid="v87010010"/>
+      <verse num="10"><q class="begin-double" qid="87010010.1" from="87010010.1" to="87010011.1"/>We, most abominable tyrant, are suffering because of our godly training and virtue,</verse>
+      <marker class="begin-verse" mid="v87010011"/>
+      <verse num="11">but you, because of your impiety and bloodthirstiness, will undergo unceasing torments.<q class="end-double" qid="87010011.1" from="87010010.1" to="87010011.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87010012"/>
+      <heading>Torture of Fourth Brother</heading>
+      <begin-paragraph/>
+      <verse num="12">When he also had died in a manner worthy of his brothers, they dragged the fourth forward, saying,</verse>
+      <marker class="begin-verse" mid="v87010013"/>
+      <verse num="13"><q class="begin-double" qid="87010013.1" from="87010013.1" to="87010013.2"/>As for you, do not give way to the same insanity as your brothers, but obey the king and save yourself.<q class="end-double" qid="87010013.2" from="87010013.1" to="87010013.2"/></verse>
+      <marker class="begin-verse" mid="v87010014"/>
+      <verse num="14">But he said to them, <q class="begin-double" qid="87010014.1" from="87010014.1" to="87010016.1"/>You do not have a fire hot enough to make me play the coward.</verse>
+      <marker class="begin-verse" mid="v87010015"/>
+      <verse num="15">No, by the blessed death of my brothers, by the eternal destruction of the tyrant, and by the everlasting life of the pious, I will not renounce our noble brotherhood.</verse>
+      <marker class="begin-verse" mid="v87010016"/>
+      <verse num="16">Contrive tortures, tyrant, so that you may learn from them that I am a brother to those who have just been tortured.<q class="end-double" qid="87010016.1" from="87010014.1" to="87010016.1"/></verse>
+      <marker class="begin-verse" mid="v87010017"/>
+      <verse num="17">When he heard this, the bloodthirsty, murderous, and utterly abominable Antiochus gave orders to cut out his tongue.</verse>
+      <marker class="begin-verse" mid="v87010018"/>
+      <verse num="18">But he said, <q class="begin-double" qid="87010018.1" from="87010018.1" to="87010021.1"/>Even if you remove my organ of speech, God hears even those who are mute.</verse>
+      <marker class="begin-verse" mid="v87010019"/>
+      <verse num="19">See, here is my tongue; cut it off, for in spite of this you will not make our reason speechless.</verse>
+      <marker class="begin-verse" mid="v87010020"/>
+      <verse num="20">Gladly, for the sake of God, we let our bodily members be mutilated.</verse>
+      <marker class="begin-verse" mid="v87010021"/>
+      <verse num="21">God will visit you swiftly, for you are cutting out a tongue that has been melodious with divine hymns.<q class="end-double" qid="87010021.1" from="87010018.1" to="87010021.1"/></verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v87011001"/>
+    <chapter num="11">
+      <heading>Torture of Fifth Brother</heading>
+      <begin-paragraph/>
+      <verse num="1">When this one died also, after being cruelly tortured, the fifth leaped up, saying,</verse>
+      <marker class="begin-verse" mid="v87011002"/>
+      <verse num="2"><q class="begin-double" qid="87011002.1" from="87011002.1" to="87011006.1"/>I will not refuse, tyrant, to be tortured for the sake of virtue.</verse>
+      <marker class="begin-verse" mid="v87011003"/>
+      <verse num="3">I have come of my own accord, so that by murdering me you will incur punishment from the heavenly justice for even more crimes.</verse>
+      <marker class="begin-verse" mid="v87011004"/>
+      <verse num="4">Hater of virtue, hater of mankind, for what act of ours are you destroying us in this way?</verse>
+      <marker class="begin-verse" mid="v87011005"/>
+      <verse num="5">Is it because<note nid="n87011005.1"/> we revere the Creator of all things and live according to his virtuous law?</verse>
+      <marker class="begin-verse" mid="v87011006"/>
+      <verse num="6">But these deeds deserve honors, not tortures.<q class="end-double" qid="87011006.1" from="87011002.1" to="87011006.1"/><note nid="n87011006.1"/></verse>
+      <marker class="begin-verse" mid="v87011009"/>
+      <verse num="9">While he was saying these things, the guards bound him and dragged him to the catapult;</verse>
+      <marker class="begin-verse" mid="v87011010"/>
+      <verse num="10">they tied him to it on his knees, and fitting iron clamps on them, they twisted his back<note nid="n87011010.1"/> around a wedge worked by a wheel,<note nid="n87011010.2"/> so that he was completely curled back like a scorpion, and all his members were disjointed.</verse>
+      <marker class="begin-verse" mid="v87011011"/>
+      <verse num="11">In this condition, gasping for breath and in anguish of body,</verse>
+      <marker class="begin-verse" mid="v87011012"/>
+      <verse num="12">he said, <q class="begin-double" qid="87011012.1" from="87011012.1" to="87011012.2"/>Tyrant, they are splendid favors that you grant us against your will, because through these noble sufferings you give us an opportunity to show our steadfastness toward the law.<q class="end-double" qid="87011012.2" from="87011012.1" to="87011012.2"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87011013"/>
+      <heading>Torture of Sixth Brother</heading>
+      <begin-paragraph/>
+      <verse num="13">After he too had died, the sixth, a mere boy, was led forward. When the tyrant inquired whether he was willing to eat and be released, he said,</verse>
+      <marker class="begin-verse" mid="v87011014"/>
+      <verse num="14"><q class="begin-double" qid="87011014.1" from="87011014.1" to="87011016.1"/>I am younger in age than my brothers, but I am their equal in mind.</verse>
+      <marker class="begin-verse" mid="v87011015"/>
+      <verse num="15">Since to this end we were born and bred, we ought likewise to die for the same principles.</verse>
+      <marker class="begin-verse" mid="v87011016"/>
+      <verse num="16">So if it seems right to you to torture me for not eating defiling foods, go on torturing!<q class="end-double" qid="87011016.1" from="87011014.1" to="87011016.1"/></verse>
+      <marker class="begin-verse" mid="v87011017"/>
+      <verse num="17">When he had said this, they led him to the wheel.</verse>
+      <marker class="begin-verse" mid="v87011018"/>
+      <verse num="18">He was carefully stretched tight upon it, his back was broken, and he was roasted<note nid="n87011018.1"/> from underneath.</verse>
+      <marker class="begin-verse" mid="v87011019"/>
+      <verse num="19">To his back they applied sharp spits that had been heated in the fire and pierced his ribs so that his entrails were burned through.</verse>
+      <marker class="begin-verse" mid="v87011020"/>
+      <verse num="20">While being tortured he said, <q class="begin-double" qid="87011020.1" from="87011020.1" to="87011027.1"/>O contest suiting holiness, in which so many of us brothers have been summoned to an arena of sufferings for the sake of piety and in which we have not been defeated!</verse>
+      <marker class="begin-verse" mid="v87011021"/>
+      <verse num="21">For devout knowledge, O tyrant, is invincible.</verse>
+      <marker class="begin-verse" mid="v87011022"/>
+      <verse num="22">I also, equipped with nobility, will die with my brothers,</verse>
+      <marker class="begin-verse" mid="v87011023"/>
+      <verse num="23">and I myself will bring a great avenger upon you, you inventor of tortures and enemy of those who are truly devout.</verse>
+      <marker class="begin-verse" mid="v87011024"/>
+      <verse num="24">We six boys have put an end to your tyranny!</verse>
+      <marker class="begin-verse" mid="v87011025"/>
+      <verse num="25">Since you have not been able to persuade us to change our mind or to force us to eat defiling foods, is not this your downfall?</verse>
+      <marker class="begin-verse" mid="v87011026"/>
+      <verse num="26">Your fire is cold to us, and the catapults painless, and your violence powerless.</verse>
+      <marker class="begin-verse" mid="v87011027"/>
+      <verse num="27">For it is not the guards of the tyrant but those of the divine law that are set over us; therefore we hold our reason unconquered.<q class="end-double" qid="87011027.1" from="87011020.1" to="87011027.1"/></verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v87012001"/>
+    <chapter num="12">
+      <heading>Torture of Seventh Brother</heading>
+      <begin-paragraph/>
+      <verse num="1">When he also, thrown into the caldron, had died a blessed death, the seventh and youngest of all came forward.</verse>
+      <marker class="begin-verse" mid="v87012002"/>
+      <verse num="2">Even though the tyrant had been fearfully reproached by the brothers, he felt strong compassion for this child when he saw that he was already in fetters. He summoned him to come nearer and tried to counsel him, saying,</verse>
+      <marker class="begin-verse" mid="v87012003"/>
+      <verse num="3"><q class="begin-double" qid="87012003.1" from="87012003.1" to="87012005.1"/>You see the result of your brothers<q class="end-single" qid="87012003.2"/> stupidity, for they died in torments because of their disobedience.</verse>
+      <marker class="begin-verse" mid="v87012004"/>
+      <verse num="4">You too, if you do not obey, will die a tortured wretch before your time,</verse>
+      <marker class="begin-verse" mid="v87012005"/>
+      <verse num="5">but if you yield to persuasion you will be my friend and a leader in the government of the kingdom.<q class="end-double" qid="87012005.1" from="87012003.1" to="87012005.1"/></verse>
+      <marker class="begin-verse" mid="v87012006"/>
+      <verse num="6">When he had so pleaded, he sent for the boy<q class="end-single" qid="87012006.1"/>s mother to show compassion on her who had been bereaved of so many sons and to influence her to persuade<note nid="n87012006.1"/> the surviving son to obey and save himself.</verse>
+      <marker class="begin-verse" mid="v87012007"/>
+      <verse num="7">But once his mother had exhorted him in the Hebrew language, as we shall tell a little later,</verse>
+      <marker class="begin-verse" mid="v87012008"/>
+      <verse num="8">he said, <q class="begin-double" qid="87012008.1" from="87012008.1" to="87012008.2"/>Let me loose, let me speak to the king and to all his friends that are with him.<q class="end-double" qid="87012008.2" from="87012008.1" to="87012008.2"/></verse>
+      <marker class="begin-verse" mid="v87012009"/>
+      <verse num="9">Extremely pleased by the boy<q class="end-single" qid="87012009.1"/>s declaration, they freed him at once.</verse>
+      <marker class="begin-verse" mid="v87012010"/>
+      <verse num="10">Running to the nearest of the braziers,</verse>
+      <marker class="begin-verse" mid="v87012011"/>
+      <verse num="11">he said, <q class="begin-double" qid="87012011.1" from="87012011.1" to="87012014.1"/>You profane tyrant, most impious of all the wicked, since you have received good things and also your kingdom from God, were you not ashamed to murder his servants and torture the athletes of piety?</verse>
+      <marker class="begin-verse" mid="v87012012"/>
+      <verse num="12">Because of this, justice has laid up for you a more intense and eternal fire and tortures, and these throughout all time<note nid="n87012012.1"/> will never let you go.</verse>
+      <marker class="begin-verse" mid="v87012013"/>
+      <verse num="13">As a man, were you not ashamed, you most savage beast, to cut out the tongues of those who have feelings like yours and are made of the same elements as you and to maltreat and torture them in this way?</verse>
+      <marker class="begin-verse" mid="v87012014"/>
+      <verse num="14">Surely they by dying nobly fulfilled their pious duty to God, but you will wail bitterly for having slain without cause the contestants for virtue.<q class="end-double" qid="87012014.1" from="87012011.1" to="87012014.1"/></verse>
+      <marker class="begin-verse" mid="v87012015"/>
+      <verse num="15">Then because he too was about to die, he said,</verse>
+      <marker class="begin-verse" mid="v87012016"/>
+      <verse num="16"><q class="begin-double" qid="87012016.1" from="87012016.1" to="87012018.1"/>I do not desert the excellent example<note nid="n87012016.1"/> of my brothers,</verse>
+      <marker class="begin-verse" mid="v87012017"/>
+      <verse num="17">and I call on the God of our fathers to be merciful to our nation;<note nid="n87012017.1"/></verse>
+      <marker class="begin-verse" mid="v87012018"/>
+      <verse num="18">but on you he will take vengeance both in this present life and when you are dead.<q class="end-double" qid="87012018.1" from="87012016.1" to="87012018.1"/></verse>
+      <marker class="begin-verse" mid="v87012019"/>
+      <verse num="19">After he had uttered these imprecations, he flung himself into the braziers and so ended his life.<note nid="n87012019.1"/></verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v87013001"/>
+    <chapter num="13">
+      <heading>Reason’s Sovereignty in the Seven</heading>
+      <begin-paragraph/>
+      <verse num="1">Since, then, the seven brothers despised sufferings even unto death, everyone must concede that devout reason is sovereign over the emotions.</verse>
+      <marker class="begin-verse" mid="v87013002"/>
+      <verse num="2">For if they had been slaves to their emotions and had eaten defiling food, we would say that they had been conquered by these emotions.</verse>
+      <marker class="begin-verse" mid="v87013003"/>
+      <verse num="3">But in fact it was not so. Instead, by reason, which is praised before God, they prevailed over their emotions.</verse>
+      <marker class="begin-verse" mid="v87013004"/>
+      <verse num="4">The supremacy of the mind over these cannot be overlooked, for the brothers<note nid="n87013004.1"/> mastered both emotions and pains.</verse>
+      <marker class="begin-verse" mid="v87013005"/>
+      <verse num="5">How then can one fail to confess the sovereignty of right reason over emotion in those who were not turned back by fiery agonies?</verse>
+      <marker class="begin-verse" mid="v87013006"/>
+      <verse num="6">For just as towers jutting out over harbors hold back the threatening waves and make it calm for those who sail into the inner basin,</verse>
+      <marker class="begin-verse" mid="v87013007"/>
+      <verse num="7">so the seven-towered right reason of the youths, by fortifying the harbor of piety, conquered the tempest of the emotions.</verse>
+      <marker class="begin-verse" mid="v87013008"/>
+      <verse num="8">For they constituted a holy chorus of piety and emboldened one another, saying,</verse>
+      <marker class="begin-verse" mid="v87013009"/>
+      <verse num="9"><q class="begin-double" qid="87013009.1" from="87013009.1" to="87013010.1"/>Brothers, let us die like brothers for the sake of the law; let us imitate the three youths in Assyria who despised the same ordeal of the furnace.</verse>
+      <marker class="begin-verse" mid="v87013010"/>
+      <verse num="10">Let us not be cowardly in the demonstration of our piety.<q class="end-double" qid="87013010.1" from="87013009.1" to="87013010.1"/></verse>
+      <marker class="begin-verse" mid="v87013011"/>
+      <verse num="11">While one said, <q class="begin-double" qid="87013011.1" from="87013011.1" to="87013011.2"/>Courage, brother,<q class="end-double" qid="87013011.2" from="87013011.1" to="87013011.2"/> another said, <q class="begin-double" qid="87013011.3" from="87013011.3" to="87013011.4"/>Bear up nobly,<q class="end-double" qid="87013011.4" from="87013011.3" to="87013011.4"/></verse>
+      <marker class="begin-verse" mid="v87013012"/>
+      <verse num="12">and another reminded them, <q class="begin-double" qid="87013012.1" from="87013012.1" to="87013012.2"/>Remember whence you came and the father by whose hand Isaac submitted to being slain for the sake of religion.<q class="end-double" qid="87013012.2" from="87013012.1" to="87013012.2"/></verse>
+      <marker class="begin-verse" mid="v87013013"/>
+      <verse num="13">Each of them and all of them together looking at one another, cheerful and undaunted, said, <q class="begin-double" qid="87013013.1" from="87013013.1" to="87013017.1"/>Let us with all our hearts consecrate ourselves to God, who gave us our lives,<note nid="n87013013.1"/> and let us use our bodies as a bulwark for the law.</verse>
+      <marker class="begin-verse" mid="v87013014"/>
+      <verse num="14">Let us not fear him who thinks he is killing us,</verse>
+      <marker class="begin-verse" mid="v87013015"/>
+      <verse num="15">for great is the contest of the soul and the danger of eternal torment lying before those who transgress the commandment of God.</verse>
+      <marker class="begin-verse" mid="v87013016"/>
+      <verse num="16">Therefore let us put on the full armor of the restraint of the passions that comes through divine reason.</verse>
+      <marker class="begin-verse" mid="v87013017"/>
+      <verse num="17">For if we so die,<note nid="n87013017.1"/> Abraham and Isaac and Jacob will welcome us, and all the fathers will praise us.<q class="end-double" qid="87013017.1" from="87013013.1" to="87013017.1"/></verse>
+      <marker class="begin-verse" mid="v87013018"/>
+      <verse num="18">Those who were left behind said to each of the brothers who were being dragged away, <q class="begin-double" qid="87013018.1" from="87013018.1" to="87013018.2"/>Do not put us to shame, brother, or betray the brothers who have died before us.<q class="end-double" qid="87013018.2" from="87013018.1" to="87013018.2"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87013019"/>
+      <begin-paragraph/>
+      <verse num="19">You are not ignorant of the affection of brotherhood, which the divine and all-wise Providence has bequeathed through the fathers to their descendants and which was implanted in the mother<q class="end-single" qid="87013019.1"/>s womb.</verse>
+      <marker class="begin-verse" mid="v87013020"/>
+      <verse num="20">There the brothers dwelt the same length of time and were shaped during the same period of time; and growing from the same blood and through the same life, they were brought to the light of day.</verse>
+      <marker class="begin-verse" mid="v87013021"/>
+      <verse num="21">When they were born after an equal time of gestation, they drank milk from the same fountains. From such embraces brotherly loving souls are nourished;</verse>
+      <marker class="begin-verse" mid="v87013022"/>
+      <verse num="22">and they grow stronger from this common nurture and daily companionship and from both general education and our discipline in the law of God.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87013023"/>
+      <begin-paragraph/>
+      <verse num="23">Therefore, when sympathy and brotherly affection had been so established, the seven brothers were the more sympathetic to one another.</verse>
+      <marker class="begin-verse" mid="v87013024"/>
+      <verse num="24">Since they had been educated by the same law and trained in the same virtues and brought up together in right living, they loved one another all the more.</verse>
+      <marker class="begin-verse" mid="v87013025"/>
+      <verse num="25">A common zeal for nobility expanded their good will and harmony toward one another,</verse>
+      <marker class="begin-verse" mid="v87013026"/>
+      <verse num="26">because, with the aid of piety, they rendered their brotherly love more fervent.</verse>
+      <marker class="begin-verse" mid="v87013027"/>
+      <verse num="27">But although nature and companionship and virtuous habits had augmented the affection of brotherhood, those who were left endured, for the sake of piety, watching their brothers being maltreated and tortured to death.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v87014001"/>
+    <chapter num="14">
+      <begin-paragraph/>
+      <verse num="1">Furthermore, they encouraged them to face the torture, so that they not only despised their agonies, but also mastered the emotions of brotherly love.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87014002"/>
+      <begin-paragraph/>
+      <verse num="2">O reason,<note nid="n87014002.1"/> more royal than kings and freer than the free!</verse>
+      <marker class="begin-verse" mid="v87014003"/>
+      <verse num="3">O sacred music of the seven brothers, well tuned in regard to piety!</verse>
+      <marker class="begin-verse" mid="v87014004"/>
+      <verse num="4">None of the seven youths proved coward or shrank from death,</verse>
+      <marker class="begin-verse" mid="v87014005"/>
+      <verse num="5">but all of them, as though running the course toward immortality, hastened to death by torture.</verse>
+      <marker class="begin-verse" mid="v87014006"/>
+      <verse num="6">Just as the hands and feet are moved in harmony with the guidance of the mind, so those holy youths, as though moved by an immortal spirit of piety, agreed to go to death for its sake.</verse>
+      <marker class="begin-verse" mid="v87014007"/>
+      <verse num="7">O holiest seven, brothers in harmony! For just as the seven days of creation move in choral dance around piety,</verse>
+      <marker class="begin-verse" mid="v87014008"/>
+      <verse num="8">so these youths, forming a chorus of seven, encircled the fear of tortures and dissolved it.</verse>
+      <marker class="begin-verse" mid="v87014009"/>
+      <verse num="9">Even now, we ourselves shudder as we hear of the tribulations of these young men; they not only saw what was happening, yes, not only heard the direct word of threat, but also bore up steadfastly under the sufferings and in agonies of fire at that.</verse>
+      <marker class="begin-verse" mid="v87014010"/>
+      <verse num="10">What could be more excruciatingly painful than this? For the power of fire is intense and swift, and it consumed their bodies quickly.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87014011"/>
+      <heading>Encomium on the Mother of the Seven</heading>
+      <begin-paragraph/>
+      <verse num="11">Do not consider it amazing that reason had full command over these men in their tortures, since even the mind of a woman despised more diverse agonies,</verse>
+      <marker class="begin-verse" mid="v87014012"/>
+      <verse num="12">for the mother of the seven young men bore up under the rackings of each one of her children.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87014013"/>
+      <begin-paragraph/>
+      <verse num="13">Observe how complex is a mother<q class="end-single" qid="87014013.1"/>s love for her children, which draws everything toward a sympathy felt in her inmost parts.</verse>
+      <marker class="begin-verse" mid="v87014014"/>
+      <verse num="14">Even unreasoning animals, like mankind, have a sympathy and parental love for their offspring.</verse>
+      <marker class="begin-verse" mid="v87014015"/>
+      <verse num="15">For example, among birds, the ones that are tame protect their young by building on the housetops,</verse>
+      <marker class="begin-verse" mid="v87014016"/>
+      <verse num="16">and the others, by building in mountain peaks and precipitous chasms and in the holes and tops of trees, hatch the nestlings and ward off the intruder.</verse>
+      <marker class="begin-verse" mid="v87014017"/>
+      <verse num="17">If they are unable to keep him away, they do what they can to help their young by flying in circles around them in the anguish of love and warning them with their own calls.</verse>
+      <marker class="begin-verse" mid="v87014018"/>
+      <verse num="18">And why is it necessary to demonstrate sympathy for children by the example of unreasoning animals,</verse>
+      <marker class="begin-verse" mid="v87014019"/>
+      <verse num="19">since even bees at the time for making honeycombs defend themselves against intruders and, as though with an iron dart, sting those who approach their hive and defend it even to the death?</verse>
+      <marker class="begin-verse" mid="v87014020"/>
+      <verse num="20">But sympathy for her children did not sway the mother of the young men; she was of the same mind as Abraham.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v87015001"/>
+    <chapter num="15">
+      <begin-paragraph/>
+      <verse num="1">O reason of the children, tyrant over the emotions! O piety, more desirable to the mother than her children!</verse>
+      <marker class="begin-verse" mid="v87015002"/>
+      <verse num="2">Two courses were open to this mother, that of piety and that of preserving her seven sons for a time, as the tyrant had promised.</verse>
+      <marker class="begin-verse" mid="v87015003"/>
+      <verse num="3">She loved piety more, the piety that preserves them for eternal life according to God<q class="end-single" qid="87015003.1"/>s promise.</verse>
+      <marker class="begin-verse" mid="v87015004"/>
+      <verse num="4">In what manner might I express the emotions of parents who love their children? We impress upon the character of a small child a wondrous likeness both of mind and of form. Especially is this true of mothers, who because of their birth pains have a deeper sympathy toward their offspring than do the fathers.</verse>
+      <marker class="begin-verse" mid="v87015005"/>
+      <verse num="5">For to the degree that mothers are weaker and the more children they bear, the more they are devoted to their children.</verse>
+      <marker class="begin-verse" mid="v87015006"/>
+      <verse num="6">The mother of the seven boys, more than any other mother, loved her children. In seven pregnancies she had implanted in herself tender love toward them,</verse>
+      <marker class="begin-verse" mid="v87015007"/>
+      <verse num="7">and because of the many pains she suffered with each of them she had sympathy for them;</verse>
+      <marker class="begin-verse" mid="v87015008"/>
+      <verse num="8">yet because of the fear of God she disdained the temporary safety of her children.</verse>
+      <marker class="begin-verse" mid="v87015009"/>
+      <verse num="9">Not only so, but also because of the nobility of her sons and their ready obedience to the law she felt a greater tenderness toward them.</verse>
+      <marker class="begin-verse" mid="v87015010"/>
+      <verse num="10">For they were just and self-controlled and courageous and magnanimous and loved their brothers and their mother, so that they obeyed her even to death in keeping the ordinances.</verse>
+      <marker class="begin-verse" mid="v87015011"/>
+      <verse num="11">Nevertheless, though so many factors influenced the mother to suffer with them out of love for her children, in the case of none of them were the various tortures strong enough to pervert her reason.</verse>
+      <marker class="begin-verse" mid="v87015012"/>
+      <verse num="12">Instead, the mother urged them on, each child singly and all together, to death for the sake of piety.</verse>
+      <marker class="begin-verse" mid="v87015013"/>
+      <verse num="13">O sacred nature and parental love, yearning of parents toward offspring, nurture, and indomitable maternal feelings!</verse>
+      <marker class="begin-verse" mid="v87015014"/>
+      <verse num="14">This mother, who saw them tortured and burned one by one, for the sake of piety did not change her attitude.</verse>
+      <marker class="begin-verse" mid="v87015015"/>
+      <verse num="15">She watched the flesh of her children consumed by fire, their toes and fingers scattered<note nid="n87015015.1"/> on the ground, and the flesh of the head to the chin exposed like masks.</verse>
+      <marker class="begin-verse" mid="v87015016"/>
+      <verse num="16">O mother, tried now by more bitter pains than even the birth pains you suffered for them!</verse>
+      <marker class="begin-verse" mid="v87015017"/>
+      <verse num="17">O woman, who alone gave birth to such perfect piety!</verse>
+      <marker class="begin-verse" mid="v87015018"/>
+      <verse num="18">When the firstborn breathed his last it did not turn you aside, nor when the second in torments looked at you piteously, nor when the third expired;</verse>
+      <marker class="begin-verse" mid="v87015019"/>
+      <verse num="19">nor did you weep when you looked at the eyes of each one in his tortures gazing boldly at the same agonies and saw in their nostrils signs of the approach of death.</verse>
+      <marker class="begin-verse" mid="v87015020"/>
+      <verse num="20">When you saw the flesh of children burned<note nid="n87015020.1"/> upon the flesh of other children, severed hands upon hands, detached heads upon heads, and corpses fallen on other corpses, and when you saw the place filled with many spectators of the torturings of your children, you did not shed tears.</verse>
+      <marker class="begin-verse" mid="v87015021"/>
+      <verse num="21">Neither the melodies of sirens nor the songs of swans attract the attention of their hearers as did the voices of the children in torture calling to their mother.</verse>
+      <marker class="begin-verse" mid="v87015022"/>
+      <verse num="22">How great and how many torments the mother then suffered as her sons were tortured on the wheel and with the hot irons!</verse>
+      <marker class="begin-verse" mid="v87015023"/>
+      <verse num="23">But devout reason, giving her heart a man<q class="end-single" qid="87015023.1"/>s courage in the very midst of her emotions, strengthened her to disregard her temporal love for her children.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87015024"/>
+      <begin-paragraph/>
+      <verse num="24">Although she witnessed the destruction of seven children and the ingenious and various rackings, this noble mother disregarded all these<note nid="n87015024.1"/> because of faith in God.</verse>
+      <marker class="begin-verse" mid="v87015025"/>
+      <verse num="25">For as in the council chamber of her own soul she saw mighty advocates—nature, family, parental love, and the instruments awaiting her children—</verse>
+      <marker class="begin-verse" mid="v87015026"/>
+      <verse num="26">this mother held two ballots, one bearing death and the other deliverance for her children.</verse>
+      <marker class="begin-verse" mid="v87015027"/>
+      <verse num="27">She did not approve the deliverance that would preserve the seven sons for a short time,</verse>
+      <marker class="begin-verse" mid="v87015028"/>
+      <verse num="28">but as the daughter of God-fearing Abraham she remembered his fortitude.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87015029"/>
+      <begin-paragraph/>
+      <verse num="29">O mother of the nation, vindicator of the law and defender of piety, who carried away the prize of the contest in your heart!</verse>
+      <marker class="begin-verse" mid="v87015030"/>
+      <verse num="30">O more noble than males in steadfastness and more manly than men in endurance!</verse>
+      <marker class="begin-verse" mid="v87015031"/>
+      <verse num="31">Just as Noah<q class="end-single" qid="87015031.1"/>s ark, carrying the world in the universal flood, stoutly endured the waves,</verse>
+      <marker class="begin-verse" mid="v87015032"/>
+      <verse num="32">so you, O guardian of the law, overwhelmed from every side by the flood and violent winds of your emotions, surrounded by the torture of your sons, endured nobly and withstood the wintry storms that assail piety.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v87016001"/>
+    <chapter num="16">
+      <begin-paragraph/>
+      <verse num="1">If, then, a woman, advanced in years and mother of seven sons, endured seeing her children tortured to death, it must be admitted that devout reason is sovereign over the emotions.</verse>
+      <marker class="begin-verse" mid="v87016002"/>
+      <verse num="2">Thus I have demonstrated not only that men have ruled over the emotions, but also that a woman has despised the fiercest tortures.</verse>
+      <marker class="begin-verse" mid="v87016003"/>
+      <verse num="3">The lions surrounding Daniel were not so savage, nor was the raging fiery furnace of Mishael so intensely hot, as was the innate parental love that inflamed her as she saw her seven sons tortured in such varied ways.</verse>
+      <marker class="begin-verse" mid="v87016004"/>
+      <verse num="4">But the mother quenched so many and such great emotions by devout reason.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87016005"/>
+      <begin-paragraph/>
+      <verse num="5">Consider this also. If this woman, though a mother, had been fainthearted, she would have mourned over them and perhaps have spoken as follows:</verse>
+      <marker class="begin-verse" mid="v87016006"/>
+      <verse num="6"><q class="begin-double" qid="87016006.1" from="87016006.1" to="87016011.1"/>O how wretched am I and thrice unhappy time after time! After bearing seven children, I am now the mother of none!</verse>
+      <marker class="begin-verse" mid="v87016007"/>
+      <verse num="7">O seven childbirths all in vain, seven profitless pregnancies, fruitless nurturings, and wretched nursings!</verse>
+      <marker class="begin-verse" mid="v87016008"/>
+      <verse num="8">In vain, my sons, I endured many birth pains for you and the more grievous anxieties of your upbringing.</verse>
+      <marker class="begin-verse" mid="v87016009"/>
+      <verse num="9">Alas for my children, some unmarried, others married and without offspring.<note nid="n87016009.1"/> I shall not see your children or have the happiness of being called grandmother.</verse>
+      <marker class="begin-verse" mid="v87016010"/>
+      <verse num="10">Alas, I who had so many and beautiful children am a widow and alone, with many sorrows.<note nid="n87016010.1"/></verse>
+      <marker class="begin-verse" mid="v87016011"/>
+      <verse num="11">Nor when I die, shall I have any of my sons to bury me.<q class="end-double" qid="87016011.1" from="87016006.1" to="87016011.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87016012"/>
+      <begin-paragraph/>
+      <verse num="12">Yet the sacred and God-fearing mother did not wail with such a lament for any of them, nor did she dissuade any of them from dying, nor did she grieve as they were dying,</verse>
+      <marker class="begin-verse" mid="v87016013"/>
+      <verse num="13">but, as though having a mind like adamant and giving rebirth for immortality to the whole number of her sons, she implored them and urged them on to death for the sake of piety.</verse>
+      <marker class="begin-verse" mid="v87016014"/>
+      <verse num="14">O mother, soldier of God in the cause of piety, elder and woman!<note nid="n87016014.1"/> By steadfastness you have conquered even a tyrant, and in word and deed you have proved more powerful than a man.</verse>
+      <marker class="begin-verse" mid="v87016015"/>
+      <verse num="15">For when you and your sons were arrested together, you stood and watched Eleazar being tortured and said to your sons in the Hebrew language,</verse>
+      <marker class="begin-verse" mid="v87016016"/>
+      <verse num="16"><q class="begin-double" qid="87016016.1" from="87016016.1" to="87016023.1"/>My sons, noble is the contest to which you are called to bear witness for the nation. Fight zealously for our ancestral law.</verse>
+      <marker class="begin-verse" mid="v87016017"/>
+      <verse num="17">For it would be shameful if, while an aged man endures such agonies for the sake of piety, you young men were to be terrified by tortures.</verse>
+      <marker class="begin-verse" mid="v87016018"/>
+      <verse num="18">Remember that it is through God that you have had a share in the world and have enjoyed life,</verse>
+      <marker class="begin-verse" mid="v87016019"/>
+      <verse num="19">and therefore you ought to endure every suffering for the sake of God.</verse>
+      <marker class="begin-verse" mid="v87016020"/>
+      <verse num="20">For his sake also our father Abraham was zealous to sacrifice his son Isaac, the ancestor of our nation; and when Isaac saw his father<q class="end-single" qid="87016020.1"/>s hand wielding a sword and descending upon him, he did not cower.</verse>
+      <marker class="begin-verse" mid="v87016021"/>
+      <verse num="21">And Daniel the righteous was thrown to the lions, and Hananiah, Azariah, and Mishael were hurled into the fiery furnace and endured it for the sake of God.</verse>
+      <marker class="begin-verse" mid="v87016022"/>
+      <verse num="22">You too must have the same faith toward God and not be grieved.</verse>
+      <marker class="begin-verse" mid="v87016023"/>
+      <verse num="23">It is unreasonable for people who have knowledge of piety not to withstand pain.<q class="end-double" qid="87016023.1" from="87016016.1" to="87016023.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87016024"/>
+      <begin-paragraph/>
+      <verse num="24">By these words the mother of the seven encouraged and persuaded each of her sons to die rather than violate God<q class="end-single" qid="87016024.1"/>s commandment.</verse>
+      <marker class="begin-verse" mid="v87016025"/>
+      <verse num="25">They knew also that those who die for the sake of God live to God, as do Abraham and Isaac and Jacob and all the patriarchs.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v87017001"/>
+    <chapter num="17">
+      <begin-paragraph/>
+      <verse num="1">Some of the guards said that when she also was about to be seized and put to death she threw herself into the flames so that no one might touch her body.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87017002"/>
+      <begin-paragraph/>
+      <verse num="2">O mother, who with your seven sons nullified the violence of the tyrant, frustrated his evil designs, and showed the nobility of your faith!</verse>
+      <marker class="begin-verse" mid="v87017003"/>
+      <verse num="3">Nobly set like a roof on the pillars of your sons, you held firm and unswerving against the earthquake of the tortures.</verse>
+      <marker class="begin-verse" mid="v87017004"/>
+      <verse num="4">Take courage, therefore, O holy-minded mother, maintaining firm an enduring hope in God.</verse>
+      <marker class="begin-verse" mid="v87017005"/>
+      <verse num="5">The moon in heaven, with the stars, does not stand so august as you, who, after lighting the way to piety for your starlike seven sons, stand in honor before God and are firmly set in heaven with them.</verse>
+      <marker class="begin-verse" mid="v87017006"/>
+      <verse num="6">For your children were true descendants of father Abraham.<note nid="n87017006.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87017007"/>
+      <heading>Effect of the Martyrdoms</heading>
+      <begin-paragraph/>
+      <verse num="7">If it were permitted for us to paint the history of your piety as an artist might, would not the viewers have shuddered as they saw the mother of the seven children enduring their varied tortures to death for the sake of piety?</verse>
+      <marker class="begin-verse" mid="v87017008"/>
+      <verse num="8">Indeed it would be proper to inscribe upon their tomb these words as a reminder to the people of our nation:<note nid="n87017008.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87017009"/>
+      <begin-paragraph/>
+      <verse num="9"><q class="begin-double" qid="87017009.1" from="87017009.1" to="87017010.1"/>Here lie buried an aged priest and an aged woman and seven children, because of the violence of the tyrant who wished to destroy the polity of the Hebrews.</verse>
+      <marker class="begin-verse" mid="v87017010"/>
+      <verse num="10">They vindicated their nation, looking to God and enduring torture even to death.<q class="end-double" qid="87017010.1" from="87017009.1" to="87017010.1"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87017011"/>
+      <begin-paragraph/>
+      <verse num="11">Truly the contest in which they were engaged was divine,</verse>
+      <marker class="begin-verse" mid="v87017012"/>
+      <verse num="12">for on that day virtue gave the awards and tested them for their endurance. Victory brought immortality in endless life.</verse>
+      <marker class="begin-verse" mid="v87017013"/>
+      <verse num="13">Eleazar was the first contestant, the mother of the seven sons entered the competition, and the brothers contended.</verse>
+      <marker class="begin-verse" mid="v87017014"/>
+      <verse num="14">The tyrant was the antagonist, and the world and the human race were the spectators.</verse>
+      <marker class="begin-verse" mid="v87017015"/>
+      <verse num="15">Reverence for God was victor and gave the crown to its own athletes.</verse>
+      <marker class="begin-verse" mid="v87017016"/>
+      <verse num="16">Who did not admire the athletes of the divine<note nid="n87017016.1"/> legislation? Who were not amazed?</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87017017"/>
+      <begin-paragraph/>
+      <verse num="17">The tyrant himself and all his council marveled at their<note nid="n87017017.1"/> endurance,</verse>
+      <marker class="begin-verse" mid="v87017018"/>
+      <verse num="18">because of which they now stand before the divine throne and live through blessed eternity.</verse>
+      <marker class="begin-verse" mid="v87017019"/>
+      <verse num="19">For Moses says, <q class="begin-double" qid="87017019.1" from="87017019.1" to="87017019.2"/>All who are consecrated are under your hands.<q class="end-double" qid="87017019.2" from="87017019.1" to="87017019.2"/></verse>
+      <marker class="begin-verse" mid="v87017020"/>
+      <verse num="20">These, then, who have been consecrated for the sake of God,<note nid="n87017020.1"/> are honored, not only with this honor, but also because of them our enemies did not rule over our nation,</verse>
+      <marker class="begin-verse" mid="v87017021"/>
+      <verse num="21">the tyrant was punished, and the homeland purified—they having become, as it were, a ransom for the sin of our nation.</verse>
+      <marker class="begin-verse" mid="v87017022"/>
+      <verse num="22">And through the blood of those devout ones and their death as a propitiatory offering, divine providence preserved Israel that previously had been afflicted.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87017023"/>
+      <begin-paragraph/>
+      <verse num="23">For the tyrant Antiochus, when he saw the courage of their virtue and their endurance under the tortures, proclaimed the endurance of these people to his soldiers as an example,</verse>
+      <marker class="begin-verse" mid="v87017024"/>
+      <verse num="24">and this made them noble and courageous for infantry battle and siege, and he ravaged and conquered all his enemies.</verse>
+      <end-paragraph/>
+    </chapter>
+    <marker class="begin-verse" mid="v87018001"/>
+    <chapter num="18">
+      <begin-paragraph/>
+      <verse num="1">O Israelite children, offspring of the seed of Abraham, obey this law and exercise piety in every way,</verse>
+      <marker class="begin-verse" mid="v87018002"/>
+      <verse num="2">knowing that devout reason is master of the emotions, not only of sufferings from within, but also of those from without.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87018003"/>
+      <begin-paragraph/>
+      <verse num="3">Therefore those who gave over their bodies in suffering for the sake of piety were not only admired by human beings, but also were deemed worthy to share in a divine inheritance.</verse>
+      <marker class="begin-verse" mid="v87018004"/>
+      <verse num="4">Because of them the nation gained peace, and by reviving observance of the law in the homeland they ravaged the enemy.</verse>
+      <marker class="begin-verse" mid="v87018005"/>
+      <verse num="5">The tyrant Antiochus was both punished on earth and is being chastised after his death. Since in no way whatever was he able to compel the Israelites to adopt foreign customs and to abandon their ancestral customs, he left Jerusalem and marched against the Persians.</verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87018006"/>
+      <heading>The Mother’s Address to Her Children</heading>
+      <begin-paragraph/>
+      <verse num="6">The mother of the seven sons expressed also these principles to her children:</verse>
+      <marker class="begin-verse" mid="v87018007"/>
+      <verse num="7"><q class="begin-double" qid="87018007.1" from="87018007.1" to="87018019.3"/>I was a pure virgin and did not go outside my father<q class="end-single" qid="87018007.2"/>s house; but I guarded the rib from which woman was made.<note nid="n87018007.1"/></verse>
+      <marker class="begin-verse" mid="v87018008"/>
+      <verse num="8">No seducer corrupted me on a desert plain, nor did the destroyer, the deceitful serpent, defile the purity of my virginity.</verse>
+      <marker class="begin-verse" mid="v87018009"/>
+      <verse num="9">In the time of my maturity I remained with my husband, and when these sons had grown up their father died. He was blessed to have lived out his life with good children and not have the grief of bereavement.</verse>
+      <marker class="begin-verse" mid="v87018010"/>
+      <verse num="10">While he was still with you, he taught you the Law and the Prophets.</verse>
+      <marker class="begin-verse" mid="v87018011"/>
+      <verse num="11">He read to you about Abel slain by Cain and about Isaac who was offered as a whole burnt offering and about Joseph in prison.</verse>
+      <marker class="begin-verse" mid="v87018012"/>
+      <verse num="12">He told you of the zeal of Phineas, and he taught you about Hananiah, Azariah, and Mishael in the fire.</verse>
+      <marker class="begin-verse" mid="v87018013"/>
+      <verse num="13">He praised Daniel in the den of the lions and blessed him.</verse>
+      <marker class="begin-verse" mid="v87018014"/>
+      <verse num="14">He reminded you of the Scripture of Isaiah, which says, <q class="begin-single" qid="87018014.1" from="87018014.1" to="87018014.2"/>Even though you go through the fire, the flame shall not consume you.<q class="end-single" qid="87018014.2" from="87018014.1" to="87018014.2"/></verse>
+      <marker class="begin-verse" mid="v87018015"/>
+      <verse num="15">He sang to you songs of the psalmist David, who said, <q class="begin-single" qid="87018015.1" from="87018015.1" to="87018015.2"/>Many are the afflictions of the righteous.<q class="end-single" qid="87018015.2" from="87018015.1" to="87018015.2"/></verse>
+      <marker class="begin-verse" mid="v87018016"/>
+      <verse num="16">He recounted to you Solomon<q class="end-single" qid="87018016.1"/>s proverb, <q class="begin-single" qid="87018016.2" from="87018016.2" to="87018016.3"/>There<note nid="n87018016.1"/> is a tree of life for those who do his will.<q class="end-single" qid="87018016.3" from="87018016.2" to="87018016.3"/></verse>
+      <marker class="begin-verse" mid="v87018017"/>
+      <verse num="17">He confirmed the saying of Ezekiel, <q class="begin-single" qid="87018017.1" from="87018017.1" to="87018017.2"/>Shall these dry bones live?<q class="end-single" qid="87018017.2" from="87018017.1" to="87018017.2"/></verse>
+      <marker class="begin-verse" mid="v87018018"/>
+      <verse num="18">For he did not forget to teach you the song that Moses taught, which says,</verse>
+      <marker class="begin-verse" mid="v87018019"/>
+      <verse num="19"><q class="begin-single" qid="87018019.1" from="87018019.1" to="87018019.2"/>I kill and I make alive: this is your life and the length of your days.<q class="end-single" qid="87018019.2" from="87018019.1" to="87018019.2"/><q class="end-double" qid="87018019.3" from="87018007.1" to="87018019.3"/></verse>
+      <end-paragraph/>
+      <marker class="begin-verse" mid="v87018020"/>
+      <begin-paragraph/>
+      <verse num="20">O bitter was that day—and yet not bitter—when that bitter tyrant of the Greeks quenched fire with fire in his cruel caldrons and in his burning rage brought those seven sons of the daughter of Abraham to the catapult and back again to more<note nid="n87018020.1"/> tortures,</verse>
+      <marker class="begin-verse" mid="v87018021"/>
+      <verse num="21">pierced the pupils of their eyes and cut out their tongues and put them to death with various tortures.</verse>
+      <marker class="begin-verse" mid="v87018022"/>
+      <verse num="22">For these crimes divine justice pursued and will pursue the accursed tyrant.</verse>
+      <marker class="begin-verse" mid="v87018023"/>
+      <verse num="23">But the sons of Abraham with their victorious mother are gathered together into<note nid="n87018023.1"/> the chorus of the fathers and have received pure and immortal<note nid="n87018023.2"/> souls from God,</verse>
+      <marker class="begin-verse" mid="v87018024"/>
+      <verse num="24">to whom be glory forever and ever. Amen.</verse>
+      <end-paragraph/>
+    </chapter>
+  </book>
+</crossway-bible>

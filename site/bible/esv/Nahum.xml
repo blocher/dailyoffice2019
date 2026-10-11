@@ -1,0 +1,380 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE crossway-bible SYSTEM "schema/crossway.bibles.dtd">
+<crossway-bible translation="English Standard Version" revision="2025-02-02" xmlns="http://www.crosswaybibles.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="schema/crossway.bibles.xsd">
+<book title="Nahum" num="34">
+  <marker class="begin-verse" mid="v34001001"/>
+  <chapter num="1">
+    <begin-paragraph/>
+    <verse num="1"><crossref let="a" cid="c34001001.1"/>An oracle concerning <crossref let="b" cid="c34001001.2"/>Nineveh. The book of the vision of Nahum of Elkosh.</verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v34001002"/>
+    <heading>God&apos;s Wrath Against Nineveh</heading>
+    <begin-block-indent/>
+    <begin-paragraph class="line-group"/>
+    <verse num="2">
+        <begin-line/><crossref let="c" cid="c34001002.1"/>The <span class="divine-name">Lord</span> is a jealous and avenging God;<end-line class="br"/>
+        <begin-line class="indent"/>the <span class="divine-name">Lord</span> is avenging and wrathful;<end-line class="br"/>
+        <begin-line/><crossref let="d" cid="c34001002.2"/>the <span class="divine-name">Lord</span> takes vengeance on his adversaries<end-line class="br"/>
+        <begin-line class="indent"/>and <crossref let="e" cid="c34001002.3"/>keeps wrath for his enemies.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34001003"/>
+    <verse num="3">
+        <begin-line/><crossref let="f" cid="c34001003.1"/>The <span class="divine-name">Lord</span> is slow to anger and <crossref let="g" cid="c34001003.2"/>great in power,<end-line class="br"/>
+        <begin-line class="indent"/>and <crossref let="h" cid="c34001003.3"/>the <span class="divine-name">Lord</span> will by no means clear the guilty.<end-line class="br"/>
+        <begin-line/><crossref let="i" cid="c34001003.4"/>His way is in whirlwind and storm,<end-line class="br"/>
+        <begin-line class="indent"/>and the clouds are the dust of his feet.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34001004"/>
+    <verse num="4">
+        <begin-line/><crossref let="j" cid="c34001004.1"/>He rebukes the sea and makes it dry;<end-line class="br"/>
+        <begin-line class="indent"/>he dries up all the rivers;<end-line class="br"/>
+        <begin-line/><crossref let="k" cid="c34001004.2"/>Bashan and <crossref let="l" cid="c34001004.3"/>Carmel wither;<end-line class="br"/>
+        <begin-line class="indent"/>the bloom of <crossref let="k" cid="c34001004.4"/>Lebanon withers.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34001005"/>
+    <verse num="5">
+        <begin-line/><crossref let="m" cid="c34001005.1"/>The mountains quake before him;<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="n" cid="c34001005.2"/>the hills melt;<end-line class="br"/>
+        <begin-line/>the earth heaves before him,<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="o" cid="c34001005.3"/>the world and all who dwell in it.<end-line/>
+    </verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v34001006"/>
+    <begin-paragraph class="line-group"/>
+    <verse num="6">
+        <begin-line/><crossref let="p" cid="c34001006.1"/>Who can stand before his indignation?<end-line class="br"/>
+        <begin-line class="indent"/>Who can endure the heat of his anger?<end-line class="br"/>
+        <begin-line/>His wrath <crossref let="q" cid="c34001006.2"/>is poured out like fire,<end-line class="br"/>
+        <begin-line class="indent"/>and <crossref let="r" cid="c34001006.3"/>the rocks are broken into pieces by him.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34001007"/>
+    <verse num="7">
+        <begin-line/><crossref let="s" cid="c34001007.1"/>The <span class="divine-name">Lord</span> is good,<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="t" cid="c34001007.2"/>a stronghold in the day of trouble;<end-line class="br"/>
+        <begin-line/><crossref let="u" cid="c34001007.3"/>he knows those who take refuge in him.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34001008"/>
+    <verse num="8">
+        <begin-line class="indent"/>But <crossref let="v" cid="c34001008.1"/>with an overflowing flood<end-line class="br"/>
+        <begin-line/>he will make a complete end of the adversaries,<note nid="n34001008.1"/><end-line class="br"/>
+        <begin-line class="indent"/>and <crossref let="w" cid="c34001008.2"/>will pursue his enemies into darkness.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34001009"/>
+    <verse num="9">
+        <begin-line/>What <crossref let="x" cid="c34001009.1"/>do you plot against the <span class="divine-name">Lord</span>?<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="y" cid="c34001009.2"/>He will make a complete end;<end-line class="br"/>
+        <begin-line class="indent"/>trouble will not rise up a second time.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34001010"/>
+    <verse num="10">
+        <begin-line/>For they are <crossref let="z" cid="c34001010.1"/>like entangled thorns,<end-line class="br"/>
+        <begin-line class="indent"/>like drunkards as they drink;<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="a" cid="c34001010.2"/>they are consumed like stubble fully dried.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34001011"/>
+    <verse num="11">
+        <begin-line/>From you came one<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="b" cid="c34001011.1"/>who plotted evil against the <span class="divine-name">Lord</span>,<end-line class="br"/>
+        <begin-line class="indent"/>a worthless counselor.<end-line/>
+    </verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v34001012"/>
+    <begin-paragraph class="line-group"/>
+    <verse num="12">
+        <begin-line/>Thus says the <span class="divine-name">Lord</span>,<end-line class="br"/>
+        <begin-line/><q class="begin-double" qid="34001012.1" from="34001012.1" to="34001013.1"/>Though they are at full strength and many,<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="c" cid="c34001012.1"/>they will be cut down and pass away.<end-line class="br"/>
+        <begin-line/><crossref let="d" cid="c34001012.2"/>Though I have afflicted you,<end-line class="br"/>
+        <begin-line class="indent"/>I will afflict you no more.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34001013"/>
+    <verse num="13">
+        <begin-line/>And now <crossref let="e" cid="c34001013.1"/>I will break his yoke from off you<end-line class="br"/>
+        <begin-line class="indent"/>and will burst your bonds apart.<q class="end-double" qid="34001013.1" from="34001012.1" to="34001013.1"/><end-line/>
+    </verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v34001014"/>
+    <begin-paragraph class="line-group"/>
+    <verse num="14">
+        <begin-line/>The <span class="divine-name">Lord</span> has given commandment about you:<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="f" cid="c34001014.1"/><q class="begin-double" qid="34001014.1" from="34001014.1" to="34001014.2"/>No more shall your name be perpetuated;<end-line class="br"/>
+        <begin-line/>from <crossref let="g" cid="c34001014.2"/>the house of your gods I will cut off<end-line class="br"/>
+        <begin-line class="indent"/>the carved image and the metal image.<end-line class="br"/>
+        <begin-line/><crossref let="h" cid="c34001014.3"/>I will make your grave, <crossref let="i" cid="c34001014.4"/>for you are vile.<q class="end-double" qid="34001014.2" from="34001014.1" to="34001014.2"/><end-line/>
+    </verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v34001015"/>
+    <begin-paragraph class="line-group"/>
+    <verse num="15">
+        <begin-line/><note nid="n34001015.1"/> <crossref let="j" cid="c34001015.1"/>Behold, upon the mountains, <crossref let="k" cid="c34001015.2"/>the feet of him<end-line class="br"/>
+        <begin-line class="indent"/>who brings good news,<end-line class="br"/>
+        <begin-line class="indent"/>who publishes peace!<end-line class="br"/>
+        <begin-line/><crossref let="l" cid="c34001015.3"/>Keep your feasts, O Judah;<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="m" cid="c34001015.4"/>fulfill your vows,<end-line class="br"/>
+        <begin-line/><crossref let="n" cid="c34001015.5"/>for never again shall the worthless pass through you;<end-line class="br"/>
+        <begin-line class="indent"/>he is utterly cut off.<end-line/>
+    </verse>
+    <end-paragraph/>
+    <end-block-indent/>
+  </chapter>
+  <marker class="begin-verse" mid="v34002001"/>
+  <chapter num="2">
+    <heading>The Destruction of Nineveh</heading>
+    <begin-block-indent/>
+    <begin-paragraph class="line-group"/>
+    <verse num="1">
+        <begin-line/><crossref let="o" cid="c34002001.1"/>The scatterer has come up against you.<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="p" cid="c34002001.2"/>Man the ramparts;<end-line class="br"/>
+        <begin-line class="indent"/>watch the road;<end-line class="br"/>
+        <begin-line/>dress for battle;<note nid="n34002001.1"/><end-line class="br"/>
+        <begin-line class="indent"/>collect all your strength.<end-line/>
+    </verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v34002002"/>
+    <begin-paragraph class="line-group"/>
+    <verse num="2">
+        <begin-line/>For <crossref let="q" cid="c34002002.1"/>the <span class="divine-name">Lord</span> is restoring the majesty of Jacob<end-line class="br"/>
+        <begin-line class="indent"/>as the majesty of Israel,<end-line class="br"/>
+        <begin-line/>for plunderers have plundered them<end-line class="br"/>
+        <begin-line class="indent"/>and <crossref let="r" cid="c34002002.2"/>ruined their branches.<end-line/>
+    </verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v34002003"/>
+    <begin-paragraph class="line-group"/>
+    <verse num="3">
+        <begin-line/>The shield of his mighty men is red;<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="s" cid="c34002003.1"/>his soldiers are clothed in scarlet.<end-line class="br"/>
+        <begin-line/>The chariots come with flashing metal<end-line class="br"/>
+        <begin-line class="indent"/>on the day he musters them;<end-line class="br"/>
+        <begin-line class="indent"/>the cypress spears are brandished.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34002004"/>
+    <verse num="4">
+        <begin-line/><crossref let="t" cid="c34002004.1"/>The chariots race madly through the streets;<end-line class="br"/>
+        <begin-line class="indent"/>they rush to and fro through the squares;<end-line class="br"/>
+        <begin-line/>they gleam like torches;<end-line class="br"/>
+        <begin-line class="indent"/>they dart like lightning.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34002005"/>
+    <verse num="5">
+        <begin-line/>He remembers <crossref let="u" cid="c34002005.1"/>his officers;<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="v" cid="c34002005.2"/>they stumble as they go,<end-line class="br"/>
+        <begin-line/>they hasten to the wall;<end-line class="br"/>
+        <begin-line class="indent"/>the siege tower<note nid="n34002005.1"/> is set up.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34002006"/>
+    <verse num="6">
+        <begin-line/><crossref let="w" cid="c34002006.1"/>The river gates are opened;<end-line class="br"/>
+        <begin-line class="indent"/>the palace <crossref let="x" cid="c34002006.2"/>melts away;<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34002007"/>
+    <verse num="7">
+        <begin-line/>its mistress<note nid="n34002007.1"/> is <crossref let="y" cid="c34002007.1"/>stripped;<note nid="n34002007.2"/> she is carried off,<end-line class="br"/>
+        <begin-line class="indent"/>her slave girls <crossref let="z" cid="c34002007.2"/>lamenting,<end-line class="br"/>
+        <begin-line/>moaning like doves<end-line class="br"/>
+        <begin-line class="indent"/>and beating their breasts.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34002008"/>
+    <verse num="8">
+        <begin-line/><crossref let="b" cid="c34002008.1"/>Nineveh is like a pool<end-line class="br"/>
+        <begin-line class="indent"/>whose waters run away.<note nid="n34002008.1"/><end-line class="br"/>
+        <begin-line/><q class="begin-double" qid="34002008.1" from="34002008.1" to="34002008.2"/>Halt! Halt!<q class="end-double" qid="34002008.2" from="34002008.1" to="34002008.2"/> they cry,<end-line class="br"/>
+        <begin-line class="indent"/>but <crossref let="c" cid="c34002008.2"/>none turns back.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34002009"/>
+    <verse num="9">
+        <begin-line/>Plunder the silver,<end-line class="br"/>
+        <begin-line class="indent"/>plunder the gold!<end-line class="br"/>
+        <begin-line/>There is no end of the treasure<end-line class="br"/>
+        <begin-line class="indent"/>or of the wealth of all precious things.<end-line/>
+    </verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v34002010"/>
+    <begin-paragraph class="line-group"/>
+    <verse num="10">
+        <begin-line/><crossref let="d" cid="c34002010.1"/>Desolate! Desolation and ruin!<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="e" cid="c34002010.2"/>Hearts melt and <crossref let="f" cid="c34002010.3"/>knees tremble;<end-line class="br"/>
+        <begin-line/><crossref let="g" cid="c34002010.4"/>anguish is in all loins;<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="h" cid="c34002010.5"/>all faces grow pale!<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34002011"/>
+    <verse num="11">
+        <begin-line/>Where is the lions&apos; den,<end-line class="br"/>
+        <begin-line class="indent"/>the feeding place of <crossref let="i" cid="c34002011.1"/>the young lions,<end-line class="br"/>
+        <begin-line/>where the lion and lioness went,<end-line class="br"/>
+        <begin-line class="indent"/>where his cubs were, with <crossref let="j" cid="c34002011.2"/>none to disturb?<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34002012"/>
+    <verse num="12">
+        <begin-line/><crossref let="k" cid="c34002012.1"/>The lion tore enough for his cubs<end-line class="br"/>
+        <begin-line class="indent"/>and <crossref let="l" cid="c34002012.2"/>strangled prey for his lionesses;<end-line class="br"/>
+        <begin-line/>he filled his caves with prey<end-line class="br"/>
+        <begin-line class="indent"/>and his dens with torn flesh.<end-line/>
+    </verse>
+    <end-paragraph/>
+    <end-block-indent/>
+    <marker class="begin-verse" mid="v34002013"/>
+    <begin-paragraph/>
+    <verse num="13"><crossref let="m" cid="c34002013.1"/>Behold, I am against you, declares the <span class="divine-name">Lord</span> of hosts, and <crossref let="n" cid="c34002013.2"/>I will burn your<note nid="n34002013.1"/> chariots in smoke, and the sword shall devour your young lions. I will cut off your prey from the earth, and <crossref let="o" cid="c34002013.3"/>the voice of your messengers shall no longer be heard.</verse>
+    <end-paragraph/>
+  </chapter>
+  <marker class="begin-verse" mid="v34003001"/>
+  <chapter num="3">
+    <heading>Woe to Nineveh</heading>
+    <begin-block-indent/>
+    <begin-paragraph class="line-group"/>
+    <verse num="1">
+        <begin-line/>Woe to <crossref let="p" cid="c34003001.1"/>the bloody city,<end-line class="br"/>
+        <begin-line class="indent"/>all full of lies and plunder&emdash;<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="q" cid="c34003001.2"/>no end to the prey!<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34003002"/>
+    <verse num="2">
+        <begin-line/>The crack of the whip, and <crossref let="r" cid="c34003002.1"/>rumble of the wheel,<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="s" cid="c34003002.2"/>galloping horse and <crossref let="t" cid="c34003002.3"/>bounding chariot!<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34003003"/>
+    <verse num="3">
+        <begin-line/>Horsemen charging,<end-line class="br"/>
+        <begin-line class="indent"/>flashing sword and <crossref let="u" cid="c34003003.1"/>glittering spear,<end-line class="br"/>
+        <begin-line/><crossref let="v" cid="c34003003.2"/>hosts of slain,<end-line class="br"/>
+        <begin-line class="indent"/>heaps of corpses,<end-line class="br"/>
+        <begin-line/>dead bodies without end&emdash;<end-line class="br"/>
+        <begin-line class="indent"/>they stumble over the bodies!<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34003004"/>
+    <verse num="4">
+        <begin-line/>And all for the countless whorings of the <crossref let="w" cid="c34003004.1"/>prostitute,<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="x" cid="c34003004.2"/>graceful and of deadly charms,<end-line class="br"/>
+        <begin-line/>who betrays nations with her whorings,<end-line class="br"/>
+        <begin-line class="indent"/>and peoples with her charms.<end-line/>
+    </verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v34003005"/>
+    <begin-paragraph class="line-group"/>
+    <verse num="5">
+        <begin-line/><crossref let="m" cid="c34003005.1"/>Behold, I am against you,<end-line class="br"/>
+        <begin-line class="indent"/>declares the <span class="divine-name">Lord</span> of hosts,<end-line class="br"/>
+        <begin-line class="indent"/>and <crossref let="y" cid="c34003005.2"/>will lift up your skirts over your face;<end-line class="br"/>
+        <begin-line/>and I will make nations look at <crossref let="z" cid="c34003005.3"/>your nakedness<end-line class="br"/>
+        <begin-line class="indent"/>and kingdoms at your shame.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34003006"/>
+    <verse num="6">
+        <begin-line/>I will throw filth at you<end-line class="br"/>
+        <begin-line class="indent"/>and <crossref let="a" cid="c34003006.1"/>treat you with contempt<end-line class="br"/>
+        <begin-line class="indent"/>and make you <crossref let="b" cid="c34003006.2"/>a spectacle.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34003007"/>
+    <verse num="7">
+        <begin-line/>And all who look at you <crossref let="c" cid="c34003007.1"/>will shrink from you and say,<end-line class="br"/>
+        <begin-line/><q class="begin-double" qid="34003007.1" from="34003007.1" to="34003007.2"/>Wasted is <crossref let="d" cid="c34003007.2"/>Nineveh; <crossref let="e" cid="c34003007.3"/>who will grieve for her?<q class="end-double" qid="34003007.2" from="34003007.1" to="34003007.2"/><end-line class="br"/>
+        <begin-line class="indent"/><crossref let="f" cid="c34003007.4"/>Where shall I seek comforters for you?<end-line/>
+    </verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v34003008"/>
+    <begin-paragraph class="line-group"/>
+    <verse num="8">
+        <begin-line/><crossref let="g" cid="c34003008.1"/>Are you better than <crossref let="h" cid="c34003008.2"/>Thebes<note nid="n34003008.1"/><end-line class="br"/>
+        <begin-line class="indent"/>that sat <crossref let="i" cid="c34003008.3"/>by the Nile,<end-line class="br"/>
+        <begin-line/>with water around her,<end-line class="br"/>
+        <begin-line class="indent"/>her rampart a sea,<end-line class="br"/>
+        <begin-line class="indent"/>and water her wall?<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34003009"/>
+    <verse num="9">
+        <begin-line/><crossref let="j" cid="c34003009.1"/>Cush was her strength;<end-line class="br"/>
+        <begin-line class="indent"/>Egypt too, and that without limit;<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="k" cid="c34003009.2"/>Put and the <crossref let="l" cid="c34003009.3"/>Libyans were her<note nid="n34003009.1"/> helpers.<end-line/>
+    </verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v34003010"/>
+    <begin-paragraph class="line-group"/>
+    <verse num="10">
+        <begin-line/><crossref let="m" cid="c34003010.1"/>Yet she became an exile;<end-line class="br"/>
+        <begin-line class="indent"/>she went into captivity;<end-line class="br"/>
+        <begin-line/><crossref let="n" cid="c34003010.2"/>her infants were dashed in pieces<end-line class="br"/>
+        <begin-line class="indent"/>at the head of every street;<end-line class="br"/>
+        <begin-line/>for her honored men <crossref let="o" cid="c34003010.3"/>lots were cast,<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="p" cid="c34003010.4"/>and all her great men were bound in chains.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34003011"/>
+    <verse num="11">
+        <begin-line/><crossref let="q" cid="c34003011.1"/>You also will be drunken;<end-line class="br"/>
+        <begin-line class="indent"/>you will go into hiding;<end-line class="br"/>
+        <begin-line/><crossref let="r" cid="c34003011.2"/>you will seek a refuge from the enemy.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34003012"/>
+    <verse num="12">
+        <begin-line/>All your fortresses are <crossref let="s" cid="c34003012.1"/>like fig trees<end-line class="br"/>
+        <begin-line class="indent"/>with first-ripe figs&emdash;<end-line class="br"/>
+        <begin-line/>if shaken they fall<end-line class="br"/>
+        <begin-line class="indent"/>into the mouth of the eater.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34003013"/>
+    <verse num="13">
+        <begin-line/>Behold, your troops<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="t" cid="c34003013.1"/>are women in your midst.<end-line class="br"/>
+        <begin-line/>The gates of your land<end-line class="br"/>
+        <begin-line class="indent"/>are wide open to your enemies;<end-line class="br"/>
+        <begin-line class="indent"/>fire has devoured your bars.<end-line/>
+    </verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v34003014"/>
+    <begin-paragraph class="line-group"/>
+    <verse num="14">
+        <begin-line/><crossref let="u" cid="c34003014.1"/>Draw water for the siege;<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="r" cid="c34003014.2"/>strengthen your forts;<end-line class="br"/>
+        <begin-line/>go into the clay;<end-line class="br"/>
+        <begin-line class="indent"/>tread the mortar;<end-line class="br"/>
+        <begin-line class="indent"/>take hold of the brick mold!<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34003015"/>
+    <verse num="15">
+        <begin-line/>There will the fire devour you;<end-line class="br"/>
+        <begin-line class="indent"/>the sword will cut you off.<end-line class="br"/>
+        <begin-line class="indent"/>It will <crossref let="v" cid="c34003015.1"/>devour you <crossref let="w" cid="c34003015.2"/>like the locust.<end-line class="br"/>
+        <begin-line/>Multiply yourselves <crossref let="w" cid="c34003015.3"/>like the locust;<end-line class="br"/>
+        <begin-line class="indent"/>multiply <crossref let="w" cid="c34003015.4"/>like the grasshopper!<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34003016"/>
+    <verse num="16">
+        <begin-line/>You increased <crossref let="x" cid="c34003016.1"/>your merchants<end-line class="br"/>
+        <begin-line class="indent"/>more than the stars of the heavens.<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="w" cid="c34003016.2"/>The locust spreads its wings and flies away.<end-line/>
+    </verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v34003017"/>
+    <begin-paragraph class="line-group"/>
+    <verse num="17">
+        <begin-line/>Your <crossref let="z" cid="c34003017.1"/>princes<note nid="n34003017.1"/> are <crossref let="w" cid="c34003017.2"/>like grasshoppers,<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="a" cid="c34003017.3"/>your scribes<note nid="n34003017.2"/> like clouds of locusts<end-line class="br"/>
+        <begin-line/>settling on the fences<end-line class="br"/>
+        <begin-line class="indent"/>in a day of cold&emdash;<end-line class="br"/>
+        <begin-line/>when the sun rises, they fly away;<end-line class="br"/>
+        <begin-line class="indent"/>no one knows where they are.<end-line/>
+    </verse>
+    <end-paragraph/>
+    <marker class="begin-verse" mid="v34003018"/>
+    <begin-paragraph class="line-group"/>
+    <verse num="18">
+        <begin-line/>Your shepherds <crossref let="b" cid="c34003018.1"/>are asleep,<end-line class="br"/>
+        <begin-line class="indent"/>O king of Assyria;<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="c" cid="c34003018.2"/>your nobles slumber.<end-line class="br"/>
+        <begin-line/>Your people <crossref let="d" cid="c34003018.3"/>are scattered on the mountains<end-line class="br"/>
+        <begin-line class="indent"/>with none to gather them.<end-line class="br"/>
+    </verse>
+    <marker class="begin-verse" mid="v34003019"/>
+    <verse num="19">
+        <begin-line/>There is no easing your hurt;<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="e" cid="c34003019.1"/>your wound is grievous.<end-line class="br"/>
+        <begin-line/>All who hear the news about you<end-line class="br"/>
+        <begin-line class="indent"/><crossref let="f" cid="c34003019.2"/>clap their hands over you.<end-line class="br"/>
+        <begin-line/>For <crossref let="g" cid="c34003019.3"/>upon whom has not come<end-line class="br"/>
+        <begin-line class="indent"/>your unceasing evil?<end-line/>
+    </verse>
+    <end-paragraph/>
+    <end-block-indent/>
+  </chapter>
+</book>
+</crossway-bible>

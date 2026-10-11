@@ -1,21 +1,22 @@
 <template>
   <Office
-      v-if="!notFound"
-      :service-type="serviceType"
-      :office="office"
-      :calendar-date="calendarDate"
+    v-if="!notFound"
+    :service-type="serviceType"
+    :office="office"
+    :calendar-date="calendarDate"
   />
-  <PageNotFound v-if="notFound"/>
+  <PageNotFound v-if="notFound" />
 </template>
 
 <script>
 // @ is an alias to /src
-import Office from "@/views/Office";
-import setCalendarDate from "@/helpers/setCalendarDate";
-import PageNotFound from "@/views/PageNotFound";
+import Office from '@/views/Office.vue';
+import setCalendarDate from '@/helpers/setCalendarDate';
+import PageNotFound from '@/views/PageNotFound.vue';
+import { DynamicStorage } from '@/helpers/storage';
 
 export default {
-  name: "Today",
+  name: 'Today',
   components: {
     Office,
     PageNotFound,
@@ -27,15 +28,39 @@ export default {
       loading: true,
       office: null,
       calendarDate: null,
-      serviceType: "office",
+      serviceType: 'office',
       notFound: false,
     };
   },
-  async created() {
-    this.serviceType = this.$route.params.serviceType || "office";
-    this.office = this.$route.params.office;
+  watch: {
+    $route(to) {
+      if (to.params.serviceType) {
+        this.serviceType = to.params.serviceType;
+      } else {
+        this.serviceType = 'office';
+      }
+      if (['office', 'family'].includes(this.serviceType)) {
+        DynamicStorage.setItem('serviceType', this.serviceType);
+      }
 
+      this.office = to.params.office;
+      this.calendarDate = setCalendarDate(to);
+      if (!this.calendarDate) {
+        this.notFound = true;
+      } else {
+        this.notFound = false;
+      }
+    },
+  },
+  async created() {
+    this.serviceType = this.$route.params.serviceType || 'office';
+    this.office = this.$route.params.office;
     this.calendarDate = setCalendarDate(this.$route);
+
+    if (['office', 'family'].includes(this.serviceType)) {
+      DynamicStorage.setItem('serviceType', this.serviceType);
+    }
+
     if (!this.calendarDate) {
       this.notFound = true;
       return;

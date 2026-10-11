@@ -1,59 +1,113 @@
 <template>
   <el-collapse-item :title="fullTitle(collect)" :name="collect.uuid">
-    <span v-if="traditional" v-html="collect.traditional_text"/>
-    <span v-if="!traditional" v-html="collect.text"/>
-    <h5>{{ collect.attribution }}</h5>
-    <el-card class="box-card" shadow="never" style="margin:0 0 15px;" body-style="padding:10px;">
-      <p><em>Add this prayer near the end of:</em>
-        <el-checkbox-group v-model="checkList" @change="handleCheckChange">
-          <el-checkbox v-for="office in offices" :key="office" :label="office"/>
-        </el-checkbox-group>
-      </p>
-    </el-card>
+    <div
+      class="collect-content text-[var(--el-text-color-primary)] bg-[var(--el-fill-color-blank)]"
+    >
+      <div
+        class="text-[var(--main-font-size)] leading-[var(--main-line-height)] p-4 font-serif break-words"
+      >
+        <div
+          v-html="traditional ? collect.traditional_text : collect.text"
+        ></div>
+      </div>
+      <h5
+        v-if="collect.attribution"
+        class="mt-2 px-4 text-sm text-[var(--el-text-color-secondary)]"
+      >
+        {{ collect.attribution }}
+      </h5>
+
+      <el-card
+        class="box-card mt-4 mx-4 mb-4 bg-[var(--el-fill-color-light)] border-[var(--el-border-color-lighter)]"
+        shadow="never"
+        body-style="padding: 1rem;"
+      >
+        <div>
+          <p
+            class="mb-2 font-sans font-medium text-[var(--el-text-color-regular)]"
+            style="
+              font-size: calc(var(--main-font-size) * 0.85) !important;
+              line-height: 1.5 !important;
+            "
+          >
+            <em>Add this prayer near the end of:</em>
+          </p>
+          <el-checkbox-group v-model="checkList" @change="handleCheckChange">
+            <el-checkbox
+              v-for="office in offices"
+              :key="office"
+              :label="office"
+            />
+          </el-checkbox-group>
+        </div>
+      </el-card>
+    </div>
   </el-collapse-item>
 </template>
 
 <script>
-import {DynamicStorage} from "@/helpers/storage";
-import {ElMessage} from "element-plus";
-import {getMessageOffset} from "@/helpers/getMessageOffest";
+import { DynamicStorage } from '@/helpers/storage';
+import { ElMessage } from 'element-plus';
+import { getMessageOffset } from '@/helpers/getMessageOffest';
 
 export default {
-  name: "Collect",
-  props: ["collect", "traditional", "extraCollects"],
-  emits: ["extraCollectsChanged"],
+  name: 'Collect',
+  props: ['collect', 'traditional', 'extraCollects'],
+  emits: ['extraCollectsChanged'],
   data() {
     return {
       checkList: [],
-      offices: ["Morning Prayer", "Midday Prayer", "Evening Prayer", "Compline"],
+      offices: [
+        'Morning Prayer',
+        'Midday Prayer',
+        'Evening Prayer',
+        'Compline',
+      ],
     };
   },
   async created() {
     this.offices.forEach((office) => {
-      if (Object.prototype.hasOwnProperty.call(this.extraCollects, office) && this.extraCollects[office].includes(this.collect.uuid)) {
-        this.checkList.push(office)
+      if (
+        Object.prototype.hasOwnProperty.call(this.extraCollects, office) &&
+        this.extraCollects[office].includes(this.collect.uuid)
+      ) {
+        this.checkList.push(office);
       }
     });
   },
   methods: {
     async handleCheckChange() {
-      const defaultDict = {}
+      const defaultDict = {};
       this.offices.forEach((office) => {
-        defaultDict[office] = []
-      })
-      const extraCollects = JSON.parse(await DynamicStorage.getItem('extraCollects')) || defaultDict;
+        defaultDict[office] = [];
+      });
+      const extraCollects =
+        JSON.parse(await DynamicStorage.getItem('extraCollects')) ||
+        defaultDict;
       this.offices.forEach((office) => {
-        if (this.checkList.includes(office) && !(extraCollects[office].includes(this.collect.uuid))) {
-          extraCollects[office].push(this.collect.uuid)
-        } else if (!this.checkList.includes(office) && extraCollects[office].includes(this.collect.uuid)) {
-          extraCollects[office].splice(extraCollects[office].indexOf(this.collect.uuid), 1);
+        if (
+          this.checkList.includes(office) &&
+          !extraCollects[office].includes(this.collect.uuid)
+        ) {
+          extraCollects[office].push(this.collect.uuid);
+        } else if (
+          !this.checkList.includes(office) &&
+          extraCollects[office].includes(this.collect.uuid)
+        ) {
+          extraCollects[office].splice(
+            extraCollects[office].indexOf(this.collect.uuid),
+            1
+          );
         }
       });
-      await DynamicStorage.setItem('extraCollects', JSON.stringify(extraCollects));
-      this.$emit('extraCollectsChanged')
+      await DynamicStorage.setItem(
+        'extraCollects',
+        JSON.stringify(extraCollects)
+      );
+      this.$emit('extraCollectsChanged');
       ElMessage.success({
-        title: "Saved",
-        message: "<small>Your prayer settings have been updated.</small>",
+        title: 'Saved',
+        message: '<small>Your prayer settings have been updated.</small>',
         showClose: true,
         dangerouslyUseHTMLString: true,
         offset: getMessageOffset(),
@@ -61,11 +115,11 @@ export default {
     },
     fullTitle(collect) {
       if (collect.number) {
-        return `${collect.number}. ${collect.title}`
+        return `${collect.number}. ${collect.title}`;
       } else {
-        return collect.title
+        return collect.title;
       }
-    }
+    },
   },
 };
 </script>
@@ -75,5 +129,7 @@ export default {
   font-weight: 800 !important;
 }
 
+.collect-content {
+  padding: 0;
+}
 </style>
-

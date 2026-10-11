@@ -3,9 +3,9 @@ import operator
 from datetime import timedelta
 from functools import reduce
 from itertools import groupby
-from math import ceil, floor
 from types import SimpleNamespace
 
+import pytz
 import requests
 from cachetools.func import lru_cache
 from django.core.exceptions import ValidationError
@@ -13,8 +13,12 @@ from django.db.models import Prefetch
 from django.forms import ModelForm
 from django.http import HttpResponse, Http404
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views.generic import CreateView
+from math import floor
+from premailer import transform
+
 from standrew.email import weekly_email, CommemorationDailyEmailModule, WeeklyMeetingEmailModule
 from standrew.models import (
     MovieCandidate,
@@ -24,6 +28,8 @@ from standrew.models import (
     MovieRankedVote,
     MovieVeto,
     MovieNight,
+    BibleStudyDay,
+    BibleStudyDayPassage,
 )
 from standrew.utils import (
     get_movie_night,
@@ -32,7 +38,6 @@ from standrew.utils import (
     check_if_voting_open,
     CandidateResultDecorator,
     get_today,
-    send_movie_email,
 )
 from website.settings import YOUTUBE_API_KEY, IMDB_API_KEY, UTELLY_API_KEY, OMDB_API_KEY, SITE_ADDRESS
 
@@ -516,3 +521,120 @@ class MovieBallotCreate(CreateView):
             MovieVeto.objects.get_or_create(candidate=candidate, voter_id=self.object.voter_id)
         self.send_voted_email()
         return result
+
+
+def bible_study(self):
+    today = timezone.now().astimezone(pytz.timezone("US/Eastern")).replace(hour=0, minute=0, second=0, microsecond=0)
+    days = BibleStudyDay.objects.order_by("date", "jesus_story_book_number", "created").filter(date__gte=today).all()
+    if days:
+        day = days[0]
+    else:
+        day = BibleStudyDay.objects.order_by("date", "jesus_story_book_number", "created").first()
+    return bible_study_passage(self, day.uuid)
+
+
+def bible_study_passage_email(self=None, id=None, raw_html=False, subject=None):
+    def fetch_main_content(url, tag="main"):
+        import requests
+        from bs4 import BeautifulSoup
+
+        # Fetch the page content
+
+        response = requests.get(url)
+        if response.status_code != 200:
+            raise Exception(f"Failed to fetch the page: {response.status_code}")
+
+        # Parse the HTML with BeautifulSoup
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        main_tag = soup.find(id=tag[1:]) if tag.startswith("#") else soup.find(tag)
+        if not main_tag:
+            raise Exception("No <main> tag found on the page.")
+
+        # Replace custom web components with their inner HTML
+        def replace_custom_elements(element):
+            while True:
+                custom_elements = element.find_all(lambda tag: "-" in tag.name)
+                if not custom_elements:
+                    break
+                for sub_element in custom_elements:
+                    inner_html = sub_element.decode_contents()
+                    # if sub_element.name == "wa-tooltip":
+                    #     continue
+                    if sub_element.name == "wa-callout":
+                        inner_html = f'<div class="callout">{inner_html}</div>'
+                    if sub_element.name == "wa-card":
+                        inner_html = f'<div class="card">{inner_html}</div>'
+                    if sub_element.name == "wa-details":
+                        inner_html = f'<div class="details">{inner_html}</div>'
+                    if sub_element.name == "wa-tag":
+                        inner_html = f'<div class="tag">{inner_html}</div>'
+                    if sub_element.name == "wa-tooltip":
+                        sub_element.decompose()
+                    else:
+                        new_element = BeautifulSoup(inner_html, "html.parser")
+                        sub_element.replace_with(new_element)
+
+        from bs4 import BeautifulSoup
+
+        def remove_attributes_from_sub_elements(element):
+            for attr in ["class", "style", "id"]:
+                element.attrs.pop(attr, None)  # Removes attribute if it exists
+            for tag in element.find_all(True):  # Finds all sub-elements
+                for attr in ["class", "style", "id"]:
+                    if (
+                        attr in tag.attrs
+                        and "callout" not in tag.attrs[attr]
+                        and "details" not in tag.attrs[attr]
+                        and "card" not in tag.attrs[attr]
+                        and "tag" not in tag.attrs[attr]
+                    ):
+                        tag.attrs.pop(attr, None)  # Removes attribute if it exists
+            return element
+
+        replace_custom_elements(main_tag)
+        main_tag = remove_attributes_from_sub_elements(main_tag)
+
+        return str(main_tag)
+
+    # Example Usage
+    url = f"https://api.dailyoffice2019.com/bible_study/{id}"  # Replace with your target page
+    header_html = fetch_main_content(url, tag="#main-header")
+    body_html = fetch_main_content(url)
+    email_html = header_html + body_html
+    context = {
+        "content": email_html,
+        "id": id,
+        "title": subject if subject else "St. Andrew's Bible Study",
+    }
+
+    html = render_to_string("standrew/passage_email.html", context)
+    html = transform(html, base_url="https://api.dailyoffice2019.com", remove_classes=True)
+    if raw_html:
+        return html
+    return HttpResponse(html)
+
+
+def bible_study_passage(self, id):
+    days = (
+        BibleStudyDay.objects.prefetch_related(
+            Prefetch(
+                "biblestudydaypassage_set",
+                queryset=BibleStudyDayPassage.objects.order_by("created").select_related("bible_study_passage"),
+            )
+        )
+        .order_by("jesus_story_book_number")
+        .all()
+    )
+
+    day = [(i, day) for i, day in enumerate(days) if day.uuid == id]
+    if len(day) < 1:
+        raise Http404
+    context = {
+        "day": day[0][1],
+        "previous": days[day[0][0] - 1] if day[0][0] > 0 else None,
+        "next": days[day[0][0] + 1] if day[0][0] < len(days) - 1 else None,
+        "days": days,
+    }
+    html = render_to_string("standrew/passage.html", context)
+    return HttpResponse(html)

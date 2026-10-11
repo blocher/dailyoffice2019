@@ -1,0 +1,213 @@
+from datetime import timedelta
+
+import kronos
+import bugsnag
+from django.core.management.base import BaseCommand, CommandError
+from django.test import RequestFactory
+from django.urls import resolve
+from django.utils import timezone
+from office.api.views.index import AUDIO_GENERATION_REQUIRED
+
+
+@kronos.register("55 9 * * *")
+class Command(BaseCommand):
+    help = "Pre-warm generated office audio for a range of days."
+
+    DEFAULT_DAYS = 9
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--days",
+            type=int,
+            default=self.DEFAULT_DAYS,
+            help=(
+                f"Number of days to warm (default: {self.DEFAULT_DAYS}). Counting starts "
+                "yesterday, or today when --skip-yesterday is set."
+            ),
+        )
+        parser.add_argument(
+            "--skip-yesterday",
+            action="store_true",
+            help="Start warming from today instead of including yesterday.",
+        )
+
+    def handle(self, *args, **options):
+
+        days = options["days"]
+        if days < 1:
+            raise CommandError("--days must be at least 1.")
+        skip_yesterday = options["skip_yesterday"]
+        completed = 0
+        failures = 0
+        reported_errors = set()
+
+        now = timezone.now()
+        start_date = now if skip_yesterday else now - timedelta(days=1)
+        date_list = [(start_date + timedelta(days=i)) for i in range(days)]
+
+        for day in date_list:
+
+            offices = [
+                "office/morning_prayer",
+                "office/midday_prayer",
+                "office/evening_prayer",
+                "office/compline",
+                "family/morning_prayer",
+                "family/midday_prayer",
+                "family/early_evening_prayer",
+                "family/close_of_day_prayer",
+            ]
+
+            for office in offices:
+
+                # Create a mock GET request
+                base_url = f"/api/v1/{office}/{day.strftime("%Y-%m-%d")}"
+
+                # Define the query parameters as a dictionary
+                query_params = {
+                    "language_style": "contemporary",
+                    "psalm_translation": "contemporary",
+                    "bible_translation": "esv",
+                    "psalter": "60",  # needed
+                    "reading_cycle": "1",
+                    "reading_length": "full",
+                    "reading_audio": "off",
+                    "canticle_rotation": "1979",  # needed
+                    "psalm_style": "whole_verse",  # needed
+                    "lectionary": "daily-office-readings",  # needed
+                    "confession": "long-on-fast",
+                    "absolution": "lay",  # needed
+                    "morning_prayer_invitatory": "invitatory_traditional",  # needed
+                    "reading_headings": "off",
+                    "language_style_for_our_father": "traditional",
+                    "national_holidays": "all",
+                    "suffrages": "rotating",
+                    "collects": "rotating",
+                    "mp_great_litany": "mp_litany_on",
+                    "ep_great_litany": "ep_litany_on",
+                    "general_thanksgiving": "on",
+                    "chrysostom": "on",
+                    "grace": "rotating",
+                    "o_antiphons": "literal",
+                    "family_readings": "brief",
+                    "family_reading_audio": "off",
+                    "family_collect": "time_of_day",
+                    "family-opening-sentence": "family-opening-sentence-fixed",
+                    "family-creed": "family-creed-yes",
+                    "extra_collects": "",
+                    "include_audio_links": "true",
+                }
+
+                contemporary_and_traditional = [
+                    {
+                        "language_style": "contemporary",
+                        "psalm_translation": "contemporary",
+                        "bible_translation": "esv",
+                        "language_style_for_our_father": "contemporary",
+                    },
+                    {
+                        "language_style": "traditional",
+                        "psalm_translation": "traditional",
+                        "bible_translation": "kjv",
+                        "language_style_for_our_father": "traditional",
+                    },
+                ]
+
+                for style in contemporary_and_traditional:
+                    new_params = query_params.copy()
+                    new_params |= style
+                    more_changes = [
+                        {
+                            "psalter": "30",
+                        },
+                        {
+                            "canticle_rotation": "default",
+                        },
+                        {
+                            "canticle_rotation": "2011",
+                        },
+                        {
+                            "psalm_style": "half_verse",
+                        },
+                        {
+                            "psalm_style": "unison",
+                        },
+                        {
+                            "lectionary": "mass-readings",
+                        },
+                        {
+                            "absolution": "priest",
+                        },
+                        {
+                            "morning_prayer_invitatory": "invitatory_jubilate_on_feasts",
+                        },
+                        {
+                            "morning_prayer_invitatory": "celebratory_always",
+                        },
+                        {
+                            "morning_prayer_invitatory": "invitatory_rotating",
+                        },
+                        {
+                            "reading_length": "abbreviated",
+                        },
+                    ]
+                    for change in more_changes:
+                        newest_params = new_params.copy()
+                        newest_params |= change
+
+                        # Create the mock request
+                        factory = RequestFactory()
+                        request = factory.get(base_url, data=newest_params)
+                        # This trusted, sequential job may warm its full requested
+                        # range, independently of the public API's date window.
+                        request._audio_prewarm = True
+                        label = f"{base_url} {style['language_style']} {change}"
+                        self.stdout.write(f"Warming {label}")
+                        # Resolve the view based on the URL
+                        match = resolve(base_url)
+
+                        # Call the resolved view with the mock request
+                        token = AUDIO_GENERATION_REQUIRED.set(True)
+                        try:
+                            response = match.func(request, *match.args, **match.kwargs)
+                            if hasattr(response, "render") and callable(response.render):
+                                response = response.render()
+                            if response.status_code >= 400:
+                                raise RuntimeError(f"Office audio returned HTTP {response.status_code}.")
+                        except Exception as exc:
+                            failures += 1
+                            causes = []
+                            cause = exc
+                            while cause is not None:
+                                causes.append(f"{type(cause).__name__}: {cause}")
+                                cause = cause.__cause__
+                            self.stderr.write(f"FAILED {label}: {' <- '.join(causes)}")
+                            error_key = tuple(causes)
+                            if error_key in reported_errors:
+                                continue
+                            try:
+                                bugsnag.notify(
+                                    exc,
+                                    context="update_audio_files",
+                                    metadata={
+                                        "audio_batch": {
+                                            "office": office,
+                                            "date": day.date().isoformat(),
+                                            "style": style["language_style"],
+                                            "variation": change,
+                                        }
+                                    },
+                                )
+                                reported_errors.add(error_key)
+                            except Exception:
+                                self.stderr.write("Bugsnag notification failed; continuing audio batch.")
+                            continue
+                        finally:
+                            AUDIO_GENERATION_REQUIRED.reset(token)
+                        completed += 1
+                        self.stdout.write(f"Completed {label}")
+
+        summary = f"Audio warming finished: {completed} succeeded, {failures} failed."
+        self.stdout.write(summary)
+        if failures:
+            raise CommandError(summary)

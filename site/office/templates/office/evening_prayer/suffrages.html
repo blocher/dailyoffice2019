@@ -1,3 +1,4 @@
+<div class="lang-english">
 <h3>The Suffrages</h3>
 <div class="suffrages-a off">
     {%  include "office/suffrages_a.html" %}
@@ -11,4 +12,147 @@
     {% with template="office/suffrages_"|add:data.default_set|add:".html" %}
         {%  include template %}
     {% endwith %}
+</div>
+</div>
+
+<div class="lang-chinese off">
+<h3>應答禱文</h3>
+<div class="suffrages-a off">
+    <table class="dialogue">
+        <tr><td><em>主禮</em></td><td>主啊，求祢向我們施慈愛；</td></tr>
+        <tr><td><em>會眾</em></td><td><strong>求祢拯救我們。</strong></td></tr>
+        <tr><td><em>主禮</em></td><td>主啊，求祢引導執政掌權者；</td></tr>
+        <tr><td><em>會眾</em></td><td><strong>引領我們走在公義和真理中。</strong></td></tr>
+        <tr><td><em>主禮</em></td><td>使祢的僕人穿上公義為衣；</td></tr>
+        <tr><td><em>會眾</em></td><td><strong>使祢的子民歡喜歌唱。</strong></td></tr>
+        <tr><td><em>主禮</em></td><td>主啊，求祢拯救祢的子民；</td></tr>
+        <tr><td><em>會眾</em></td><td><strong>賜福祢的產業。</strong></td></tr>
+        <tr><td><em>主禮</em></td><td>主啊，求祢賜平安給我們；</td></tr>
+        <tr><td><em>會眾</em></td><td><strong>以祢的大能保衛我們。</strong></td></tr>
+        <tr><td><em>主禮</em></td><td>求祢不要忘記貧窮的人；</td></tr>
+        <tr><td><em>會眾</em></td><td><strong>不要奪去困苦人的盼望。</strong></td></tr>
+        <tr><td><em>主禮</em></td><td>上帝啊，求祢為我造清潔的心；</td></tr>
+        <tr><td><em>會眾</em></td><td><strong>不要從我們收回祢的聖靈。</strong></td></tr>
+    </table>
+</div>
+
+<div class="suffrages-b off">
+    <p class="hanging-indent">求主使今晚成為神聖、美好、平安的晚上，</p>
+    <p class="indent entreaty"><strong>我們懇求祢，主啊。</strong></p>
+    <p class="hanging-indent">求祢差遣聖天使引領我們走在平安善意的道路上，</p>
+    <p class="indent entreaty"><strong>我們懇求祢，主啊。</strong></p>
+    <p class="hanging-indent">求祢赦免我們的罪過，</p>
+    <p class="indent entreaty"><strong>我們懇求祢，主啊。</strong></p>
+    <p class="hanging-indent">求祢賜平安給祢的教會和全世界，</p>
+    <p class="indent entreaty"><strong>我們懇求祢，主啊。</strong></p>
+    <p class="hanging-indent">求祢使我們在信靠和敬畏中離開今世，不在基督的審判臺前被定罪，</p>
+    <p class="indent entreaty"><strong>我們懇求祢，主啊。</strong></p>
+    <p class="hanging-indent">求祢用聖靈使我們與眾聖徒一同團契，彼此交託，將我們的一生交託基督，</p>
+    <p class="indent entreaty"><strong>我們懇求祢，主啊。</strong></p>
+</div>
+
+<div class="suffrages-rotating suffrages-rotating-{{ data.default_set }}">
+    {% if data.default_set == "a" %}
+    <table class="dialogue">
+        <tr><td><em>主禮</em></td><td>主啊，求祢向我們施慈愛；</td></tr>
+        <tr><td><em>會眾</em></td><td><strong>求祢拯救我們。</strong></td></tr>
+        <tr><td><em>主禮</em></td><td>主啊，求祢引導執政掌權者；</td></tr>
+        <tr><td><em>會眾</em></td><td><strong>引領我們走在公義和真理中。</strong></td></tr>
+        <tr><td><em>主禮</em></td><td>使祢的僕人穿上公義為衣；</td></tr>
+        <tr><td><em>會眾</em></td><td><strong>使祢的子民歡喜歌唱。</strong></td></tr>
+        <tr><td><em>主禮</em></td><td>主啊，求祢拯救祢的子民；</td></tr>
+        <tr><td><em>會眾</em></td><td><strong>賜福祢的產業。</strong></td></tr>
+        <tr><td><em>主禮</em></td><td>主啊，求祢賜平安給我們；</td></tr>
+        <tr><td><em>會眾</em></td><td><strong>以祢的大能保衛我們。</strong></td></tr>
+        <tr><td><em>主禮</em></td><td>求祢不要忘記貧窮的人；</td></tr>
+        <tr><td><em>會眾</em></td><td><strong>不要奪去困苦人的盼望。</strong></td></tr>
+        <tr><td><em>主禮</em></td><td>上帝啊，求祢為我造清潔的心；</td></tr>
+        <tr><td><em>會眾</em></td><td><strong>不要從我們收回祢的聖靈。</strong></td></tr>
+    </table>
+    {% else %}
+    <p class="hanging-indent">求主使今晚成為神聖、美好、平安的晚上，</p>
+    <p class="indent entreaty"><strong>我們懇求祢，主啊。</strong></p>
+    <p class="hanging-indent">求祢差遣聖天使引領我們走在平安善意的道路上，</p>
+    <p class="indent entreaty"><strong>我們懇求祢，主啊。</strong></p>
+    <p class="hanging-indent">求祢赦免我們的罪過，</p>
+    <p class="indent entreaty"><strong>我們懇求祢，主啊。</strong></p>
+    <p class="hanging-indent">求祢賜平安給祢的教會和全世界，</p>
+    <p class="indent entreaty"><strong>我們懇求祢，主啊。</strong></p>
+    <p class="hanging-indent">求祢使我們在信靠和敬畏中離開今世，不在基督的審判臺前被定罪，</p>
+    <p class="indent entreaty"><strong>我們懇求祢，主啊。</strong></p>
+    <p class="hanging-indent">求祢用聖靈使我們與眾聖徒一同團契，彼此交託，將我們的一生交託基督，</p>
+    <p class="indent entreaty"><strong>我們懇求祢，主啊。</strong></p>
+    {% endif %}
+</div>
+</div>
+
+<div class="lang-spanish off">
+<h3>Los Sufragios</h3>
+<div class="suffrages-a off">
+    <table class="dialogue">
+        <tr><td><em>Oficiante</em></td><td>Oh Señor, muestra tu misericordia sobre nosotros;</td></tr>
+        <tr><td><em>Pueblo</em></td><td><strong>Y concédenos tu salvación.</strong></td></tr>
+        <tr><td><em>Oficiante</em></td><td>Oh Señor, guía a los que nos gobiernan;</td></tr>
+        <tr><td><em>Pueblo</em></td><td><strong>Y guíanos en el camino de la justicia y la verdad.</strong></td></tr>
+        <tr><td><em>Oficiante</em></td><td>Viste a tus ministros de justicia;</td></tr>
+        <tr><td><em>Pueblo</em></td><td><strong>Y haz que tu pueblo elegido cante de gozo.</strong></td></tr>
+        <tr><td><em>Oficiante</em></td><td>Oh Señor, salva a tu pueblo;</td></tr>
+        <tr><td><em>Pueblo</em></td><td><strong>Y bendice a tu heredad.</strong></td></tr>
+        <tr><td><em>Oficiante</em></td><td>Oh Señor, danos paz;</td></tr>
+        <tr><td><em>Pueblo</em></td><td><strong>Porque solo en ti confiamos.</strong></td></tr>
+        <tr><td><em>Oficiante</em></td><td>No te olvides de los pobres, oh Señor;</td></tr>
+        <tr><td><em>Pueblo</em></td><td><strong>Ni les quites la esperanza a los afligidos.</strong></td></tr>
+        <tr><td><em>Oficiante</em></td><td>Crea en nosotros un corazón limpio, oh Dios;</td></tr>
+        <tr><td><em>Pueblo</em></td><td><strong>Y no nos quites tu Santo Espíritu.</strong></td></tr>
+    </table>
+</div>
+
+<div class="suffrages-b off">
+    <p class="hanging-indent">Que esta noche sea santa, buena y pacífica,</p>
+    <p class="indent entreaty"><strong>Te suplicamos, Señor.</strong></p>
+    <p class="hanging-indent">Que tus santos ángeles nos guíen por caminos de paz y buena voluntad,</p>
+    <p class="indent entreaty"><strong>Te suplicamos, Señor.</strong></p>
+    <p class="hanging-indent">Que nos perdones y absuelvas de nuestros pecados y ofensas,</p>
+    <p class="indent entreaty"><strong>Te suplicamos, Señor.</strong></p>
+    <p class="hanging-indent">Que haya paz para tu Iglesia y para todo el mundo,</p>
+    <p class="indent entreaty"><strong>Te suplicamos, Señor.</strong></p>
+    <p class="hanging-indent">Que partamos de esta vida en fe y temor de ti, sin ser condenados ante el gran trono del juicio de Cristo,</p>
+    <p class="indent entreaty"><strong>Te suplicamos, Señor.</strong></p>
+    <p class="hanging-indent">Que estemos unidos al Espíritu con todos los santos, encomendándonos los unos a los otros y toda nuestra vida a Cristo,</p>
+    <p class="indent entreaty"><strong>Te suplicamos, Señor.</strong></p>
+</div>
+
+<div class="suffrages-rotating suffrages-rotating-{{ data.default_set }}">
+    {% if data.default_set == "a" %}
+    <table class="dialogue">
+        <tr><td><em>Oficiante</em></td><td>Oh Señor, muestra tu misericordia sobre nosotros;</td></tr>
+        <tr><td><em>Pueblo</em></td><td><strong>Y concédenos tu salvación.</strong></td></tr>
+        <tr><td><em>Oficiante</em></td><td>Oh Señor, guía a los que nos gobiernan;</td></tr>
+        <tr><td><em>Pueblo</em></td><td><strong>Y guíanos en el camino de la justicia y la verdad.</strong></td></tr>
+        <tr><td><em>Oficiante</em></td><td>Viste a tus ministros de justicia;</td></tr>
+        <tr><td><em>Pueblo</em></td><td><strong>Y haz que tu pueblo elegido cante de gozo.</strong></td></tr>
+        <tr><td><em>Oficiante</em></td><td>Oh Señor, salva a tu pueblo;</td></tr>
+        <tr><td><em>Pueblo</em></td><td><strong>Y bendice a tu heredad.</strong></td></tr>
+        <tr><td><em>Oficiante</em></td><td>Oh Señor, danos paz;</td></tr>
+        <tr><td><em>Pueblo</em></td><td><strong>Porque solo en ti confiamos.</strong></td></tr>
+        <tr><td><em>Oficiante</em></td><td>No te olvides de los pobres, oh Señor;</td></tr>
+        <tr><td><em>Pueblo</em></td><td><strong>Ni les quites la esperanza a los afligidos.</strong></td></tr>
+        <tr><td><em>Oficiante</em></td><td>Crea en nosotros un corazón limpio, oh Dios;</td></tr>
+        <tr><td><em>Pueblo</em></td><td><strong>Y no nos quites tu Santo Espíritu.</strong></td></tr>
+    </table>
+    {% else %}
+    <p class="hanging-indent">Que esta noche sea santa, buena y pacífica,</p>
+    <p class="indent entreaty"><strong>Te suplicamos, Señor.</strong></p>
+    <p class="hanging-indent">Que tus santos ángeles nos guíen por caminos de paz y buena voluntad,</p>
+    <p class="indent entreaty"><strong>Te suplicamos, Señor.</strong></p>
+    <p class="hanging-indent">Que nos perdones y absuelvas de nuestros pecados y ofensas,</p>
+    <p class="indent entreaty"><strong>Te suplicamos, Señor.</strong></p>
+    <p class="hanging-indent">Que haya paz para tu Iglesia y para todo el mundo,</p>
+    <p class="indent entreaty"><strong>Te suplicamos, Señor.</strong></p>
+    <p class="hanging-indent">Que partamos de esta vida en fe y temor de ti, sin ser condenados ante el gran trono del juicio de Cristo,</p>
+    <p class="indent entreaty"><strong>Te suplicamos, Señor.</strong></p>
+    <p class="hanging-indent">Que estemos unidos al Espíritu con todos los santos, encomendándonos los unos a los otros y toda nuestra vida a Cristo,</p>
+    <p class="indent entreaty"><strong>Te suplicamos, Señor.</strong></p>
+    {% endif %}
+</div>
 </div>

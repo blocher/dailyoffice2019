@@ -3,8 +3,8 @@ import re
 from functools import cached_property
 
 from bs4 import BeautifulSoup
-from ckeditor.fields import RichTextField
 from django.db import models
+from django_ckeditor_5.fields import CKEditor5Field
 
 from churchcal.base_models import BaseModel
 from churchcal.models import Commemoration, Proper, Common, SanctoraleCommemoration
@@ -48,7 +48,21 @@ class OfficeDay(BaseModel):
         ).all()
         return {passage.passage: passage for passage in passages if passage}
 
+    # Fallback translations for versions that don't include deuterocanonical books
+    TRANSLATION_FALLBACKS = {
+        "cuvs": "znsigao",
+        "cuv": "sigao",
+        "esv": "nrsvce",
+        "niv": "nrsvce",
+        "nasb": "nrsvce",
+        "sigao": "nrsvce",
+        "znsigao": "nrsvce",
+        "nvi": "nrsvce",
+        "rv1960": "nvi",
+    }
+
     def passage_to_text(self, attribute, translation="esv"):
+        translation = Scripture.normalize_bible_translation(translation)
         passage = getattr(self, attribute)
         if not passage and "_abbreviated" in attribute:
             attribute = attribute.replace("_abbreviated", "")
@@ -56,9 +70,12 @@ class OfficeDay(BaseModel):
         try:
             result = getattr(self.readings[passage], translation)
             if not result or result.strip() in ["", "-"]:
+                fallback = self.TRANSLATION_FALLBACKS.get(translation, "nrsvce")
+                result = getattr(self.readings[passage], fallback, None)
+            if not result or result.strip() in ["", "-"]:
                 result = self.readings[passage].nrsvce
             return result
-        except KeyError:
+        except (KeyError, AttributeError):
             return None
 
     def __getattribute__(self, attrname):
@@ -96,7 +113,7 @@ class ThirtyDayPsalterDay(BaseModel):
 
 class AboutItem(BaseModel):
     question = models.CharField(max_length=4000)
-    answer = RichTextField()
+    answer = CKEditor5Field()
     app_mode = models.BooleanField(default=True)
     web_mode = models.BooleanField(default=True)
     order = models.PositiveSmallIntegerField()
@@ -136,7 +153,7 @@ class AboutItem(BaseModel):
         return "app"
 
     def display_name(self):
-        return "{} ({})".format(re.sub("<[^<]+?>", "", self.question), self.mode())
+        return "{} ({})".format(re.sub(r"<[^<]+?>", "", self.question), self.mode())
 
     def __str__(self):
         return self.display_name()
@@ -146,7 +163,7 @@ class AboutItem(BaseModel):
 
 
 class UpdateNotice(BaseModel):
-    notice = RichTextField()
+    notice = CKEditor5Field()
     app_mode = models.BooleanField(default=True)
     web_mode = models.BooleanField(default=True)
     version = models.FloatField()
@@ -163,6 +180,70 @@ class UpdateNotice(BaseModel):
 
     class Meta(object):
         ordering = ["-version"]
+
+
+class SiteMessage(BaseModel):
+    """A dynamic announcement/notice banner controlled from the Django admin.
+
+    Replaces the previously hard-coded "New" banner in the frontend, allowing
+    staff to add, style, target, and expire messages without a code change.
+    """
+
+    TAG_COLOR_CHOICES = (
+        ("emerald", "Green"),
+        ("blue", "Blue"),
+        ("amber", "Amber / Yellow"),
+        ("red", "Red"),
+        ("purple", "Purple"),
+        ("gray", "Gray"),
+    )
+
+    tag_text = models.CharField(
+        max_length=40,
+        blank=True,
+        default="",
+        help_text="Short label shown in the colored tag (e.g. 'New'). Leave blank to hide the tag.",
+    )
+    tag_color = models.CharField(
+        max_length=20,
+        choices=TAG_COLOR_CHOICES,
+        default="emerald",
+        help_text="Color of the tag.",
+    )
+    text = models.CharField(max_length=500, help_text="The main message text.")
+    link = models.CharField(
+        max_length=1000,
+        blank=True,
+        default="",
+        help_text="Optional link destination. Use an internal path (e.g. /calendar) or a full URL (https://...).",
+    )
+
+    dismissible = models.BooleanField(default=True, help_text="Allow users to dismiss (close) the message.")
+    dismiss_permanent = models.BooleanField(
+        default=True,
+        help_text=(
+            "Only applies when the message is dismissible. When checked, a dismissed message stays hidden "
+            "forever on that device. When unchecked, it reappears on the user's next visit/session."
+        ),
+    )
+
+    show_on_web = models.BooleanField(default=True, help_text="Show this message on the website.")
+    show_on_android = models.BooleanField(default=True, help_text="Show this message in the Android app.")
+    show_on_ios = models.BooleanField(default=True, help_text="Show this message in the iOS app.")
+
+    active = models.BooleanField(default=True, help_text="Uncheck to hide the message without deleting it.")
+    expiration_date = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Optional. After this date/time the message will no longer be shown.",
+    )
+    order = models.PositiveSmallIntegerField(default=0, help_text="Lower numbers appear first.")
+
+    class Meta:
+        ordering = ["order", "-created"]
+
+    def __str__(self):
+        return self.text[:60] if self.text else "Site Message"
 
 
 class Setting(BaseModel):
@@ -188,14 +269,17 @@ class Setting(BaseModel):
     order = models.PositiveSmallIntegerField(blank=True, null=True)
     setting_type = models.PositiveSmallIntegerField(choices=SETTING_TYPES, null=False, default=MAIN_SETTINGS)
     site = models.PositiveSmallIntegerField(choices=SETTING_SITES, null=False, default=DAILY_OFFICE_SITE)
+    setting_string_order = models.PositiveSmallIntegerField(null=False, default=0)
 
 
 class SettingOption(BaseModel):
+    DEFAULT_ABBREVIATION = "A"
     setting = models.ForeignKey(Setting, on_delete=models.CASCADE)
     order = models.PositiveSmallIntegerField(blank=True, null=True)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     value = models.CharField(max_length=255)
+    abbreviation = models.CharField(null=False, max_length=1, default=DEFAULT_ABBREVIATION)
 
 
 class CollectType(BaseModel):
@@ -257,10 +341,12 @@ class Collect(BaseModel):
     )
 
     title = models.CharField(max_length=255)
-    text = RichTextField()
+    text = CKEditor5Field()
     normalized_text = models.TextField(blank=True, null=True)
-    traditional_text = RichTextField(blank=True, null=True)
+    traditional_text = CKEditor5Field(blank=True, null=True)
     normalized_traditional_text = models.TextField(blank=True, null=True)
+    chinese_text = models.TextField(blank=True, null=True)
+    spanish_text = models.TextField(blank=True, null=True)
     collect_type = models.ForeignKey(CollectType, on_delete=models.SET_NULL, null=True, blank=True)
     order = models.PositiveSmallIntegerField(default=0)
     number = models.PositiveSmallIntegerField(null=True, blank=True)
@@ -286,11 +372,59 @@ class Collect(BaseModel):
 
         return do_strip_tags(self.text).replace(" Amen.", "")
 
+    @property
+    def chinese_text_no_tags(self):
+        if not self.chinese_text:
+            return None
+        from office.management.commands.import_collects import do_strip_tags
+
+        return do_strip_tags(self.chinese_text).replace("阿們。", "").replace(" Amen.", "").strip()
+
+    @property
+    def spanish_text_no_tags(self):
+        if not self.spanish_text:
+            return None
+        from office.management.commands.import_collects import do_strip_tags
+
+        return do_strip_tags(self.spanish_text).replace("Amén.", "").replace(" Amen.", "").strip()
+
     def __str__(self):
         return self.title
 
 
 class Scripture(BaseModel):
+    BIBLE_TRANSLATIONS = frozenset(
+        {
+            "esv",
+            "kjv",
+            "rsv",
+            "nrsvce",
+            "nabre",
+            "niv",
+            "nasb",
+            "coverdale",
+            "renewed_coverdale",
+            "cuvs",
+            "cuv",
+            "sigao",
+            "znsigao",
+            "nvi",
+            "rv1960",
+        }
+    )
+    INVALID_TRANSLATION_VALUES = frozenset({"undefined", "null", "none"})
+
+    @classmethod
+    def normalize_bible_translation(cls, translation, default="esv"):
+        if not translation:
+            return default
+        translation = str(translation).lower().strip()
+        if translation in cls.INVALID_TRANSLATION_VALUES:
+            return default
+        if translation not in cls.BIBLE_TRANSLATIONS:
+            return default
+        return translation
+
     passage = models.CharField(max_length=255)
     esv = models.TextField(blank=True, null=True)
     kjv = models.TextField(blank=True, null=True)
@@ -301,9 +435,17 @@ class Scripture(BaseModel):
     nasb = models.TextField(blank=True, null=True)
     coverdale = models.TextField(blank=True, null=True)
     renewed_coverdale = models.TextField(blank=True, null=True)
+    cuvs = models.TextField(blank=True, null=True)
+    cuv = models.TextField(blank=True, null=True)
+    sigao = models.TextField(blank=True, null=True)
+    znsigao = models.TextField(blank=True, null=True)
+    nvi = models.TextField(blank=True, null=True)
+    rv1960 = models.TextField(blank=True, null=True)
 
     @staticmethod
     def no_headings(markup):
+        if not markup:
+            markup = ""
         soup = BeautifulSoup(markup, "html.parser")
         for sup in soup.find_all("h1"):
             sup.decompose()
@@ -355,8 +497,16 @@ class Scripture(BaseModel):
         return self.no_headings(self.renewed_coverdale)
 
     @property
+    def nvi_no_headings(self):
+        return self.no_headings(self.nvi)
+
+    @property
+    def rv1960_no_headings(self):
+        return self.no_headings(self.rv1960)
+
+    @property
     def apocrypha(self):
-        return self.esv == "-"
+        return self.esv == "-" or self.esv == ""
 
     @property
     def ending_call(self):
@@ -479,7 +629,7 @@ class LectionaryItem(BaseModel):
         year = year.upper().strip()
         if not reading.short_scripture:
             return f'<a href="/mass_readings/{year}/#{self.pk}_{reading.long_scripture.pk}">{reading.long_scripture.passage}</a>'
-        short_passage = re.sub("[a-zA-Z]", "", reading.short_scripture.passage).strip()
+        short_passage = re.sub(r"[a-zA-Z]", "", reading.short_scripture.passage).strip()
         return f'<a href="/mass_readings/{year}/#{self.pk}_{reading.long_scripture.pk}">{reading.long_scripture.passage} [<em> or, {short_passage}</em> ]</a>'
 
     def passages_for_year_and_number(self, year, number):
@@ -570,6 +720,139 @@ class LectionaryItem(BaseModel):
             if self.common.collect_2:
                 collects.append(self.common.collect_2)
         return collects
+
+
+class PronunciationOverride(models.Model):
+    """Admin-editable text substitutions applied to TTS input before synthesis.
+
+    These affect only the audio input (and therefore the generated clip hash),
+    never the text displayed to the user. Kept in the database so that
+    "this sounds wrong" reports are a data edit rather than a code change.
+    """
+
+    CACHE_KEY = "tts_pronunciation_overrides_v2"
+
+    match = models.CharField(max_length=255, help_text="Text (or regex) to find in the TTS input before synthesis.")
+    replacement = models.CharField(max_length=255, blank=True, default="", help_text="Replacement text.")
+    is_regex = models.BooleanField(default=False, help_text="Treat 'match' as a regular expression.")
+    providers = models.CharField(
+        max_length=128,
+        blank=True,
+        default="",
+        help_text="Comma-separated TTS providers this rule applies to (e.g. openai). Leave blank for all.",
+    )
+    order = models.PositiveIntegerField(default=0, help_text="Lower numbers are applied first.")
+    enabled = models.BooleanField(default=True)
+    note = models.CharField(max_length=255, blank=True, default="")
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ("order", "id")
+
+    def __str__(self):
+        return f"{self.match!r} -> {self.replacement!r}"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self._clear_cache()
+
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+        self._clear_cache()
+
+    @classmethod
+    def _clear_cache(cls):
+        from django.core.cache import cache
+
+        cache.delete(cls.CACHE_KEY)
+
+    @classmethod
+    def cached_rules(cls):
+        from django.core.cache import cache
+
+        rules = cache.get(cls.CACHE_KEY)
+        if rules is None:
+            rules = list(
+                cls.objects.filter(enabled=True)
+                .order_by("order", "id")
+                .values("match", "replacement", "is_regex", "providers")
+            )
+            cache.set(cls.CACHE_KEY, rules, 60)
+        return rules
+
+    @classmethod
+    def apply(cls, text, provider=None):
+        if not text:
+            return text
+        for rule in cls.cached_rules():
+            allowed = [name.strip().lower() for name in (rule.get("providers") or "").split(",") if name.strip()]
+            if allowed and (not provider or provider.lower() not in allowed):
+                continue
+            if rule["is_regex"]:
+                text = re.sub(rule["match"], rule["replacement"], text)
+            else:
+                text = text.replace(rule["match"], rule["replacement"])
+        return text
+
+
+class AudioClip(BaseModel):
+    """Tracks which normalized text maps to which generated TTS audio file.
+
+    Enables deleting/rebuilding individual clips and pruning orphaned files
+    left behind when voices, pacing, or pronunciation change.
+    """
+
+    KINDS = (
+        ("line", "Single line"),
+        ("group", "Grouped lines"),
+        ("reader", "Reading sentence"),
+        ("silence", "Silence"),
+    )
+
+    key = models.CharField(max_length=64, unique=True, db_index=True, help_text="uuid5 stem / filename base.")
+    filename = models.CharField(max_length=128)
+    text = models.TextField(blank=True, default="", help_text="Normalized text sent to the TTS provider.")
+    line_type = models.CharField(max_length=64, blank=True, default="")
+    provider = models.CharField(max_length=32, blank=True, default="", db_index=True)
+    voice = models.CharField(max_length=32, blank=True, default="", db_index=True)
+    model = models.CharField(max_length=32, blank=True, default="")
+    speed = models.FloatField(default=1.0)
+    kind = models.CharField(max_length=16, choices=KINDS, default="line")
+    duration = models.FloatField(null=True, blank=True, help_text="Length in seconds (via mutagen).")
+    word_timing = models.JSONField(
+        blank=True,
+        default=list,
+        help_text="Provider word alignment relative to the beginning of this clip.",
+    )
+
+    class Meta:
+        ordering = ("line_type", "voice", "text")
+
+    def __str__(self):
+        return f"{self.voice} [{self.line_type}] {self.text[:60]}"
+
+    @property
+    def file_path(self):
+        import os
+
+        from django.conf import settings
+
+        return os.path.join(settings.MEDIA_ROOT, self.filename)
+
+    def delete_file(self):
+        import os
+
+        try:
+            if self.filename and os.path.isfile(self.file_path):
+                os.remove(self.file_path)
+                sidecar = f"{self.file_path}.json"
+                if os.path.isfile(sidecar):
+                    os.remove(sidecar)
+                return True
+        except OSError:
+            pass
+        return False
 
 
 class MetricalCollect(BaseModel):

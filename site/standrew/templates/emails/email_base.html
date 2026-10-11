@@ -3,35 +3,33 @@
 {% mjml %}
     <mjml>
     <mj-body>
-        <mj-container >
-            <mj-section>
+        <mj-section>
+            <mj-column>
+                <mj-text>
+                    &nbsp;
+                </mj-text>
+            </mj-column>
+        </mj-section>
+
+        <mj-section>
+            <mj-column>
+                <mj-image src="https://www.historic-uk.com/wp-content/uploads/2017/04/st-andrew.jpg" />
+                <mj-text align="center" padding="0">
+                    <h2>The Community of St. Andrew</h2>
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-wrapper border="2px dotted gray">
+            <mj-section  >
                 <mj-column>
                     <mj-text>
-                        &nbsp;
+                        <h1>{{ heading }}</h1>
+                        {% block content %}
+                        {% endblock %}
                     </mj-text>
                 </mj-column>
             </mj-section>
-
-            <mj-section>
-                <mj-column>
-                    <mj-image src="https://www.historic-uk.com/wp-content/uploads/2017/04/st-andrew.jpg" />
-                    <mj-text align="center" padding="0">
-                        <h2>The Community of St. Andrew</h2>
-                    </mj-text>
-                </mj-column>
-            </mj-section>
-            <mj-wrapper border="2px dotted gray">
-                <mj-section  >
-                    <mj-column>
-                        <mj-text>
-                            <h1>{{ heading }}</h1>
-                            {% block content %}
-                            {% endblock %}
-                        </mj-text>
-                    </mj-column>
-                </mj-section>
-            </mj-wrapper>
-        </mj-container>
+        </mj-wrapper>
     </mj-body>
     </mjml>
 {% endmjml %}

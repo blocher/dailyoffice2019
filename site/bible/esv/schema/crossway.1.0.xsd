@@ -1,0 +1,99 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.crosswaybibles.org"
+	xmlns="http://www.crosswaybibles.org"
+	>
+	<xsd:include schemaLocation="http://www.gnpcb.org/share/schemas/crossway.base.xsd"/>
+
+	<xsd:complexType name="beginChapterElement">
+		<xsd:attribute name="num" use="required">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:positiveInteger">
+					<xsd:minInclusive value="1"/>
+					<xsd:maxInclusive value="150"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:element name="crossway-bible">
+		<xsd:complexType>
+			<xsd:choice minOccurs="1" maxOccurs="unbounded">
+				<xsd:element name="passage" type="passageElement"/>
+				<xsd:element name="error" type="xsd:string"/>
+				<xsd:element name="copyright" type="xsd:string"/>
+			</xsd:choice>
+			<xsd:attribute name="class">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="passage-query"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:complexType name="currentElement">
+		<xsd:attribute name="class" use="optional">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<!-- if the passage includes all the verses in the chapter(s), ie, verse 1 - end of (any) chapter,
+					     we don't need to create a link -->
+					<xsd:enumeration value="full-chapter"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:element name="passageElement">
+		<xsd:complexType>
+			<xsd:sequence minOccurs="0" maxOccurs="unbounded">
+				<!-- a human-readable name for the passage, eg, "1 Chronicles 2:1-5" -->
+				<xsd:element name="reference" type="xsd:string"/>
+				<xsd:element name="surrounding-chapters" type="surroundingChaptersElement"/>
+				<xsd:element name="content">
+					<xsd:complexType mixed="true">
+						<xsd:choice minOccurs="1" maxOccurs="500">
+							<xsd:element name="verse-unit" type="verseUnitElement"/>
+						</xsd:choice>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+			<xsd:attribute name="class">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:string">
+						<xsd:enumeration value="passage-query"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="surroundingChaptersElement">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="previous" type="xsd:string"/>
+				<xsd:element name="current"  type="currentElement"/>
+				<xsd:element name="next"     type="xsd:string"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:complexType name="verseUnitElement" mixed="true">
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:group   ref="blockElements"        minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="begin-chapter"       type="beginChapterElement" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="end-chapter"         type="emptyElement" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:group   ref="standardTextElements" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="woc"                 type="wocElement" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="selah"               type="selahElement" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="marker"              type="markerElement" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:choice>
+		<xsd:attribute name="unit-id" use="required">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<xsd:pattern value="[0-9]{8}"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,35 @@
+<!ELEMENT crossway-concordance (dt|dd)+>
+<!ATTLIST crossway-concordance  translation CDATA #REQUIRED
+                                edition CDATA #REQUIRED
+                                revision CDATA #REQUIRED>
+
+<!ELEMENT dt   (#PCDATA|h|i)*>
+<!--depending on the application, you may want to preserve the tab-character separating text and ref in dd-->
+<!ELEMENT dd   (#PCDATA|text|ref)*>
+<!--the text of the verse surrounding the word-->
+<!ELEMENT text (#PCDATA|w|span)*>
+
+<!--for="..." is an 8-digit verse identifier-->
+<!ELEMENT ref  (#PCDATA)*>
+<!ATTLIST ref   for CDATA #REQUIRED>
+
+<!--always has a class="divine-name", indicating small-caps-->
+<!ELEMENT span (#PCDATA)*>
+<!ATTLIST span  class CDATA #REQUIRED>
+
+<!--italic explanatory text in dt-->
+<!ELEMENT i    (#PCDATA)*>
+<!ATTLIST i     language CDATA #REQUIRED>
+
+<!--the word in the dt; always upper-case-->
+<!ELEMENT h    (#PCDATA)*>
+
+<!--the word (single-letter) in the dd-->
+<!ELEMENT w    (#PCDATA)*>
+<!ATTLIST w     wid CDATA #IMPLIED>
+
+<!ENTITY ldblquot "&#8220;">
+<!ENTITY rdblquot "&#8221;">
+<!ENTITY lquot    "&#8216;">
+<!ENTITY rquot    "&#8217;">
+<!ENTITY emdash   "&#8212;">

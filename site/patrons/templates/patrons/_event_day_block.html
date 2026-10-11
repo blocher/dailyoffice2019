@@ -1,0 +1,26 @@
+<article class="feast-day-block event-day-block">
+    <h1>{{ event.family_member.first_name }}: {{ event.get_event_type_display }}</h1>
+    <p class="lede">
+        {{ view_date|date:"F j, Y" }}
+        <span class="lede-sep">·</span>
+        <span class="lede-sub">first observed {{ event.date|date:"F j, Y" }}</span>
+    </p>
+
+    <section class="panel">
+        <h2>Details</h2>
+        <dl>
+            <dt>Family member</dt>
+            <dd>{{ event.family_member.full_name }}</dd>
+            <dt>Event type</dt>
+            <dd>{{ event.get_event_type_display }}</dd>
+            <dt>Details</dt>
+            <dd>
+                {% if event.details %}
+                    {{ event.details|linebreaksbr }}
+                {% else %}
+                    <span class="empty">No details entered.</span>
+                {% endif %}
+            </dd>
+        </dl>
+    </section>
+</article>

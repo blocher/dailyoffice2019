@@ -14,6 +14,12 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
+    # Management commands do not construct Django's Bugsnag middleware.
+    # Initialize the same notifier before running them (including cron jobs).
+    import bugsnag
+    from django.conf import settings
+
+    bugsnag.configure(**settings.BUGSNAG)
     execute_from_command_line(sys.argv)
 
 

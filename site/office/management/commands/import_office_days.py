@@ -39,8 +39,20 @@ class Command(BaseCommand):
 
     def parse_passage(self, passage):
         try:
-            passage = scriptures.extract(passage)[0]
-            return scriptures.reference_to_string(*passage)
+            references = scriptures.extract(passage)
+            if not references:
+                return None
+            # Return original passage to preserve multiple ranges, or we could reconstruct it
+            # Reconstructing it is better for normalization
+            parts = []
+            for ref in references:
+                parts.append(scriptures.reference_to_string(*ref))
+            # If they are in the same book and chapter, we could combine them,
+            # but returning the original string is safer if we want to preserve exact formatting
+            # Let's just return the original passage but normalized if it was a single reference
+            if len(references) == 1:
+                return scriptures.reference_to_string(*references[0])
+            return passage
         except:
             return None
 

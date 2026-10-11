@@ -1,23 +1,22 @@
-import { Plugins, StatusBarStyle } from "@capacitor/core";
 import { readingSettings } from "./reading_settings";
-import * as clipboard from "clipboard-polyfill/text";
-
-const { StatusBar, Storage } = Plugins;
+import * as clipboard from "clipboard-polyfill";
+import { StatusBar, Style } from "@capacitor/status-bar";
+import { Preferences } from "@capacitor/preferences";
 
 export async function setItem(key, value) {
-  await Storage.set({
+  await Preferences.set({
     key: key,
     value: value,
   });
 }
 
 export async function getItem(key) {
-  const item = await Storage.get({ key: key });
+  const item = await Preferences.get({ key: key });
   return item.value;
 }
 
 export async function removeItem(key) {
-  await Storage.remove({
+  await Preferences.remove({
     key: key,
   });
 }
@@ -53,7 +52,7 @@ const getSetting = async (property) => {
 const settings = () => {
   const setUpStatusBar = async () => {
     StatusBar.setStyle({
-      style: StatusBarStyle.Dark,
+      style: Style.Dark,
     })
       .then(() => {
         return true;
@@ -172,7 +171,7 @@ const settings = () => {
           "//" +
           location.host +
           window.location.pathname +
-          window.location.hash
+          window.location.hash,
       );
     }
   };
@@ -225,7 +224,7 @@ const settings = () => {
       document.getElementById("html").style.fontSize = base_font_size;
       document.getElementById("font-size-range").value = base_font_size.replace(
         "px",
-        ""
+        "",
       );
     }
 

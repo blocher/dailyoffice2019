@@ -7,15 +7,15 @@
 <script>
 // @ is an alias to /src
 export default {
-  name: "Office Rubric",
+  name: 'Office Rubric',
   components: {},
-  props: ["line"],
+  props: ['line'],
 };
 </script>
 
 <style lang="scss" scoped>
 .rubric {
-  font-size: .8em;
+  font-size: 0.8em;
   line-height: 1.2em;
 }
 </style>

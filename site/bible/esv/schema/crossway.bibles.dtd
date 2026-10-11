@@ -1,0 +1,114 @@
+<!ELEMENT crossway-bible (book)+>
+<!ATTLIST crossway-bible  translation CDATA #REQUIRED
+                          revision CDATA #REQUIRED
+                          xmlns:xsi CDATA #IMPLIED
+                          xmlns CDATA #IMPLIED
+                          xsi:schemaLocation CDATA #IMPLIED>
+
+<!ELEMENT book (chapter|heading|marker)+>
+<!ATTLIST book  title CDATA #REQUIRED
+                num CDATA #REQUIRED>
+
+<!ELEMENT chapter (#PCDATA|begin-block-indent|begin-paragraph|end-block-indent|end-paragraph|heading|subheading|verse|marker|note)*>
+<!ATTLIST chapter  num CDATA #REQUIRED>
+
+<!ELEMENT subheading (#PCDATA|crossrefs|crossref|note|span|q)*>
+<!ATTLIST subheading  class (psalm-acrostic-title|psalm-title|speaker|textual-note) #IMPLIED>
+
+<!ELEMENT begin-block-indent EMPTY>
+<!ELEMENT begin-paragraph    EMPTY>
+<!ATTLIST begin-paragraph    class (same-paragraph|extra-space|line-group) #IMPLIED>
+<!ELEMENT end-block-indent   EMPTY>
+<!ELEMENT end-paragraph      EMPTY>
+
+<!-- How far to indent -->
+<!ELEMENT begin-line EMPTY>
+<!ATTLIST begin-line class (indent|indent-2|declares|psalm-doxology) #IMPLIED>
+<!-- class="br" indicates a line break -->
+<!ELEMENT end-line   EMPTY>
+<!ATTLIST end-line   class (br) #IMPLIED>
+
+<!-- class="psalm-book" is only in the Psalms -->
+<!ELEMENT heading (#PCDATA|span|note)*>
+<!ATTLIST heading class (psalm-book) #IMPLIED>
+
+<!ELEMENT verse  (#PCDATA|begin-paragraph|end-paragraph|begin-block-indent|end-block-indent|begin-line|end-line|span|note|crossrefs|crossref|woc|heading|subheading|selah|q|deutero)*>
+<!ATTLIST verse   class (woc) #IMPLIED
+                  num CDATA #REQUIRED
+                  altnum CDATA #IMPLIED>
+
+<!ELEMENT deutero (#PCDATA|begin-paragraph|end-paragraph|begin-block-indent|end-block-indent|begin-line|end-line|span|note|crossrefs|crossref|woc|heading|subheading|selah|q)*>
+
+<!-- class="us-time" appears only in notes -->
+<!ELEMENT span (#PCDATA)>
+<!ATTLIST span  class (divine-name|us-time|small-caps) #IMPLIED>
+
+<!ELEMENT selah (#PCDATA|note|crossrefs|crossref)*>
+
+<!-- Words of Christ; never crosses a paragraph -->
+<!ELEMENT woc (#PCDATA|span|note|begin-line|end-line|crossrefs|crossref|q)*>
+
+<!-- contains two or more crossrefs that need to be separated by a comma
+     (or a comma and space)-->
+<!ELEMENT crossrefs (crossref)+>
+
+<!ELEMENT crossref EMPTY>
+<!ATTLIST crossref let CDATA #IMPLIED
+                   cid ID #REQUIRED>
+
+<!-- notes themselves contain (#PCDATA|a|i|verse-num|span)* -->
+<!ELEMENT note EMPTY>
+<!ATTLIST note nid CDATA #REQUIRED>
+
+<!ELEMENT q EMPTY>
+<!ATTLIST q class CDATA #REQUIRED
+            qid CDATA #REQUIRED
+            from CDATA #IMPLIED
+            to CDATA #IMPLIED>
+
+<!--
+<marker> is designed to indicate the placement of
+arbitrary data for various editions; the goal is to clutter the Bible XML files
+as little as possible with a proliferation of non-Bible content;
+
+mid="..." should use a unique alphabetic prefix that can be queried with XPath;
+ideally, the rest of "mid" should be an 8-digit number indicating the verse where
+it appears (or should be attached to; a book introduction would be part of the
+first verse of the first chapter of the book
+
+class="..." is optional and can be used to make it easier to determine the type
+of marker; for example, a complete marker for an introduction to John in the
+text-only edition might be:
+	<marker class="intro" mid="it43001001"/>
+In the cross-reference edition, it might be:
+	<marker class="intro" mid="ic43001001"/>
+Taken together, you would have the following fragment:
+	<book title="John" num="43">
+		<marker class="intro" mid="it43001001"/>
+		<marker class="intro" mid="ic43001001"/>
+		<chapter num="1">
+			<heading>...etc...
+-->
+<!ELEMENT marker EMPTY>
+<!ATTLIST marker class CDATA #IMPLIED
+                 mid CDATA #REQUIRED>
+
+<!-- link to preface for certain footnotes -->
+<!ELEMENT a (#PCDATA)>
+<!ATTLIST a href CDATA #IMPLIED>
+
+<!-- italic text for certain footnotes -->
+<!ELEMENT i (#PCDATA|span)*>
+
+<!ELEMENT verse-num (#PCDATA)>
+
+<!-- Entities -->
+<!ENTITY ldblquot  "&#8220;">
+<!ENTITY rdblquot  "&#8221;">
+<!ENTITY lquot     "&#8216;">
+<!ENTITY rquot     "&#8217;">
+<!ENTITY emdash    "&#8212;">
+<!ENTITY endash    "&#8211;">
+<!ENTITY ellipsis  "&#160;.&#160;.&#160;.">
+<!ENTITY ellipsis4 ".&#160;.&#160;.&#160;.">
+<!ENTITY emacron   "&#275;">

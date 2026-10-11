@@ -11,3 +11,14 @@ build:
 clean:
 	rm -rf public
 	rm -rf static
+
+# Deploy the checked-out commit (must be on origin/master). See deploy/deploy.sh.
+.PHONY: deploy deploy-api deploy-web
+deploy:
+	deploy/deploy.sh all
+
+deploy-api:
+	deploy/deploy.sh api
+
+deploy-web:
+	deploy/deploy.sh web
