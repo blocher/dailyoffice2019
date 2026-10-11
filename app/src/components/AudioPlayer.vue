@@ -297,6 +297,18 @@ const SPEED_STORAGE_KEY = 'audioPlaybackSpeed';
 const SCROLL_STORAGE_KEY = 'audioAutoScroll';
 const highlightModes = ['word', 'sentence', 'off'];
 
+// Wrap node.data[start, end) in `wrapper` without a Range. Every live Range
+// is updated on each DOM mutation, so wrapping thousands of words through
+// Range.surroundContents is quadratic and froze long offices for seconds.
+// The original node keeps the text before `start`, so callers working from
+// the end of a node backwards can keep using offsets into the original node.
+function wrapText(node, start, end, wrapper) {
+  const target = start > 0 ? node.splitText(start) : node;
+  if (end - start < target.length) target.splitText(end - start);
+  target.parentNode.insertBefore(wrapper, target);
+  wrapper.appendChild(target);
+}
+
 export default {
   name: 'AudioPlayer',
   emits: ['dismiss-audio', 'audio-play'],
@@ -900,10 +912,27 @@ export default {
           .replace(/[^\p{L}\p{N}]/gu, '')
       );
     },
+    // Look up line anchors and word spans from maps built once per pass,
+    // instead of a document-wide query for every one of thousands of words.
+    indexDocument() {
+      this.lineAnchors = new Map();
+      document.querySelectorAll('[data-line-id]').forEach((element) => {
+        if (!this.lineAnchors.has(element.dataset.lineId)) {
+          this.lineAnchors.set(element.dataset.lineId, element);
+        }
+      });
+      this.wordElements = new Map();
+      document
+        .querySelectorAll('[data-audio-word-index]')
+        .forEach((element) => {
+          this.wordElements.set(element.dataset.audioWordIndex, element);
+        });
+    },
     findLineAnchor(lineId) {
-      return Array.from(document.querySelectorAll('[data-line-id]')).find(
-        (element) => element.dataset.lineId === lineId
-      );
+      return this.lineAnchors?.get(lineId);
+    },
+    wordElement(index) {
+      return this.wordElements?.get(String(index));
     },
     wordContainerForAnchor(anchor) {
       if (!anchor) return null;
@@ -922,6 +951,7 @@ export default {
         this.prepareHighlightSegments();
         return;
       }
+      this.indexDocument();
       const segmentsByLine = new Map();
       this.wordSegments.forEach((segment, index) => {
         if (!segment.id) return;
@@ -932,11 +962,7 @@ export default {
       });
 
       segmentsByLine.forEach((segments, lineId) => {
-        if (
-          segments.every((segment) =>
-            document.querySelector(`[data-audio-word-index='${segment.index}']`)
-          )
-        ) {
+        if (segments.every((segment) => this.wordElement(segment.index))) {
           return;
         }
         const container = this.wordContainerForAnchor(
@@ -1003,13 +1029,10 @@ export default {
           nodeMatches
             .sort((left, right) => right.start - left.start)
             .forEach((match) => {
-              const range = document.createRange();
-              range.setStart(match.node, match.start);
-              range.setEnd(match.node, match.end);
               const word = document.createElement('span');
               word.className = 'audio-word';
               word.dataset.audioWordIndex = String(match.index);
-              range.surroundContents(word);
+              wrapText(match.node, match.start, match.end, word);
             });
         });
       });
@@ -1025,6 +1048,7 @@ export default {
     },
     prepareHighlightSegments() {
       this.clearActiveWord();
+      this.indexDocument();
       document
         .querySelectorAll('[data-audio-highlight-index]')
         .forEach((element) => {
@@ -1033,6 +1057,7 @@ export default {
           element.removeAttribute('aria-current');
         });
       this.highlightSegments = [];
+      this.highlightElements = new Map();
       const byLine = new Map();
       this.wordSegments.forEach((word, index) => {
         if (!byLine.has(word.id)) byLine.set(word.id, []);
@@ -1085,13 +1110,10 @@ export default {
           )
         ) {
           words.forEach((word) => {
-            const element = document.querySelector(
-              `[data-audio-word-index='${word.index}']`
-            );
+            const element = this.wordElement(word.index);
             if (!element) return;
             const index = this.highlightSegments.length;
-            element.dataset.audioHighlightIndex = String(index);
-            element.classList.add('audio-line');
+            this.registerHighlight(element, index);
             this.highlightSegments.push({
               index,
               exactWord: true,
@@ -1140,22 +1162,17 @@ export default {
                   sentence.index + sentence.segment.length - offset
                 );
                 if (start >= end) return;
-                const range = document.createRange();
-                range.setStart(node, start);
-                range.setEnd(node, end);
                 const span = document.createElement('span');
                 span.dataset.audioSentence = String(
                   sentences.length - reverseIndex - 1
                 );
-                range.surroundContents(span);
+                wrapText(node, start, end, span);
               });
           });
         }
         const groups = new Map();
         words.forEach((word) => {
-          const element = document.querySelector(
-            `[data-audio-word-index='${word.index}']`
-          );
+          const element = this.wordElement(word.index);
           const sentence = (
             element?.closest('[data-audio-sentence]') ||
             element?.querySelector('[data-audio-sentence]')
@@ -1202,8 +1219,7 @@ export default {
               ? [container.querySelector('[data-audio-line-content]')]
               : container.querySelectorAll(`[data-audio-sentence='${key}']`);
           elements.forEach((element) => {
-            element.dataset.audioHighlightIndex = String(index);
-            element.classList.add('audio-line');
+            this.registerHighlight(element, index);
           });
           this.highlightSegments.push({
             index,
@@ -1214,6 +1230,14 @@ export default {
         });
       });
       this.highlightSegments.sort((a, b) => a.start_time - b.start_time);
+    },
+    registerHighlight(element, index) {
+      element.dataset.audioHighlightIndex = String(index);
+      element.classList.add('audio-line');
+      if (!this.highlightElements.has(index)) {
+        this.highlightElements.set(index, []);
+      }
+      this.highlightElements.get(index).push(element);
     },
     activeWordAt(time) {
       let candidate = null;
@@ -1244,9 +1268,7 @@ export default {
         this.clearActiveWord();
         if (nextIndex >= 0) {
           this.activeWordIndex = nextIndex;
-          const elements = document.querySelectorAll(
-            `[data-audio-highlight-index='${nextIndex}']`
-          );
+          const elements = this.highlightElements?.get(nextIndex) || [];
           elements.forEach((element) =>
             element.classList.add('audio-line--active')
           );
@@ -1254,9 +1276,7 @@ export default {
         }
       }
       if (nextIndex < 0 || !this.enableScrolling || !this.isPlaying) return;
-      const active = document.querySelector(
-        `[data-audio-highlight-index='${nextIndex}']`
-      );
+      const active = this.highlightElements?.get(nextIndex)?.[0];
       if (!active) return;
       // Follow measured words even while the sentence highlight stays unchanged.
       // Missing timing falls back to the highlighted text rather than another line.
@@ -1270,9 +1290,7 @@ export default {
           low = middle + 1;
         } else high = middle - 1;
       }
-      const word = document.querySelector(
-        `[data-audio-word-index='${wordIndex}']`
-      );
+      const word = this.wordElement(wordIndex);
       const belongsToHighlight =
         word &&
         (word.closest(`[data-audio-highlight-index='${nextIndex}']`) ||
@@ -1443,7 +1461,6 @@ export default {
     highlightMode() {
       this.prepareHighlightSegments();
       this.updateActiveWord(this.audioElement?.currentTime ?? this.currentTime);
-      this.$nextTick(() => this.emitVisibility());
     },
   },
 };

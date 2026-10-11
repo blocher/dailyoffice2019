@@ -88,6 +88,16 @@ export default {
   },
   emits: ['update:audioEnabled'],
   props: {
+    // Optional v-model:audio-enabled; keeps the switch in sync when the
+    // parent changes it (e.g. hiding audio from the player itself).
+    audioEnabled: {
+      type: Boolean,
+      default: undefined,
+    },
+    showAudioControls: {
+      type: Boolean,
+      default: true,
+    },
     contextLabel: {
       type: String,
       default: 'this service',
@@ -150,13 +160,16 @@ export default {
       ]);
     },
     showAudioControlsCard() {
-      return this.matchesDisplayCard([
-        'display',
-        'audio',
-        'controls',
-        this.contextLabel,
-        this.contentAudioEnabled ? 'enabled' : 'disabled',
-      ]);
+      return (
+        this.showAudioControls &&
+        this.matchesDisplayCard([
+          'display',
+          'audio',
+          'controls',
+          this.contextLabel,
+          this.contentAudioEnabled ? 'enabled' : 'disabled',
+        ])
+      );
     },
     hasMatchingCards() {
       return (
@@ -167,6 +180,11 @@ export default {
     },
   },
   watch: {
+    audioEnabled(newVal) {
+      if (typeof newVal === 'boolean' && newVal !== this.audioEnabledLocal) {
+        this.audioEnabledLocal = newVal;
+      }
+    },
     async audioEnabledLocal(newVal) {
       await DynamicStorage.setItem('audioEnabled', newVal ? 'true' : 'false');
       this.$emit('update:audioEnabled', newVal);
