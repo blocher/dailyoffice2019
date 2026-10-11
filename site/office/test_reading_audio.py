@@ -154,6 +154,79 @@ class ReadingAudioCompletenessTests(SimpleTestCase):
             self.assertEqual(self.serializer.handle_html('<iframe src="example"></iframe>'), [])
         clip.assert_not_called()
 
+    def deuterocanonical_office(self, day, translation):
+        passage = {9: "I Maccabees 1", 10: "I Maccabees 2", 11: "II Maccabees 6"}[day]
+        office = SimpleNamespace(
+            settings={
+                "lectionary": "daily-office-readings",
+                "reading_cycle": "1",
+                "reading_length": "full",
+                "bible_translation": translation,
+                "display_language": "english",
+                "reading_headings": "off",
+                "reading_audio": "on",
+            },
+            office_readings=SimpleNamespace(ep_reading_1=passage, ep_reading_1_testament="DC"),
+            readings={
+                passage: SimpleNamespace(
+                    esv="-",
+                    nrsvce=(
+                        '<h3>Heading</h3><p><sup class="versenum">1</sup>Fallback first verse.</p>'
+                        '<p><sup class="versenum">2</sup>Fallback second verse.</p>'
+                    ),
+                    kjv="<p>Legacy first verse.</p><p>Legacy second verse.</p>",
+                )
+            },
+            date=SimpleNamespace(date=datetime.date(2026, 10, day)),
+        )
+        office.get_modules = lambda: [index.EPFirstReading(office)]
+        return office
+
+    def test_deuterocanonical_fallback_and_kjv_body_reach_the_audio_tracks(self):
+        # Synthetic text exercises the actual reading/module path without
+        # copying licensed passages or depending on production appointments.
+        for day in (9, 10, 11):
+            for translation in ("esv", "kjv"):
+                with (
+                    self.subTest(day=day, translation=translation),
+                    patch.object(index, "TTS_PROVIDER", ElevenLabsTTSProvider()),
+                    patch.object(
+                        index.GenericDailyOfficeSerializer, "get_or_create_clip", return_value=self.clip
+                    ) as clips,
+                    patch.object(index, "frame_tracks", side_effect=lambda obj, tracks, *args: tracks),
+                    patch.object(
+                        index.GenericDailyOfficeSerializer, "get_single_track", return_value=["complete.mp3"]
+                    ),
+                ):
+                    audio = self.serializer.get_audio(self.deuterocanonical_office(day, translation))
+                spoken = [
+                    call.args[0]
+                    for call in clips.call_args_list
+                    if call.kwargs.get("kind") == "reader" and not call.kwargs.get("no_generate")
+                ]
+                prefix = "Fallback" if translation == "esv" else "Legacy"
+                self.assertEqual(spoken, [f"{prefix} first verse.", f"{prefix} second verse."])
+                self.assertEqual(len(audio["tracks"]), 4)  # Introduction, two paragraphs, closing.
+                self.assertEqual(audio["single_track"], ["complete.mp3"])
+
+    def test_deuterocanonical_fallback_failure_rejects_the_audio_response(self):
+        def clip(content, line_type, **kwargs):
+            if kwargs.get("kind") == "reader" and not kwargs.get("no_generate"):
+                if content == "Fallback second verse.":
+                    return None, None
+            return self.clip
+
+        with (
+            patch.object(index, "TTS_PROVIDER", ElevenLabsTTSProvider()),
+            patch.object(index.GenericDailyOfficeSerializer, "get_or_create_clip", side_effect=clip),
+            patch.object(index, "frame_tracks") as frame,
+            patch.object(index.GenericDailyOfficeSerializer, "get_single_track") as assemble,
+        ):
+            with self.assertRaises(index.ReadingAudioUnavailable):
+                self.serializer.get_audio(self.deuterocanonical_office(10, "esv"))
+        frame.assert_not_called()
+        assemble.assert_not_called()
+
     @override_settings(ELEVENLABS_TTS_MODEL="eleven_multilingual_v2", ELEVENLABS_PRONUNCIATION_DICTIONARY_ID="")
     def test_retry_preserves_cached_and_newly_synthesized_paragraphs(self):
         provider = ElevenLabsTTSProvider()
