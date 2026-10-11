@@ -96,6 +96,12 @@ Validation (saved environment: Node 24.19.0 and Python 3.12.14):
 
 - Final legacy `npm ci --ignore-scripts` succeeds. The isolated Webpack build with Babel 8 succeeds
   with 16 Sass deprecation warnings; build output stays in `/tmp`.
+  This validates a future build; changing the site lockfile does not update JavaScript already served.
+  The tracked `site/webpack-stats.json` and existing committed/deployed static assets are unchanged.
+  Before releasing the refreshed legacy assets, run `cd site && npm ci --include=dev && npm run build`
+  in the release workspace, then release the generated assets together with their matching
+  `webpack-stats.json` through the existing static-asset release process. The current API deployment
+  does not rebuild this bundle; this PR does not add a production rebuild or perform an asset release.
 - Clean complete Python requirements install; `pip check` and Django checks pass. 236 backend tests
   execute: 233 pass, three audio assertions fail (`3 != 4`). The two failing
   `ReadingAudioCompletenessTests` cases and the ElevenLabs case in
@@ -105,6 +111,11 @@ Validation (saved environment: Node 24.19.0 and Python 3.12.14):
   `https://npm.fontawesome.com/@fortawesome/vue-fontawesome/-/vue-fontawesome-3.3.3.tgz`.
   Normal lint, Vitest, Vite build, and Cypress commands cannot run because their executables are absent
   after installation fails. There is no app `tsconfig.json` or configured typecheck script.
+  The smallest safe unblock is for a maintainer to run this branch's `npm ci` from `app/` in an
+  existing developer or CI environment already authorized for `npm.fontawesome.com`, then run the
+  frontend checks there. No credentials need to be shared with the agent. HTTP 403 alone does not
+  establish whether registry authorization or this saved environment's access policy caused the denial;
+  no new credentials, permissions, or registry-routing workaround are requested for this environment.
 - ESLint 10 from the isolated public pre-commit environment, using a copy of the unchanged app config,
   reports 18 existing source errors. No app source changes are made here.
 - Shell syntax, JSON parsing, manifest/lock agreement, staged pre-commit hooks, and `git diff --check`
