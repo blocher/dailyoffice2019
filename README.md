@@ -38,7 +38,7 @@ The consolidation in PR #250 started from master `909f9c277`, after direct depen
 `dc53115e3`. The Firebase/TypeScript follow-up starts from `073c1f78a`, preserving the newer deployment
 workflow. The original inventory covered four npm manifests, three npm lockfiles, 96 numbered Python
 requirements, three Git requirements, pre-commit and Android/Swift manifests and the Swift lockfile.
-Only the app npm project remains. It now has 90 direct dependency entries and 1,105 locked package
+Only the app npm project remains. It now has 90 direct dependency entries and 1,103 locked package
 entries; all 870 public package names were rechecked against npm metadata. Ten configured FontAwesome
 lock entries remain private-registry unverified. There are 94 numbered Python requirements after
 removing django-webpack-loader and unused rake-nltk, plus the same three Git requirements. This is an
@@ -84,8 +84,9 @@ Dependabot and compatibility:
 - TypeScript is now 7.0.2. Unused `@vue/eslint-config-typescript` and `@typescript-eslint/parser`
   direct dependencies and unused hook compiler/parser dependencies are removed. The active ESLint
   config never selected them. No TypeScript 6 compatibility layer or native bridge is needed by the
-  remaining tooling. `npm run typecheck` uses strict TypeScript 7 checking for standalone `src/**/*.ts`;
-  it does not check Vue templates or JavaScript. Vite separately transpiles TypeScript with Oxc.
+  remaining tooling. `npm run typecheck` uses strict TypeScript 7 checking for standalone `src/**/*.ts` and
+  `capacitor.config.ts`, with verbatim module syntax to enforce type-only imports. It does not check
+  Vue templates or JavaScript. Vite separately transpiles TypeScript with Oxc.
 - Firebase is now 13.0.0 with a narrowly scoped `@capacitor-firebase/analytics` override referencing
   the direct `$firebase` dependency. Analytics 8.5.2 declares optional peer `^12.6.0`, not an exact
   12.19 requirement. This is an experimental compatibility exception, not upstream support: Firebase
@@ -139,6 +140,10 @@ Validation (saved environment: Node 24.19.0 and Python 3.12.14):
 - ESLint 10 in the independent public validation environment, using the final app config and
   temporary copies of app source, reports the same 18 existing `no-useless-assignment` errors after
   formatting those copies. No parser crash occurs; repository app source is unchanged.
+- A targeted `npm run test:config` check reproduces the old Capacitor config-loader failure under
+  CLI 8.5.3/TypeScript 7, then passes with the type-only import. The obsolete `bundledWebRuntime: false`
+  option is removed; CLI 8 no longer declares or reads it. Expanded typecheck passes against exact
+  source/config copies and public CLI dependencies. Two extraneous orphan Stylus lock nodes are pruned.
 - A clean public-only compatibility fixture with final lint/Vite versions, TypeScript 7, and the
   published Analytics plugin plus Firebase 13 scoped override builds successfully (26 modules).
   This excludes private icons and is not a full application build.
@@ -349,7 +354,7 @@ removed site npm owners are excluded. For names with multiple parents, example c
 | `fs-extra` | 10.1.0, 11.1.1, 9.1.0 | 11.4.1 | app: @capacitor-community/electron 5.0.1 ~11.1.1, app: @capacitor/assets 3.0.5 10.1.0 | none reported |
 | `fs-minipass` | 2.1.0 | 3.0.3 | app: tar 6.2.1 ^2.0.0 | none reported |
 | `get-stream` | 4.1.0, 5.2.0 | 9.0.1 | app: execa 1.0.0 ^4.0.0, app: execa 4.1.0 ^5.0.0 | none reported |
-| `glob` | 7.2.3, 9.3.5 | 13.0.6 | app: rimraf 4.4.1 ^9.2.0 | none reported |
+| `glob` | 9.3.5 | 13.0.6 | app: rimraf 4.4.1 ^9.2.0 | none reported |
 | `global-dirs` | 3.0.1 | 4.0.0 | app: is-installed-globally 0.4.0 ^3.0.0 | none reported |
 | `globals` | 14.0.0 | 17.13.0 | app: @eslint/eslintrc 3.3.7 ^14.0.0 | none reported |
 | `has-flag` | 3.0.0, 4.0.0 | 5.0.1 | app: supports-color 5.5.0 ^3.0.0, app: supports-color 8.1.1 ^4.0.0 | none reported |
@@ -454,7 +459,7 @@ removed site npm owners are excluded. For names with multiple parents, example c
 | `resolve-from` | 4.0.0 | 5.0.0 | app: import-fresh 3.3.1 ^4.0.0 | none reported |
 | `restore-cursor` | 2.0.0, 3.1.0 | 5.1.0 | app: cli-cursor 2.1.0 ^2.0.0, app: cli-cursor 3.1.0 ^3.1.0 | none reported |
 | `rimraf` | 4.4.1 | 6.1.3 | app: @capacitor/cli 5.7.8 ^4.4.1 | none reported |
-| `sax` | 1.1.4, 1.2.4 | 1.6.1 | app: xml2js 0.5.0 >=0.6.0, app: elementtree 0.1.7 1.1.4 | none reported |
+| `sax` | 1.1.4 | 1.6.1 | app: xml2js 0.5.0 >=0.6.0, app: elementtree 0.1.7 1.1.4 | none reported |
 | `semver` | 5.7.2, 6.3.1 | 7.8.5 | app: @vue/cli-shared-utils 4.5.19 ^6.1.0, app: cross-spawn 6.0.6 ^5.5.0 | none reported |
 | `sharp` | 0.32.6 | 0.35.5 | app: @capacitor/assets 3.0.5 0.32.6 | high |
 | `shebang-command` | 1.2.0 | 2.0.0 | app: cross-spawn 6.0.6 ^1.2.0 | none reported |

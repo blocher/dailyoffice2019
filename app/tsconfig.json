@@ -10,9 +10,11 @@
     "strict": true,
     "noEmit": true,
     "isolatedModules": true,
-    "types": []
+    "types": [],
+    "verbatimModuleSyntax": true
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "capacitor.config.ts"
   ]
 }

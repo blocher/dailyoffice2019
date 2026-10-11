@@ -14,7 +14,8 @@
     "capacitor:build": "vue-cli-service capacitor:build",
     "capacitor:serve": "vue-cli-service capacitor:serve",
     "ios": "npm run build && npx cap sync && npx cap build ios && npx cap run ios",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:config": "node --test scripts/capacitor-config.check.mjs"
   },
   "dependencies": {
     "@achrinza/node-ipc": "^10.1.11",
