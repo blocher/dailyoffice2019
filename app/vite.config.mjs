@@ -7,6 +7,10 @@ import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  server: {
+    port: 5176,
+    strictPort: true,
+  },
   plugins: [vue(), tailwindcss()],
   resolve: {
     alias: {

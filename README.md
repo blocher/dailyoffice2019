@@ -543,7 +543,7 @@ If you are using macOS, all the above requirements may be installed with Homebre
 
 - Collect static assets `python manage.py collectstatic`
 - Start development server `python manage.py runsslserver`
-- The API documentation will be accessible locally at `https://127.0.0.1:8000/api/`
+- The API documentation will be accessible locally at `https://127.0.0.1:8006/api/`
 
 #### Run the client (frontend) server
 

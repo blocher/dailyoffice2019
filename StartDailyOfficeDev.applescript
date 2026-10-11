@@ -35,8 +35,8 @@ tell application "iTerm"
         set name to "Daily Office Backend"
         write text "source ~/projects/dailyoffice2019/env/bin/activate"
         write text "cd ~/projects/dailyoffice2019/site"
-        write text "kill $(lsof -t -i:8000) 2>/dev/null || true"
-        write text "python manage.py runsslserver"
+        write text "kill $(lsof -t -iTCP:8006 -sTCP:LISTEN 2>/dev/null) 2>/dev/null || true"
+        write text "python manage.py runsslserver 127.0.0.1:8006"
         set pane2 to (split horizontally with default profile)
     end tell
     
@@ -46,7 +46,7 @@ tell application "iTerm"
         set name to "Daily Office Frontend"
         write text "source ~/projects/dailyoffice2019/env/bin/activate"
         write text "cd ~/projects/dailyoffice2019/app"
-        write text "kill $(lsof -t -i:5173) 2>/dev/null || true"
+        write text "kill $(lsof -t -iTCP:5176 -sTCP:LISTEN 2>/dev/null) 2>/dev/null || true"
         write text "npm run dev"
         set pane3 to (split horizontally with default profile)
     end tell
@@ -70,5 +70,5 @@ end try
 
 -- Open Chrome to the dev server in the background so it doesn't hang the script
 try
-    do shell script "open -a 'Google Chrome' 'http://localhost:5173/' > /dev/null 2>&1 &"
+    do shell script "open -a 'Google Chrome' 'http://localhost:5176/' > /dev/null 2>&1 &"
 end try

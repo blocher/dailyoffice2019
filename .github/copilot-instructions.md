@@ -167,8 +167,8 @@ make clean build
 cd site
 source env/bin/activate
 python manage.py runsslserver
-# Accessible at https://127.0.0.1:8000/
-# API docs at https://127.0.0.1:8000/api/
+# Accessible at https://127.0.0.1:8006/
+# API docs at https://127.0.0.1:8006/api/
 ```
 
 **Note**: Requires `django-sslserver` package (part of requirements.txt)
@@ -217,7 +217,7 @@ EMAIL_PORT=465
 EMAIL_HOST_USER=development@example.com
 EMAIL_HOST_PASSWORD=development-email-password
 ZOOM_LINK=https://zoom.us/development
-SITE_ADDRESS=https://127.0.0.1:8000
+SITE_ADDRESS=https://127.0.0.1:8006
 OMDB_API_KEY=development-omdb-key
 UTELLY_API_KEY=development-utelly-key
 IMDB_API_KEY=development-imdb-key
@@ -306,7 +306,7 @@ After making changes, ALWAYS test these scenarios:
 5. **Test development server**:
    ```bash
    python manage.py runsslserver
-   # Verify https://127.0.0.1:8000/ loads
+   # Verify https://127.0.0.1:8006/ loads
    ```
 
 ## Project Structure Reference
