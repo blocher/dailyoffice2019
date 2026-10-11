@@ -38,7 +38,6 @@ django-richtextfield>=1.6.2
 django-robots>=6.1
 django-taggit>=6.1.0
 django_tinymce>=5.0.0
-django-webpack-loader>=3.2.4
 django-widget-tweaks>=1.5.1
 djangorestframework>=3.18.3
 docx>=0.2.4

@@ -15,11 +15,8 @@ from distutils.util import strtobool
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.db.models import Prefetch, Q
-from django.http import HttpResponse
 from django.utils import timezone
-from django.template.loader import render_to_string
 from django.utils.functional import cached_property
-from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import TemplateResponseMixin
 from mailchimp_marketing.api_client import ApiClientError
@@ -4997,101 +4994,6 @@ class SiteMessageViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         elif platform == "web":
             queryset = queryset.filter(show_on_web=True)
         return queryset.order_by("order", "-created")
-
-
-# heading
-# subheading
-# citation
-# html
-# leader
-# congregation
-# rubric
-# leader_dialogue
-# congregation_dialogue
-
-
-def heading(content):
-    return "<h2>{}</h2>".format(content)
-
-
-def subheading(content):
-    return "<h4>{}</h4>".format(content)
-
-
-def citation(content):
-    return "<h5>{}</h5>".format(content)
-
-
-def html_content(content):
-    return content
-
-
-def leader(content, indented=False):
-    if indented:
-        return "<p class='indent'>{}</p>".format(content)
-    return "<p class='handing-indent'>{}</p>".format(content)
-
-
-def congregation(content, indented=False):
-    if indented:
-        return "<p class='indent'><strong>{}</strong></p>".format(content)
-    return "<p class='handing-indent'><strong>{}</strong></p>".format(content)
-
-
-def rubric(content):
-    return "<p><em>{}</em></p>".format(content)
-
-
-def leader_dialogue(content, indented=False):
-    return leader(content, indented)
-
-
-def congregation_dialogue(content, indented=False):
-    return congregation(content, indented)
-
-
-def line_to_html(line):
-    if line["line_type"] == "heading":
-        return heading(line["content"])
-    if line["line_type"] == "subheading":
-        return subheading(line["content"])
-    if line["line_type"] == "citation":
-        return citation(line["content"])
-    if line["line_type"] == "html":
-        return html_content(line["content"])
-    if line["line_type"] == "leader":
-        return leader(line["content"], line["indented"])
-    if line["line_type"] == "congregation":
-        return congregation(line["content"], line["indented"])
-    if line["line_type"] == "rubric":
-        return rubric(line["content"])
-    if line["line_type"] == "leader_dialogue":
-        return leader_dialogue(line["content"], line["indented"])
-    if line["line_type"] == "congregation_dialogue":
-        return congregation_dialogue(line["content"], line["indented"])
-    return line["content"]
-
-
-def json_modules_to_html(modules, request=None):
-    html = ""
-    for module in modules:
-        for line in module["lines"]:
-            html += line_to_html(line)
-    return render_to_string("display_base.html", {"content": mark_safe(html)})
-
-
-class MorningPrayerDisplayView(OfficeAPIView):
-    def get(self, request, year, month, day):
-        office = MorningPrayer(request, year, month, day)
-        serializer = OfficeSerializer(office)
-        return HttpResponse(json_modules_to_html(serializer.data["modules"], request), content_type="text/html")
-
-
-class NoondayPrayerDisplayView(OfficeAPIView):
-    def get(self, request, year, month, day):
-        office = MorningPrayer(request, year, month, day)
-        serializer = OfficeSerializer(office)
-        return HttpResponse(json_modules_to_html(serializer.data["modules"], request), content_type="text/html")
 
 
 class EmailSignupView(APIView):

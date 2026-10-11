@@ -3,7 +3,7 @@ from datetime import date
 from bs4 import BeautifulSoup
 from django.core import serializers
 from django.db.models import Prefetch
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.template.loader import render_to_string
@@ -303,13 +303,11 @@ def family(request):
 
 
 def handle404(request, exception):
-    response = render(request, "404.html")
-    response.status_code = 404
-    return response
+    return four_oh_four(request, exception)
 
 
 def four_oh_four(request, exception):
-    return render(request, "404.html", status=404)
+    return JsonResponse({"detail": "Not found."}, status=404)
 
 
 def four_oh_four_redirect(request, exception):

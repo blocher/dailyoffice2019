@@ -20,15 +20,10 @@ CFLAGS="-Wno-narrowing" pip install cld2-cffi  --no-cache-dir
 echo "======Installing Requirements======"
 pip install -r requirements.txt --no-cache-dir
 
-echo "======Installing legacy asset dependencies======"
-npm ci --include=dev
-
 echo "======Migrating Database======"
 python manage.py migrate --no-input
 
-echo "======Running Webpack and Collceting Static Files======"
-mkdir -p static
-npx webpack
+echo "======Collecting Static Files======"
 python manage.py collectstatic --noinput --clear
 
 echo "======Clearing Memcached======"
