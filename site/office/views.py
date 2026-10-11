@@ -309,7 +309,7 @@ def handle404(request, exception):
 
 
 def four_oh_four(request, exception):
-    return render(request, "404.html")
+    return render(request, "404.html", status=404)
 
 
 def four_oh_four_redirect(request, exception):

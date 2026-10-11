@@ -288,7 +288,7 @@ class PatronViewTests(TestCase):
 
 
 class PatronMessageApiTests(TestCase):
-    @patch("patrons.views.timezone.localdate", return_value=date(2026, 7, 21))
+    @patch("patrons.views.timezone.localdate", side_effect=[date(2026, 7, 21), date(2026, 7, 22)])
     def test_today_message_endpoint_returns_sorted_plain_text_messages(self, mocked_localdate):
         alice = FamilyMember.objects.create(first_name="Alice", last_name="Able")
         benedict = FamilyMember.objects.create(first_name="Benedict", last_name="Baker")
@@ -338,7 +338,7 @@ class PatronMessageApiTests(TestCase):
         )
         mocked_localdate.assert_called_once_with()
 
-    @patch("patrons.views.timezone.localdate", return_value=date(2026, 7, 21))
+    @patch("patrons.views.timezone.localdate", side_effect=[date(2026, 7, 21), date(2026, 7, 22)])
     def test_tomorrow_message_endpoint_uses_tomorrow_phrase(self, mocked_localdate):
         clare = FamilyMember.objects.create(first_name="Clare", last_name="Carter")
         Event.objects.create(

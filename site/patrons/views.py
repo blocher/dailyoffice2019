@@ -16,7 +16,6 @@ from patrons.dates import (
 )
 from patrons.models import CalendarFeed, Event, FamilyMember, PatronalFeast
 
-
 CALENDAR_FILTERS = (
     ("general", "Catholic/General"),
     ("traditional", "Catholic/Traditional"),
@@ -280,11 +279,12 @@ def _event_entries_for_day(value, when_text, day_order, request):
     return entries
 
 
-def _message_response_window(request, window_start):
+def _message_response_window(request, window_start, local_today=None):
     window_start = _message_effective_window_start(request, window_start)
     d0 = window_start
     d1 = window_start + timedelta(days=1)
-    local_today = timezone.localdate()
+    if local_today is None:
+        local_today = timezone.localdate()
     all_entries = []
     for day_order, message_day in enumerate((d0, d1)):
         when_text = _when_phrase(message_day, window_start, local_today)
@@ -315,11 +315,12 @@ def _message_response_window(request, window_start):
 
 def message_today(request):
     today = timezone.localdate()
-    return _message_response_window(request, today)
+    return _message_response_window(request, today, local_today=today)
 
 
 def message_tomorrow(request):
-    return _message_response_window(request, timezone.localdate() + timedelta(days=1))
+    today = timezone.localdate()
+    return _message_response_window(request, today + timedelta(days=1), local_today=today)
 
 
 def message_date(request, year, month, day):
