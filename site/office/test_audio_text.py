@@ -74,7 +74,12 @@ class MasterAudioIntegrationTests(TestCase):
                 html, html=True, no_generate=True, id="reading_original"
             )
         generate.assert_called_once_with(
-            "35,000 men. 3.5 measures.", "reader", kind="reader", no_generate=True, voice="assigned-reader"
+            "35,000 men. 3.5 measures.",
+            "reader",
+            kind="reader",
+            no_generate=True,
+            raise_on_error=False,
+            voice="assigned-reader",
         )
         self.assertEqual(re.sub(r"<span data-line-id='[^']*'></span>", "", rendered), html)
 

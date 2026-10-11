@@ -25,7 +25,7 @@ from django.views.generic.base import TemplateResponseMixin
 from mailchimp_marketing.api_client import ApiClientError
 from mutagen.mp3 import MP3
 from rest_framework import serializers, mixins, viewsets
-from rest_framework.exceptions import PermissionDenied, ValidationError
+from rest_framework.exceptions import APIException, PermissionDenied, ValidationError
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -58,6 +58,13 @@ from office.models import (
 )
 from office.utils import passage_to_citation, get_client_ip, generate_uuid_from_string
 from psalter.utils import get_psalms
+
+
+class ReadingAudioUnavailable(APIException):
+    status_code = 503
+    default_detail = "Complete Scripture audio is unavailable. Please try again later."
+    default_code = "reading_audio_unavailable"
+
 
 # --- Text-to-speech configuration -------------------------------------------
 # The active backend (OpenAI, Fish Audio, ...) is selected by the TTS_PROVIDER
@@ -3445,6 +3452,12 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
 
     @staticmethod
     def handle_html(line, html=False, no_generate=False, id=None, module="Reading", voice=None):
+        """Render reading markers or require every spoken paragraph for playback.
+
+        Display/cache planning may use prospective clip URLs. Playback must fail
+        before assembling an office when any paragraph cannot be supplied; clips
+        already cached remain available for a subsequent request.
+        """
         import re
         from office.audio_text import reading_text
 
@@ -3469,9 +3482,22 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             if not text_without_verses:
                 lines.append(paragraph)
                 continue
-            url, path = GenericDailyOfficeSerializer.get_or_create_clip(
-                text_without_verses, "reader", kind="reader", no_generate=no_generate, voice=voice
-            )
+            required = not html and not no_generate
+            try:
+                url, path = GenericDailyOfficeSerializer.get_or_create_clip(
+                    text_without_verses,
+                    "reader",
+                    kind="reader",
+                    no_generate=no_generate,
+                    raise_on_error=required,
+                    voice=voice,
+                )
+            except Exception as exc:
+                if required:
+                    raise ReadingAudioUnavailable() from exc
+                raise
+            if required and (not url or not path):
+                raise ReadingAudioUnavailable()
             if url:
                 uuid_match = re.search(r"/uploads/(?:[^/]+/)?([0-9a-fA-F-]+)\.mp3", url)
                 if uuid_match:
