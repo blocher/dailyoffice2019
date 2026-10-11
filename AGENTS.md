@@ -26,7 +26,7 @@ This project is a full-stack application divided into a modern Vue frontend and 
   
 - **`site/`**: The main Django project directory (Backend).
   - Contains standard Django apps (like `website/`) holding core logic, models, views, and custom management commands.
-  - Also contains a Webpack/Babel/SCSS pipeline for legacy server-rendered assets. The active 404 template still loads its bundle, so preserve this build path. Email MJML rendering uses the configured HTTP service, not local Node tooling.
+  - Backend pages use standalone assets or Python-provided admin/editor/API-doc assets. The retired legacy prayer display and HTML 404 no longer require npm or Webpack. Preserve collectstatic, static serving, and email CSS.
 
 ## 💻 Vue Frontend Standards (`app/`)
 

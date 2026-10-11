@@ -87,19 +87,13 @@ retry with longer timeouts.
 pip install --timeout 600 --retries 5 Django==5.2 psycopg-binary beautifulsoup4 requests arrow django-environ
 ```
 
-### Legacy asset setup (only when rebuilding server-rendered assets)
+### Backend static assets
 
-The API deployment does not install Node dependencies. The root npm project was removed;
-run frontend commands from `app/`. Some historical Django templates, including the active
-404 page, still load a Webpack bundle. To rebuild those assets deliberately:
-
-```bash
-cd site
-npm ci --include=dev
-npm run build
-```
-
-Django email templates use the configured MJML HTTP service and Python packages, not a local npm MJML compiler.
+The backend and repository root no longer have npm projects. The legacy `/new` prayer display
+route is removed and production 404 responses are JSON. Run frontend npm commands from `app/`.
+Django `collectstatic` and static serving remain necessary for admin/editor/API-documentation assets;
+patrons and Bible-study pages retain their standalone assets. Email MJML uses the configured HTTP
+service and Python packages. Do not reintroduce a Webpack build into backend deployment.
 
 ### Frontend Setup - FONTAWESOME PRO AUTHENTICATION REQUIRED
 
@@ -277,7 +271,7 @@ pre-commit run --all-files
 ### Build Times and Timeout Requirements
 
 - **Database import**: ~4 seconds (fast and reliable)
-- **Backend npm install**: ~2 minutes
+- **Backend assets**: supplied by Python packages and standalone pages; no npm installation
 - **Python pip install**: 5-45 minutes (network dependent, **NEVER CANCEL**)
 - **Static site generation**: 5-45 minutes (**NEVER CANCEL**, use 60+ minute timeouts)
 - **collectstatic**: 30-60 seconds

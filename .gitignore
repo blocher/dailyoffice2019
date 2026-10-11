@@ -23,5 +23,5 @@ dailyofficelocalapi/
 site/env_test/
 .voice-auditions/
 
-# Dependencies are installed from the app and legacy asset lockfiles.
+# Frontend dependencies are installed from the app lockfile.
 **/node_modules/
