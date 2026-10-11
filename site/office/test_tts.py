@@ -96,7 +96,12 @@ class ElevenLabsTTSProviderTests(SimpleTestCase):
         provider = ElevenLabsTTSProvider()
         with (
             patch.object(index, "TTS_PROVIDER", provider),
-            patch.object(index.GenericDailyOfficeSerializer, "get_or_create_clip", return_value=(None, None)) as clip,
+            patch.object(
+                index.GenericDailyOfficeSerializer,
+                "get_or_create_clip",
+                return_value=("https://example.com/uploads/12345678.mp3", "/uploads/12345678.mp3"),
+            ) as clip,
+            patch.object(index.GenericDailyOfficeSerializer, "get_clip_word_timing", return_value=[]),
         ):
             index.GenericDailyOfficeSerializer.handle_html(
                 "<p>First paragraph.</p><p>Second paragraph.</p>", voice="reader-two"
