@@ -23,6 +23,7 @@
     "@babel/preset-env": "^8.0.7",
     "autoprefixer": "^10.6.1",
     "babel-loader": "^10.1.1",
+    "babel-plugin-polyfill-corejs3": "^1.0.0",
     "copy-webpack-plugin": "^14.0.0",
     "css-loader": "^7.1.5",
     "file-loader": "^6.2.0",
@@ -38,5 +39,8 @@
   },
   "engines": {
     "node": "^22.22.2 || >=24.15.0"
+  },
+  "scripts": {
+    "build": "webpack --config webpack.config.js"
   }
 }

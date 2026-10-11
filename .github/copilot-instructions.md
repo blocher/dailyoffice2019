@@ -87,13 +87,19 @@ retry with longer timeouts.
 pip install --timeout 600 --retries 5 Django==5.2 psycopg-binary beautifulsoup4 requests arrow django-environ
 ```
 
-### Backend Node.js Setup - Takes ~2 minutes
+### Legacy asset setup (only when rebuilding server-rendered assets)
+
+The API deployment does not install Node dependencies. The root npm project was removed;
+run frontend commands from `app/`. Some historical Django templates, including the active
+404 page, still load a Webpack bundle. To rebuild those assets deliberately:
 
 ```bash
 cd site
-npm install
-# Ignore security warnings - Takes 1.5-2 minutes, NEVER CANCEL
+npm ci --include=dev
+npm run build
 ```
+
+Django email templates use the configured MJML HTTP service and Python packages, not a local npm MJML compiler.
 
 ### Frontend Setup - FONTAWESOME PRO AUTHENTICATION REQUIRED
 

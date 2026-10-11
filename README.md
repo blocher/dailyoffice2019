@@ -32,141 +32,504 @@ see where you might help out. Updates to documentation and tests (both of which 
 
 The project is known to work with these versions, although it may also work with more recent versions.
 
-### Dependency refresh (October 11, 2026)
+### Dependency review and consolidation (October 11, 2026)
 
-Project-owned manifests were checked against PyPI, npm (including the authenticated Font Awesome registry),
-and upstream pre-commit releases. Existing `>=`, `^`, and exact-version conventions are retained;
-these ranges do not freeze future releases. The three existing npm lockfiles are refreshed together.
-The email-template package has no dependencies. Vendored `node_modules` manifests are not source manifests.
+This follow-up starts from master `909f9c277`, which already contains the direct dependency upgrade
+`dc53115e3`. The inventory covers four project-owned npm manifests, three original npm lockfiles,
+all 96 numbered Python requirements, three Git requirements, active pre-commit dependencies,
+and Android/Swift manifests and the Swift lockfile. The final two npm lockfiles contain 1,137
+public package names checked against npm metadata; ten FontAwesome registry entries remain
+unverified. This is an inventory and available-advisory review, not an exhaustive security audit.
 
-Compatibility exceptions:
+Ownership and consolidation:
 
-- TypeScript is updated to 6.0.3. Latest stable 7.0.2 exceeds `@typescript-eslint/parser` 8.71.1's
-  declared `>=4.8.4 <6.1.0` peer range. Upgrade TypeScript 7 only after the lint parser supports it.
-- Firebase stays on the newest 12.x release, 12.19.0. Latest stable 13.0.0 conflicts with
-  `@capacitor-firebase/analytics` 8.5.2's `firebase ^12.6.0` peer requirement.
-- `@achrinza/node-ipc` stays at 10.1.11: npm's `latest` tag points to the older 9.2.10 line.
-- `vue-meta` stays at 3.0.0-alpha.10: its stable `latest` tag, 2.4.0, targets Vue 2 rather than this Vue 3 app.
-- The three Git requirements retain their existing fork/branch references. They are moving references,
-  not numbered PyPI releases; the `django-inlinecss@django4` fork must not be replaced with the old PyPI package.
-- Commented-out pre-commit hooks are inactive and are not treated as installed dependencies.
+- `app/` is the active Vue/Vite/Capacitor frontend. `@element-plus/icons-vue` is now explicit there,
+  matching direct imports; the browser plugin was already declared there.
+- The root project had no entrypoint, scripts, or workspaces. Its npm manifest, lockfile, and 922
+  tracked generated `node_modules` files are removed. Run frontend installation from `app/`.
+- Unused app `update`, `install`, and duplicate `npm` library dependencies are removed after source
+  and script searches found no consumers. npm remains the CLI. This removes 911 app lock entries,
+  including bundled npm 12.2.0's vulnerable brace-expansion 5.0.9.
+- **Exception to removing all site npm setup:** active `handler404` renders `404.html`, which extends
+  `base.html` and loads `render_bundle`; the historical `site/deploy/post-receive` rebuilds Webpack.
+  A minimal legacy asset manifest remains, with runtime imports in `dependencies` and build tools
+  in `devDependencies`. Rebuild deliberately with `cd site && npm ci --include=dev && npm run build`.
+  Remove this last site npm project after migrating bundle-dependent templates and the historical
+  deployment path. The source and static-asset functionality are preserved.
+- The current API deployment script `post-receive.sh` no longer installs site npm packages or runs
+  an unpinned browserslist updater; its Webpack command was already commented out. The historical
+  asset-building script now uses `npm ci --include=dev` instead of Yarn and a live updater.
+- Unreferenced site `capacitor-firebase-analytics`, `split-html`, npm MJML, native platform/CLI
+  packages, development server, and other unused packages are removed. This eliminates npm 6.14.18's
+  bundled brace-expansion 1.1.11 and obsolete Mocha. The imported scoped community analytics plugin
+  remains. Python MJML packages and email templates remain: Django uses `MJML_BACKEND_MODE=httpserver`.
+  The empty email npm manifest and unused Yarn config are removed; `node_modules` is now ignored.
 
-Breaking changes and migration checks:
+Dependabot and compatibility:
 
-- **Django 5.2 → 6.1:** Python 3.12+ is required; check PostgreSQL/server support, third-party admin widgets,
-  and removed APIs. Django 6.0 removes `CheckConstraint(check=...)`, argument-free `format_html()`,
-  and positional `Model.save()` arguments. Django 6.1 changes some admin template blocks and markup.
-  See [6.0 release notes](https://docs.djangoproject.com/en/6.1/releases/6.0/) and
-  [6.1 release notes](https://docs.djangoproject.com/en/6.1/releases/6.1/).
-  `site/runtime.txt` still declares Python 3.7 and the historical `site/deploy/post-receive` creates a
-  Python 3.10 environment: neither can install these requirements. Provision a supported interpreter
-  before using those deployment paths; this refresh does not deploy or change server configuration.
-- **Vite 7 → 8:** the production bundler changes from Rollup to Rolldown; build output, plugins,
-  minification, and chunking need checking. See the [migration guide](https://vite.dev/guide/migration.html).
-- **Vitest 3 → 5 / jsdom 27 → 30:** review mocks, timers, DOM behavior, and test-runner configuration.
-  Vitest 5 clears mock calls before each test by default and authenticates the UI URL.
-  See the [migration guide](https://vitest.dev/guide/migration/).
-- **ESLint 9 → 10 and lint-plugin majors:** config lookup and recommended rules change.
-  The hook now installs the actual app-config imports and their required peers. The unused TSLint
-  bridge was removed from the hook because it only supports ESLint 8.
-  See the [migration guide](https://eslint.org/docs/latest/use/migrate-to-10.0.0).
-- **Babel 7 → 8 / webpack tooling majors:** Babel 8 raises Node requirements, is ESM-only, and removes
-  deprecated options. Legacy loaders/plugins need checking if the old pipeline is used again.
-  See the [Babel guide](https://babeljs.io/docs/v8-migration).
-- **Legacy Capacitor 6 → 8:** native projects need platform migrations and `cap sync` before rebuilding;
-  lockfile updates alone do not migrate Xcode, Android Gradle, or SDK requirements.
-  The active Vue app already used Capacitor 8. See the [Capacitor guide](https://capacitorjs.com/docs/updating/8-0).
-- **MJML 4 → 5, iCalendar 6 → 7, OpenAI 2 → 3, Pillow 11 → 12, Delorean 1 → 2,
-  cryptography 46 → 50 and pyOpenSSL 25 → 26:** treat email rendering, calendar serialization,
-  audio-provider calls, image operations, time-zone conversions, and TLS integrations as migration
-  surfaces. Major-version changes are flagged below; a major number alone does not prove a specific
-  application failure, and automated checks do not cover live external services or native builds.
-- **Black 25 → 26:** formatting output can change. Hook and Python requirement now use the same release.
+- Supersedes #247/#248 by eliminating root source-map-js 1.2.1 and Vue/server-renderer 3.5.13.
+  App source-map-js is 1.2.2 and Vue/server-renderer are 3.5.43.
+- Supersedes #249 by removing unused `split-html` and its Mocha tree. Before consolidation,
+  brace-expansion was refreshed to 1.1.21 and the 34 optional CSS entries pruned by #249 were preserved.
+  Their owning npm MJML package was subsequently removed for a demonstrated lack of local consumers.
+- Every remaining brace-expansion copy is 1.1.21, 2.1.7, or 5.0.12, within its parent's range.
+  No bundled npm remains. No forced audit fixes or cross-major overrides were applied.
+- Babel 8 rejects `useBuiltIns`. Site Babel now uses `babel-plugin-polyfill-corejs3` 1.0.0,
+  `usage-global`, and core-js 3.50 to preserve polyfills. See the
+  [Babel migration guide](https://babeljs.io/docs/v8-migration).
+- TypeScript stays at 6.0.3 rather than 7.0.2 because parser 8.71.1 requires `>=4.8.4 <6.1.0`.
+  It has no reported advisory in this audit. Firebase stays at 12.19.0 rather than 13.0.0 because
+  analytics 8.5.2 requires `firebase ^12.6.0`; its tree has high advisories and needs a supported
+  analytics release plus native validation before migration.
+- `@achrinza/node-ipc` 10.1.11 remains because `latest` points to older 9.2.10; the Vue 3 `vue-meta`
+  alpha remains because stable 2.4.0 targets Vue 2. Indirect node-ipc under the Vue CLI native plugin
+  still emits engine warnings. Replace that plugin with tested Capacitor CLI scripts before removal.
+- FontAwesome versions and configuration remain unchanged. Metadata refresh and clean install return
+  HTTP 403. Stored credentials were not read, printed, copied, configured, or transmitted.
+- All 96 numbered Python requirements already name current PyPI releases. Clean resolution updates
+  indirect packages too; `pip list --outdated` is empty. There is no Python lockfile: `>=` requirements
+  and three moving Git references do not freeze future installs. Keep the django-inlinecss fork.
+- Active pre-commit versions were already current. Initializing its local Git hook package used the
+  saved npm 10 CLI with Node 24 after npm 11 returned `EALLOWGIT`; no security settings changed.
 
-The inventory below flags every changed first version component, including calendar-versioned projects
-(such as Black, django-filter, pipenv, and pytz). These are review flags, not a claim that each package
-has an application-breaking change. Pre-1.0 updates (`decode-uri-component`, `django-environ`, Python `mjml`,
-Hypercorn, and uvicorn) also warrant review despite their unchanged first component.
+Validation (saved environment: Node 24.19.0 and Python 3.12.14):
 
-| Manifest | Dependency | Previous | Updated |
+- Final legacy `npm ci --ignore-scripts` succeeds. The isolated Webpack build with Babel 8 succeeds
+  with 16 Sass deprecation warnings; build output stays in `/tmp`.
+- Clean complete Python requirements install; `pip check` and Django checks pass. 236 backend tests
+  execute: 233 pass, three audio assertions fail (`3 != 4`). The two failing
+  `ReadingAudioCompletenessTests` cases and the ElevenLabs case in
+  `ReadingVoiceTests.test_complete_reading_keeps_one_voice_through_audio_assembly` also fail in the
+  saved older Django environment. No backend source changes are made here.
+- App clean install is blocked by HTTP 403 fetching
+  `https://npm.fontawesome.com/@fortawesome/vue-fontawesome/-/vue-fontawesome-3.3.3.tgz`.
+  Normal lint, Vitest, Vite build, and Cypress commands cannot run because their executables are absent
+  after installation fails. There is no app `tsconfig.json` or configured typecheck script.
+- ESLint 10 from the isolated public pre-commit environment, using a copy of the unchanged app config,
+  reports 18 existing source errors. No app source changes are made here.
+- Shell syntax, JSON parsing, manifest/lock agreement, staged pre-commit hooks, and `git diff --check`
+  pass. Lifecycle scripts, native builds, browser tests, live providers, and deployment are unvalidated.
+
+Security reports at review time:
+
+| Dependency set | Before | Final |
+| --- | --- | --- |
+| Root npm | Not measured before | Removed; intermediate clean audit: 0 |
+| App npm | 91: 38 critical, 20 high, 33 moderate | 32: 3 critical, 12 high, 17 moderate |
+| Site npm | 63: 3 critical, 43 high, 15 moderate, 2 low | 0 |
+| Fresh Python environment | Not measured before | 1 high, unpatched NLTK advisory |
+
+Counts include propagated parent reports and do not prove each affected package is exploitable here.
+The remaining critical npm reports involve `request`, `form-data`, and older `tar` under native asset
+tooling. Latest direct releases still constrain these children; migrate or replace their owners instead
+of overriding incompatible majors. Other findings cover Firebase/grpc, Xcode/project tooling,
+Mailchimp/query-string, Stylus parsing, and lint/build plugins. Tooling vulnerabilities still matter
+in developer/build processes. Manifest sections distinguish runtime and tooling, although some tools
+were historically listed as runtime. The only remaining bundles are Tailwind’s optional WebAssembly runtime dependencies; npm bundles are removed. These six packages are shipped within the upstream oxide tarball: `@emnapi/core 1.11.1`, `@emnapi/runtime 1.11.1`, `@emnapi/wasi-threads 1.2.2`, `@napi-rs/wasm-runtime 1.1.4`, `@tybys/wasm-util 0.10.2`, `tslib 2.8.1`. Updating their contents requires an upstream oxide release; lockfile overrides cannot rewrite a tarball.
+
+Python rake-nltk retains NLTK 3.10.3, affected by
+[GHSA-8mgp-746c-j5xp](https://github.com/nltk/nltk/security/advisories/GHSA-8mgp-746c-j5xp),
+a high-severity model-path sandbox bypass with no patched release. The affected model import/export
+APIs were not found in repository Python source; this does not establish safety for every indirect
+call. Review whether rake-nltk is still required and evaluate an upstream fix before accepting
+untrusted model paths.
+
+| Reported app package | Severity | Locked versions | Owner examples / migration needed |
 | --- | --- | --- | --- |
-| `app/package.json` | `nanoid` | `^5.1.6` | `6.0.2` |
-| `app/package.json` | `npm` | `^11.10.0` | `12.2.0` |
-| `app/package.json` | `unplugin-vue-components` | `^31.0.0` | `32.1.0` |
-| `app/package.json` | `@babel/eslint-parser` | `^7.28.4` | `8.0.7` |
-| `app/package.json` | `@cypress/request` | `^3.0.9` | `4.0.1` |
-| `app/package.json` | `@eslint/js` | `^9.36.0` | `10.0.1` |
-| `app/package.json` | `@vitest/ui` | `^3.2.4` | `5.0.3` |
-| `app/package.json` | `cypress` | `^15.3.0` | `16.1.1` |
-| `app/package.json` | `eslint` | `^9.36.0` | `10.12.0` |
-| `app/package.json` | `eslint-plugin-cypress` | `^5.1.1` | `7.0.2` |
-| `app/package.json` | `eslint-plugin-vue-scoped-css` | `^2.12.0` | `3.1.3` |
-| `app/package.json` | `globals` | `^16.4.0` | `17.13.0` |
-| `app/package.json` | `jsdom` | `^27.0.0` | `30.1.2` |
-| `app/package.json` | `npm` | `^11` | `12.2.0` |
-| `app/package.json` | `typescript` | `^5.9.3` | `6.0.3` |
-| `app/package.json` | `vite` | `^7.1.7` | `8.3.4` |
-| `app/package.json` | `vitest` | `^3.2.4` | `5.0.3` |
-| `site/package.json` | `@babel/core` | `^7.26.0` | `8.0.7` |
-| `site/package.json` | `@babel/preset-env` | `^7.26.0` | `8.0.7` |
-| `site/package.json` | `@capacitor-community/firebase-analytics` | `^6.0.0` | `8.1.0` |
-| `site/package.json` | `@capacitor/android` | `^6.2.0` | `8.5.3` |
-| `site/package.json` | `@capacitor/app` | `^6.0.2` | `8.1.2` |
-| `site/package.json` | `@capacitor/core` | `^6.2.0` | `8.5.3` |
-| `site/package.json` | `@capacitor/ios` | `^6.2.0` | `8.5.3` |
-| `site/package.json` | `@capacitor/preferences` | `^6.0.3` | `8.0.1` |
-| `site/package.json` | `@capacitor/splash-screen` | `^6.0.3` | `8.0.2` |
-| `site/package.json` | `@capacitor/status-bar` | `^6.0.2` | `8.0.4` |
-| `site/package.json` | `babel-loader` | `^9.2.1` | `10.1.1` |
-| `site/package.json` | `copy-webpack-plugin` | `^12.0.2` | `14.0.0` |
-| `site/package.json` | `mjml` | `^4.15.3` | `5.4.1` |
-| `site/package.json` | `nanoid` | `^5.0.9` | `6.0.2` |
-| `site/package.json` | `postcss-preset-env` | `^10.1.2` | `11.6.1` |
-| `site/package.json` | `sass-loader` | `^16.0.4` | `17.0.1` |
-| `site/package.json` | `webpack-cli` | `^6.0.1` | `7.2.3` |
-| `site/package.json` | `webpack-dev-server` | `^5.2.0` | `6.0.0` |
-| `site/package.json` | `@capacitor/cli` | `^6.2.0` | `8.5.3` |
-| `site/requirements.txt` | `black` | `25.9.0` | `26.10.1` |
-| `site/requirements.txt` | `cryptography` | `46.0.2` | `50.0.2` |
-| `site/requirements.txt` | `Delorean` | `1.0.0` | `2.0.0` |
-| `site/requirements.txt` | `Django` | `5.2.6` | `6.1.2` |
-| `site/requirements.txt` | `django-debug-toolbar` | `6.0.0` | `8.0.0` |
-| `site/requirements.txt` | `django-distill` | `3.2.7` | `4.0.6` |
-| `site/requirements.txt` | `django-filter` | `25.1` | `26.2` |
-| `site/requirements.txt` | `django-js-asset` | `3.1.2` | `4.2.0` |
-| `site/requirements.txt` | `django_tinymce` | `4.1.0` | `5.0.0` |
-| `site/requirements.txt` | `gunicorn` | `23.0.0` | `26.2.0` |
-| `site/requirements.txt` | `icalendar` | `6.3.1` | `7.3.0` |
-| `site/requirements.txt` | `openai` | `2.0.0` | `3.29.0` |
-| `site/requirements.txt` | `Pillow` | `11.3.0` | `12.3.0` |
-| `site/requirements.txt` | `pip` | `25.2` | `26.2.1` |
-| `site/requirements.txt` | `pipdeptree` | `2.28.0` | `4.2.7` |
-| `site/requirements.txt` | `pipenv` | `2025.0.4` | `2026.9.0` |
-| `site/requirements.txt` | `pyOpenSSL` | `25.3.0` | `26.4.0` |
-| `site/requirements.txt` | `pytz` | `2025.2` | `2026.5` |
-| `site/requirements.txt` | `setuptools` | `80.9.0` | `84.0.0` |
-| `site/requirements.txt` | `virtualenv` | `20.34.0` | `21.14.6` |
+| `@capacitor-firebase/analytics` | high | 8.5.2 | app direct ^8.5.2 |
+| `@capacitor/assets` | high | 3.0.5 | app direct ^3.0.5 |
+| `@capacitor/cli` | high | 5.7.8, 8.5.3 | @capacitor-community/electron >=5.4.0, @capacitor/assets ^5.3.0, app direct ^8.5.3 |
+| `@firebase/firestore` | high | 4.17.2 | @firebase/firestore-compat 4.17.2, firebase 4.17.2 |
+| `@firebase/firestore-compat` | high | 0.4.14 | firebase 0.4.14 |
+| `@grpc/grpc-js` | high | 1.9.16 | @firebase/firestore ~1.9.0 |
+| `@tailwindcss/typography` | moderate | 0.5.20 | app direct ^0.5.20 |
+| `@trapezedev/project` | moderate | 7.1.10 | @capacitor/assets ^7.0.10 |
+| `@vue/cli-shared-utils` | moderate | 4.5.19 | vue-cli-plugin-capacitor ^4.5.4 |
+| `@vue/eslint-config-typescript` | high | 14.9.0 | app direct ^14.9.0 |
+| `braces` | high | 3.0.3 | micromatch ^3.0.3 |
+| `css` | moderate | 3.0.0 | stylus ^3.0.0 |
+| `decode-uri-component` | moderate | 0.2.2 | query-string ^0.2.0, source-map-resolve ^0.2.0 |
+| `eslint-plugin-vue-scoped-css` | moderate | 3.1.3 | app direct ^3.1.3 |
+| `fast-glob` | high | 3.3.3 | @vue/eslint-config-typescript ^3.3.3 |
+| `firebase` | high | 12.19.0 | @capacitor-firebase/analytics ^12.6.0, app direct ^12.19.0 |
+| `form-data` | critical | 2.3.3 | request ~2.3.2 |
+| `micromatch` | high | 4.0.8 | fast-glob ^4.0.8 |
+| `postcss-selector-parser` | moderate | 6.0.10 | @tailwindcss/typography 6.0.10 |
+| `postcss-styl` | moderate | 0.12.3 | app direct ^0.12.3, eslint-plugin-vue-scoped-css ^0.12.0 |
+| `qs` | moderate | 6.5.5 | request ~6.5.2 |
+| `query-string` | moderate | 6.14.1 | vue-mailchimp-subscribe ^6.8.3 |
+| `request` | critical | 2.88.2 | @vue/cli-shared-utils ^2.88.2 |
+| `sharp` | high | 0.32.6 | @capacitor/assets 0.32.6 |
+| `source-map-resolve` | moderate | 0.6.0 | css ^0.6.0 |
+| `stylus` | moderate | 0.57.0 | postcss-styl ^0.57.0, vite >=0.54.8 |
+| `tar` | critical | 6.2.1 | @capacitor/cli ^6.1.11 |
+| `tough-cookie` | moderate | 2.5.0 | request ~2.5.0 |
+| `uuid` | moderate | 3.4.0, 7.0.3 | request ^3.3.2, xcode ^7.0.3 |
+| `vue-cli-plugin-capacitor` | moderate | 2.0.1 | app direct ^2.0.1 |
+| `vue-mailchimp-subscribe` | moderate | 1.1.0 | app direct ^1.1.0 |
+| `xcode` | moderate | 3.0.1 | @capacitor/cli ^3.0.1, @trapezedev/project ^3.0.1 |
 
-Validation with Python 3.14.2 and Node 24.21.0:
+Native pins retained for a coordinated platform migration:
 
-- All Python requirements install in a clean temporary environment; `pip check` reports no broken requirements.
-- Django system checks and all 220 backend tests (`office`, `patrons`, `churchcal`, `bible`, `psalter`) pass.
-  Four pre-existing failures were resolved: patron message endpoints now share one local-date snapshot
-  to keep their dates and labels consistent across midnight; the custom error page returns HTTP 404;
-  deuterocanonical audio tests mock dialogue clips as well as reading clips and verify the introduction,
-  both reading paragraphs, and closing. The missing narration was an unmocked-provider test issue.
-- Upgrading debug-toolbar exposed routes being imported while its app is excluded during tests.
-  URL registration now checks that the app is installed, with a regression test.
-- Vue production build passes and all 53 tests across 10 files pass on Vite 8 / Vitest 5.
-  Build warnings remain for large chunks and `vue-axios` using CommonJS `module` inside its ESM bundle.
-- ESLint 10 successfully checks `app/src/helpers/clientId.test.js` with the current config.
-- Node 24 emits engine warnings from old `node-ipc` dependencies, including a transitive 9.x dependency
-  of the legacy Vue CLI Capacitor plugin. These old dependencies need a separate native-tooling cleanup.
-- Native iOS/Android/Electron builds, Cypress browser tests, live AI/TLS provider requests, and the unused
-  legacy webpack/email pipeline have not been exercised. Successful web checks do not establish those paths' compatibility.
-- Clean `npm ci --ignore-scripts` installs pass for the root, Vue app, and legacy manifests.
-  The updated `pre-commit run` passes, and the ESLint hook also passes when explicitly exercised
-  on the existing frontend test file. Dependency lifecycle scripts were skipped during temporary installation.
+Xcode/Swift is unavailable and app installation is blocked. Do not hand-edit Capacitor-generated
+Swift projects or independently select latest Firebase children. Swift's manifest and lock still pin
+Capacitor 8.1.0 while npm uses 8.5.3: reconcile with supported `cap sync`, resolve, and build on macOS.
+Android needs a tested Gradle/AGP/SDK migration. No native vulnerability scan was available, so these
+pins are not asserted secure. Numeric Swift tags are observations, not compatibility assurances.
+
+| Native dependency | Retained | Latest stable metadata / numeric upstream tag |
+| --- | --- | --- |
+| Swift `abseil-cpp-binary` | 1.2024072200.0 | 1.2025051202.0 |
+| Swift `app-check` | 11.2.0 | 12.0.0 |
+| Swift `capacitor-swift-pm` | 8.1.0 | 8.5.3 |
+| Swift `firebase-ios-sdk` | 12.9.0 | 13.0.1 |
+| Swift `google-ads-on-device-conversion-ios-sdk` | 3.2.0 | 3.7.0 |
+| Swift `googleappmeasurement` | 12.8.0 | 13.0.1 |
+| Swift `googledatatransport` | 10.1.0 | 10.1.1 |
+| Swift `googleutilities` | 8.1.0 | 8.1.4 |
+| Swift `grpc-binary` | 1.69.0 | 1.83.1 |
+| Swift `gtm-session-fetcher` | 4.5.0 | 5.3.1 |
+| Swift `nanopb` | 2.30910.0 | 2.30910.1 |
+| Swift `promises` | 2.4.0 | 2.4.1 |
+| Android `androidx.activity:activity` | 1.11.0 | 1.13.0 |
+| Android `androidx.appcompat:appcompat` | 1.7.1 | 1.8.0 |
+| Android `androidx.core:core` | 1.17.0 | 1.19.1 |
+| Android `androidx.fragment:fragment` | 1.8.9 | 1.9.1 |
+| Android `androidx.webkit:webkit` | 1.14.0 | 1.17.1 |
+| Android `com.android.tools.build:gradle` | 8.13.0 | 9.4.1 |
+| Android `com.google.gms:google-services` | 4.4.4 | 4.5.0 |
+| Gradle wrapper | 8.14.3 | 9.8.1 |
+| Cordova Android | 14.0.1 | 15.1.0 |
+
+`site/runtime.txt` still declares Python 3.7 and the historical deploy script creates Python 3.10,
+both incompatible with Django 6.1. Provision a supported interpreter before using those paths.
+This PR edits repository install scripts but does not deploy or modify server infrastructure.
+
+<details>
+<summary>Retained npm versions differing from each package's public latest tag</summary>
+
+Existing parent ranges and peers are preserved. Migrate the named owners and validate runtime/tooling
+behavior before lifting those constraints. Direct exceptions are explained above. A blank cell means
+no below-tag version in that lockfile. “None reported” refers only to the registry audit and is not a
+security guarantee. For names with multiple parents, example constraints are shown.
+
+| Package | App versions | Site versions | Latest tag | Owning range examples | Reported impact |
+| --- | --- | --- | --- | --- | --- |
+| `@achrinza/node-ipc` | 10.1.11, 9.2.2 |  | 9.2.10 | app: @vue/cli-shared-utils 9.2.2, app: app direct ^10.1.11 | none reported |
+| `@achrinza/strong-type` | 0.1.14 |  | 1.1.20 | app: @achrinza/event-pubsub 0.1.14 | none reported |
+| `@asamuzakjp/dom-selector` | 9.2.4 |  | 10.0.1 | app: jsdom ^9.2.4 | none reported |
+| `@babel/code-frame` | 7.29.7 | 7.29.7 | 8.0.6 | app: @testing-library/dom ^7.10.4, app: parse-json ^7.0.0 | none reported |
+| `@babel/helper-string-parser` | 7.29.7 |  | 8.0.6 | app: @babel/types ^7.29.7 | none reported |
+| `@babel/helper-validator-identifier` | 7.29.7 | 7.29.7 | 8.0.6 | app: @babel/code-frame ^7.29.7, app: @babel/types ^7.29.7 | none reported |
+| `@babel/parser` | 7.29.9 |  | 8.0.7 | app: @vue/compiler-core ^7.29.8, app: @vue/compiler-sfc ^7.29.8 | none reported |
+| `@babel/runtime` | 7.29.10 |  | 8.0.7 | app: @testing-library/dom ^7.12.5, app: @testing-library/vue ^7.23.2 | none reported |
+| `@babel/types` | 7.29.8 |  | 8.0.6 | app: @babel/parser ^7.29.8 | none reported |
+| `@capacitor/cli` | 5.7.8 |  | 8.5.3 | app: @capacitor/assets ^5.3.0 | high |
+| `@emnapi/core` | 1.11.1 |  | 1.11.3 | app: @napi-rs/wasm-runtime ^1.7.1, app: @tailwindcss/oxide-wasm32-wasi ^1.11.1 | none reported |
+| `@emnapi/runtime` | 1.11.1 |  | 1.11.3 | app: @napi-rs/wasm-runtime ^1.7.1, app: @tailwindcss/oxide-wasm32-wasi ^1.11.1 | none reported |
+| `@emnapi/wasi-threads` | 1.2.2 |  | 2.2.0 | app: @emnapi/core 1.2.2, app: @tailwindcss/oxide-wasm32-wasi ^1.2.2 | none reported |
+| `@firebase/ai` | 2.16.0 |  | 3.0.0 | app: firebase 2.16.0 | none reported |
+| `@firebase/app` | 0.16.2 |  | 0.16.3 | app: @firebase/ai 0.x, app: @firebase/analytics 0.x | none reported |
+| `@firebase/app-compat` | 0.5.18 |  | 0.5.19 | app: @firebase/analytics-compat 0.x, app: @firebase/app-check-compat 0.x | none reported |
+| `@firebase/auth` | 1.13.6 |  | 1.13.7 | app: @firebase/auth-compat 1.13.6, app: firebase 1.13.6 | none reported |
+| `@firebase/auth-compat` | 0.6.11 |  | 0.6.12 | app: firebase 0.6.11 | none reported |
+| `@firebase/firestore` | 4.17.2 |  | 4.18.0 | app: @firebase/firestore-compat 4.17.2, app: firebase 4.17.2 | high |
+| `@firebase/firestore-compat` | 0.4.14 |  | 0.4.15 | app: firebase 0.4.14 | high |
+| `@firebase/remote-config` | 0.9.2 |  | 0.9.3 | app: @firebase/remote-config-compat 0.9.2, app: firebase 0.9.2 | none reported |
+| `@firebase/remote-config-compat` | 0.2.29 |  | 0.2.30 | app: firebase 0.2.29 | none reported |
+| `@firebase/storage` | 0.14.5 |  | 0.14.6 | app: @firebase/storage-compat 0.14.5, app: firebase 0.14.5 | none reported |
+| `@firebase/storage-compat` | 0.4.5 |  | 0.4.6 | app: firebase 0.4.5 | none reported |
+| `@grpc/grpc-js` | 1.9.16 |  | 1.14.6 | app: @firebase/firestore ~1.9.0 | high |
+| `@grpc/proto-loader` | 0.7.15 |  | 0.8.1 | app: @firebase/firestore ^0.7.8, app: @grpc/grpc-js ^0.7.8 | none reported |
+| `@hapi/address` | 2.1.4 |  | 5.1.1 | app: @hapi/joi 2.x.x | none reported |
+| `@hapi/bourne` | 1.3.2 |  | 4.0.1 | app: @hapi/joi 1.x.x | none reported |
+| `@hapi/hoek` | 8.5.1 |  | 11.0.7 | app: @hapi/joi 8.x.x, app: @hapi/topo ^8.3.0 | none reported |
+| `@hapi/joi` | 15.1.1 |  | 17.1.1 | app: @vue/cli-shared-utils ^15.0.1 | none reported |
+| `@hapi/topo` | 3.1.6 |  | 6.0.2 | app: @hapi/joi 3.x.x | none reported |
+| `@humanfs/core` | 0.19.2 |  | 0.20.0 | app: @humanfs/node ^0.19.2 | none reported |
+| `@humanfs/node` | 0.16.8 |  | 0.17.0 | app: eslint ^0.16.6 | none reported |
+| `@humanfs/types` | 0.15.0 |  | 0.16.0 | app: @humanfs/core ^0.15.0, app: @humanfs/node ^0.15.0 | none reported |
+| `@ionic/utils-process` | 2.1.11 |  | 2.1.12 | app: @ionic/utils-subprocess 2.1.11 | none reported |
+| `@ionic/utils-stream` | 3.1.6 |  | 3.1.7 | app: @ionic/utils-subprocess 3.1.6 | none reported |
+| `@ionic/utils-subprocess` | 2.1.14 |  | 3.0.1 | app: @capacitor/cli ^2.1.11, app: @trapezedev/project ^2.1.8 | none reported |
+| `@ionic/utils-terminal` | 2.3.4 |  | 2.3.5 | app: @capacitor/cli ^2.3.3, app: @ionic/utils-process 2.3.4 | none reported |
+| `@jridgewell/gen-mapping` | 0.4.0-beta.0 | 0.4.0-beta.0 | 0.3.13 | app: @babel/generator 0.4.0-beta.0, site: @babel/generator 0.4.0-beta.0 | none reported |
+| `@keyv/bigmap` | 1.3.1 |  | 6.1.0 | app: @cacheable/memory ^1.3.1 | none reported |
+| `@napi-rs/wasm-runtime` | 1.1.4 |  | 1.2.5 | app: @tailwindcss/oxide-wasm32-wasi ^1.1.4 | none reported |
+| `@nodelib/fs.scandir` | 2.1.5 |  | 4.0.1 | app: @nodelib/fs.walk 2.1.5 | none reported |
+| `@nodelib/fs.stat` | 2.0.5 |  | 4.0.0 | app: @nodelib/fs.scandir 2.0.5, app: fast-glob ^2.0.2 | none reported |
+| `@nodelib/fs.walk` | 1.2.8 |  | 3.0.1 | app: fast-glob ^1.2.3 | none reported |
+| `@polka/url` | 1.0.0-next.29 |  | 0.5.0 | app: sirv ^1.0.0-next.24 | none reported |
+| `@prettier/plugin-xml` | 2.2.0 |  | 3.4.2 | app: @trapezedev/project ^2.2.0 | none reported |
+| `@testing-library/dom` | 9.3.4 |  | 10.4.2 | app: @testing-library/vue ^9.3.3 | none reported |
+| `@tybys/wasm-util` | 0.10.2 |  | 0.10.4 | app: @napi-rs/wasm-runtime ^0.10.1, app: @tailwindcss/oxide-wasm32-wasi ^0.10.2 | none reported |
+| `@types/fs-extra` | 8.1.5 |  | 11.0.4 | app: @ionic/utils-fs ^8.0.0 | none reported |
+| `@types/jsesc` | 2.5.1 | 2.5.1 | 3.0.3 | app: @babel/generator ^2.5.0, site: @babel/generator ^2.5.0 | none reported |
+| `@types/sinonjs__fake-timers` | 8.1.1 |  | 15.0.1 | app: cypress 8.1.1 | none reported |
+| `@types/slice-ansi` | 4.0.0 |  | 7.1.0 | app: @ionic/utils-terminal ^4.0.0 | none reported |
+| `@vue/cli-shared-utils` | 4.5.19 |  | 5.0.9 | app: vue-cli-plugin-capacitor ^4.5.4 | moderate |
+| `@vue/devtools-api` | 6.6.4 |  | 8.2.1 | app: vuex ^6.0.0-beta.11 | none reported |
+| `@webassemblyjs/floating-point-hex-parser` |  | 1.13.2 | 1.14.1 | site: @webassemblyjs/helper-numbers 1.13.2 | none reported |
+| `@webassemblyjs/helper-api-error` |  | 1.13.2 | 1.14.1 | site: @webassemblyjs/helper-numbers 1.13.2, site: @webassemblyjs/wasm-parser 1.13.2 | none reported |
+| `@webassemblyjs/helper-numbers` |  | 1.13.2 | 1.14.1 | site: @webassemblyjs/ast 1.13.2 | none reported |
+| `@webassemblyjs/helper-wasm-bytecode` |  | 1.13.2 | 1.14.1 | site: @webassemblyjs/ast 1.13.2, site: @webassemblyjs/helper-wasm-section 1.13.2 | none reported |
+| `@webassemblyjs/ieee754` |  | 1.13.2 | 1.14.1 | site: @webassemblyjs/wasm-gen 1.13.2, site: @webassemblyjs/wasm-parser 1.13.2 | none reported |
+| `@webassemblyjs/leb128` |  | 1.13.2 | 1.14.1 | site: @webassemblyjs/wasm-gen 1.13.2, site: @webassemblyjs/wasm-parser 1.13.2 | none reported |
+| `@webassemblyjs/utf8` |  | 1.13.2 | 1.14.1 | site: @webassemblyjs/wasm-gen 1.13.2, site: @webassemblyjs/wasm-parser 1.13.2 | none reported |
+| `address` | 1.2.2 |  | 2.0.3 | app: vue-cli-plugin-capacitor ^1.0.3 | none reported |
+| `agent-base` | 6.0.2 | 6.0.2 | 9.0.0 | app: https-proxy-agent 6, site: https-proxy-agent 6 | none reported |
+| `ajv` | 6.15.0 | 6.15.0 | 8.20.0 | app: @eslint/eslintrc ^6.14.0, app: eslint ^6.14.0 | none reported |
+| `ajv-keywords` |  | 3.5.2 | 5.1.0 | site: schema-utils ^3.5.2 | none reported |
+| `ansi-regex` | 4.1.1, 5.0.1 |  | 6.4.0 | app: pretty-format ^5.0.1, app: strip-ansi ^4.1.0 | none reported |
+| `ansi-styles` | 3.2.1, 4.3.0, 5.2.0, 6.2.3 |  | 7.0.0 | app: chalk ^3.2.1, app: chalk ^4.1.0 | none reported |
+| `argparse` | 2.0.1 | 2.0.1 | 3.0.2 | app: js-yaml ^2.0.1, site: js-yaml ^2.0.1 | none reported |
+| `aria-query` | 5.1.3 |  | 5.3.2 | app: @testing-library/dom 5.1.3 | none reported |
+| `ast-kit` | 2.2.0 |  | 3.0.0 | app: @vue-macros/common ^2.1.2 | none reported |
+| `asynckit` | 0.4.0 | 0.4.0 | 0.5.0 | app: form-data ^0.4.0, site: form-data ^0.4.0 | none reported |
+| `balanced-match` | 1.0.2 |  | 4.0.4 | app: brace-expansion ^1.0.0 | none reported |
+| `big.js` |  | 5.2.2 | 7.0.1 | site: loader-utils ^5.2.2 | none reported |
+| `birpc` | 2.9.0 |  | 4.2.0 | app: @vue/devtools-kit ^2.6.1 | none reported |
+| `bl` | 4.1.0 |  | 7.0.12 | app: ora ^4.1.0, app: tar-stream ^4.0.3 | none reported |
+| `boolbase` | 1.0.0 |  | 2.0.0 | app: css-select ^1.0.0, app: nth-check ^1.0.0 | none reported |
+| `bplist-creator` | 0.1.0 |  | 0.3.0 | app: simple-plist 0.1.0 | none reported |
+| `bplist-parser` | 0.3.1, 0.3.2 |  | 0.5.0 | app: native-run ^0.3.2, app: simple-plist 0.3.1 | none reported |
+| `brace-expansion` | 1.1.21, 2.1.7 |  | 5.0.12 | app: minimatch ^1.1.7, app: minimatch ^2.0.1 | none reported |
+| `buffer` | 5.7.1 |  | 6.0.3 | app: bl ^5.5.0, app: cypress ^5.7.1 | none reported |
+| `buffer-crc32` | 0.2.13 |  | 1.0.0 | app: yauzl ~0.2.3 | none reported |
+| `callsites` | 3.1.0 | 3.1.0 | 4.2.0 | app: parent-module ^3.0.0, site: parent-module ^3.0.0 | none reported |
+| `chalk` | 2.4.2, 4.1.2 |  | 6.0.1 | app: @capacitor-community/electron ^4.1.2, app: @testing-library/dom ^4.1.0 | none reported |
+| `chevrotain` | 7.1.1 |  | 13.2.0 | app: @xml-tools/parser 7.1.1 | none reported |
+| `chownr` | 1.1.4, 2.0.0 |  | 3.0.0 | app: tar ^2.0.0, app: tar-fs ^1.1.1 | none reported |
+| `chrome-remote-interface` | 0.33.3 |  | 0.34.0 | app: cypress 0.33.3 | none reported |
+| `cli-cursor` | 2.1.0, 3.1.0 |  | 5.0.0 | app: ora ^2.1.0, app: ora ^3.1.0 | none reported |
+| `cli-spinners` | 2.9.2 |  | 3.4.0 | app: ora ^2.0.0, app: ora ^2.5.0 | none reported |
+| `cli-table3` | 0.6.1 |  | 0.6.5 | app: cypress 0.6.1 | none reported |
+| `cli-truncate` | 5.2.0 |  | 6.1.1 | app: listr2 ^5.0.0 | none reported |
+| `cliui` | 8.0.1 |  | 9.0.1 | app: yargs ^8.0.1 | none reported |
+| `clone` | 1.0.4 |  | 2.1.2 | app: defaults ^1.0.2 | none reported |
+| `color` | 4.2.3 |  | 5.0.3 | app: sharp ^4.2.3 | none reported |
+| `color-convert` | 1.9.3, 2.0.1 |  | 3.1.3 | app: ansi-styles ^1.9.0, app: ansi-styles ^2.0.1 | none reported |
+| `color-name` | 1.1.3, 1.1.4 |  | 2.1.1 | app: color-convert 1.1.3, app: color-convert ~1.1.4 | none reported |
+| `color-string` | 1.9.1 |  | 2.1.4 | app: color ^1.9.0 | none reported |
+| `commander` | 12.1.0, 14.0.3, 2.11.0, 6.2.1, 8.3.0, 9.5.0 | 14.0.3, 2.20.3 | 15.0.0 | app: @capacitor/assets 8.3.0, app: @capacitor/cli ^12.1.0 | none reported |
+| `concat-map` | 0.0.1 |  | 0.0.2 | app: brace-expansion 0.0.1 | none reported |
+| `confbox` | 0.1.8 |  | 0.3.1 | app: pkg-types ^0.1.8 | none reported |
+| `core-util-is` | 1.0.2 |  | 1.0.3 | app: verror 1.0.2 | none reported |
+| `cosmiconfig` |  | 9.0.2 | 10.0.1 | site: postcss-loader ^9.0.0 | none reported |
+| `cross-spawn` | 6.0.6 |  | 7.0.6 | app: execa ^6.0.0 | none reported |
+| `css-select` | 4.3.0 |  | 7.0.0 | app: node-html-parser ^4.2.1 | none reported |
+| `css-what` | 6.2.2 |  | 8.0.0 | app: css-select ^6.0.1 | none reported |
+| `dashdash` | 1.14.1 |  | 2.0.0 | app: sshpk ^1.12.0 | none reported |
+| `debug` | 2.6.9, 3.2.7, 4.3.4 |  | 4.4.3 | app: @capacitor/assets 4.3.4, app: @cypress/xvfb ^3.1.0 | none reported |
+| `decode-uri-component` | 0.2.2 |  | 0.5.0 | app: query-string ^0.2.0, app: source-map-resolve ^0.2.0 | moderate |
+| `decompress-response` | 6.0.0 |  | 10.0.0 | app: simple-get ^6.0.0 | none reported |
+| `defaults` | 1.0.4 |  | 3.0.0 | app: wcwidth ^1.0.3 | none reported |
+| `define-lazy-prop` | 2.0.0 |  | 3.0.0 | app: open ^2.0.0 | none reported |
+| `diff` | 5.2.2 |  | 9.0.0 | app: @trapezedev/project ^5.1.0 | none reported |
+| `dom-accessibility-api` | 0.5.16 |  | 0.7.1 | app: @testing-library/dom ^0.5.9 | none reported |
+| `dom-serializer` | 1.4.1 |  | 3.1.1 | app: domutils ^1.0.1 | none reported |
+| `domelementtype` | 2.3.0 |  | 3.0.0 | app: dom-serializer ^2.0.1, app: domhandler ^2.2.0 | none reported |
+| `domhandler` | 4.3.1 |  | 6.0.1 | app: css-select ^4.3.1, app: dom-serializer ^4.2.0 | none reported |
+| `domutils` | 2.8.0 |  | 4.0.2 | app: css-select ^2.8.0 | none reported |
+| `easy-stack` | 1.0.1 |  | 2.1.1 | app: @node-ipc/js-queue 1.0.1 | none reported |
+| `ecc-jsbn` | 0.1.2 |  | 0.2.0 | app: sshpk ~0.1.1 | none reported |
+| `electron-is-dev` | 2.0.0 |  | 3.0.1 | app: @capacitor-community/electron ~2.0.0 | none reported |
+| `emoji-regex` | 10.6.0, 8.0.0 |  | 11.0.0 | app: string-width ^10.3.0, app: string-width ^8.0.0 | none reported |
+| `entities` | 2.2.0, 7.0.1 |  | 8.1.0 | app: @vue/compiler-core ^7.0.1, app: dom-serializer ^2.0.0 | none reported |
+| `env-paths` | 2.2.1 | 2.2.1 | 4.0.0 | app: @capacitor/cli ^2.2.0, site: cosmiconfig ^2.2.1 | none reported |
+| `es-module-lexer` | 2.3.2 | 2.3.2 | 3.0.3 | app: vitest ^2.3.2, site: webpack ^2.1.0 | none reported |
+| `escape-string-regexp` | 1.0.5, 4.0.0 |  | 5.0.0 | app: chalk ^1.0.5, app: eslint ^4.0.0 | none reported |
+| `eslint-visitor-keys` | 3.4.3, 4.2.1 |  | 5.0.1 | app: @eslint-community/eslint-utils ^3.4.3, app: espree ^4.2.1 | none reported |
+| `espree` | 10.4.0 |  | 11.2.0 | app: @eslint/eslintrc ^10.0.1, app: vue-eslint-parser ^10.3.0 // ^11.0.0 | none reported |
+| `estree-walker` | 2.0.2 |  | 3.0.3 | app: @vue/compiler-core ^2.0.2, app: @vue/compiler-sfc ^2.0.2 | none reported |
+| `event-pubsub` | 4.3.0 |  | 6.1.1 | app: @achrinza/node-ipc 4.3.0 | none reported |
+| `eventemitter2` | 6.4.7 |  | 6.4.9 | app: cypress 6.4.7 | none reported |
+| `execa` | 1.0.0, 4.1.0 |  | 10.1.0 | app: @vue/cli-shared-utils ^1.0.0, app: cypress 4.1.0 | none reported |
+| `extsprintf` | 1.3.0 |  | 1.4.1 | app: jsprim 1.3.0, app: verror ^1.2.0 | none reported |
+| `fast-levenshtein` | 2.0.6 |  | 3.0.0 | app: optionator ^2.0.6 | none reported |
+| `fast-uri` |  | 3.1.8 | 4.2.2 | site: ajv ^3.0.1 | none reported |
+| `filter-obj` | 1.1.0 |  | 6.1.0 | app: query-string ^1.1.0 | none reported |
+| `find-up` | 5.0.0 | 4.1.0, 5.0.0 | 8.0.0 | app: eslint ^5.0.0, site: babel-loader ^5.0.0 | none reported |
+| `firebase` | 12.19.0 |  | 13.0.0 | app: @capacitor-firebase/analytics ^12.6.0, app: app direct ^12.19.0 | high |
+| `flat` |  | 5.0.2 | 6.0.1 | site: webpack-merge ^5.0.2 | none reported |
+| `form-data` | 2.3.3 |  | 4.0.6 | app: request ~2.3.2 | critical |
+| `fs-extra` | 10.1.0, 11.1.1, 9.1.0 |  | 11.4.1 | app: @capacitor-community/electron ~11.1.1, app: @capacitor/assets 10.1.0 | none reported |
+| `fs-minipass` | 2.1.0 |  | 3.0.3 | app: tar ^2.0.0 | none reported |
+| `get-stream` | 4.1.0, 5.2.0 |  | 9.0.1 | app: execa ^4.0.0, app: execa ^5.0.0 | none reported |
+| `glob` | 7.2.3, 9.3.5 |  | 13.0.6 | app: rimraf ^9.2.0, app: stylus ^7.1.6 | none reported |
+| `glob-parent` | 5.1.2 |  | 6.0.2 | app: fast-glob ^5.1.2 | none reported |
+| `global-dirs` | 3.0.1 |  | 4.0.0 | app: is-installed-globally ^3.0.0 | none reported |
+| `globals` | 14.0.0 |  | 17.13.0 | app: @eslint/eslintrc ^14.0.0 | none reported |
+| `has-flag` | 3.0.0, 4.0.0 | 4.0.0 | 5.0.1 | app: supports-color ^3.0.0, app: supports-color ^4.0.0 | none reported |
+| `hasha` | 5.2.2 |  | 7.0.0 | app: cypress 5.2.2 | none reported |
+| `hashery` | 1.5.1 |  | 3.0.3 | app: @cacheable/utils ^1.5.1, app: @keyv/bigmap ^1.4.0 | none reported |
+| `he` | 1.2.0 |  | 2.0.0 | app: node-html-parser 1.2.0 | none reported |
+| `hookable` | 5.5.3 |  | 6.1.2 | app: @vue/devtools-kit ^5.5.3 | none reported |
+| `hookified` | 1.15.1, 2.2.0 |  | 3.0.4 | app: @cacheable/memory ^1.15.1, app: @keyv/bigmap ^1.15.0 | none reported |
+| `hosted-git-info` | 2.8.9 |  | 10.1.1 | app: normalize-package-data ^2.1.4 | none reported |
+| `http-signature` | 1.2.0 |  | 1.4.0 | app: request ~1.2.0 | none reported |
+| `https-proxy-agent` | 5.0.1 | 5.0.1 | 9.1.0 | app: axios ^5.0.1, site: axios ^5.0.1 | none reported |
+| `human-signals` | 1.1.1 |  | 8.0.1 | app: execa ^1.1.1 | none reported |
+| `idb` | 7.1.1 |  | 8.0.4 | app: @firebase/app 7.1.1, app: @firebase/installations 7.1.1 | none reported |
+| `ignore` | 5.3.2 |  | 7.0.12 | app: @eslint/eslintrc ^5.2.0, app: eslint ^5.2.0 | none reported |
+| `import-fresh` | 3.3.1 | 3.3.1 | 4.0.1 | app: @eslint/eslintrc ^3.2.1, site: cosmiconfig ^3.3.0 | none reported |
+| `ini` | 1.3.8, 2.0.0, 4.1.3 |  | 7.0.0 | app: @trapezedev/project ^2.0.0, app: config-chain ^1.3.4 | none reported |
+| `is-arrayish` | 0.2.1 | 0.2.1 | 0.3.4 | app: error-ex ^0.2.1, site: error-ex ^0.2.1 | none reported |
+| `is-docker` | 2.2.1 |  | 4.0.0 | app: is-wsl ^2.0.0, app: open ^2.1.1 | none reported |
+| `is-fullwidth-code-point` | 3.0.0 |  | 5.1.0 | app: slice-ansi ^3.0.0, app: string-width ^3.0.0 | none reported |
+| `is-installed-globally` | 0.4.0 |  | 1.0.1 | app: cypress ~0.4.0 | none reported |
+| `is-interactive` | 1.0.0 |  | 2.0.0 | app: ora ^1.0.0 | none reported |
+| `is-path-inside` | 3.0.3 |  | 4.0.0 | app: is-installed-globally ^3.0.2 | none reported |
+| `is-plain-object` |  | 2.0.4 | 5.1.0 | site: clone-deep ^2.0.4 | none reported |
+| `is-stream` | 1.1.0, 2.0.1 |  | 4.0.1 | app: execa ^1.1.0, app: execa ^2.0.0 | none reported |
+| `is-unicode-supported` | 0.1.0 |  | 2.1.0 | app: log-symbols ^0.1.0, app: ora ^0.1.0 | none reported |
+| `is-wsl` | 1.1.0, 2.2.0 |  | 3.1.1 | app: open ^1.1.0, app: open ^2.2.0 | none reported |
+| `isexe` | 2.0.0 | 2.0.0 | 4.0.0 | app: which ^2.0.0, site: which ^2.0.0 | none reported |
+| `isobject` |  | 3.0.1 | 4.1.1 | site: is-plain-object ^3.0.1 | none reported |
+| `jest-worker` |  | 27.5.1 | 30.5.1 | site: minimizer-webpack-plugin ^27.4.5 | none reported |
+| `js-message` | 1.0.7 |  | 3.1.1 | app: @achrinza/node-ipc 1.0.7 | none reported |
+| `js-tokens` | 4.0.0 | 4.0.0 | 10.0.0 | app: @babel/code-frame ^4.0.0, site: @babel/code-frame ^4.0.0 | none reported |
+| `js-yaml` | 4.3.2 | 4.3.2 | 5.4.3 | app: @eslint/eslintrc ^4.3.2, site: cosmiconfig ^4.1.0 | none reported |
+| `jsbn` | 0.1.1 |  | 1.1.0 | app: ecc-jsbn ~0.1.0, app: sshpk ~0.1.0 | none reported |
+| `json-parse-even-better-errors` | 2.3.1 | 2.3.1 | 6.0.0 | app: parse-json ^2.3.0, site: parse-json ^2.3.0 | none reported |
+| `json-schema-traverse` | 0.4.1 | 0.4.1 | 1.0.0 | app: ajv ^0.4.1, site: ajv ^0.4.1 | none reported |
+| `jsprim` | 1.4.2 |  | 2.0.2 | app: http-signature ^1.2.2 | none reported |
+| `keyv` | 4.5.4, 5.6.0 |  | 6.1.0 | app: @cacheable/memory ^5.6.0, app: @cacheable/utils ^5.6.0 | none reported |
+| `kleur` | 3.0.3 |  | 4.1.5 | app: prompts ^3.0.3 | none reported |
+| `lightningcss` | 1.32.0 |  | 1.33.0 | app: @tailwindcss/node 1.32.0 | none reported |
+| `lightningcss-android-arm64` | 1.32.0 |  | 1.33.0 | app: lightningcss 1.32.0 | none reported |
+| `lightningcss-darwin-arm64` | 1.32.0 |  | 1.33.0 | app: lightningcss 1.32.0 | none reported |
+| `lightningcss-darwin-x64` | 1.32.0 |  | 1.33.0 | app: lightningcss 1.32.0 | none reported |
+| `lightningcss-freebsd-x64` | 1.32.0 |  | 1.33.0 | app: lightningcss 1.32.0 | none reported |
+| `lightningcss-linux-arm-gnueabihf` | 1.32.0 |  | 1.33.0 | app: lightningcss 1.32.0 | none reported |
+| `lightningcss-linux-arm64-gnu` | 1.32.0 |  | 1.33.0 | app: lightningcss 1.32.0 | none reported |
+| `lightningcss-linux-arm64-musl` | 1.32.0 |  | 1.33.0 | app: lightningcss 1.32.0 | none reported |
+| `lightningcss-linux-x64-gnu` | 1.32.0 |  | 1.33.0 | app: lightningcss 1.32.0 | none reported |
+| `lightningcss-linux-x64-musl` | 1.32.0 |  | 1.33.0 | app: lightningcss 1.32.0 | none reported |
+| `lightningcss-win32-arm64-msvc` | 1.32.0 |  | 1.33.0 | app: lightningcss 1.32.0 | none reported |
+| `lightningcss-win32-x64-msvc` | 1.32.0 |  | 1.33.0 | app: lightningcss 1.32.0 | none reported |
+| `lines-and-columns` | 1.2.4 | 1.2.4 | 2.0.4 | app: parse-json ^1.1.6, site: parse-json ^1.1.6 | none reported |
+| `listr2` | 9.0.5 |  | 11.1.1 | app: cypress ^9.0.5 | none reported |
+| `loader-utils` |  | 2.0.4 | 3.3.1 | site: file-loader ^2.0.0 | none reported |
+| `locate-path` | 6.0.0 | 5.0.0, 6.0.0 | 8.0.0 | app: find-up ^6.0.0, site: find-up ^5.0.0 | none reported |
+| `log-symbols` | 2.2.0, 4.1.0 |  | 7.0.1 | app: cypress ^4.0.0, app: ora ^2.2.0 | none reported |
+| `log-update` | 6.1.0 |  | 8.0.0 | app: listr2 ^6.1.0 | none reported |
+| `lru-cache` | 10.4.3, 5.1.1 |  | 11.5.3 | app: @vue/cli-shared-utils ^5.1.1, app: path-scurry ^10.2.0 | none reported |
+| `magic-string` | 0.30.21 |  | 1.4.3 | app: @tailwindcss/node ^0.30.21, app: @vue/compiler-sfc ^0.30.21 | none reported |
+| `magic-string-ast` | 1.0.3 |  | 2.1.1 | app: @vue-macros/common ^1.0.2 | none reported |
+| `mdn-data` | 2.27.1 |  | 2.37.2 | app: css-tree 2.27.1 | none reported |
+| `mime-db` | 1.52.0 | 1.52.0 | 1.54.0 | app: mime-types 1.52.0, site: mime-types 1.52.0 | none reported |
+| `mime-types` | 2.1.35 | 2.1.35 | 3.0.2 | app: @capacitor-community/electron ~2.1.35, app: @cypress/request ~2.1.19 | none reported |
+| `mimic-fn` | 1.2.0, 2.1.0 |  | 5.0.0 | app: onetime ^1.0.0, app: onetime ^2.1.0 | none reported |
+| `mimic-response` | 3.1.0 |  | 4.0.0 | app: decompress-response ^3.1.0 | none reported |
+| `minimatch` | 3.1.5, 8.0.7 |  | 10.2.6 | app: @eslint/eslintrc ^3.1.5, app: glob ^3.1.1 | none reported |
+| `minipass` | 3.3.6, 4.2.8, 5.0.0 |  | 7.1.3 | app: fs-minipass ^3.0.0, app: glob ^4.2.4 | none reported |
+| `minizlib` | 2.1.2 |  | 3.1.0 | app: tar ^2.1.1 | none reported |
+| `mkdirp` | 1.0.4 |  | 3.0.1 | app: tar ^1.0.3 | none reported |
+| `ms` | 2.0.0, 2.1.2 |  | 2.1.3 | app: debug 2.0.0, app: debug 2.1.2 | none reported |
+| `nanoid` | 3.3.20 | 3.3.20 | 6.0.2 | app: postcss ^3.3.19, site: postcss ^3.3.19 | none reported |
+| `nice-try` | 1.0.5 |  | 5.0.0 | app: cross-spawn ^1.0.4 | none reported |
+| `node-abi` | 3.98.0 |  | 4.37.0 | app: prebuild-install ^3.3.0 | none reported |
+| `node-addon-api` | 6.1.0, 7.1.1 | 7.1.1 | 8.9.2 | app: @parcel/watcher ^7.0.0, app: sharp ^6.1.0 | none reported |
+| `node-fetch` | 2.7.0 |  | 3.3.2 | app: @capacitor/assets 2.7.0 | none reported |
+| `node-html-parser` | 5.4.2 |  | 9.0.4 | app: @capacitor/assets 5.4.2 | none reported |
+| `normalize-package-data` | 2.5.0 |  | 9.0.0 | app: read-pkg ^2.5.0 | none reported |
+| `npm-run-path` | 2.0.2, 4.0.1 |  | 6.0.0 | app: execa ^2.0.0, app: execa ^4.0.0 | none reported |
+| `nth-check` | 2.1.1 |  | 3.0.1 | app: css-select ^2.0.1, app: eslint-plugin-vue ^2.1.1 | none reported |
+| `obug` | 2.2.1 |  | 3.0.0 | app: unplugin-vue-components ^2.1.1, app: vitest ^2.1.4 | none reported |
+| `onetime` | 2.0.1, 5.1.2, 7.0.0 |  | 8.0.0 | app: execa ^5.1.0, app: restore-cursor ^2.0.0 | none reported |
+| `open` | 6.4.0, 8.4.2 |  | 11.0.4 | app: @capacitor/cli ^8.4.0, app: @vue/cli-shared-utils ^6.3.0 | none reported |
+| `ora` | 3.4.0, 5.4.1 |  | 9.4.1 | app: @capacitor-community/electron ^5.4.1, app: @vue/cli-shared-utils ^3.4.0 | none reported |
+| `p-finally` | 1.0.0 |  | 3.0.0 | app: execa ^1.0.0 | none reported |
+| `p-limit` | 3.1.0 | 2.3.0, 3.1.0 | 7.3.3 | app: p-locate ^3.0.2, site: p-locate ^2.2.0 | none reported |
+| `p-locate` | 5.0.0 | 4.1.0, 5.0.0 | 7.0.0 | app: locate-path ^5.0.0, site: locate-path ^4.1.0 | none reported |
+| `p-try` |  | 2.2.0 | 3.0.0 | site: p-limit ^2.0.0 | none reported |
+| `parent-module` | 1.0.1 | 1.0.1 | 3.2.0 | app: import-fresh ^1.0.0, site: import-fresh ^1.0.0 | none reported |
+| `parse-json` | 5.2.0 | 5.2.0 | 8.3.0 | app: read-pkg ^5.0.0, site: cosmiconfig ^5.2.0 | none reported |
+| `path-exists` | 4.0.0 | 4.0.0 | 5.0.0 | app: find-up ^4.0.0, site: find-up ^4.0.0 | none reported |
+| `path-is-absolute` | 1.0.1 |  | 2.0.0 | app: glob ^1.0.0 | none reported |
+| `path-key` | 2.0.1, 3.1.1 | 3.1.1 | 4.0.0 | app: cross-spawn ^2.0.1, app: cross-spawn ^3.1.0 | none reported |
+| `path-scurry` | 1.11.1 |  | 2.0.2 | app: glob ^1.6.1 | none reported |
+| `picomatch` | 2.3.2 |  | 4.0.7 | app: micromatch ^2.3.1 | none reported |
+| `pify` | 2.3.0 |  | 6.1.0 | app: executable ^2.2.0 | none reported |
+| `pkg-dir` |  | 4.2.0 | 9.0.0 | site: import-local ^4.2.0 | none reported |
+| `pkg-types` | 1.3.1 |  | 2.3.3 | app: mlly ^1.3.1 | none reported |
+| `plist` | 3.1.1 |  | 5.0.0 | app: @capacitor/cli ^3.0.5, app: @capacitor/cli ^3.1.0 | none reported |
+| `postcss-selector-parser` | 6.0.10 |  | 7.1.6 | app: @tailwindcss/typography 6.0.10 | moderate |
+| `prettier` | 2.8.8 |  | 3.9.10 | app: @trapezedev/project ^2.7.1 | none reported |
+| `pretty-bytes` | 5.6.0 |  | 7.2.0 | app: cypress ^5.6.0 | none reported |
+| `pretty-format` | 27.5.1 |  | 30.5.1 | app: @testing-library/dom ^27.0.2 | none reported |
+| `protobufjs` | 7.6.6 |  | 8.8.1 | app: @grpc/proto-loader ^7.2.5 | none reported |
+| `proxy-from-env` | 1.0.0 |  | 2.1.0 | app: cypress 1.0.0 | none reported |
+| `qified` | 0.10.1 |  | 0.13.2 | app: cacheable ^0.10.1 | none reported |
+| `qs` | 6.5.5 |  | 6.16.0 | app: request ~6.5.2 | moderate |
+| `quansync` | 0.2.11 |  | 1.0.0 | app: local-pkg ^0.2.11 | none reported |
+| `query-string` | 6.14.1 |  | 9.5.1 | app: vue-mailchimp-subscribe ^6.8.3 | moderate |
+| `react-is` | 17.0.2 |  | 19.3.0 | app: pretty-format ^17.0.1 | none reported |
+| `read-pkg` | 5.2.0 |  | 10.1.0 | app: @vue/cli-shared-utils ^5.1.1 | none reported |
+| `readable-stream` | 3.6.2 |  | 4.8.0 | app: bl ^3.4.0, app: tar-stream ^3.1.1 | none reported |
+| `resolve-from` | 4.0.0 | 4.0.0 | 5.0.0 | app: import-fresh ^4.0.0, site: import-fresh ^4.0.0 | none reported |
+| `restore-cursor` | 2.0.0, 3.1.0 |  | 5.1.0 | app: cli-cursor ^2.0.0, app: cli-cursor ^3.1.0 | none reported |
+| `rimraf` | 4.4.1 |  | 6.1.3 | app: @capacitor/cli ^4.4.1 | none reported |
+| `sax` | 1.1.4, 1.2.4 |  | 1.6.1 | app: elementtree 1.1.4, app: stylus ~1.2.4 | none reported |
+| `schema-utils` |  | 3.3.0 | 4.5.0 | site: file-loader ^3.0.0 | none reported |
+| `semver` | 5.7.2, 6.3.1 |  | 7.8.5 | app: @vue/cli-shared-utils ^6.1.0, app: cross-spawn ^5.5.0 | none reported |
+| `sharp` | 0.32.6 |  | 0.35.5 | app: @capacitor/assets 0.32.6 | high |
+| `shebang-command` | 1.2.0 |  | 2.0.0 | app: cross-spawn ^1.2.0 | none reported |
+| `shebang-regex` | 1.0.0, 3.0.0 | 3.0.0 | 4.0.0 | app: shebang-command ^1.0.0, app: shebang-command ^3.0.0 | none reported |
+| `signal-exit` | 3.0.7 |  | 4.1.0 | app: @ionic/utils-process ^3.0.3, app: @ionic/utils-terminal ^3.0.3 | none reported |
+| `sisteransi` | 1.0.5 |  | 2.0.0 | app: prompts ^1.0.5 | none reported |
+| `slice-ansi` | 4.0.0, 7.1.2, 8.0.0 |  | 9.0.1 | app: @ionic/utils-terminal ^4.0.0, app: cli-truncate ^8.0.0 | none reported |
+| `source-map` | 0.6.1, 0.7.6 | 0.6.1 | 0.8.0 | app: css ^0.6.1, app: stylus ^0.7.3 | none reported |
+| `spdx-expression-parse` | 3.0.1 |  | 5.0.0 | app: spdx-correct ^3.0.0, app: validate-npm-package-license ^3.0.0 | none reported |
+| `split-on-first` | 1.1.0 |  | 4.0.0 | app: query-string ^1.0.0 | none reported |
+| `stream-buffers` | 2.2.0 |  | 3.0.3 | app: bplist-creator 2.2.x | none reported |
+| `string-width` | 4.2.3, 7.2.0 |  | 8.3.0 | app: @ionic/utils-terminal ^4.1.0, app: cli-table3 ^4.2.0 | none reported |
+| `strip-ansi` | 5.2.0, 6.0.1 |  | 7.2.0 | app: @ionic/utils-terminal ^6.0.0, app: @vue/cli-shared-utils ^6.0.0 | none reported |
+| `strip-eof` | 1.0.0 |  | 2.0.0 | app: execa ^1.0.0 | none reported |
+| `strip-final-newline` | 2.0.0 |  | 4.0.0 | app: execa ^2.0.0 | none reported |
+| `strip-json-comments` | 2.0.1, 3.1.1 |  | 5.0.3 | app: @eslint/eslintrc ^3.1.1, app: rc ~2.0.1 | none reported |
+| `stylus` | 0.57.0 |  | 0.64.0 | app: postcss-styl ^0.57.0, app: vite >=0.54.8 | moderate |
+| `supports-color` | 5.5.0, 7.2.0, 8.1.1 | 8.1.1 | 11.0.0 | app: chalk ^5.3.0, app: chalk ^7.1.0 | none reported |
+| `synckit` | 0.11.13 |  | 0.12.3 | app: eslint-plugin-prettier ^0.11.13 | none reported |
+| `tar` | 6.2.1 |  | 7.5.22 | app: @capacitor/cli ^6.1.11 | critical |
+| `tar-fs` | 2.1.5 |  | 3.1.3 | app: prebuild-install ^2.0.0 | none reported |
+| `tar-stream` | 2.2.0 |  | 3.2.2 | app: tar-fs ^2.1.4 | none reported |
+| `throttleit` | 1.0.1 |  | 3.0.0 | app: request-progress ^1.0.0 | none reported |
+| `through2` | 4.0.2 |  | 5.0.11 | app: native-run ^4.0.2 | none reported |
+| `tldts` | 6.1.86 |  | 7.4.18 | app: tough-cookie ^6.1.32 | none reported |
+| `tldts-core` | 6.1.86 |  | 7.4.18 | app: tldts ^6.1.86 | none reported |
+| `tough-cookie` | 2.5.0, 5.1.2 |  | 6.0.2 | app: @cypress/request ^5.0.0, app: request ~2.5.0 | moderate |
+| `tr46` | 0.0.3 |  | 7.0.0 | app: whatwg-url ~0.0.3 | none reported |
+| `tslib` | 2.6.2 |  | 2.8.1 | app: @capacitor/assets 2.6.2, app: @capacitor/core ^2.1.0 | none reported |
+| `tweetnacl` | 0.14.5 |  | 1.0.3 | app: bcrypt-pbkdf ^0.14.3, app: sshpk ~0.14.0 | none reported |
+| `type-fest` | 0.6.0, 0.8.1 |  | 5.10.0 | app: hasha ^0.8.0, app: read-pkg ^0.6.0 | none reported |
+| `typescript` | 6.0.3 |  | 7.0.2 | app: @typescript-eslint/eslint-plugin >=4.8.4 <6.1.0, app: @typescript-eslint/parser >=4.8.4 <6.1.0 | none reported |
+| `undici-types` | 8.9.0 | 8.9.0 | 8.11.2 | app: @types/node ~8.9.0, site: @types/node ~8.9.0 | none reported |
+| `unicode-canonical-property-names-ecmascript` |  | 2.0.1 | 3.0.0 | site: unicode-match-property-ecmascript ^2.0.0 | none reported |
+| `unicode-property-aliases-ecmascript` |  | 2.2.0 | 3.0.0 | site: unicode-match-property-ecmascript ^2.0.0 | none reported |
+| `unimport` | 6.5.0 |  | 7.0.2 | app: unplugin-auto-import ^6.4.0 | none reported |
+| `untildify` | 4.0.0 |  | 6.0.0 | app: @ionic/utils-terminal ^4.0.0, app: cypress ^4.0.0 | none reported |
+| `uuid` | 3.4.0, 7.0.3 |  | 14.0.3 | app: request ^3.3.2, app: xcode ^7.0.3 | moderate |
+| `verror` | 1.10.0 |  | 1.10.1 | app: jsprim 1.10.0 | none reported |
+| `vue-meta` | 3.0.0-alpha.10 |  | 2.4.0 | app: app direct ^3.0.0-alpha.10 | none reported |
+| `web-vitals` | 4.2.4 |  | 6.2.3 | app: @firebase/performance ^4.2.4 | none reported |
+| `webidl-conversions` | 3.0.1 |  | 8.0.1 | app: whatwg-url ^3.0.0 | none reported |
+| `whatwg-url` | 5.0.0 |  | 17.2.0 | app: node-fetch ^5.0.0 | none reported |
+| `which` | 1.3.1, 2.0.2 | 2.0.2 | 7.0.0 | app: cross-spawn ^1.2.9, app: cross-spawn ^2.0.1 | none reported |
+| `why-is-node-running` | 3.2.1 |  | 3.2.3 | app: vitest 3.2.1 | none reported |
+| `wrap-ansi` | 7.0.0, 9.0.2 |  | 10.0.2 | app: @ionic/utils-terminal ^7.0.0, app: cliui ^7.0.0 | none reported |
+| `ws` | 7.5.13 |  | 8.22.0 | app: chrome-remote-interface ^7.2.0 | none reported |
+| `xml2js` | 0.5.0 |  | 0.6.2 | app: @capacitor/cli ^0.5.0 | none reported |
+| `xmlbuilder` | 11.0.1 |  | 15.1.1 | app: xml2js ~11.0.0 | none reported |
+| `xpath` | 0.0.32 |  | 0.0.35 | app: @trapezedev/project ^0.0.32 | none reported |
+| `yallist` | 3.1.1, 4.0.0 |  | 5.0.0 | app: lru-cache ^3.0.2, app: minipass ^4.0.0 | none reported |
+| `yargs` | 17.7.2 |  | 18.2.0 | app: @capacitor/assets 17.7.2, app: @grpc/proto-loader ^17.7.2 | none reported |
+| `yargs-parser` | 21.1.1 |  | 22.0.0 | app: yargs ^21.1.1 | none reported |
+| `yauzl` | 2.10.0 |  | 3.4.0 | app: native-run ^2.10.0 | none reported |
+| `yocto-queue` | 0.1.0 | 0.1.0 | 1.2.2 | app: p-limit ^0.1.0, site: p-limit ^0.1.0 | none reported |
+
+</details>
 
 ### Setting up a development environment
 
