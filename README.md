@@ -602,7 +602,8 @@ the official Twilio pages before budgeting: [Twilio SMS quickstart](https://www.
 - `make deploy` deploys the API and the frontend; `make deploy-api` or `make deploy-web` deploys one side.
 - To roll back, check out an older `master` commit and deploy again.
 
-The frontend is built locally (Node from `app/.nvmrc`, unit tests, `vite build`) before anything ships, then
+The frontend is built locally (Node from `app/.nvmrc`, `npm ci` when the lockfile or Node version changed, unit
+tests, `vite build`) before anything ships, then
 uploaded to the `dailyoffice2019` Cloudflare Pages project with Wrangler (`npx wrangler login` once). Cloudflare
 does not build from Git. The API commit is pushed to the `production` remote and `deploy/server.sh` runs on the
 server over SSH. The deploy stops at the first failure and checks that both sites respond.

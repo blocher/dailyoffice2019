@@ -51,7 +51,15 @@ if [ "$TARGET" != api ]; then
     set -eu
   fi
   [ "$(node -v)" = "$NODE_WANT" ] || fail "need Node $NODE_WANT (app/.nvmrc)"
-  (cd app && npm ci --no-audit --no-fund --loglevel=error && npx vitest run && npm run build)
+  # Reinstall only when the lockfile or Node version changed since the last clean install.
+  stamp="$NODE_WANT $(shasum app/package-lock.json | cut -d' ' -f1)"
+  if [ "$(cat app/node_modules/.deploy-stamp 2>/dev/null)" = "$stamp" ]; then
+    echo "Dependencies unchanged; skipping npm ci"
+  else
+    (cd app && npm ci --no-audit --no-fund --loglevel=error)
+    echo "$stamp" >app/node_modules/.deploy-stamp
+  fi
+  (cd app && npx vitest run && npm run build)
 fi
 
 if [ "$TARGET" != web ]; then
