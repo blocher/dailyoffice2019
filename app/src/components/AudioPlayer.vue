@@ -1,240 +1,304 @@
 <template>
   <div class="audio-player">
-    <div class="controls fixed-controls" style="width: 100%">
+    <section
+      class="controls fixed-controls"
+      aria-label="Daily Office audio"
+      @keydown.esc="closePanels(true)"
+    >
       <div v-if="!isEsvOrKjv || !isWithinSevenDays" class="availability-note">
-        <span v-if="!isEsvOrKjv">
-          <small>
-            Audio is only available if the selected Bible translation is the
-            English Standard Version (ESV) or the Kings James Version.
-            <a href="/settings">Change settings</a>
-          </small>
-        </span>
-        <span v-if="!isWithinSevenDays">
-          <small>
+        <div>
+          <p v-if="!isEsvOrKjv">
+            Audio is available with the English Standard Version (ESV) or King
+            James Version (KJV). <a href="/settings">Change settings</a>
+          </p>
+          <p v-if="!isWithinSevenDays">
             Audio is available from three days ago through nine days ahead.
             <a href="/">Go to today</a>
-          </small>
-        </span>
+          </p>
+        </div>
         <button
           v-if="!isPlaying"
           class="dismiss-button"
+          type="button"
+          aria-label="Hide audio controls"
           title="Hide audio controls"
-          @click.stop="$emit('dismiss-audio')"
+          @click="$emit('dismiss-audio')"
         >
           <font-awesome-icon :icon="faXmark" />
         </button>
       </div>
 
-      <div v-if="isEsvOrKjv" class="player-shell">
-        <button
-          v-if="isMobile && !isExpanded"
-          class="mini-player"
-          type="button"
-          aria-label="Expand audio player"
-          @click="toggleExpanded"
-        >
-          <div class="mini-player-content">
-            <span class="mini-player-icon">
-              <font-awesome-icon
-                :icon="isPlaying && !isPaused ? faPause : faPlay"
-              />
-            </span>
-            <span class="mini-player-text">
-              <span class="mini-player-eyebrow">
-                {{ isPlaying ? 'Now listening' : 'Audio ready' }}
-              </span>
-              <strong>{{ currentSectionName }}</strong>
-            </span>
-            <span class="mini-player-time">
-              {{ formattedCurrentTime }} / {{ formattedDuration }}
-            </span>
-            <span class="mini-player-expand">
-              <font-awesome-icon :icon="faChevronUp" />
-            </span>
+      <div v-else class="player">
+        <div v-if="playbackError" role="status" class="audio-error">
+          <span>{{ playbackError }}</span>
+          <button type="button" @click="retryAudio">Retry audio</button>
+        </div>
+
+        <div class="player-bar">
+          <div class="timeline">
+            <span class="time" aria-hidden="true">{{
+              formattedCurrentTime
+            }}</span>
+            <input
+              class="timeline-slider"
+              type="range"
+              min="0"
+              :max="duration || 0"
+              step="0.01"
+              :value="currentTime"
+              :disabled="!duration"
+              aria-label="Audio progress"
+              :aria-valuetext="`${formattedCurrentTime} of ${formattedDuration}`"
+              :style="{ '--progress': progressPercentage + '%' }"
+              @input="seekToTime"
+            />
+            <span class="time time--remaining" aria-hidden="true"
+              >-{{ formattedRemainingTime }}</span
+            >
           </div>
-          <div class="mini-player-progress">
-            <div
-              class="mini-player-progress-bar"
-              :style="{ width: progressPercentage + '%' }"
-            ></div>
-          </div>
-        </button>
 
-        <template v-else>
-          <div class="player-header">
-            <div class="player-now">
-              <span class="player-kicker">
-                {{ isPlaying ? 'Now listening' : 'Daily Office audio' }}
-              </span>
-              <strong class="player-section">{{ currentSectionName }}</strong>
-            </div>
-            <div class="player-header-actions">
-              <button
-                v-if="!isPlaying"
-                class="dismiss-button"
-                title="Hide audio controls"
-                @click.stop="$emit('dismiss-audio')"
-              >
-                <font-awesome-icon :icon="faXmark" />
-              </button>
-              <button
-                v-if="isMobile"
-                class="collapse-button"
-                title="Minimize"
-                type="button"
-                @click="toggleExpanded"
-              >
-                <font-awesome-icon :icon="faChevronDown" />
-              </button>
-            </div>
-          </div>
-          <span v-if="playbackError" role="status" class="audio-error">
-            {{ playbackError }}
-            <button type="button" @click="retryAudio">Retry audio</button>
-          </span>
+          <button
+            class="skip-button skip-button--back"
+            type="button"
+            title="Back 15 seconds"
+            aria-label="Back 15 seconds"
+            :disabled="!audioReady"
+            @click="skipBy(-15)"
+          >
+            <svg class="skip-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path class="skip-arc" d="M12 3.75A8.25 8.25 0 1 1 3.75 12" />
+              <path class="skip-arc" d="M14.5 1.25 12 3.75l2.5 2.5" />
+              <text x="12" y="15.4" text-anchor="middle">15</text>
+            </svg>
+          </button>
+          <button
+            class="primary-play-button"
+            :class="{ 'is-buffering': isBuffering }"
+            type="button"
+            :disabled="!audioReady"
+            :aria-label="isPlaying ? 'Pause audio' : 'Play audio'"
+            @click="togglePlayback"
+          >
+            <font-awesome-icon :icon="isPlaying ? faPause : faPlay" />
+          </button>
+          <button
+            class="skip-button skip-button--forward"
+            type="button"
+            title="Forward 15 seconds"
+            aria-label="Forward 15 seconds"
+            :disabled="!audioReady"
+            @click="skipBy(15)"
+          >
+            <svg class="skip-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path class="skip-arc" d="M12 3.75A8.25 8.25 0 1 0 20.25 12" />
+              <path class="skip-arc" d="M9.5 1.25 12 3.75l-2.5 2.5" />
+              <text x="12" y="15.4" text-anchor="middle">15</text>
+            </svg>
+          </button>
 
-          <div v-if="audioReady" class="player-main">
-            <div class="transport-controls">
-              <button
-                class="skip-button"
-                type="button"
-                title="Back 15 seconds"
-                aria-label="Back 15 seconds"
-                @click="skipBy(-15)"
-              >
-                <font-awesome-icon :icon="faBackwardStep" />
-                <span>15</span>
-              </button>
-              <button
-                class="primary-play-button"
-                type="button"
-                :aria-label="isPlaying ? 'Pause audio' : 'Play audio'"
-                @click="togglePlayback"
-              >
-                <font-awesome-icon :icon="isPlaying ? faPause : faPlay" />
-              </button>
-              <button
-                class="skip-button"
-                type="button"
-                title="Forward 15 seconds"
-                aria-label="Forward 15 seconds"
-                @click="skipBy(15)"
-              >
-                <font-awesome-icon :icon="faForwardStep" />
-                <span>15</span>
-              </button>
-            </div>
-
-            <div class="timeline">
-              <input
-                class="timeline-slider"
-                type="range"
-                min="0"
-                :max="duration || 0"
-                step="0.01"
-                :value="currentTime"
-                aria-label="Audio progress"
-                :style="{ '--progress': progressPercentage + '%' }"
-                @input="seekToTime"
-              />
-              <div class="timeline-times" aria-hidden="true">
-                <span>{{ formattedCurrentTime }}</span>
-                <span>-{{ formattedRemainingTime }}</span>
-              </div>
-            </div>
-
-            <div class="utility-controls">
-              <el-select
-                v-model="playbackSpeed"
-                class="speed-selector"
-                aria-label="Playback speed"
-                @change="handleSpeedChange"
-              >
-                <el-option v-for="speed in speeds" :key="speed" :value="speed">
-                  {{ speed }}
-                </el-option>
-              </el-select>
-              <div class="segment-selector-wrap">
-                <span class="control-label">Section</span>
-                <el-select
-                  v-model="currentTrackSegment"
-                  class="segment-selector"
-                  placeholder="Jump to…"
-                  :disabled="seeking"
-                  aria-label="Jump to section"
-                  @change="handleTrackSegmentChange"
-                >
-                  <el-option
-                    v-for="segment in trackSegments"
-                    :key="segment.start_time"
-                    :value="segment.start_time"
+          <div class="now-playing">
+            <button
+              ref="sectionsControl"
+              class="section-button"
+              type="button"
+              :disabled="!trackSegments.length"
+              :aria-label="`Jump to section. Now: ${currentSectionName}`"
+              aria-haspopup="true"
+              :aria-expanded="showSections"
+              aria-controls="audio-section-menu"
+              @click="togglePanel('sections')"
+            >
+              <span class="section-caption">
+                <span v-if="transientStatus">{{ transientStatus }}</span>
+                <template v-else>
+                  <span class="caption-status">{{ playbackStatus }}</span>
+                  <span class="caption-time"
+                    >{{ formattedCurrentTime }} / {{ formattedDuration }}</span
                   >
-                    {{ segment.name }}
-                  </el-option>
-                </el-select>
-                <div v-if="seeking" class="seeking-overlay">
-                  <Loading :small="true" />
-                  <span class="seeking-text">Jumping…</span>
+                </template>
+              </span>
+              <span class="section-name">
+                <span class="section-name-text" :title="currentSectionName">{{
+                  currentSectionName
+                }}</span>
+                <font-awesome-icon
+                  v-if="trackSegments.length"
+                  class="section-chevron"
+                  :icon="faChevronUp"
+                />
+              </span>
+            </button>
+            <div
+              v-show="showSections"
+              id="audio-section-menu"
+              class="popover section-menu"
+              role="group"
+              aria-label="Jump to section"
+              @keydown="handleMenuKeydown"
+            >
+              <p class="popover-title">Jump to section</p>
+              <ul ref="sectionList">
+                <li
+                  v-for="(segment, index) in trackSegments"
+                  :key="segment.start_time"
+                >
+                  <button
+                    class="section-item"
+                    :class="{
+                      'section-item--current': index === currentSectionIndex,
+                    }"
+                    type="button"
+                    :aria-current="
+                      index === currentSectionIndex ? 'true' : undefined
+                    "
+                    @click="jumpToSection(segment.start_time)"
+                  >
+                    <span class="section-item-name">{{ segment.name }}</span>
+                    <span class="section-item-time">{{
+                      formatTime(segment.start_time)
+                    }}</span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="options-wrap">
+            <button
+              ref="preferencesControl"
+              class="preferences-button"
+              type="button"
+              title="Listening options"
+              aria-label="Listening options"
+              aria-haspopup="true"
+              :aria-expanded="showPreferences"
+              aria-controls="audio-reading-preferences"
+              @click="togglePanel('preferences')"
+            >
+              <font-awesome-icon :icon="faSliders" />
+              <span v-if="playbackSpeed !== '1.0x'" class="speed-badge">{{
+                speedLabel
+              }}</span>
+            </button>
+            <div
+              v-show="showPreferences"
+              id="audio-reading-preferences"
+              class="popover preferences-panel"
+              role="group"
+              aria-label="Listening options"
+            >
+              <div class="preference-row speed-control">
+                <span class="preference-label" id="audio-speed-label"
+                  >Speed</span
+                >
+                <div
+                  class="stepper"
+                  role="group"
+                  aria-labelledby="audio-speed-label"
+                >
+                  <button
+                    type="button"
+                    aria-label="Slower"
+                    :disabled="speedIndex <= 0"
+                    @click="stepSpeed(-1)"
+                  >
+                    <font-awesome-icon :icon="faMinus" />
+                  </button>
+                  <output class="speed-value" aria-live="polite">{{
+                    speedLabel
+                  }}</output>
+                  <button
+                    type="button"
+                    aria-label="Faster"
+                    :disabled="speedIndex >= speeds.length - 1"
+                    @click="stepSpeed(1)"
+                  >
+                    <font-awesome-icon :icon="faPlus" />
+                  </button>
                 </div>
               </div>
-              <label class="highlight-control flex min-w-0 items-center gap-2">
-                <span>Highlight</span>
-                <select
-                  :value="highlightMode"
-                  class="min-h-11 min-w-0 rounded-xl border px-2 text-base focus-visible:outline-2 focus-visible:outline-offset-2"
-                  @change="changeHighlightMode($event.target.value)"
+
+              <fieldset class="highlight-control">
+                <legend class="preference-label">Highlight text</legend>
+                <div class="segmented">
+                  <label v-for="mode in highlightOptions" :key="mode.value">
+                    <input
+                      type="radio"
+                      name="audio-highlight-mode"
+                      :value="mode.value"
+                      :checked="highlightMode === mode.value"
+                      @change="changeHighlightMode(mode.value)"
+                    />
+                    <span>{{ mode.label }}</span>
+                  </label>
+                </div>
+              </fieldset>
+
+              <div class="preference-row">
+                <span class="preference-label" id="audio-scroll-label"
+                  >Auto-scroll
+                  <small>Keep the spoken words in view</small></span
                 >
-                  <option value="word">Word by word</option>
-                  <option value="sentence">Sentence by sentence</option>
-                  <option value="off">Off</option>
-                </select>
-              </label>
+                <button
+                  class="scroll-control"
+                  type="button"
+                  role="switch"
+                  :aria-checked="enableScrolling"
+                  aria-labelledby="audio-scroll-label"
+                  @click="toggleScrolling"
+                >
+                  <span class="switch-thumb"></span>
+                </button>
+              </div>
+
               <button
-                class="scroll-control"
-                :class="{ 'scroll-control--active': enableScrolling }"
+                v-if="!isPlaying"
+                class="hide-player-button"
                 type="button"
-                :aria-pressed="enableScrolling"
-                @click="enableScrolling = !enableScrolling"
+                @click="$emit('dismiss-audio')"
               >
-                <span class="scroll-control-mark" aria-hidden="true">↹</span>
-                Auto-scroll
+                <font-awesome-icon :icon="faXmark" />
+                <span>Hide audio player</span>
               </button>
             </div>
           </div>
-          <div v-else class="player-loading">
-            <Loading :small="true" />
-            <span>Preparing audio…</span>
-          </div>
-        </template>
+
+          <button
+            v-if="!isPlaying"
+            class="dismiss-button"
+            type="button"
+            aria-label="Hide audio controls"
+            title="Hide audio controls"
+            @click="$emit('dismiss-audio')"
+          >
+            <font-awesome-icon :icon="faXmark" />
+          </button>
+        </div>
       </div>
-    </div>
+    </section>
   </div>
 </template>
 
 <script>
-import Loading from '@/components/Loading.vue';
 import { DynamicStorage } from '@/helpers/storage';
 
 import {
-  faBackwardStep,
-  faChevronDown,
   faChevronUp,
-  faForwardStep,
+  faMinus,
   faPause,
   faPlay,
-  faVolumeHigh,
-  faVolumeMute,
+  faPlus,
+  faSliders,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 
 const HIGHLIGHT_STORAGE_KEY = 'audioHighlightMode';
+const SPEED_STORAGE_KEY = 'audioPlaybackSpeed';
+const SCROLL_STORAGE_KEY = 'audioAutoScroll';
 const highlightModes = ['word', 'sentence', 'off'];
 
 export default {
   name: 'AudioPlayer',
-  components: {
-    Loading,
-  },
   emits: ['dismiss-audio', 'audio-play'],
   props: {
     audio: {
@@ -281,11 +345,18 @@ export default {
       playbackRequested: false,
       playAttempt: 0,
       playbackSpeed: '1.0x',
+      speedChanged: false,
       enableScrolling: true,
-      isExpanded: false, // Track if player is expanded or minimized (mobile only)
+      scrollingChanged: false,
+      showPreferences: false,
+      showSections: false,
+      highlightOptions: [
+        { value: 'word', label: 'Word' },
+        { value: 'sentence', label: 'Sentence' },
+        { value: 'off', label: 'Off' },
+      ],
       currentTime: 0, // Current playback time
       duration: 0, // Total duration
-      isMobile: false, // Track if we're on mobile
       hasEmittedPlay: false, // analytics: emit audio-play once per office load
       speeds: [
         '0.5x',
@@ -312,9 +383,17 @@ export default {
       if (this.destroyed || this.highlightModeChanged) return;
       this.highlightMode = highlightModes.includes(value) ? value : 'word';
     });
-    // Check if mobile on mount
-    this.checkMobile();
-    window.addEventListener('resize', this.checkMobile);
+    DynamicStorage.getItem(SPEED_STORAGE_KEY).then((value) => {
+      if (this.destroyed || this.speedChanged) return;
+      if (this.speeds.includes(value)) this.playbackSpeed = value;
+      this.handleSpeedChange();
+    });
+    DynamicStorage.getItem(SCROLL_STORAGE_KEY).then((value) => {
+      if (this.destroyed || this.scrollingChanged) return;
+      if (value === 'true' || value === 'false') {
+        this.enableScrolling = value === 'true';
+      }
+    });
     window.visualViewport?.addEventListener('resize', this.emitVisibility);
     window.visualViewport?.addEventListener('scroll', this.emitVisibility);
 
@@ -361,18 +440,29 @@ export default {
       this.$nextTick(() => this.prepareWordElements());
     }
 
-    this.$nextTick(() => this.emitVisibility());
+    this.$nextTick(() => {
+      this.emitVisibility();
+      if (typeof window.ResizeObserver !== 'undefined') {
+        this.controlsObserver = new window.ResizeObserver(() =>
+          this.emitVisibility()
+        );
+        this.controlsObserver.observe(
+          this.$el.querySelector('.fixed-controls')
+        );
+      }
+    });
   },
   beforeUnmount() {
     this.destroyed = true;
+    this.controlsObserver?.disconnect();
     this.stopHighlightClock();
     this.cancelTrackSeek?.();
     this.playbackRequested = false;
+    document.removeEventListener('pointerdown', this.handleOutsidePointer);
     document.removeEventListener(
       'visibilitychange',
       this.handleVisibilityChange
     );
-    window.removeEventListener('resize', this.checkMobile);
     window.visualViewport?.removeEventListener('resize', this.emitVisibility);
     window.visualViewport?.removeEventListener('scroll', this.emitVisibility);
     if (this.audioElement) {
@@ -394,7 +484,12 @@ export default {
       const isVisible = forceState !== undefined ? forceState : true;
       const controls = this.$el?.querySelector('.controls.fixed-controls');
       const height =
-        isVisible && controls ? Math.ceil(controls.offsetHeight) : 0;
+        isVisible && controls
+          ? Math.ceil(
+              controls.offsetHeight +
+                (parseFloat(window.getComputedStyle(controls).bottom) || 0)
+            )
+          : 0;
       const event = new window.CustomEvent('audio-player-visibility', {
         detail: { visible: isVisible, height },
       });
@@ -421,7 +516,6 @@ export default {
           this.isPlaying = false;
           this.isPaused = true;
           this.loading = false;
-          this.isExpanded = true;
           this.playbackError =
             error.name === 'NotAllowedError'
               ? 'Playback was interrupted. Press Play to continue.'
@@ -516,7 +610,6 @@ export default {
     handleStalled() {
       if (!this.playbackRequested) return;
       this.loading = true;
-      this.isExpanded = true;
       this.playbackError =
         'Audio is buffering. Check your connection if it does not resume.';
     },
@@ -527,7 +620,6 @@ export default {
       this.isPlaying = false;
       this.isPaused = true;
       this.loading = false;
-      this.isExpanded = true;
       this.playbackError =
         'Audio stopped loading. Retry to continue from your place.';
       this.updateMediaPosition();
@@ -669,11 +761,32 @@ export default {
       this.updateActiveWord(target);
     },
     handleSpeedChange() {
-      if (this.audioElement) {
-        this.audioElement.playbackRate = parseFloat(
-          this.playbackSpeed.replace(/[^\d.]/g, '')
-        );
-      }
+      if (!this.audioElement) return;
+      const rate = parseFloat(this.playbackSpeed.replace(/[^\d.]/g, ''));
+      // load() (used by retry) resets playbackRate to defaultPlaybackRate.
+      this.audioElement.defaultPlaybackRate = rate;
+      this.audioElement.playbackRate = rate;
+    },
+    stepSpeed(direction) {
+      const next = this.speeds[this.speedIndex + direction];
+      if (!next) return;
+      this.speedChanged = true;
+      this.playbackSpeed = next;
+      this.handleSpeedChange();
+      DynamicStorage.setItem(SPEED_STORAGE_KEY, next).catch(() => {});
+    },
+    toggleScrolling() {
+      this.scrollingChanged = true;
+      this.enableScrolling = !this.enableScrolling;
+      DynamicStorage.setItem(
+        SCROLL_STORAGE_KEY,
+        String(this.enableScrolling)
+      ).catch(() => {});
+    },
+    jumpToSection(startTime) {
+      this.closePanels(true);
+      this.currentTrackSegment = startTime;
+      this.handleTrackSegmentChange();
     },
     handleTrackSegmentChange() {
       if (!this.audioElement || this.currentTrackSegment === null) return;
@@ -1196,17 +1309,57 @@ export default {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     },
-    toggleExpanded() {
-      this.isExpanded = !this.isExpanded;
-      this.$nextTick(() => this.emitVisibility());
-    },
-    checkMobile() {
-      this.isMobile = window.innerWidth <= 768;
-      // Always show full player on desktop
-      if (!this.isMobile) {
-        this.isExpanded = true;
+    togglePanel(panel) {
+      const opening =
+        panel === 'sections' ? !this.showSections : !this.showPreferences;
+      this.showSections = opening && panel === 'sections';
+      this.showPreferences = opening && panel === 'preferences';
+      document.removeEventListener('pointerdown', this.handleOutsidePointer);
+      if (!opening) return;
+      document.addEventListener('pointerdown', this.handleOutsidePointer);
+      if (panel === 'sections') {
+        // Start keyboard and visual focus at the section now playing.
+        this.$nextTick(() => {
+          const current =
+            this.$refs.sectionList?.querySelector('[aria-current]') ||
+            this.$refs.sectionList?.querySelector('button');
+          current?.scrollIntoView?.({ block: 'nearest' });
+          current?.focus({ preventScroll: true });
+        });
       }
-      this.$nextTick(() => this.emitVisibility());
+    },
+    closePanels(restoreFocus = false) {
+      const control = this.showSections
+        ? 'sectionsControl'
+        : this.showPreferences
+          ? 'preferencesControl'
+          : null;
+      this.showSections = false;
+      this.showPreferences = false;
+      document.removeEventListener('pointerdown', this.handleOutsidePointer);
+      if (restoreFocus && control) this.$refs[control]?.focus();
+    },
+    handleOutsidePointer(event) {
+      const panels = this.$el?.querySelectorAll('.now-playing, .options-wrap');
+      if (Array.from(panels || []).some((el) => el.contains(event.target))) {
+        return;
+      }
+      this.closePanels();
+    },
+    handleMenuKeydown(event) {
+      const items = Array.from(
+        this.$refs.sectionList?.querySelectorAll('button') || []
+      );
+      const index = items.indexOf(document.activeElement);
+      const target = {
+        ArrowDown: items[Math.min(index + 1, items.length - 1)],
+        ArrowUp: items[Math.max(index - 1, 0)],
+        Home: items[0],
+        End: items[items.length - 1],
+      }[event.key];
+      if (!target) return;
+      event.preventDefault();
+      target.focus();
     },
     formatTime(seconds) {
       if (!seconds || isNaN(seconds)) return '0:00';
@@ -1216,6 +1369,27 @@ export default {
     },
   },
   computed: {
+    playbackStatus() {
+      if (this.transientStatus) return this.transientStatus;
+      if (this.isPlaying) return 'Now listening';
+      return this.isPaused ? 'Paused' : 'Daily Office audio';
+    },
+    // Short-lived states shown in place of the clock on every screen size.
+    transientStatus() {
+      if (!this.audioReady) return 'Preparing audio…';
+      if (this.seeking) return 'Jumping…';
+      if (this.isBuffering) return 'Buffering…';
+      return '';
+    },
+    isBuffering() {
+      return this.audioReady && this.loading && this.playbackRequested;
+    },
+    speedIndex() {
+      return this.speeds.indexOf(this.playbackSpeed);
+    },
+    speedLabel() {
+      return this.playbackSpeed.replace('x', '×');
+    },
     formattedCurrentTime() {
       return this.formatTime(this.currentTime);
     },
@@ -1225,16 +1399,18 @@ export default {
     formattedRemainingTime() {
       return this.formatTime(Math.max(0, this.duration - this.currentTime));
     },
+    currentSectionIndex() {
+      let current = 0;
+      this.trackSegments.forEach((segment, index) => {
+        if (segment.start_time <= this.currentTime) current = index;
+      });
+      return current;
+    },
     currentSectionName() {
       if (!this.trackSegments.length) {
         return this.office.replaceAll('_', ' ');
       }
-      let current = this.trackSegments[0];
-      for (const segment of this.trackSegments) {
-        if (segment.start_time > this.currentTime) break;
-        current = segment;
-      }
-      return current.name;
+      return this.trackSegments[this.currentSectionIndex].name;
     },
     progressPercentage() {
       if (!this.duration) return 0;
@@ -1250,20 +1426,14 @@ export default {
     faChevronUp() {
       return faChevronUp;
     },
-    faChevronDown() {
-      return faChevronDown;
+    faMinus() {
+      return faMinus;
     },
-    faBackwardStep() {
-      return faBackwardStep;
+    faPlus() {
+      return faPlus;
     },
-    faForwardStep() {
-      return faForwardStep;
-    },
-    faVolumeHigh() {
-      return faVolumeHigh;
-    },
-    faVolumeMute() {
-      return faVolumeMute;
+    faSliders() {
+      return faSliders;
     },
     faXmark() {
       return faXmark;
@@ -1275,885 +1445,669 @@ export default {
       this.updateActiveWord(this.audioElement?.currentTime ?? this.currentTime);
       this.$nextTick(() => this.emitVisibility());
     },
-    isPlaying(newVal) {
-      // Auto-expand when audio starts playing (mobile only)
-      if (newVal && !this.isExpanded && this.isMobile) {
-        this.isExpanded = true;
-      }
-    },
   },
 };
 </script>
 
 <style scoped>
-/* Prevent iOS/Android zoom on input focus - CRITICAL for Capacitor apps */
-select,
-input,
-textarea,
-button,
-.el-select :deep(input),
-.el-switch :deep(input),
-.el-button :deep(span),
-.el-select :deep(.el-input__wrapper),
-.el-select :deep(.el-select__wrapper) {
-  font-size: 16px !important; /* iOS/Android won't zoom if font-size >= 16px */
-  touch-action: manipulation; /* Disable double-tap zoom */
-  -webkit-user-select: none; /* Prevent text selection zoom on iOS */
-  user-select: none;
-}
-
-/* Prevent zoom on all interactive elements */
-.audio-player *,
-.controls *,
-.menu-and-buttons *,
-button,
-.el-button,
-.el-select,
-.el-switch {
-  touch-action: manipulation !important;
-  -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
-}
-
+/* One compact bar on every screen: transport, the current section (which
+   opens a jump menu), a timeline, and a listening-options popover. Popovers
+   float above the bar so opening them never moves a control. */
 .audio-player {
-  padding: 0;
+  --color-text: var(--font-color, #111827);
+  --player-border: color-mix(in srgb, var(--color-text) 14%, transparent);
+  --player-muted: color-mix(in srgb, var(--color-text) 68%, var(--color-bg));
+  --player-hover: color-mix(in srgb, var(--color-text) 7%, transparent);
+  --player-tint: color-mix(in srgb, var(--accent-color) 12%, var(--color-bg));
+  color: var(--color-text);
+  font-size: 1rem;
+  line-height: 1.4;
 }
-
-.audio-player .playing {
-  font-weight: bold;
-  color: green;
-}
-
-.audio-list {
-  margin-bottom: 120px; /* Default for desktop (always full) */
-  transition: margin-bottom 0.3s ease;
-}
-
-/* Mobile gets smaller margin when collapsed */
-@media (max-width: 768px) {
-  .audio-list {
-    margin-bottom: 60px; /* Smaller for mini player on mobile */
-  }
-}
-
 .controls.fixed-controls {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  border-top: 2px solid #ccc;
-  background-color: var(--color-bg);
-  /* Safe area padding for iPhone notch and rounded corners */
-  padding: 14px 18px; /* Increased horizontal padding */
-  padding-left: max(18px, env(safe-area-inset-left));
-  padding-right: max(18px, env(safe-area-inset-right));
-  padding-bottom: max(14px, env(safe-area-inset-bottom));
+  inset-inline: max(8px, env(safe-area-inset-left))
+    max(8px, env(safe-area-inset-right));
+  bottom: max(8px, env(safe-area-inset-bottom));
+  max-width: 920px;
+  margin-inline: auto;
+  padding: 10px 14px;
+  border: 1px solid var(--player-border);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--color-bg) 94%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+  box-shadow:
+    0 1px 2px #0000000d,
+    0 10px 32px -8px #00000026;
   z-index: 100;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-  touch-action: manipulation;
-  transition: all 0.3s ease; /* Smooth transition for expand/collapse */
 }
-
-.menu-and-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
+button,
+input {
+  font-family: inherit;
   touch-action: manipulation;
 }
-
-/* Mini Player Styles (Collapsed State) */
-.mini-player {
+button {
   cursor: pointer;
-  padding: 8px 12px;
-  background: var(--color-bg);
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
+  color: inherit;
+}
+button:disabled,
+input:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+button:focus-visible,
+input:focus-visible,
+a:focus-visible,
+.segmented input:focus-visible + span {
+  outline: 2px solid var(--accent-color) !important;
+  outline-offset: 2px;
 }
 
-.mini-player:hover {
-  background: rgba(0, 0, 0, 0.05);
-}
-
-.mini-player:active {
-  transform: scale(0.99);
-}
-
-.mini-player-content {
+/* ---- Bar layout ---------------------------------------------------- */
+.player-bar {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 16px;
-}
-
-.mini-player-icon {
-  font-size: 20px;
-  min-width: 24px;
-  text-align: center;
-  color: var(--accent-color);
-}
-
-.mini-player-text {
-  flex: 1;
-  font-weight: 500;
-  color: var(--color-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.mini-player-chapters {
-  font-weight: 400;
-  opacity: 0.7;
-  font-size: 14px;
-}
-
-.mini-player-time {
-  font-weight: 400;
-  opacity: 0.7;
-  font-size: 13px;
-  margin-left: 4px;
-}
-
-.mini-player-expand {
-  font-size: 20px;
-  opacity: 0.5;
-  transition: opacity 0.2s ease;
-}
-
-.mini-player:hover .mini-player-expand {
-  opacity: 1;
-}
-
-/* Mini Player Progress Bar */
-.mini-player-progress {
-  margin-top: 8px;
-  height: 3px;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.mini-player-progress-bar {
-  height: 100%;
-  background: var(--accent-color);
-  transition: width 0.3s ease;
-  border-radius: 2px;
-}
-
-/* Player Header (Expanded State - Mobile Only) */
-.player-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-  padding: 0 4px;
-}
-
-/* Hide player header on desktop */
-@media (min-width: 769px) {
-  .player-header {
-    display: none;
-  }
-}
-
-.player-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-text);
-  opacity: 0.7;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.collapse-button {
-  background: transparent;
-  border: none;
-  font-size: 24px;
-  padding: 0;
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  cursor: pointer;
-  color: var(--color-text);
-  opacity: 0.6;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.collapse-button:hover {
-  opacity: 1;
-  background: rgba(0, 0, 0, 0.05);
-}
-
-.collapse-button:active {
-  transform: scale(0.95);
-}
-
-.button-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  width: 100%;
-  touch-action: manipulation;
-}
-
-.controls-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  width: 100%;
-  touch-action: manipulation;
-}
-
-/* Playback buttons - large and touch-friendly */
-.playback-buttons {
-  display: flex;
-  gap: 8px;
-  flex: 1;
-  max-width: 100%;
-  touch-action: manipulation;
-}
-
-.playback-buttons .el-button {
-  flex: 1;
-  min-height: 48px; /* iOS HIG recommends 44px minimum */
-  font-size: 16px !important;
-  font-weight: 600;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  transition: all 0.2s ease;
-  touch-action: manipulation !important;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.play-button,
-.pause-button {
-  --el-button-bg-color: var(--accent-color);
-  --el-button-border-color: var(--accent-color);
-  --el-button-text-color: var(--accent-contrast);
-  --el-button-hover-bg-color: var(--accent-color);
-  --el-button-hover-border-color: var(--accent-color);
-  --el-button-hover-text-color: var(--accent-contrast);
-  --el-button-active-bg-color: var(--accent-color);
-  --el-button-active-border-color: var(--accent-color);
-  --el-button-active-text-color: var(--accent-contrast);
-  --el-button-disabled-bg-color: var(--accent-color);
-  --el-button-disabled-border-color: var(--accent-color);
-  --el-button-disabled-text-color: var(--accent-contrast);
-}
-
-.play-button:not(.is-disabled):hover,
-.pause-button:not(.is-disabled):hover {
-  filter: brightness(0.95);
-}
-
-.play-button.is-disabled,
-.pause-button.is-disabled {
-  opacity: 0.55;
-}
-
-.play-button :deep(.button-icon),
-.play-button :deep(.button-text),
-.pause-button :deep(.button-icon),
-.pause-button :deep(.button-text) {
-  color: var(--accent-contrast);
-}
-
-.button-icon {
-  font-size: 18px;
-  touch-action: manipulation;
-  user-select: none;
-}
-
-.button-text {
-  font-size: 16px;
-  touch-action: manipulation;
-  user-select: none;
-}
-
-.playback-buttons .el-button:active {
-  transform: scale(0.98);
-}
-
-/* Speed selector - compact but touch-friendly */
-.speed-selector {
-  min-width: 85px;
-  max-width: 85px;
-  flex-shrink: 0;
-  touch-action: manipulation;
-}
-
-.speed-selector :deep(.el-input__inner),
-.speed-selector :deep(.el-input__wrapper),
-.speed-selector :deep(input) {
-  font-size: 16px !important;
-  min-height: 40px;
-  touch-action: manipulation !important;
-}
-
-/* Segment selector - flexible width */
-.segment-selector-wrap {
-  position: relative;
-  flex: 1;
-  min-width: 0;
-  touch-action: manipulation;
-}
-
-.segment-selector {
-  width: 100%;
-  min-width: 0;
-  touch-action: manipulation;
-}
-
-/* Spinner shown over the "Jump to" control while a long-office seek settles */
-.seeking-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border-radius: var(--el-border-radius-base, 4px);
-  background: var(--color-bg);
-  border: 1px solid var(--el-border-color, #dcdfe6);
-  color: var(--color-text);
-  cursor: progress;
-  z-index: 2;
-}
-
-.seeking-text {
-  font-size: 14px;
-  font-weight: 500;
-  opacity: 0.85;
-}
-
-.segment-selector :deep(.el-input__inner),
-.segment-selector :deep(.el-input__wrapper),
-.segment-selector :deep(input) {
-  font-size: 16px !important;
-  min-height: 40px;
-  touch-action: manipulation !important;
-}
-
-/* Scroll toggle switch */
-.scroll-toggle {
-  flex-shrink: 0;
-  touch-action: manipulation !important;
-  --el-switch-on-color: var(--accent-color);
-  --el-switch-border-color: var(--accent-color);
-}
-
-.scroll-toggle :deep(.el-switch__label),
-.scroll-toggle :deep(span) {
-  font-size: 14px !important;
-  touch-action: manipulation !important;
-  user-select: none;
-}
-
-.scroll-toggle :deep(.el-switch__label) {
-  color: var(--el-text-color-regular);
-  transition: color 0.2s ease;
-}
-
-.scroll-toggle :deep(.el-switch__label.is-active) {
-  color: var(--accent-color);
-  font-weight: 600;
-}
-
-.scroll-toggle :deep(.el-switch__core) {
-  touch-action: manipulation !important;
-}
-
-/* Select dropdown options - prevent zoom */
-.el-select :deep(.el-select-dropdown__item) {
-  font-size: 16px !important;
-  min-height: 40px;
-  padding: 10px 20px;
-  touch-action: manipulation !important;
-}
-
-/* Ensure all Element Plus components don't zoom */
-:deep(.el-button),
-:deep(.el-select),
-:deep(.el-switch),
-:deep(.el-input),
-:deep(.el-select-dropdown) {
-  touch-action: manipulation !important;
-}
-
-:deep(.el-button span),
-:deep(.el-select span),
-:deep(.el-switch span) {
-  font-size: 16px !important;
-  touch-action: manipulation !important;
-  user-select: none;
-}
-
-/* Tablet/Medium/Large Desktop - Consistent wrapping behavior for all desktop sizes */
-@media (min-width: 769px) {
-  .controls.fixed-controls {
-    padding: 16px 20px;
-    padding-left: max(20px, env(safe-area-inset-left));
-    padding-right: max(20px, env(safe-area-inset-right));
-    padding-bottom: max(16px, env(safe-area-inset-bottom));
-  }
-
-  .menu-and-buttons {
-    flex-direction: row;
-    align-items: center;
-    gap: 14px;
-    flex-wrap: wrap;
-  }
-
-  .button-row {
-    flex: 0 1 auto; /* Allow shrinking to trigger wrap */
-    flex-basis: 260px; /* Preferred size */
-    min-width: 220px; /* But not smaller than this */
-  }
-
-  .controls-row {
-    display: flex !important;
-    flex: 1 1 auto; /* Allow both grow and shrink */
-    flex-basis: 400px; /* Preferred size - will wrap if not available */
-    justify-content: flex-end;
-    gap: 10px;
-    min-width: 300px; /* Minimum before wrapping */
-  }
-
-  .playback-buttons {
-    width: 100%;
-    min-width: 220px;
-    max-width: 100%;
-  }
-
-  .playback-buttons .el-button {
-    min-width: 95px;
-    flex: 1;
-  }
-
-  .speed-selector {
-    min-width: 80px;
-    max-width: 90px;
-    flex-shrink: 0;
-  }
-
-  .segment-selector-wrap {
-    flex: 1 1 auto;
-    min-width: 130px;
-    max-width: 220px;
-  }
-
-  .scroll-toggle {
-    flex-shrink: 0;
-    min-width: fit-content;
-  }
-}
-
-/* Mobile optimizations */
-@media (max-width: 768px) {
-  .controls.fixed-controls {
-    padding: 12px 16px; /* Increased horizontal padding */
-    padding-left: max(16px, env(safe-area-inset-left));
-    padding-right: max(16px, env(safe-area-inset-right));
-    padding-bottom: max(12px, env(safe-area-inset-bottom));
-  }
-
-  .button-text {
-    display: inline; /* Always show text on mobile */
-  }
-
-  .playback-buttons .el-button {
-    min-height: 52px; /* Slightly larger on mobile for easier tapping */
-  }
-}
-
-/* Very small screens */
-@media (max-width: 360px) {
-  .button-text {
-    display: none; /* Hide text, show only icons on very small screens */
-  }
-
-  .button-icon {
-    font-size: 20px;
-  }
-
-  .scroll-toggle :deep(.el-switch__label) {
-    display: none; /* Simplified switch on small screens */
-  }
-}
-
-/* ── Dismiss (X) button ── */
-.dismiss-button {
-  background: transparent;
-  border: none;
-  font-size: 18px;
-  padding: 0;
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  border-radius: 6px;
-  cursor: pointer;
-  color: var(--color-text);
-  opacity: 0.5;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.dismiss-button:hover {
-  opacity: 1;
-  background: rgba(0, 0, 0, 0.08);
-}
-
-.dismiss-button:active {
-  transform: scale(0.92);
-}
-
-/* Mini-player variant sits inline after the expand chevron */
-.dismiss-button--mini {
-  margin-left: 12px;
-  padding-left: 12px;
-  border-left: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 0;
-  height: 24px;
-}
-
-:deep(.dark) .dismiss-button--mini {
-  border-left-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Desktop variant — push to far right flex-end, ensure it doesn't overlap content */
-.dismiss-button--desktop {
-  margin-left: auto; /* Push to right in flex container */
-  position: relative; /* Remove absolute positioning */
-  top: auto;
-  right: auto;
-  transform: none;
-  order: 10; /* Ensure it's last visually if needed */
-}
-
-.player-header-actions {
-  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 4px;
 }
-
-/* 12ui direction C: warm book paper, restrained gold, quiet green transport. */
-.controls.fixed-controls {
-  left: 50%;
-  right: auto;
-  bottom: max(12px, env(safe-area-inset-bottom));
-  width: min(calc(100% - 24px), 1120px) !important;
-  padding: 14px 18px;
-  transform: translateX(-50%);
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--color-text) 14%, transparent);
-  border-radius: 16px;
-  background: color-mix(in srgb, var(--color-bg) 96%, transparent);
-  box-shadow:
-    0 18px 50px rgba(48, 40, 28, 0.16),
-    0 2px 8px rgba(48, 40, 28, 0.08);
-  backdrop-filter: blur(18px);
-}
-
-.player-shell {
-  display: grid;
-  grid-template-columns: minmax(140px, 190px) minmax(0, 1fr);
-  align-items: center;
-  gap: 22px;
-  width: 100%;
-}
-
-.player-header {
-  display: flex !important;
-  align-items: center;
-  justify-content: space-between;
-  min-width: 0;
-  margin: 0;
-  padding: 0 16px 0 2px;
-  border-right: 1px solid color-mix(in srgb, var(--color-text) 10%, transparent);
-}
-
-.player-now,
-.mini-player-text {
+.timeline {
+  order: -1;
   display: flex;
+  flex: 1 0 100%;
+  align-items: center;
+  gap: 10px;
   min-width: 0;
+}
+.primary-play-button {
+  order: 0;
+}
+.now-playing {
+  order: 1;
+  flex: 1 1 0;
+  min-width: 0;
+  margin-inline: 4px;
+}
+.skip-button--back {
+  order: 2;
+}
+.skip-button--forward {
+  order: 3;
+}
+.options-wrap {
+  order: 4;
+}
+.dismiss-button {
+  order: 5;
+}
+
+/* ---- Buttons ------------------------------------------------------- */
+.primary-play-button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent-color);
+  color: var(--accent-contrast, #fff);
+  font-size: 18px;
+  box-shadow: 0 2px 8px -2px
+    color-mix(in srgb, var(--accent-color) 60%, transparent);
+  transition:
+    transform 120ms ease,
+    filter 120ms ease;
+}
+.primary-play-button :deep(.fa-play) {
+  margin-left: 2px; /* optical centre */
+}
+.primary-play-button:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+.primary-play-button:active:not(:disabled) {
+  transform: scale(0.94);
+}
+.primary-play-button.is-buffering::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border: 2px solid transparent;
+  border-top-color: var(--accent-color);
+  border-radius: 50%;
+  animation: player-spin 0.9s linear infinite;
+}
+@keyframes player-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.skip-button,
+.preferences-button,
+.dismiss-button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 44px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+}
+.skip-button:hover:not(:disabled),
+.preferences-button:hover,
+.dismiss-button:hover,
+.section-button:hover:not(:disabled) {
+  background: var(--player-hover);
+}
+.skip-icon {
+  width: 28px;
+  height: 28px;
+  overflow: visible;
+}
+.skip-arc {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.skip-icon text {
+  fill: currentColor;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.preferences-button {
+  width: auto;
+  min-width: 40px;
+  padding-inline: 10px;
+  grid-auto-flow: column;
+  gap: 6px;
+  font-size: 17px;
+}
+.preferences-button[aria-expanded='true'] {
+  background: var(--player-tint);
+  color: var(--accent-color);
+}
+.speed-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.dismiss-button {
+  color: var(--player-muted);
+  font-size: 18px;
+}
+
+/* ---- Current section / jump menu ----------------------------------- */
+.now-playing,
+.options-wrap {
+  position: static;
+}
+.section-button {
+  display: flex;
+  width: 100%;
+  min-height: 44px;
   flex-direction: column;
+  justify-content: center;
+  padding: 2px 8px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
   text-align: left;
 }
-
-.player-kicker,
-.mini-player-eyebrow,
-.control-label {
-  color: color-mix(in srgb, var(--color-text) 58%, transparent);
-  font-size: 0.68rem;
-  font-weight: 650;
-  letter-spacing: 0.12em;
-  line-height: 1.2;
-  text-transform: uppercase;
+.section-button:disabled {
+  opacity: 1;
 }
-
-.player-section {
+.section-caption {
   display: block;
-  margin-top: 5px;
   overflow: hidden;
-  color: var(--color-text);
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 1.08rem;
-  font-weight: 500;
-  line-height: 1.2;
+  color: var(--player-muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.3;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
-.player-main {
-  display: grid;
-  grid-template-columns: auto minmax(180px, 1fr) auto;
-  align-items: center;
-  gap: 22px;
+.caption-status {
+  display: none;
+}
+.section-name {
+  display: flex;
   min-width: 0;
+  max-width: 100%;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.section-name-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.section-chevron {
+  flex: 0 0 auto;
+  width: 10px;
+  color: var(--player-muted);
+  transition: transform 150ms ease;
+}
+.section-button[aria-expanded='true'] .section-chevron {
+  transform: rotate(180deg);
 }
 
-.transport-controls {
+/* ---- Popovers ------------------------------------------------------- */
+.popover {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  z-index: 1;
+  max-height: min(60dvh, 440px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 8px;
+  border: 1px solid var(--player-border);
+  border-radius: 16px;
+  background: var(--color-bg);
+  box-shadow: 0 12px 40px -8px #00000040;
+  animation: popover-in 140ms ease-out;
+}
+@keyframes popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+.popover-title {
+  margin: 4px 8px 6px;
+  color: var(--player-muted);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.section-menu {
+  inset-inline: 0;
+}
+.section-menu ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.section-item {
+  display: flex;
+  width: 100%;
+  min-height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  font-size: 0.9375rem;
+  text-align: left;
+}
+.section-item:hover,
+.section-item:focus-visible {
+  background: var(--player-hover);
+}
+.section-item--current {
+  background: var(--player-tint);
+  color: var(--accent-color);
+  font-weight: 600;
+}
+.section-item--current:hover {
+  background: var(--player-tint);
+}
+.section-item-time {
+  flex: 0 0 auto;
+  color: var(--player-muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+.preferences-panel {
+  right: 0;
+  width: min(320px, 100%);
+  padding: 6px 14px;
+}
+
+/* ---- Listening options --------------------------------------------- */
+.preference-row,
+.highlight-control {
   display: flex;
   align-items: center;
-  gap: 8px;
-}
-
-.primary-play-button,
-.skip-button,
-.scroll-control {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 56px;
+  margin: 0;
+  padding: 8px 0;
   border: 0;
-  cursor: pointer;
+  border-bottom: 1px solid var(--player-border);
 }
-
-.primary-play-button {
-  width: 54px;
-  height: 54px;
-  flex: 0 0 54px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--accent-color) 72%, #315844);
-  color: var(--accent-contrast);
-  font-size: 1.1rem;
-  box-shadow: 0 6px 18px
-    color-mix(in srgb, var(--accent-color) 26%, transparent);
-  transition:
-    transform 160ms ease,
-    filter 160ms ease;
+.highlight-control {
+  display: block;
+  padding-block: 10px 12px;
 }
-
-.primary-play-button:hover {
-  filter: brightness(1.06);
-  transform: translateY(-1px);
+.highlight-control legend {
+  float: left; /* keeps the legend inside the fieldset's padding box */
+  width: 100%;
 }
-
-.primary-play-button:active {
-  transform: scale(0.96);
-}
-
-.skip-button {
-  position: relative;
-  width: 38px;
-  height: 38px;
+.preference-label {
+  display: flex;
+  flex-direction: column;
   padding: 0;
-  border-radius: 50%;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+.preference-label small {
+  color: var(--player-muted);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+.stepper {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--player-border);
+  border-radius: 999px;
+}
+.stepper button {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
   background: transparent;
-  color: color-mix(in srgb, var(--color-text) 72%, transparent);
-  font-size: 0.9rem;
+  font-size: 12px;
 }
-
-.skip-button span {
+.stepper button:hover:not(:disabled) {
+  background: var(--player-hover);
+}
+.speed-value {
+  min-width: 3.25em;
+  font-size: 0.9375rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  text-align: center;
+}
+.segmented {
+  display: grid;
+  clear: both;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 8px;
+  padding: 3px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--color-text) 7%, var(--color-bg));
+}
+.segmented label {
+  position: relative;
+}
+.segmented input {
   position: absolute;
-  bottom: 2px;
-  font-size: 0.48rem !important;
-  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
 }
-
-.skip-button:hover {
-  background: color-mix(in srgb, var(--color-text) 7%, transparent);
+.segmented span {
+  display: grid;
+  place-items: center;
+  min-height: 36px;
+  border-radius: 9px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background-color 120ms ease;
+}
+.segmented input:checked + span {
+  background: var(--color-bg);
+  box-shadow: 0 1px 3px #00000026;
+  color: var(--accent-color);
+  font-weight: 600;
+}
+.scroll-control {
+  position: relative;
+  flex: 0 0 auto;
+  width: 48px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-text) 22%, var(--color-bg));
+  transition: background-color 150ms ease;
+}
+.scroll-control[aria-checked='true'] {
+  background: var(--accent-color);
+}
+.switch-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px #0000004d;
+  transition: transform 150ms ease;
+}
+.scroll-control[aria-checked='true'] .switch-thumb {
+  transform: translateX(20px);
+}
+.preferences-panel > :last-child {
+  border-bottom: 0;
+}
+.hide-player-button {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--player-muted);
+  font-size: 0.875rem;
+  line-height: 1;
+}
+.hide-player-button :deep(svg) {
+  width: 14px;
+  height: 14px;
+}
+.hide-player-button:hover {
   color: var(--color-text);
 }
 
-.timeline {
-  min-width: 0;
+/* ---- Timeline ------------------------------------------------------- */
+.time {
+  display: none;
+  flex: 0 0 auto;
+  min-width: 2.75em;
+  color: var(--player-muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
 }
-
+.time--remaining {
+  text-align: right;
+}
 .timeline-slider {
-  width: 100%;
-  height: 30px;
-  margin: 0;
+  display: block;
+  flex: 1;
+  min-width: 0;
+  height: 18px;
+  margin: -4px 0 2px;
   appearance: none;
   background: transparent;
   cursor: pointer;
 }
-
+.timeline-slider:disabled {
+  opacity: 1;
+}
 .timeline-slider::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 999px;
   background: linear-gradient(
     to right,
     var(--accent-color) 0 var(--progress),
-    color-mix(in srgb, var(--color-text) 16%, transparent) var(--progress) 100%
+    color-mix(in srgb, var(--color-text) 16%, var(--color-bg)) var(--progress)
+      100%
   );
 }
-
 .timeline-slider::-moz-range-track {
   height: 4px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--color-text) 16%, transparent);
+  background: color-mix(in srgb, var(--color-text) 16%, var(--color-bg));
 }
-
 .timeline-slider::-moz-range-progress {
   height: 4px;
   border-radius: 999px;
   background: var(--accent-color);
 }
-
 .timeline-slider::-webkit-slider-thumb {
-  width: 16px;
-  height: 16px;
-  margin-top: -6px;
+  width: 14px;
+  height: 14px;
+  margin-top: -5px;
   appearance: none;
   border: 2px solid var(--color-bg);
   border-radius: 50%;
   background: var(--accent-color);
-  box-shadow: 0 1px 5px rgba(50, 40, 24, 0.28);
+  box-shadow: 0 1px 3px #00000040;
+  transition: transform 120ms ease;
 }
-
 .timeline-slider::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   border: 2px solid var(--color-bg);
   border-radius: 50%;
   background: var(--accent-color);
 }
-
-.timeline-times {
-  display: flex;
-  justify-content: space-between;
-  margin-top: -3px;
-  color: color-mix(in srgb, var(--color-text) 54%, transparent);
-  font-size: 0.7rem;
-  font-variant-numeric: tabular-nums;
+.timeline-slider:hover::-webkit-slider-thumb,
+.timeline-slider:active::-webkit-slider-thumb {
+  transform: scale(1.2);
 }
 
-.utility-controls {
+/* ---- Messages ------------------------------------------------------- */
+.audio-error,
+.availability-note {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
+  gap: 12px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.audio-error {
   flex-wrap: wrap;
+  margin-bottom: 8px;
+  padding: 4px 4px 4px 12px;
+  border-radius: 10px;
+  background: var(--player-tint);
 }
-
-.highlight-control {
-  color: var(--color-text, var(--font-color));
+.audio-error span {
+  flex: 1 1 200px;
 }
-
-.highlight-control select {
-  background: var(--color-bg);
-  color: var(--color-text, var(--font-color));
-  border-color: color-mix(
-    in srgb,
-    var(--color-text, var(--font-color)) 35%,
-    transparent
-  );
-  outline-color: var(--accent-color);
-  max-width: 100%;
-}
-
-.highlight-control select:focus-visible {
-  outline: 2px solid var(--accent-color) !important;
-  outline-offset: 2px;
-}
-
-.utility-controls .speed-selector {
-  width: 76px;
-  min-width: 76px;
-}
-
-.utility-controls .segment-selector-wrap {
-  display: grid;
-  grid-template-columns: auto minmax(104px, 160px);
-  align-items: center;
-  gap: 7px;
-  max-width: none;
-}
-
-.scroll-control {
+.audio-error button {
   min-height: 40px;
-  gap: 6px;
-  padding: 0 12px;
-  border: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
-  border-radius: 11px;
-  background: color-mix(in srgb, var(--color-bg) 80%, transparent);
-  color: color-mix(in srgb, var(--color-text) 72%, transparent);
-  font-size: 0.78rem !important;
-  white-space: nowrap;
-}
-
-.scroll-control--active {
-  border-color: color-mix(in srgb, var(--accent-color) 34%, transparent);
-  background: color-mix(in srgb, var(--accent-color) 17%, var(--color-bg));
-  color: var(--color-text);
-}
-
-.scroll-control-mark {
-  color: var(--accent-color);
-  font-size: 1rem !important;
-}
-
-.availability-note,
-.player-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-.mini-player {
-  width: 100%;
-  padding: 3px 2px;
+  padding: 8px;
   border: 0;
+  background: transparent;
+  font-weight: 600;
+  text-decoration: underline;
+}
+.availability-note {
+  justify-content: space-between;
+}
+.availability-note p {
+  margin: 0;
+}
+.availability-note a {
+  text-decoration: underline;
 }
 
-.mini-player-content {
-  gap: 10px;
+/* Small phones: the options popover carries "Hide audio player". */
+@media (max-width: 479px) {
+  .controls.fixed-controls {
+    padding: 8px 10px 8px;
+  }
+  .player-bar > .dismiss-button {
+    display: none;
+  }
+  .skip-button {
+    width: 38px;
+  }
+  .preferences-panel {
+    width: 100%;
+  }
 }
 
-.mini-player-icon {
-  display: grid;
-  width: 42px;
-  height: 42px;
-  place-items: center;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--accent-color) 16%, var(--color-bg));
+/* Wide screens: a single row with the timeline inline. */
+@media (min-width: 720px) {
+  .controls.fixed-controls {
+    padding: 10px 12px;
+  }
+  .player-bar {
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+  .skip-button--back {
+    order: 0;
+  }
+  .primary-play-button {
+    order: 1;
+  }
+  .skip-button--forward {
+    order: 2;
+  }
+  .now-playing {
+    position: relative;
+    order: 3;
+    flex: 0 1 220px;
+    margin-inline: 6px 2px;
+  }
+  .timeline {
+    order: 4;
+    flex: 1 1 auto;
+  }
+  .options-wrap {
+    position: relative;
+    order: 5;
+  }
+  .dismiss-button {
+    order: 6;
+  }
+  .skip-button,
+  .dismiss-button {
+    width: 44px;
+  }
+  .time {
+    display: block;
+  }
+  .timeline-slider {
+    margin: 0;
+  }
+  .caption-status {
+    display: inline;
+  }
+  .caption-time {
+    display: none;
+  }
+  /* Anchor popovers to their trigger, clear of the bar's top edge. */
+  .popover {
+    bottom: calc(100% + 20px);
+  }
+  .section-menu {
+    inset-inline: 0 auto;
+    width: 340px;
+  }
+  .preferences-panel {
+    width: 320px;
+  }
 }
-
-.mini-player-time {
-  margin-left: auto;
-  font-variant-numeric: tabular-nums;
-}
-
 :global(.audio-line) {
   position: relative;
   /* Paint breathing room without changing text width or punctuation spacing. */
@@ -2172,7 +2126,7 @@ button,
   box-shadow:
     -0.12em 0 0 0.035em color-mix(in srgb, var(--accent-color) 22%, transparent),
     0.12em 0 0 0.035em color-mix(in srgb, var(--accent-color) 22%, transparent);
-  color: color-mix(in srgb, var(--color-text) 88%, var(--accent-color));
+  color: color-mix(in srgb, var(--font-color) 88%, var(--accent-color));
 }
 
 /* Sentence fragments meet at word and markup boundaries. Do not extend
@@ -2189,97 +2143,11 @@ button,
 
 @media (prefers-reduced-motion: reduce) {
   :global(.audio-line),
-  .primary-play-button {
+  .primary-play-button,
+  .switch-thumb,
+  .popover {
     transition: none;
-  }
-}
-
-@media (max-width: 900px) {
-  .player-shell {
-    grid-template-columns: 130px minmax(0, 1fr);
-    gap: 14px;
-  }
-
-  .player-main {
-    grid-template-columns: auto minmax(150px, 1fr);
-    gap: 14px;
-  }
-
-  .utility-controls {
-    grid-column: 1 / -1;
-  }
-}
-
-@media (max-width: 768px) {
-  .controls.fixed-controls {
-    bottom: max(8px, env(safe-area-inset-bottom));
-    width: calc(100% - 16px) !important;
-    padding: 12px 14px;
-    border-radius: 14px;
-  }
-
-  .player-shell {
-    display: block;
-  }
-
-  .player-header {
-    margin-bottom: 10px;
-    padding: 0 0 9px;
-    border-right: 0;
-    border-bottom: 1px solid
-      color-mix(in srgb, var(--color-text) 9%, transparent);
-  }
-
-  .player-main {
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 10px 14px;
-  }
-
-  .primary-play-button {
-    width: 50px;
-    height: 50px;
-    flex-basis: 50px;
-  }
-
-  .utility-controls {
-    display: grid;
-    grid-template-columns: 72px minmax(0, 1fr) auto;
-    width: 100%;
-  }
-
-  .highlight-control {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    justify-content: space-between;
-  }
-
-  .highlight-control select {
-    flex: 1;
-    max-width: 230px;
-  }
-
-  .utility-controls .speed-selector {
-    width: 72px;
-    min-width: 72px;
-  }
-
-  .utility-controls .segment-selector-wrap {
-    display: block;
-    min-width: 0;
-  }
-
-  .control-label {
-    display: none;
-  }
-
-  .scroll-control {
-    min-width: 44px;
-    padding: 0 10px;
-    font-size: 0 !important;
-  }
-
-  .scroll-control-mark {
-    font-size: 1.05rem !important;
+    animation: none;
   }
 }
 </style>

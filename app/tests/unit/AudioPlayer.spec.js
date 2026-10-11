@@ -58,9 +58,13 @@ const audio = [
   ],
 ];
 
+const setHighlight = (wrapper, mode) =>
+  wrapper.get(`.highlight-control input[value="${mode}"]`).setValue(true);
+
 const mountPlayer = (source = audio) =>
   mount(AudioPlayer, {
     attachTo: document.body,
+    data: () => ({ showPreferences: true }),
     props: {
       audio: source,
       audioReady: true,
@@ -71,8 +75,6 @@ const mountPlayer = (source = audio) =>
     global: {
       stubs: {
         Loading: true,
-        'el-select': { template: '<div><slot /></div>' },
-        'el-option': { template: '<span><slot /></span>' },
         'font-awesome-icon': true,
       },
     },
@@ -307,7 +309,9 @@ describe('AudioPlayer word synchronization', () => {
       const wrapper = mountPlayer();
       await wrapper.vm.$nextTick();
       expect(wrapper.vm.highlightMode).toBe('word');
-      expect(wrapper.get('select').element.value).toBe('word');
+      expect(
+        wrapper.get('.highlight-control input:checked').element.value
+      ).toBe('word');
       wrapper.unmount();
     }
   );
@@ -330,12 +334,14 @@ describe('AudioPlayer word synchronization', () => {
   it('offers an accessible native control and persists its selection', async () => {
     const wrapper = mountPlayer();
     await wrapper.vm.$nextTick();
-    const select = wrapper.get('select');
-    expect(select.element.closest('label').textContent).toContain('Highlight');
-    expect(
-      Array.from(select.element.options).map((option) => option.text)
-    ).toEqual(['Word by word', 'Sentence by sentence', 'Off']);
-    await select.setValue('sentence');
+    const group = wrapper.get('fieldset.highlight-control');
+    expect(group.get('legend').text()).toContain('Highlight');
+    expect(group.findAll('label').map((label) => label.text())).toEqual([
+      'Word',
+      'Sentence',
+      'Off',
+    ]);
+    await setHighlight(wrapper, 'sentence');
     expect(DynamicStorage.setItem).toHaveBeenCalledWith(
       'audioHighlightMode',
       'sentence'
@@ -377,7 +383,7 @@ describe('AudioPlayer word synchronization', () => {
     const emphasis = content.querySelector('em').textContent;
     const wrapper = mountPlayer(source);
     await wrapper.vm.$nextTick();
-    await wrapper.get('select').setValue('sentence');
+    await setHighlight(wrapper, 'sentence');
     const highlighted = () =>
       Array.from(content.querySelectorAll('.audio-line--active'))
         .map((element) => element.textContent)
@@ -400,11 +406,11 @@ describe('AudioPlayer word synchronization', () => {
     await wrapper.vm.$nextTick();
     wrapper.vm.enableScrolling = false;
     wrapper.vm.audioElement.currentTime = 0.5;
-    await wrapper.get('select').setValue('sentence');
+    await setHighlight(wrapper, 'sentence');
     const wrappers = content.querySelectorAll('span').length;
     for (let iteration = 0; iteration < 5; iteration += 1) {
       for (const mode of ['word', 'sentence', 'off']) {
-        await wrapper.get('select').setValue(mode);
+        await setHighlight(wrapper, mode);
         expect(wrapper.vm.audioElement.currentTime).toBe(0.5);
         if (mode === 'off') {
           for (const time of [0.15, 0.5, 0.8]) {
@@ -428,7 +434,7 @@ describe('AudioPlayer word synchronization', () => {
   it('keeps independent word following enabled while highlights are Off', async () => {
     const wrapper = mountPlayer();
     await wrapper.vm.$nextTick();
-    await wrapper.get('select').setValue('off');
+    await setHighlight(wrapper, 'off');
     wrapper.vm.isPlaying = true;
     const word = content.querySelector('.audio-word');
     word.getBoundingClientRect = () => ({ top: 900, bottom: 930 });
@@ -447,7 +453,7 @@ describe('AudioPlayer word synchronization', () => {
     source[4] = [];
     const wrapper = mountPlayer(source);
     await wrapper.vm.$nextTick();
-    await wrapper.get('select').setValue('sentence');
+    await setHighlight(wrapper, 'sentence');
     expect(wrapper.vm.highlightSegments).toHaveLength(2);
     expect(
       wrapper.vm.highlightSegments.every((segment) => segment.estimated)
@@ -471,9 +477,9 @@ describe('AudioPlayer word synchronization', () => {
     const source = ['/audio/unknown.mp3', '', [], [], []];
     const wrapper = mountPlayer(source);
     await wrapper.vm.$nextTick();
-    expect(wrapper.find('select').exists()).toBe(true);
+    expect(wrapper.find('.highlight-control input').exists()).toBe(true);
     for (const mode of ['sentence', 'off', 'word']) {
-      await wrapper.get('select').setValue(mode);
+      await setHighlight(wrapper, mode);
       wrapper.vm.updateActiveWord(2);
       expect(wrapper.vm.highlightSegments).toHaveLength(0);
       expect(content.querySelector('.audio-line--active')).toBeNull();
@@ -491,7 +497,7 @@ describe('AudioPlayer word synchronization', () => {
     );
     const wrapper = mountPlayer();
     await wrapper.vm.$nextTick();
-    await wrapper.get('select').setValue('off');
+    await setHighlight(wrapper, 'off');
     resolve('sentence');
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.highlightMode).toBe('off');
@@ -512,7 +518,7 @@ describe('AudioPlayer word synchronization', () => {
     DynamicStorage.setItem.mockRejectedValue(new Error('unavailable'));
     const wrapper = mountPlayer();
     await wrapper.vm.$nextTick();
-    await wrapper.get('select').setValue('off');
+    await setHighlight(wrapper, 'off');
     await Promise.resolve();
     expect(wrapper.vm.highlightMode).toBe('off');
     wrapper.unmount();

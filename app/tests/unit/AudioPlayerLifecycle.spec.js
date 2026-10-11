@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { shallowMount } from '@vue/test-utils';
 import AudioPlayer from '@/components/AudioPlayer.vue';
+import { DynamicStorage } from '@/helpers/storage';
 
 vi.mock('@/helpers/storage', () => ({
   DynamicStorage: {
@@ -51,6 +52,7 @@ const mountPlayer = () => {
       isWithinSevenDays: true,
     },
     global: {
+      renderStubDefaultSlot: true,
       stubs: [
         'font-awesome-icon',
         'el-button',
@@ -64,6 +66,8 @@ const mountPlayer = () => {
   return wrapper.vm;
 };
 beforeEach(() => {
+  DynamicStorage.getItem.mockResolvedValue(null);
+  DynamicStorage.setItem.mockResolvedValue();
   audio = new FakeAudio();
   vi.stubGlobal(
     'Audio',
@@ -358,5 +362,176 @@ describe('AudioPlayer playback lifecycle', () => {
     expect(mediaSession.playbackState).toBe('none');
     audio.emit('playing');
     expect(vm.isPlaying).toBe(false);
+  });
+});
+
+describe('AudioPlayer compact controls', () => {
+  const initialWidth = window.innerWidth;
+  beforeEach(() => {
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      value: 375,
+    });
+  });
+  afterEach(() => {
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      value: initialWidth,
+    });
+  });
+
+  it('plays and pauses from the compact bar', async () => {
+    const vm = mountPlayer();
+    await wrapper.get('[aria-label="Play audio"]').trigger('click');
+    expect(audio.play).toHaveBeenCalledOnce();
+    audio.paused = false;
+    audio.emit('play');
+    await vm.$nextTick();
+    await wrapper.get('[aria-label="Pause audio"]').trigger('click');
+    expect(audio.pause).toHaveBeenCalledOnce();
+  });
+
+  it('can dismiss paused audio from the bar or the options popover', async () => {
+    const vm = mountPlayer();
+    await vm.$nextTick();
+    await wrapper.get('[aria-label="Hide audio controls"]').trigger('click');
+    await wrapper.get('.preferences-button').trigger('click');
+    await wrapper.get('.hide-player-button').trigger('click');
+    expect(wrapper.emitted('dismiss-audio')).toHaveLength(2);
+    audio.paused = false;
+    audio.emit('play');
+    await vm.$nextTick();
+    expect(wrapper.find('[aria-label="Hide audio controls"]').exists()).toBe(
+      false
+    );
+    expect(wrapper.find('.hide-player-button').exists()).toBe(false);
+  });
+
+  it('exposes loading instead of an enabled play button before audio is ready', async () => {
+    mountPlayer();
+    await wrapper.setProps({ audioReady: false });
+    expect(
+      wrapper.get('[aria-label="Play audio"]').attributes('disabled')
+    ).toBeDefined();
+    expect(wrapper.text()).toContain('Preparing audio');
+  });
+
+  it('jumps to a section from the current-section menu', async () => {
+    const vm = mountPlayer();
+    await vm.$nextTick();
+    const trigger = wrapper.get('.section-button');
+    expect(trigger.text()).toContain('Reading');
+    expect(trigger.attributes('aria-expanded')).toBe('false');
+    await trigger.trigger('click');
+    expect(trigger.attributes('aria-expanded')).toBe('true');
+    const item = wrapper.get('.section-item');
+    expect(item.text()).toContain('Reading');
+    expect(item.text()).toContain('1:00');
+    await item.trigger('click');
+    expect(audio.play).toHaveBeenCalledOnce();
+    expect(audio.currentTime).toBe(59);
+    expect(trigger.attributes('aria-expanded')).toBe('false');
+  });
+
+  it('opens listening options without moving controls and closes with Escape', async () => {
+    const vm = mountPlayer();
+    await vm.$nextTick();
+    const options = wrapper.get('.preferences-button');
+    expect(options.attributes('aria-expanded')).toBe('false');
+    expect(wrapper.get('.preferences-panel').isVisible()).toBe(false);
+    await options.trigger('click');
+    expect(options.attributes('aria-expanded')).toBe('true');
+    await wrapper
+      .get('.highlight-control input[value="sentence"]')
+      .setValue(true);
+    await wrapper.get('.scroll-control').trigger('click');
+    expect(vm.highlightMode).toBe('sentence');
+    expect(vm.enableScrolling).toBe(false);
+    expect(DynamicStorage.setItem).toHaveBeenCalledWith(
+      'audioAutoScroll',
+      'false'
+    );
+    await wrapper.get('.scroll-control').trigger('keydown', { key: 'Escape' });
+    expect(options.attributes('aria-expanded')).toBe('false');
+    expect(wrapper.get('.preferences-panel').isVisible()).toBe(false);
+    await options.trigger('click');
+    expect(
+      wrapper.get('.highlight-control input:checked').element.value
+    ).toBe('sentence');
+  });
+
+  it('closes an open popover when the other one opens or on outside press', async () => {
+    const vm = mountPlayer();
+    await vm.$nextTick();
+    await wrapper.get('.section-button').trigger('click');
+    await wrapper.get('.preferences-button').trigger('click');
+    expect(vm.showSections).toBe(false);
+    expect(vm.showPreferences).toBe(true);
+    document.body.dispatchEvent(
+      new window.Event('pointerdown', { bubbles: true })
+    );
+    expect(vm.showPreferences).toBe(false);
+  });
+
+  it('applies and remembers speed changes and 15-second skips', async () => {
+    const vm = mountPlayer();
+    await vm.$nextTick();
+    await wrapper.get('.preferences-button').trigger('click');
+    for (let step = 0; step < 5; step += 1) {
+      await wrapper.get('[aria-label="Faster"]').trigger('click');
+    }
+    expect(audio.playbackRate).toBe(1.5);
+    expect(audio.defaultPlaybackRate).toBe(1.5);
+    expect(wrapper.get('.speed-badge').text()).toBe('1.5×');
+    expect(DynamicStorage.setItem).toHaveBeenLastCalledWith(
+      'audioPlaybackSpeed',
+      '1.5x'
+    );
+    await wrapper.get('[aria-label="Slower"]').trigger('click');
+    expect(audio.playbackRate).toBe(1.4);
+    await wrapper.get('[aria-label="Forward 15 seconds"]').trigger('click');
+    expect(audio.currentTime).toBe(15);
+    await wrapper.get('[aria-label="Back 15 seconds"]').trigger('click');
+    expect(audio.currentTime).toBe(0);
+  });
+
+  it('restores saved speed and auto-scroll preferences', async () => {
+    DynamicStorage.getItem.mockImplementation(async (key) =>
+      ({ audioPlaybackSpeed: '1.2x', audioAutoScroll: 'false' })[key]
+    );
+    const vm = mountPlayer();
+    await Promise.resolve();
+    await vm.$nextTick();
+    expect(vm.playbackSpeed).toBe('1.2x');
+    expect(audio.playbackRate).toBe(1.2);
+    expect(vm.enableScrolling).toBe(false);
+  });
+
+  it('reports layout changes and disconnects its resize observer', async () => {
+    const observe = vi.fn();
+    const disconnect = vi.fn();
+    let onResize;
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        constructor(callback) {
+          onResize = callback;
+        }
+        observe = observe;
+        disconnect = disconnect;
+      }
+    );
+    const event = vi.fn();
+    document.addEventListener('audio-player-visibility', event);
+    const vm = mountPlayer();
+    await vm.$nextTick();
+    expect(observe).toHaveBeenCalledOnce();
+    onResize();
+    expect(event.mock.lastCall[0].detail.visible).toBe(true);
+    wrapper.unmount();
+    wrapper = null;
+    expect(disconnect).toHaveBeenCalledOnce();
+    expect(event.mock.lastCall[0].detail.visible).toBe(false);
+    document.removeEventListener('audio-player-visibility', event);
   });
 });

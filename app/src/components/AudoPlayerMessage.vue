@@ -1,29 +1,31 @@
 <template>
   <div class="audio-player">
-    <div class="controls fixed-controls" style="width: 100%">
+    <div class="controls fixed-controls">
       <div class="menu-and-buttons">
         <span v-if="!isEnglish || !isEsvOrKjv" class="audio-message">
           <small>
             Audio is available when English is selected as the display language,
             along with the English Standard Version (ESV) or King James Version
             (KJV) Bible translation.
-            <a href="/settings"> Change Settings >>> </a>
+            <a href="/settings"> Change settings </a>
           </small>
         </span>
         <span v-else-if="!isWithinSevenDays" class="audio-message">
           <small>
             Audio is available from three days ago through nine days ahead.
-            <a href="/"> Go to Today >>> </a>
+            <a href="/"> Go to today </a>
           </small>
         </span>
         <span v-else-if="!audioReady" class="audio-message">
-          <small> Audio is loading...it may take a few moments. </small>
+          <small> Preparing audio… </small>
         </span>
         <span v-else-if="!hasAudioLinks" class="audio-message">
           <small> Audio is not available for this office. </small>
         </span>
         <button
           class="dismiss-button"
+          type="button"
+          aria-label="Hide audio controls"
           title="Hide audio controls"
           @click.stop="$emit('dismiss-audio')"
         >
@@ -72,9 +74,20 @@ export default {
     },
   },
   mounted() {
-    this.$nextTick(() => this.emitVisibility());
+    this.$nextTick(() => {
+      this.emitVisibility();
+      if (typeof window.ResizeObserver !== 'undefined') {
+        this.controlsObserver = new window.ResizeObserver(() =>
+          this.emitVisibility()
+        );
+        this.controlsObserver.observe(
+          this.$el.querySelector('.fixed-controls')
+        );
+      }
+    });
   },
   beforeUnmount() {
+    this.controlsObserver?.disconnect();
     this.emitVisibility(false);
   },
   methods: {
@@ -83,7 +96,10 @@ export default {
       const controls = this.$el?.querySelector('.controls.fixed-controls');
       const height =
         isVisible && controls
-          ? Math.ceil(controls.getBoundingClientRect().height)
+          ? Math.ceil(
+              controls.getBoundingClientRect().height +
+                (parseFloat(window.getComputedStyle(controls).bottom) || 0)
+            )
           : 0;
       const event = new window.CustomEvent('audio-player-visibility', {
         detail: { visible: isVisible, height },
@@ -95,126 +111,65 @@ export default {
 </script>
 
 <style scoped>
-.audio-player {
-  padding: 10px;
-}
-
-.audio-message {
-  display: block;
-  padding: 0 8px;
-  line-height: 1.4;
-}
-
-.audio-player .playing {
-  font-weight: bold;
-  color: green;
-}
-
-.el-button-group {
-  width: 100%;
-}
-
-.audio-list {
-  margin-bottom: 100px;
-}
-
-.el-switch {
-  margin-left: 10px;
-}
-
 .controls.fixed-controls {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  border-top: 2px solid #ccc;
-  background-color: var(--color-bg);
-  padding: 10px;
+  inset-inline: max(8px, env(safe-area-inset-left))
+    max(8px, env(safe-area-inset-right));
+  bottom: max(8px, env(safe-area-inset-bottom));
+  width: auto;
+  max-width: 920px;
+  max-height: calc(100dvh - 32px - env(safe-area-inset-bottom));
+  overflow-y: auto;
+  margin-inline: auto;
+  padding: 8px 8px 8px 16px;
+  border: 1px solid color-mix(in srgb, var(--font-color) 14%, transparent);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--color-bg) 94%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+  color: var(--font-color);
+  box-shadow:
+    0 1px 2px #0000000d,
+    0 10px 32px -8px #00000026;
   z-index: 100;
-  flex-wrap: nowrap;
 }
-
 .menu-and-buttons {
   display: flex;
-  flex-direction: row;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  flex-wrap: nowrap;
-  gap: 16px;
+  gap: 12px;
 }
-
+.audio-message {
+  min-width: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.audio-message small {
+  font-size: inherit;
+}
+.audio-message a {
+  text-decoration: underline;
+}
 .dismiss-button {
+  display: grid;
+  place-items: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 10px;
   background: transparent;
-  border: none;
-  font-size: 18px;
-  padding: 0 0 0 16px;
-  width: auto;
-  height: 32px;
-  min-width: 32px;
-  flex-shrink: 0;
-  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  color: inherit;
   cursor: pointer;
-  color: var(--color-text, #333);
-  opacity: 0.5;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
 }
-
-:deep(.dark) .dismiss-button {
-  border-left-color: rgba(255, 255, 255, 0.1);
-}
-
 .dismiss-button:hover {
-  opacity: 1;
-  background: rgba(0, 0, 0, 0.08);
+  background: color-mix(in srgb, var(--font-color) 8%, transparent);
 }
-
-.dismiss-button:active {
-  transform: scale(0.92);
-}
-
-button {
-  padding: 10px 15px;
-  font-size: 14px;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-}
-
-button:disabled {
-  cursor: not-allowed;
-}
-
-.smallSelector {
-  max-width: 200px;
-  flex-shrink: 1;
-}
-
-.smallestSelector {
-  max-width: 75px;
-  flex-shrink: 1;
-  margin-right: 5px;
-}
-
-@media (max-width: 768px) {
-  .smallSelector {
-    max-width: 150px;
-  }
-
-  .menu-and-buttons {
-    flex-wrap: nowrap;
-    gap: 5px;
-  }
-
-  button {
-    flex-shrink: 0;
-  }
+.dismiss-button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent-color) !important;
+  outline-offset: 2px;
 }
 </style>
