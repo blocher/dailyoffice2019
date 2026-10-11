@@ -2,7 +2,6 @@ import globals from 'globals';
 import eslintJs from '@eslint/js'; // Import CommonJS module for eslint:recommended
 import vue from 'eslint-plugin-vue';
 import prettierPlugin from 'eslint-plugin-prettier';
-import vueScopedCss from 'eslint-plugin-vue-scoped-css';
 import vueEslintParser from 'vue-eslint-parser';
 import cypressPlugin from 'eslint-plugin-cypress';
 
@@ -66,7 +65,6 @@ export default [
     plugins: {
       vue,
       prettier: prettierPlugin,
-      'vue-scoped-css': vueScopedCss,
       cypress: cypressPlugin,
     },
     rules: {
