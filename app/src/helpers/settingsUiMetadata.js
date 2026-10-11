@@ -20,6 +20,11 @@ export const SETTINGS_UI_FALLBACK_METADATA = {
     priority: 30,
     keywords: ['abbreviated', 'full readings'],
   },
+  apocrypha_readings: {
+    category: 'Readings',
+    priority: 35,
+    keywords: ['apocrypha', 'alternate', 'deuterocanon', 'first lesson'],
+  },
   reading_audio: {
     category: 'Audio',
     priority: 40,
