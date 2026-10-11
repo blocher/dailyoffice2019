@@ -595,6 +595,18 @@ the official Twilio pages before budgeting: [Twilio SMS quickstart](https://www.
 - Please use `black` to format code with a line length of 119 beore submitting a pull request
 - `find . -iname "*.py" | xargs black --target-version=py311 --line-length=119` from the `site` directory
 
+## Deploying
+
+`master` is the only long-lived branch. From a clean checkout of a commit that is already on `origin/master`:
+
+- `make deploy` deploys the API and the frontend; `make deploy-api` or `make deploy-web` deploys one side.
+- To roll back, check out an older `master` commit and deploy again.
+
+The frontend is built locally (Node from `app/.nvmrc`, unit tests, `vite build`) before anything ships, then
+uploaded to the `dailyoffice2019` Cloudflare Pages project with Wrangler (`npx wrangler login` once). Cloudflare
+does not build from Git. The API commit is pushed to the `production` remote and `deploy/server.sh` runs on the
+server over SSH. The deploy stops at the first failure and checks that both sites respond.
+
 ## Quick overview
 
 The application is built around several Django "apps". The most important are:

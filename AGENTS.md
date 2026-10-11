@@ -49,3 +49,4 @@ This project is a full-stack application divided into a modern Vue frontend and 
 - **Explore First**: Use your read and search tools to understand the existing patterns in both `app/` and `site/` before creating new files or modifying existing ones.
 - **Match Style**: Always match the existing coding style of the file you are editing.
 - **Verify**: After making changes, run relevant tests and **always run `pre-commit run`**.
+- **Deploying**: `master` is the only long-lived branch; deploy with `make deploy` (see "Deploying" in README.md). There are no deploy branches.
