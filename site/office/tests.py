@@ -328,7 +328,9 @@ class EmbeddedGreatLitanyTests(SimpleTestCase):
 
     def test_ending_option_is_accepted_by_api_settings(self):
         request = SimpleNamespace(query_params={"great_litany_ending": "litany"})
-        with patch.object(Settings, "_default_settings", return_value={"great_litany_ending": "supplication"}):
+        with patch.object(
+            Settings, "_setting_options", return_value={"great_litany_ending": ["supplication", "litany"]}
+        ):
             self.assertEqual(Settings(request)["great_litany_ending"], "litany")
 
     def test_family_collects_do_not_change_when_daily_office_litany_is_enabled(self):
