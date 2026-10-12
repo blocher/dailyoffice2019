@@ -15,6 +15,7 @@ from distutils.util import strtobool
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.db.models import Prefetch, Q
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.views.decorators.csrf import csrf_exempt
@@ -4562,7 +4563,7 @@ class ReadingsView(OfficeAPIView):
 
 class CommemorationsView(OfficeAPIView):
     def get(self, request, uuid):
-        commemoration = Commemoration.objects.get(pk=uuid)
+        commemoration = get_object_or_404(Commemoration, pk=uuid)
         serializer = CommemorationSerializer(commemoration)
         return Response(serializer.data)
 
