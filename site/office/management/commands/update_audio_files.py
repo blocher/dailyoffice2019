@@ -71,6 +71,7 @@ class Command(BaseCommand):
                     "psalter": "60",  # needed
                     "reading_cycle": "1",
                     "reading_length": "full",
+                    "apocrypha_readings": "appointed",
                     "reading_audio": "off",
                     "canticle_rotation": "1979",  # needed
                     "psalm_style": "whole_verse",  # needed
@@ -149,6 +150,9 @@ class Command(BaseCommand):
                         },
                         {
                             "reading_length": "abbreviated",
+                        },
+                        {
+                            "apocrypha_readings": "alternate",
                         },
                     ]
                     for change in more_changes:

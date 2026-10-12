@@ -90,7 +90,9 @@ class AudioWindowTests(SimpleTestCase):
 
         def view(request, *args, **kwargs):
             self.assertTrue(request._audio_prewarm)
-            calls.append(request.path.rsplit("/", 1)[-1])
+            calls.append(
+                (request.path.rsplit("/", 1)[-1], request.GET["apocrypha_readings"], request.GET["language_style"])
+            )
             return SimpleNamespace(content=b"", status_code=200)
 
         with (
@@ -100,7 +102,15 @@ class AudioWindowTests(SimpleTestCase):
         ):
             call_command("update_audio_files", days=12, skip_yesterday=True, stdout=StringIO())
         expected = [
-            (self.today + datetime.timedelta(days=i)).isoformat() for i in range(12) for _ in range(8 * 2 * 11)
+            (
+                (self.today + datetime.timedelta(days=i)).isoformat(),
+                "alternate" if variation == 11 else "appointed",
+                style,
+            )
+            for i in range(12)
+            for _ in range(8)
+            for style in ("contemporary", "traditional")
+            for variation in range(12)
         ]
         self.assertEqual(calls, expected)
 
@@ -125,9 +135,9 @@ class AudioWindowTests(SimpleTestCase):
             patch.object(update_audio_files, "resolve", return_value=SimpleNamespace(func=view, args=(), kwargs={})),
             patch.object(update_audio_files.bugsnag, "notify", side_effect=RuntimeError("reporting down")) as notify,
         ):
-            with self.assertRaisesRegex(CommandError, "350 succeeded, 2 failed"):
+            with self.assertRaisesRegex(CommandError, "382 succeeded, 2 failed"):
                 call_command("update_audio_files", days=2, stdout=output, stderr=errors)
-        self.assertEqual(len(calls), 352)
+        self.assertEqual(len(calls), 384)
         self.assertFalse(index.AUDIO_GENERATION_REQUIRED.get())
         self.assertEqual(notify.call_count, 2)
         self.assertIn("HTTP 429", errors.getvalue())
