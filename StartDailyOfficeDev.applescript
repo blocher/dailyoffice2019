@@ -70,16 +70,18 @@ on run
 
 	tell application "iTerm"
 		activate
-		-- Rerunning replaces this project's window; other iTerm windows are untouched.
+		-- Rerunning replaces this project's window; other iTerm windows are untouched. Each pane gets Ctrl-C
+		-- first: closing alone leaves servers that ignore hang-ups (redis-server) running.
 		repeat with existingWindow in windows
 			try
-				repeat with existingSession in sessions of current tab of existingWindow
-					tell existingSession to set existingTag to variable named "user.launcherProject"
-					if existingTag is my projectID then
-						close existingWindow
-						exit repeat
-					end if
-				end repeat
+				tell current session of current tab of existingWindow to set existingTag to variable named "user.launcherProject"
+				if existingTag is my projectID then
+					repeat with existingSession in sessions of current tab of existingWindow
+						tell existingSession to write text (character id 3) newline no
+					end repeat
+					delay 1.5
+					close existingWindow
+				end if
 			end try
 		end repeat
 
