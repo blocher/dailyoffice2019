@@ -1,189 +1,214 @@
 <template>
-  <div class="small-container home office">
-    <Loading v-if="loading && !notFound" />
+  <div class="readings">
     <PageNotFound v-if="notFound" />
-    <el-alert v-if="error" :title="error" type="error" />
+    <template v-else>
+      <section class="readings-head">
+        <div v-if="services" id="readings-settings" class="readings-choice">
+          <UiSegmented
+            v-if="serviceGroups.length > 1"
+            class="readings-tabs"
+            variant="underline"
+            block
+            :model-value="currentGroup"
+            :options="serviceGroups"
+            aria-label="Service"
+            @update:model-value="changeGroup"
+          >
+            <template #option="{ option }">
+              <span class="readings-tabs__long">{{ option.label }}</span>
+              <span class="readings-tabs__short" aria-hidden="true">{{
+                option.short
+              }}</span>
+            </template>
+          </UiSegmented>
 
-    <div v-if="!loading && !notFound" class="space-y-6">
-      <!-- Header Section -->
-      <header class="office-header mb-8">
+          <fieldset v-if="groupServices.length > 1" class="service-choices">
+            <legend class="eyebrow service-choices__legend">Choose one</legend>
+            <label
+              v-for="item in groupServices"
+              :key="item.name"
+              class="ui-check service-choice"
+              :class="{ 'is-selected': item.name === service }"
+            >
+              <input
+                type="radio"
+                name="readings-service"
+                :value="item.name"
+                :checked="item.name === service"
+                @change="changeService(item.name)"
+              />
+              <span class="service-choice__name">{{ item.name }}</span>
+            </label>
+          </fieldset>
+        </div>
+
+        <nav class="day-line" aria-label="Choose a day">
+          <router-link
+            :to="dayLink(-1)"
+            class="day-line__step"
+            aria-label="Previous day"
+            @click="scrollToTop"
+          >
+            <UiIcon name="chevron-left" />
+          </router-link>
+          <div class="day-line__center">
+            <router-link :to="calendarLink" class="day-line__date">
+              {{ formattedDate }}
+            </router-link>
+            <router-link
+              v-if="!isViewingToday"
+              :to="todayLink"
+              class="day-line__today"
+              @click="scrollToTop"
+            >
+              Return to today
+            </router-link>
+          </div>
+          <router-link
+            :to="dayLink(1)"
+            class="day-line__step"
+            aria-label="Next day"
+            @click="scrollToTop"
+          >
+            <UiIcon name="chevron-right" />
+          </router-link>
+        </nav>
+
+        <Loading v-if="loading" />
+        <UiAlert v-if="error" tone="error" :title="error" />
+
         <CalendarCard
-          v-if="!error"
+          v-if="!loading && card"
           :calendar-date="calendarDate"
           :card="card"
           service-type="readings"
           office="readings"
         />
 
-        <OfficeNav :calendar-date="calendarDate" selected-office="readings" />
-
         <div
-          id="readings-settings"
-          class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-100 dark:border-gray-700 shadow-sm mt-6"
+          v-if="!loading && services"
+          class="readings-tools"
+          role="toolbar"
+          aria-label="Reading tools"
         >
-          <!-- Service Selection -->
-          <div class="mb-4">
-            <h4
-              class="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-2"
-            >
-              Service
-            </h4>
-            <el-select
-              v-model="service"
-              class="w-full"
-              size="large"
-              @change="changeService"
-            >
-              <el-option-group label="Daily Offices">
-                <el-option
-                  v-for="item in daily_office"
-                  :key="item.name"
-                  :label="item.name"
-                  :value="item.name"
-                />
-              </el-option-group>
-              <el-option-group label="Holy Eucharist">
-                <el-option
-                  v-for="item in holy_eucharist"
-                  :key="item.name"
-                  :label="item.name"
-                  :value="item.name"
-                />
-              </el-option-group>
-            </el-select>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Psalter Version -->
-            <div>
-              <h4
-                class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2"
-              >
-                Psalter
-              </h4>
-              <el-select
-                v-model="psalmsTranslation"
-                class="w-full"
-                size="large"
-                @change="changeTranslation"
-              >
-                <el-option
-                  v-for="item in psalmsTranslations"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </div>
-
-            <!-- Translation -->
-            <div>
-              <h4
-                class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2"
-              >
-                Translation
-              </h4>
-              <el-select
-                v-model="translation"
-                class="w-full"
-                size="large"
-                @change="changeTranslation"
-              >
-                <el-option
-                  v-for="item in translations"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </div>
-
-            <!-- Psalm Style -->
-            <div>
-              <h4
-                class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2"
-              >
-                Style
-              </h4>
-              <el-select
-                v-model="psalmStyle"
-                class="w-full"
-                size="large"
-                @change="changeStyle"
-              >
-                <el-option
-                  v-for="item in psalmStyles"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </div>
-          </div>
+          <button
+            type="button"
+            class="readings-tool"
+            @click="openPanel('display')"
+          >
+            <span class="readings-tool__glyph" aria-hidden="true">Aa</span>
+            Display
+          </button>
+          <router-link
+            v-if="officeLink"
+            :to="officeLink.to"
+            class="readings-tool"
+          >
+            <UiIcon :name="officeLink.icon" />
+            {{ officeLink.label }}
+          </router-link>
+          <router-link to="/settings" class="readings-tool">
+            <UiIcon name="sliders" />
+            Customize
+          </router-link>
         </div>
 
-        <DisplaySettingsModule
-          v-if="!loading && !notFound && !error"
-          class="mt-6"
-        />
-      </header>
-    </div>
-  </div>
+        <UiDisclosure
+          v-if="!loading && services"
+          class="readings-versions"
+          title="Translation"
+          :meta="versionsSummary"
+        >
+          <div class="readings-versions__grid">
+            <UiField label="Bible translation" for-id="readings-translation">
+              <UiSelect
+                id="readings-translation"
+                v-model="translation"
+                :options="translations"
+                @change="changeTranslation"
+              />
+            </UiField>
+            <UiField label="Psalter" for-id="readings-psalter">
+              <UiSelect
+                id="readings-psalter"
+                v-model="psalmsTranslation"
+                :options="psalmsTranslations"
+                @change="changeTranslation"
+              />
+            </UiField>
+            <UiField label="Psalm style" for-id="readings-psalm-style">
+              <UiSelect
+                id="readings-psalm-style"
+                v-model="psalmStyle"
+                :options="psalmStyles"
+                @change="changeStyle"
+              />
+            </UiField>
+          </div>
+        </UiDisclosure>
+      </section>
 
-  <div
-    class="readingsPanel book-content transition-opacity duration-200"
-    :class="{ 'opacity-50 pointer-events-none': readingsLoading }"
-  >
-    <div id="main" v-if="!loading && !notFound">
-      <div class="mt-6">
-        <h2 class="mt-2 pt-0 text-center">{{ service }}</h2>
-        <CitationGroup
-          v-for="(readings, number) in groupedReadings"
-          :key="number"
-          :readings="readings"
-          @reading-link-click="handleReadingLinkClick"
-        />
-      </div>
+      <template v-if="!loading && services">
+        <div class="book-opening">
+          <Ornament glyph="o" />
+        </div>
 
-      <Collects
-        v-if="showCollects && !loading"
-        :collects="collectsToShow"
-        :style="'Contemporary'"
-      />
-      <Collects
-        v-if="showTraditionalCollects && !loading"
-        :collects="traditionalCollectsToShow"
-        :style="'Traditional'"
-      />
-      <template v-if="!loading">
-        <Reading
-          v-for="(reading, index) in readingsToShow"
-          :id="readingName(index)"
-          :key="index"
-          :reading="reading"
-          :psalm-cycle="psalmCycle"
-          :length="reading.length"
-          :translation="translation"
-          :psalms-translation="psalmsTranslation"
-          @cycle-60="setCycle60"
-          @cycle-30="setCycle30"
-        />
+        <!-- The readings, set like the office text -->
+        <div
+          id="main"
+          class="book readings-text"
+          :class="{ 'is-busy': readingsLoading }"
+          :aria-busy="readingsLoading ? 'true' : null"
+        >
+          <h2 class="readings-service">{{ serviceTitle.title }}</h2>
+          <h4 v-if="serviceTitle.subtitle" class="readings-service">
+            {{ serviceTitle.subtitle }}
+          </h4>
+          <CitationGroup
+            v-for="(readings, number) in groupedReadings"
+            :key="number"
+            :readings="readings"
+            @reading-link-click="handleReadingLinkClick"
+          />
+
+          <Collects
+            v-if="showCollects"
+            :collects="collectsToShow"
+            :style="'Contemporary'"
+          />
+          <Collects
+            v-if="showTraditionalCollects"
+            :collects="traditionalCollectsToShow"
+            :style="'Traditional'"
+          />
+          <Reading
+            v-for="(reading, index) in readingsToShow"
+            :id="readingName(index)"
+            :key="index"
+            :reading="reading"
+            :psalm-cycle="psalmCycle"
+            :length="reading.length"
+            :translation="translation"
+            :psalms-translation="psalmsTranslation"
+            @cycle-60="setCycle60"
+            @cycle-30="setCycle30"
+          />
+          <div class="readings-credit">
+            <a href="https://www.esv.org/">
+              Scripture quotations are from the ESV® Bible (The Holy Bible,
+              English Standard Version®), copyright © 2001 by Crossway, a
+              publishing ministry of Good News Publishers. Used by permission.
+              All rights reserved.
+            </a>
+          </div>
+        </div>
       </template>
-      <p class="text-center mt-6" v-if="!loading">
-        <a href="https://www.esv.org/">
-          Scripture quotations are from the ESV® Bible (The Holy Bible, English
-          Standard Version®), copyright © 2001 by Crossway, a publishing
-          ministry of Good News Publishers. Used by permission. All rights
-          reserved.
-        </a>
-      </p>
-    </div>
+    </template>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import OfficeNav from '@/components/OfficeNav.vue';
 import CalendarCard from '@/components/CalendarCard.vue';
 import PageNotFound from '@/views/PageNotFound.vue';
 import Loading from '@/components/Loading.vue';
@@ -191,22 +216,45 @@ import setCalendarDate from '@/helpers/setCalendarDate';
 import CitationGroup from '@/components/CitationGroup.vue';
 import Reading from '@/components/Reading.vue';
 import Collects from '@/components/Collects.vue';
-import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
 import { DynamicStorage } from '@/helpers/storage';
 import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
+import { openPanel } from '@/helpers/panels';
 import { nextTick } from 'vue';
+
+const SERVICE_GROUPS = [
+  {
+    value: 'morning_prayer',
+    label: 'Morning Prayer',
+    short: 'Morning',
+    icon: 'sunrise',
+  },
+  {
+    value: 'evening_prayer',
+    label: 'Evening Prayer',
+    short: 'Evening',
+    icon: 'sunset',
+  },
+  {
+    value: 'holy_eucharist',
+    label: 'Holy Eucharist',
+    short: 'Eucharist',
+    icon: 'cross',
+  },
+];
+
+function datePath(date) {
+  return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+}
 
 export default {
   name: 'Readings',
   components: {
-    OfficeNav,
     CalendarCard,
     PageNotFound,
     Loading,
     CitationGroup,
     Reading,
     Collects,
-    DisplaySettingsModule,
   },
   props: {},
   data() {
@@ -269,12 +317,76 @@ export default {
         },
       ],
       notFound: false,
-      activeIndex: '1',
-      uniqueOpened: true,
-      ellipsis: false,
     };
   },
   computed: {
+    // Morning Prayer, Evening Prayer, and Holy Eucharist, as tabs
+    serviceGroups() {
+      return SERVICE_GROUPS.filter((group) => this[group.value].length);
+    },
+    currentGroup() {
+      if (!this.service) return null;
+      return this.getPositionAndServiceName(this.service).service_name;
+    },
+    // The services in the selected group (e.g. a Sunday and a holy day)
+    groupServices() {
+      return this.currentGroup ? this[this.currentGroup] || [] : [];
+    },
+    // "Evening Prayer (The Twenty-first Sunday after Pentecost)" is set as
+    // a title with its occasion beneath, as the book sets an office's day.
+    serviceTitle() {
+      const name = this.service || '';
+      const match = name.match(/^(.+?)\s+\((.+)\)$/);
+      if (match && !/^Proper \d+$/.test(match[2])) {
+        return { title: match[1], subtitle: match[2] };
+      }
+      return { title: name, subtitle: '' };
+    },
+    versionsSummary() {
+      const translation = this.translations.find(
+        (item) => item.value === this.translation
+      );
+      const psalter =
+        this.psalmsTranslation === 'traditional'
+          ? 'Traditional'
+          : 'Contemporary';
+      const name = translation ? translation.label.split(':')[0] : '';
+      return [name, psalter].filter(Boolean).join(' · ');
+    },
+    // Pray the office these readings belong to
+    officeLink() {
+      const group = SERVICE_GROUPS.find((g) => g.value === this.currentGroup);
+      if (!group || group.value === 'holy_eucharist') return null;
+      return {
+        to: `/${group.value}/${datePath(this.calendarDate)}`,
+        label: 'Pray the office',
+        icon: group.icon,
+      };
+    },
+    isViewingToday() {
+      const today = new Date();
+      return (
+        this.calendarDate.getFullYear() === today.getFullYear() &&
+        this.calendarDate.getMonth() === today.getMonth() &&
+        this.calendarDate.getDate() === today.getDate()
+      );
+    },
+    formattedDate() {
+      return this.calendarDate.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    },
+    calendarLink() {
+      return `/calendar/${this.calendarDate.getFullYear()}/${
+        this.calendarDate.getMonth() + 1
+      }/`;
+    },
+    todayLink() {
+      return this.readingsPath(new Date());
+    },
     groupedReadings: function () {
       const groups = {};
       this.readingsToShow.forEach((reading) => {
@@ -303,7 +415,7 @@ export default {
     traditionalCollectsToShow: function () {
       if (this.service) {
         let serviceItems = this.services[this.service];
-        let collects = [];
+        let collects;
         try {
           collects = serviceItems['traditional_collects'];
         } catch {
@@ -358,7 +470,6 @@ export default {
                   this.service = this.holy_eucharist[position].name;
                 }
               }
-              this.activeIndex = this.serviceLink(this.service);
               this.setReadingsToShow();
             }
           }
@@ -416,7 +527,7 @@ export default {
     },
     initialize: async function () {
       this.readingsLoading = true;
-      let data = null;
+      let data;
       try {
         this.availableSettings = await this.$store.state.availableSettings;
         await this.$store.dispatch('initializeSettings');
@@ -476,7 +587,6 @@ export default {
             this.service = this.daily_office[position].name;
           } else if (service == 'holy_eucharist') {
             this.service = this.holy_eucharist[position].name;
-            this.activeIndex = '2';
           } else {
             this.service = this.morning_prayer[position].name;
           }
@@ -486,7 +596,6 @@ export default {
       } else {
         this.service = this.morning_prayer[0].name;
       }
-      this.activeIndex = this.serviceLink(this.service);
       this.setReadingsToShow();
       this.error = false;
       this.loading = false;
@@ -508,23 +617,32 @@ export default {
       await DynamicStorage.setItem('psalm_style', this.psalmStyle);
       await this.initialize();
     },
-    serviceLink: function (service) {
-      let serviceValues = this.getPositionAndServiceName(service);
-      let link = '';
-      if (serviceValues.position > 0) {
-        link = `/readings/${serviceValues.service_name}/${serviceValues.position}/${this.calendarDate.getFullYear()}/${
-          this.calendarDate.getMonth() + 1
-        }/${this.calendarDate.getDate()}`;
-      } else {
-        link = `/readings/${serviceValues.service_name}/${this.calendarDate.getFullYear()}/${
-          this.calendarDate.getMonth() + 1
-        }/${this.calendarDate.getDate()}`;
+    // Readings for another day, keeping the kind of service (not its
+    // position, which may not exist on that day).
+    readingsPath(date) {
+      const service = this.$route.params.service;
+      return service
+        ? `/readings/${service}/${datePath(date)}`
+        : `/readings/${datePath(date)}`;
+    },
+    dayLink(offset) {
+      const date = new Date(this.calendarDate);
+      date.setDate(date.getDate() + offset);
+      return this.readingsPath(date);
+    },
+    scrollToTop() {
+      window.scrollTo(0, 0);
+    },
+    openPanel,
+    changeGroup: async function (group) {
+      const services = this[group] || [];
+      if (services.length) {
+        await this.changeService(services[0].name);
       }
-      return link;
     },
     getPositionAndServiceName: function (service) {
-      let position = 0;
-      let service_name = '';
+      let position;
+      let service_name;
       if (service.includes('Morning Prayer')) {
         service_name = 'morning_prayer';
         position = this.morning_prayer.findIndex((p) => p.name == service);
@@ -617,7 +735,9 @@ export default {
       return `reading_${index}`;
     },
     goto(id) {
-      const menu = document.getElementById('topMenu');
+      const menu =
+        document.getElementById('topMenu') ||
+        document.querySelector('.app-header');
       const menuHeight = menu ? menu.offsetHeight : 0;
       const element = document.getElementById(id);
       if (!element) return;
@@ -639,33 +759,257 @@ export default {
   },
 };
 </script>
-<style scoped lang="scss">
-h1 {
-  margin: 2rem 0 0 !important;
+
+<style scoped>
+.readings-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: var(--space-4) var(--gutter) 0;
 }
 
-h2 {
-  font-size: 1.2rem;
-  padding-top: 0 !important;
+/* Service: Morning Prayer · Evening Prayer · Holy Eucharist */
+.readings-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
 }
 
-h3 {
-  margin: 0 !important;
-  padding: 0 0 1rem !important;
-}
-
-.el-select {
+.readings-choice .readings-tabs {
   width: 100%;
+  max-width: 34rem;
 }
 
-.collectsWrapper {
-  padding: 1rem;
-  border: 1px solid var(--font-color);
-  border-radius: 0.25rem;
-  margin: 1rem 0;
+.readings-tabs__short {
+  display: none;
 }
 
-.grow {
-  flex-grow: 1;
+/* Phones: short names, no icons, so all three fit at 320px */
+@media (max-width: 479px) {
+  .readings-tabs__long,
+  .readings-tabs :deep(.ui-segmented__icon) {
+    display: none;
+  }
+
+  .readings-tabs__short {
+    display: inline;
+  }
+
+  .readings-tabs :deep(.ui-segmented__option) {
+    padding-inline: var(--space-1);
+  }
+}
+
+/* When a group has more than one set of readings (a Sunday and a holy
+   day, say), list them in full: their names are too long for tabs. */
+.service-choices {
+  width: 100%;
+  max-width: 34rem;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.service-choices__legend {
+  width: 100%;
+  margin-bottom: var(--space-1);
+  text-align: center;
+}
+
+.service-choice {
+  display: flex;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-1);
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-soft);
+  transition: color var(--duration) var(--ease);
+}
+
+.service-choice:first-of-type {
+  border-top: 1px solid var(--rule);
+}
+
+.service-choice input {
+  margin-top: 0.2rem;
+}
+
+.service-choice:hover,
+.service-choice.is-selected {
+  color: var(--ink);
+}
+
+.service-choice__name {
+  min-width: 0;
+  line-height: 1.3;
+  text-wrap: pretty;
+}
+
+/* Day line: ‹ Sunday, October 11, 2026 › (as on the office page) */
+.day-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 34rem;
+  margin: 0 auto;
+}
+
+.day-line__step {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  color: var(--ink-soft);
+  font-size: 1.15rem;
+  text-decoration: none;
+  transition: background-color var(--duration) var(--ease);
+}
+
+.day-line__step:hover {
+  background-color: var(--paper-sunken);
+  color: var(--ink);
+}
+
+.day-line__center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  flex: 1;
+}
+
+.day-line__date {
+  font-size: var(--text-md);
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.12em;
+  color: var(--ink-soft);
+  text-decoration: none;
+  text-align: center;
+}
+
+.day-line__date:hover {
+  color: var(--accent);
+}
+
+.day-line__today {
+  font-size: var(--text-xs);
+  font-style: italic;
+}
+
+/* Quiet tools under the day's title */
+.readings-tools {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-1) var(--space-2);
+}
+
+.readings-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.25rem;
+  padding: 0.2rem 0.7rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-pill);
+  background-color: var(--paper);
+  color: var(--ink-soft);
+  font-size: var(--text-sm);
+  text-decoration: none;
+  transition:
+    border-color var(--duration) var(--ease),
+    color var(--duration) var(--ease),
+    background-color var(--duration) var(--ease);
+}
+
+/* A 44px tap target around the quieter 36px pill */
+.readings-tool {
+  position: relative;
+}
+
+.readings-tool::after {
+  content: '';
+  position: absolute;
+  inset: -0.25rem 0;
+}
+
+.readings-tool:hover {
+  border-color: var(--rule-strong);
+  color: var(--ink);
+}
+
+.readings-tool .ui-icon {
+  color: var(--accent);
+}
+
+.readings-tool__glyph {
+  font-size: 1.05em;
+  line-height: 1;
+}
+
+/* Translation and psalter */
+.readings-versions {
+  width: 100%;
+  max-width: 34rem;
+  margin: 0 auto;
+  border-top: 1px solid var(--rule);
+}
+
+.readings-versions__grid {
+  display: grid;
+  gap: var(--space-4);
+  padding-top: var(--space-2);
+}
+
+@media (min-width: 640px) {
+  .readings-versions__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .readings-versions__grid > :first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+.book-opening {
+  margin: var(--space-5) auto var(--space-1);
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+/* The text dims while a new translation loads */
+.readings-text {
+  transition: opacity var(--duration) var(--ease);
+}
+
+.readings-text.is-busy {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.readings-service {
+  text-wrap: balance;
+}
+
+.readings-credit {
+  margin-top: 3em;
+  padding-top: 1.25em;
+  border-top: 1px solid var(--rule);
+  font-size: 0.6em;
+  line-height: var(--leading-ui);
+  font-style: italic;
+  text-align: center;
+}
+
+.readings-credit a {
+  color: var(--ink-faint);
 }
 </style>

@@ -1,19 +1,17 @@
 <template>
-  <div class="small-container">
-    <div class="about">
-      <h1>Scripture preview</h1>
-      <Loading v-if="loading" />
-      <el-alert v-if="error" :title="error" type="error" />
-      <div v-if="!loading && !error">
-        {{ passage }}
-        <h3>ESV</h3>
-        <div v-html="esv"></div>
-        <h3>KJV</h3>
-        <div v-html="kjv"></div>
-        <h3>RSV</h3>
-        <div v-html="rsv"></div>
-      </div>
-    </div>
+  <div class="page">
+    <header class="page-header">
+      <p class="eyebrow">Scripture preview</p>
+      <h1 class="page-title">{{ passage }}</h1>
+    </header>
+    <Loading v-if="loading" />
+    <UiAlert v-if="error" tone="error" :title="error" />
+  </div>
+  <div v-if="!loading && !error" class="book scripture">
+    <section v-for="version in versions" :key="version.label">
+      <h2>{{ version.label }}</h2>
+      <div v-html="version.html"></div>
+    </section>
   </div>
 </template>
 
@@ -32,6 +30,15 @@ export default {
       kjv: '-',
       rsv: '-',
     };
+  },
+  computed: {
+    versions() {
+      return [
+        { label: 'ESV', html: this.esv },
+        { label: 'KJV', html: this.kjv },
+        { label: 'RSV', html: this.rsv },
+      ];
+    },
   },
   async created() {
     this.passage = this.$route.params.passage;
@@ -54,3 +61,13 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.page {
+  padding-bottom: 0;
+}
+
+.scripture section + section {
+  margin-top: 1.5em;
+}
+</style>
