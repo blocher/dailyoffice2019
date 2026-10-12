@@ -33,7 +33,7 @@ export const READING_FONTS = [
   {
     value: 'garamond',
     label: 'Garamond',
-    note: 'Old style, as in the 1928 and 1979 books',
+    note: 'Old style, as in the 1979 book',
     family: "'EB Garamond', Georgia, serif",
   },
   {
