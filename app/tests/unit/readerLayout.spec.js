@@ -10,7 +10,7 @@ import {
 } from '@/helpers/readerLayout';
 
 describe('reader layout', () => {
-  it('uses a single full-bleed page on phones', () => {
+  it('uses a single page with a little desk around it on phones', () => {
     const layout = computeReaderLayout({
       width: 375,
       height: 812,
@@ -19,8 +19,8 @@ describe('reader layout', () => {
     expect(layout.isPhone).toBe(true);
     expect(layout.spread).toBe(false);
     expect(layout.cols).toBe(1);
-    expect(layout.sheetW).toBe(375);
-    expect(layout.pageW).toBe(375 - layout.padX * 2);
+    expect(layout.sheetW).toBe(375 - 20);
+    expect(layout.pageW).toBe(layout.sheetW - layout.padX * 2);
     expect(layout.windowW).toBe(layout.pageW);
   });
 

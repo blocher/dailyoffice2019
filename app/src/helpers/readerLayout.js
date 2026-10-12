@@ -27,9 +27,13 @@ export function computeReaderLayout({
   spread = 'auto',
 }) {
   const isPhone = width <= PHONE_MAX;
-  const outerX = isPhone ? 0 : Math.round(Math.min(48, width * 0.04));
-  const outerY = isPhone ? 0 : Math.round(Math.min(40, height * 0.05));
-  const padX = Math.round(Math.max(24, Math.min(64, width * 0.055)));
+  // Phones show a little desk around the page too, so it reads as a book
+  // lying open on a table.
+  const outerX = isPhone ? 10 : Math.round(Math.min(48, width * 0.04));
+  const outerY = isPhone ? 12 : Math.round(Math.min(40, height * 0.05));
+  const padX = isPhone
+    ? 20
+    : Math.round(Math.max(24, Math.min(64, width * 0.055)));
   const padTop = isPhone ? 46 : 54;
   const padBottom = isPhone ? 46 : 54;
 

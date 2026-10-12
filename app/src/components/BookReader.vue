@@ -47,6 +47,21 @@
               />
             </div>
 
+            <!-- The edges of the pages still to come (and, in a spread, those
+                 already read), thinning as the reader goes. -->
+            <span
+              v-if="edgeAhead"
+              class="reader__edges reader__edges--ahead"
+              :style="{ '--edge': `${edgeAhead}px` }"
+              aria-hidden="true"
+            />
+            <span
+              v-if="layout.spread && edgeBehind"
+              class="reader__edges reader__edges--behind"
+              :style="{ '--edge': `${edgeBehind}px` }"
+              aria-hidden="true"
+            />
+
             <div class="reader__window" :class="{ 'is-hidden': sceneActive }">
               <div
                 ref="flow"
@@ -283,6 +298,15 @@ const pagesOnView = computed(() =>
   Array.from({ length: layout.cols }, (_, i) => firstPage.value + i)
 );
 const currentSection = computed(() => sectionOn(firstPage.value));
+// Thickness of the page stacks, in px: about one line per five pages.
+const edgeAhead = computed(() => {
+  const left = totalPages.value - (firstPage.value + layout.cols);
+  return Math.max(0, Math.min(7, Math.ceil(left / 5)));
+});
+const edgeBehind = computed(() =>
+  Math.max(0, Math.min(7, Math.ceil(firstPage.value / 5)))
+);
+
 const flowOffset = computed(
   () => -firstPage.value * layout.step + dragOffset.value
 );
@@ -557,26 +581,31 @@ function buildTurn(direction) {
   let angle;
 
   if (!spread) {
-    // A single page fills the screen, where a 3D flip reads poorly. Pages
-    // behave like a stack instead: turning forward slides the top page off
-    // to the left, under the finger, uncovering the next; turning back
-    // slides the previous page in from the left, over the current one.
-    const width = layout.sheetW;
-    const sheet = makeFace(direction > 0 ? first : first - 1, 'single');
-    sheet.classList.add('reader-slider');
-    host.append(
-      place(makeFace(direction > 0 ? first + 1 : first, 'single'), 0),
-      place(sheet, 0)
-    );
-    sceneActive.value = true;
-    const offset = direction > 0 ? (p) => -width * p : (p) => -width * (1 - p);
-    return (p) => {
-      sheet.style.transform = `translateX(${offset(p)}px)`;
-      // The shadow the moving page casts fades as it leaves (or settles).
-      const visible = direction > 0 ? 1 - p : p;
-      host.style.setProperty('--lift', Math.min(1, visible * 1.4).toFixed(3));
-    };
+    // The right-hand page of an open book: it lifts toward the reader and
+    // turns over the spine. Viewed from the page's outer edge, that edge
+    // peels away at once, so the next page shows from the first moment.
+    host.style.perspective = '1800px';
+    host.style.perspectiveOrigin = `${layout.sheetW}px 50%`;
+    // Only the right-hand page is on screen, so once a page passes
+    // upright it is gone: turn it from flat to just past upright, and bring
+    // a page back from just past upright down onto the stack. Its outer
+    // edge then stays close to the finger.
+    const SWING = 100;
+    if (direction > 0) {
+      host.append(place(makeFace(first + 1, 'single'), 0));
+      front = makeFace(first, 'single');
+      angle = (p) => -SWING * p;
+    } else {
+      host.append(place(makeFace(first, 'single'), 0));
+      front = makeFace(first - 1, 'single');
+      angle = (p) => -SWING * (1 - p);
+    }
+    back = makeFace(-1, 'back');
+    turner.style.transformOrigin = 'left center';
+    place(turner, 0);
   } else if (direction > 0) {
+    host.style.perspective = '';
+    host.style.perspectiveOrigin = '';
     host.append(place(makeFace(first, 'left'), 0));
     host.append(place(makeFace(first + 3, 'right'), 1));
     front = makeFace(first + 1, 'right');
@@ -585,6 +614,8 @@ function buildTurn(direction) {
     place(turner, 1);
     angle = (p) => -180 * p;
   } else {
+    host.style.perspective = '';
+    host.style.perspectiveOrigin = '';
     host.append(place(makeFace(first - 2, 'left'), 0));
     host.append(place(makeFace(first + 1, 'right'), 1));
     front = makeFace(first, 'left');
@@ -1073,10 +1104,6 @@ onBeforeUnmount(() => {
   overscroll-behavior: contain;
 }
 
-.reader.is-phone {
-  background-color: var(--paper);
-}
-
 :root.dark .reader {
   --gutter-shade: rgb(0 0 0 / 0.55);
 }
@@ -1103,8 +1130,12 @@ onBeforeUnmount(() => {
   flex-shrink: 0;
 }
 
-.reader:not(.is-phone) .reader__book {
+.reader__book {
   box-shadow: var(--shadow-lg);
+}
+
+.reader.is-phone .reader__book {
+  box-shadow: var(--shadow);
 }
 
 .reader__sheet,
@@ -1117,7 +1148,42 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-/* The gutter: a soft shadow where pages meet the spine */
+/* The gutter: a soft shadow where pages meet the spine. A single page is
+   the right-hand page of an open book, so its spine is on the left. */
+.reader__sheet--single,
+.reader-face--single {
+  background-image: linear-gradient(
+    to right,
+    var(--gutter-shade),
+    transparent 6%
+  );
+}
+
+/* Page edges stacked beside the book */
+.reader__edges {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  width: var(--edge);
+  background: repeating-linear-gradient(
+    to right,
+    var(--paper-raised) 0 1px,
+    var(--rule-strong) 1px 2px
+  );
+  box-shadow: var(--shadow-sm);
+  pointer-events: none;
+}
+
+.reader__edges--ahead {
+  left: 100%;
+  border-radius: 0 2px 2px 0;
+}
+
+.reader__edges--behind {
+  right: 100%;
+  border-radius: 2px 0 0 2px;
+}
+
 .reader__sheet--left,
 .reader-face--left {
   background-image: linear-gradient(
@@ -1358,14 +1424,6 @@ onBeforeUnmount(() => {
     color-mix(in srgb, #000 calc(var(--lift) * 14%), transparent),
     transparent 60%
   );
-}
-
-/* A page sliding over the stack, casting a soft shadow from its edge */
-.reader__scene :deep(.reader-slider) {
-  will-change: transform;
-  box-shadow:
-    1px 0 0 var(--rule),
-    6px 0 22px rgb(0 0 0 / calc(var(--lift) * 0.16));
 }
 
 /* The plain reverse of a single page */
