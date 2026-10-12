@@ -1,12 +1,9 @@
 <template>
   <nav class="office-nav" aria-label="Choose an office">
-    <UiSegmented
-      class="office-nav__mode"
-      :model-value="currentServiceType"
-      :options="modeOptions"
-      size="sm"
-      aria-label="Kind of prayer"
-      @update:model-value="setServiceType"
+    <PrayModeSwitch
+      :mode="currentServiceType"
+      :date="calendarDate"
+      :office="selectedOffice"
     />
 
     <ul class="office-tabs">
@@ -37,7 +34,7 @@
 
 <script>
 import DayLine from '@/components/DayLine.vue';
-import { DynamicStorage } from '@/helpers/storage';
+import PrayModeSwitch from '@/components/PrayModeSwitch.vue';
 
 const DAILY = [
   { name: 'morning_prayer', text: 'Morning', icon: 'sunrise' },
@@ -53,27 +50,13 @@ const FAMILY = [
   { name: 'close_of_day_prayer', text: 'Close of Day', icon: 'moon' },
 ];
 
-const TO_FAMILY = {
-  morning_prayer: 'morning_prayer',
-  midday_prayer: 'midday_prayer',
-  evening_prayer: 'early_evening_prayer',
-  compline: 'close_of_day_prayer',
-};
-
-const TO_DAILY = {
-  morning_prayer: 'morning_prayer',
-  midday_prayer: 'midday_prayer',
-  early_evening_prayer: 'evening_prayer',
-  close_of_day_prayer: 'compline',
-};
-
 function datePath(date) {
   return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
 }
 
 export default {
   name: 'OfficeNav',
-  components: { DayLine },
+  components: { DayLine, PrayModeSwitch },
   props: {
     calendarDate: {
       type: Date,
@@ -98,10 +81,6 @@ export default {
       familyLinks: [],
       dayLinks: [],
       currentServiceType: this.serviceType,
-      modeOptions: [
-        { value: 'office', label: 'Daily Office' },
-        { value: 'family', label: 'Family Prayer' },
-      ],
     };
   },
   computed: {
@@ -167,19 +146,7 @@ export default {
       },
     ];
   },
-  methods: {
-    async setServiceType(type) {
-      if (type === this.currentServiceType) return;
-      const lookup = type === 'family' ? TO_FAMILY : TO_DAILY;
-      const office = lookup[this.selectedOffice];
-      this.currentServiceType = type;
-      this.links = type === 'family' ? this.familyLinks : this.dailyLinks;
-      await DynamicStorage.setItem('serviceType', type);
-      if (!office) return;
-      const prefix = type === 'family' ? '/family' : '';
-      this.$router.push(`${prefix}/${office}/${datePath(this.calendarDate)}`);
-    },
-  },
+  methods: {},
 };
 </script>
 

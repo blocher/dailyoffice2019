@@ -41,10 +41,6 @@
             <UiIcon name="headphones" />
             {{ audioEnabled ? 'Audio on' : 'Listen' }}
           </button>
-          <router-link :to="readingsLink" class="office-tool">
-            <UiIcon name="book-text" />
-            Readings
-          </router-link>
           <router-link to="/settings" class="office-tool">
             <UiIcon name="sliders" />
             Customize
@@ -240,10 +236,6 @@ export default {
   computed: {
     audioEnabled() {
       return displayState.audioEnabled;
-    },
-    readingsLink() {
-      const d = this.calendarDate;
-      return `/readings/${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
     },
     audioLoadingEnabled() {
       // Set VITE_FETCH_AUDIO_ON=false to avoid on-demand generation in dev.

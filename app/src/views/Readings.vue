@@ -3,6 +3,13 @@
     <PageNotFound v-if="notFound" />
     <template v-else>
       <section class="readings-head">
+        <PrayModeSwitch
+          v-if="calendarDate"
+          class="readings-mode"
+          mode="readings"
+          :date="calendarDate"
+          :office="currentGroup"
+        />
         <div v-if="services" id="readings-settings" class="readings-choice">
           <UiSegmented
             v-if="serviceGroups.length > 1"
@@ -79,14 +86,6 @@
             <span class="readings-tool__glyph" aria-hidden="true">Aa</span>
             Display
           </button>
-          <router-link
-            v-if="officeLink"
-            :to="officeLink.to"
-            class="readings-tool"
-          >
-            <UiIcon :name="officeLink.icon" />
-            {{ officeLink.label }}
-          </router-link>
           <router-link to="/settings" class="readings-tool">
             <UiIcon name="sliders" />
             Customize
@@ -191,6 +190,7 @@
 // @ is an alias to /src
 import CalendarCard from '@/components/CalendarCard.vue';
 import DayLine from '@/components/DayLine.vue';
+import PrayModeSwitch from '@/components/PrayModeSwitch.vue';
 import PageNotFound from '@/views/PageNotFound.vue';
 import Loading from '@/components/Loading.vue';
 import setCalendarDate from '@/helpers/setCalendarDate';
@@ -232,6 +232,7 @@ export default {
   components: {
     CalendarCard,
     DayLine,
+    PrayModeSwitch,
     PageNotFound,
     Loading,
     CitationGroup,
@@ -336,15 +337,6 @@ export default {
       return [name, psalter].filter(Boolean).join(' · ');
     },
     // Pray the office these readings belong to
-    officeLink() {
-      const group = SERVICE_GROUPS.find((g) => g.value === this.currentGroup);
-      if (!group || group.value === 'holy_eucharist') return null;
-      return {
-        to: `/${group.value}/${datePath(this.calendarDate)}`,
-        label: 'Pray the office',
-        icon: group.icon,
-      };
-    },
     isViewingToday() {
       const today = new Date();
       return (
@@ -732,6 +724,10 @@ export default {
 </script>
 
 <style scoped>
+.readings-mode {
+  align-self: center;
+}
+
 .readings-head {
   display: flex;
   flex-direction: column;
