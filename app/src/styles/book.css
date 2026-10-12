@@ -1,0 +1,182 @@
+/*
+  Book text
+  =========
+  The liturgy itself: offices, readings, psalms, collects, the litany. It
+  follows the conventions of the 2019 Book of Common Prayer:
+
+    - titles in letter-spaced small capitals, centered
+    - Scripture citations in small capitals, set right
+    - congregational text in semibold (not bold)
+    - rubrics in italic, noticeably smaller
+    - black ink only (black-letter mode restores red rubrics, as in the
+      1549–1662 books)
+
+  Size and face come from the reader's display settings.
+  `#main` is kept as an alias for older templates; prefer `.book`.
+*/
+
+#main,
+.book {
+  max-width: var(--measure);
+  margin: 0 auto var(--space-8);
+  padding: 0 var(--main-content-gutter);
+  font-family: var(--font-reading);
+  font-size: calc(var(--main-font-size) * var(--reading-scale));
+  line-height: var(--leading-prose);
+  font-variant-numeric: oldstyle-nums;
+  color: var(--ink);
+  text-align: left;
+}
+
+:is(#main, .book) :is(p, h2, h3, li) {
+  font-size: 1em;
+  line-height: var(--leading-prose);
+}
+
+:is(#main, .book) h1,
+:is(#main, .book) h2,
+:is(#main, .book) h3 {
+  font-weight: 400;
+  font-style: normal;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.12em;
+  text-align: center;
+  margin: 0.2em 0;
+  padding-top: 1.6em;
+}
+
+:is(#main, .book) h1 {
+  font-size: 1.3em;
+  line-height: 1.4;
+}
+
+:is(#main, .book) h2 {
+  font-size: 1.08em;
+}
+
+:is(#main, .book) h3 {
+  padding-top: 1.25em;
+  margin-bottom: 0.25em;
+  font-size: 1em;
+  line-height: 1.4;
+}
+
+/* Subheadings ("Tuesday", "or this") */
+:is(#main, .book) h4 {
+  margin: 0 0 0.6em;
+  padding-top: 0;
+  font-weight: 400;
+  font-style: italic;
+  font-size: 0.92em;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+
+/* Citations */
+:is(#main, .book) h5 {
+  margin: 0.3em 0 0.6em;
+  font-weight: 400;
+  font-size: 0.95em;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.08em;
+  text-align: right;
+  color: var(--ink-soft);
+}
+
+:is(#main, .book) p {
+  font-weight: 400;
+  font-style: normal;
+}
+
+:is(#main, .book) p + p {
+  margin-top: 0.15em;
+}
+
+/* Congregational text: semibold, as in the printed book. */
+:is(#main, .book) :is(strong, b) {
+  font-weight: 600;
+}
+
+:is(#main, .book) sup {
+  font-size: 0.6em;
+  line-height: 0;
+  vertical-align: 0.6em;
+  color: var(--ink-faint);
+}
+
+:is(#main, .book) p.indent {
+  margin: 0 0 0 1em;
+}
+
+:is(#main, .book) p.hangingIndent {
+  text-indent: -1em;
+  margin-left: 1em;
+}
+
+:is(#main, .book) a {
+  color: var(--accent);
+}
+
+/* Rubrics */
+:is(#main, .book) .rubric,
+:is(#main, .book) p.rubric {
+  font-size: 0.8em;
+  font-style: italic;
+  line-height: 1.35;
+  margin: 0.6em 0;
+  color: var(--ink);
+}
+
+:is(#main, .book) .rubric em {
+  font-style: italic;
+}
+
+:root[data-reading-font='blackletter'] :is(#main, .book) .rubric,
+:root[data-reading-font='blackletter'] :is(#main, .book) .rubric em {
+  font-style: normal;
+  color: var(--season-red);
+}
+
+/* Officiant / People call and response */
+:is(#main, .book) .row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9em;
+}
+
+:is(#main, .book) .row .column.left {
+  flex: 0 0 3.6em;
+}
+
+:is(#main, .book) .row .column.right {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+:is(#main, .book) .row .column.left .rubric {
+  margin: 0;
+  font-size: 0.72em;
+}
+
+:is(#main, .book) .row .column.left small {
+  font-size: 1em;
+}
+
+/* Free HTML blocks from the API (readings, notes) */
+:is(#main, .book) .officeHTML p,
+:is(#main, .book) .officeHTML iframe {
+  margin-bottom: 0.8em;
+}
+
+:is(#main, .book) .officeHTML h3 {
+  font-size: 0.8em !important;
+}
+
+/* Fleuron that opens the text */
+.book-opening {
+  display: block;
+  text-align: center;
+  font-size: 1.6rem;
+  margin: var(--space-2) auto var(--space-1);
+}

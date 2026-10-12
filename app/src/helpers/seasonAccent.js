@@ -9,7 +9,7 @@ const ACCENT_MAP = {
 };
 
 const LIGHT_TEXT = '#ffffff';
-const DARK_TEXT = '#0b1220';
+const DARK_TEXT = '#161513';
 
 export function normalizeLiturgicalColor(color) {
   if (!color || typeof color !== 'string') {
@@ -73,8 +73,8 @@ export function setSeasonAccent(color) {
   root.dataset.seasonAccent = normalized;
   root.style.setProperty('--accent-key', normalized);
   root.style.setProperty('--accent-token', accent.token);
-  root.style.setProperty('--accent-color', accentReference);
-  root.style.setProperty('--accent-contrast', contrast);
+  root.style.setProperty('--accent', accentReference);
+  root.style.setProperty('--on-accent', contrast);
 }
 
 export function refreshSeasonAccent() {
@@ -94,7 +94,7 @@ function getBestContrastColor(accentColorReference) {
   }
 
   const lightRatio = contrastRatio(accentRgb, [255, 255, 255]);
-  const darkRatio = contrastRatio(accentRgb, [11, 18, 32]);
+  const darkRatio = contrastRatio(accentRgb, [22, 21, 19]);
   return lightRatio >= darkRatio ? LIGHT_TEXT : DARK_TEXT;
 }
 

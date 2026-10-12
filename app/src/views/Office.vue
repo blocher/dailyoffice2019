@@ -1,87 +1,109 @@
 <template>
-  <div class="home office">
-    <div class="small-container">
-      <PageNotFound v-if="notFound" />
-      <div v-if="!notFound" class="space-y-6">
+  <div class="office">
+    <PageNotFound v-if="notFound" />
+    <template v-else>
+      <section class="office-head">
+        <OfficeNav
+          :calendar-date="calendarDate"
+          :selected-office="office"
+          :service-type="serviceType"
+        />
         <Loading v-if="loading" />
-
-        <!-- Header Section -->
-        <header class="office-header mb-8">
-          <CalendarCard
-            :office="office"
-            :calendar-date="calendarDate"
-            :card="card"
-            :service-type="serviceType"
-          />
-          <el-alert
-            v-if="error"
-            :title="error"
-            type="error"
-            show-icon
-            class="my-4"
-          />
-          <OfficeNav
-            :calendar-date="calendarDate"
-            :selected-office="office"
-            :service-type="serviceType"
-          />
-
-          <div v-if="!loading" class="office-display-settings">
-            <DisplaySettingsModule
-              :show-audio-controls="audioLoadingEnabled"
-              v-model:audio-enabled="audioEnabled"
-              :collapsible="false"
-            />
-          </div>
-        </header>
-      </div>
-    </div>
-
-    <!-- Main Content (Book Style) -->
-    <div id="main" class="book-content">
-      <div v-for="module in modules" :key="module.name">
+        <UiAlert v-if="error" tone="error" :title="error" />
+        <CalendarCard
+          v-if="!loading && !error"
+          :office="office"
+          :calendar-date="calendarDate"
+          :card="card"
+          :service-type="serviceType"
+        />
         <div
-          v-for="line in module.lines.filter((l) => l.line_type !== 'speaker')"
-          :key="line.content"
+          v-if="!loading"
+          class="office-tools"
+          role="toolbar"
+          aria-label="Reading tools"
         >
-          <OfficeHeading v-if="line.line_type === 'heading'" :line="line" />
-          <OfficeSubheading
-            v-if="line.line_type === 'subheading'"
-            :line="line"
-          />
-          <OfficeCitation v-if="line.line_type === 'citation'" :line="line" />
-          <OfficeHTML
-            v-if="line.line_type === 'html' || line.line_type === 'audio'"
-            :line="line"
-          />
-          <OfficeLeader
-            v-if="line.line_type === 'leader' || line.line_type === 'reader'"
-            :line="line"
-          />
-          <OfficeLeaderDialogue
-            v-if="line.line_type === 'leader_dialogue'"
-            :line="line"
-          />
-          <OfficeCongregation
-            v-if="line.line_type === 'congregation'"
-            :line="line"
-          />
+          <button
+            type="button"
+            class="office-tool"
+            @click="openPanel('display')"
+          >
+            <span class="office-tool__glyph" aria-hidden="true">Aa</span>
+            Display
+          </button>
+          <button
+            v-if="audioLoadingEnabled"
+            type="button"
+            class="office-tool"
+            :aria-pressed="audioEnabled ? 'true' : 'false'"
+            @click="setAudioEnabled(!audioEnabled)"
+          >
+            <UiIcon name="headphones" />
+            {{ audioEnabled ? 'Audio on' : 'Listen' }}
+          </button>
+          <router-link :to="readingsLink" class="office-tool">
+            <UiIcon name="book-text" />
+            Readings
+          </router-link>
+          <router-link to="/settings" class="office-tool">
+            <UiIcon name="sliders" />
+            Customize
+          </router-link>
+        </div>
+      </section>
 
-          <OfficeCongregationDialogue
-            v-if="line.line_type === 'congregation_dialogue'"
-            :line="line"
-          />
+      <div v-if="modules" class="book-opening">
+        <Ornament glyph="o" />
+      </div>
 
-          <OfficeRubric v-if="line.line_type === 'rubric'" :line="line" />
-          <OfficeSpacer v-if="line.line_type === 'spacer'" />
+      <!-- The office text, set like the printed book -->
+      <div id="main" class="book">
+        <div v-for="module in modules" :key="module.name">
+          <div
+            v-for="line in module.lines.filter(
+              (l) => l.line_type !== 'speaker'
+            )"
+            :key="line.content"
+          >
+            <OfficeHeading v-if="line.line_type === 'heading'" :line="line" />
+            <OfficeSubheading
+              v-if="line.line_type === 'subheading'"
+              :line="line"
+            />
+            <OfficeCitation v-if="line.line_type === 'citation'" :line="line" />
+            <OfficeHTML
+              v-if="line.line_type === 'html' || line.line_type === 'audio'"
+              :line="line"
+            />
+            <OfficeLeader
+              v-if="line.line_type === 'leader' || line.line_type === 'reader'"
+              :line="line"
+            />
+            <OfficeLeaderDialogue
+              v-if="line.line_type === 'leader_dialogue'"
+              :line="line"
+            />
+            <OfficeCongregation
+              v-if="line.line_type === 'congregation'"
+              :line="line"
+            />
+            <OfficeCongregationDialogue
+              v-if="line.line_type === 'congregation_dialogue'"
+              :line="line"
+            />
+            <OfficeRubric v-if="line.line_type === 'rubric'" :line="line" />
+            <OfficeSpacer v-if="line.line_type === 'spacer'" />
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Footer Section -->
-    <footer class="office-footer mt-12 pb-24">
-      <!-- DonationPrompt removed to avoid duplication with App.vue footer -->
-    </footer>
+      <OfficeContinue
+        v-if="modules"
+        :office="office"
+        :calendar-date="calendarDate"
+        :service-type="serviceType"
+      />
+    </template>
   </div>
 
   <AudioPlayer
@@ -144,8 +166,10 @@ import PageNotFound from '@/views/PageNotFound.vue';
 import { DynamicStorage } from '@/helpers/storage';
 import AudioPlayer from '@/components/AudioPlayer.vue';
 import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue';
-import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
-import { ElMessageBox } from 'element-plus';
+import OfficeContinue from '@/components/OfficeContinue.vue';
+import { confirm } from '@/ui/feedback';
+import { openPanel } from '@/helpers/panels';
+import { displayState, setAudioEnabled } from '@/helpers/displayPreferences';
 import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
 import { trackEvent } from '@/helpers/analytics';
 import { getCachedClientId } from '@/helpers/clientId';
@@ -155,7 +179,7 @@ export default {
   components: {
     AudioPlayerMessage,
     AudioPlayer,
-    DisplaySettingsModule,
+    OfficeContinue,
     OfficeHeading,
     OfficeSubheading,
     OfficeCitation,
@@ -193,7 +217,6 @@ export default {
       notFound: false,
       audioLinks: [],
       audioReady: false,
-      audioEnabled: true,
       isEsvOrKjv: false,
       isEnglish: false,
       officeDateStr: null,
@@ -202,6 +225,13 @@ export default {
     };
   },
   computed: {
+    audioEnabled() {
+      return displayState.audioEnabled;
+    },
+    readingsLink() {
+      const d = this.calendarDate;
+      return `/readings/${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
+    },
     audioLoadingEnabled() {
       // Set VITE_FETCH_AUDIO_ON=false to avoid on-demand generation in dev.
       return import.meta.env.VITE_FETCH_AUDIO_ON !== 'false';
@@ -220,22 +250,8 @@ export default {
       );
     },
   },
-  watch: {
-    async audioEnabled(newVal) {
-      await DynamicStorage.setItem('audioEnabled', newVal ? 'true' : 'false');
-    },
-  },
   async mounted() {
     await DynamicStorage.setItem('serviceType', this.serviceType);
-    const audioEnabledString = await DynamicStorage.getItem(
-      'audioEnabled',
-      'true'
-    );
-    this.audioEnabled =
-      audioEnabledString === 'true' ||
-      audioEnabledString === true ||
-      audioEnabledString === null ||
-      audioEnabledString === undefined;
   },
 
   async created() {
@@ -317,8 +333,6 @@ export default {
       },
       { toBackend: false, toGA: true }
     );
-    await this.$nextTick();
-    await this.applyStoredFontSize();
     if (
       this.audioLoadingEnabled &&
       this.isWithinSevenDays &&
@@ -331,39 +345,18 @@ export default {
   },
 
   methods: {
+    openPanel,
+    setAudioEnabled,
     async confirmDismissAudio() {
-      try {
-        await ElMessageBox.confirm(
-          'You can re-enable audio controls at any time from Display Settings at the top of this page.',
-          'Hide Audio Controls?',
-          {
-            confirmButtonText: 'Hide',
-            cancelButtonText: 'Cancel',
-            type: 'info',
-          }
-        );
-        this.audioEnabled = false;
-      } catch {
-        // user cancelled — do nothing
+      const hide = await confirm({
+        title: 'Hide the audio player?',
+        message:
+          'You can bring it back any time with Listen, just above the prayers, or from Display (Aa) at the top of the page.',
+        confirmText: 'Hide',
+      });
+      if (hide) {
+        await setAudioEnabled(false);
       }
-    },
-    async applyStoredFontSize() {
-      const storedFontSize = parseInt(
-        (await DynamicStorage.getItem('fontSize')) || '24',
-        10
-      );
-      const fontSize = Number.isNaN(storedFontSize) ? 24 : storedFontSize;
-      this.applyFontSizeToMain(fontSize);
-    },
-    applyFontSizeToMain(value) {
-      document.documentElement.style.setProperty(
-        '--main-font-size',
-        `${value}px`
-      );
-      document.documentElement.style.setProperty(
-        '--main-line-height',
-        `${value * 1.6}px`
-      );
     },
     applySeasonAccentFromCard(card) {
       const liturgicalColor = resolveColorFromCard(card, this.office);
@@ -511,28 +504,65 @@ export default {
 </script>
 
 <style scoped>
-.office-header {
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.office-display-settings {
-  width: min(100%, 34rem);
-  margin: 0.75rem auto 0;
-}
-
-/* Ensure main content is centered and readable on large screens */
-#main {
-  max-width: 65ch;
+.office-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 46rem;
   margin: 0 auto;
-  padding: 0 var(--main-content-gutter);
+  padding: var(--space-4) var(--gutter) 0;
 }
 
-@media (max-width: 768px) {
-  .office-display-settings {
-    width: 100%;
-    margin-top: 0.65rem;
-  }
+/* Quiet tools under the day's title: they say "these exist" without
+   standing between the reader and the prayers. */
+.office-tools {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-1) var(--space-2);
+}
+
+.office-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.25rem;
+  padding: 0.2rem 0.7rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-pill);
+  background-color: var(--paper);
+  color: var(--ink-soft);
+  font-size: var(--text-sm);
+  text-decoration: none;
+  transition:
+    border-color var(--duration) var(--ease),
+    color var(--duration) var(--ease),
+    background-color var(--duration) var(--ease);
+}
+
+.office-tool:hover {
+  border-color: var(--rule-strong);
+  color: var(--ink);
+}
+
+.office-tool[aria-pressed='true'] {
+  border-color: var(--accent-rule);
+  background-color: var(--accent-wash);
+  color: var(--ink);
+}
+
+.office-tool .ui-icon {
+  color: var(--accent);
+}
+
+.office-tool__glyph {
+  font-size: 1.05em;
+  line-height: 1;
+}
+
+.book-opening {
+  margin: var(--space-5) auto var(--space-1);
+  text-align: center;
+  font-size: 1.5rem;
 }
 </style>

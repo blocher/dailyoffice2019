@@ -1,0 +1,203 @@
+/*
+  Design tokens
+  =============
+  Every color, size, and radius in the app comes from here. Components use
+  these tokens (never raw hex values) so the three themes — light, sepia, and
+  dark — stay consistent everywhere. The theme is the class on <html>.
+
+  The accent is the liturgical color of the day (set by helpers/seasonAccent);
+  before an office loads it falls back to a muted oxblood "rubric" red.
+*/
+
+:root {
+  /* Type */
+  --font-book:
+    'Adobe Caslon Pro', Georgia, 'Times New Roman', Times, 'Noto Serif SC',
+    'Noto Serif TC', 'Source Han Serif SC', 'Source Han Serif TC', '宋体',
+    '明體', serif;
+  --font-ornament: 'Adobe Caslon Pro', serif;
+  --font-reading: var(--font-book);
+  --reading-scale: 1;
+
+  /* UI type scale. The book face reads small, so the floor is 15px. */
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.625rem;
+  --text-2xl: 2.125rem;
+  --leading-tight: 1.2;
+  --leading-ui: 1.4;
+  --leading-prose: 1.55;
+  --tracking-caps: 0.08em;
+
+  /* Reading size (set by the text size control; px) */
+  --main-font-size: 24px;
+  --main-line-height: 36px;
+
+  /* Space (4px grid) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+
+  /* Shape */
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+
+  /* Layout */
+  --measure: 65ch;
+  --page-width: 72rem;
+  --content-width: 46rem;
+  --header-height: 3.25rem;
+  --gutter: clamp(1rem, 4vw, 1.75rem);
+  --main-content-gutter: var(--gutter);
+
+  /* Motion */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --duration: 180ms;
+
+  /* Safe areas */
+  --sat: env(safe-area-inset-top);
+  --sar: env(safe-area-inset-right);
+  --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left);
+
+  /* Viewport fallbacks (helpers/viewport.ts refines these) */
+  --vvh: 100vh;
+  --vvh-unit: 1vh;
+}
+
+@supports (height: 100dvh) {
+  :root {
+    --vvh: 100dvh;
+    --vvh-unit: 1dvh;
+  }
+}
+
+/* ── Light ───────────────────────────────────────────── */
+:root,
+:root.light {
+  color-scheme: light;
+  --paper: #fdfcf9;
+  --paper-raised: #ffffff;
+  --paper-sunken: #f4f1eb;
+  --paper-overlay: rgb(253 252 249 / 0.92);
+  --ink: #1c1a17;
+  --ink-soft: #55504a;
+  --ink-faint: #857e74;
+  --rule: #e7e2d9;
+  --rule-strong: #cdc6ba;
+  --scrim: rgb(28 26 23 / 0.38);
+  --shadow-sm: 0 1px 2px rgb(28 26 23 / 0.06);
+  --shadow: 0 2px 6px rgb(28 26 23 / 0.06), 0 8px 24px rgb(28 26 23 / 0.08);
+  --shadow-lg: 0 12px 40px rgb(28 26 23 / 0.18);
+
+  --season-red: #a8241c;
+  --season-green: #2f6a3b;
+  --season-purple: #5b2b84;
+  --season-white: #9a7a22;
+  --season-black: #3a3733;
+  --season-rose: #a94a76;
+  --season-blue: #2a4d97;
+  --accent-default: #8a2c25;
+  --on-accent: #ffffff;
+
+  --tone-info: #2a4d97;
+  --tone-success: #2f6a3b;
+  --tone-warning: #8a5a00;
+  --tone-danger: #a8241c;
+}
+
+/* ── Sepia ───────────────────────────────────────────── */
+:root.sepia {
+  color-scheme: light;
+  --paper: #f4ecd9;
+  --paper-raised: #f9f3e5;
+  --paper-sunken: #ebe1c9;
+  --paper-overlay: rgb(244 236 217 / 0.93);
+  --ink: #36291b;
+  --ink-soft: #66543d;
+  --ink-faint: #917e65;
+  --rule: #e0d2b5;
+  --rule-strong: #c9b892;
+  --scrim: rgb(54 41 27 / 0.4);
+  --shadow-sm: 0 1px 2px rgb(54 41 27 / 0.08);
+  --shadow: 0 2px 6px rgb(54 41 27 / 0.08), 0 8px 24px rgb(54 41 27 / 0.1);
+  --shadow-lg: 0 12px 40px rgb(54 41 27 / 0.22);
+
+  --season-red: #9c2a1c;
+  --season-green: #3d6635;
+  --season-purple: #5e2f77;
+  --season-white: #8c6a1c;
+  --season-black: #3d3123;
+  --season-rose: #9d4a66;
+  --season-blue: #2f4f86;
+  --accent-default: #8a3524;
+  --on-accent: #fffaf0;
+
+  --tone-info: #2f4f86;
+  --tone-success: #3d6635;
+  --tone-warning: #7d5208;
+  --tone-danger: #9c2a1c;
+}
+
+/* ── Dark ────────────────────────────────────────────── */
+:root.dark {
+  color-scheme: dark;
+  --paper: #161513;
+  --paper-raised: #201e1b;
+  --paper-sunken: #100f0d;
+  --paper-overlay: rgb(22 21 19 / 0.92);
+  --ink: #e9e4da;
+  --ink-soft: #b6ada0;
+  --ink-faint: #877f73;
+  --rule: #2f2c28;
+  --rule-strong: #47433d;
+  --scrim: rgb(0 0 0 / 0.55);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
+  --shadow: 0 2px 6px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.35);
+  --shadow-lg: 0 12px 40px rgb(0 0 0 / 0.55);
+
+  --season-red: #e4776d;
+  --season-green: #82bf8f;
+  --season-purple: #bb9cdb;
+  --season-white: #dcbc66;
+  --season-black: #aaa298;
+  --season-rose: #e59aba;
+  --season-blue: #93b2ec;
+  --accent-default: #df8a7c;
+  --on-accent: #161513;
+
+  --tone-info: #93b2ec;
+  --tone-success: #82bf8f;
+  --tone-warning: #dcbc66;
+  --tone-danger: #e4776d;
+}
+
+/* ── Derived (all themes) ────────────────────────────── */
+:root {
+  --accent: var(--accent-default);
+  --accent-wash: color-mix(in srgb, var(--accent) 9%, var(--paper));
+  --accent-rule: color-mix(in srgb, var(--accent) 35%, var(--rule));
+  --focus-ring: 0 0 0 2px var(--paper), 0 0 0 4px var(--accent);
+
+  /*
+    Compatibility aliases for older component styles. Prefer the tokens
+    above in new code.
+  */
+  --color-bg: var(--paper);
+  --color-text: var(--ink);
+  --font-color: var(--ink);
+  --font-on-white-background: var(--ink);
+  --header-bg-color: var(--paper);
+  --accent-color: var(--accent);
+  --accent-contrast: var(--on-accent);
+  --link-color: var(--accent);
+}

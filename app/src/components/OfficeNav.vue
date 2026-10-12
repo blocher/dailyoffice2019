@@ -1,130 +1,99 @@
 <template>
-  <div class="office-nav max-w-xl mx-auto space-y-4 mb-8">
-    <!-- Mode Switcher -->
-    <div
-      class="flex items-center justify-between bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm"
-    >
-      <div class="mode-switch-meta">
-        <span class="mode-switch-label">Mode</span>
-        <span class="mode-switch-current">{{ currentModeLabel }}</span>
-      </div>
-      <button
-        @click.stop.prevent="toggleServiceType"
-        class="mode-switch-button font-medium rounded px-2 py-0.5 transition-colors"
-        :aria-label="switchModeLabel"
-      >
-        {{ switchModeLabel }}
-      </button>
-    </div>
+  <nav class="office-nav" aria-label="Choose an office">
+    <UiSegmented
+      class="office-nav__mode"
+      :model-value="currentServiceType"
+      :options="modeOptions"
+      size="sm"
+      aria-label="Kind of prayer"
+      @update:model-value="setServiceType"
+    />
 
-    <!-- Main Office Links Grid -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-      <router-link
-        v-for="link in links"
-        :key="link.name"
-        :to="link.to"
-        class="group"
-      >
-        <div
-          class="h-full rounded-xl p-3 flex flex-col items-center justify-center transition-all duration-200 border"
-          :class="selectedClass(link.name)"
+    <ul class="office-tabs">
+      <li v-for="link in links" :key="link.name">
+        <router-link
+          :to="link.to"
+          class="office-tab"
+          :class="{ 'is-active': selectedOffice === link.name }"
+          :aria-current="selectedOffice === link.name ? 'page' : null"
         >
-          <div
-            class="text-xl mb-2 transition-colors"
-            :class="iconClass(link.name)"
-          >
-            <font-awesome-icon :icon="link.icon" />
-          </div>
-          <p
-            class="text-xs font-semibold leading-tight"
-            :class="textClass(link.name)"
-            v-html="link.text"
-          ></p>
-        </div>
-      </router-link>
-    </div>
+          <UiIcon :name="link.icon" class="office-tab__icon" />
+          <span class="office-tab__label">{{ link.text }}</span>
+        </router-link>
+      </li>
+    </ul>
 
-    <!-- Readings Link -->
-    <div v-if="readingsLink">
-      <router-link :to="readingsLink.to" class="block group">
-        <div
-          class="rounded-xl p-3 flex items-center justify-center gap-3 transition-all duration-200 border"
-          :class="selectedClass(readingsLink.name)"
-        >
-          <font-awesome-icon
-            :icon="readingsLink.icon"
-            class="transition-colors"
-            :class="iconClass(readingsLink.name)"
-          />
-          <span
-            class="text-sm font-semibold"
-            :class="textClass(readingsLink.name)"
-            v-html="readingsLink.text"
-          ></span>
-        </div>
-      </router-link>
-    </div>
-
-    <!-- Day Navigation -->
-    <div class="grid grid-cols-3 gap-3 pt-2">
+    <div class="day-line">
       <router-link
-        v-for="link in dayLinks"
-        :key="link.text"
-        :to="link.to"
+        :to="dayLinks[0]?.to || ''"
+        class="day-line__step"
+        aria-label="Previous day"
         @click="scrollToTop"
-        class="block"
       >
-        <div
-          class="h-full rounded-lg p-2 flex flex-col sm:flex-row items-center justify-center text-center gap-2 transition-colors border"
-          :class="{
-            'office-nav-selected': link.selected,
-            'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700':
-              !link.selected,
-          }"
+        <UiIcon name="chevron-left" />
+      </router-link>
+      <div class="day-line__center">
+        <router-link :to="calendarLink" class="day-line__date">
+          {{ formattedDate }}
+        </router-link>
+        <router-link
+          v-if="!isViewingToday"
+          :to="todayLink"
+          class="day-line__today"
+          @click="scrollToTop"
         >
-          <font-awesome-icon
-            v-if="link.icon === 'left'"
-            :icon="['fad', 'left']"
-            :class="
-              link.selected
-                ? 'office-nav-selected-icon'
-                : 'text-gray-500 dark:text-gray-400'
-            "
-          />
-          <span class="text-xs font-medium">{{ link.text }}</span>
-          <font-awesome-icon
-            v-if="link.icon === 'right'"
-            :icon="['fad', 'right']"
-            :class="
-              link.selected
-                ? 'office-nav-selected-icon'
-                : 'text-gray-500 dark:text-gray-400'
-            "
-          />
-        </div>
+          Return to today
+        </router-link>
+      </div>
+      <router-link
+        :to="dayLinks[2]?.to || ''"
+        class="day-line__step"
+        aria-label="Next day"
+        @click="scrollToTop"
+      >
+        <UiIcon name="chevron-right" />
       </router-link>
     </div>
-    <router-link
-      v-if="!isViewingToday"
-      :to="todayLink"
-      class="block w-fit mx-auto text-xs font-medium text-gray-500 dark:text-gray-400 underline underline-offset-4 decoration-gray-300 dark:decoration-gray-600 hover:text-gray-800 dark:hover:text-gray-200"
-      @click="scrollToTop"
-    >
-      Back to today
-    </router-link>
-  </div>
+  </nav>
 </template>
 
 <script>
-// @ is an alias to /src
-
-// @ is an alias to /src
-// @ is an alias to /src
 import { DynamicStorage } from '@/helpers/storage';
+
+const DAILY = [
+  { name: 'morning_prayer', text: 'Morning', icon: 'sunrise' },
+  { name: 'midday_prayer', text: 'Midday', icon: 'sun' },
+  { name: 'evening_prayer', text: 'Evening', icon: 'sunset' },
+  { name: 'compline', text: 'Compline', icon: 'moon' },
+];
+
+const FAMILY = [
+  { name: 'morning_prayer', text: 'Morning', icon: 'sunrise' },
+  { name: 'midday_prayer', text: 'Midday', icon: 'sun' },
+  { name: 'early_evening_prayer', text: 'Early Evening', icon: 'sunset' },
+  { name: 'close_of_day_prayer', text: 'Close of Day', icon: 'moon' },
+];
+
+const TO_FAMILY = {
+  morning_prayer: 'morning_prayer',
+  midday_prayer: 'midday_prayer',
+  evening_prayer: 'early_evening_prayer',
+  compline: 'close_of_day_prayer',
+};
+
+const TO_DAILY = {
+  morning_prayer: 'morning_prayer',
+  midday_prayer: 'midday_prayer',
+  early_evening_prayer: 'evening_prayer',
+  close_of_day_prayer: 'compline',
+};
+
+function datePath(date) {
+  return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+}
 
 export default {
   name: 'OfficeNav',
-  components: {},
   props: {
     calendarDate: {
       type: Date,
@@ -139,28 +108,18 @@ export default {
   },
   data() {
     return {
-      links: null,
-      dayLink: null,
-      readingsLink: null, // Add to data to prevent reactivity issues
-      dailyLinks: [], // Store options
-      familyLinks: [], // Store options
-      dayLinks: [], // Add to data
+      links: [],
+      dailyLinks: [],
+      familyLinks: [],
+      dayLinks: [],
       currentServiceType: this.serviceType,
+      modeOptions: [
+        { value: 'office', label: 'Daily Office' },
+        { value: 'family', label: 'Family Prayer' },
+      ],
     };
   },
   computed: {
-    currentModeLabel() {
-      return this.currentServiceType === 'family'
-        ? 'Short Family Prayer'
-        : 'Full Daily Office';
-    },
-    switchModeLabel() {
-      const targetMode =
-        this.currentServiceType === 'family'
-          ? 'Full Daily Office'
-          : 'Short Family Prayer';
-      return `Switch to ${targetMode}`;
-    },
     isViewingToday() {
       const today = new Date();
       return (
@@ -176,116 +135,55 @@ export default {
         today.getMonth() + 1
       }/${today.getDate()}`;
     },
+    formattedDate() {
+      return this.calendarDate.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    },
+    calendarLink() {
+      return `/calendar/${this.calendarDate.getFullYear()}/${
+        this.calendarDate.getMonth() + 1
+      }/`;
+    },
   },
   async created() {
     const tomorrow = new Date(this.calendarDate);
     tomorrow.setDate(this.calendarDate.getDate() + 1);
     const yesterday = new Date(this.calendarDate);
     yesterday.setDate(this.calendarDate.getDate() - 1);
-    this.dailyLinks = [
-      {
-        to: `/morning_prayer/${this.calendarDate.getFullYear()}/${
-          this.calendarDate.getMonth() + 1
-        }/${this.calendarDate.getDate()}`,
-        text: 'Morning',
-        name: 'morning_prayer',
-        icon: ['fad', 'sunrise'],
-      },
-      {
-        to: `/midday_prayer/${this.calendarDate.getFullYear()}/${
-          this.calendarDate.getMonth() + 1
-        }/${this.calendarDate.getDate()}`,
-        text: 'Midday',
-        name: 'midday_prayer',
-        icon: ['fad', 'sun'],
-      },
-      {
-        to: `/evening_prayer/${this.calendarDate.getFullYear()}/${
-          this.calendarDate.getMonth() + 1
-        }/${this.calendarDate.getDate()}`,
-        text: 'Evening',
-        name: 'evening_prayer',
-        icon: ['fad', 'sunset'],
-      },
-      {
-        to: `/compline/${this.calendarDate.getFullYear()}/${
-          this.calendarDate.getMonth() + 1
-        }/${this.calendarDate.getDate()}`,
-        text: 'Compline',
-        name: 'compline',
-        icon: ['fad', 'moon-stars'],
-      },
-    ];
-    this.readingsLink = {
-      to: `/readings/${this.calendarDate.getFullYear()}/${
-        this.calendarDate.getMonth() + 1
-      }/${this.calendarDate.getDate()}`,
-      text: "Day's Readings",
-      name: 'readings',
-      icon: ['fad', 'book-bible'],
-    };
-    this.familyLinks = [
-      {
-        to: `/family/morning_prayer/${this.calendarDate.getFullYear()}/${
-          this.calendarDate.getMonth() + 1
-        }/${this.calendarDate.getDate()}`,
-        text: 'Morning',
-        name: 'morning_prayer',
-        icon: ['fad', 'sunrise'],
-      },
-      {
-        to: `/family/midday_prayer/${this.calendarDate.getFullYear()}/${
-          this.calendarDate.getMonth() + 1
-        }/${this.calendarDate.getDate()}`,
-        text: 'Midday',
-        name: 'midday_prayer',
-        icon: ['fad', 'sun'],
-      },
-      {
-        to: `/family/early_evening_prayer/${this.calendarDate.getFullYear()}/${
-          this.calendarDate.getMonth() + 1
-        }/${this.calendarDate.getDate()}`,
-        text: 'Early Evening',
-        name: 'early_evening_prayer',
-        icon: ['fad', 'sunset'],
-      },
-      {
-        to: `/family/close_of_day_prayer/${this.calendarDate.getFullYear()}/${
-          this.calendarDate.getMonth() + 1
-        }/${this.calendarDate.getDate()}`,
-        text: 'Close of Day',
-        name: 'close_of_day_prayer',
-        icon: ['fad', 'moon-stars'],
-      },
-    ];
-    if (this.currentServiceType === 'family') {
-      this.links = this.familyLinks;
-    } else {
-      this.links = this.dailyLinks;
-    }
+    const today = datePath(this.calendarDate);
+
+    this.dailyLinks = DAILY.map((link) => ({
+      ...link,
+      to: `/${link.name}/${today}`,
+    }));
+    this.familyLinks = FAMILY.map((link) => ({
+      ...link,
+      to: `/family/${link.name}/${today}`,
+    }));
+    this.links =
+      this.currentServiceType === 'family' ? this.familyLinks : this.dailyLinks;
+
     const servicePart =
       this.currentServiceType === 'family' ? `/${this.currentServiceType}` : '';
     this.dayLinks = [
       {
-        to: `${servicePart}/${this.selectedOffice}/${yesterday.getFullYear()}/${
-          yesterday.getMonth() + 1
-        }/${yesterday.getDate()}`,
+        to: `${servicePart}/${this.selectedOffice}/${datePath(yesterday)}`,
         text: 'Previous',
         icon: 'left',
         selected: false,
       },
       {
-        to: `${servicePart}/${this.selectedOffice}/${this.calendarDate.getFullYear()}/${
-          this.calendarDate.getMonth() + 1
-        }/${this.calendarDate.getDate()}`,
+        to: `${servicePart}/${this.selectedOffice}/${today}`,
         text: 'Selected day',
         icon: '',
         selected: true,
       },
       {
-        to: `${servicePart}/${this.selectedOffice}/${tomorrow.getFullYear()}/${
-          tomorrow.getMonth() + 1
-        }/${tomorrow.getDate()}`,
+        to: `${servicePart}/${this.selectedOffice}/${datePath(tomorrow)}`,
         text: 'Next',
         icon: 'right',
         selected: false,
@@ -293,144 +191,152 @@ export default {
     ];
   },
   methods: {
-    selectedClass(name) {
-      if (this.selectedOffice === name) {
-        return 'office-nav-selected';
-      }
-      return 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:border-gray-300 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:border-gray-500';
-    },
-    hoverClass(name) {
-      // Not used with new tailwind classes, but kept for compatibility if needed
-      if (this.selectedOffice === name) {
-        return 'always';
-      }
-      return 'hover';
-    },
-    redirectToDaily() {
-      if (this.selectedOffice) {
-        const lookup = {
-          morning_prayer: 'morning_prayer',
-          midday_prayer: 'midday_prayer',
-          early_evening_prayer: 'evening_prayer',
-          close_of_day_prayer: 'compline',
-        };
-        const new_office = lookup[this.selectedOffice];
-        if (new_office) {
-          this.$router.push(
-            `/office/${new_office}/${this.calendarDate.getFullYear()}/${
-              this.calendarDate.getMonth() + 1
-            }/${this.calendarDate.getDate()}`
-          );
-        }
-      }
-    },
-    redirectToFamily() {
-      if (this.selectedOffice) {
-        const lookup = {
-          morning_prayer: 'morning_prayer',
-          midday_prayer: 'midday_prayer',
-          evening_prayer: 'early_evening_prayer',
-          compline: 'close_of_day_prayer',
-        };
-        const new_office = lookup[this.selectedOffice];
-        if (new_office) {
-          this.$router.push(
-            `/family/${new_office}/${this.calendarDate.getFullYear()}/${
-              this.calendarDate.getMonth() + 1
-            }/${this.calendarDate.getDate()}`
-          );
-        }
-      }
-    },
-    async toggleServiceType() {
-      if (this.currentServiceType === 'family') {
-        this.currentServiceType = 'office';
-        this.links = this.dailyLinks;
-        await DynamicStorage.setItem('serviceType', 'office');
-        this.redirectToDaily();
-      } else {
-        this.currentServiceType = 'family';
-        await DynamicStorage.setItem('serviceType', 'family');
-        this.links = this.familyLinks;
-        this.redirectToFamily();
-      }
+    async setServiceType(type) {
+      if (type === this.currentServiceType) return;
+      const lookup = type === 'family' ? TO_FAMILY : TO_DAILY;
+      const office = lookup[this.selectedOffice];
+      this.currentServiceType = type;
+      this.links = type === 'family' ? this.familyLinks : this.dailyLinks;
+      await DynamicStorage.setItem('serviceType', type);
+      if (!office) return;
+      const prefix = type === 'family' ? '/family' : '';
+      this.$router.push(`${prefix}/${office}/${datePath(this.calendarDate)}`);
     },
     scrollToTop() {
       window.scrollTo(0, 0);
-    },
-    iconClass(name) {
-      if (this.selectedOffice === name) {
-        return 'office-nav-selected-icon';
-      }
-      return 'text-gray-500 dark:text-gray-400';
-    },
-    textClass(name) {
-      if (this.selectedOffice === name) {
-        return 'office-nav-selected-text';
-      }
-      return 'text-gray-700 dark:text-gray-300';
     },
   },
 };
 </script>
 
 <style scoped>
-.office-nav-selected {
-  background-color: var(--accent-color);
-  border-color: var(--accent-color);
-  color: var(--accent-contrast);
+.office-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
 }
 
-.office-nav-selected:hover {
-  filter: brightness(0.95);
+/* Office tabs */
+.office-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: 100%;
+  max-width: 34rem;
+  border-bottom: 1px solid var(--rule);
 }
 
-.office-nav-selected-text,
-.office-nav-selected-icon {
-  color: var(--accent-contrast);
+.office-tab {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  min-height: 3.5rem;
+  padding: var(--space-2) var(--space-1);
+  color: var(--ink-soft);
+  font-size: var(--text-sm);
+  line-height: 1.15;
+  text-align: center;
+  text-decoration: none;
+  transition: color var(--duration) var(--ease);
 }
 
-.mode-switch-button {
-  color: var(--accent-color);
-  border: 1px solid var(--accent-color);
+.office-tab::after {
+  content: '';
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
   background-color: transparent;
-  line-height: 1.1;
-  font-size: 0.75rem;
-  padding: 0.4rem;
-  white-space: nowrap;
+  transition: background-color var(--duration) var(--ease);
 }
 
-.mode-switch-button:hover {
-  color: var(--accent-color);
-  background-color: var(--el-fill-color-light);
+.office-tab:hover {
+  color: var(--ink);
 }
 
-:root.dark .mode-switch-meta {
-  color: var(--el-text-color-primary);
+.office-tab.is-active {
+  color: var(--ink);
 }
 
-.mode-switch-label {
-  display: block;
-  font-size: 0.7rem;
-  line-height: 1;
-  color: var(--el-text-color-secondary);
-  margin-bottom: 0.3rem;
-  letter-spacing: 0.02em;
+.office-tab.is-active::after {
+  background-color: var(--accent);
 }
 
-.mode-switch-current {
-  display: block;
-  font-size: 0.88rem;
-  line-height: 1.1;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
+.office-tab__icon {
+  font-size: 1.2rem;
+  color: var(--ink-faint);
+  transition: color var(--duration) var(--ease);
 }
 
-:root.dark .mode-switch-button {
-  border-color: var(--accent-color);
+.office-tab.is-active .office-tab__icon {
+  color: var(--accent);
 }
 
-:root.dark .mode-switch-button:hover {
-  background-color: var(--el-fill-color-light);
+@media (min-width: 560px) {
+  .office-tab {
+    flex-direction: row;
+    gap: 0.45rem;
+    font-size: var(--text-md);
+  }
+}
+
+/* Day line: ‹ Sunday, October 11, 2026 › */
+.day-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 34rem;
+  margin-top: var(--space-1);
+}
+
+.day-line__step {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  color: var(--ink-soft);
+  font-size: 1.15rem;
+  text-decoration: none;
+  transition: background-color var(--duration) var(--ease);
+}
+
+.day-line__step:hover {
+  background-color: var(--paper-sunken);
+  color: var(--ink);
+}
+
+.day-line__center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  flex: 1;
+}
+
+.day-line__date {
+  font-size: var(--text-md);
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.12em;
+  color: var(--ink-soft);
+  text-decoration: none;
+  text-align: center;
+}
+
+.day-line__date:hover {
+  color: var(--accent);
+}
+
+.day-line__today {
+  font-size: var(--text-xs);
+  font-style: italic;
 }
 </style>

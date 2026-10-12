@@ -6,138 +6,15 @@ import axios from 'axios';
 import VueAxios from 'vue-axios';
 import App from './App.vue';
 import router from './router';
-import ElementPlus from 'element-plus';
-import './assets/tailwind.css';
-import 'element-plus/dist/index.css';
-import 'element-plus/theme-chalk/dark/css-vars.css';
-
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import UiKit from './ui';
+import './styles/index.css';
 import { createMetaManager } from 'vue-meta';
-import { DynamicStorage } from './helpers/storage';
 import { installViewportCssVars } from './helpers/viewport';
 import { getClientId } from './helpers/clientId';
-
-// import { faTwitter } from "@fortawesome/free-brands-svg-icons";
-// import { faUserSecret } from "@fortawesome/free-solid-svg-icons";
-// import {
-//   faMoonStars,
-//   faSun,
-//   faSunrise,
-//   faSunset,
-// } from "@fortawesome/pro-regular-svg-icons";
-// import { faCoffee } from "@fortawesome/pro-light-svg-icons";
-// import { faFeather } from "@fortawesome/pro-thin-svg-icons";
-import {
-  faBars,
-  faBookBible,
-  faBooks,
-  faCircle1,
-  faCircle2,
-  faCircle3,
-  faCircle4,
-  faCopy,
-  faDownload,
-  faEnvelopes,
-  faFontCase,
-  faGift,
-  faGlobe,
-  faHeart,
-  faLeft,
-  faMessagePen,
-  faMicrophone,
-  faMoonStars,
-  faMugHot,
-  faOctagonCheck,
-  faRight,
-  faSearch,
-  faServer,
-  faShareNodes,
-  faSquareCaretDown,
-  faSquareCaretUp,
-  faSquareUpRight,
-  faSun,
-  faSunrise,
-  faSunset,
-  faTriangleExclamation,
-} from '@fortawesome/pro-duotone-svg-icons';
+import { loadDisplayPreferences } from './helpers/displayPreferences';
 import { createGtag, event } from 'vue-gtag';
-import {
-  faAndroid,
-  faApple,
-  faFacebook,
-  faGoogle,
-  faMicrosoft,
-  faWikipediaW,
-  faYahoo,
-} from '@fortawesome/free-brands-svg-icons';
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
 import { Capacitor } from '@capacitor/core';
-
-library.add(
-  faBars,
-  faSun,
-  faSunrise,
-  faSunset,
-  faTriangleExclamation,
-  faMoonStars,
-  faLeft,
-  faRight,
-  faFontCase,
-  faShareNodes,
-  faCopy,
-  faDownload,
-  faFacebook,
-  faApple,
-  faAndroid,
-  faGoogle,
-  faMicrosoft,
-  faYahoo,
-  faWikipediaW,
-  faGlobe,
-  faEnvelopes,
-  faBooks,
-  faBookBible,
-  faMessagePen,
-  faServer,
-  faMicrophone,
-  faMugHot,
-  faHeart,
-  faGift,
-  faCircle1,
-  faCircle2,
-  faCircle3,
-  faCircle4,
-  faSearch,
-  faSquareUpRight,
-  faSquareCaretUp,
-  faSquareCaretDown,
-  faOctagonCheck
-);
-
-async function applyInitialThemePreference() {
-  let activeTheme = await DynamicStorage.getItem('user-theme');
-  if (activeTheme !== 'dark' && activeTheme !== 'light') {
-    activeTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light';
-  }
-  document.documentElement.className = activeTheme;
-
-  const storedFontSize = parseInt(
-    (await DynamicStorage.getItem('fontSize')) || '24',
-    10
-  );
-  const fontSize = Number.isNaN(storedFontSize) ? 24 : storedFontSize;
-  document.documentElement.style.setProperty(
-    '--main-font-size',
-    `${fontSize}px`
-  );
-  document.documentElement.style.setProperty(
-    '--main-line-height',
-    `${fontSize * 1.6}px`
-  );
-}
 
 // Stabilize viewport units on mobile browsers (notably iOS Chrome) where
 // the browser toolbars collapsing/expanding can cause fixed footers to “float”.
@@ -292,14 +169,13 @@ const app = createApp(App)
   )
   .use(store)
   .use(VueAxios, axios)
-  .use(ElementPlus)
-  .use(createMetaManager())
-  .component('font-awesome-icon', FontAwesomeIcon);
+  .use(UiKit)
+  .use(createMetaManager());
 
 app.config.globalProperties.$gtag = { event };
 
 const bootstrap = async () => {
-  await applyInitialThemePreference();
+  await loadDisplayPreferences();
   // Attach the anonymous client id + platform to every API request so the
   // backend can attribute office views to a unique user (updated clients only).
   try {
