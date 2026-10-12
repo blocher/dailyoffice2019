@@ -8,7 +8,7 @@
 
     <p v-if="feast" class="office-title__feast">
       <span
-        class="office-title__swatch"
+        class="swatch office-title__swatch"
         :class="`swatch--${color}`"
         :title="`Liturgical color: ${color}`"
       />
@@ -142,38 +142,8 @@ export default {
 }
 
 .office-title__swatch {
-  display: inline-block;
-  width: 0.55em;
-  height: 0.55em;
   margin-right: 0.45em;
-  border-radius: 2px;
   vertical-align: 0.08em;
-  background-color: var(--season-green);
-}
-
-.swatch--red {
-  background-color: var(--season-red);
-}
-
-.swatch--purple {
-  background-color: var(--season-purple);
-}
-
-.swatch--white {
-  background-color: var(--paper-raised);
-  box-shadow: inset 0 0 0 1px var(--season-white);
-}
-
-.swatch--black {
-  background-color: var(--season-black);
-}
-
-.swatch--rose {
-  background-color: var(--season-rose);
-}
-
-.swatch--blue {
-  background-color: var(--season-blue);
 }
 
 .office-title__fast {
