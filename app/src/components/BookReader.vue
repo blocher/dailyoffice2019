@@ -48,7 +48,7 @@
                 class="reader__flow book"
                 :style="{ transform: `translateX(${flowOffset}px)` }"
               >
-                <header class="reader-title">
+                <header v-if="showTitle" class="reader-title">
                   <p v-if="subtitle" class="reader-title__eyebrow">
                     {{ subtitle }}
                   </p>
@@ -219,6 +219,8 @@ const props = defineProps({
   title: { type: String, default: '' },
   subtitle: { type: String, default: '' },
   feast: { type: String, default: '' },
+  // Turn off when the text opens with its own title.
+  showTitle: { type: Boolean, default: true },
 });
 const emit = defineEmits(['update:open']);
 
@@ -324,6 +326,8 @@ function sectionOn(page) {
 }
 
 function sectionTitle(page) {
+  // Like a chapter opening, the first page has no running head.
+  if (page === 0) return '';
   return sectionOn(page)?.title || props.title;
 }
 
@@ -940,6 +944,9 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .reader {
+  --gutter-shade: rgb(0 0 0 / 0.08);
+  /* The left margin stays visible for hanging indents and verse numbers */
+  --bleed: var(--pad-x);
   position: fixed;
   inset: 0;
   z-index: 900;
@@ -952,6 +959,10 @@ onBeforeUnmount(() => {
 
 .reader.is-phone {
   background-color: var(--paper);
+}
+
+:root.dark .reader {
+  --gutter-shade: rgb(0 0 0 / 0.55);
 }
 
 .reader__stage {
@@ -995,7 +1006,7 @@ onBeforeUnmount(() => {
 .reader-face--left {
   background-image: linear-gradient(
     to left,
-    color-mix(in srgb, var(--ink) 9%, transparent),
+    var(--gutter-shade),
     transparent 7%
   );
 }
@@ -1004,7 +1015,7 @@ onBeforeUnmount(() => {
 .reader-face--right {
   background-image: linear-gradient(
     to right,
-    color-mix(in srgb, var(--ink) 9%, transparent),
+    var(--gutter-shade),
     transparent 7%
   );
 }
@@ -1048,18 +1059,21 @@ onBeforeUnmount(() => {
   text-align: right;
 }
 
-/* The text window across the page(s) on screen */
+/* The text window across the page(s) on screen. It opens into the left
+   margin so hanging indents and verse numbers show, and stops at the right
+   text edge so the next page never peeks in. */
 .reader__window,
 .reader-face__window {
   position: absolute;
   top: var(--pad-top);
-  left: var(--pad-x);
+  left: calc(var(--pad-x) - var(--bleed));
   height: var(--page-h);
+  padding-left: var(--bleed);
   overflow: hidden;
 }
 
 .reader__window {
-  width: var(--window-w);
+  width: calc(var(--window-w) + var(--bleed));
 }
 
 .reader__window.is-hidden {
@@ -1067,13 +1081,13 @@ onBeforeUnmount(() => {
 }
 
 .reader-face__window {
-  width: var(--page-w);
+  width: calc(var(--page-w) + var(--bleed));
 }
 
 .reader-face__window > .reader__flow {
   position: absolute;
   top: 0;
-  left: 0;
+  left: var(--bleed);
 }
 
 /* The text strip: pages are columns */
@@ -1123,9 +1137,9 @@ onBeforeUnmount(() => {
 }
 
 .reader-title__eyebrow {
-  font-size: 0.7em;
+  font-size: 0.62em;
   font-variant-caps: all-small-caps;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.1em;
   color: var(--ink-faint);
 }
 

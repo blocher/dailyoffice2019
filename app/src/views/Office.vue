@@ -321,6 +321,15 @@ export default {
     }
     this.setDocumentTitle();
     this.modules = data.data.modules;
+    // ?book=1 opens the book view directly (a shareable deep link).
+    if (this.$route.query.book) {
+      const url = new window.URL(window.location.href);
+      url.searchParams.delete('book');
+      window.history.replaceState(window.history.state, '', url.toString());
+      this.$nextTick(() => {
+        this.bookOpen = true;
+      });
+    }
     this.card = data.data.calendar_day;
     this.applySeasonAccentFromCard(this.card);
     this.error = false;

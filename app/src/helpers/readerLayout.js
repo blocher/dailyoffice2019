@@ -29,7 +29,7 @@ export function computeReaderLayout({
   const isPhone = width <= PHONE_MAX;
   const outerX = isPhone ? 0 : Math.round(Math.min(48, width * 0.04));
   const outerY = isPhone ? 0 : Math.round(Math.min(40, height * 0.05));
-  const padX = Math.round(Math.max(20, Math.min(64, width * 0.055)));
+  const padX = Math.round(Math.max(24, Math.min(64, width * 0.055)));
   const padTop = isPhone ? 46 : 54;
   const padBottom = isPhone ? 46 : 54;
 

@@ -37,6 +37,16 @@
       <div class="book-opening">
         <Ornament glyph="o" />
       </div>
+      <p class="litany-book">
+        <UiButton
+          variant="quiet"
+          size="sm"
+          icon="book"
+          @click="bookOpen = true"
+        >
+          Book view
+        </UiButton>
+      </p>
 
       <div id="main" class="book litany">
         <div v-for="(line, index) in selected.lines" :key="index">
@@ -50,6 +60,15 @@
           <OfficeSpacer v-if="line.line_type == 'spacer'" />
         </div>
       </div>
+
+      <BookReader
+        v-model:open="bookOpen"
+        title="The Great Litany"
+        :subtitle="selected.name"
+        :show-title="false"
+      >
+        <OfficeLines :modules="[{ name: 'litany', lines: selected.lines }]" />
+      </BookReader>
     </template>
   </div>
 </template>
@@ -63,6 +82,8 @@ import OfficeCongregation from '@/components/OfficeCongregation.vue';
 import OfficeLeader from '@/components/OfficeLeader.vue';
 import OfficeRubric from '@/components/OfficeRubric.vue';
 import OfficeSpacer from '@/components/OfficeSpacer.vue';
+import BookReader from '@/components/BookReader.vue';
+import OfficeLines from '@/components/OfficeLines.vue';
 
 const LANGUAGES = ['Contemporary', 'Traditional'];
 
@@ -83,11 +104,14 @@ export default {
     OfficeLeader,
     OfficeRubric,
     OfficeSpacer,
+    BookReader,
+    OfficeLines,
   },
   props: {},
   data() {
     return {
       loading: true,
+      bookOpen: false,
       error: false,
       calendarDate: null,
       card: null,
@@ -238,5 +262,9 @@ export default {
   font-variant-caps: all-small-caps;
   letter-spacing: 0.1em;
   color: var(--ink-faint);
+}
+.litany-book {
+  margin: calc(var(--space-2) * -1) 0 var(--space-2);
+  text-align: center;
 }
 </style>

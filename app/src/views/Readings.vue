@@ -87,6 +87,15 @@
             <UiIcon :name="officeLink.icon" />
             {{ officeLink.label }}
           </router-link>
+          <button
+            v-if="readingsToShow && readingsToShow.length"
+            type="button"
+            class="readings-tool"
+            @click="bookOpen = true"
+          >
+            <UiIcon name="book" />
+            Book view
+          </button>
           <router-link to="/settings" class="readings-tool">
             <UiIcon name="sliders" />
             Customize
@@ -182,6 +191,35 @@
             </a>
           </div>
         </div>
+
+        <BookReader
+          v-model:open="bookOpen"
+          :title="serviceTitle.title"
+          :subtitle="bookSubtitle"
+          :feast="serviceTitle.subtitle || ''"
+        >
+          <Collects
+            v-if="showCollects"
+            :collects="collectsToShow"
+            :style="'Contemporary'"
+          />
+          <Collects
+            v-if="showTraditionalCollects"
+            :collects="traditionalCollectsToShow"
+            :style="'Traditional'"
+          />
+          <Reading
+            v-for="(reading, index) in readingsToShow"
+            :key="index"
+            :reading="reading"
+            :psalm-cycle="psalmCycle"
+            :length="reading.length"
+            :translation="translation"
+            :psalms-translation="psalmsTranslation"
+            @cycle-60="setCycle60"
+            @cycle-30="setCycle30"
+          />
+        </BookReader>
       </template>
     </template>
   </div>
@@ -197,6 +235,7 @@ import setCalendarDate from '@/helpers/setCalendarDate';
 import CitationGroup from '@/components/CitationGroup.vue';
 import Reading from '@/components/Reading.vue';
 import Collects from '@/components/Collects.vue';
+import BookReader from '@/components/BookReader.vue';
 import { DynamicStorage } from '@/helpers/storage';
 import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
 import { openPanel } from '@/helpers/panels';
@@ -237,11 +276,13 @@ export default {
     CitationGroup,
     Reading,
     Collects,
+    BookReader,
   },
   props: {},
   data() {
     return {
       loading: true,
+      bookOpen: false,
       readingsLoading: false,
       error: false,
       calendarDate: null,
@@ -302,6 +343,15 @@ export default {
     };
   },
   computed: {
+    bookSubtitle() {
+      if (!this.calendarDate) return '';
+      return this.calendarDate.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    },
     // Morning Prayer, Evening Prayer, and Holy Eucharist, as tabs
     serviceGroups() {
       return SERVICE_GROUPS.filter((group) => this[group.value].length);
