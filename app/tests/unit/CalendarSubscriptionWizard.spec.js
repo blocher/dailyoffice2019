@@ -95,9 +95,7 @@ describe('CalendarSubscriptionWizard', () => {
 
     expect(wrapper.vm.showWizard).toBe(true);
     expect(wrapper.vm.panelMode).toBe('quick');
-    expect(wrapper.text()).toContain(
-      'Add to your calendar app'
-    );
+    expect(wrapper.text()).toContain('Add to your calendar app');
     expect(wrapper.text()).toContain('Sundays and Major Feasts');
 
     await wrapper.vm.goToFullWizard();
