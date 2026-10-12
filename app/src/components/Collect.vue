@@ -1,135 +1,193 @@
 <template>
-  <el-collapse-item :title="fullTitle(collect)" :name="collect.uuid">
-    <div
-      class="collect-content text-[var(--el-text-color-primary)] bg-[var(--el-fill-color-blank)]"
-    >
-      <div
-        class="text-[var(--main-font-size)] leading-[var(--main-line-height)] p-4 font-serif break-words"
-      >
-        <div
-          v-html="traditional ? collect.traditional_text : collect.text"
-        ></div>
-      </div>
-      <h5
-        v-if="collect.attribution"
-        class="mt-2 px-4 text-sm text-[var(--el-text-color-secondary)]"
-      >
-        {{ collect.attribution }}
-      </h5>
+  <UiDisclosure
+    class="collect"
+    :open="isOpen"
+    :meta="chosenSummary"
+    @update:open="onToggle"
+  >
+    <template #title>
+      <span class="collect__title">
+        <span v-if="collect.number" class="collect__number">{{
+          collect.number
+        }}</span>
+        <span>{{ collect.title }}</span>
+      </span>
+    </template>
 
-      <el-card
-        class="box-card mt-4 mx-4 mb-4 bg-[var(--el-fill-color-light)] border-[var(--el-border-color-lighter)]"
-        shadow="never"
-        body-style="padding: 1rem;"
-      >
-        <div>
-          <p
-            class="mb-2 font-sans font-medium text-[var(--el-text-color-regular)]"
-            style="
-              font-size: calc(var(--main-font-size) * 0.85) !important;
-              line-height: 1.5 !important;
-            "
-          >
-            <em>Add this prayer near the end of:</em>
-          </p>
-          <el-checkbox-group v-model="checkList" @change="handleCheckChange">
-            <el-checkbox
-              v-for="office in offices"
-              :key="office"
-              :label="office"
-            />
-          </el-checkbox-group>
+    <!-- Rendered only while open: hundreds of collects stay light. -->
+    <template v-if="isOpen">
+      <div class="book collect__text">
+        <div v-html="traditional ? collect.traditional_text : collect.text" />
+        <h5 v-if="collect.attribution">{{ collect.attribution }}</h5>
+      </div>
+
+      <fieldset class="collect__offices">
+        <legend class="collect__offices-label">
+          Add this prayer near the end of
+        </legend>
+        <div class="collect__office-options">
+          <UiCheckbox
+            v-for="office in OFFICES"
+            :key="office"
+            v-model="checkList"
+            :value="office"
+            :label="office"
+            @change="handleCheckChange"
+          />
         </div>
-      </el-card>
-    </div>
-  </el-collapse-item>
+      </fieldset>
+    </template>
+  </UiDisclosure>
 </template>
 
-<script>
+<script setup>
+import { computed, ref, watch } from 'vue';
 import { DynamicStorage } from '@/helpers/storage';
-import { ElMessage } from 'element-plus';
-import { getMessageOffset } from '@/helpers/getMessageOffest';
+import { toast } from '@/ui/feedback';
 
-export default {
-  name: 'Collect',
-  props: ['collect', 'traditional', 'extraCollects'],
-  emits: ['extraCollectsChanged'],
-  data() {
-    return {
-      checkList: [],
-      offices: [
-        'Morning Prayer',
-        'Midday Prayer',
-        'Evening Prayer',
-        'Compline',
-      ],
-    };
-  },
-  async created() {
-    this.offices.forEach((office) => {
-      if (
-        Object.prototype.hasOwnProperty.call(this.extraCollects, office) &&
-        this.extraCollects[office].includes(this.collect.uuid)
-      ) {
-        this.checkList.push(office);
-      }
-    });
-  },
-  methods: {
-    async handleCheckChange() {
-      const defaultDict = {};
-      this.offices.forEach((office) => {
-        defaultDict[office] = [];
-      });
-      const extraCollects =
-        JSON.parse(await DynamicStorage.getItem('extraCollects')) ||
-        defaultDict;
-      this.offices.forEach((office) => {
-        if (
-          this.checkList.includes(office) &&
-          !extraCollects[office].includes(this.collect.uuid)
-        ) {
-          extraCollects[office].push(this.collect.uuid);
-        } else if (
-          !this.checkList.includes(office) &&
-          extraCollects[office].includes(this.collect.uuid)
-        ) {
-          extraCollects[office].splice(
-            extraCollects[office].indexOf(this.collect.uuid),
-            1
-          );
-        }
-      });
-      await DynamicStorage.setItem(
-        'extraCollects',
-        JSON.stringify(extraCollects)
-      );
-      this.$emit('extraCollectsChanged');
-      ElMessage.success({
-        title: 'Saved',
-        message: '<small>Your prayer settings have been updated.</small>',
-        showClose: true,
-        dangerouslyUseHTMLString: true,
-        offset: getMessageOffset(),
-      });
-    },
-    fullTitle(collect) {
-      if (collect.number) {
-        return `${collect.number}. ${collect.title}`;
-      } else {
-        return collect.title;
-      }
-    },
-  },
-};
-</script>
+/*
+  One collect in the library. Choosing offices stores the collect's uuid in
+  DynamicStorage 'extraCollects', a JSON object of office name -> [uuid].
+*/
+const OFFICES = [
+  'Morning Prayer',
+  'Midday Prayer',
+  'Evening Prayer',
+  'Compline',
+];
 
-<style lang="scss">
-.el-collapse-item__header.is-active {
-  font-weight: 800 !important;
+const props = defineProps({
+  collect: { type: Object, required: true },
+  traditional: { type: Boolean, default: false },
+  extraCollects: { type: Object, default: () => ({}) },
+  open: { type: Boolean, default: false },
+});
+const emit = defineEmits(['extraCollectsChanged', 'update:open']);
+
+function officesFor(extraCollects) {
+  return OFFICES.filter(
+    (office) =>
+      Object.prototype.hasOwnProperty.call(extraCollects || {}, office) &&
+      extraCollects[office].includes(props.collect.uuid)
+  );
 }
 
-.collect-content {
+const isOpen = ref(props.open);
+watch(
+  () => props.open,
+  (value) => {
+    isOpen.value = value;
+  }
+);
+
+function onToggle(value) {
+  if (value === isOpen.value) return;
+  isOpen.value = value;
+  emit('update:open', value);
+}
+
+const checkList = ref(officesFor(props.extraCollects));
+
+watch(
+  () => props.extraCollects,
+  (value) => {
+    checkList.value = officesFor(value);
+  }
+);
+
+const chosenSummary = computed(() =>
+  checkList.value.map((office) => office.replace(' Prayer', '')).join(', ')
+);
+
+async function handleCheckChange() {
+  const defaultDict = {};
+  OFFICES.forEach((office) => {
+    defaultDict[office] = [];
+  });
+  const extraCollects =
+    JSON.parse(await DynamicStorage.getItem('extraCollects')) || defaultDict;
+  OFFICES.forEach((office) => {
+    if (!extraCollects[office]) extraCollects[office] = [];
+    if (
+      checkList.value.includes(office) &&
+      !extraCollects[office].includes(props.collect.uuid)
+    ) {
+      extraCollects[office].push(props.collect.uuid);
+    } else if (
+      !checkList.value.includes(office) &&
+      extraCollects[office].includes(props.collect.uuid)
+    ) {
+      extraCollects[office].splice(
+        extraCollects[office].indexOf(props.collect.uuid),
+        1
+      );
+    }
+  });
+  await DynamicStorage.setItem('extraCollects', JSON.stringify(extraCollects));
+  emit('extraCollectsChanged');
+  toast.success({
+    title: 'Saved',
+    message: 'Your prayer settings have been updated.',
+  });
+}
+</script>
+
+<style scoped>
+.collect :deep(.ui-disclosure__summary) {
+  min-height: 2.75rem;
+  padding-block: var(--space-2);
+}
+
+.collect__title {
+  display: flex;
+  font-size: var(--text-md);
+  align-items: baseline;
+  gap: var(--space-3);
+  line-height: 1.3;
+}
+
+.collect__number {
+  flex: 0 0 1.75rem;
+  text-align: right;
+  font-variant-numeric: oldstyle-nums tabular-nums;
+  color: var(--accent);
+}
+
+/* The prayer itself, in the reader's chosen size and face. */
+.collect__text {
+  max-width: none;
+  margin: var(--space-2) 0 0;
   padding: 0;
+  overflow-wrap: break-word;
+}
+
+.collect__offices {
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--rule);
+}
+
+.collect__offices-label {
+  padding: 0;
+  font-size: var(--text-sm);
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+}
+
+.collect__office-options {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--space-5);
+}
+
+.collect__office-options :deep(.ui-check) {
+  align-items: center;
+  min-height: 2.75rem;
+  font-size: var(--text-sm);
+}
+
+.collect__office-options :deep(.ui-check input) {
+  margin-top: 0;
 }
 </style>

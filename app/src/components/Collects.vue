@@ -16,17 +16,16 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 p {
   margin-bottom: 0.5rem;
 }
 
+/* Set off between hairlines, not boxed. */
 .collectsWrapper {
-  padding: 1rem;
-  border: 1px solid var(--font-color);
-  border-radius: 0.25rem;
-  margin: 1rem 0;
+  margin: 1em 0;
+  padding: 0.75em 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
 }
 </style>
-
-<style lang="scss"></style>

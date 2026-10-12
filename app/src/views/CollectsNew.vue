@@ -1,150 +1,124 @@
 <template>
-  <div class="collects-view">
-    <main v-cloak class="px-4 pt-8 pb-12 mx-auto max-w-6xl lg:pb-16">
-      <header class="text-center settings-hero">
-        <h1>Collects</h1>
-      </header>
+  <div v-cloak class="page collects-page">
+    <header class="page-header">
+      <h1 class="page-title">Collects</h1>
+      <p class="page-lede">
+        Prayers for the Christian year, the offices, and many occasions. Choose
+        any to add to Morning, Midday, or Evening Prayer, or Compline.
+      </p>
+    </header>
 
-      <Loading v-if="loading" class="mt-8" />
+    <Loading v-if="loading" />
+    <UiAlert v-if="error" tone="error" :title="error" />
 
-      <div v-if="!loading && !error">
-        <div
-          class="settings-search-top mb-6 bg-[var(--el-fill-color-blank)] border border-[var(--el-border-color-light)]"
-        >
-          <label class="settings-search-top__label"> Search & Filter </label>
-          <div class="flex flex-col gap-4">
-            <div class="flex flex-col gap-4 items-center w-full md:flex-row">
-              <el-input
-                id="collects-search"
-                v-model="search"
-                clearable
-                class="flex-1"
-                placeholder="Search by word or phrase"
-              >
-                <template #prefix>
-                  <el-icon><Search /></el-icon>
-                </template>
-              </el-input>
+    <template v-if="!loading && !error">
+      <section class="collects-filters" aria-label="Search and filter">
+        <UiInput
+          id="collects-search"
+          v-model="search"
+          icon="search"
+          clearable
+          type="search"
+          placeholder="Search by word or phrase"
+          aria-label="Search the collects"
+        />
 
-              <div class="flex justify-end w-full shrink-0 md:w-auto">
-                <el-switch
-                  v-model="traditional"
-                  size="large"
-                  active-text="Traditional"
-                  inactive-text="Contemporary"
-                  @change="setTraditional"
-                />
-              </div>
-            </div>
-
-            <div class="flex flex-col gap-4 items-center w-full md:flex-row">
-              <div class="flex-1 w-full">
-                <el-checkbox-group
-                  v-model="selectedCollectTypes"
-                  size="default"
-                  class="flex flex-wrap gap-2 m-0"
-                >
-                  <el-checkbox
-                    v-for="collectType in collects"
-                    :key="collectType.uuid"
-                    border
-                    :label="collectType.uuid"
-                    class="mr-0"
-                  >
-                    {{ collectType.name }}
-                  </el-checkbox>
-                </el-checkbox-group>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          class="mx-auto mb-8 settings-display-narrow"
-          style="width: min(100%, 58rem); max-width: none"
-        >
-          <DisplaySettingsModule />
-        </div>
-
-        <div class="flex flex-wrap gap-2 justify-end mb-6">
-          <el-button
-            size="small"
-            :disabled="buttonsDisabled"
-            @click="expandAll"
-          >
-            {{ showAllText }}
-          </el-button>
-          <el-button
-            size="small"
-            :disabled="buttonsDisabled"
-            @click="collapseAll"
-          >
-            {{ hideAllText }}
-          </el-button>
-          <el-button
-            size="small"
-            :disabled="buttonsDisabled"
-            @click="showOnlySelected"
-          >
-            {{ showOnlyText }}
-          </el-button>
-        </div>
-
-        <div id="main">
-          <div
-            v-if="collectCategoriesToShow.length === 0"
-            class="py-12 text-center text-gray-500"
-          >
-            <h3 class="mb-2 text-xl font-semibold">No results</h3>
-            <p>
-              <em
-                >There are no collects that match your search terms and
-                filters.</em
-              >
-            </p>
-          </div>
-
-          <div v-for="category in collectCategoriesToShow" :key="category.uuid">
-            <h3
-              class="text-2xl font-bold mb-4 mt-8 text-[var(--el-text-color-primary)]"
-            >
-              {{ category.name }}
-            </h3>
-            <div
-              v-for="subcategory in category.subcategories"
-              :key="subcategory.uuid"
-            >
-              <CollectsSubcategory
-                ref="subcategories"
-                :traditional="traditional"
-                :subcategory="subcategory"
-                :extra-collects="extraCollects"
-                @extra-collects-changed="setExtraCollects"
+        <div class="collects-filters__row">
+          <fieldset class="collects-filters__types">
+            <legend class="collects-filters__label">Show</legend>
+            <div class="collects-filters__checks">
+              <UiCheckbox
+                v-for="collectType in collects"
+                :key="collectType.uuid"
+                v-model="selectedCollectTypes"
+                :value="collectType.uuid"
+                :label="collectType.name"
               />
             </div>
+          </fieldset>
+
+          <div class="collects-filters__language">
+            <span class="collects-filters__label">Language</span>
+            <UiSegmented
+              :model-value="traditional"
+              :options="languageOptions"
+              aria-label="Language"
+              @update:model-value="changeLanguage"
+            />
           </div>
         </div>
+      </section>
+
+      <div class="collects-actions">
+        <button
+          type="button"
+          class="collects-action"
+          :disabled="buttonsDisabled"
+          @click="expandAll"
+        >
+          {{ showAllText }}
+        </button>
+        <button
+          type="button"
+          class="collects-action"
+          :disabled="buttonsDisabled"
+          @click="collapseAll"
+        >
+          {{ hideAllText }}
+        </button>
+        <button
+          type="button"
+          class="collects-action"
+          :disabled="buttonsDisabled"
+          @click="showOnlySelected"
+        >
+          <UiIcon name="bookmark" />
+          {{ showOnlyText }}
+        </button>
       </div>
-    </main>
-    <div class="px-4 mx-auto max-w-6xl">
-      <el-alert v-if="error" :title="error" type="error" />
-    </div>
+
+      <div class="collects-results">
+        <div v-if="collectCategoriesToShow.length === 0" class="collects-empty">
+          <Ornament glyph="o" />
+          <p class="collects-empty__title">No results</p>
+          <p>There are no collects that match your search terms and filters.</p>
+        </div>
+
+        <section
+          v-for="(category, index) in collectCategoriesToShow"
+          :key="category.uuid"
+          class="collects-category"
+        >
+          <div v-if="index" class="collects-category__break">
+            <Ornament glyph="o" />
+          </div>
+          <h2 class="section-title collects-category__title">
+            {{ category.name }}
+          </h2>
+          <CollectsSubcategory
+            v-for="subcategory in category.subcategories"
+            :key="subcategory.uuid"
+            ref="subcategories"
+            :traditional="traditional"
+            :subcategory="subcategory"
+            :extra-collects="extraCollects"
+            @extra-collects-changed="setExtraCollects"
+          />
+        </section>
+      </div>
+    </template>
   </div>
 </template>
 
 <script>
 import Loading from '@/components/Loading.vue';
-import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
 import CollectsSubcategory from '@/components/CollectsSubcategory.vue';
-import { Search } from '@element-plus/icons-vue';
 import { DynamicStorage } from '@/helpers/storage';
 
 export default {
   components: {
     Loading,
-    DisplaySettingsModule,
     CollectsSubcategory,
-    Search,
   },
   data() {
     return {
@@ -164,12 +138,13 @@ export default {
         'Evening Prayer',
         'Compline',
       ],
-      showAllText: 'Expand All',
-      showAllDefaultText: 'Expand All',
-      hideAllText: 'Collapse All',
-      hideAllDefaultText: 'Collapse All',
-      showOnlyText: 'Expand Only Chosen Prayers',
-      showOnlyDefaultText: 'Expand Only Chosen Prayers',
+      languageOptions: [
+        { value: false, label: 'Contemporary' },
+        { value: true, label: 'Traditional' },
+      ],
+      showAllText: 'Expand all',
+      hideAllText: 'Collapse all',
+      showOnlyText: 'Show my chosen prayers',
       extraCollects: {},
       buttonsDisabled: false,
     };
@@ -220,7 +195,7 @@ export default {
     );
     this.traditional = traditional === 'true' || traditional === true;
     this.setTraditional();
-    let data = null;
+    let data;
 
     try {
       data = await this.$http.get(
@@ -250,6 +225,10 @@ export default {
       this.extraCollects =
         JSON.parse(await DynamicStorage.getItem('extraCollects')) ||
         this.defaultDict;
+    },
+    changeLanguage(value) {
+      this.traditional = value;
+      this.setTraditional();
     },
     async setTraditional() {
       await DynamicStorage.setItem('traditionalCollects', this.traditional);
@@ -290,7 +269,7 @@ export default {
         JSON.parse(await DynamicStorage.getItem('extraCollects')) ||
         defaultDict;
       this.offices.forEach((office) => {
-        checkList = checkList.concat(extraCollects[office]);
+        checkList = checkList.concat(extraCollects[office] || []);
       });
       if (this.$refs.subcategories) {
         this.$refs.subcategories.forEach((subcategory) => {
@@ -304,53 +283,120 @@ export default {
 </script>
 
 <style scoped>
-[v-cloak] {
-  display: none;
+.collects-filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
 }
 
-.settings-hero {
-  margin-bottom: 1rem;
+.collects-filters__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-5);
 }
 
-.settings-hero__description {
-  margin: 0.55rem 0 0;
-  max-width: 62ch;
-  color: var(--el-text-color-secondary);
-  font-size: 0.97rem;
+.collects-filters__types {
+  flex: 1 1 18rem;
+  min-width: 0;
 }
 
-.settings-display-narrow {
-  width: min(100%, 58rem);
-}
-
-.settings-search-top {
-  border: 1px solid var(--el-border-color-light);
-  border-radius: 0.55rem;
-  background-color: var(--el-fill-color-blank);
-  padding: 0.58rem 0.66rem 0.66rem;
-  margin-bottom: 0.7rem;
-}
-
-.settings-search-top__label {
+.collects-filters__label {
   display: block;
-  margin-bottom: 0.26rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--el-text-color-secondary);
+  padding: 0;
+  margin-bottom: var(--space-1);
+  font-size: var(--text-sm);
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
 }
 
-.el-checkbox-group.m-0 {
-  margin: 0 !important;
+.collects-filters__checks {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--space-5);
 }
 
-@media (max-width: 768px) {
-  .settings-hero__description {
-    font-size: 0.92rem;
-  }
-  .settings-display-narrow {
-    width: 100%;
-  }
+.collects-filters__checks :deep(.ui-check) {
+  align-items: center;
+  min-height: 2.75rem;
+}
+
+.collects-filters__checks :deep(.ui-check input) {
+  margin-top: 0;
+}
+
+.collects-filters__language {
+  flex: 0 0 auto;
+}
+
+.collects-filters__language :deep(.ui-segmented--pill .ui-segmented__option) {
+  min-height: 2.375rem;
+}
+
+.collects-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: var(--space-4);
+  margin-top: var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--rule);
+}
+
+.collects-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  font-size: var(--text-sm);
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+}
+
+.collects-action:not(:disabled):hover {
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.collects-action:disabled {
+  opacity: 0.5;
+}
+
+.collects-category {
+  margin-top: var(--space-6);
+}
+
+.collects-category__break {
+  margin: 0 auto var(--space-4);
+  text-align: center;
+  font-size: 1.4rem;
+}
+
+.collects-category__title {
+  text-align: center;
+  margin-bottom: var(--space-3);
+}
+
+.collects-empty {
+  padding: var(--space-7) 0;
+  text-align: center;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+.collects-empty .ornament {
+  font-size: 1.5rem;
+  margin-bottom: var(--space-3);
+}
+
+.collects-empty__title {
+  font-style: normal;
+  font-size: var(--text-lg);
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.1em;
+  color: var(--ink);
 }
 </style>

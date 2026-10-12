@@ -1,68 +1,64 @@
 <template>
-  <div class="small-container home office">
-    <Loading v-if="loading && !notFound" />
-    <PageNotFound v-if="notFound" />
-    <el-alert v-if="error" :title="error" type="error" />
-    <header class="office-header mb-8">
-      <h1 class="text-center">The Great Litany and the Supplication</h1>
-      <div v-if="!loading && !notFound" id="readings" class="space-y-6">
-        <div
-          id="litany-settings"
-          class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-100 dark:border-gray-700 shadow-sm mt-6 mb-6"
-        >
-          <div class="mb-2">
-            <h4
-              class="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-2"
-            >
-              Service
-            </h4>
-            <el-select
-              v-model="service"
-              class="w-full"
-              size="large"
-              @change="changeService"
-            >
-              <el-option-group label="Contemporary Language">
-                <el-option
-                  v-for="item in contemporaryServices"
-                  :key="item.name"
-                  :label="item.name"
-                  :value="item.name"
-                />
-              </el-option-group>
-              <el-option-group label="Traditional Language">
-                <el-option
-                  v-for="item in traditionalServices"
-                  :key="item.name"
-                  :label="item.name"
-                  :value="item.name"
-                />
-              </el-option-group>
-            </el-select>
-          </div>
-        </div>
-        <DisplaySettingsModule v-if="!loading && !error && !notFound" />
+  <PageNotFound v-if="notFound" />
+  <div v-else class="litany-page">
+    <header class="page litany-head">
+      <div class="page-header">
+        <h1 class="page-title">The Great Litany</h1>
+        <p class="page-lede">and the Supplication</p>
       </div>
+
+      <Loading v-if="loading" />
+      <UiAlert v-if="error" tone="error" :title="error" />
+
+      <section
+        v-if="!loading && !error"
+        id="litany-settings"
+        class="litany-options"
+        aria-label="Litany options"
+      >
+        <UiField label="Form" for-id="litany-form" class="litany-options__form">
+          <UiSelect
+            id="litany-form"
+            :model-value="currentForm"
+            :options="formOptions"
+            @update:model-value="changeForm"
+          />
+        </UiField>
+        <UiField label="Language">
+          <UiSegmented
+            :model-value="currentLanguage"
+            :options="languageOptions"
+            aria-label="Language"
+            @update:model-value="changeLanguage"
+          />
+        </UiField>
+      </section>
     </header>
-  </div>
-  <div v-if="!loading && !error" id="main" class="main litany book-content">
-    <div v-for="(line, index) in selected.lines" :key="index">
-      <OfficeHeading v-if="line.line_type == 'heading'" :line="line" />
-      <OfficeLeader v-if="line.line_type == 'leader'" :line="line" />
-      <OfficeCongregation
-        v-if="line.line_type == 'congregation'"
-        :line="line"
-      />
-      <OfficeRubric v-if="line.line_type == 'rubric'" :line="line" />
-      <OfficeSpacer v-if="line.line_type == 'spacer'" />
-    </div>
+
+    <template v-if="!loading && !error && selected">
+      <div class="book-opening">
+        <Ornament glyph="o" />
+      </div>
+
+      <div id="main" class="book litany">
+        <div v-for="(line, index) in selected.lines" :key="index">
+          <OfficeHeading v-if="line.line_type == 'heading'" :line="line" />
+          <OfficeLeader v-if="line.line_type == 'leader'" :line="line" />
+          <OfficeCongregation
+            v-if="line.line_type == 'congregation'"
+            :line="line"
+          />
+          <OfficeRubric v-if="line.line_type == 'rubric'" :line="line" />
+          <OfficeSpacer v-if="line.line_type == 'spacer'" />
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
 import Loading from '@/components/Loading.vue';
-import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
 import PageNotFound from '@/views/PageNotFound.vue';
 import OfficeHeading from '@/components/OfficeHeading.vue';
 import OfficeCongregation from '@/components/OfficeCongregation.vue';
@@ -70,11 +66,19 @@ import OfficeLeader from '@/components/OfficeLeader.vue';
 import OfficeRubric from '@/components/OfficeRubric.vue';
 import OfficeSpacer from '@/components/OfficeSpacer.vue';
 
+const LANGUAGES = ['Contemporary', 'Traditional'];
+
+// "The Supplication (Traditional)" -> { form: 'The Supplication', language: 'Traditional' }
+function splitServiceName(name) {
+  const match = /^(.*?)\s*\((Contemporary|Traditional)\)\s*$/.exec(name);
+  if (!match) return { form: name, language: null };
+  return { form: match[1], language: match[2] };
+}
+
 export default {
   name: 'Litany',
   components: {
     Loading,
-    DisplaySettingsModule,
     PageNotFound,
     OfficeHeading,
     OfficeCongregation,
@@ -106,6 +110,28 @@ export default {
           name: service.name,
         };
       });
+    },
+    currentForm() {
+      return this.service ? splitServiceName(this.service).form : '';
+    },
+    currentLanguage() {
+      return this.service ? splitServiceName(this.service).language : null;
+    },
+    // Each form of the litany, in the order the API gives them.
+    formOptions() {
+      const forms = [];
+      this.services.forEach((service) => {
+        const { form } = splitServiceName(service.name);
+        if (!forms.includes(form)) forms.push(form);
+      });
+      return forms.map((form) => ({ value: form, label: form }));
+    },
+    languageOptions() {
+      return LANGUAGES.filter((language) =>
+        this.services.some(
+          (service) => splitServiceName(service.name).language === language
+        )
+      ).map((language) => ({ value: language, label: language }));
     },
   },
   async mounted() {
@@ -145,6 +171,26 @@ export default {
     serviceLink: function () {
       return `/litany`;
     },
+    // Find the service for a form + language, falling back to any service
+    // in that form if the exact pairing does not exist.
+    findService(form, language) {
+      const inForm = this.services.filter(
+        (service) => splitServiceName(service.name).form === form
+      );
+      return (
+        inForm.find(
+          (service) => splitServiceName(service.name).language === language
+        ) || inForm[0]
+      );
+    },
+    changeForm(form) {
+      const service = this.findService(form, this.currentLanguage);
+      if (service) this.changeService(service.name);
+    },
+    changeLanguage(language) {
+      const service = this.findService(this.currentForm, language);
+      if (service) this.changeService(service.name);
+    },
     changeService: function (service) {
       this.service = service;
       this.selected = this.modules.find((module) => module.name === service);
@@ -168,12 +214,37 @@ export default {
   },
 };
 </script>
-<style scoped lang="scss">
-h1 {
-  margin: 2rem 0 0 !important;
+
+<style scoped>
+.litany-head {
+  padding-bottom: 0;
 }
 
-.el-select {
-  width: 100%;
+.litany-head .page-header {
+  margin-bottom: var(--space-5);
+}
+
+.litany-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-4);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--rule);
+}
+
+.litany-options__form {
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+
+.litany-options :deep(.ui-field__label) {
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+}
+
+.litany-options :deep(.ui-segmented--pill .ui-segmented__option) {
+  min-height: 2.375rem;
 }
 </style>

@@ -1,101 +1,82 @@
 <template>
-  <div class="small-container">
-    <Loading v-if="loading" />
-    <el-alert v-if="error" :title="error" type="error" />
-
-    <header class="office-header mb-8">
-      <h1 class="text-center">Psalms</h1>
-      <h4 class="text-center">{{ selectedTopicName }}</h4>
-      <div v-if="!loading && !error" class="space-y-6">
-        <div
-          class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-100 dark:border-gray-700 shadow-sm mt-6 mb-6"
-        >
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <h4
-                class="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-2"
-              >
-                Category
-              </h4>
-              <el-select
-                v-model="selectedTopic"
-                class="w-full"
-                placeholder="Select"
-                size="large"
-                filterable
-                @change="updateDisplayedTopic"
-              >
-                <el-option key="all" label="All Categories" value="all" />
-                <el-option
-                  v-for="topic in topics"
-                  :key="topic.id"
-                  :label="topic.topic_name"
-                  :value="topic.id"
-                />
-              </el-select>
-            </div>
-            <div>
-              <h4
-                class="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-2"
-              >
-                Language
-              </h4>
-              <div class="flex items-center h-[40px]">
-                <el-switch
-                  v-model="traditional"
-                  size="large"
-                  active-text="Traditional"
-                  inactive-text="Contemporary"
-                  @change="setTraditional"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div class="page psalter">
+    <header class="page-header">
+      <p class="eyebrow">The Psalter</p>
+      <h1 class="page-title">Psalms</h1>
+      <p class="page-lede">
+        {{
+          selectedTopic === 'all'
+            ? 'The Psalms of David, from the 2019 Book of Common Prayer'
+            : selectedTopicName
+        }}
+      </p>
     </header>
 
-    <div v-if="!loading && !error" id="main">
-      <div
-        v-for="psalm in displayedPsalms"
-        :key="psalm.number"
-        class="mb-4 bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-100 dark:border-gray-800 shadow-sm"
-      >
-        <div>
-          <router-link
-            :to="`/psalm/${psalm.number}`"
-            class="text-lg font-semibold mb-1 block"
-          >
-            Psalm {{ psalm.number }}&nbsp;
-            <small class="text-gray-500">{{ psalm.latin_title }}</small>
-          </router-link>
-          <small
-            v-if="!traditional"
-            class="text-gray-600 dark:text-gray-400 block mb-2"
-            >{{ psalm.verses[0].first_half.replace(/[^\p{L}]+$/gu, '') }}</small
-          >
-          <small
-            v-if="traditional"
-            class="text-gray-600 dark:text-gray-400 block mb-2"
-            >{{
-              psalm.verses[0].first_half_tle.replace(/[^\p{L}]+$/gu, '')
-            }}</small
-          >
-          <div class="mt-2">
-            <el-tag
-              v-for="topic in psalm.topics"
-              :key="topic.id"
-              class="mr-2 cursor-pointer"
-              type="info"
-              size="small"
-              @click="handleTagClick(topic.id)"
-            >
-              {{ topic.topic_name }}
-            </el-tag>
-          </div>
+    <Loading v-if="loading" />
+    <UiAlert v-if="error" tone="error" :title="error" />
+
+    <template v-if="!loading && !error">
+      <section class="psalter-filters" aria-label="Find a psalm">
+        <UiInput
+          v-model="search"
+          icon="search"
+          clearable
+          type="search"
+          placeholder="Number, Latin title, or first line"
+          aria-label="Search the psalms"
+        />
+        <div class="psalter-filters__row">
+          <UiField label="Category" for-id="psalter-topic" class="grow">
+            <UiSelect
+              id="psalter-topic"
+              v-model="selectedTopic"
+              :options="topicOptions"
+              @change="selectTopic"
+            />
+          </UiField>
+          <UiField label="Language">
+            <UiSegmented
+              :model-value="traditional"
+              :options="languageOptions"
+              aria-label="Language"
+              @update:model-value="changeLanguage"
+            />
+          </UiField>
         </div>
+      </section>
+
+      <p class="psalter-count" aria-live="polite">
+        {{ resultsLabel }}
+        <button
+          v-if="selectedTopic !== 'all' || search"
+          type="button"
+          class="psalter-count__reset"
+          @click="resetFilters"
+        >
+          Show all
+        </button>
+      </p>
+
+      <ol v-if="filteredPsalms.length" class="psalter-list">
+        <li v-for="psalm in filteredPsalms" :key="psalm.number">
+          <router-link :to="`/psalm/${psalm.number}`" class="psalm-entry">
+            <span class="psalm-entry__number">{{ psalm.number }}</span>
+            <span class="psalm-entry__body">
+              <span class="psalm-entry__latin">{{ psalm.latin_title }}</span>
+              <span class="psalm-entry__first">{{ firstLine(psalm) }}</span>
+              <span v-if="psalm.topics.length" class="psalm-entry__topics">
+                {{ psalm.topics.map((t) => t.topic_name).join(' · ') }}
+              </span>
+            </span>
+          </router-link>
+        </li>
+      </ol>
+
+      <div v-else class="psalter-empty">
+        <Ornament glyph="o" />
+        <p>No psalms match your search.</p>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -115,7 +96,39 @@ export default {
       selectedTopic: 'all',
       selectedTopicName: 'All Categories',
       traditional: false,
+      search: '',
+      languageOptions: [
+        { value: false, label: 'Contemporary' },
+        { value: true, label: 'Traditional' },
+      ],
     };
+  },
+  computed: {
+    topicOptions() {
+      return [
+        { value: 'all', label: 'All Categories' },
+        ...(this.topics || []).map((topic) => ({
+          value: topic.id,
+          label: topic.topic_name,
+        })),
+      ];
+    },
+    filteredPsalms() {
+      const psalms = this.displayedPsalms || [];
+      const query = this.search.toLowerCase().trim();
+      if (!query) return psalms;
+      return psalms.filter((psalm) => {
+        if (String(psalm.number) === query) return true;
+        const first = psalm.verses[0] || {};
+        return [psalm.latin_title, first.first_half, first.first_half_tle]
+          .filter(Boolean)
+          .some((text) => text.toLowerCase().includes(query));
+      });
+    },
+    resultsLabel() {
+      const count = this.filteredPsalms.length;
+      return `${count} ${count === 1 ? 'psalm' : 'psalms'}`;
+    },
   },
   async created() {
     const traditional = await DynamicStorage.getItem(
@@ -128,7 +141,7 @@ export default {
       this.traditional = false;
     }
     this.setTraditional();
-    let data = null;
+    let data;
     try {
       data = await this.$http.get(
         `${import.meta.env.VITE_API_URL}api/v1/psalms`
@@ -179,8 +192,25 @@ export default {
     },
   },
   methods: {
-    handleTagClick(topic_id) {
-      this.$router.push({ name: 'Psalms', query: { topic: topic_id } });
+    firstLine(psalm) {
+      const verse = psalm.verses[0];
+      if (!verse) return '';
+      const text = this.traditional ? verse.first_half_tle : verse.first_half;
+      return (text || '').trim().replace(/[^\p{L}]+$/gu, '');
+    },
+    // Keep the chosen category in the URL so it can be shared and so the
+    // topic links on a psalm page land on the same filtered list.
+    selectTopic(topicId) {
+      const query = topicId === 'all' ? {} : { topic: topicId };
+      this.$router.replace({ name: 'Psalms', query });
+      this.updateDisplayedTopic();
+    },
+    resetFilters() {
+      this.search = '';
+      if (this.selectedTopic !== 'all') {
+        this.selectedTopic = 'all';
+        this.selectTopic('all');
+      }
     },
     updateDisplayedTopic() {
       if (this.selectedTopic === 'all') {
@@ -197,9 +227,145 @@ export default {
         ).topic_name;
       }
     },
+    changeLanguage(value) {
+      this.traditional = value;
+      this.setTraditional();
+    },
     async setTraditional() {
       await DynamicStorage.setItem('traditionalPsalms', this.traditional);
     },
   },
 };
 </script>
+
+<style scoped>
+.psalter-filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--rule);
+}
+
+.psalter-filters__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-4);
+}
+
+.psalter-filters__row .grow {
+  flex: 1 1 14rem;
+  min-width: 0;
+}
+
+.psalter-filters :deep(.ui-field__label) {
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+}
+
+.psalter-filters :deep(.ui-segmented--pill .ui-segmented__option) {
+  min-height: 2.375rem;
+}
+
+.psalter-count {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 2.75rem;
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+}
+
+.psalter-count__reset {
+  min-height: 2.75rem;
+  color: var(--accent);
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.1em;
+}
+
+.psalter-count__reset:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+/* Two calm columns on wider screens; one on phones. */
+.psalter-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  column-gap: var(--space-6);
+}
+
+.psalter-list > li {
+  border-top: 1px solid var(--rule);
+  min-width: 0;
+}
+
+.psalm-entry {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  min-height: 2.75rem;
+  padding: var(--space-3) var(--space-1);
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--duration) var(--ease);
+}
+
+.psalm-entry:hover {
+  background-color: var(--accent-wash);
+}
+
+.psalm-entry__number {
+  flex: 0 0 2.25rem;
+  text-align: right;
+  font-size: var(--text-xl);
+  line-height: 1;
+  font-variant-numeric: oldstyle-nums tabular-nums;
+  color: var(--accent);
+}
+
+.psalm-entry__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.psalm-entry__latin {
+  font-style: italic;
+  font-size: var(--text-md);
+  line-height: var(--leading-tight);
+}
+
+.psalm-entry__first {
+  font-size: var(--text-sm);
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+
+.psalm-entry__topics {
+  margin-top: 0.15rem;
+  font-size: var(--text-xs);
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+}
+
+.psalter-empty {
+  padding: var(--space-7) 0;
+  text-align: center;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+.psalter-empty .ornament {
+  font-size: 1.5rem;
+  margin-bottom: var(--space-3);
+}
+</style>
