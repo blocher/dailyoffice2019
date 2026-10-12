@@ -41,6 +41,15 @@
             <UiIcon name="headphones" />
             {{ audioEnabled ? 'Audio on' : 'Listen' }}
           </button>
+          <button
+            v-if="modules"
+            type="button"
+            class="office-tool"
+            @click="bookOpen = true"
+          >
+            <UiIcon name="book" />
+            Book view
+          </button>
           <router-link :to="readingsLink" class="office-tool">
             <UiIcon name="book-text" />
             Readings
@@ -62,48 +71,7 @@
         </aside>
         <!-- The office text, set like the printed book -->
         <div id="main" class="book">
-          <div v-for="module in modules" :key="module.name">
-            <div
-              v-for="line in module.lines.filter(
-                (l) => l.line_type !== 'speaker'
-              )"
-              :key="line.content"
-            >
-              <OfficeHeading v-if="line.line_type === 'heading'" :line="line" />
-              <OfficeSubheading
-                v-if="line.line_type === 'subheading'"
-                :line="line"
-              />
-              <OfficeCitation
-                v-if="line.line_type === 'citation'"
-                :line="line"
-              />
-              <OfficeHTML
-                v-if="line.line_type === 'html' || line.line_type === 'audio'"
-                :line="line"
-              />
-              <OfficeLeader
-                v-if="
-                  line.line_type === 'leader' || line.line_type === 'reader'
-                "
-                :line="line"
-              />
-              <OfficeLeaderDialogue
-                v-if="line.line_type === 'leader_dialogue'"
-                :line="line"
-              />
-              <OfficeCongregation
-                v-if="line.line_type === 'congregation'"
-                :line="line"
-              />
-              <OfficeCongregationDialogue
-                v-if="line.line_type === 'congregation_dialogue'"
-                :line="line"
-              />
-              <OfficeRubric v-if="line.line_type === 'rubric'" :line="line" />
-              <OfficeSpacer v-if="line.line_type === 'spacer'" />
-            </div>
-          </div>
+          <OfficeLines :modules="modules || []" />
         </div>
         <div class="office-body__margin" aria-hidden="true" />
       </div>
@@ -116,6 +84,16 @@
       />
     </template>
   </div>
+
+  <BookReader
+    v-if="modules"
+    v-model:open="bookOpen"
+    :title="officeTitle"
+    :subtitle="longDate"
+    :feast="feastHtml"
+  >
+    <OfficeLines :modules="modules" />
+  </BookReader>
 
   <AudioPlayer
     v-if="
@@ -160,16 +138,6 @@
 
 <script>
 // @ is an alias to /src
-import OfficeHeading from '@/components/OfficeHeading.vue';
-import OfficeSubheading from '@/components/OfficeSubheading.vue';
-import OfficeCitation from '@/components/OfficeCitation.vue';
-import OfficeHTML from '@/components/OfficeHTML.vue';
-import OfficeCongregation from '@/components/OfficeCongregation.vue';
-import OfficeLeader from '@/components/OfficeLeader.vue';
-import OfficeCongregationDialogue from '@/components/OfficeCongregationDialogue.vue';
-import OfficeLeaderDialogue from '@/components/OfficeLeaderDialogue.vue';
-import OfficeRubric from '@/components/OfficeRubric.vue';
-import OfficeSpacer from '@/components/OfficeSpacer.vue';
 import Loading from '@/components/Loading.vue';
 import CalendarCard from '@/components/CalendarCard.vue';
 import OfficeNav from '@/components/OfficeNav.vue';
@@ -178,6 +146,8 @@ import { DynamicStorage } from '@/helpers/storage';
 import AudioPlayer from '@/components/AudioPlayer.vue';
 import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue';
 import OfficeContinue from '@/components/OfficeContinue.vue';
+import OfficeLines from '@/components/OfficeLines.vue';
+import BookReader from '@/components/BookReader.vue';
 import OfficeContents from '@/components/OfficeContents.vue';
 import { confirm } from '@/ui/feedback';
 import { openPanel } from '@/helpers/panels';
@@ -192,17 +162,9 @@ export default {
     AudioPlayerMessage,
     AudioPlayer,
     OfficeContinue,
+    OfficeLines,
+    BookReader,
     OfficeContents,
-    OfficeHeading,
-    OfficeSubheading,
-    OfficeCitation,
-    OfficeHTML,
-    OfficeCongregation,
-    OfficeLeader,
-    OfficeCongregationDialogue,
-    OfficeLeaderDialogue,
-    OfficeRubric,
-    OfficeSpacer,
     Loading,
     CalendarCard,
     OfficeNav,
@@ -235,11 +197,41 @@ export default {
       officeDateStr: null,
       bibleTranslation: null,
       audioPlayTracked: false,
+      bookOpen: false,
     };
   },
   computed: {
     audioEnabled() {
       return displayState.audioEnabled;
+    },
+    officeTitle() {
+      const daily = {
+        morning_prayer: 'Daily Morning Prayer',
+        midday_prayer: 'Daily Midday Prayer',
+        evening_prayer: 'Daily Evening Prayer',
+        compline: 'Compline',
+      };
+      const family = {
+        morning_prayer: 'Family Prayer in the Morning',
+        midday_prayer: 'Family Prayer at Midday',
+        early_evening_prayer: 'Family Prayer in the Early Evening',
+        close_of_day_prayer: 'Family Prayer at the Close of Day',
+      };
+      return (this.serviceType === 'family' ? family : daily)[this.office];
+    },
+    longDate() {
+      return this.calendarDate.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    },
+    feastHtml() {
+      if (!this.card) return '';
+      return ['evening_prayer', 'compline'].includes(this.office)
+        ? this.card.primary_evening_feast
+        : this.card.primary_feast;
     },
     readingsLink() {
       const d = this.calendarDate;
