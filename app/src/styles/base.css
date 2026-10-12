@@ -386,3 +386,40 @@ a {
   gap: var(--space-2);
   margin-top: var(--space-3);
 }
+
+/* ── Liturgical color swatch ─────────────────────────── */
+/* <span class="swatch swatch--purple" /> — sized by the surrounding text. */
+.swatch {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 0.55em;
+  height: 0.55em;
+  border-radius: 2px;
+  background-color: var(--season-green);
+}
+
+.swatch--red {
+  background-color: var(--season-red);
+}
+
+.swatch--purple {
+  background-color: var(--season-purple);
+}
+
+.swatch--black {
+  background-color: var(--season-black);
+}
+
+.swatch--rose {
+  background-color: var(--season-rose);
+}
+
+.swatch--blue {
+  background-color: var(--season-blue);
+}
+
+.swatch--white,
+.swatch--gold {
+  background-color: var(--paper-raised);
+  box-shadow: inset 0 0 0 1px var(--season-white);
+}

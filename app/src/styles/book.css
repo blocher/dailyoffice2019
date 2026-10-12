@@ -109,13 +109,19 @@
   margin: 0 0 0 1em;
 }
 
-:is(#main, .book) p.hangingIndent {
+:is(#main, .book) p.hangingIndent,
+:is(#main, .book) p.hanging-indent {
   text-indent: -1em;
   margin-left: 1em;
 }
 
 :is(#main, .book) a {
   color: var(--accent);
+}
+
+/* Psalm verses from the readings API sit close together. */
+:is(#main, .book) .psalm p {
+  margin: 0.25em 0;
 }
 
 /* Rubrics */

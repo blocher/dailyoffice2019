@@ -1,11 +1,7 @@
 <template>
   <article class="commemoration">
     <h2 class="commemoration__name">
-      <span
-        class="commemoration__swatch"
-        :class="`swatch--${colorName}`"
-        aria-hidden="true"
-      />
+      <span class="swatch" :class="`swatch--${colorName}`" aria-hidden="true" />
       <span v-html="commemoration.name" />
     </h2>
     <p v-if="commemoration.ai_one_sentence" class="commemoration__bio">
@@ -73,45 +69,6 @@ export default {
   font-weight: 600;
   line-height: 1.3;
   color: var(--ink);
-}
-
-.commemoration__swatch {
-  flex-shrink: 0;
-  width: 0.55em;
-  height: 0.55em;
-  border-radius: 2px;
-  background-color: var(--paper-raised);
-  box-shadow: inset 0 0 0 1px var(--season-white);
-}
-
-.swatch--red {
-  background-color: var(--season-red);
-  box-shadow: none;
-}
-
-.swatch--green {
-  background-color: var(--season-green);
-  box-shadow: none;
-}
-
-.swatch--purple {
-  background-color: var(--season-purple);
-  box-shadow: none;
-}
-
-.swatch--black {
-  background-color: var(--season-black);
-  box-shadow: none;
-}
-
-.swatch--rose {
-  background-color: var(--season-rose);
-  box-shadow: none;
-}
-
-.swatch--blue {
-  background-color: var(--season-blue);
-  box-shadow: none;
 }
 
 .commemoration__bio,

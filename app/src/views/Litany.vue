@@ -243,8 +243,4 @@ export default {
   letter-spacing: 0.1em;
   color: var(--ink-faint);
 }
-
-.litany-options :deep(.ui-segmented--pill .ui-segmented__option) {
-  min-height: 2.375rem;
-}
 </style>

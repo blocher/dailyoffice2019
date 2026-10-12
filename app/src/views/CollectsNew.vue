@@ -331,10 +331,6 @@ export default {
   flex: 0 0 auto;
 }
 
-.collects-filters__language :deep(.ui-segmented--pill .ui-segmented__option) {
-  min-height: 2.375rem;
-}
-
 .collects-actions {
   display: flex;
   flex-wrap: wrap;

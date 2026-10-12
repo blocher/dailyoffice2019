@@ -248,10 +248,6 @@ export default {
   margin-top: var(--space-2);
 }
 
-.psalm-tools :deep(.ui-segmented__option) {
-  min-height: 2.375rem;
-}
-
 /* Previous · All · Next */
 .psalm-nav {
   display: grid;

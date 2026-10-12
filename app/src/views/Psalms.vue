@@ -265,10 +265,6 @@ export default {
   color: var(--ink-faint);
 }
 
-.psalter-filters :deep(.ui-segmented--pill .ui-segmented__option) {
-  min-height: 2.375rem;
-}
-
 .psalter-count {
   display: flex;
   align-items: center;

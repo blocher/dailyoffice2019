@@ -23,41 +23,19 @@
       </li>
     </ul>
 
-    <div class="day-line">
-      <router-link
-        :to="dayLinks[0]?.to || ''"
-        class="day-line__step"
-        aria-label="Previous day"
-        @click="scrollToTop"
-      >
-        <UiIcon name="chevron-left" />
-      </router-link>
-      <div class="day-line__center">
-        <router-link :to="calendarLink" class="day-line__date">
-          {{ formattedDate }}
-        </router-link>
-        <router-link
-          v-if="!isViewingToday"
-          :to="todayLink"
-          class="day-line__today"
-          @click="scrollToTop"
-        >
-          Return to today
-        </router-link>
-      </div>
-      <router-link
-        :to="dayLinks[2]?.to || ''"
-        class="day-line__step"
-        aria-label="Next day"
-        @click="scrollToTop"
-      >
-        <UiIcon name="chevron-right" />
-      </router-link>
-    </div>
+    <DayLine
+      :date="calendarDate"
+      :prev-to="dayLinks[0]?.to || ''"
+      :next-to="dayLinks[2]?.to || ''"
+      :today-to="todayLink"
+      :calendar-to="calendarLink"
+      :is-today="isViewingToday"
+    />
   </nav>
 </template>
 
 <script>
+import DayLine from '@/components/DayLine.vue';
 import { DynamicStorage } from '@/helpers/storage';
 
 const DAILY = [
@@ -94,6 +72,7 @@ function datePath(date) {
 
 export default {
   name: 'OfficeNav',
+  components: { DayLine },
   props: {
     calendarDate: {
       type: Date,
@@ -134,14 +113,6 @@ export default {
       return `${servicePart}/${this.selectedOffice}/${today.getFullYear()}/${
         today.getMonth() + 1
       }/${today.getDate()}`;
-    },
-    formattedDate() {
-      return this.calendarDate.toLocaleDateString('en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
     },
     calendarLink() {
       return `/calendar/${this.calendarDate.getFullYear()}/${
@@ -201,9 +172,6 @@ export default {
       if (!office) return;
       const prefix = type === 'family' ? '/family' : '';
       this.$router.push(`${prefix}/${office}/${datePath(this.calendarDate)}`);
-    },
-    scrollToTop() {
-      window.scrollTo(0, 0);
     },
   },
 };
@@ -283,60 +251,5 @@ export default {
     gap: 0.45rem;
     font-size: var(--text-md);
   }
-}
-
-/* Day line: ‹ Sunday, October 11, 2026 › */
-.day-line {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  width: 100%;
-  max-width: 34rem;
-  margin-top: var(--space-1);
-}
-
-.day-line__step {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  color: var(--ink-soft);
-  font-size: 1.15rem;
-  text-decoration: none;
-  transition: background-color var(--duration) var(--ease);
-}
-
-.day-line__step:hover {
-  background-color: var(--paper-sunken);
-  color: var(--ink);
-}
-
-.day-line__center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 0;
-  flex: 1;
-}
-
-.day-line__date {
-  font-size: var(--text-md);
-  font-variant-caps: all-small-caps;
-  letter-spacing: 0.12em;
-  color: var(--ink-soft);
-  text-decoration: none;
-  text-align: center;
-}
-
-.day-line__date:hover {
-  color: var(--accent);
-}
-
-.day-line__today {
-  font-size: var(--text-xs);
-  font-style: italic;
 }
 </style>

@@ -138,7 +138,7 @@ function onKeydown(event, index) {
 }
 
 .ui-segmented--pill .ui-segmented__option {
-  min-height: 2.125rem;
+  min-height: 2.5rem;
   padding: 0.25rem 0.85rem;
   border-radius: calc(var(--radius) - 3px);
   font-size: var(--text-sm);
@@ -157,7 +157,7 @@ function onKeydown(event, index) {
 }
 
 .ui-segmented--pill.ui-segmented--sm .ui-segmented__option {
-  min-height: 1.875rem;
+  min-height: 2.125rem;
   padding: 0.15rem 0.6rem;
   font-size: var(--text-xs);
 }

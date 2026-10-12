@@ -536,6 +536,7 @@ export default {
 }
 
 .office-tool {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -551,6 +552,13 @@ export default {
     border-color var(--duration) var(--ease),
     color var(--duration) var(--ease),
     background-color var(--duration) var(--ease);
+}
+
+/* A 44px touch target around the slimmer pill */
+.office-tool::before {
+  content: '';
+  position: absolute;
+  inset: -0.25rem 0;
 }
 
 .office-tool:hover {

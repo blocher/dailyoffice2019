@@ -1,5 +1,10 @@
 <template>
-  <details class="ui-disclosure" :open="open" @toggle="onToggle">
+  <details
+    class="ui-disclosure"
+    :class="`ui-disclosure--meta-${metaTone}`"
+    :open="open"
+    @toggle="onToggle"
+  >
     <summary class="ui-disclosure__summary">
       <span class="ui-disclosure__title">
         <slot name="title">{{ title }}</slot>
@@ -26,6 +31,8 @@ defineProps({
   title: { type: String, default: '' },
   meta: { type: String, default: '' },
   open: { type: Boolean, default: false },
+  /** 'accent' (a current choice) or 'neutral' (a count or note) */
+  metaTone: { type: String, default: 'accent' },
 });
 const emit = defineEmits(['update:open']);
 
@@ -78,6 +85,11 @@ function onToggle(event) {
   color: var(--accent);
 }
 
+.ui-disclosure--meta-neutral .ui-disclosure__meta {
+  font-style: normal;
+  color: var(--ink-faint);
+}
+
 .ui-disclosure__chevron {
   flex-shrink: 0;
   color: var(--ink-faint);
@@ -85,7 +97,15 @@ function onToggle(event) {
   transition: transform var(--duration) var(--ease);
 }
 
-.ui-disclosure[open] > .ui-disclosure__summary .ui-disclosure__chevron {
+.ui-disclosure[open]
+  > .ui-disclosure__summary
+  .ui-disclosure--meta-neutral
+  .ui-disclosure__meta {
+  font-style: normal;
+  color: var(--ink-faint);
+}
+
+.ui-disclosure__chevron {
   transform: rotate(180deg);
 }
 

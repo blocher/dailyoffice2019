@@ -1,6 +1,7 @@
 <template>
   <UiDisclosure
     class="collects-group"
+    meta-tone="neutral"
     :open="groupOpen"
     @update:open="groupOpen = $event"
   >
@@ -115,9 +116,7 @@ defineExpose({ expandAll, collapseAll, showOnlySelected });
 }
 
 .collects-group__meta {
-  font-style: normal;
   font-variant-numeric: oldstyle-nums;
-  color: var(--ink-faint);
 }
 
 .collects-group__chosen {

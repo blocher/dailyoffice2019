@@ -20,7 +20,7 @@
         </h1>
         <p v-if="rankName || colorName" class="saint-header__meta">
           <span
-            class="saint-swatch"
+            class="swatch saint-swatch"
             :class="`swatch--${colorName || 'white'}`"
             aria-hidden="true"
           />
@@ -627,38 +627,8 @@ export default {
 }
 
 .saint-swatch {
-  display: inline-block;
   margin-right: 0.45em;
   vertical-align: 0.05em;
-  width: 0.6em;
-  height: 0.6em;
-  border-radius: 2px;
-  background-color: var(--season-green);
-}
-
-.swatch--red {
-  background-color: var(--season-red);
-}
-
-.swatch--purple {
-  background-color: var(--season-purple);
-}
-
-.swatch--white {
-  background-color: var(--paper-raised);
-  box-shadow: inset 0 0 0 1px var(--season-white);
-}
-
-.swatch--black {
-  background-color: var(--season-black);
-}
-
-.swatch--rose {
-  background-color: var(--season-rose);
-}
-
-.swatch--blue {
-  background-color: var(--season-blue);
 }
 
 .saint-portrait {

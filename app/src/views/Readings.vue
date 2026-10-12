@@ -42,37 +42,14 @@
           </fieldset>
         </div>
 
-        <nav class="day-line" aria-label="Choose a day">
-          <router-link
-            :to="dayLink(-1)"
-            class="day-line__step"
-            aria-label="Previous day"
-            @click="scrollToTop"
-          >
-            <UiIcon name="chevron-left" />
-          </router-link>
-          <div class="day-line__center">
-            <router-link :to="calendarLink" class="day-line__date">
-              {{ formattedDate }}
-            </router-link>
-            <router-link
-              v-if="!isViewingToday"
-              :to="todayLink"
-              class="day-line__today"
-              @click="scrollToTop"
-            >
-              Return to today
-            </router-link>
-          </div>
-          <router-link
-            :to="dayLink(1)"
-            class="day-line__step"
-            aria-label="Next day"
-            @click="scrollToTop"
-          >
-            <UiIcon name="chevron-right" />
-          </router-link>
-        </nav>
+        <DayLine
+          :date="calendarDate"
+          :prev-to="dayLink(-1)"
+          :next-to="dayLink(1)"
+          :today-to="todayLink"
+          :calendar-to="calendarLink"
+          :is-today="isViewingToday"
+        />
 
         <Loading v-if="loading" />
         <UiAlert v-if="error" tone="error" :title="error" />
@@ -210,6 +187,7 @@
 <script>
 // @ is an alias to /src
 import CalendarCard from '@/components/CalendarCard.vue';
+import DayLine from '@/components/DayLine.vue';
 import PageNotFound from '@/views/PageNotFound.vue';
 import Loading from '@/components/Loading.vue';
 import setCalendarDate from '@/helpers/setCalendarDate';
@@ -250,6 +228,7 @@ export default {
   name: 'Readings',
   components: {
     CalendarCard,
+    DayLine,
     PageNotFound,
     Loading,
     CitationGroup,
@@ -370,14 +349,6 @@ export default {
         this.calendarDate.getMonth() === today.getMonth() &&
         this.calendarDate.getDate() === today.getDate()
       );
-    },
-    formattedDate() {
-      return this.calendarDate.toLocaleDateString('en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
     },
     calendarLink() {
       return `/calendar/${this.calendarDate.getFullYear()}/${
@@ -630,9 +601,6 @@ export default {
       date.setDate(date.getDate() + offset);
       return this.readingsPath(date);
     },
-    scrollToTop() {
-      window.scrollTo(0, 0);
-    },
     openPanel,
     changeGroup: async function (group) {
       const services = this[group] || [];
@@ -847,61 +815,6 @@ export default {
   min-width: 0;
   line-height: 1.3;
   text-wrap: pretty;
-}
-
-/* Day line: ‹ Sunday, October 11, 2026 › (as on the office page) */
-.day-line {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  width: 100%;
-  max-width: 34rem;
-  margin: 0 auto;
-}
-
-.day-line__step {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 50%;
-  color: var(--ink-soft);
-  font-size: 1.15rem;
-  text-decoration: none;
-  transition: background-color var(--duration) var(--ease);
-}
-
-.day-line__step:hover {
-  background-color: var(--paper-sunken);
-  color: var(--ink);
-}
-
-.day-line__center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 0;
-  flex: 1;
-}
-
-.day-line__date {
-  font-size: var(--text-md);
-  font-variant-caps: all-small-caps;
-  letter-spacing: 0.12em;
-  color: var(--ink-soft);
-  text-decoration: none;
-  text-align: center;
-}
-
-.day-line__date:hover {
-  color: var(--accent);
-}
-
-.day-line__today {
-  font-size: var(--text-xs);
-  font-style: italic;
 }
 
 /* Quiet tools under the day's title */
