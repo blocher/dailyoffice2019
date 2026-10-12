@@ -75,11 +75,13 @@ class BatchSetup:
 class BatchPlanningTests(BatchSetup, SimpleTestCase):
     def test_seven_days_all_offices_styles_and_baseline(self):
         items = list(batch.office_requests(date(2026, 10, 3), 7))
-        self.assertEqual(len(items), 7 * 8 * 2 * 12)
+        self.assertEqual(len(items), 7 * 8 * 2 * 13)
         self.assertEqual({url[-10:] for url, _ in items}, {f"2026-10-{day:02}" for day in range(3, 10)})
         self.assertEqual({params["language_style"] for _, params in items}, {"traditional", "contemporary"})
         self.assertEqual(items[0][1]["psalter"], "60")
         self.assertEqual(items[1][1]["psalter"], "30")
+        self.assertEqual(items[0][1]["apocrypha_readings"], "appointed")
+        self.assertEqual(items[12][1]["apocrypha_readings"], "alternate")
 
     @patch.object(batch.SERIALIZER, "find_reusable_reader", return_value=None)
     def test_prepare_collects_deduplicates_skips_cache_and_resets_context(self, reuse):

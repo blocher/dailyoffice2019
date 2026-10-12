@@ -48,6 +48,7 @@ BASE_SETTINGS = {
     "psalter": "60",
     "reading_cycle": "1",
     "reading_length": "full",
+    "apocrypha_readings": "appointed",
     "reading_audio": "off",
     "canticle_rotation": "1979",
     "psalm_style": "whole_verse",
@@ -102,6 +103,7 @@ VARIATIONS = [
     {"morning_prayer_invitatory": "celebratory_always"},
     {"morning_prayer_invitatory": "invitatory_rotating"},
     {"reading_length": "abbreviated"},
+    {"apocrypha_readings": "alternate"},
 ]
 
 
