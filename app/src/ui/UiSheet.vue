@@ -247,6 +247,16 @@ onBeforeUnmount(() => {
   color: var(--ink);
 }
 
+@media (max-width: 639px) {
+  .ui-sheet__header .eyebrow {
+    display: none;
+  }
+
+  .ui-sheet__title {
+    font-size: var(--text-md);
+  }
+}
+
 .ui-sheet__body {
   flex: 1 1 auto;
   min-height: 0;

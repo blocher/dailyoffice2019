@@ -355,8 +355,10 @@ const fontLabel = computed(
 }
 
 .font-tile__sample {
+  display: block;
+  height: 1.75rem;
   font-size: 1.35rem;
-  line-height: 1.2;
+  line-height: 1.75rem;
   color: var(--ink);
   white-space: nowrap;
 }

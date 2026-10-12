@@ -20,7 +20,7 @@ import { Capacitor } from '@capacitor/core';
 // the browser toolbars collapsing/expanding can cause fixed footers to “float”.
 installViewportCssVars();
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, from) => {
   // This goes through the matched routes from last to first, finding the closest route with a title.
   // e.g., if we have `/some/deep/nested/route` and `/some`, `/deep`, and `/nested` have titles,
   // `/nested`'s will be chosen.
@@ -62,7 +62,7 @@ router.beforeEach((to, from, next) => {
   );
 
   // Skip rendering meta tags if there are none.
-  if (!nearestWithMeta) return next();
+  if (!nearestWithMeta) return;
 
   // Turn the meta tag definitions into actual elements in the head.
   nearestWithMeta.meta.metaTags
@@ -80,8 +80,6 @@ router.beforeEach((to, from, next) => {
     })
     // Add the meta tags to the document head.
     .forEach((tag) => document.head.appendChild(tag));
-
-  next();
 });
 
 // Helper function to update meta tags

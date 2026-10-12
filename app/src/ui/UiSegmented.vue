@@ -173,6 +173,12 @@ function onKeydown(event, index) {
   gap: 0.35em;
 }
 
+@media (max-width: 400px) {
+  .ui-segmented--block.ui-segmented--pill .ui-segmented__icon {
+    display: none;
+  }
+}
+
 /* Underline: tabs */
 .ui-segmented--underline {
   gap: var(--space-1);

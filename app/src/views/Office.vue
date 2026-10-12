@@ -327,6 +327,7 @@ export default {
       this.loading = false;
       return;
     }
+    this.setDocumentTitle();
     this.modules = data.data.modules;
     this.card = data.data.calendar_day;
     this.applySeasonAccentFromCard(this.card);
@@ -360,6 +361,23 @@ export default {
   methods: {
     openPanel,
     setAudioEnabled,
+    setDocumentTitle() {
+      const names = {
+        morning_prayer: 'Morning Prayer',
+        midday_prayer: 'Midday Prayer',
+        evening_prayer: 'Evening Prayer',
+        compline: 'Compline',
+        early_evening_prayer: 'Early Evening',
+        close_of_day_prayer: 'Close of Day',
+      };
+      const date = this.calendarDate.toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+      });
+      const site =
+        this.serviceType === 'family' ? 'Family Prayer' : 'The Daily Office';
+      document.title = `${names[this.office]}, ${date} | ${site}`;
+    },
     async confirmDismissAudio() {
       const hide = await confirm({
         title: 'Hide the audio player?',

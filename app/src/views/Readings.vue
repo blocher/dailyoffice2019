@@ -21,25 +21,6 @@
               }}</span>
             </template>
           </UiSegmented>
-
-          <fieldset v-if="groupServices.length > 1" class="service-choices">
-            <legend class="eyebrow service-choices__legend">Choose one</legend>
-            <label
-              v-for="item in groupServices"
-              :key="item.name"
-              class="ui-check service-choice"
-              :class="{ 'is-selected': item.name === service }"
-            >
-              <input
-                type="radio"
-                name="readings-service"
-                :value="item.name"
-                :checked="item.name === service"
-                @change="changeService(item.name)"
-              />
-              <span class="service-choice__name">{{ item.name }}</span>
-            </label>
-          </fieldset>
         </div>
 
         <DayLine
@@ -61,6 +42,28 @@
           service-type="readings"
           office="readings"
         />
+
+        <fieldset
+          v-if="!loading && services && groupServices.length > 1"
+          class="service-choices"
+        >
+          <legend class="eyebrow service-choices__legend">Choose one</legend>
+          <label
+            v-for="item in groupServices"
+            :key="item.name"
+            class="ui-check service-choice"
+            :class="{ 'is-selected': item.name === service }"
+          >
+            <input
+              type="radio"
+              name="readings-service"
+              :value="item.name"
+              :checked="item.name === service"
+              @change="changeService(item.name)"
+            />
+            <span class="service-choice__name">{{ item.name }}</span>
+          </label>
+        </fieldset>
 
         <div
           v-if="!loading && services"

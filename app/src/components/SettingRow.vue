@@ -158,7 +158,7 @@ const isChanged = computed(() => {
 }
 
 .setting-row__value {
-  flex: 0 1 auto;
+  flex: 0 0 auto;
   min-width: 0;
   max-width: 48%;
   overflow: hidden;
@@ -168,6 +168,31 @@ const isChanged = computed(() => {
   font-style: italic;
   color: var(--ink-soft);
   text-align: right;
+}
+
+@media (max-width: 479px) {
+  .setting-row__summary {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'title chevron'
+      'value chevron';
+    row-gap: 0.1rem;
+  }
+
+  .setting-row__title {
+    grid-area: title;
+  }
+
+  .setting-row__value {
+    grid-area: value;
+    max-width: none;
+    text-align: left;
+  }
+
+  .setting-row__chevron {
+    grid-area: chevron;
+  }
 }
 
 .setting-row__saved {

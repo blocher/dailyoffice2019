@@ -6,8 +6,16 @@
     </header>
     <Loading v-if="loading" />
     <UiAlert v-if="error" tone="error" :title="error" />
+    <UiAlert
+      v-else-if="!loading && isEmpty"
+      tone="warning"
+      title="We couldn’t find that passage"
+    >
+      Check the book, chapter, and verse — for example “John 3:16” or “Psalm
+      23”.
+    </UiAlert>
   </div>
-  <div v-if="!loading && !error" class="book scripture">
+  <div v-if="!loading && !error && !isEmpty" class="book scripture">
     <section v-for="version in versions" :key="version.label">
       <h2>{{ version.label }}</h2>
       <div v-html="version.html"></div>
@@ -32,6 +40,9 @@ export default {
     };
   },
   computed: {
+    isEmpty() {
+      return this.versions.every((v) => !String(v.html || '').trim());
+    },
     versions() {
       return [
         { label: 'ESV', html: this.esv },

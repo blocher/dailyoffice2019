@@ -4,6 +4,14 @@
     <header class="page-header">
       <p class="eyebrow">{{ seasonName || 'The Christian Year' }}</p>
       <h1 class="page-title">{{ formattedDate }}</h1>
+      <nav v-if="calendarDate" class="day-step" aria-label="Other days">
+        <router-link :to="dayPath(-1)" class="day-step__link">
+          <UiIcon name="chevron-left" /> Previous day
+        </router-link>
+        <router-link :to="dayPath(1)" class="day-step__link">
+          Next day <UiIcon name="chevron-right" />
+        </router-link>
+      </nav>
     </header>
 
     <Loading v-if="loading" />
@@ -20,6 +28,7 @@
           :calendar-date="calendarDate"
           :service-type="currentServiceType"
           :selected-office="'day'"
+          :show-day-line="false"
         />
       </section>
 
@@ -123,6 +132,11 @@ export default {
     await this.setDay();
   },
   methods: {
+    dayPath(offset) {
+      const d = new Date(this.calendarDate);
+      d.setDate(d.getDate() + offset);
+      return `/day/${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}/`;
+    },
     openPanel,
     scrollToTop() {
       window.scrollTo(0, 0);
@@ -135,6 +149,7 @@ export default {
         this.notFound = true;
         return;
       }
+      document.title = `${this.formattedDate} | The Daily Office`;
       this.day = this.$route.params.day;
       this.month = this.$route.params.month;
       this.year = this.$route.params.year;
@@ -170,6 +185,27 @@ export default {
 </script>
 
 <style scoped>
+.day-step {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-5);
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.day-step__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 2.75rem;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+
+.day-step__link:hover {
+  color: var(--accent);
+}
+
 .page-title {
   text-wrap: balance;
 }

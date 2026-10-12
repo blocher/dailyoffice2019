@@ -20,17 +20,14 @@
 
       <template v-if="!loading && !error">
         <p v-if="psalm.topics && psalm.topics.length" class="psalm-topics">
-          <template v-for="(topic, index) in psalm.topics" :key="topic.id">
-            <span v-if="index" class="psalm-topics__sep" aria-hidden="true"
-              >·</span
-            >
-            <router-link
-              :to="{ name: 'Psalms', query: { topic: topic.id } }"
-              class="psalm-topics__link"
-            >
-              {{ topic.topic_name }}
-            </router-link>
-          </template>
+          <router-link
+            v-for="topic in psalm.topics"
+            :key="topic.id"
+            :to="{ name: 'Psalms', query: { topic: topic.id } }"
+            class="psalm-topics__link"
+          >
+            {{ topic.topic_name }}
+          </router-link>
         </p>
 
         <div class="psalm-tools">
@@ -220,7 +217,7 @@ export default {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  column-gap: var(--space-2);
+  column-gap: var(--space-4);
   font-size: var(--text-sm);
   font-variant-caps: all-small-caps;
   letter-spacing: 0.1em;
@@ -236,10 +233,6 @@ export default {
 
 .psalm-topics__link:hover {
   color: var(--accent);
-}
-
-.psalm-topics__sep {
-  color: var(--ink-faint);
 }
 
 .psalm-tools {

@@ -13,7 +13,10 @@
           :class="{ 'is-current': section.id === currentId }"
           :aria-current="section.id === currentId ? 'location' : null"
           @click.prevent="jump(section.id)"
-          >{{ section.title }}</a
+          >{{ section.title
+          }}<span v-if="section.note" class="office-contents__note">{{
+            section.note
+          }}</span></a
         >
       </li>
     </ol>
@@ -54,10 +57,21 @@ function collect() {
     return;
   }
   const headings = [...root.querySelectorAll('h2')];
-  sections.value = headings.map((heading, index) => {
+  const list = headings.map((heading, index) => {
     if (!heading.id) heading.id = slug(heading.textContent || '', index);
-    return { id: heading.id, title: (heading.textContent || '').trim() };
+    // A subheading directly after the heading (e.g. which feast a collect
+    // belongs to) tells repeated headings apart.
+    const next = heading.parentElement?.nextElementSibling?.firstElementChild;
+    const note =
+      next && next.tagName === 'H4' ? (next.textContent || '').trim() : '';
+    return { id: heading.id, title: (heading.textContent || '').trim(), note };
   });
+  const counts = {};
+  list.forEach((s) => (counts[s.title] = (counts[s.title] || 0) + 1));
+  sections.value = list.map((s) => ({
+    ...s,
+    note: counts[s.title] > 1 ? s.note : '',
+  }));
   if (typeof window.IntersectionObserver === 'undefined') return;
   observer = new window.IntersectionObserver(
     (entries) => {
@@ -130,6 +144,18 @@ onBeforeUnmount(() => observer?.disconnect());
   transition:
     color var(--duration) var(--ease),
     border-color var(--duration) var(--ease);
+}
+
+.office-contents__note {
+  display: block;
+  margin-top: 0.1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-xs);
+  font-style: italic;
+  font-variant-caps: normal;
+  letter-spacing: 0;
 }
 
 .office-contents__link:hover {

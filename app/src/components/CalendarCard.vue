@@ -121,6 +121,12 @@ export default {
   vertical-align: 0.05em;
 }
 
+@media (max-width: 399px) {
+  .office-title__flourish {
+    display: none;
+  }
+}
+
 @media (max-width: 559px) {
   .office-title {
     font-size: max(15px, calc(var(--main-font-size) * 0.68));

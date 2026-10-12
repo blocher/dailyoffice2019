@@ -435,7 +435,7 @@ export default {
         1: 'Which calendar feed do you want?',
         2: 'Which calendar do you use?',
         3: 'Do you want to subscribe or import?',
-        4: 'Finish',
+        4: 'Add it to your calendar',
       },
       scopeOptions: CALENDAR_SCOPE_OPTIONS,
       appOptions: CALENDAR_APP_OPTIONS,
@@ -445,13 +445,13 @@ export default {
   computed: {
     sheetEyebrow() {
       return this.panelMode === 'quick'
-        ? 'Add to your calendar app'
-        : `Guided setup · Step ${this.currentStep} of 4`;
+        ? 'Calendar feeds'
+        : `Step ${this.currentStep} of 4`;
     },
     sheetTitle() {
       return this.panelMode === 'quick'
-        ? 'Add Feasts and Readings to Your Calendar App'
-        : 'Add the liturgical calendar to your calendar';
+        ? 'Add to your calendar app'
+        : 'Guided setup';
     },
     sheetSubtitle() {
       return this.panelMode === 'quick'

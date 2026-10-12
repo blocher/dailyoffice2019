@@ -113,6 +113,13 @@ function toTop() {
   color: var(--accent);
 }
 
+@media (max-width: 374px) {
+  .day-line__date {
+    font-size: var(--text-sm);
+    letter-spacing: 0.06em;
+  }
+}
+
 .day-line__today {
   font-size: var(--text-xs);
   font-style: italic;

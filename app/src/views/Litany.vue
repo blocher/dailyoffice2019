@@ -2,10 +2,8 @@
   <PageNotFound v-if="notFound" />
   <div v-else class="litany-page">
     <header class="page litany-head">
-      <div class="page-header">
-        <h1 class="page-title">The Great Litany</h1>
-        <p class="page-lede">and the Supplication</p>
-      </div>
+      <!-- The text's own heading is the visible title, as in the book. -->
+      <h1 class="visually-hidden">The Great Litany</h1>
 
       <Loading v-if="loading" />
       <UiAlert v-if="error" tone="error" :title="error" />
@@ -220,14 +218,11 @@ export default {
   padding-bottom: 0;
 }
 
-.litany-head .page-header {
-  margin-bottom: var(--space-5);
-}
-
 .litany-options {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
+  justify-content: center;
   gap: var(--space-4);
   padding-bottom: var(--space-5);
   border-bottom: 1px solid var(--rule);
@@ -235,6 +230,7 @@ export default {
 
 .litany-options__form {
   flex: 1 1 16rem;
+  max-width: 26rem;
   min-width: 0;
 }
 

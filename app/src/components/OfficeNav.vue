@@ -24,6 +24,7 @@
     </ul>
 
     <DayLine
+      v-if="showDayLine"
       :date="calendarDate"
       :prev-to="dayLinks[0]?.to || ''"
       :next-to="dayLinks[2]?.to || ''"
@@ -83,6 +84,11 @@ export default {
     serviceType: {
       default: 'office',
       type: String,
+    },
+    // The Day page shows its own date, so it hides this.
+    showDayLine: {
+      default: true,
+      type: Boolean,
     },
   },
   data() {

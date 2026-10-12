@@ -117,21 +117,34 @@ export default {
     async setDate() {
       this.forward = this.$route.params.forward;
       const today = new Date();
+      const offices = [
+        'morning_prayer',
+        'evening_prayer',
+        'midday_prayer',
+        'compline',
+        'early_evening_prayer',
+        'close_of_day_prayer',
+      ];
+      const serviceParam = this.$route.params.serviceType;
       this.office = this.$route.params.office;
+      this.notFound = false;
+      if (serviceParam && !['office', 'family'].includes(serviceParam)) {
+        // A bare office name like /morning_prayer is caught by
+        // /:serviceType; anything else there is not a page.
+        if (!this.office && offices.includes(serviceParam)) {
+          this.office = serviceParam;
+        } else {
+          this.notFound = true;
+          document.title = 'Page not found | The Daily Office';
+          return;
+        }
+      }
       if (!this.office) {
         this.setCurrentOffice();
       }
-      if (
-        ![
-          'morning_prayer',
-          'evening_prayer',
-          'midday_prayer',
-          'compline',
-          'early_evening_prayer',
-          'close_of_day_prayer',
-        ].includes(this.office)
-      ) {
+      if (!offices.includes(this.office)) {
         this.notFound = true;
+        document.title = 'Page not found | The Daily Office';
         return;
       }
       if (this.forward === 'tomorrow') {

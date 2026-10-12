@@ -509,6 +509,7 @@ export default {
           `${import.meta.env.VITE_API_URL}api/v1/commemorations/${this.$route.params.uuid}`
         );
         this.commemoration = commemoration.data;
+        document.title = `${String(this.commemoration?.name || 'Commemoration').replace(/<[^>]*>/g, '')} | The Daily Office`;
         this.checkImages();
       } catch {
         this.error =

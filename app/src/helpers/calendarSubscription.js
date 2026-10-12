@@ -49,7 +49,7 @@ export const CALENDAR_APP_OPTIONS = [
   {
     value: 'other',
     label: 'Other',
-    description: 'Use a calendar URL or download an `.ics` file.',
+    description: 'Use a calendar URL or download an .ics file.',
     icon: 'globe',
   },
 ];
@@ -58,7 +58,7 @@ export const CALENDAR_METHOD_OPTIONS = [
   {
     value: 'subscribe',
     label: 'Subscribe',
-    description: 'Recommended — updates sync automatically.',
+    description: 'Updates sync automatically.',
     recommended: true,
   },
   {

@@ -88,14 +88,16 @@ async function open(url) {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: var(--space-1) var(--space-4);
-  margin-top: var(--space-6);
+  gap: 0 var(--space-4);
+  margin-top: var(--space-5);
   font-size: var(--text-sm);
 }
 
 .app-footer__links a,
 .app-footer__links button {
-  padding: var(--space-1) 0;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
   color: var(--ink-soft);
   text-decoration: none;
 }

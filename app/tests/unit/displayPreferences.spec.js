@@ -36,7 +36,11 @@ describe('display preferences', () => {
   });
 
   it('keeps stored preferences from earlier versions of the app', async () => {
-    stubStorage({ 'user-theme': 'dark', fontSize: '30', audioEnabled: 'false' });
+    stubStorage({
+      'user-theme': 'dark',
+      fontSize: '30',
+      audioEnabled: 'false',
+    });
     await loadDisplayPreferences();
     expect(displayState.theme).toBe('dark');
     expect(document.documentElement.classList.contains('dark')).toBe(true);

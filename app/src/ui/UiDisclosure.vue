@@ -97,15 +97,7 @@ function onToggle(event) {
   transition: transform var(--duration) var(--ease);
 }
 
-.ui-disclosure[open]
-  > .ui-disclosure__summary
-  .ui-disclosure--meta-neutral
-  .ui-disclosure__meta {
-  font-style: normal;
-  color: var(--ink-faint);
-}
-
-.ui-disclosure__chevron {
+.ui-disclosure[open] > .ui-disclosure__summary .ui-disclosure__chevron {
   transform: rotate(180deg);
 }
 

@@ -191,8 +191,9 @@ export default {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  width: 2rem;
-  height: 2rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin: -0.4rem -0.3rem -0.4rem 0;
   border-radius: 50%;
   color: var(--ink-faint);
 }
