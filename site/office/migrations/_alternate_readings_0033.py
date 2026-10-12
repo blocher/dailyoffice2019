@@ -70,6 +70,59 @@ def marker(tag):
     return None
 
 
+def prune_numbered(soup, expected, selected):
+    """Prune local XML ESV markup whose verse numbers delimit text in DOM order.
+
+    A verse can continue across paragraph/poetry containers. Keep those
+    containers and prune their contents, rather than assuming sibling chunks.
+    Headings belong to the following numbered verse.
+    """
+    headings = soup.find_all(["h1", "h2", "h3", "h4", "h5", "h6"])
+    remove = []
+    for heading in headings:
+        following = heading.find_next("sup", class_="verse-num")
+        if following is None or not following.get_text(strip=True).isdigit():
+            raise ValueError("Unsupported heading without a following verse")
+        if int(following.get_text(strip=True)) not in selected:
+            remove.append(heading)
+    current = None
+    seen = set()
+    for node in list(soup.descendants):
+        if any(parent in headings for parent in node.parents):
+            continue
+        if getattr(node, "name", None) == "sup" and "verse-num" in node.get("class", []):
+            number = node.get_text(strip=True)
+            if not number.isdigit():
+                raise ValueError(f"Unsupported verse number {number!r}")
+            verse = int(number)
+            if verse not in expected or (current is not None and verse <= current):
+                raise ValueError("Unsupported or out-of-order donor verse numbers")
+            current = verse
+            seen.add(verse)
+            if verse not in selected:
+                remove.append(node)
+        elif any(parent.name == "sup" and "verse-num" in parent.get("class", []) for parent in node.parents):
+            continue
+        elif getattr(node, "name", None) is None:
+            if node.strip() and current is None:
+                raise ValueError(f"Unmarked donor text: {str(node)[:70]!r}")
+            if current not in selected:
+                remove.append(node)
+        elif node.name == "br" and current not in selected:
+            remove.append(node)
+    if seen != expected:
+        raise ValueError(f"Incomplete donor verse markup: missing {expected-seen}, extra {seen-expected}")
+    for node in remove:
+        node.extract()
+    for tag in reversed(list(soup.find_all())):
+        if tag.name != "br" and not tag.get_text(strip=True):
+            tag.decompose()
+    result = str(soup)
+    if not present(result):
+        raise ValueError("Extraction produced empty Scripture")
+    return result
+
+
 def extract(text, chapter, expected, selected, book_marker=None):
     """Prune verse-marked HTML, preserving selected ancestors/paragraphs.
 
@@ -83,6 +136,13 @@ def extract(text, chapter, expected, selected, book_marker=None):
         node.extract()
     for node in soup.select(".footnotes, .crossrefs, sup.footnote, sup.crossreference"):
         node.decompose()
+    # Si Gao stores each verse in a table cell with a bare numeric superscript.
+    if not soup.select("span.text, sup.verse-num"):
+        for number in soup.select("td > sup"):
+            if not number.attrs and number.get_text(strip=True).isdigit():
+                number["class"] = ["verse-num"]
+    if soup.select("sup.verse-num") and not soup.select("span.text"):
+        return prune_numbered(soup, expected, selected)
     seen = set()
     for tag in soup.select("span.text"):
         pos = marker(tag)
@@ -160,6 +220,13 @@ def scripture_texts(source, row, short=False):
             for fields in values:
                 fields["nabre"] = None
             continue
+        # The stored Si Gao Song 6 donor has only 12 numbered verses, while
+        # the reviewed split requires 13. Use the existing NRSVCE fallback
+        # for both portions instead of guessing a cross-translation mapping.
+        if translation in ("sigao", "znsigao") and row["donor"] == "Song of Songs 6":
+            for fields in values:
+                fields[translation] = None
+            continue
         if translation == "rsv" and row["donor"] == "II Chronicles 20":
             soup = BeautifulSoup(text, "html.parser")
             for tag in soup.find_all("span", class_="2Chr-20-21"):
@@ -182,8 +249,11 @@ def scripture_texts(source, row, short=False):
 
 def body_text(text):
     soup = BeautifulSoup(text or "", "html.parser")
+    for number in soup.select("td > sup"):
+        if not number.attrs and number.get_text(strip=True).isdigit():
+            number.decompose()
     for tag in soup.select(
-        "h1, h2, h3, h4, h5, h6, .chapternum, .versenum, sup.footnote, sup.crossreference, .footnotes, .crossrefs"
+        "h1, h2, h3, h4, h5, h6, .chapternum, .versenum, .verse-num, sup.footnote, sup.crossreference, .footnotes, .crossrefs"
     ):
         tag.decompose()
     return re.sub(r"\s+", " ", soup.get_text(" ", strip=True)).strip()
@@ -212,7 +282,12 @@ def forward(apps, schema_editor):
         if matches:
             existing = matches[0]
             for name, value in texts.items():
-                if body_text(getattr(existing, name)) != body_text(value):
+                stored = getattr(existing, name)
+                # Reuse older portions with missing optional translations;
+                # preserve their existing fallback behavior without filling them.
+                if name not in ("esv", "nrsvce") and not present(stored):
+                    continue
+                if body_text(stored) != body_text(value):
                     raise ValueError(f"Pre-existing {passage} ({name}) differs from donor; no user text overwritten")
             return existing
         return scriptures.create(uuid=owned_id("scripture:" + passage), passage=passage, **texts)

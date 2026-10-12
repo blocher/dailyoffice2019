@@ -5,7 +5,7 @@ from unittest.mock import patch
 from bs4 import BeautifulSoup
 from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
-from django.test import TestCase, TransactionTestCase
+from django.test import SimpleTestCase, TestCase, TransactionTestCase
 
 from office.alternate_readings import alternate_first_lesson
 from office.api.views.index import (
@@ -269,7 +269,58 @@ class AlternateReadingTests(TestCase):
         self.assertEqual(SETTING_UI_METADATA["apocrypha_readings"]["ui_category"], "Readings")
 
 
-class ExtractionTests(TestCase):
+class ExtractionTests(SimpleTestCase):
+    def test_xml_esv_numbered_verses_preserve_poetry_and_headings(self):
+        text = (
+            '<h3>First heading</h3><sup class="verse-num">1</sup>'
+            '<span class="line">First verse</span><br>'
+            '<div class="poetry"><span class="line indent-1">continued line</span>'
+            '<sup class="verse-num">2</sup><span class="line">Second verse</span></div>'
+            '<h3>Next heading</h3><p><sup class="verse-num">3</sup>Third verse</p>'
+        )
+        morning = extract(text, 53, [1, 2, 3], [1], book_marker="Isa")
+        evening = extract(text, 53, [1, 2, 3], [2, 3], book_marker="Isa")
+        self.assertIn("First heading", morning)
+        self.assertIn("First verse", morning)
+        self.assertIn("continued line", morning)
+        self.assertIn('class="poetry"', morning)
+        self.assertNotIn("Second verse", morning)
+        self.assertNotIn("Next heading", morning)
+        self.assertNotIn("First verse", evening)
+        self.assertNotIn("continued line", evening)
+        self.assertIn("Second verse", evening)
+        self.assertIn("Next heading", evening)
+        self.assertIn("Third verse", evening)
+
+    def test_xml_esv_incomplete_and_unmarked_text_rejected(self):
+        with self.assertRaisesRegex(ValueError, "Incomplete"):
+            extract('<sup class="verse-num">1</sup>First verse', 53, [1, 2], [1])
+        with self.assertRaisesRegex(ValueError, "Unmarked"):
+            extract('unmarked text<sup class="verse-num">1</sup>First verse', 53, [1], [1])
+
+    def test_sigao_numbered_table_cells(self):
+        text = '<td width="100%"><sup>1</sup>First verse</td><td width="100%"><sup>2</sup>Second verse</td>'
+        result = extract(text, 53, [1, 2], [2])
+        self.assertNotIn("First verse", result)
+        self.assertIn("Second verse", result)
+        self.assertEqual(body_text(result), "Second verse")
+        self.assertEqual(body_text("<td><sup>2</sup>Second verse</td>"), "Second verse")
+
+    def test_incomplete_sigao_song_six_uses_explicit_fallback(self):
+        row = next(r for r in plan() if r["donor"] == "Song of Songs 6")
+        text = "".join(f"<td><sup>{v}</sup>Verse {v}</td>" for v in range(1, 13))
+        source = Scripture(
+            passage=row["donor"],
+            esv=marked(row["verses"], 6, book="Song"),
+            nrsvce=marked(row["verses"], 6, book="Song"),
+            sigao=text,
+            znsigao=text,
+        )
+        for fields in scripture_texts(source, row):
+            self.assertIsNone(fields["sigao"])
+            self.assertIsNone(fields["znsigao"])
+            self.assertTrue(fields["nrsvce"])
+
     def test_all_reviewed_citations_cover_without_gaps_or_overlap(self):
         rows = plan()
         self.assertEqual(len(rows), 57)
@@ -414,6 +465,20 @@ class AlternateMigrationTests(TransactionTestCase):
         self.assertTrue(Alternate.objects.filter(pk=existing.pk).exists())
         morning.refresh_from_db()
         self.assertEqual(morning.esv, "<p>Administrator edit after deployment</p>")
+
+    def test_existing_portion_missing_optional_translation_is_preserved(self):
+        day, whole = self.seed()
+        row = next(r for r in plan() if r["donor"] == "Exodus 3")
+        texts = scripture_texts(whole, row)
+        Scripture = self.historical.get_model("office", "Scripture")
+        existing = Scripture.objects.create(passage=row["mp"], **texts[0])
+        whole.cuv = marked(row["verses"], language="Chinese")
+        whole.save()
+        historical = self.migrate()
+        mapping = historical.get_model("office", "AlternateReading").objects.get(office_day_id=day.pk)
+        self.assertEqual(mapping.morning_id, existing.pk)
+        existing.refresh_from_db()
+        self.assertFalse(existing.cuv)
 
     def test_conflicting_preexisting_scripture_is_not_overwritten(self):
         self.seed()
