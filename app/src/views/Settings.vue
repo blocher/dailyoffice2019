@@ -104,6 +104,9 @@ const DISPLAY_TERMS = [
   'legible',
   'audio',
   'player',
+  'rubric',
+  'italic',
+  'red',
 ];
 
 export default {

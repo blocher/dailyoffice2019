@@ -94,6 +94,20 @@
       </div>
     </section>
 
+    <section class="display-row">
+      <div class="display-row__head">
+        <h3 class="display-row__label">Rubrics</h3>
+        <span class="display-row__value">{{ rubricNote }}</span>
+      </div>
+      <UiSegmented
+        :model-value="state.rubricStyle"
+        :options="rubricOptions"
+        block
+        aria-label="Rubrics"
+        @update:model-value="setRubricStyle"
+      />
+    </section>
+
     <section v-if="showAudio" class="display-row display-row--inline">
       <div class="display-row__copy">
         <h3 class="display-row__label">Audio player</h3>
@@ -117,12 +131,14 @@ import {
   DEFAULT_FONT_SIZE,
   FONT_SIZES,
   READING_FONTS,
+  RUBRIC_STYLES,
   THEMES,
   displayState as state,
   fontSizePercent,
   setAudioEnabled,
   setFontSize,
   setReadingFont,
+  setRubricStyle,
   setTheme,
   stepFontSize,
 } from '@/helpers/displayPreferences';
@@ -151,6 +167,20 @@ const themeLabel = computed(() => {
   if (state.theme !== 'auto') return '';
   return `Following device · ${state.resolvedTheme === 'dark' ? 'Dark' : 'Light'}`;
 });
+
+// Each option previews itself: italic, or red and upright.
+const rubricOptions = RUBRIC_STYLES.map((r) => ({
+  value: r.value,
+  label: r.label,
+  style:
+    r.value === 'italic'
+      ? { fontStyle: 'italic' }
+      : { color: 'var(--season-red)' },
+}));
+
+const rubricNote = computed(
+  () => RUBRIC_STYLES.find((r) => r.value === state.rubricStyle)?.note || ''
+);
 
 const fontLabel = computed(
   () => fonts.find((f) => f.value === state.readingFont)?.label || ''

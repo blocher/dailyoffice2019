@@ -1,11 +1,13 @@
 /*
   Display preferences
   ===================
-  Theme, text size, reading face, and whether audio controls show. One
+  Theme, text size, reading face, rubric style, and whether audio controls
+  show. One
   reactive store shared by the header's Display panel, the Settings page, and
   the office page, so a change in one place shows everywhere at once.
   Values persist through DynamicStorage under the same keys the app has
-  always used ('user-theme', 'fontSize', 'audioEnabled') plus 'readingFont'.
+  always used ('user-theme', 'fontSize', 'audioEnabled') plus 'readingFont'
+  and 'rubricStyle'.
 */
 import { reactive } from 'vue';
 import { DynamicStorage } from '@/helpers/storage';
@@ -31,7 +33,7 @@ export const READING_FONTS = [
   {
     value: 'garamond',
     label: 'Garamond',
-    note: 'Old style, as in the 1928 book',
+    note: 'Old style, as in the 1928 and 1979 books',
     family: "'EB Garamond', Georgia, serif",
   },
   {
@@ -60,7 +62,13 @@ export const READING_FONTS = [
   },
 ];
 
+export const RUBRIC_STYLES = [
+  { value: 'italic', label: 'Italic', note: 'As in the 2019 Prayer Book' },
+  { value: 'red', label: 'Red', note: 'As in older Prayer Books' },
+];
+
 const THEME_VALUES = THEMES.map((t) => t.value);
+const RUBRIC_VALUES = RUBRIC_STYLES.map((r) => r.value);
 const FONT_VALUES = READING_FONTS.map((f) => f.value);
 
 export const displayState = reactive({
@@ -68,6 +76,7 @@ export const displayState = reactive({
   resolvedTheme: 'light',
   fontSize: DEFAULT_FONT_SIZE,
   readingFont: 'caslon',
+  rubricStyle: 'italic',
   audioEnabled: true,
   loaded: false,
 });
@@ -130,10 +139,21 @@ export function applyReadingFont() {
   }
 }
 
+export function applyRubricStyle() {
+  const el = root();
+  if (!el) return;
+  if (displayState.rubricStyle === 'red') {
+    el.dataset.rubrics = 'red';
+  } else {
+    delete el.dataset.rubrics;
+  }
+}
+
 export function applyAll() {
   applyTheme();
   applyFontSize();
   applyReadingFont();
+  applyRubricStyle();
 }
 
 function watchSystemTheme() {
@@ -153,17 +173,22 @@ function parseFontSize(raw) {
 }
 
 export async function loadDisplayPreferences() {
-  const [theme, fontSize, readingFont, audioEnabled] = await Promise.all([
-    DynamicStorage.getItem('user-theme'),
-    DynamicStorage.getItem('fontSize'),
-    DynamicStorage.getItem('readingFont'),
-    DynamicStorage.getItem('audioEnabled'),
-  ]);
+  const [theme, fontSize, readingFont, rubricStyle, audioEnabled] =
+    await Promise.all([
+      DynamicStorage.getItem('user-theme'),
+      DynamicStorage.getItem('fontSize'),
+      DynamicStorage.getItem('readingFont'),
+      DynamicStorage.getItem('rubricStyle'),
+      DynamicStorage.getItem('audioEnabled'),
+    ]);
   displayState.theme = THEME_VALUES.includes(theme) ? theme : 'auto';
   displayState.fontSize = parseFontSize(fontSize ?? DEFAULT_FONT_SIZE);
   displayState.readingFont = FONT_VALUES.includes(readingFont)
     ? readingFont
     : 'caslon';
+  displayState.rubricStyle = RUBRIC_VALUES.includes(rubricStyle)
+    ? rubricStyle
+    : 'italic';
   displayState.audioEnabled = !(
     audioEnabled === 'false' || audioEnabled === false
   );
@@ -209,6 +234,13 @@ export async function setReadingFont(font) {
   await DynamicStorage.setItem('readingFont', font);
 }
 
+export async function setRubricStyle(style) {
+  if (!RUBRIC_VALUES.includes(style)) return;
+  displayState.rubricStyle = style;
+  applyRubricStyle();
+  await DynamicStorage.setItem('rubricStyle', style);
+}
+
 export async function setAudioEnabled(enabled) {
   displayState.audioEnabled = Boolean(enabled);
   await DynamicStorage.setItem(
@@ -222,6 +254,7 @@ export async function resetDisplayPreferences() {
     setTheme('auto'),
     setFontSize(DEFAULT_FONT_SIZE),
     setReadingFont('caslon'),
+    setRubricStyle('italic'),
     setAudioEnabled(true),
   ]);
 }
@@ -231,6 +264,7 @@ export function hasCustomDisplay() {
     displayState.theme !== 'auto' ||
     displayState.fontSize !== DEFAULT_FONT_SIZE ||
     displayState.readingFont !== 'caslon' ||
+    displayState.rubricStyle !== 'italic' ||
     !displayState.audioEnabled
   );
 }
