@@ -206,7 +206,14 @@ const routes = [
       title: 'Scripture | The Daily Office',
     },
   },
-  { path: '/:pathMatch(.*)', component: PageNotFound, name: 'not_found' },
+  {
+    path: '/:pathMatch(.*)',
+    component: PageNotFound,
+    name: 'not_found',
+    meta: {
+      title: 'Page not found | The Daily Office',
+    },
+  },
 ];
 
 const routesToNotScrollToTop = [
