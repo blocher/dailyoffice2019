@@ -26,7 +26,7 @@
           @wheel="onWheel"
           @click.capture="onClickCapture"
         >
-          <div class="reader__book" :style="bookStyle">
+          <div class="reader__book" :style="[bookStyle, closeStyle]">
             <div
               v-for="(page, slot) in pagesOnView"
               :key="slot"
@@ -40,6 +40,11 @@
               <p class="reader__number" aria-hidden="true">
                 {{ page < totalPages ? page + 1 : '' }}
               </p>
+              <span
+                v-if="slot === layout.cols - 1 && page < totalPages - 1"
+                class="reader__corner"
+                aria-hidden="true"
+              />
             </div>
 
             <div class="reader__window" :class="{ 'is-hidden': sceneActive }">
@@ -73,13 +78,9 @@
 
         <!-- Toolbars: shown by tapping the middle of the page -->
         <header class="reader__bar reader__bar--top">
-          <button
-            type="button"
-            class="reader__icon-button"
-            aria-label="Close book view"
-            @click="close()"
-          >
-            <UiIcon name="close" />
+          <button type="button" class="reader__done" @click="close()">
+            <UiIcon name="chevron-down" />
+            Done
           </button>
           <div class="reader__titles">
             <p class="reader__bar-eyebrow">{{ subtitle }}</p>
@@ -104,9 +105,6 @@
         </header>
 
         <footer class="reader__bar reader__bar--bottom">
-          <p class="reader__section">
-            {{ currentSection ? currentSection.title : title }}
-          </p>
           <input
             class="ui-range reader__scrubber"
             type="range"
@@ -118,6 +116,9 @@
             @input="goToView(Number($event.target.value) - 1)"
           />
           <p class="reader__progress">
+            <span class="reader__section">{{
+              currentSection ? currentSection.title : title
+            }}</span>
             <span>{{ pageLabel }}</span>
             <span class="reader__left">{{ leftLabel }}</span>
           </p>
@@ -142,7 +143,8 @@
             <span>Next page</span>
           </div>
           <p class="reader__hint-note">
-            Tap the edges or swipe to turn the page.
+            Tap the edges or swipe to turn the page.<br />
+            Swipe down, or tap <strong>Done</strong>, to close.
           </p>
         </div>
 
@@ -244,6 +246,8 @@ const dragOffset = ref(0);
 const sceneActive = ref(false);
 const turning = ref(false);
 const isFullscreen = ref(false);
+// Distance of a swipe-down-to-close, while it's happening.
+const closeOffset = ref(0);
 
 const turnOptions = [
   { value: 'turn', label: 'Turn' },
@@ -305,6 +309,15 @@ const cssVars = computed(() => ({
   '--cols': layout.cols,
   '--window-w': `${layout.windowW}px`,
 }));
+
+const closeStyle = computed(() => {
+  const o = closeOffset.value;
+  if (!o) return null;
+  return {
+    transform: `translateY(${o * 0.6}px) scale(${1 - o / 2400})`,
+    opacity: Math.max(0.35, 1 - o / 500),
+  };
+});
 
 const bookStyle = computed(() => ({
   width: `${layout.sheetW * layout.cols}px`,
@@ -438,7 +451,12 @@ function goToView(target) {
   view.value = Math.max(0, Math.min(viewCount.value - 1, target));
 }
 
-function animate(from, to, duration, onFrame) {
+const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+// A whole turn lifts gently, travels, and settles.
+const easeInOut = (t) =>
+  t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+function animate(from, to, duration, onFrame, ease = easeOut) {
   return new Promise((resolve) => {
     let done = false;
     const finish = () => {
@@ -451,10 +469,10 @@ function animate(from, to, duration, onFrame) {
     // turn half-finished because of it.
     const fallback = window.setTimeout(finish, duration + 250);
     const start = window.performance.now();
-    const ease = (t) => 1 - Math.pow(1 - t, 3);
     const tick = (now) => {
       if (done) return;
-      const t = Math.min(1, (now - start) / Math.max(1, duration));
+      // A frame's timestamp can predate the start; never run backwards.
+      const t = Math.max(0, Math.min(1, (now - start) / Math.max(1, duration)));
       onFrame(from + (to - from) * ease(t));
       if (t < 1) {
         window.requestAnimationFrame(tick);
@@ -529,18 +547,20 @@ function buildTurn(direction) {
   let angle;
 
   if (!spread) {
+    // A single page fills the screen, so it swings away into the screen;
+    // lifting toward the reader would hide the next page until halfway.
     if (direction > 0) {
       host.append(place(makeFace(first + 1, 'single'), 0));
       front = makeFace(first, 'single');
       back = makeFace(-1, 'back');
       turner.style.transformOrigin = 'left center';
-      angle = (p) => -180 * p;
+      angle = (p) => 180 * p;
     } else {
       host.append(place(makeFace(first, 'single'), 0));
       front = makeFace(first - 1, 'single');
       back = makeFace(-1, 'back');
       turner.style.transformOrigin = 'left center';
-      angle = (p) => -180 * (1 - p);
+      angle = (p) => 180 * (1 - p);
     }
     place(turner, 0);
   } else if (direction > 0) {
@@ -606,7 +626,15 @@ async function turn(direction, { fromProgress = 0, draw = null } = {}) {
     dragOffset.value = 0;
   } else {
     const render = draw || buildTurn(direction);
-    await animate(fromProgress, 1, 520 * (1 - fromProgress) + 80, render);
+    // From a standstill the page lifts and settles; from a drag it simply
+    // carries on.
+    await animate(
+      fromProgress,
+      1,
+      fromProgress > 0 ? 420 * (1 - fromProgress) + 120 : 640,
+      render,
+      fromProgress > 0 ? easeOut : easeInOut
+    );
     view.value += direction;
     await nextTick();
     clearScene();
@@ -642,6 +670,7 @@ const drag = {
   draw: null,
   progress: 0,
   bounce: false,
+  closing: false,
 };
 
 function isInteractive(target) {
@@ -663,12 +692,23 @@ function onPointerDown(event) {
   drag.draw = null;
   drag.progress = 0;
   drag.bounce = false;
+  drag.closing = false;
+  cancelChromeFlash();
 }
 
 function onPointerMove(event) {
   if (drag.id !== event.pointerId) return;
   const dx = event.clientX - drag.x;
   const dy = event.clientY - drag.y;
+  // Swipe down to close, as with a sheet.
+  if (!drag.active && !drag.closing && dy > 12 && dy > Math.abs(dx) * 1.3) {
+    drag.closing = true;
+    hideChrome();
+  }
+  if (drag.closing) {
+    closeOffset.value = Math.max(0, dy);
+    return;
+  }
   if (!drag.active) {
     if (Math.abs(dx) < 10 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
     drag.active = true;
@@ -702,6 +742,15 @@ async function onPointerUp(event) {
   drag.id = null;
   const dx = event.clientX - drag.x;
   const elapsed = window.performance.now() - drag.t;
+  if (drag.closing) {
+    const dy = event.clientY - drag.y;
+    if (dy > 110 || dy / Math.max(1, elapsed) > 0.6) {
+      close();
+    } else {
+      await animate(closeOffset.value, 0, 220, (y) => (closeOffset.value = y));
+    }
+    return;
+  }
   if (!drag.active) {
     if (Math.abs(dx) < 10 && elapsed < 600) handleTap(event.clientX);
     return;
@@ -735,6 +784,7 @@ async function onPointerUp(event) {
 function onPointerCancel() {
   if (drag.id === null) return;
   drag.id = null;
+  closeOffset.value = 0;
   if (drag.draw) {
     clearScene();
   }
@@ -754,19 +804,68 @@ function onClickCapture(event) {
 function handleTap(clientX) {
   const selection = window.getSelection?.();
   if (selection && String(selection).trim()) return;
-  if (chrome.value) {
+  const rect = stage.value.getBoundingClientRect();
+  const position = (clientX - rect.left) / rect.width;
+  const edge = position < 0.3 || position > 0.7;
+  if (chrome.value && !(chromeFromFlash && edge)) {
     hideChrome();
     return;
   }
-  const rect = stage.value.getBoundingClientRect();
-  const position = (clientX - rect.left) / rect.width;
+  hideChrome();
   if (position < 0.3) prev();
   else if (position > 0.7) next();
-  else chrome.value = true;
+  else {
+    chrome.value = true;
+    chromeFromFlash = false;
+  }
 }
 
 function hideChrome() {
   chrome.value = false;
+}
+
+// On opening, show the toolbars for a moment so people see Done and Aa,
+// then get out of the way.
+let chromeTimer = null;
+// True while the toolbars are up only because of that opening flash.
+let chromeFromFlash = false;
+function flashChrome() {
+  chrome.value = true;
+  chromeFromFlash = true;
+  cancelChromeFlash();
+  chromeTimer = window.setTimeout(() => {
+    chromeTimer = null;
+    chrome.value = false;
+    peekIfNew();
+  }, 2600);
+}
+
+function cancelChromeFlash() {
+  if (chromeTimer) {
+    window.clearTimeout(chromeTimer);
+    chromeTimer = null;
+  }
+}
+
+// The first few times, lift the corner of the page a little to show that
+// it turns.
+async function peekIfNew() {
+  if (!props.open || turning.value || !canGo(1)) return;
+  if (effectiveStyle() === 'none') return;
+  const seen = parseInt((await DynamicStorage.getItem('readerPeeks')) || 0, 10);
+  if (seen >= 3) return;
+  await DynamicStorage.setItem('readerPeeks', String(seen + 1));
+  turning.value = true;
+  if (effectiveStyle() === 'turn') {
+    const draw = buildTurn(1);
+    await animate(0, 0.22, 560, draw, easeInOut);
+    await animate(0.22, 0, 640, draw, easeInOut);
+    clearScene();
+  } else {
+    await animate(0, -36, 360, (x) => (dragOffset.value = x), easeInOut);
+    await animate(-36, 0, 420, (x) => (dragOffset.value = x), easeInOut);
+  }
+  turning.value = false;
 }
 
 let wheelTotal = 0;
@@ -848,7 +947,8 @@ function onFullscreenChange() {
 
 async function dismissHint() {
   hint.value = false;
-  await DynamicStorage.setItem('readerHintSeen', 'true');
+  await DynamicStorage.setItem('readerHintSeen2', 'true');
+  flashChrome();
 }
 
 /* ── Open / close ───────────────────────────────────── */
@@ -879,7 +979,7 @@ async function onOpen() {
   const [style, spread, seen] = await Promise.all([
     DynamicStorage.getItem('readerTurnStyle'),
     DynamicStorage.getItem('readerSpread'),
-    DynamicStorage.getItem('readerHintSeen'),
+    DynamicStorage.getItem('readerHintSeen2'),
   ]);
   if (['turn', 'slide', 'none'].includes(style)) turnStyle.value = style;
   if (['auto', 'single', 'spread'].includes(spread)) spreadPref.value = spread;
@@ -897,6 +997,7 @@ async function onOpen() {
 
   await nextTick();
   await relayout();
+  if (!hint.value) flashChrome();
   // Fonts can finish loading after the first layout.
   if (document.fonts?.ready) {
     document.fonts.ready.then(() => relayout());
@@ -908,6 +1009,8 @@ async function onOpen() {
 }
 
 function onClose() {
+  cancelChromeFlash();
+  window.setTimeout(() => (closeOffset.value = 0), 400);
   document.documentElement.classList.remove('has-reader');
   window.removeEventListener('popstate', onPopState);
   window.removeEventListener('keydown', onKeydown);
@@ -1059,6 +1162,30 @@ onBeforeUnmount(() => {
   text-align: right;
 }
 
+/* A dog-eared corner: a quiet sign that the page turns */
+.reader__corner {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 1.6rem;
+  height: 1.6rem;
+  pointer-events: none;
+  background: linear-gradient(
+    to top left,
+    var(--paper-sunken) 0 49%,
+    color-mix(in srgb, var(--ink) 22%, var(--paper)) 50%,
+    color-mix(in srgb, var(--ink) 6%, var(--paper-raised)) 54%,
+    var(--paper-raised) 62%,
+    transparent 63%
+  );
+  filter: drop-shadow(-1px -1px 1.5px rgb(0 0 0 / 0.12));
+}
+
+.reader.is-phone .reader__corner {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
 /* The text window across the page(s) on screen. It opens into the left
    margin so hanging indents and verse numbers show, and stops at the right
    text edge so the next page never peeks in. */
@@ -1084,10 +1211,11 @@ onBeforeUnmount(() => {
   width: calc(var(--page-w) + var(--bleed));
 }
 
-.reader-face__window > .reader__flow {
-  position: absolute;
+/* A page copy sits in its window exactly as the live text does. */
+.reader-face__window > .reader__flow.book {
+  position: relative;
   top: 0;
-  left: var(--bleed);
+  left: 0;
 }
 
 /* The text strip: pages are columns */
@@ -1238,7 +1366,9 @@ onBeforeUnmount(() => {
 
 .reader__bar--top {
   top: 0;
-  padding-top: calc(var(--space-2) + env(safe-area-inset-top));
+  min-height: calc(3rem + env(safe-area-inset-top));
+  padding-top: calc(var(--space-1) + env(safe-area-inset-top));
+  padding-bottom: var(--space-1);
   border-bottom: 1px solid var(--rule);
   transform: translateY(-100%);
   opacity: 0;
@@ -1248,8 +1378,9 @@ onBeforeUnmount(() => {
   bottom: 0;
   flex-direction: column;
   align-items: stretch;
-  gap: var(--space-1);
-  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
+  gap: 0;
+  padding-top: var(--space-1);
+  padding-bottom: calc(var(--space-2) + env(safe-area-inset-bottom));
   border-top: 1px solid var(--rule);
   transform: translateY(100%);
   opacity: 0;
@@ -1263,6 +1394,24 @@ onBeforeUnmount(() => {
   transform: none;
   opacity: 1;
   pointer-events: auto;
+}
+
+.reader__done {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-shrink: 0;
+  min-height: 2.75rem;
+  padding: 0 0.85rem 0 0.6rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-pill);
+  background-color: var(--paper-raised);
+  color: var(--ink);
+  font-size: var(--text-sm);
+}
+
+.reader__done:hover {
+  border-color: var(--ink-faint);
 }
 
 .reader__icon-button {
@@ -1310,26 +1459,38 @@ onBeforeUnmount(() => {
 }
 
 .reader__section {
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: var(--text-sm);
   font-variant-caps: all-small-caps;
   letter-spacing: 0.12em;
-  text-align: center;
   color: var(--ink-soft);
+}
+
+/* On phones the toolbars stay within the page margins as far as they can:
+   one line of title, one line of progress. */
+.reader.is-phone .reader__bar-eyebrow {
+  display: none;
+}
+
+.reader.is-phone .reader__left {
+  display: none;
 }
 
 .reader__scrubber {
   width: min(100%, 40rem);
   align-self: center;
+  height: 2.25rem;
 }
 
 .reader__progress {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: baseline;
   gap: 0 var(--space-3);
+  min-width: 0;
   font-size: var(--text-xs);
   color: var(--ink-faint);
 }
