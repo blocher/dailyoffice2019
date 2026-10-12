@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { mount } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import CalendarSubscriptionWizard from '../../src/components/CalendarSubscriptionWizard.vue';
 import { getCalendarFeedBaseUrl } from '../../src/helpers/calendarSubscription';
+import UiKit from '../../src/ui';
 
 const { clipboardWrite, browserOpen, messageSuccess } = vi.hoisted(() => ({
   clipboardWrite: vi.fn().mockResolvedValue(),
@@ -27,61 +28,19 @@ vi.mock('@capacitor/core', () => ({
   },
 }));
 
-vi.mock('element-plus', () => ({
-  ElMessage: {
-    success: messageSuccess,
-  },
+vi.mock('@/ui/feedback', () => ({
+  toast: Object.assign(vi.fn(), { success: messageSuccess }),
+  confirm: vi.fn(),
 }));
 
-const ElDrawerStub = {
-  props: ['modelValue'],
-  template:
-    '<div v-if="modelValue"><slot name="header"></slot><slot></slot></div>',
-};
-
-const ElButtonStub = {
-  emits: ['click'],
-  template: '<button @click="$emit(\'click\', $event)"><slot /></button>',
-};
-
-const ElInputStub = {
-  props: ['modelValue'],
-  template: '<input :value="modelValue" readonly />',
-};
-
-const ElAlertStub = {
-  props: ['title'],
-  template: '<div><div>{{ title }}</div><slot name="default"></slot><slot /></div>',
-};
-
-const ElCollapseStub = {
-  template: '<div class="el-collapse-stub"><slot /></div>',
-};
-
-const ElCollapseItemStub = {
-  props: ['name', 'title'],
-  template:
-    '<div class="el-collapse-item-stub"><div>{{ title }}</div><div><slot /></div></div>',
-};
-
-const ElTooltipStub = {
-  template: '<div class="el-tooltip-stub"><slot /><slot name="content" /></div>',
-};
-
 function mountWizard(props = {}) {
-  document.documentElement.style.setProperty('--sat', '0px');
   return mount(CalendarSubscriptionWizard, {
     props,
     global: {
+      plugins: [UiKit],
       stubs: {
-        'font-awesome-icon': true,
-        'el-drawer': ElDrawerStub,
-        'el-button': ElButtonStub,
-        'el-input': ElInputStub,
-        'el-alert': ElAlertStub,
-        'el-collapse': ElCollapseStub,
-        'el-collapse-item': ElCollapseItemStub,
-        'el-tooltip': ElTooltipStub,
+        // Render the sheet in place so its content is part of the wrapper.
+        teleport: true,
       },
     },
   });
@@ -95,7 +54,10 @@ describe('CalendarSubscriptionWizard', () => {
   });
 
   it('opens with the current calendar scope and shows the import warning when selected', async () => {
-    const wrapper = mountWizard({ defaultScope: 'major', includeMinorFeasts: false });
+    const wrapper = mountWizard({
+      defaultScope: 'major',
+      includeMinorFeasts: false,
+    });
 
     wrapper.vm.openWizard({ scope: 'major' });
     await wrapper.vm.$nextTick();
@@ -108,7 +70,9 @@ describe('CalendarSubscriptionWizard', () => {
     wrapper.vm.selectedMethod = 'import';
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.text()).toContain('Imported calendar events are hard to remove');
+    expect(wrapper.text()).toContain(
+      'Imported calendar events are hard to remove'
+    );
   });
 
   it('opens the quick links drawer from the launcher button', async () => {
@@ -131,7 +95,9 @@ describe('CalendarSubscriptionWizard', () => {
 
     expect(wrapper.vm.showWizard).toBe(true);
     expect(wrapper.vm.panelMode).toBe('quick');
-    expect(wrapper.text()).toContain('Add Feasts and Readings to Your Calendar App');
+    expect(wrapper.text()).toContain(
+      'Add Feasts and Readings to Your Calendar App'
+    );
     expect(wrapper.text()).toContain('Sundays and Major Feasts');
 
     await wrapper.vm.goToFullWizard();
@@ -177,5 +143,49 @@ describe('CalendarSubscriptionWizard', () => {
     expect(clipboardWrite).toHaveBeenCalledWith({
       string: `${getCalendarFeedBaseUrl()}/every.ics`,
     });
+    expect(messageSuccess).toHaveBeenCalledWith(
+      'The calendar URL has been copied.'
+    );
+  });
+
+  it('closes the sheet entirely from the quick links panel', async () => {
+    const wrapper = mountWizard({ defaultScope: 'major' });
+
+    wrapper.vm.openQuickLinks();
+    await wrapper.vm.$nextTick();
+    expect(wrapper.find('[role="dialog"]').exists()).toBe(true);
+
+    await wrapper.find('.ui-sheet__close').trigger('click');
+
+    expect(wrapper.vm.showWizard).toBe(false);
+  });
+
+  it('walks from feed to setup by choosing options', async () => {
+    const wrapper = mountWizard({ defaultScope: 'major' });
+
+    wrapper.vm.openWizard({ scope: 'major' });
+    await wrapper.vm.$nextTick();
+
+    const feedChoices = wrapper.findAll('[role="radio"]');
+    expect(feedChoices).toHaveLength(3);
+    await feedChoices[2].trigger('click');
+    await flushPromises();
+    expect(wrapper.vm.selectedScope).toBe('every');
+    expect(wrapper.vm.currentStep).toBe(2);
+
+    const appChoice = wrapper
+      .findAll('[role="radio"]')
+      .find((choice) => choice.text().includes('Apple Calendar'));
+    await appChoice.trigger('click');
+    await flushPromises();
+    expect(wrapper.vm.currentStep).toBe(3);
+
+    const subscribe = wrapper
+      .findAll('[role="radio"]')
+      .find((choice) => choice.text().includes('Subscribe'));
+    await subscribe.trigger('click');
+    await flushPromises();
+    expect(wrapper.vm.currentStep).toBe(4);
+    expect(wrapper.text()).toContain('Subscribe in Apple Calendar');
   });
 });

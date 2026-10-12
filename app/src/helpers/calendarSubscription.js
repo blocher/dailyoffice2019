@@ -9,7 +9,7 @@ export const CALENDAR_SCOPE_OPTIONS = [
   {
     value: 'major_minor',
     label: 'Sundays, Major Feasts, and Lesser Commemorations',
-    description: 'Matches the “Show All Feasts” view on the calendar page.',
+    description: 'Matches the “All feasts” view on the calendar page.',
   },
   {
     value: 'every',
@@ -19,36 +19,38 @@ export const CALENDAR_SCOPE_OPTIONS = [
   },
 ];
 
+// `icon` is a UiIcon name (src/ui/iconData.js). There are no Microsoft or
+// Yahoo marks, so those use the generic calendar icon beside their name.
 export const CALENDAR_APP_OPTIONS = [
   {
     value: 'apple',
     label: 'Apple Calendar',
     description: 'Works well on iPhone, iPad, and Mac.',
-    icon: ['fab', 'apple'],
+    icon: 'apple',
   },
   {
     value: 'google',
     label: 'Google Calendar',
     description: 'Best if you use Google Calendar on the web.',
-    icon: ['fab', 'google'],
+    icon: 'google-calendar',
   },
   {
     value: 'outlook',
     label: 'Microsoft Outlook',
     description: 'For Outlook.com and Microsoft 365 calendars.',
-    icon: ['fab', 'microsoft'],
+    icon: 'calendar',
   },
   {
     value: 'yahoo',
     label: 'Yahoo Calendar',
     description: 'Yahoo Mail and Calendar.',
-    icon: ['fab', 'yahoo'],
+    icon: 'calendar',
   },
   {
     value: 'other',
     label: 'Other',
     description: 'Use a calendar URL or download an `.ics` file.',
-    icon: ['fad', 'globe'],
+    icon: 'globe',
   },
 ];
 

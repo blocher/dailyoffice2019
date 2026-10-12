@@ -183,6 +183,7 @@ export default {
 .site-message__text {
   flex: 1;
   min-width: 0;
+  overflow-wrap: anywhere;
   color: var(--ink-soft);
 }
 
