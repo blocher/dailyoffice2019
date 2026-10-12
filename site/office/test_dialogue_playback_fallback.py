@@ -113,6 +113,28 @@ class DialoguePlaybackFallbackTests(SimpleTestCase):
             for private in ("Hello", "Yes", "synthetic-request", "audio_base64", "xi-api-key"):
                 self.assertNotIn(private, report)
 
+    @override_settings(ELEVENLABS_TTS_INSTRUCTIONS="")
+    def test_mapping_diagnostics_distinguish_zero_intervals_from_positive_interior(self):
+        for positive in (False, True):
+            with (
+                self.subTest(positive_interior=positive),
+                tempfile.TemporaryDirectory() as directory,
+                override_settings(MEDIA_ROOT=directory),
+                patch("office.elevenlabs_dialogue.requests.post", return_value=self.response()) as post,
+                patch("office.elevenlabs_dialogue.bugsnag.notify") as notify,
+            ):
+                data = post.return_value.json.return_value
+                if positive:
+                    for alignment in (data["alignment"], data["normalized_alignment"]):
+                        alignment["character_end_times_seconds"][2] = 0.1
+                session = DialogueSession(ElevenLabsTTSProvider())
+                self.assertIsNotNone(session.clip(self.lines())[0])
+                details = notify.call_args.kwargs["metadata"]["audio"]
+                for key in ("raw_alignment", "normalized_alignment"):
+                    self.assertEqual(details[key]["positive_character_intervals"], int(positive))
+                    self.assertGreater(details[key]["zero_character_intervals"], 0)
+                self.assertFalse(session.highlighting_available)
+
     def test_corrupt_or_cut_audio_is_rejected_without_publishing(self):
         for audio in (b"not an MP3", self.audio[: len(self.audio) // 2]):
             with (

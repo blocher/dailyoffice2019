@@ -170,6 +170,8 @@ class ReadingVoiceTests(SimpleTestCase):
     @override_settings(
         ELEVENLABS_TTS_MODEL="eleven_v4",
         ELEVENLABS_TTS_VOICES_READER=("reader-one", "reader-two"),
+        ELEVENLABS_TTS_VOICE_LEADER="synthetic-leader",
+        ELEVENLABS_TTS_VOICE_CONGREGATION="synthetic-people",
         ELEVENLABS_PRONUNCIATION_DICTIONARY_ID="",
         GEMINI_TTS_VOICES_READER=("Kore", "Charon"),
     )
