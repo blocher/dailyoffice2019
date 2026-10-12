@@ -78,3 +78,22 @@ describe('settingsUiMetadata', () => {
     expect(matchesSettingSearch(normalized, 'canticles')).toBe(false);
   });
 });
+
+it('places alternate Apocrypha readings in Readings and supports discovery', () => {
+  const setting = createNormalizedApiSetting(
+    {
+      name: 'apocrypha_readings',
+      setting_type: 1,
+      title: 'Apocrypha Readings',
+      options: [
+        { name: 'As appointed', value: 'appointed' },
+        { name: 'Use alternate readings', value: 'alternate' },
+      ],
+    },
+    () => Promise.resolve()
+  );
+  expect(setting.category).toBe('Readings');
+  expect(setting.priority).toBe(35);
+  expect(matchesSettingSearch(setting, 'deuterocanon')).toBe(true);
+  expect(matchesSettingSearch(setting, 'alternate')).toBe(true);
+});

@@ -868,3 +868,22 @@ class MetricalCollect(BaseModel):
     text_source = models.CharField(max_length=255, null=True, blank=True)
     tune_source = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True)
+
+
+class AlternateReading(BaseModel):
+    """Reviewed first-lesson alternatives; appointed OfficeDay rows stay intact."""
+
+    office_day = models.OneToOneField(OfficeDay, on_delete=models.CASCADE, related_name="alternate_reading")
+    donor_office = models.CharField(max_length=2, choices=(("mp", "Morning Prayer"), ("ep", "Evening Prayer")))
+    whole = models.ForeignKey(Scripture, on_delete=models.PROTECT, related_name="alternate_whole")
+    morning = models.ForeignKey(Scripture, on_delete=models.PROTECT, related_name="alternate_morning")
+    evening = models.ForeignKey(Scripture, on_delete=models.PROTECT, related_name="alternate_evening")
+    short_whole = models.ForeignKey(
+        Scripture, on_delete=models.PROTECT, related_name="alternate_short_whole", null=True, blank=True
+    )
+    short_morning = models.ForeignKey(
+        Scripture, on_delete=models.PROTECT, related_name="alternate_short_morning", null=True, blank=True
+    )
+    short_evening = models.ForeignKey(
+        Scripture, on_delete=models.PROTECT, related_name="alternate_short_evening", null=True, blank=True
+    )

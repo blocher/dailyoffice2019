@@ -33,6 +33,7 @@ from churchcal.api.permissions import ReadOnly
 from churchcal.api.serializer import DaySerializer, CommemorationSerializer
 from churchcal.calculations import get_calendar_date, get_church_year
 from churchcal.models import Commemoration
+from office.alternate_readings import alternate_first_lesson, scripture_translation
 from office.audio_ceremony import INTERCESSION_INVITATION, INTERCESSION_MODULE, frame_tracks
 from office.api.line import Line
 from office.api.serializers import UpdateNoticeSerializer, SiteMessageSerializer
@@ -844,41 +845,24 @@ class ReadingModule(Module):
                 line["audio_voice"] = voice
         return [line for line in lines if line and (line["content"] or line["line_type"] == "spacer")]
 
-    def get_reading(self, field, abbreviated=False, translation="esv", text_only=False):
-        subheading = getattr(self.office.office_readings, field)
-        passage = getattr(self.office.office_readings, field)
-        citation = passage_to_citation(getattr(self.office.office_readings, field), language=self.language)
-        text_obj = self.office.readings[passage]
-        text = getattr(text_obj, translation)
-        if text in ["-", "<html><head></head><body>-</body></html>", ""]:
-            fallback = OfficeDay.TRANSLATION_FALLBACKS.get(translation, "nrsvce")
-            text = getattr(text_obj, fallback, None)
-        if not text or text in ["-", "<html><head></head><body>-</body></html>", ""]:
-            text = getattr(text_obj, "nrsvce")
-        closing = self.closing(getattr(self.office.office_readings, "{}_testament".format(field)))
-        closing_response = self.closing_response(getattr(self.office.office_readings, "{}_testament".format(field)))
-        testament = getattr(self.office.office_readings, "{}_testament".format(field))
-
-        if abbreviated:
-            has_abbreviated = (
-                True
-                if hasattr(self.office.office_readings, "{}_abbreviated".format(field))
-                and getattr(self.office.office_readings, "{}_abbreviated".format(field))
-                else False
-            )
-            if has_abbreviated:
-                subheading = getattr(self.office.office_readings, "{}_abbreviated".format(field))
-                passage = getattr(self.office.office_readings, "{}_abbreviated".format(field))
-                citation = passage_to_citation(
-                    getattr(self.office.office_readings, "{}_abbreviated".format(field)), language=self.language
-                )
-                text = self.office.readings[passage]
-                text = getattr(text, translation)
-                if text in ["-", "<html><head></head><body>-</body></html>"]:
-                    fallback = OfficeDay.TRANSLATION_FALLBACKS.get(translation, "nrsvce")
-                    text = getattr(text_obj, fallback, None)
-                if not text or text in ["-", "<html><head></head><body>-</body></html>"]:
-                    text = getattr(text_obj, "nrsvce")
+    def get_reading(self, field, abbreviated=False, translation="esv", text_only=False, selection=None):
+        if selection:
+            passage = selection.passage
+            text = selection.text
+            testament = selection.testament
+            actual_translation = selection.translation
+        else:
+            selected_field = field
+            if abbreviated and getattr(self.office.office_readings, field + "_abbreviated", None):
+                selected_field += "_abbreviated"
+            passage = getattr(self.office.office_readings, selected_field)
+            text_obj = self.office.readings[passage]
+            text, actual_translation = scripture_translation(text_obj, translation)
+            testament = getattr(self.office.office_readings, field + "_testament")
+        subheading = passage
+        citation = passage_to_citation(passage, language=self.language)
+        closing = self.closing(testament)
+        closing_response = self.closing_response(testament)
 
         text = self.remove_headings_if_needed(text)
 
@@ -896,7 +880,7 @@ class ReadingModule(Module):
 
         lines = [
             Line(subheading, "subheading"),
-            Line(self.audio(passage, testament), "html"),
+            Line(self.audio(passage, testament) if not selection or actual_translation == "esv" else None, "html"),
             Line(citation, "reader"),
             Line("", "spacer"),
             Line(
@@ -948,11 +932,21 @@ class ReadingModule(Module):
             return None
 
         abbreviated = reading_length == "abbreviated"
+        selection = None
+        if number == 1:
+            selection = alternate_first_lesson(
+                self.office.office_readings,
+                office,
+                self.office.settings,
+                self.office.date.date.year,
+                translation,
+                abbreviated,
+            )
         if int(reading_cycle) == 2:
             office = "ep" if self.office.date.date.year % 2 == 0 else "mp"
 
         reading_field = "{}_reading_{}".format(office, number)
-        return self.get_reading(reading_field, abbreviated, translation)
+        return self.get_reading(reading_field, abbreviated, translation, selection=selection)
 
 
 class MPFirstReading(ReadingModule):
@@ -4152,155 +4146,62 @@ def holy_day_evening_prayer_60_day_psalms(obj):
     }
 
 
-def holy_day_morning_prayer_reading_1(obj):
-    full = reading_format(
-        name="The First Lesson",
-        citation=obj.holy_day_readings.mp_reading_1,
-        text=obj.holy_day_readings.passage_to_text("mp_reading_1", obj.translation),
-        testament=obj.holy_day_readings.mp_reading_1_testament,
-        reading_number=1,
-    )
-    abbreviated = full
-    if obj.holy_day_readings.mp_reading_1_abbreviated:
-        abbreviated = reading_format(
-            name="The First Lesson",
-            citation=obj.holy_day_readings.mp_reading_1_abbreviated,
-            text=obj.holy_day_readings.passage_to_text("mp_reading_1_abrreviated", obj.translation),
-            testament=obj.holy_day_readings.mp_reading_1_testament,
-            reading_number=1,
+def office_lesson_formats(obj, day, office, number):
+    """Readings overview uses the same first-lesson resolver as the Offices."""
+    selected_office = office
+    if obj.settings.get("apocrypha_readings") == "alternate" and int(obj.settings.get("reading_cycle", 1)) == 2:
+        selected_office = "ep" if obj.date.date.year % 2 == 0 else "mp"
+    field = f"{selected_office}_reading_{number}"
+    result = {}
+    for length in ("full", "abbreviated"):
+        selection = None
+        if number == 1:
+            selection = alternate_first_lesson(
+                day, office, obj.settings, obj.date.date.year, obj.translation, length == "abbreviated"
+            )
+        selected_field = field
+        if length == "abbreviated" and getattr(day, field + "_abbreviated", None):
+            selected_field += "_abbreviated"
+        result[length] = reading_format(
+            name="The First Lesson" if number == 1 else "The Second Lesson",
+            citation=selection.passage if selection else getattr(day, selected_field),
+            text=selection.text if selection else day.passage_to_text(selected_field, obj.translation),
+            testament=selection.testament if selection else getattr(day, field + "_testament"),
+            reading_number=number,
         )
-    return {
-        "full": full,
-        "abbreviated": abbreviated,
-    }
+    return result
+
+
+def holy_day_morning_prayer_reading_1(obj):
+    return office_lesson_formats(obj, obj.holy_day_readings, "mp", 1)
 
 
 def holy_day_morning_prayer_reading_2(obj):
-    full = reading_format(
-        name="The Second Lesson",
-        citation=obj.holy_day_readings.mp_reading_2,
-        text=obj.holy_day_readings.passage_to_text("mp_reading_2", obj.translation),
-        testament=obj.holy_day_readings.mp_reading_2_testament,
-        reading_number=2,
-    )
-    abbreviated = full
-    return {
-        "full": full,
-        "abbreviated": abbreviated,
-    }
+    return office_lesson_formats(obj, obj.holy_day_readings, "mp", 2)
 
 
 def holy_day_evening_prayer_reading_1(obj):
-    full = reading_format(
-        name="The First Lesson",
-        citation=obj.holy_day_readings.ep_reading_1,
-        text=obj.holy_day_readings.passage_to_text("ep_reading_1", obj.translation),
-        testament=obj.holy_day_readings.ep_reading_1_testament,
-        reading_number=1,
-    )
-    abbreviated = full
-    if obj.holy_day_readings.ep_reading_1_abbreviated:
-        abbreviated = reading_format(
-            name="The First Lesson",
-            citation=obj.holy_day_readings.ep_reading_1_abbreviated,
-            text=obj.holy_day_readings.passage_to_text("ep_reading_1_abbreviated", obj.translation),
-            testament=obj.holy_day_readings.ep_reading_1_testament,
-        )
-    return {
-        "full": full,
-        "abbreviated": abbreviated,
-    }
+    return office_lesson_formats(obj, obj.holy_day_readings, "ep", 1)
 
 
 def holy_day_evening_prayer_reading_2(obj):
-    full = reading_format(
-        name="The Second Lesson",
-        citation=obj.holy_day_readings.ep_reading_2,
-        text=obj.holy_day_readings.passage_to_text("ep_reading_2", obj.translation),
-        testament=obj.holy_day_readings.ep_reading_2_testament,
-        reading_number=2,
-    )
-    abbreviated = full
-    return {
-        "full": full,
-        "abbreviated": abbreviated,
-    }
+    return office_lesson_formats(obj, obj.holy_day_readings, "ep", 2)
 
 
 def standard_morning_prayer_reading_1(obj):
-    full = reading_format(
-        name="The First Lesson",
-        citation=obj.standard_readings.mp_reading_1,
-        text=obj.standard_readings.passage_to_text("mp_reading_1", obj.translation),
-        testament=obj.standard_readings.mp_reading_1_testament,
-        reading_number=1,
-    )
-    abbreviated = full
-    if obj.standard_readings.mp_reading_1_abbreviated:
-        abbreviated = reading_format(
-            name="The First Lesson",
-            citation=obj.standard_readings.mp_reading_1_abbreviated,
-            text=obj.standard_readings.passage_to_text("mp_reading_1_abbreviated", obj.translation),
-            testament=obj.standard_readings.mp_reading_1_testament,
-            reading_number=1,
-        )
-    return {
-        "full": full,
-        "abbreviated": abbreviated,
-    }
+    return office_lesson_formats(obj, obj.standard_readings, "mp", 1)
 
 
 def standard_morning_prayer_reading_2(obj):
-    full = reading_format(
-        name="The Second Lesson",
-        citation=obj.standard_readings.mp_reading_2,
-        text=obj.standard_readings.passage_to_text("mp_reading_2", obj.translation),
-        testament=obj.standard_readings.mp_reading_2_testament,
-        reading_number=2,
-    )
-    abbreviated = full
-    return {
-        "full": full,
-        "abbreviated": abbreviated,
-    }
+    return office_lesson_formats(obj, obj.standard_readings, "mp", 2)
 
 
 def standard_evening_prayer_reading_1(obj):
-    full = reading_format(
-        name="The First Lesson",
-        citation=obj.standard_readings.ep_reading_1,
-        text=obj.standard_readings.passage_to_text("ep_reading_1", obj.translation),
-        testament=obj.standard_readings.ep_reading_1_testament,
-        reading_number=1,
-    )
-    abbreviated = full
-    if obj.standard_readings.ep_reading_1_abbreviated:
-        abbreviated = reading_format(
-            name="The First Lesson",
-            citation=obj.standard_readings.ep_reading_1_abbreviated,
-            text=obj.standard_readings.passage_to_text("ep_reading_1_abbreviated", obj.translation),
-            testament=obj.standard_readings.ep_reading_1_testament,
-            reading_number=1,
-        )
-    return {
-        "full": full,
-        "abbreviated": abbreviated,
-    }
+    return office_lesson_formats(obj, obj.standard_readings, "ep", 1)
 
 
 def standard_evening_prayer_reading_2(obj):
-    full = reading_format(
-        name="The Second Lesson",
-        citation=obj.standard_readings.ep_reading_2,
-        text=obj.standard_readings.passage_to_text("ep_reading_2", obj.translation),
-        testament=obj.standard_readings.ep_reading_2_testament,
-        reading_number=2,
-    )
-    abbreviated = full
-    return {
-        "full": full,
-        "abbreviated": abbreviated,
-    }
+    return office_lesson_formats(obj, obj.standard_readings, "ep", 2)
 
 
 def get_reading_name_from_reading_number(reading):
@@ -4762,6 +4663,11 @@ SETTING_UI_METADATA = {
         "ui_category": "Readings",
         "ui_priority": 30,
         "ui_keywords": ["abbreviated", "full readings"],
+    },
+    "apocrypha_readings": {
+        "ui_category": "Readings",
+        "ui_priority": 35,
+        "ui_keywords": ["apocrypha", "alternate", "deuterocanon", "first lesson"],
     },
     "reading_audio": {
         "ui_category": "Audio",
