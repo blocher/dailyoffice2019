@@ -31,6 +31,14 @@ class DialogueTimingError(ValueError):
         }
 
 
+class DialogueTimingMetadataError(ValueError):
+    """Recognize unusable timing arrays without accepting transcript mismatches."""
+
+    def __init__(self, reason):
+        super().__init__("Dialogue character timing metadata is unavailable or inconsistent")
+        self.timing_details = {"reason": reason}
+
+
 class DialogueRequestError(RuntimeError):
     """Report retry decisions without recording vendor bodies or request data."""
 
@@ -128,6 +136,19 @@ class DialogueSession:
 
     def _timing(self, alignment, segments, speaking_turns, prepared):
         """Validate one complete alignment in script order; never sort or invent times."""
+        characters = alignment.get("characters")
+        if (
+            not isinstance(characters, list)
+            or not characters
+            or any(not isinstance(character, str) or len(character) != 1 for character in characters)
+        ):
+            raise ValueError("Dialogue character structure is unavailable or invalid")
+        starts = alignment.get("character_start_times_seconds")
+        ends = alignment.get("character_end_times_seconds")
+        if not isinstance(starts, list) or not isinstance(ends, list) or not starts or not ends:
+            raise DialogueTimingMetadataError("unavailable_character_timing")
+        if len(starts) != len(characters) or len(ends) != len(characters):
+            raise DialogueTimingMetadataError("unequal_character_timing_lengths")
         timing = []
         previous_end = 0
         previous_character = 0
@@ -418,11 +439,11 @@ class DialogueSession:
                         timing = self._timing(normalized, segments, speaking_turns, prepared)
                     except ValueError as normalized_error:
                         diagnostics["normalized_alignment"] = self._alignment_details(normalized_error, normalized)
-                        if isinstance(normalized_error, DialogueTimingError):
+                        if isinstance(normalized_error, (DialogueTimingError, DialogueTimingMetadataError)):
                             timing_error = normalized_error
                         try:
                             # A transcript/index mismatch is not merely failed word timing.
-                            if not isinstance(raw_error, DialogueTimingError):
+                            if not isinstance(raw_error, (DialogueTimingError, DialogueTimingMetadataError)):
                                 raise ValueError("not_word_timing_failure")
                             segment_end = self._fallback_segment_end(alignment, segments, speaking_turns, prepared)
                             duration = self._decoded_duration(audio, path.parent)

@@ -524,6 +524,11 @@ turns or missing segment metadata reject the fallback. Structural metadata and d
 not establish that every word was actually spoken; inconsistent provider metadata can still
 require listening or a separately authorized production review.
 
+Missing, empty or non-list character timing arrays and unequal array lengths are explicitly
+classified as unusable timing metadata. They can use the same independent playback guards;
+valid comparable normalized timing still takes priority. Missing/invalid character data,
+transcript mismatches and unrelated errors do not themselves enable the fallback.
+
 The player suppresses measured and estimated word/sentence highlights during explicitly
 unavailable chunks, retaining playback and highlights elsewhere. No word timestamps are
 invented. Valid fallback audio is cached with a versioned metadata envelope and an audio

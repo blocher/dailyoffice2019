@@ -149,6 +149,131 @@ class DialoguePlaybackFallbackTests(SimpleTestCase):
                 self.assertFalse(list(Path(directory).rglob("dialogue_*.mp3")))
                 self.assertFalse(list(Path(directory).rglob("*.dialogue.json")))
 
+    def test_unavailable_character_times_allow_only_independently_validated_playback(self):
+        for failure in ("missing_start", "missing_end", "missing_both", "empty", "short", "long", "null"):
+            with (
+                self.subTest(timing_metadata=failure),
+                tempfile.TemporaryDirectory() as directory,
+                override_settings(MEDIA_ROOT=directory),
+                patch("office.elevenlabs_dialogue.requests.post", return_value=self.response()) as post,
+                patch("office.elevenlabs_dialogue.bugsnag.notify") as notify,
+            ):
+                for key in ("alignment", "normalized_alignment"):
+                    alignment = post.return_value.json.return_value[key]
+                    if failure in ("missing_start", "missing_both"):
+                        del alignment["character_start_times_seconds"]
+                    if failure in ("missing_end", "missing_both"):
+                        del alignment["character_end_times_seconds"]
+                    if failure == "empty":
+                        alignment["character_start_times_seconds"] = []
+                    elif failure == "short":
+                        alignment["character_end_times_seconds"].pop()
+                    elif failure == "long":
+                        alignment["character_end_times_seconds"].append(0.0)
+                    elif failure == "null":
+                        alignment["character_end_times_seconds"] = None
+                session = DialogueSession(ElevenLabsTTSProvider())
+                path, timing = session.clip(self.lines())
+                self.assertIsNotNone(path)
+                self.assertEqual(timing, [])
+                self.assertFalse(session.highlighting_available)
+                self.assertEqual(next(Path(directory).rglob("dialogue_*.mp3")).read_bytes(), self.audio)
+                details = notify.call_args.kwargs["metadata"]["audio"]
+                for key in ("raw_alignment", "normalized_alignment"):
+                    self.assertIn(
+                        details[key]["reason"], ("unavailable_character_timing", "unequal_character_timing_lengths")
+                    )
+                self.assertEqual(session.clip(self.lines()), (path, []))
+                self.assertEqual(post.call_count, 1)
+
+    @override_settings(ELEVENLABS_TTS_INSTRUCTIONS="")
+    def test_unavailable_raw_times_still_prefer_valid_normalized_timing(self):
+        for failure in ("missing", "unequal"):
+            with (
+                self.subTest(timing_metadata=failure),
+                tempfile.TemporaryDirectory() as directory,
+                override_settings(MEDIA_ROOT=directory),
+                patch("office.elevenlabs_dialogue.requests.post", return_value=self.response()) as post,
+                patch("office.elevenlabs_dialogue.bugsnag.notify") as notify,
+            ):
+                data = post.return_value.json.return_value
+                if failure == "missing":
+                    del data["alignment"]["character_start_times_seconds"]
+                else:
+                    data["alignment"]["character_end_times_seconds"].pop()
+                normalized = data["normalized_alignment"]
+                count = len(normalized["characters"])
+                normalized["character_start_times_seconds"] = [i * 0.01 for i in range(count)]
+                normalized["character_end_times_seconds"] = [(i + 1) * 0.01 for i in range(count)]
+                session = DialogueSession(ElevenLabsTTSProvider())
+                path, timing = session.clip(self.lines())
+                self.assertIsNotNone(path)
+                self.assertEqual([word["word"] for word in timing], ["Hello", "Yes"])
+                self.assertTrue(session.highlighting_available)
+                notify.assert_not_called()
+
+    def test_unclassified_alignment_errors_do_not_enable_audio_only_fallback(self):
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            override_settings(MEDIA_ROOT=directory),
+            patch("office.elevenlabs_dialogue.requests.post", return_value=self.response()),
+            patch("office.elevenlabs_dialogue.bugsnag.notify"),
+            patch.object(DialogueSession, "_timing", side_effect=ValueError("synthetic unexpected error")),
+            patch.object(DialogueSession, "_decoded_duration") as decode,
+        ):
+            self.assertEqual(DialogueSession(ElevenLabsTTSProvider()).clip(self.lines()), (None, []))
+            decode.assert_not_called()
+            self.assertFalse(list(Path(directory).rglob("dialogue_*.mp3")))
+
+    def test_missing_times_do_not_bypass_transcript_segment_or_audio_guards(self):
+        for failure in (
+            "transcript",
+            "characters",
+            "voice",
+            "missing_turn",
+            "missing_time",
+            "bounds",
+            "order",
+            "late_end",
+            "corrupt",
+            "cut",
+        ):
+            with (
+                self.subTest(failure=failure),
+                tempfile.TemporaryDirectory() as directory,
+                override_settings(MEDIA_ROOT=directory),
+                patch("office.elevenlabs_dialogue.requests.post", return_value=self.response()) as post,
+                patch("office.elevenlabs_dialogue.bugsnag.notify"),
+            ):
+                data = post.return_value.json.return_value
+                for key in ("alignment", "normalized_alignment"):
+                    del data[key]["character_start_times_seconds"]
+                    del data[key]["character_end_times_seconds"]
+                if failure == "transcript":
+                    data["alignment"]["characters"][0] = "?"
+                elif failure == "characters":
+                    del data["alignment"]["characters"]
+                    del data["normalized_alignment"]["characters"]
+                elif failure == "voice":
+                    data["voice_segments"][0]["voice_id"] = "wrong"
+                elif failure == "missing_turn":
+                    data["voice_segments"].pop()
+                elif failure == "missing_time":
+                    del data["voice_segments"][0]["end_time_seconds"]
+                elif failure == "bounds":
+                    data["voice_segments"][0]["character_start_index"] = -1
+                elif failure == "order":
+                    data["voice_segments"].reverse()
+                elif failure == "late_end":
+                    data["voice_segments"][-1]["end_time_seconds"] = 5
+                elif failure == "corrupt":
+                    data["audio_base64"] = base64.b64encode(b"not an MP3").decode()
+                elif failure == "cut":
+                    data["audio_base64"] = base64.b64encode(self.audio[: len(self.audio) // 2]).decode()
+                self.assertEqual(DialogueSession(ElevenLabsTTSProvider()).clip(self.lines()), (None, []))
+                self.assertFalse(list(Path(directory).rglob("dialogue_*.mp3")))
+                self.assertFalse(list(Path(directory).rglob("*.dialogue.json")))
+
     def test_mismatched_or_incomplete_segment_metadata_cannot_enable_fallback(self):
         for failure in ("voice", "order", "missing", "bounds", "transcript", "missing_time", "late_end"):
             with (
