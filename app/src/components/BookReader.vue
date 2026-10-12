@@ -9,7 +9,7 @@
           'is-phone': layout.isPhone,
           'is-spread': layout.spread,
           'has-chrome': chrome,
-          'is-turning': turning,
+          'is-turning': turning || sceneActive || dragOffset !== 0,
         }"
         :style="cssVars"
         role="dialog"
@@ -75,6 +75,16 @@
             />
           </div>
         </div>
+
+        <!-- Always-visible way out, tucked into the top margin -->
+        <button
+          type="button"
+          class="reader__close"
+          aria-label="Close book view"
+          @click="close()"
+        >
+          <UiIcon name="close" />
+        </button>
 
         <!-- Toolbars: shown by tapping the middle of the page -->
         <header class="reader__bar reader__bar--top">
@@ -547,22 +557,25 @@ function buildTurn(direction) {
   let angle;
 
   if (!spread) {
-    // A single page fills the screen, so it swings away into the screen;
-    // lifting toward the reader would hide the next page until halfway.
-    if (direction > 0) {
-      host.append(place(makeFace(first + 1, 'single'), 0));
-      front = makeFace(first, 'single');
-      back = makeFace(-1, 'back');
-      turner.style.transformOrigin = 'left center';
-      angle = (p) => 180 * p;
-    } else {
-      host.append(place(makeFace(first, 'single'), 0));
-      front = makeFace(first - 1, 'single');
-      back = makeFace(-1, 'back');
-      turner.style.transformOrigin = 'left center';
-      angle = (p) => 180 * (1 - p);
-    }
-    place(turner, 0);
+    // A single page fills the screen, where a 3D flip reads poorly. Pages
+    // behave like a stack instead: turning forward slides the top page off
+    // to the left, under the finger, uncovering the next; turning back
+    // slides the previous page in from the left, over the current one.
+    const width = layout.sheetW;
+    const sheet = makeFace(direction > 0 ? first : first - 1, 'single');
+    sheet.classList.add('reader-slider');
+    host.append(
+      place(makeFace(direction > 0 ? first + 1 : first, 'single'), 0),
+      place(sheet, 0)
+    );
+    sceneActive.value = true;
+    const offset = direction > 0 ? (p) => -width * p : (p) => -width * (1 - p);
+    return (p) => {
+      sheet.style.transform = `translateX(${offset(p)}px)`;
+      // The shadow the moving page casts fades as it leaves (or settles).
+      const visible = direction > 0 ? 1 - p : p;
+      host.style.setProperty('--lift', Math.min(1, visible * 1.4).toFixed(3));
+    };
   } else if (direction > 0) {
     host.append(place(makeFace(first, 'left'), 0));
     host.append(place(makeFace(first + 3, 'right'), 1));
@@ -1146,6 +1159,12 @@ onBeforeUnmount(() => {
   top: calc(var(--pad-top) * 0.42);
 }
 
+/* Keep the running head clear of the close button on phones */
+.reader.is-phone .reader__head {
+  left: 3.25rem;
+  right: 3.25rem;
+}
+
 .reader__number {
   bottom: calc(var(--pad-bottom) * 0.36);
   font-variant-numeric: oldstyle-nums;
@@ -1341,9 +1360,48 @@ onBeforeUnmount(() => {
   );
 }
 
+/* A page sliding over the stack, casting a soft shadow from its edge */
+.reader__scene :deep(.reader-slider) {
+  will-change: transform;
+  box-shadow:
+    1px 0 0 var(--rule),
+    6px 0 22px rgb(0 0 0 / calc(var(--lift) * 0.16));
+}
+
 /* The plain reverse of a single page */
 .reader__scene :deep(.reader-face--verso) {
   background-color: var(--paper-sunken);
+}
+
+/* The always-visible close button. It sits in the corner of the top
+   margin, clear of the running head, and gives way to the toolbar. */
+.reader__close {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 0.35rem);
+  left: max(0.35rem, env(safe-area-inset-left));
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  color: var(--ink-soft);
+  font-size: 1.15rem;
+  background-color: color-mix(in srgb, var(--paper) 70%, transparent);
+  transition:
+    opacity 200ms var(--ease),
+    background-color 200ms var(--ease);
+}
+
+.reader__close:hover {
+  background-color: var(--paper-sunken);
+  color: var(--ink);
+}
+
+.reader.has-chrome .reader__close,
+.reader.is-turning .reader__close {
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Toolbars */
