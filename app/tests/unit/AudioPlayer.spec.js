@@ -539,4 +539,39 @@ describe('AudioPlayer word synchronization', () => {
     expect(wrapper.vm.audioElement.currentTime).toBe(0);
     wrapper.unmount();
   });
+  it.each(['word', 'sentence'])('disables estimated highlights only for unavailable chunks in %s mode', async (mode) => {
+    content.innerHTML = "<span data-line-id='line-one'></span><p>The Lord speaks.</p><span data-line-id='line-two'></span><p>We respond.</p>";
+    const source = [...audio];
+    source[3] = [
+      { id: 'line-one', start_time: 0, end_time: 5, highlighting_available: false },
+      { id: 'line-two', start_time: 5, end_time: 12 },
+    ];
+    source[4] = [];
+    const wrapper = mountPlayer(source);
+    await wrapper.vm.$nextTick();
+    await setHighlight(wrapper, mode);
+    expect(wrapper.vm.highlightSegments.length).toBeGreaterThan(0);
+    expect(wrapper.vm.highlightSegments.every((segment) => segment.start_time >= 5)).toBe(true);
+    expect(wrapper.vm.activeWordAt(1)).toBe(-1);
+    expect(wrapper.vm.activeWordAt(6)).toBeGreaterThanOrEqual(0);
+    wrapper.vm.updateActiveWord(6);
+    expect(content.querySelector('.audio-line--active')).not.toBeNull();
+    wrapper.vm.updateActiveWord(1);
+    expect(content.querySelector('.audio-line--active')).toBeNull();
+    wrapper.unmount();
+  });
+
+  it('suppresses measured highlights in explicitly unavailable audio while playback remains usable', async () => {
+    const source = [...audio];
+    source[3] = [{ id: 'line-one', start_time: 0, end_time: 5, highlighting_available: false }];
+    source[4] = audio[4].map((word) => ({ ...word, provider: 'elevenlabs' }));
+    const wrapper = mountPlayer(source);
+    await wrapper.vm.$nextTick();
+    wrapper.vm.updateActiveWord(0.4);
+    expect(content.querySelector('.audio-line--active')).toBeNull();
+    await wrapper.vm.audioElement.play();
+    expect(wrapper.vm.audioElement.play).toHaveBeenCalled();
+    wrapper.unmount();
+  });
+
 });
