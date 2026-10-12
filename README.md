@@ -542,7 +542,10 @@ If you are using macOS, all the above requirements may be installed with Homebre
 #### Run API server (in separate terminal)
 
 - Collect static assets `python manage.py collectstatic`
-- Start development server `python manage.py runsslserver`
+- One time, so browsers trust the local HTTPS certificate: `brew install mkcert && mkcert -install`
+- Start development server `python manage.py runsslserver 127.0.0.1:8006` (it creates a mkcert certificate in
+  `site/.dev-certs/` on first run and reuses it; without mkcert it falls back to a self-signed certificate your browser
+  will ask you to accept)
 - The API documentation will be accessible locally at `https://127.0.0.1:8006/api/`
 
 #### Run the client (frontend) server
