@@ -125,12 +125,8 @@ export default {
   },
   methods: {
     onAudioVisibilityEvent(event) {
-      const payload = event.detail;
-      if (payload && typeof payload === 'object') {
-        this.audioBarHeight = payload.visible ? Number(payload.height) || 0 : 0;
-        return;
-      }
-      this.audioBarHeight = payload ? 132 : 0;
+      const payload = event.detail || {};
+      this.audioBarHeight = payload.visible ? Number(payload.height) || 0 : 0;
     },
   },
 };

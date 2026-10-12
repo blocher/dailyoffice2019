@@ -2,6 +2,11 @@
   <div class="audio-player">
     <div class="controls fixed-controls">
       <div class="menu-and-buttons">
+        <UiIcon
+          name="headphones"
+          class="message-icon"
+          :class="{ 'is-preparing': isPreparing }"
+        />
         <span v-if="!isEnglish || !isEsvOrKjv" class="audio-message">
           <small>
             Audio is available when English is selected as the display language,
@@ -29,7 +34,7 @@
           title="Hide audio controls"
           @click.stop="$emit('dismiss-audio')"
         >
-          <font-awesome-icon :icon="faXmark" />
+          <UiIcon name="close" />
         </button>
       </div>
     </div>
@@ -37,10 +42,11 @@
 </template>
 
 <script>
-import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import UiIcon from '@/ui/UiIcon.vue';
 
 export default {
   name: 'AudioPlayerMessage',
+  components: { UiIcon },
   emits: ['dismiss-audio'],
   props: {
     audioReady: {
@@ -69,8 +75,15 @@ export default {
     },
   },
   computed: {
-    faXmark() {
-      return faXmark;
+    // Mirrors the template's v-else-if chain: only "Preparing audio…" is
+    // a transient state worth animating.
+    isPreparing() {
+      return (
+        this.isEnglish &&
+        this.isEsvOrKjv &&
+        this.isWithinSevenDays &&
+        !this.audioReady
+      );
     },
   },
   mounted() {
@@ -111,65 +124,98 @@ export default {
 </script>
 
 <style scoped>
+/* Matches the AudioPlayer bar: docked to the bottom edge on phones, a
+   floating raised card on wider screens. */
 .controls.fixed-controls {
   position: fixed;
-  inset-inline: max(8px, env(safe-area-inset-left))
-    max(8px, env(safe-area-inset-right));
-  bottom: max(8px, env(safe-area-inset-bottom));
-  width: auto;
-  max-width: 920px;
-  max-height: calc(100dvh - 32px - env(safe-area-inset-bottom));
-  overflow-y: auto;
-  margin-inline: auto;
-  padding: 8px 8px 8px 16px;
-  border: 1px solid color-mix(in srgb, var(--font-color) 14%, transparent);
-  border-radius: 18px;
-  background: color-mix(in srgb, var(--color-bg) 94%, transparent);
-  -webkit-backdrop-filter: blur(14px) saturate(1.4);
-  backdrop-filter: blur(14px) saturate(1.4);
-  color: var(--font-color);
-  box-shadow:
-    0 1px 2px #0000000d,
-    0 10px 32px -8px #00000026;
+  inset-inline: 0;
+  bottom: 0;
   z-index: 100;
+  max-height: calc(var(--vvh) - 2rem - env(safe-area-inset-bottom));
+  overflow-y: auto;
+  padding: var(--space-2) max(var(--space-2), env(safe-area-inset-right))
+    calc(var(--space-2) + env(safe-area-inset-bottom))
+    max(var(--space-4), env(safe-area-inset-left));
+  border-top: 1px solid var(--rule);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background-color: var(--paper-raised);
+  color: var(--ink);
+  font-family: var(--font-book);
+  box-shadow: var(--shadow);
 }
 .menu-and-buttons {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: var(--space-3);
+}
+.message-icon {
+  color: var(--accent);
+  font-size: 1.25rem;
+}
+.message-icon.is-preparing {
+  animation: message-pulse 1.6s var(--ease) infinite;
+}
+@keyframes message-pulse {
+  50% {
+    opacity: 0.35;
+  }
 }
 .audio-message {
+  flex: 1 1 auto;
   min-width: 0;
-  font-size: 0.875rem;
-  line-height: 1.5;
+  color: var(--ink-soft);
+  font-size: var(--text-sm);
+  line-height: 1.45;
   overflow-wrap: anywhere;
 }
 .audio-message small {
   font-size: inherit;
 }
 .audio-message a {
-  text-decoration: underline;
+  color: var(--accent);
+  white-space: nowrap;
 }
 .dismiss-button {
   display: grid;
   place-items: center;
-  flex: 0 0 44px;
-  width: 44px;
-  height: 44px;
-  border: 0;
-  border-radius: 10px;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
+  flex: 0 0 2.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-left: auto;
+  border-radius: var(--radius);
+  color: var(--ink-faint);
+  font-size: 1.125rem;
   touch-action: manipulation;
+  transition:
+    background-color var(--duration) var(--ease),
+    color var(--duration) var(--ease);
 }
 .dismiss-button:hover {
-  background: color-mix(in srgb, var(--font-color) 8%, transparent);
+  background-color: var(--paper-sunken);
+  color: var(--ink);
 }
 .dismiss-button:focus-visible,
 a:focus-visible {
-  outline: 2px solid var(--accent-color) !important;
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+@media (min-width: 720px) {
+  .controls.fixed-controls {
+    inset-inline: max(var(--gutter), env(safe-area-inset-left))
+      max(var(--gutter), env(safe-area-inset-right));
+    bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
+    max-width: 58rem;
+    margin-inline: auto;
+    padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .message-icon.is-preparing {
+    animation: none;
+  }
 }
 </style>

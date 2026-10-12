@@ -282,9 +282,18 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll));
 }
 
 @media (max-width: 359px) {
+  .app-header__bar {
+    gap: var(--space-1);
+  }
+
   .primary-nav__link {
     padding: 0 0.4rem;
     font-size: var(--text-sm);
+  }
+
+  .header-action {
+    min-width: 2.25rem;
+    padding: 0 0.35rem;
   }
 }
 </style>

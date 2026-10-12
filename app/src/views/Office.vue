@@ -56,45 +56,56 @@
         <Ornament glyph="o" />
       </div>
 
-      <!-- The office text, set like the printed book -->
-      <div id="main" class="book">
-        <div v-for="module in modules" :key="module.name">
-          <div
-            v-for="line in module.lines.filter(
-              (l) => l.line_type !== 'speaker'
-            )"
-            :key="line.content"
-          >
-            <OfficeHeading v-if="line.line_type === 'heading'" :line="line" />
-            <OfficeSubheading
-              v-if="line.line_type === 'subheading'"
-              :line="line"
-            />
-            <OfficeCitation v-if="line.line_type === 'citation'" :line="line" />
-            <OfficeHTML
-              v-if="line.line_type === 'html' || line.line_type === 'audio'"
-              :line="line"
-            />
-            <OfficeLeader
-              v-if="line.line_type === 'leader' || line.line_type === 'reader'"
-              :line="line"
-            />
-            <OfficeLeaderDialogue
-              v-if="line.line_type === 'leader_dialogue'"
-              :line="line"
-            />
-            <OfficeCongregation
-              v-if="line.line_type === 'congregation'"
-              :line="line"
-            />
-            <OfficeCongregationDialogue
-              v-if="line.line_type === 'congregation_dialogue'"
-              :line="line"
-            />
-            <OfficeRubric v-if="line.line_type === 'rubric'" :line="line" />
-            <OfficeSpacer v-if="line.line_type === 'spacer'" />
+      <div class="office-body">
+        <aside class="office-body__margin">
+          <OfficeContents :source="modules" />
+        </aside>
+        <!-- The office text, set like the printed book -->
+        <div id="main" class="book">
+          <div v-for="module in modules" :key="module.name">
+            <div
+              v-for="line in module.lines.filter(
+                (l) => l.line_type !== 'speaker'
+              )"
+              :key="line.content"
+            >
+              <OfficeHeading v-if="line.line_type === 'heading'" :line="line" />
+              <OfficeSubheading
+                v-if="line.line_type === 'subheading'"
+                :line="line"
+              />
+              <OfficeCitation
+                v-if="line.line_type === 'citation'"
+                :line="line"
+              />
+              <OfficeHTML
+                v-if="line.line_type === 'html' || line.line_type === 'audio'"
+                :line="line"
+              />
+              <OfficeLeader
+                v-if="
+                  line.line_type === 'leader' || line.line_type === 'reader'
+                "
+                :line="line"
+              />
+              <OfficeLeaderDialogue
+                v-if="line.line_type === 'leader_dialogue'"
+                :line="line"
+              />
+              <OfficeCongregation
+                v-if="line.line_type === 'congregation'"
+                :line="line"
+              />
+              <OfficeCongregationDialogue
+                v-if="line.line_type === 'congregation_dialogue'"
+                :line="line"
+              />
+              <OfficeRubric v-if="line.line_type === 'rubric'" :line="line" />
+              <OfficeSpacer v-if="line.line_type === 'spacer'" />
+            </div>
           </div>
         </div>
+        <div class="office-body__margin" aria-hidden="true" />
       </div>
 
       <OfficeContinue
@@ -167,6 +178,7 @@ import { DynamicStorage } from '@/helpers/storage';
 import AudioPlayer from '@/components/AudioPlayer.vue';
 import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue';
 import OfficeContinue from '@/components/OfficeContinue.vue';
+import OfficeContents from '@/components/OfficeContents.vue';
 import { confirm } from '@/ui/feedback';
 import { openPanel } from '@/helpers/panels';
 import { displayState, setAudioEnabled } from '@/helpers/displayPreferences';
@@ -180,6 +192,7 @@ export default {
     AudioPlayerMessage,
     AudioPlayer,
     OfficeContinue,
+    OfficeContents,
     OfficeHeading,
     OfficeSubheading,
     OfficeCitation,
@@ -558,6 +571,28 @@ export default {
 .office-tool__glyph {
   font-size: 1.05em;
   line-height: 1;
+}
+
+/* Wide screens: a margin index beside the text, like a book's ribbon. */
+.office-body__margin {
+  display: none;
+}
+
+@media (min-width: 1200px) {
+  .office-body {
+    display: grid;
+    grid-template-columns: minmax(11rem, 1fr) minmax(0, auto) minmax(
+        11rem,
+        1fr
+      );
+    align-items: start;
+  }
+
+  .office-body__margin {
+    display: block;
+    align-self: stretch;
+    padding-left: var(--gutter);
+  }
 }
 
 .book-opening {
