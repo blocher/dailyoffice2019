@@ -12,6 +12,7 @@ import {
   loadDisplayPreferences,
   nextFontSize,
   setReadingFont,
+  setRubricStyle,
   setTheme,
 } from '@/helpers/displayPreferences';
 import { DynamicStorage } from '@/helpers/storage';
@@ -77,6 +78,19 @@ describe('display preferences', () => {
     );
     await setReadingFont('caslon');
     expect(document.documentElement.dataset.readingFont).toBeUndefined();
+  });
+
+  it('switches rubrics between italic and red, and saves the choice', async () => {
+    stubStorage({ rubricStyle: 'red' });
+    await loadDisplayPreferences();
+    expect(displayState.rubricStyle).toBe('red');
+    expect(document.documentElement.dataset.rubrics).toBe('red');
+    await setRubricStyle('italic');
+    expect(document.documentElement.dataset.rubrics).toBeUndefined();
+    expect(DynamicStorage.setItem).toHaveBeenCalledWith(
+      'rubricStyle',
+      'italic'
+    );
   });
 
   it('steps text size along fixed notches and reports it against the default', () => {

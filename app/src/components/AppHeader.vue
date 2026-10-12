@@ -70,6 +70,11 @@ const PRAY_ROUTES = [
   'FamilyPrayer',
   'FamilyPrayerToday',
   'FamilyPrayerWithDate',
+  'readings',
+  'readingsByService',
+  'readingsByServiceAndDate',
+  'readingsByServicePositionAndDate',
+  'readingsByDate',
 ];
 
 const route = useRoute();

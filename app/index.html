@@ -40,6 +40,7 @@
           if (size) root.style.setProperty('--main-font-size', size + 'px');
           var font = get('readingFont');
           if (font && font !== 'caslon') root.dataset.readingFont = font;
+          if (get('rubricStyle') === 'red') root.dataset.rubrics = 'red';
         } catch (e) {
           // Storage can be unavailable (private mode); defaults apply.
         }

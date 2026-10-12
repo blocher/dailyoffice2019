@@ -8,8 +8,8 @@
     - Scripture citations in small capitals, set right
     - congregational text in semibold (not bold)
     - rubrics in italic, noticeably smaller
-    - black ink only (black-letter mode restores red rubrics, as in the
-      1549–1662 books)
+    - black ink only, unless the reader chooses red rubrics (black-letter
+      mode always uses them, as in the 1549–1662 books)
 
   Size and face come from the reader's display settings.
   `#main` is kept as an alias for older templates; prefer `.book`.
@@ -147,6 +147,10 @@
   font-style: italic;
 }
 
+/* Red rubrics, set upright, as in the older Prayer Books (a display
+   setting; black-letter mode always uses them). */
+:root[data-rubrics='red'] :is(#main, .book) .rubric,
+:root[data-rubrics='red'] :is(#main, .book) .rubric em,
 :root[data-reading-font='blackletter'] :is(#main, .book) .rubric,
 :root[data-reading-font='blackletter'] :is(#main, .book) .rubric em {
   font-style: normal;
