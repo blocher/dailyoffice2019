@@ -210,6 +210,13 @@ function onKeydown(event, index) {
   background-color: var(--accent);
 }
 
+/* Touch screens: options plus the track make a 44px+ target. */
+@media (pointer: coarse) {
+  .ui-segmented--pill.ui-segmented--sm .ui-segmented__option {
+    min-height: 2.5rem;
+  }
+}
+
 .ui-segmented__icon {
   font-size: 0.95em;
 }

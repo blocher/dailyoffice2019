@@ -192,4 +192,17 @@ const linkAttrs = computed(() => {
 .ui-button--icon-only.ui-button--lg {
   width: 3rem;
 }
+
+/* Touch screens: every button is at least a 44px target. */
+@media (pointer: coarse) {
+  .ui-button,
+  .ui-button--sm {
+    min-height: 2.75rem;
+  }
+
+  .ui-button--icon-only,
+  .ui-button--icon-only.ui-button--sm {
+    width: 2.75rem;
+  }
+}
 </style>

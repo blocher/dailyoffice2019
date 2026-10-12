@@ -1,7 +1,6 @@
 /* eslint-env node */
 /* global process */
 import { defineConfig } from 'vite';
-import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import path from 'path';
 
@@ -11,7 +10,7 @@ export default defineConfig({
     port: 5176,
     strictPort: true,
   },
-  plugins: [vue(), tailwindcss()],
+  plugins: [vue()],
   resolve: {
     alias: {
       '@': path.resolve(process.cwd(), './src'), // Replaced __dirname for ESM compatibility

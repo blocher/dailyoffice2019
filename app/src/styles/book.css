@@ -73,6 +73,12 @@
   text-align: center;
 }
 
+/* Office subheadings keep the spacing they have always had. */
+:is(#main, .book) h4.subheading {
+  margin: 0.5rem 0;
+  padding: 0.5rem 0;
+}
+
 /* Citations */
 :is(#main, .book) h5 {
   margin: 0.3em 0 0.6em;

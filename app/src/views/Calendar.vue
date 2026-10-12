@@ -105,7 +105,7 @@
                 <span class="day__number">{{ cell.dayNumber }}</span>
                 <span
                   v-if="cell.color"
-                  class="day__swatch"
+                  class="swatch day__swatch"
                   :class="`swatch--${cell.color}`"
                   aria-hidden="true"
                 />
@@ -136,7 +136,7 @@
         </p>
         <h2 class="day-detail__feast">
           <span
-            class="day-detail__swatch"
+            class="swatch day-detail__swatch"
             :class="`swatch--${selectedColor}`"
             :title="`Liturgical color: ${selectedColor}`"
           />
@@ -152,7 +152,7 @@
             :key="commemoration.uuid || commemoration.name"
           >
             <span
-              class="day-detail__swatch day-detail__swatch--small"
+              class="swatch day-detail__swatch day-detail__swatch--small"
               :class="`swatch--${colorOf(commemoration)}`"
               aria-hidden="true"
             />
@@ -860,7 +860,6 @@ export default {
   width: 0.45rem;
   height: 0.45rem;
   border-radius: 1px;
-  background-color: var(--season-green);
 }
 
 .day.has-feast .day__swatch {
@@ -999,7 +998,6 @@ export default {
   margin-right: 0.45em;
   border-radius: 2px;
   vertical-align: 0.08em;
-  background-color: var(--season-green);
 }
 
 .day-detail__swatch--small {
@@ -1107,35 +1105,5 @@ export default {
   color: var(--ink-soft);
   font-size: var(--text-md);
   line-height: var(--leading-prose);
-}
-/* ── Liturgical color swatches (last, so they win over the base
-   swatch color above) ── */
-.swatch--red {
-  background-color: var(--season-red);
-}
-
-.swatch--green {
-  background-color: var(--season-green);
-}
-
-.swatch--purple {
-  background-color: var(--season-purple);
-}
-
-.swatch--white {
-  background-color: var(--paper-raised);
-  box-shadow: inset 0 0 0 1px var(--season-white);
-}
-
-.swatch--black {
-  background-color: var(--season-black);
-}
-
-.swatch--rose {
-  background-color: var(--season-rose);
-}
-
-.swatch--blue {
-  background-color: var(--season-blue);
 }
 </style>

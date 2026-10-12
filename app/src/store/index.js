@@ -97,7 +97,27 @@ export default createStore({
       state.settings = settings;
       state.settingAbbreviations = setting_abbreviations;
       await initializeAdditionalCollects();
-      router.push({ path: router.currentRoute._value.fullPath, query: {} });
+      // Drop only the query parameters consumed above (a share link's
+      // settings and extra collects) so other links, such as
+      // /calendar?subscribe=1, keep theirs. Replace rather than push so the
+      // cleanup doesn't add a history entry.
+      const currentQuery = router.currentRoute._value.query || {};
+      const settingNames = (availableSettings || []).map((s) => s.name);
+      const consumed = Object.keys(currentQuery).filter(
+        (key) =>
+          key === 'settings' ||
+          settingNames.includes(key) ||
+          key.endsWith('_prayer_collects') ||
+          key === 'compline_collects'
+      );
+      if (consumed.length) {
+        const remaining = { ...currentQuery };
+        consumed.forEach((key) => delete remaining[key]);
+        router.replace({
+          path: router.currentRoute._value.path,
+          query: remaining,
+        });
+      }
       if (applied) {
         toast.success({
           title: 'Settings applied from the share link',
