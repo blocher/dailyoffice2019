@@ -429,12 +429,14 @@ a {
 .badge-new {
   display: inline-flex;
   align-items: center;
-  padding: 0 0.4rem 0.05rem;
+  /* Small capitals sit low in their line box; the extra top padding
+     centers them optically in the pill. */
+  padding: 0.135rem 0.42rem 0;
   border-radius: var(--radius-pill);
   background-color: var(--accent);
   color: var(--on-accent);
   font-size: 0.72rem;
   font-variant-caps: all-small-caps;
   letter-spacing: 0.08em;
-  line-height: 1.5;
+  line-height: 1.32;
 }
