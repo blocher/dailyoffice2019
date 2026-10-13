@@ -140,6 +140,7 @@
 
 <script>
 // @ is an alias to /src
+import { defineAsyncComponent } from 'vue';
 import Loading from '@/components/Loading.vue';
 import CalendarCard from '@/components/CalendarCard.vue';
 import OfficeNav from '@/components/OfficeNav.vue';
@@ -149,7 +150,6 @@ import AudioPlayer from '@/components/AudioPlayer.vue';
 import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue';
 import OfficeContinue from '@/components/OfficeContinue.vue';
 import OfficeLines from '@/components/OfficeLines.vue';
-import BookReader from '@/components/BookReader.vue';
 import { discoveryState } from '@/helpers/discovery';
 import DisplayDiscoveryCard from '@/components/DisplayDiscoveryCard.vue';
 import OfficeContents from '@/components/OfficeContents.vue';
@@ -159,6 +159,11 @@ import { displayState, setAudioEnabled } from '@/helpers/displayPreferences';
 import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
 import { trackEvent } from '@/helpers/analytics';
 import { getCachedClientId } from '@/helpers/clientId';
+
+// Book view loads separately, after the office is showing.
+const BookReader = defineAsyncComponent(
+  () => import('@/components/BookReader.vue')
+);
 
 export default {
   name: 'Office',

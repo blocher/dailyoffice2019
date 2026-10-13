@@ -34,6 +34,12 @@ The project is known to work with these versions, although it may also work with
 
 ### Dependency review and follow-up (October 11, 2026)
 
+> **Superseded in part (October 12, 2026):** the 2026 redesign removed Element Plus (and
+> `@element-plus/icons-vue`), Tailwind CSS (and `@tailwindcss/typography`), and FontAwesome from the
+> app. The UI now uses its own components in `app/src/ui/` and inline Lucide icons. The notes below
+> about those packages, the FontAwesome private registry and its lock entries describe the earlier
+> state.
+
 The consolidation in PR #250 started from master `909f9c277`, after direct dependency upgrade
 `dc53115e3`. The Firebase/TypeScript follow-up starts from `073c1f78a`, preserving the newer deployment
 workflow. The original inventory covered four npm manifests, three npm lockfiles, 96 numbered Python

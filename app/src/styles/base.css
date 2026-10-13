@@ -91,6 +91,9 @@ html {
 
 body {
   min-height: var(--vvh);
+  /* Keep the page clear of a landscape phone's notch and rounded corners. */
+  padding-right: env(safe-area-inset-right);
+  padding-left: env(safe-area-inset-left);
   background-color: var(--paper);
   color: var(--ink);
   font-family: var(--font-book);
@@ -231,21 +234,10 @@ a {
   padding-inline: var(--gutter);
 }
 
-.container--content {
-  max-width: calc(var(--content-width) + 2 * var(--gutter));
-}
-
 .stack {
   display: flex;
   flex-direction: column;
   gap: var(--stack-gap, var(--space-4));
-}
-
-.cluster {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--cluster-gap, var(--space-2));
 }
 
 /* ── Page scaffolding (secondary pages) ──────────────── */
@@ -311,23 +303,6 @@ a {
   content: '';
   flex: 1;
   border-top: 1px solid var(--rule);
-}
-
-/* ── Safe-area helpers ───────────────────────────────── */
-.min-h-vv {
-  min-height: var(--vvh);
-}
-
-.h-vv {
-  height: var(--vvh);
-}
-
-.pb-safe {
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-.pt-safe-top {
-  padding-top: env(safe-area-inset-top);
 }
 
 @media (prefers-reduced-motion: reduce) {

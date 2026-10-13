@@ -36,8 +36,6 @@ import UiSheet from './UiSheet.vue';
 import UiSwitch from './UiSwitch.vue';
 import UiTag from './UiTag.vue';
 
-export { toast, confirm } from './feedback';
-
 const components = {
   Ornament,
   UiAlert,

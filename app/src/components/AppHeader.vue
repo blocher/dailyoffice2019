@@ -154,7 +154,8 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll));
 }
 
 .app-header.is-hidden {
-  transform: translateY(-100%);
+  /* Slide the bar away but keep the strip under the status bar covered. */
+  transform: translateY(calc(-100% + env(safe-area-inset-top)));
 }
 
 .app-header__bar {

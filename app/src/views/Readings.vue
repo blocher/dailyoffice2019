@@ -31,6 +31,7 @@
         </div>
 
         <DayLine
+          v-if="calendarDate"
           :date="calendarDate"
           :prev-to="dayLink(-1)"
           :next-to="dayLink(1)"
@@ -40,7 +41,11 @@
         />
 
         <Loading v-if="loading" />
-        <UiAlert v-if="error" tone="error" :title="error" />
+        <UiAlert v-if="error" tone="error" :title="error">
+          <UiButton variant="secondary" size="sm" @click="retry">
+            Try again
+          </UiButton>
+        </UiAlert>
 
         <CalendarCard
           v-if="!loading && card"
@@ -499,6 +504,10 @@ export default {
   },
   async created() {
     this.calendarDate = setCalendarDate(this.$route);
+    if (!this.calendarDate) {
+      this.notFound = true;
+      return;
+    }
     await this.$store.dispatch('initializeSettings');
 
     let translation = await DynamicStorage.getItem('readings_translation');
@@ -619,6 +628,11 @@ export default {
       this.error = false;
       this.loading = false;
       this.readingsLoading = false;
+    },
+    retry: async function () {
+      this.error = false;
+      this.loading = true;
+      await this.initialize();
     },
     readingID: function (reading) {
       const readingId = reading.citation.replace(/[\W_]+/g, '_');

@@ -1,14 +1,16 @@
-import Settings from '../views/Settings.vue';
 import Pray from '../views/Pray.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import Today from '@/views/Today.vue';
-import Calendar from '@/views/Calendar.vue';
-import Day from '@/views/Day.vue';
 import PageNotFound from '@/views/PageNotFound.vue';
-import Readings from '@/views/Readings.vue';
-import Scripture from '@/views/Scripture.vue';
-import Litany from '@/views/Litany.vue';
-import Commemoration from '@/views/Commemoration.vue';
+
+// The offices load with the app; other pages load when first visited.
+const Calendar = () => import('@/views/Calendar.vue');
+const Settings = () => import('@/views/Settings.vue');
+const Day = () => import('@/views/Day.vue');
+const Readings = () => import('@/views/Readings.vue');
+const Scripture = () => import('@/views/Scripture.vue');
+const Litany = () => import('@/views/Litany.vue');
+const Commemoration = () => import('@/views/Commemoration.vue');
 
 const routes = [
   {

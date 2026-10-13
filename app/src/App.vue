@@ -4,7 +4,7 @@
   >
   <AppHeader />
 
-  <main id="content" class="app-main" :style="mainStyle">
+  <main id="content" class="app-main" tabindex="-1" :style="mainStyle">
     <Loading v-if="loading" />
     <div v-if="error" class="app-error">
       <UiAlert tone="error" :title="error" />
@@ -14,6 +14,7 @@
   </main>
 
   <AppFooter v-if="showLinks" :style="mainStyle" />
+  <BackToTop :offset="audioBarHeight" />
 
   <AppMenu />
   <DisplayPanel />
@@ -24,25 +25,32 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from 'vue';
 import { useActiveMeta, useMeta } from 'vue-meta';
 import { useRoute } from 'vue-router';
 import AppFooter from '@/components/AppFooter.vue';
 import AppHeader from '@/components/AppHeader.vue';
 import AppMenu from '@/components/AppMenu.vue';
+import BackToTop from '@/components/BackToTop.vue';
 import DisplayPanel from '@/components/DisplayPanel.vue';
 import EmailSignup from '@/components/EmailSignup.vue';
 import Loading from '@/components/Loading.vue';
-import ShareSettings from '@/components/ShareSettings.vue';
 import SiteMessages from '@/components/SiteMessages.vue';
 import SubmitFeedback from '@/components/SubmitFeedback.vue';
 import UiFeedbackHost from '@/ui/UiFeedbackHost.vue';
 import { applyAll } from '@/helpers/displayPreferences';
+
+// The share panel (with its QR code library) loads after the first page.
+const ShareSettings = defineAsyncComponent(
+  () => import('@/components/ShareSettings.vue')
+);
 
 export default {
   components: {
     AppFooter,
     AppHeader,
     AppMenu,
+    BackToTop,
     DisplayPanel,
     EmailSignup,
     Loading,
@@ -132,9 +140,7 @@ export default {
   methods: {
     // Move focus without changing the address, which would reload the page.
     skipToContent() {
-      const main = document.getElementById('content');
-      main.setAttribute('tabindex', '-1');
-      main.focus();
+      document.getElementById('content').focus();
     },
     onAudioVisibilityEvent(event) {
       const payload = event.detail || {};
@@ -162,6 +168,11 @@ export default {
 
 .app-main {
   min-height: calc(var(--vvh) - var(--header-height) - 10rem);
+}
+
+/* Focused only as a skip-link target, not as a control. */
+.app-main:focus {
+  outline: none;
 }
 
 .app-error {

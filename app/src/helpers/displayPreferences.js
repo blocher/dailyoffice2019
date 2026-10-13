@@ -309,14 +309,3 @@ export async function resetDisplayPreferences() {
     setAudioEnabled(true),
   ]);
 }
-
-export function hasCustomDisplay() {
-  return (
-    displayState.theme !== 'auto' ||
-    displayState.fontSize !== DEFAULT_FONT_SIZE ||
-    displayState.readingFont !== 'caslon' ||
-    displayState.rubricStyle !== 'italic' ||
-    !displayState.showContents ||
-    !displayState.audioEnabled
-  );
-}

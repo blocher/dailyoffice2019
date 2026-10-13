@@ -91,11 +91,6 @@ export function countViews(pages, layout) {
   return Math.max(1, Math.ceil(pages / layout.cols));
 }
 
-/** The first page shown on a view. */
-export function firstPageOfView(view, layout) {
-  return view * layout.cols;
-}
-
 /** The view that shows a page. */
 export function viewOfPage(page, layout) {
   return Math.floor(page / layout.cols);

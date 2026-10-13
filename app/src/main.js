@@ -22,6 +22,21 @@ import { Capacitor } from '@capacitor/core';
 // the browser toolbars collapsing/expanding can cause fixed footers to “float”.
 installViewportCssVars();
 
+// After a deploy, an open tab may ask for a page chunk that no longer
+// exists. Reload to pick up the new build (at most once a minute, so a
+// chunk that is truly missing can't cause a reload loop).
+window.addEventListener('vite:preloadError', (event) => {
+  try {
+    const last = Number(window.sessionStorage.getItem('reloadedForNewBuild'));
+    if (Date.now() - last < 60000) return;
+    window.sessionStorage.setItem('reloadedForNewBuild', String(Date.now()));
+  } catch {
+    return;
+  }
+  event.preventDefault();
+  window.location.reload();
+});
+
 router.beforeEach((to, from) => {
   // ?book=1 opens an office in book view. Take the flag off the address
   // before the page renders, so closing the book doesn't reload the office.

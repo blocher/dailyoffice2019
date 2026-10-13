@@ -36,6 +36,12 @@
           }
           var root = document.documentElement;
           root.className = theme;
+          document
+            .querySelector('meta[name="theme-color"]')
+            .setAttribute(
+              'content',
+              { light: '#fdfcf9', sepia: '#f4ecd9', dark: '#161513' }[theme]
+            );
           var size = parseInt(get('fontSize'), 10);
           if (size) root.style.setProperty('--main-font-size', size + 'px');
           var font = get('readingFont');

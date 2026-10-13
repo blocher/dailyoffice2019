@@ -360,10 +360,12 @@ onBeforeUnmount(() => {
 }
 
 .ui-sheet--right {
+  padding-right: env(safe-area-inset-right);
   border-left: 1px solid var(--rule);
 }
 
 .ui-sheet--left {
+  padding-left: env(safe-area-inset-left);
   border-right: 1px solid var(--rule);
 }
 
