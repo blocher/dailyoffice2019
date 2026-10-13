@@ -1,13 +1,13 @@
 /*
   Display preferences
   ===================
-  Theme, text size, reading face, rubric style, and whether audio controls
-  show. One
+  Theme, text size, reading face, rubric style, the margin contents, and
+  whether audio controls show. One
   reactive store shared by the header's Display panel, the Settings page, and
   the office page, so a change in one place shows everywhere at once.
   Values persist through DynamicStorage under the same keys the app has
-  always used ('user-theme', 'fontSize', 'audioEnabled') plus 'readingFont'
-  and 'rubricStyle'.
+  always used ('user-theme', 'fontSize', 'audioEnabled') plus 'readingFont',
+  'rubricStyle', and 'showContents'.
 */
 import { reactive } from 'vue';
 import { DynamicStorage } from '@/helpers/storage';
@@ -77,6 +77,7 @@ export const displayState = reactive({
   fontSize: DEFAULT_FONT_SIZE,
   readingFont: 'caslon',
   rubricStyle: 'italic',
+  showContents: true,
   audioEnabled: true,
   loaded: false,
 });
@@ -173,14 +174,21 @@ function parseFontSize(raw) {
 }
 
 export async function loadDisplayPreferences() {
-  const [theme, fontSize, readingFont, rubricStyle, audioEnabled] =
-    await Promise.all([
-      DynamicStorage.getItem('user-theme'),
-      DynamicStorage.getItem('fontSize'),
-      DynamicStorage.getItem('readingFont'),
-      DynamicStorage.getItem('rubricStyle'),
-      DynamicStorage.getItem('audioEnabled'),
-    ]);
+  const [
+    theme,
+    fontSize,
+    readingFont,
+    rubricStyle,
+    showContents,
+    audioEnabled,
+  ] = await Promise.all([
+    DynamicStorage.getItem('user-theme'),
+    DynamicStorage.getItem('fontSize'),
+    DynamicStorage.getItem('readingFont'),
+    DynamicStorage.getItem('rubricStyle'),
+    DynamicStorage.getItem('showContents'),
+    DynamicStorage.getItem('audioEnabled'),
+  ]);
   displayState.theme = THEME_VALUES.includes(theme) ? theme : 'auto';
   displayState.fontSize = parseFontSize(fontSize ?? DEFAULT_FONT_SIZE);
   displayState.readingFont = FONT_VALUES.includes(readingFont)
@@ -189,6 +197,7 @@ export async function loadDisplayPreferences() {
   displayState.rubricStyle = RUBRIC_VALUES.includes(rubricStyle)
     ? rubricStyle
     : 'italic';
+  displayState.showContents = showContents !== 'false';
   displayState.audioEnabled = !(
     audioEnabled === 'false' || audioEnabled === false
   );
@@ -241,6 +250,15 @@ export async function setRubricStyle(style) {
   await DynamicStorage.setItem('rubricStyle', style);
 }
 
+/** The list of an office's sections beside the text on wide screens. */
+export async function setShowContents(show) {
+  displayState.showContents = Boolean(show);
+  await DynamicStorage.setItem(
+    'showContents',
+    displayState.showContents ? 'true' : 'false'
+  );
+}
+
 export async function setAudioEnabled(enabled) {
   displayState.audioEnabled = Boolean(enabled);
   await DynamicStorage.setItem(
@@ -255,6 +273,7 @@ export async function resetDisplayPreferences() {
     setFontSize(DEFAULT_FONT_SIZE),
     setReadingFont('caslon'),
     setRubricStyle('italic'),
+    setShowContents(true),
     setAudioEnabled(true),
   ]);
 }
@@ -265,6 +284,7 @@ export function hasCustomDisplay() {
     displayState.fontSize !== DEFAULT_FONT_SIZE ||
     displayState.readingFont !== 'caslon' ||
     displayState.rubricStyle !== 'italic' ||
+    !displayState.showContents ||
     !displayState.audioEnabled
   );
 }

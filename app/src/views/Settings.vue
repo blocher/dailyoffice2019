@@ -23,40 +23,44 @@
         />
       </div>
 
+      <div class="settings-tabs">
+        <UiSegmented
+          :model-value="openTab"
+          :options="tabs"
+          variant="underline"
+          block
+          aria-label="Which settings to show"
+          @update:model-value="toggleOffice"
+        />
+        <p class="settings-tabs__note">{{ tabNote }}</p>
+      </div>
+
+      <!-- Display: its own tab, and found by search from the other tabs -->
       <section
-        v-if="showDisplay"
+        v-if="isDisplayTab || (isFiltering && displayMatches)"
         class="settings-display"
         aria-labelledby="settings-display-title"
       >
-        <h2 id="settings-display-title" class="section-title">Display</h2>
-        <p class="settings-display__note">
-          Also available from <span class="settings-aa">Aa</span> at the top of
-          every page.
-        </p>
+        <h2
+          v-if="!isDisplayTab"
+          id="settings-display-title"
+          class="section-title"
+        >
+          Display
+        </h2>
+        <h2 v-else id="settings-display-title" class="visually-hidden">
+          Display
+        </h2>
         <div class="surface settings-display__body">
           <DisplaySettings />
         </div>
       </section>
 
-      <section class="settings-offices" aria-label="Office settings">
-        <div class="settings-tabs">
-          <UiSegmented
-            :model-value="openTab"
-            :options="tabs"
-            variant="underline"
-            block
-            aria-label="Which prayers to set up"
-            @update:model-value="toggleOffice"
-          />
-          <p class="settings-tabs__note">
-            {{
-              openTab === 'family'
-                ? 'Short services for households and for children, from the Prayer Book’s Family Prayer.'
-                : 'Morning, Midday, and Evening Prayer and Compline.'
-            }}
-          </p>
-        </div>
-
+      <section
+        v-if="!isDisplayTab"
+        class="settings-offices"
+        aria-label="Office settings"
+      >
         <SettingsPanel
           :key="openTab"
           :available-settings="availableSettings"
@@ -66,7 +70,7 @@
       </section>
 
       <footer class="settings-footer">
-        <UiButton icon="share" @click="openPanel('share')">
+        <UiButton v-if="!isDisplayTab" icon="share" @click="openPanel('share')">
           Share these settings
         </UiButton>
         <UiButton variant="ghost" icon="reset" @click="restoreDefaults">
@@ -81,6 +85,7 @@
 import DisplaySettings from '@/components/DisplaySettings.vue';
 import Loading from '@/components/Loading.vue';
 import SettingsPanel from '@/components/SettingsPanel.vue';
+import { resetDisplayPreferences } from '@/helpers/displayPreferences';
 import { openPanel } from '@/helpers/panels';
 import { DynamicStorage } from '@/helpers/storage';
 import { confirm, toast } from '@/ui/feedback';
@@ -107,6 +112,9 @@ const DISPLAY_TERMS = [
   'rubric',
   'italic',
   'red',
+  'contents',
+  'margin',
+  'sections',
 ];
 
 export default {
@@ -126,19 +134,34 @@ export default {
       tabs: [
         { value: 'office', label: 'Daily Office' },
         { value: 'family', label: 'Family Prayer' },
+        { value: 'display', label: 'Display' },
       ],
     };
   },
   computed: {
     openTabLabel() {
+      if (this.openTab === 'display') return 'Display';
       return this.openTab === 'family' ? 'Family Prayer' : 'Daily Office';
     },
-    showDisplay() {
+    isDisplayTab() {
+      return this.openTab === 'display';
+    },
+    isFiltering() {
+      return Boolean(this.searchQuery.trim());
+    },
+    displayMatches() {
       const query = this.searchQuery.trim().toLowerCase();
-      if (!query) return true;
       return DISPLAY_TERMS.some(
         (term) => term.includes(query) || query.includes(term)
       );
+    },
+    tabNote() {
+      if (this.openTab === 'display') {
+        return 'How the prayers look on this device. Also under Aa at the top of every page.';
+      }
+      return this.openTab === 'family'
+        ? 'Short services for households and for children, from the Prayer Book’s Family Prayer.'
+        : 'Morning, Midday, and Evening Prayer and Compline.';
     },
   },
   watch: {
@@ -169,7 +192,7 @@ export default {
       }
 
       const storedPane = await DynamicStorage.getItem('settingsPane');
-      if (storedPane === 'office' || storedPane === 'family') {
+      if (['office', 'family', 'display'].includes(storedPane)) {
         this.openTab = storedPane;
       } else {
         await DynamicStorage.setItem('settingsPane', 'office');
@@ -182,6 +205,19 @@ export default {
       await DynamicStorage.setItem('settingsPane', value);
     },
     async restoreDefaults() {
+      if (this.isDisplayTab) {
+        const ok = await confirm({
+          title: 'Restore display defaults?',
+          message:
+            'Theme, text size, typeface, rubrics, margin contents, and the audio player go back to their defaults.',
+          confirmText: 'Restore defaults',
+          tone: 'danger',
+        });
+        if (!ok) return;
+        await resetDisplayPreferences();
+        toast.success('Display settings restored to their defaults.');
+        return;
+      }
       const site = this.openTabLabel;
       const ok = await confirm({
         title: `Restore ${site} defaults?`,
@@ -229,18 +265,6 @@ export default {
 
 .settings-display .section-title {
   margin-left: var(--space-1);
-}
-
-.settings-display__note {
-  margin: 0 0 var(--space-3) var(--space-1);
-  font-size: var(--text-sm);
-  font-style: italic;
-  color: var(--ink-faint);
-}
-
-.settings-aa {
-  font-style: normal;
-  color: var(--ink-soft);
 }
 
 .settings-display__body {

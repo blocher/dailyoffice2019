@@ -54,7 +54,7 @@
 
       <div class="office-body">
         <aside class="office-body__margin">
-          <OfficeContents :source="modules" />
+          <OfficeContents v-if="showContents" :source="modules" />
         </aside>
         <!-- The office text, set like the printed book -->
         <div id="main" class="book">
@@ -109,6 +109,11 @@
         :office="office"
         :calendar-date="calendarDate"
         :service-type="serviceType"
+      />
+
+      <DisplayDiscoveryCard
+        v-if="modules"
+        :audio-available="audioLoadingEnabled"
       />
     </template>
   </div>
@@ -174,6 +179,7 @@ import { DynamicStorage } from '@/helpers/storage';
 import AudioPlayer from '@/components/AudioPlayer.vue';
 import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue';
 import OfficeContinue from '@/components/OfficeContinue.vue';
+import DisplayDiscoveryCard from '@/components/DisplayDiscoveryCard.vue';
 import OfficeContents from '@/components/OfficeContents.vue';
 import { confirm } from '@/ui/feedback';
 import { openPanel } from '@/helpers/panels';
@@ -188,6 +194,7 @@ export default {
     AudioPlayerMessage,
     AudioPlayer,
     OfficeContinue,
+    DisplayDiscoveryCard,
     OfficeContents,
     OfficeHeading,
     OfficeSubheading,
@@ -236,6 +243,9 @@ export default {
   computed: {
     audioEnabled() {
       return displayState.audioEnabled;
+    },
+    showContents() {
+      return displayState.showContents;
     },
     audioLoadingEnabled() {
       // Set VITE_FETCH_AUDIO_ON=false to avoid on-demand generation in dev.
