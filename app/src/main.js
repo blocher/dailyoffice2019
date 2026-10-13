@@ -11,6 +11,7 @@ import './styles/index.css';
 import { createMetaManager } from 'vue-meta';
 import { installViewportCssVars } from './helpers/viewport';
 import { getClientId } from './helpers/clientId';
+import { identifyUser, startErrorReporting } from './helpers/errorReporting';
 import { loadDisplayPreferences } from './helpers/displayPreferences';
 import { loadDiscovery } from './helpers/discovery';
 import { requestBookView } from './helpers/panels';
@@ -201,6 +202,9 @@ const app = createApp(App)
 
 app.config.globalProperties.$gtag = { event };
 
+// Report uncaught errors to Bugsnag (production builds with a key only).
+startErrorReporting(app);
+
 const bootstrap = async () => {
   await loadDisplayPreferences();
   loadDiscovery();
@@ -208,6 +212,7 @@ const bootstrap = async () => {
   // backend can attribute office views to a unique user (updated clients only).
   try {
     const clientId = await getClientId();
+    identifyUser(clientId);
     axios.defaults.headers.common['X-Client-Id'] = clientId;
     axios.defaults.headers.common['X-Client-Platform'] =
       Capacitor.getPlatform();

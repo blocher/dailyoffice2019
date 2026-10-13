@@ -5,6 +5,7 @@ import {
   countViews,
   pageOfOffset,
   pagesLeftInSection,
+  resolvePageCount,
   sectionForPage,
   viewOfPage,
 } from '@/helpers/readerLayout';
@@ -75,6 +76,52 @@ describe('reader layout', () => {
     expect(pageOfOffset(0, layout)).toBe(0);
     expect(pageOfOffset(layout.step * 3 + 10, layout)).toBe(3);
     expect(viewOfPage(3, layout)).toBe(1);
+  });
+
+  it('counts pages from where the text ends when the scroll width falls short', () => {
+    const layout = computeReaderLayout({
+      width: 390,
+      height: 844,
+      fontSize: 24,
+    });
+    // A browser that reports only the first column's width.
+    const midPage = (page) => page * layout.step + layout.pageW / 2;
+    expect(
+      resolvePageCount(
+        { scrollWidth: layout.pageW, contentEnd: midPage(66) },
+        layout
+      )
+    ).toEqual({ total: 67, fromScrollWidth: 1, fromContentEnd: 67 });
+  });
+
+  it('agrees with the scroll width when both measures work', () => {
+    const layout = computeReaderLayout({
+      width: 390,
+      height: 844,
+      fontSize: 24,
+    });
+    const scrollWidth = layout.step * 12 - layout.gap;
+    const contentEnd = 11 * layout.step + 40;
+    expect(resolvePageCount({ scrollWidth, contentEnd }, layout)).toEqual({
+      total: 12,
+      fromScrollWidth: 12,
+      fromContentEnd: 12,
+    });
+  });
+
+  it('falls back to the scroll width when the text end is unknown', () => {
+    const layout = computeReaderLayout({
+      width: 1440,
+      height: 900,
+      fontSize: 24,
+    });
+    const scrollWidth = layout.step * 5 - layout.gap;
+    expect(resolvePageCount({ scrollWidth, contentEnd: null }, layout)).toEqual(
+      { total: 5, fromScrollWidth: 5, fromContentEnd: null }
+    );
+    expect(
+      resolvePageCount({ scrollWidth: 0, contentEnd: null }, layout)
+    ).toEqual({ total: 1, fromScrollWidth: 1, fromContentEnd: null });
   });
 
   it('finds the section for a page and the pages left in it', () => {
