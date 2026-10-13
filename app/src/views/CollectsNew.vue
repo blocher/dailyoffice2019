@@ -102,6 +102,7 @@
             :traditional="traditional"
             :subcategory="subcategory"
             :extra-collects="extraCollects"
+            :searching="Boolean(search.trim())"
             @extra-collects-changed="setExtraCollects"
           />
         </section>

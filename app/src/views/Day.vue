@@ -8,6 +8,9 @@
         <router-link :to="dayPath(-1)" class="day-step__link">
           <UiIcon name="chevron-left" /> Previous day
         </router-link>
+        <router-link v-if="!isToday" :to="todayPath" class="day-step__link">
+          Today
+        </router-link>
         <router-link :to="dayPath(1)" class="day-step__link">
           Next day <UiIcon name="chevron-right" />
         </router-link>
@@ -101,6 +104,16 @@ export default {
     },
     seasonName() {
       return this.card?.season?.name || '';
+    },
+    isToday() {
+      return (
+        this.calendarDate &&
+        this.calendarDate.toDateString() === new Date().toDateString()
+      );
+    },
+    todayPath() {
+      const d = new Date();
+      return `/day/${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}/`;
     },
     readingsLink() {
       const d = this.calendarDate;

@@ -4,6 +4,7 @@
       :mode="currentServiceType"
       :date="calendarDate"
       :office="selectedOffice"
+      @change="setServiceType"
     />
 
     <ul class="office-tabs">
@@ -146,7 +147,13 @@ export default {
       },
     ];
   },
-  methods: {},
+  methods: {
+    setServiceType(serviceType) {
+      this.currentServiceType = serviceType;
+      this.links =
+        serviceType === 'family' ? this.familyLinks : this.dailyLinks;
+    },
+  },
 };
 </script>
 

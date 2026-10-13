@@ -411,7 +411,9 @@ export default {
       };
     },
     shortName() {
-      return this.commemoration?.saint_name || this.title.name;
+      // Only a real name; some records have just a stray comma.
+      const saintName = this.commemoration?.saint_name || '';
+      return /\p{L}/u.test(saintName) ? saintName : this.title.name;
     },
     portrait() {
       if (this.validImages.ai_image_1) return this.commemoration.ai_image_1;

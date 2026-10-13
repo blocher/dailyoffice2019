@@ -154,7 +154,7 @@ class CommemorationSerializer(serializers.Serializer):
         if hasattr(obj, "saint_name") and obj.saint_name:
             return obj.saint_name
         if obj.name:
-            return ",".split(obj.name)[0]
+            return obj.name.split(",")[0]
 
     def get_ai_one_sentence(self, obj):
         return self.remove_citations(obj.ai_one_sentence)

@@ -22,7 +22,7 @@ export const THEMES = [
 ];
 
 export const DEFAULT_FONT_SIZE = 24;
-export const FONT_SIZES = [16, 18, 20, 22, 24, 26, 28, 31, 34, 38, 42];
+export const FONT_SIZES = [12, 14, 16, 18, 20, 22, 24, 26, 28, 31, 34, 38, 42];
 
 export const READING_FONTS = [
   {
@@ -198,7 +198,7 @@ function watchSystemTheme() {
 function parseFontSize(raw) {
   const value = parseInt(raw, 10);
   if (Number.isNaN(value)) return DEFAULT_FONT_SIZE;
-  return Math.min(48, Math.max(12, value));
+  return Math.min(48, Math.max(10, value));
 }
 
 export async function loadDisplayPreferences() {

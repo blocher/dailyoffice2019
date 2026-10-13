@@ -34,11 +34,20 @@ import Loading from '@/components/Loading.vue';
 
 const mode = Capacitor.getPlatform() !== 'web' ? 'app' : 'web';
 // Links that open a new tab must not get a handle on this page.
-DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+function addNoopener(node) {
   if (node.tagName === 'A' && node.getAttribute('target') === '_blank') {
     node.setAttribute('rel', 'noopener noreferrer');
   }
-});
+}
+
+function sanitizeAnswer(html) {
+  DOMPurify.addHook('afterSanitizeAttributes', addNoopener);
+  try {
+    return DOMPurify.sanitize(html, { ADD_ATTR: ['target'] });
+  } finally {
+    DOMPurify.removeHook('afterSanitizeAttributes');
+  }
+}
 
 const aboutItems = ref(null);
 const error = ref(null);
@@ -48,9 +57,7 @@ const items = computed(() =>
   (aboutItems.value || []).map((item) => ({
     uuid: item.uuid,
     question: DOMPurify.sanitize(item[`question_for_${mode}`] || ''),
-    answer: DOMPurify.sanitize(item[`answer_for_${mode}`] || '', {
-      ADD_ATTR: ['target'],
-    }),
+    answer: sanitizeAnswer(item[`answer_for_${mode}`] || ''),
   }))
 );
 

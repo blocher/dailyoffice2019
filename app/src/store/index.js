@@ -113,9 +113,10 @@ export default createStore({
       if (consumed.length) {
         const remaining = { ...currentQuery };
         consumed.forEach((key) => delete remaining[key]);
-        router.replace({
+        await router.replace({
           path: router.currentRoute._value.path,
           query: remaining,
+          hash: router.currentRoute._value.hash,
         });
       }
       if (applied) {

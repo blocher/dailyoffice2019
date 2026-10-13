@@ -53,7 +53,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import Collect from '@/components/Collect.vue';
 
 /*
@@ -64,11 +64,20 @@ const props = defineProps({
   subcategory: { type: Object, required: true },
   traditional: { type: Boolean, default: false },
   extraCollects: { type: Object, default: () => ({}) },
+  // While a search is active, groups open to show the matching titles.
+  searching: { type: Boolean, default: false },
 });
 const emit = defineEmits(['extraCollectsChanged']);
 
 const groupOpen = ref(false);
 const openedItems = ref([]);
+
+watch(
+  () => props.searching,
+  (searching) => {
+    groupOpen.value = searching;
+  }
+);
 
 const chosenCount = computed(() => {
   const chosen = new Set(

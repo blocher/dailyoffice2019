@@ -1,5 +1,7 @@
 <template>
-  <a class="skip-link" href="#content">Skip to content</a>
+  <a class="skip-link" href="#content" @click.prevent="skipToContent"
+    >Skip to content</a
+  >
   <AppHeader />
 
   <main id="content" class="app-main" :style="mainStyle">
@@ -128,6 +130,12 @@ export default {
     this.showLinks = true;
   },
   methods: {
+    // Move focus without changing the address, which would reload the page.
+    skipToContent() {
+      const main = document.getElementById('content');
+      main.setAttribute('tabindex', '-1');
+      main.focus();
+    },
     onAudioVisibilityEvent(event) {
       const payload = event.detail || {};
       this.audioBarHeight = payload.visible ? Number(payload.height) || 0 : 0;

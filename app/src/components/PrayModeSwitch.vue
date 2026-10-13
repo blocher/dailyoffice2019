@@ -22,9 +22,14 @@ const props = defineProps({
   /** 'office' | 'family' | 'readings' */
   mode: { type: String, required: true },
   date: { type: Date, required: true },
-  /** The current office, or the readings service (morning/evening/eucharist) */
+  /**
+   * The current office, the readings service (morning/evening/eucharist),
+   * or 'day' on the Day page.
+   */
   office: { type: String, default: '' },
 });
+
+const emit = defineEmits(['change']);
 
 const router = useRouter();
 
@@ -76,6 +81,12 @@ async function go(target) {
     return;
   }
   await DynamicStorage.setItem('serviceType', target);
+  // On a page that isn't an office (the Day page), switch the office
+  // links in place rather than leaving the page.
+  if (props.office === 'day') {
+    emit('change', target);
+    return;
+  }
   if (target === 'family') {
     const office =
       TO_FAMILY[props.office] ||

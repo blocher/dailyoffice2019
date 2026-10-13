@@ -133,6 +133,14 @@ export default {
         // /:serviceType; anything else there is not a page.
         if (!this.office && offices.includes(serviceParam)) {
           this.office = serviceParam;
+          // Early Evening and Close of Day are Family Prayer offices.
+          if (
+            ['early_evening_prayer', 'close_of_day_prayer'].includes(
+              serviceParam
+            )
+          ) {
+            this.currentServiceType = 'family';
+          }
         } else {
           this.notFound = true;
           document.title = 'Page not found | The Daily Office';

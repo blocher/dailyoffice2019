@@ -503,6 +503,8 @@ export default {
       return '';
     },
     async selectDate(changeType) {
+      // The month isn't known until the calendar has loaded.
+      if (!this.year && changeType !== 'today') return;
       if (changeType === 'prev-month') {
         if (this.month === 1) {
           this.year -= 1;
