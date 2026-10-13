@@ -37,8 +37,11 @@
           aria-label="Support the Daily Office"
           @click="openSupport"
         >
-          <UiIcon name="heart" class="header-action__icon" />
-          <span class="header-action__label header-action__label--sm"
+          <UiIcon
+            name="heart"
+            class="header-action__icon header-action__heart"
+          />
+          <span class="header-action__label header-action__label--always"
             >Support</span
           >
         </button>
@@ -269,9 +272,19 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll));
   padding-top: 0.1em;
 }
 
-@media (min-width: 640px) {
-  .header-action__label--sm {
-    display: inline;
+/* Support is always named. On phones the heart gives way to the word,
+   which takes the accent color instead. */
+.header-action__label--always {
+  display: inline;
+}
+
+@media (max-width: 639px) {
+  .header-action__heart {
+    display: none;
+  }
+
+  .header-action--support {
+    color: var(--accent);
   }
 }
 
@@ -286,14 +299,38 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll));
   }
 }
 
-@media (max-width: 359px) {
+@media (max-width: 479px) {
   .app-header__bar {
     gap: var(--space-1);
   }
 
+  .primary-nav {
+    gap: 0;
+  }
+
   .primary-nav__link {
-    padding: 0 0.4rem;
+    padding: 0 0.45rem;
+  }
+
+  .primary-nav__link::after {
+    left: 0.45rem;
+    right: 0.45rem;
+  }
+
+  .header-action {
+    padding: 0 0.45rem;
+  }
+}
+
+@media (max-width: 359px) {
+  .primary-nav__link {
+    padding: 0 0.3rem;
     font-size: var(--text-sm);
+  }
+
+  .primary-nav__link::after {
+    left: 0.3rem;
+    right: 0.3rem;
   }
 
   .header-action {
