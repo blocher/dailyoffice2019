@@ -308,7 +308,14 @@ const pagesOnView = computed(() =>
     (_, i) => firstPage.value + liveShift.value + i
   )
 );
-const currentSection = computed(() => sectionOn(firstPage.value));
+// The footer names the section the reader is in at the last page showing,
+// matching the pages-left count beside it.
+const currentSection = computed(() =>
+  sectionForPage(
+    Math.min(totalPages.value - 1, firstPage.value + layout.cols - 1),
+    sections.value
+  )
+);
 // Thickness of the page stacks, in px: about one line per five pages.
 const edgeAhead = computed(() => {
   const left = totalPages.value - (firstPage.value + layout.cols);
@@ -956,6 +963,8 @@ function onKeydown(event) {
   if (!props.open || optionsOpen.value || panels.display) return;
   if (event.target?.matches?.('input, textarea, select')) return;
   const key = event.key;
+  // A key press also puts the first-run hint away.
+  if (hint.value && key !== 'Escape') dismissHint();
   if (key === 'Escape') {
     if (chrome.value) hideChrome();
     else close();
@@ -1371,6 +1380,18 @@ onBeforeUnmount(() => {
   break-inside: avoid;
 }
 
+/* A book page shows the text only; choices like a reading's length or the
+   psalter cycle stay on the page behind the book. */
+.reader__flow :deep(.reading__options) {
+  display: none;
+}
+
+/* Office lines are each wrapped in a div, so keep the wrapper of a heading
+   with the line that follows too. */
+.reader__flow :deep(div:has(> :is(h2, h3, h4):last-child)) {
+  break-after: avoid;
+}
+
 .reader__flow :deep(.row),
 .reader__flow :deep(h5),
 .reader__flow :deep(img),
@@ -1691,6 +1712,12 @@ onBeforeUnmount(() => {
 .reader__hint-zone .ui-icon {
   font-size: 1.6rem;
   color: var(--accent);
+}
+
+/* Room for two lines under every icon, so the icons line up even when a
+   label wraps on a narrow phone. */
+.reader__hint-zone span {
+  min-height: 2.6em;
 }
 
 .reader__hint-zone:last-of-type {

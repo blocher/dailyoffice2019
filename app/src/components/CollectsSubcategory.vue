@@ -24,7 +24,7 @@
         :disabled="disableShowAll"
         @click="expandAll()"
       >
-        Open all
+        Expand all
       </button>
       <span aria-hidden="true">·</span>
       <button
@@ -33,7 +33,7 @@
         :disabled="disableHideAll"
         @click="collapseAll(false)"
       >
-        Close all
+        Collapse all
       </button>
     </div>
 
@@ -122,6 +122,11 @@ defineExpose({ expandAll, collapseAll, showOnlySelected });
 .collects-group__title {
   font-size: var(--text-lg);
   line-height: 1.25;
+}
+
+/* The count is short; keep it whole when a long title wraps. */
+.collects-group :deep(.ui-disclosure__meta) {
+  flex-shrink: 0;
 }
 
 .collects-group__meta {

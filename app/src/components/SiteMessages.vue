@@ -7,7 +7,11 @@
       role="region"
       aria-label="Announcement"
     >
-      <UiTag v-if="message.tag_text" :tone="tagTone(message.tag_color)">
+      <UiTag
+        v-if="message.tag_text"
+        class="site-message__tag"
+        :tone="tagTone(message.tag_color)"
+      >
         {{ message.tag_text }}
       </UiTag>
       <p class="site-message__text">
@@ -183,8 +187,37 @@ export default {
 .site-message__text {
   flex: 1;
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
   color: var(--ink-soft);
+}
+
+/* Phones: the tag sits above the text so the text gets the full width. */
+@media (max-width: 559px) {
+  .site-message {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'tag close'
+      'text text';
+    row-gap: var(--space-1);
+  }
+
+  .site-message__tag {
+    grid-area: tag;
+    justify-self: start;
+  }
+
+  .site-message__text {
+    grid-area: text;
+  }
+
+  .site-message__close {
+    grid-area: close;
+  }
+
+  .site-message:not(:has(.site-message__tag)) {
+    grid-template-areas: 'text close';
+  }
 }
 
 .site-message__close {

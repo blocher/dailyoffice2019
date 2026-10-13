@@ -92,12 +92,35 @@ const PRAY_ROUTES = [
   'readingsByDate',
 ];
 
+// /:serviceType and /:serviceType/:office also catch unknown addresses,
+// which show Not Found; Pray isn't the current page then.
+const SERVICE_TYPES = ['office', 'family'];
+const OFFICES = [
+  'morning_prayer',
+  'midday_prayer',
+  'evening_prayer',
+  'compline',
+  'early_evening_prayer',
+  'close_of_day_prayer',
+];
+
+function isPrayPage(r) {
+  if (!PRAY_ROUTES.includes(r.name)) return false;
+  const { serviceType, office } = r.params;
+  if (r.name.startsWith('readings')) return true;
+  if (serviceType && !office) {
+    return [...SERVICE_TYPES, ...OFFICES].includes(serviceType);
+  }
+  if (serviceType && !SERVICE_TYPES.includes(serviceType)) return false;
+  return !office || OFFICES.includes(office);
+}
+
 const route = useRoute();
 const hidden = ref(false);
 let lastY = 0;
 
 const navItems = computed(() => [
-  { to: '/', label: 'Pray', active: PRAY_ROUTES.includes(route.name) },
+  { to: '/', label: 'Pray', active: isPrayPage(route) },
   {
     to: '/calendar',
     label: 'Calendar',

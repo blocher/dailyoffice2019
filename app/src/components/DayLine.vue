@@ -121,6 +121,9 @@ function toTop() {
 }
 
 .day-line__today {
+  /* A larger tap area without moving the line around it. */
+  padding: 0.7rem 0.5rem;
+  margin: -0.7rem -0.5rem;
   font-size: var(--text-xs);
   font-style: italic;
 }

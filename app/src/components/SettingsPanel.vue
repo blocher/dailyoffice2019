@@ -1,6 +1,6 @@
 <template>
   <div class="settings-panel">
-    <p v-if="!groups.length" class="settings-empty">
+    <p v-if="!groups.length && showEmpty" class="settings-empty">
       No settings match your search.
     </p>
     <section
@@ -54,6 +54,11 @@ export default {
     searchQuery: {
       type: String,
       default: '',
+    },
+    // Off when the page shows other results (Display) for the search.
+    showEmpty: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {

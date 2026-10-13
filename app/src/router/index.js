@@ -132,6 +132,7 @@ const routes = [
       title: 'Today | The Daily Office',
     },
   },
+  { path: '/privacy', redirect: '/privacy-policy' },
   {
     path: '/privacy-policy',
     name: 'Privacy Policy',

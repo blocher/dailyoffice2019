@@ -26,6 +26,9 @@
   font-variant-numeric: oldstyle-nums;
   color: var(--ink);
   text-align: left;
+  /* Long unbroken words ("President/Sovereign/Prime Minister") wrap
+     rather than push the page sideways at large text sizes. */
+  overflow-wrap: break-word;
 }
 
 :is(#main, .book) :is(p, h2, h3, li) {
@@ -160,16 +163,19 @@
 /* Officiant / People call and response */
 :is(#main, .book) .row {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 0.9em;
+  column-gap: 0.9em;
 }
 
 :is(#main, .book) .row .column.left {
   flex: 0 0 3.6em;
 }
 
+/* When the line would be too narrow beside the speaker (a small phone or
+   very large text), the speaker moves above it. */
 :is(#main, .book) .row .column.right {
-  flex: 1 1 auto;
+  flex: 1 1 9em;
   min-width: 0;
 }
 

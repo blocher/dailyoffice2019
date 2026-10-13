@@ -35,9 +35,33 @@
         <p class="settings-tabs__note">{{ tabNote }}</p>
       </div>
 
+      <p
+        v-if="isDisplayTab && isFiltering && !displayMatches"
+        class="settings-empty"
+      >
+        No display settings match your search.
+      </p>
+      <p
+        v-if="isFiltering && otherTabMatches.length"
+        class="settings-elsewhere"
+      >
+        Also found in
+        <template v-for="(match, index) in otherTabMatches" :key="match.value">
+          <span v-if="index" aria-hidden="true"> · </span>
+          <button
+            type="button"
+            class="settings-elsewhere__tab"
+            @click="toggleOffice(match.value)"
+          >
+            {{ match.label
+            }}<template v-if="match.count"> ({{ match.count }})</template>
+          </button>
+        </template>
+      </p>
+
       <!-- Display: its own tab, and found by search from the other tabs -->
       <section
-        v-if="isDisplayTab || (isFiltering && displayMatches)"
+        v-if="isFiltering ? displayMatches : isDisplayTab"
         class="settings-display"
         aria-labelledby="settings-display-title"
       >
@@ -65,6 +89,7 @@
           :key="`${openTab}-${panelVersion}`"
           :available-settings="availableSettings"
           :search-query="searchQuery"
+          :show-empty="!(isFiltering && displayMatches)"
           :site="openTab === 'family' ? 'Family Prayer' : 'Daily Office'"
         />
       </section>
@@ -87,6 +112,10 @@ import Loading from '@/components/Loading.vue';
 import SettingsPanel from '@/components/SettingsPanel.vue';
 import { resetDisplayPreferences } from '@/helpers/displayPreferences';
 import { openPanel } from '@/helpers/panels';
+import {
+  createNormalizedApiSetting,
+  matchesSettingSearch,
+} from '@/helpers/settingsUiMetadata';
 import { DynamicStorage } from '@/helpers/storage';
 import { confirm, toast } from '@/ui/feedback';
 
@@ -155,6 +184,38 @@ export default {
       const query = this.searchQuery.trim().toLowerCase();
       return DISPLAY_TERMS.some(
         (term) => term.includes(query) || query.includes(term)
+      );
+    },
+    // While searching, the other tabs that also have matches.
+    otherTabMatches() {
+      const countFor = (site) =>
+        (this.availableSettings || [])
+          .filter((setting) => setting.site_name === site)
+          .map((setting) => createNormalizedApiSetting(setting, () => {}))
+          .filter((setting) => matchesSettingSearch(setting, this.searchQuery))
+          .length;
+      return (
+        [
+          {
+            value: 'office',
+            label: 'Daily Office',
+            count: countFor('Daily Office'),
+          },
+          {
+            value: 'family',
+            label: 'Family Prayer',
+            count: countFor('Family Prayer'),
+          },
+          {
+            value: 'display',
+            label: 'Display',
+            count: this.displayMatches ? 1 : 0,
+          },
+        ]
+          .filter((tab) => tab.value !== this.openTab && tab.count)
+          // Display shows alongside the other tabs' results already.
+          .filter((tab) => tab.value !== 'display' || this.isDisplayTab)
+          .map((tab) => (tab.value === 'display' ? { ...tab, count: 0 } : tab))
       );
     },
     tabNote() {
@@ -278,6 +339,27 @@ export default {
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
+}
+
+.settings-elsewhere {
+  margin-top: calc(-1 * var(--space-2));
+  font-size: var(--text-sm);
+  text-align: center;
+  color: var(--ink-faint);
+}
+
+.settings-elsewhere__tab {
+  min-height: 2.75rem;
+  padding: 0 var(--space-1);
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.settings-empty {
+  font-style: italic;
+  text-align: center;
+  color: var(--ink-faint);
 }
 
 .settings-tabs__note {

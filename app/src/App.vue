@@ -159,11 +159,12 @@ export default {
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius);
   background-color: var(--paper-raised);
-  box-shadow: var(--shadow);
 }
 
+/* The shadow only while showing, so none spills from off-screen. */
 .skip-link:focus {
   top: calc(env(safe-area-inset-top) + var(--space-2));
+  box-shadow: var(--shadow);
 }
 
 .app-main {
