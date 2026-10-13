@@ -33,13 +33,15 @@ class QuerySettingsTests(SimpleTestCase):
         self.assertEqual(settings["psalter"], "30")
         self.assertEqual(settings["canticle_rotation"], "2011")
         module = object.__new__(ReadingModule)
-        module.office = SimpleNamespace(settings=settings, date=SimpleNamespace(date=datetime.date(2026, 10, 5)))
+        module.office = SimpleNamespace(
+            settings=settings, office_readings=None, date=SimpleNamespace(date=datetime.date(2026, 10, 5))
+        )
         with (
             patch.object(ReadingModule, "bible_translation", "esv"),
             patch.object(module, "get_reading", return_value=["reading"]) as reading,
         ):
             self.assertEqual(module.get_lines_for_reading("mp", 1), ["reading"])
-        reading.assert_called_once_with("mp_reading_1", False, "esv")
+        reading.assert_called_once_with("mp_reading_1", False, "esv", selection=None)
 
     def test_last_supported_option_wins_and_invalid_values_keep_defaults(self):
         settings = self.settings("reading_cycle=1,2,unknown&psalter=invalid&reading_length=&unknown=2")

@@ -18,6 +18,7 @@ from django.http import HttpResponse
 from django.test import RequestFactory
 from django.urls import resolve
 from django.db.models import Prefetch, Q
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.views.decorators.csrf import csrf_exempt
@@ -4625,7 +4626,7 @@ class ReadingsView(OfficeAPIView):
 
 class CommemorationsView(OfficeAPIView):
     def get(self, request, uuid):
-        commemoration = Commemoration.objects.get(pk=uuid)
+        commemoration = get_object_or_404(Commemoration, pk=uuid)
         serializer = CommemorationSerializer(commemoration)
         return Response(serializer.data)
 
