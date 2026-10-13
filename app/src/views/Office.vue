@@ -63,7 +63,7 @@
 
       <div class="office-body">
         <aside class="office-body__margin">
-          <OfficeContents :source="modules" />
+          <OfficeContents v-if="showContents" :source="modules" />
         </aside>
         <!-- The office text, set like the printed book -->
         <div id="main" class="book">
@@ -77,6 +77,11 @@
         :office="office"
         :calendar-date="calendarDate"
         :service-type="serviceType"
+      />
+
+      <DisplayDiscoveryCard
+        v-if="modules"
+        :audio-available="audioLoadingEnabled"
       />
     </template>
   </div>
@@ -144,6 +149,7 @@ import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue';
 import OfficeContinue from '@/components/OfficeContinue.vue';
 import OfficeLines from '@/components/OfficeLines.vue';
 import BookReader from '@/components/BookReader.vue';
+import DisplayDiscoveryCard from '@/components/DisplayDiscoveryCard.vue';
 import OfficeContents from '@/components/OfficeContents.vue';
 import { confirm } from '@/ui/feedback';
 import { openPanel } from '@/helpers/panels';
@@ -160,6 +166,7 @@ export default {
     OfficeContinue,
     OfficeLines,
     BookReader,
+    DisplayDiscoveryCard,
     OfficeContents,
     Loading,
     CalendarCard,
@@ -228,6 +235,9 @@ export default {
       return ['evening_prayer', 'compline'].includes(this.office)
         ? this.card.primary_evening_feast
         : this.card.primary_feast;
+    },
+    showContents() {
+      return displayState.showContents;
     },
     audioLoadingEnabled() {
       // Set VITE_FETCH_AUDIO_ON=false to avoid on-demand generation in dev.

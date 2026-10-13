@@ -16,8 +16,17 @@
 </template>
 
 <script setup>
+import { watch } from 'vue';
 import DisplaySettings from '@/components/DisplaySettings.vue';
+import { markDisplaySeen } from '@/helpers/discovery';
 import { panels } from '@/helpers/panels';
+
+watch(
+  () => panels.display,
+  (open) => {
+    if (open) markDisplaySeen();
+  }
+);
 
 defineProps({
   showAudio: { type: Boolean, default: true },

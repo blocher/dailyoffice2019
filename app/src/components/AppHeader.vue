@@ -24,12 +24,23 @@
           type="button"
           class="header-action"
           :class="{ 'is-open': panels.display }"
-          aria-label="Display: theme, text size, typeface, audio"
+          aria-label="Display: theme, text size, typeface, rubrics, audio"
+          :aria-describedby="discovery.displayNew ? 'display-new' : null"
           :aria-expanded="panels.display ? 'true' : 'false'"
           @click="toggle('display')"
         >
           <span class="header-action__glyph" aria-hidden="true">Aa</span>
           <span class="header-action__label">Display</span>
+          <span
+            v-if="discovery.displayNew"
+            id="display-new"
+            class="header-action__dot"
+          >
+            <span class="visually-hidden">New display options</span>
+          </span>
+          <span class="header-tooltip" aria-hidden="true">
+            Theme · Text size · Typeface · Rubrics · Audio
+          </span>
         </button>
         <button
           type="button"
@@ -65,6 +76,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { Browser } from '@capacitor/browser';
+import { discoveryState as discovery } from '@/helpers/discovery';
 import { openPanel, panels } from '@/helpers/panels';
 
 const PRAY_ROUTES = [
@@ -240,6 +252,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll));
 }
 
 .header-action {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -254,6 +267,54 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll));
   transition:
     background-color var(--duration) var(--ease),
     color var(--duration) var(--ease);
+}
+
+/* A one-time dot: the Display panel hasn't been opened yet, or has
+   gained something new since. */
+.header-action__dot {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.3rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--paper);
+}
+
+/* Hover hint naming what's inside (pointer devices only) */
+.header-tooltip {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: 5;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background-color: var(--paper-raised);
+  box-shadow: var(--shadow);
+  color: var(--ink-soft);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-2px);
+  pointer-events: none;
+  transition:
+    opacity 150ms var(--ease),
+    transform 150ms var(--ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .header-action:hover .header-tooltip,
+  .header-action:focus-visible .header-tooltip {
+    opacity: 1;
+    transform: none;
+    transition-delay: 350ms;
+  }
+}
+
+.header-action.is-open .header-tooltip {
+  display: none;
 }
 
 .header-action:hover,

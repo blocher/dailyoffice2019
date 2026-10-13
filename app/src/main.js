@@ -12,6 +12,7 @@ import { createMetaManager } from 'vue-meta';
 import { installViewportCssVars } from './helpers/viewport';
 import { getClientId } from './helpers/clientId';
 import { loadDisplayPreferences } from './helpers/displayPreferences';
+import { loadDiscovery } from './helpers/discovery';
 import { createGtag, event } from 'vue-gtag';
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
 import { Capacitor } from '@capacitor/core';
@@ -174,6 +175,7 @@ app.config.globalProperties.$gtag = { event };
 
 const bootstrap = async () => {
   await loadDisplayPreferences();
+  loadDiscovery();
   // Attach the anonymous client id + platform to every API request so the
   // backend can attribute office views to a unique user (updated clients only).
   try {

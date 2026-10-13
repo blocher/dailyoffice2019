@@ -101,6 +101,12 @@ function onKeydown(event, index) {
   flex: 1 1 0;
 }
 
+/* Tabs size to their labels, sharing any spare room, so a longer label
+   never truncates beside short ones. */
+.ui-segmented--block.ui-segmented--underline .ui-segmented__option {
+  flex: 1 1 auto;
+}
+
 .ui-segmented__option {
   display: inline-flex;
   align-items: center;
@@ -225,5 +231,12 @@ function onKeydown(event, index) {
 
 .ui-segmented__icon {
   font-size: 0.95em;
+}
+
+@media (max-width: 359px) {
+  .ui-segmented--underline .ui-segmented__option {
+    padding-inline: 0.35rem;
+    font-size: var(--text-sm);
+  }
 }
 </style>
