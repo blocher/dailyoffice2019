@@ -231,11 +231,20 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll));
   margin-left: auto;
 }
 
+/* With labels showing, keep each icon close to its word and the actions
+   clearly apart from one another. */
+@media (min-width: 860px) {
+  .header-actions {
+    gap: var(--space-3);
+  }
+}
+
 .header-action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
+  gap: 0.3rem;
+  line-height: 1;
   min-width: 2.5rem;
   height: 2.5rem;
   padding: 0 0.55rem;
@@ -254,10 +263,15 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll));
 }
 
 .header-action__icon {
-  font-size: 1.2rem;
+  position: relative;
+  /* Optical: center on the words' lowercase, not their full line box */
+  top: -0.09em;
+  font-size: 1.1rem;
 }
 
 .header-action__glyph {
+  position: relative;
+  top: 0.06em;
   font-size: 1.15rem;
   line-height: 1;
   letter-spacing: 0.02em;
@@ -269,7 +283,6 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll));
 
 .header-action__label {
   display: none;
-  padding-top: 0.1em;
 }
 
 /* Support is always named. On phones the heart gives way to the word,
