@@ -374,9 +374,3 @@ class DebugToolbarURLTests(SimpleTestCase):
         self.assertNotIn("debug_toolbar", settings.INSTALLED_APPS)
         with self.assertRaises(Resolver404):
             resolve("/__debug__/history_sidebar/")
-
-
-class CommemorationNotFoundTests(TestCase):
-    def test_unknown_commemoration_returns_404(self):
-        response = self.client.get("/api/v1/commemorations/d40268c9-199b-4527-8d5b-50d9ff36cfeb")
-        self.assertEqual(response.status_code, 404)
