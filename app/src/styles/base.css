@@ -240,6 +240,13 @@ a {
   gap: var(--stack-gap, var(--space-4));
 }
 
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--cluster-gap, var(--space-2));
+}
+
 /* ── Page scaffolding (secondary pages) ──────────────── */
 .page {
   width: 100%;
