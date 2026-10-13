@@ -281,7 +281,7 @@ minor_settings_dict = [
         ],
     },
     {
-        "title": "Display Language",
+        "title": "Language",
         "name": "display_language",
         "help_text": "Display the liturgical texts in English, Chinese, or Spanish.",
         "options": [
