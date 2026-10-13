@@ -15,6 +15,7 @@ from django.test import SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 
 from office import combined_track
+from office.audio_builds import AudioNotReady, deferred_generation
 from office.models import AudioClip
 
 
@@ -145,6 +146,17 @@ class EnsureCombinedTrackTests(SimpleTestCase):
         duration, _run = self.ensure(self.ffmpeg_writing(None, returncode=1))
         self.assertEqual(duration, 0.0)
         self.assertFalse(os.path.exists(self.final))
+
+    def test_web_request_defers_a_missing_track_but_serves_a_complete_one(self):
+        with deferred_generation():
+            with self.assertRaises(AudioNotReady):
+                self.ensure(self.ffmpeg_writing(100.0))
+            self.assertFalse(os.path.exists(self.final))
+            Path(self.final).write_bytes(b"done")
+            self.durations[self.final] = 100.2
+            duration, run = self.ensure(self.ffmpeg_writing(1.0))
+        self.assertEqual(duration, 100.2)
+        run.assert_not_called()
 
     def test_complete_build_with_unexpected_length_is_not_rebuilt_every_request(self):
         # ffmpeg succeeded, so the expectation (not the file) is off: serve it,

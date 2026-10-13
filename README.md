@@ -608,6 +608,12 @@ uploaded to the `dailyoffice2019` Cloudflare Pages project with Wrangler (`npx w
 does not build from Git. The API commit is pushed to the `production` remote and `deploy/server.sh` runs on the
 server over SSH. The deploy stops at the first failure and checks that both sites respond.
 
+Office API responses are cached for 60 seconds (`OFFICE_API_CACHE_SECONDS`), so database edits appear within about a
+minute; admin saves and every deploy (which flushes memcached) clear the cache at once, and
+`python manage.py clear_office_cache` clears it by hand. Office audio that is not built yet is prepared in the
+background while the app shows "Preparing audio…" (`site/office/audio_builds.py`). App-server and database
+connection limits are in `deploy/gunicorn_config.py` and `DATABASES` in `site/website/settings.py`.
+
 ## Quick overview
 
 The application is built around several Django "apps". The most important are:

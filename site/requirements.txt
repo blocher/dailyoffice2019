@@ -76,6 +76,8 @@ pre-commit>=4.6.2
 premailer>=3.10.0
 psycopg>=3.3.6
 psycopg-binary>=3.3.6
+# Connection pool used by DATABASES OPTIONS["pool"] (see website/settings.py).
+psycopg-pool>=3.3.0
 pymemcache>=4.0.0
 pyrankvote>=2.0.6
 python-crontab>=3.4.0
