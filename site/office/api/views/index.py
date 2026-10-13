@@ -64,6 +64,12 @@ from office.utils import passage_to_citation, get_client_ip, generate_uuid_from_
 from psalter.utils import get_psalms
 
 
+class DialogueAudioUnavailable(APIException):
+    status_code = 503
+    default_detail = "Complete office audio is unavailable. Please try again later."
+    default_code = "office_audio_unavailable"
+
+
 class ReadingAudioUnavailable(APIException):
     status_code = 503
     default_detail = "Complete Scripture audio is unavailable. Please try again later."
@@ -3665,6 +3671,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 "member_ids": track.get("member_ids") or [track["line_id"]],
                 "text": track.get("text"),
                 "word_timing": track.get("word_timing") or [],
+                "highlighting_available": track.get("highlighting_available", True),
                 "silence_before": track.get("silence_before") or 0,
                 "silence_after": track.get("silence_after") or 0,
                 "skip_gap_before": track.get("skip_gap_before", False),
@@ -3739,7 +3746,12 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             clip_duration = get_audio_duration(track["path"])
             for member_id in track["member_ids"]:
                 short_track_list.append(
-                    {"id": member_id, "start_time": start_time, "end_time": start_time + clip_duration}
+                    {
+                        "id": member_id,
+                        "start_time": start_time,
+                        "end_time": start_time + clip_duration,
+                        "highlighting_available": track["highlighting_available"],
+                    }
                 )
             for word in track["word_timing"]:
                 word_track_list.append(
@@ -3875,9 +3887,11 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     except Exception:
                         logger.exception("Bugsnag dialogue reporting failed")
                     dialogue.reset()
-                    chunks = []
+                    raise DialogueAudioUnavailable() from exc
                 for position, chunk in enumerate(chunks):
                     path, timing = dialogue.clip(chunk)
+                    if not path:
+                        raise DialogueAudioUnavailable()
                     if path:
                         tracks.append(
                             {
@@ -3888,6 +3902,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                                 "url": f"{audio_base_url()}{path}",
                                 "path": path,
                                 "word_timing": timing,
+                                "highlighting_available": dialogue.highlighting_available,
                                 "silence_before": pending_before[0]
                                 + (line_silence(group_buffer[0], "silence_before") if position == 0 else 0),
                                 "silence_after": (

@@ -1111,6 +1111,7 @@ export default {
       // timing by text length, then retain measured word anchors where present.
       const clips = new Map();
       this.detailedSegments.forEach((segment) => {
+        if (segment.highlighting_available === false) return;
         if (!clips.has(segment.start_time)) clips.set(segment.start_time, []);
         clips.get(segment.start_time).push(segment);
       });
@@ -1284,6 +1285,15 @@ export default {
       this.highlightElements.get(index).push(element);
     },
     activeWordAt(time) {
+      if (
+        this.detailedSegments.some(
+          (segment) =>
+            segment.highlighting_available === false &&
+            time >= segment.start_time &&
+            time < segment.end_time
+        )
+      )
+        return -1;
       let candidate = null;
       for (const segment of this.highlightSegments) {
         if (segment.start_time > time) break;
