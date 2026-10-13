@@ -59,7 +59,11 @@ if [ "$TARGET" != api ]; then
     (cd app && npm ci --no-audit --no-fund --loglevel=error)
     echo "$stamp" >app/node_modules/.deploy-stamp
   fi
-  (cd app && npx vitest run && npm run build)
+  # Stamp the build so Bugsnag reports and the uploaded source maps share a version.
+  APP_VERSION="$(node -p "require('./app/package.json').version")+$(git rev-parse --short HEAD)"
+  (cd app && npx vitest run && VITE_APP_VERSION="$APP_VERSION" npm run build)
+  # Send the source maps to Bugsnag and take them out of dist (never published).
+  (cd app && VITE_APP_VERSION="$APP_VERSION" node scripts/upload-sourcemaps.mjs)
 fi
 
 if [ "$TARGET" != web ]; then

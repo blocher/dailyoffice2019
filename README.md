@@ -642,6 +642,13 @@ Both sides report errors to Bugsnag, on by default in production and off in deve
   errors, unhandled promise rejections, Vue errors, and diagnostics such as `BookViewSinglePage` (Book view laid out
   as a single page) are reported; stale-chunk reloads, `ResizeObserver` warnings, extension errors, and offline
   network failures are dropped. Changes take effect at the next `vite build`.
+- **Source maps**: `vite build` writes hidden source maps (no `sourceMappingURL` comment).
+  `make deploy` stamps the build's app version (package version + commit), then
+  `app/scripts/upload-sourcemaps.mjs` uploads the maps to Bugsnag for `https://www.dailyoffice2019.com` and
+  `https://dailyoffice2019.com` and deletes them from `dist`, so they are never published.
+  `npm run capacitor:build` does the same for the native apps' origins before `cap sync`. Uploads use
+  `VITE_BUGSNAG_API_KEY` and are skipped when reporting is off; a failed upload only leaves that build's traces
+  minified. `BUGSNAG_SOURCE_MAP_ENDPOINT` overrides the upload server.
 
 ### Code formatting standard
 

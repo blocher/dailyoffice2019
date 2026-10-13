@@ -1,7 +1,11 @@
 import Bugsnag from '@bugsnag/js';
 import BugsnagPluginVue from '@bugsnag/plugin-vue';
 import { Capacitor } from '@capacitor/core';
-import { version as appVersion } from '../../package.json';
+import { version as packageVersion } from '../../package.json';
+
+// The deploy stamps each web build (package version + commit) so reports and
+// uploaded source maps match; other builds report the package version.
+const appVersion = import.meta.env.VITE_APP_VERSION || packageVersion;
 
 /*
   Error reporting

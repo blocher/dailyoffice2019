@@ -11,7 +11,7 @@
     "test:e2e": "cypress run",
     "test:e2e:open": "cypress open",
     "lint": "eslint .",
-    "capacitor:build": "npm run build && cap sync && cap build",
+    "capacitor:build": "npm run build && node scripts/upload-sourcemaps.mjs --base-url capacitor://localhost --base-url https://localhost && cap sync && cap build",
     "capacitor:serve": "npm run build && cap run",
     "ios": "npm run capacitor:serve -- ios",
     "typecheck": "tsc --noEmit",
@@ -61,6 +61,7 @@
   "devDependencies": {
     "@babel/core": "^8.0.7",
     "@babel/eslint-parser": "^8.0.7",
+    "@bugsnag/source-maps": "2.3.3",
     "@capacitor/android": "^8.5.3",
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.5.3",
