@@ -45,6 +45,7 @@
           @click="bookOpen = true"
         >
           Book view
+          <span v-if="discovery.bookViewNew" class="badge-new">New</span>
         </UiButton>
       </p>
 
@@ -83,6 +84,7 @@ import OfficeLeader from '@/components/OfficeLeader.vue';
 import OfficeRubric from '@/components/OfficeRubric.vue';
 import OfficeSpacer from '@/components/OfficeSpacer.vue';
 import BookReader from '@/components/BookReader.vue';
+import { discoveryState } from '@/helpers/discovery';
 import OfficeLines from '@/components/OfficeLines.vue';
 
 const LANGUAGES = ['Contemporary', 'Traditional'];
@@ -112,6 +114,7 @@ export default {
     return {
       loading: true,
       bookOpen: false,
+      discovery: discoveryState,
       error: false,
       calendarDate: null,
       card: null,

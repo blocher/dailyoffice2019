@@ -4,6 +4,7 @@ import {
   discoveryState,
   dismissDisplayCard,
   loadDiscovery,
+  markBookViewSeen,
   markDisplaySeen,
 } from '@/helpers/discovery';
 import { DynamicStorage } from '@/helpers/storage';
@@ -59,5 +60,23 @@ describe('discovery nudges', () => {
     stubStorage({ displayCardDismissed: 'true' });
     await loadDiscovery();
     expect(discoveryState.showDisplayCard).toBe(false);
+  });
+
+  it('tags Book view as new until it is opened, and only before the cutoff', async () => {
+    stubStorage({});
+    await loadDiscovery(new Date(2026, 9, 12));
+    expect(discoveryState.bookViewNew).toBe(true);
+
+    await markBookViewSeen();
+    expect(discoveryState.bookViewNew).toBe(false);
+    expect(DynamicStorage.setItem).toHaveBeenCalledWith('bookViewSeen', 'true');
+
+    stubStorage({ bookViewSeen: 'true' });
+    await loadDiscovery(new Date(2026, 9, 12));
+    expect(discoveryState.bookViewNew).toBe(false);
+
+    stubStorage({});
+    await loadDiscovery(new Date(2027, 1, 2));
+    expect(discoveryState.bookViewNew).toBe(false);
   });
 });

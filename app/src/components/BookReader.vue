@@ -220,6 +220,7 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue';
 import { displayState } from '@/helpers/displayPreferences';
+import { markBookViewSeen } from '@/helpers/discovery';
 import { openPanel, panels } from '@/helpers/panels';
 import {
   computeReaderLayout,
@@ -1020,6 +1021,7 @@ function close() {
 
 async function onOpen() {
   document.documentElement.classList.add('has-reader');
+  markBookViewSeen();
   const [style, spread, seen] = await Promise.all([
     DynamicStorage.getItem('readerTurnStyle'),
     DynamicStorage.getItem('readerSpread'),

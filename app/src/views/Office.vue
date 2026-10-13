@@ -49,6 +49,7 @@
           >
             <UiIcon name="book" />
             Book view
+            <span v-if="discovery.bookViewNew" class="badge-new">New</span>
           </button>
           <router-link to="/settings" class="office-tool">
             <UiIcon name="sliders" />
@@ -149,6 +150,7 @@ import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue';
 import OfficeContinue from '@/components/OfficeContinue.vue';
 import OfficeLines from '@/components/OfficeLines.vue';
 import BookReader from '@/components/BookReader.vue';
+import { discoveryState } from '@/helpers/discovery';
 import DisplayDiscoveryCard from '@/components/DisplayDiscoveryCard.vue';
 import OfficeContents from '@/components/OfficeContents.vue';
 import { confirm } from '@/ui/feedback';
@@ -201,6 +203,7 @@ export default {
       bibleTranslation: null,
       audioPlayTracked: false,
       bookOpen: false,
+      discovery: discoveryState,
     };
   },
   computed: {

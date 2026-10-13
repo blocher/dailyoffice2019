@@ -94,6 +94,7 @@
           >
             <UiIcon name="book" />
             Book view
+            <span v-if="discovery.bookViewNew" class="badge-new">New</span>
           </button>
           <router-link to="/settings" class="readings-tool">
             <UiIcon name="sliders" />
@@ -236,6 +237,7 @@ import CitationGroup from '@/components/CitationGroup.vue';
 import Reading from '@/components/Reading.vue';
 import Collects from '@/components/Collects.vue';
 import BookReader from '@/components/BookReader.vue';
+import { discoveryState } from '@/helpers/discovery';
 import { DynamicStorage } from '@/helpers/storage';
 import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
 import { openPanel } from '@/helpers/panels';
@@ -284,6 +286,7 @@ export default {
     return {
       loading: true,
       bookOpen: false,
+      discovery: discoveryState,
       readingsLoading: false,
       error: false,
       calendarDate: null,
