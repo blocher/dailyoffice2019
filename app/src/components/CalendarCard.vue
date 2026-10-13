@@ -118,7 +118,8 @@ export default {
   display: inline-block;
   margin: 0 0.25em;
   font-size: 0.8em;
-  vertical-align: 0.05em;
+  /* Centered on the small capitals, which are shorter than full caps */
+  vertical-align: -0.17em;
 }
 
 @media (max-width: 399px) {
