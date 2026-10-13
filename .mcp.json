@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "smartbear": {
+      "command": "npx",
+      "args": ["-y", "@smartbear/mcp@latest"],
+      "env": {
+        "BUGSNAG_AUTH_TOKEN": "${BUGSNAG_AUTH_TOKEN}",
+        "BUGSNAG_PROJECT_API_KEY": "${BUGSNAG_PROJECT_API_KEY}"
+      }
+    }
+  }
+}
