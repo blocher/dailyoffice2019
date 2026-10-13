@@ -6,144 +6,50 @@ import axios from 'axios';
 import VueAxios from 'vue-axios';
 import App from './App.vue';
 import router from './router';
-import ElementPlus from 'element-plus';
-import './assets/tailwind.css';
-import 'element-plus/dist/index.css';
-import 'element-plus/theme-chalk/dark/css-vars.css';
-
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import UiKit from './ui';
+import './styles/index.css';
 import { createMetaManager } from 'vue-meta';
-import { DynamicStorage } from './helpers/storage';
 import { installViewportCssVars } from './helpers/viewport';
 import { getClientId } from './helpers/clientId';
-
-// import { faTwitter } from "@fortawesome/free-brands-svg-icons";
-// import { faUserSecret } from "@fortawesome/free-solid-svg-icons";
-// import {
-//   faMoonStars,
-//   faSun,
-//   faSunrise,
-//   faSunset,
-// } from "@fortawesome/pro-regular-svg-icons";
-// import { faCoffee } from "@fortawesome/pro-light-svg-icons";
-// import { faFeather } from "@fortawesome/pro-thin-svg-icons";
-import {
-  faBars,
-  faBookBible,
-  faBooks,
-  faCircle1,
-  faCircle2,
-  faCircle3,
-  faCircle4,
-  faCopy,
-  faDownload,
-  faEnvelopes,
-  faFontCase,
-  faGift,
-  faGlobe,
-  faHeart,
-  faLeft,
-  faMessagePen,
-  faMicrophone,
-  faMoonStars,
-  faMugHot,
-  faOctagonCheck,
-  faRight,
-  faSearch,
-  faServer,
-  faShareNodes,
-  faSquareCaretDown,
-  faSquareCaretUp,
-  faSquareUpRight,
-  faSun,
-  faSunrise,
-  faSunset,
-  faTriangleExclamation,
-} from '@fortawesome/pro-duotone-svg-icons';
+import { identifyUser, startErrorReporting } from './helpers/errorReporting';
+import { loadDisplayPreferences } from './helpers/displayPreferences';
+import { loadDiscovery } from './helpers/discovery';
+import { requestBookView } from './helpers/panels';
 import { createGtag, event } from 'vue-gtag';
-import {
-  faAndroid,
-  faApple,
-  faFacebook,
-  faGoogle,
-  faMicrosoft,
-  faWikipediaW,
-  faYahoo,
-} from '@fortawesome/free-brands-svg-icons';
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
 import { Capacitor } from '@capacitor/core';
-
-library.add(
-  faBars,
-  faSun,
-  faSunrise,
-  faSunset,
-  faTriangleExclamation,
-  faMoonStars,
-  faLeft,
-  faRight,
-  faFontCase,
-  faShareNodes,
-  faCopy,
-  faDownload,
-  faFacebook,
-  faApple,
-  faAndroid,
-  faGoogle,
-  faMicrosoft,
-  faYahoo,
-  faWikipediaW,
-  faGlobe,
-  faEnvelopes,
-  faBooks,
-  faBookBible,
-  faMessagePen,
-  faServer,
-  faMicrophone,
-  faMugHot,
-  faHeart,
-  faGift,
-  faCircle1,
-  faCircle2,
-  faCircle3,
-  faCircle4,
-  faSearch,
-  faSquareUpRight,
-  faSquareCaretUp,
-  faSquareCaretDown,
-  faOctagonCheck
-);
-
-async function applyInitialThemePreference() {
-  let activeTheme = await DynamicStorage.getItem('user-theme');
-  if (activeTheme !== 'dark' && activeTheme !== 'light') {
-    activeTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light';
-  }
-  document.documentElement.className = activeTheme;
-
-  const storedFontSize = parseInt(
-    (await DynamicStorage.getItem('fontSize')) || '24',
-    10
-  );
-  const fontSize = Number.isNaN(storedFontSize) ? 24 : storedFontSize;
-  document.documentElement.style.setProperty(
-    '--main-font-size',
-    `${fontSize}px`
-  );
-  document.documentElement.style.setProperty(
-    '--main-line-height',
-    `${fontSize * 1.6}px`
-  );
-}
 
 // Stabilize viewport units on mobile browsers (notably iOS Chrome) where
 // the browser toolbars collapsing/expanding can cause fixed footers to “float”.
 installViewportCssVars();
 
-router.beforeEach((to, from, next) => {
+// After a deploy, an open tab may ask for a page chunk that no longer
+// exists. Reload to pick up the new build (at most once a minute, so a
+// chunk that is truly missing can't cause a reload loop).
+window.addEventListener('vite:preloadError', (event) => {
+  try {
+    const last = Number(window.sessionStorage.getItem('reloadedForNewBuild'));
+    if (Date.now() - last < 60000) return;
+    window.sessionStorage.setItem('reloadedForNewBuild', String(Date.now()));
+  } catch {
+    return;
+  }
+  event.preventDefault();
+  window.location.reload();
+});
+
+router.beforeEach((to, from) => {
+  // ?book=1 opens an office in book view. Take the flag off the address
+  // before the page renders, so closing the book doesn't reload the office.
+  if (to.query.book) {
+    requestBookView();
+    const query = { ...to.query };
+    delete query.book;
+    return { path: to.path, query, hash: to.hash, replace: true };
+  }
+  // A navigation to the same address (e.g. Back closing the book view)
+  // changes nothing on the page.
+  if (from.matched.length && to.fullPath === from.fullPath) return;
   // This goes through the matched routes from last to first, finding the closest route with a title.
   // e.g., if we have `/some/deep/nested/route` and `/some`, `/deep`, and `/nested` have titles,
   // `/nested`'s will be chosen.
@@ -185,7 +91,7 @@ router.beforeEach((to, from, next) => {
   );
 
   // Skip rendering meta tags if there are none.
-  if (!nearestWithMeta) return next();
+  if (!nearestWithMeta) return;
 
   // Turn the meta tag definitions into actual elements in the head.
   nearestWithMeta.meta.metaTags
@@ -203,8 +109,6 @@ router.beforeEach((to, from, next) => {
     })
     // Add the meta tags to the document head.
     .forEach((tag) => document.head.appendChild(tag));
-
-  next();
 });
 
 // Helper function to update meta tags
@@ -222,6 +126,7 @@ function updateMetaTag(attribute, value, content) {
 
 router.afterEach(async (to, from) => {
   if (!Capacitor.isNativePlatform()) return;
+  if (from.matched.length && to.fullPath === from.fullPath) return;
   const screenName = typeof to.name === 'string' ? to.name : to.path;
   const prevScreen = typeof from.name === 'string' ? from.name : from.path;
   const params = Object.keys(to.params || {}).length
@@ -292,18 +197,22 @@ const app = createApp(App)
   )
   .use(store)
   .use(VueAxios, axios)
-  .use(ElementPlus)
-  .use(createMetaManager())
-  .component('font-awesome-icon', FontAwesomeIcon);
+  .use(UiKit)
+  .use(createMetaManager());
 
 app.config.globalProperties.$gtag = { event };
 
+// Report uncaught errors to Bugsnag (production builds with a key only).
+startErrorReporting(app);
+
 const bootstrap = async () => {
-  await applyInitialThemePreference();
+  await loadDisplayPreferences();
+  loadDiscovery();
   // Attach the anonymous client id + platform to every API request so the
   // backend can attribute office views to a unique user (updated clients only).
   try {
     const clientId = await getClientId();
+    identifyUser(clientId);
     axios.defaults.headers.common['X-Client-Id'] = clientId;
     axios.defaults.headers.common['X-Client-Platform'] =
       Capacitor.getPlatform();

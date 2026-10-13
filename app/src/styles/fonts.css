@@ -1,0 +1,142 @@
+/*
+  Fonts
+  =====
+  Adobe Caslon Pro is the face of the 2019 Book of Common Prayer and stays the
+  default everywhere. The other reading faces are optional and self-hosted, so
+  they work offline in the apps. Browsers only download a face once it is
+  shown: when a reader chooses it, or in the samples in the Display panel and
+  the "Make it yours" card.
+
+  Each choice has some precedent in the history of the Prayer Book:
+    caslon       Adobe Caslon. The 2019 BCP; Caslon's types were also the
+                 workhorse of colonial American printing.
+    garamond     EB Garamond. The 1979 BCP is set in Sabon, Tschichold's
+                 Garamond revival. (The 1928 BCP's everyday editions are
+                 set in Century Old Style, and Updike's 1928 Standard Book
+                 in Janson; neither has a close free equivalent.)
+    baskerville  Libre Baskerville. John Baskerville printed the Cambridge
+                 Prayer Book of 1760.
+    blackletter  Grenze Gotisch. The 1549–1662 books were set in black letter
+                 with red rubrics.
+    sans         Gill Sans where the device has it (Apple, Office), else
+                 Source Sans 3. Common Worship (2000) is set in Gill Sans.
+    legible      Atkinson Hyperlegible Next, designed for low-vision readers.
+*/
+
+@import '@fontsource/eb-garamond/400.css';
+@import '@fontsource/eb-garamond/400-italic.css';
+@import '@fontsource/eb-garamond/600.css';
+@import '@fontsource/eb-garamond/600-italic.css';
+@import '@fontsource/eb-garamond/700.css';
+@import '@fontsource/libre-baskerville/400.css';
+@import '@fontsource/libre-baskerville/400-italic.css';
+@import '@fontsource/libre-baskerville/600.css';
+@import '@fontsource/libre-baskerville/700.css';
+@import '@fontsource/grenze-gotisch/400.css';
+@import '@fontsource/grenze-gotisch/600.css';
+@import '@fontsource/grenze-gotisch/700.css';
+@import '@fontsource/source-sans-3/400.css';
+@import '@fontsource/source-sans-3/400-italic.css';
+@import '@fontsource/source-sans-3/600.css';
+@import '@fontsource/source-sans-3/700.css';
+@import '@fontsource/atkinson-hyperlegible-next/400.css';
+@import '@fontsource/atkinson-hyperlegible-next/400-italic.css';
+@import '@fontsource/atkinson-hyperlegible-next/600.css';
+@import '@fontsource/atkinson-hyperlegible-next/700.css';
+
+@font-face {
+  font-family: 'Adobe Caslon Pro';
+  src:
+    url('/assets/fonts/ACaslonPro-Regular.woff2') format('woff2'),
+    url('/assets/fonts/ACaslonPro-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adobe Caslon Pro';
+  src:
+    url('/assets/fonts/ACaslonPro-Italic.woff2') format('woff2'),
+    url('/assets/fonts/ACaslonPro-Italic.woff') format('woff');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adobe Caslon Pro';
+  src:
+    url('/assets/fonts/ACaslonPro-Semibold.woff2') format('woff2'),
+    url('/assets/fonts/ACaslonPro-Semibold.woff') format('woff');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adobe Caslon Pro';
+  src:
+    url('/assets/fonts/ACaslonPro-SemiboldItalic.woff2') format('woff2'),
+    url('/assets/fonts/ACaslonPro-SemiboldItalic.woff') format('woff');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adobe Caslon Pro';
+  src:
+    url('/assets/fonts/ACaslonPro-Bold.woff2') format('woff2'),
+    url('/assets/fonts/ACaslonPro-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Adobe Caslon Pro';
+  src:
+    url('/assets/fonts/ACaslonPro-BoldItalic.woff2') format('woff2'),
+    url('/assets/fonts/ACaslonPro-BoldItalic.woff') format('woff');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Reading face. The scale evens out x-heights so a size feels the same in
+   every face. */
+:root[data-reading-font='garamond'] {
+  --font-reading:
+    'EB Garamond', 'Adobe Caslon Pro', Georgia, 'Noto Serif SC', 'Noto Serif TC',
+    serif;
+  --reading-scale: 1.02;
+}
+
+:root[data-reading-font='baskerville'] {
+  --font-reading:
+    'Libre Baskerville', Baskerville, Georgia, 'Noto Serif SC', 'Noto Serif TC',
+    serif;
+  --reading-scale: 0.84;
+}
+
+:root[data-reading-font='blackletter'] {
+  --font-reading:
+    'Grenze Gotisch', 'Adobe Caslon Pro', Georgia, 'Noto Serif SC',
+    'Noto Serif TC', serif;
+  --reading-scale: 1;
+}
+
+:root[data-reading-font='sans'] {
+  --font-reading:
+    'Gill Sans', 'Gill Sans MT', 'Source Sans 3', system-ui, -apple-system,
+    'Segoe UI', 'Noto Sans SC', 'Noto Sans TC', sans-serif;
+  --reading-scale: 0.9;
+}
+
+:root[data-reading-font='legible'] {
+  --font-reading:
+    'Atkinson Hyperlegible Next', system-ui, -apple-system, 'Segoe UI',
+    'Noto Sans SC', 'Noto Sans TC', sans-serif;
+  --reading-scale: 0.84;
+}

@@ -1,13 +1,16 @@
 <template>
-  <p>
+  <div class="citations">
     <span v-for="(reading, index) in readings" :key="index">
       <a
         :href="readingID(reading.full)"
         @click.prevent="goToReading(reading.full, 'full')"
         >{{ reading.full.citation }}</a
       >
-      <span v-if="reading.full.cycle == '30'"> (30 Day Cycle)</span
-      ><span v-if="reading.full.cycle == '60'"> (60 Day Cycle)</span>
+      <span v-if="reading.full.cycle == '30'" class="citations__note">
+        (30-day cycle)</span
+      ><span v-if="reading.full.cycle == '60'" class="citations__note">
+        (60-day cycle)</span
+      >
       <span
         v-if="
           reading.abbreviated &&
@@ -27,12 +30,13 @@
         >&nbsp;<em>or</em>&nbsp;</span
       >
     </span>
-  </p>
+  </div>
 </template>
 
 <script>
 export default {
   props: ['readings'],
+  emits: ['readingLinkClick'],
   methods: {
     readingID: function (reading) {
       const readingId = reading.citation.replace(/[\W_]+/g, '_');
@@ -45,12 +49,27 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
-a {
-  display: inline;
-  font-weight: bold;
-  color: var(--el-menu-hover-text-color);
+<style scoped>
+/* The day's citations, centered under the service name, as a contents
+   line: each one jumps to its reading. */
+.citations {
+  margin-bottom: 0.4em;
+  font-size: 0.9em;
+  line-height: var(--leading-prose);
+  text-align: center;
+  text-wrap: balance;
+}
+
+.citations a {
+  text-decoration: none;
+}
+
+.citations a:hover {
+  text-decoration: underline;
+}
+
+.citations__note {
+  font-style: italic;
+  color: var(--ink-soft);
 }
 </style>
-
-<style lang="scss"></style>

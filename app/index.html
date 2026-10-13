@@ -11,6 +11,47 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
     <title>The Daily Office</title>
+    <meta name="theme-color" content="#fdfcf9">
+    <link rel="preload" href="/assets/fonts/ACaslonPro-Regular.woff2" as="font" type="font/woff2" crossorigin>
+    <style>
+      /* Paper colors before the stylesheet arrives (match styles/tokens.css) */
+      html { background: #fdfcf9; }
+      html.sepia { background: #f4ecd9; }
+      html.dark { background: #161513; }
+    </style>
+    <script>
+      // Apply the saved theme, text size, and typeface before the app loads so
+      // dark and sepia readers never see a flash of white. On the web, Capacitor
+      // Preferences keeps these in localStorage; native apps settle on load.
+      (function () {
+        try {
+          var get = function (key) {
+            return window.localStorage.getItem('CapacitorStorage.' + key);
+          };
+          var theme = get('user-theme');
+          if (theme !== 'light' && theme !== 'sepia' && theme !== 'dark') {
+            theme = window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light';
+          }
+          var root = document.documentElement;
+          root.className = theme;
+          document
+            .querySelector('meta[name="theme-color"]')
+            .setAttribute(
+              'content',
+              { light: '#fdfcf9', sepia: '#f4ecd9', dark: '#161513' }[theme]
+            );
+          var size = parseInt(get('fontSize'), 10);
+          if (size) root.style.setProperty('--main-font-size', size + 'px');
+          var font = get('readingFont');
+          if (font && font !== 'caslon') root.dataset.readingFont = font;
+          if (get('rubricStyle') === 'red') root.dataset.rubrics = 'red';
+        } catch (e) {
+          // Storage can be unavailable (private mode); defaults apply.
+        }
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">

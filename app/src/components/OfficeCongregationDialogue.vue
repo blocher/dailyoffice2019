@@ -23,23 +23,3 @@ export default {
   props: ['line'],
 };
 </script>
-
-<style>
-.rubric {
-  font-size: 0.8em;
-  line-height: 1.2em;
-}
-
-.row {
-  display: flex;
-  align-items: baseline;
-}
-
-.column.left {
-  flex: 50%;
-}
-
-.column.right {
-  flex: 75%;
-}
-</style>

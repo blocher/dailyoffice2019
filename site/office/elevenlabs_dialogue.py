@@ -15,6 +15,8 @@ import bugsnag
 import requests
 from django.conf import settings
 
+from office.audio_builds import AudioNotReady, generation_deferred, release_db_connections
+
 
 class DialogueTimingError(ValueError):
     """Keep numeric failure evidence without logging prayer text or credentials."""
@@ -111,6 +113,8 @@ class DialogueSession:
         self.highlighting_available = True
         try:
             return self._clip(lines)
+        except AudioNotReady:
+            raise
         except Exception as exc:
             self.reset()
             try:
@@ -373,6 +377,9 @@ class DialogueSession:
         relative = f"elevenlabs/dialogue_{key}.mp3"
         path = Path(settings.MEDIA_ROOT) / relative
         sidecar = path.with_suffix(".dialogue.json")
+        if generation_deferred() and not (path.exists() and path.stat().st_size and sidecar.exists()):
+            # Checked before the lock: a web request must not wait on a build.
+            raise AudioNotReady()
         path.parent.mkdir(parents=True, exist_ok=True)
         # A process-safe lock avoids paying twice for the same module.
         import fcntl
@@ -417,6 +424,7 @@ class DialogueSession:
                 recent = [rid for rid, created in self.previous if time.time() - created < 7200]
                 if recent:
                     payload["previous_request_ids"] = recent[-3:]
+                release_db_connections()
                 response = self._request(payload, api_key)
                 data = response.json()
                 audio = base64.b64decode(data["audio_base64"], validate=True)

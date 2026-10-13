@@ -6,7 +6,8 @@
       @keydown.esc="closePanels(true)"
     >
       <div v-if="!isEsvOrKjv || !isWithinSevenDays" class="availability-note">
-        <div>
+        <UiIcon name="headphones" class="note-icon" />
+        <div class="note-text">
           <p v-if="!isEsvOrKjv">
             Audio is available with the English Standard Version (ESV) or King
             James Version (KJV). <a href="/settings">Change settings</a>
@@ -24,7 +25,7 @@
           title="Hide audio controls"
           @click="$emit('dismiss-audio')"
         >
-          <font-awesome-icon :icon="faXmark" />
+          <UiIcon name="close" />
         </button>
       </div>
 
@@ -79,7 +80,10 @@
             :aria-label="isPlaying ? 'Pause audio' : 'Play audio'"
             @click="togglePlayback"
           >
-            <font-awesome-icon :icon="isPlaying ? faPause : faPlay" />
+            <UiIcon
+              :name="isPlaying ? 'pause' : 'play'"
+              :class="{ 'icon-play': !isPlaying }"
+            />
           </button>
           <button
             class="skip-button skip-button--forward"
@@ -121,10 +125,10 @@
                 <span class="section-name-text" :title="currentSectionName">{{
                   currentSectionName
                 }}</span>
-                <font-awesome-icon
+                <UiIcon
                   v-if="trackSegments.length"
                   class="section-chevron"
-                  :icon="faChevronUp"
+                  name="chevron-up"
                 />
               </span>
             </button>
@@ -175,7 +179,7 @@
               aria-controls="audio-reading-preferences"
               @click="togglePanel('preferences')"
             >
-              <font-awesome-icon :icon="faSliders" />
+              <UiIcon name="sliders" />
               <span v-if="playbackSpeed !== '1.0x'" class="speed-badge">{{
                 speedLabel
               }}</span>
@@ -202,7 +206,7 @@
                     :disabled="speedIndex <= 0"
                     @click="stepSpeed(-1)"
                   >
-                    <font-awesome-icon :icon="faMinus" />
+                    <UiIcon name="minus" />
                   </button>
                   <output class="speed-value" aria-live="polite">{{
                     speedLabel
@@ -213,7 +217,7 @@
                     :disabled="speedIndex >= speeds.length - 1"
                     @click="stepSpeed(1)"
                   >
-                    <font-awesome-icon :icon="faPlus" />
+                    <UiIcon name="plus" />
                   </button>
                 </div>
               </div>
@@ -257,7 +261,7 @@
                 type="button"
                 @click="$emit('dismiss-audio')"
               >
-                <font-awesome-icon :icon="faXmark" />
+                <UiIcon name="close" />
                 <span>Hide audio player</span>
               </button>
             </div>
@@ -271,7 +275,7 @@
             title="Hide audio controls"
             @click="$emit('dismiss-audio')"
           >
-            <font-awesome-icon :icon="faXmark" />
+            <UiIcon name="close" />
           </button>
         </div>
       </div>
@@ -280,17 +284,15 @@
 </template>
 
 <script>
+import {
+  beyondTrackEnd,
+  endedEarly,
+  freshTrackUrl,
+  timelineEnd,
+} from '@/helpers/audioTrack';
 import { DynamicStorage } from '@/helpers/storage';
 
-import {
-  faChevronUp,
-  faMinus,
-  faPause,
-  faPlay,
-  faPlus,
-  faSliders,
-  faXmark,
-} from '@fortawesome/free-solid-svg-icons';
+import UiIcon from '@/ui/UiIcon.vue';
 
 const HIGHLIGHT_STORAGE_KEY = 'audioHighlightMode';
 const SPEED_STORAGE_KEY = 'audioPlaybackSpeed';
@@ -311,6 +313,7 @@ function wrapText(node, start, end, wrapper) {
 
 export default {
   name: 'AudioPlayer',
+  components: { UiIcon },
   emits: ['dismiss-audio', 'audio-play'],
   props: {
     audio: {
@@ -353,6 +356,7 @@ export default {
       loading: true,
       audioElement: null,
       playbackError: '',
+      trackIncomplete: false, // the file ends before its timeline; retry refetches it
       pendingResumeTime: null,
       playbackRequested: false,
       playAttempt: 0,
@@ -604,7 +608,26 @@ export default {
       this.updateMediaPosition();
     },
     handleEnded() {
+      const el = this.audioElement;
+      const endedAt = el ? el.currentTime || el.duration : 0;
+      const expectedEnd = timelineEnd(
+        this.trackSegments,
+        this.detailedSegments
+      );
+      if (el && endedEarly(endedAt, expectedEnd)) {
+        // The file is shorter than its timeline (a truncated copy). Keep the
+        // place instead of rewinding, so a retry can carry on from here.
+        this.pauseAudio();
+        this.currentTime = endedAt;
+        this.markTrackIncomplete('The audio ended early. Try again?');
+        return;
+      }
       this.stopAudio();
+    },
+    markTrackIncomplete(message) {
+      this.trackIncomplete = true;
+      this.playbackError = message;
+      this.updateMediaPosition();
     },
     handleCanPlay() {
       this.loading = false;
@@ -642,6 +665,11 @@ export default {
       this.pendingResumeTime =
         this.pendingResumeTime ??
         (this.audioElement.currentTime || this.currentTime);
+      if (this.trackIncomplete) {
+        // Bypass the cached short copy and fetch the track again.
+        this.trackIncomplete = false;
+        this.audioElement.src = freshTrackUrl(this.audio[0]);
+      }
       this.audioElement.load();
       this.startAudio();
     },
@@ -817,6 +845,14 @@ export default {
       // the seek slightly earlier lands in that silence instead of mid-word.
       const LEAD_IN = 1.0;
       const target = Math.max(0, rawTarget - LEAD_IN);
+      const pastEndMessage = 'The audio ends before this section. Try again?';
+
+      // A truncated file can't reach later sections; say so rather than
+      // starting the office over from the top.
+      if (beyondTrackEnd(target, el.duration)) {
+        this.markTrackIncomplete(pastEndMessage);
+        return;
+      }
 
       // iOS (Safari & Chrome both run on WebKit) gates seeking on a known,
       // finite `duration` AND a `seekable` range that already reaches the
@@ -857,7 +893,15 @@ export default {
         if (Math.abs(el.currentTime - target) < 1) cleanup();
       };
       const trySeek = () => {
-        if (settled || !canReachTarget()) return;
+        if (settled) return;
+        if (beyondTrackEnd(target, el.duration)) {
+          // The length only became known after playback was requested.
+          cleanup();
+          this.pauseAudio();
+          this.markTrackIncomplete(pastEndMessage);
+          return;
+        }
+        if (!canReachTarget()) return;
         try {
           el.currentTime = Math.min(target, el.duration - 0.05);
         } catch {
@@ -1444,28 +1488,6 @@ export default {
       if (!this.duration) return 0;
       return (this.currentTime / this.duration) * 100;
     },
-    // FontAwesome icons
-    faPlay() {
-      return faPlay;
-    },
-    faPause() {
-      return faPause;
-    },
-    faChevronUp() {
-      return faChevronUp;
-    },
-    faMinus() {
-      return faMinus;
-    },
-    faPlus() {
-      return faPlus;
-    },
-    faSliders() {
-      return faSliders;
-    },
-    faXmark() {
-      return faXmark;
-    },
   },
   watch: {
     highlightMode() {
@@ -1479,34 +1501,32 @@ export default {
 <style scoped>
 /* One compact bar on every screen: transport, the current section (which
    opens a jump menu), a timeline, and a listening-options popover. Popovers
-   float above the bar so opening them never moves a control. */
+   float above the bar so opening them never moves a control.
+
+   Phones dock the bar to the bottom edge (it absorbs the safe area); wider
+   screens float it as a raised card. Every color is a theme token, so the bar
+   follows light, sepia, and dark without overrides. */
 .audio-player {
-  --color-text: var(--font-color, #111827);
-  --player-border: color-mix(in srgb, var(--color-text) 14%, transparent);
-  --player-muted: color-mix(in srgb, var(--color-text) 68%, var(--color-bg));
-  --player-hover: color-mix(in srgb, var(--color-text) 7%, transparent);
-  --player-tint: color-mix(in srgb, var(--accent-color) 12%, var(--color-bg));
-  color: var(--color-text);
-  font-size: 1rem;
-  line-height: 1.4;
+  color: var(--ink);
+  font-family: var(--font-book);
+  font-size: var(--text-md);
+  line-height: var(--leading-ui);
 }
 .controls.fixed-controls {
   position: fixed;
-  inset-inline: max(8px, env(safe-area-inset-left))
-    max(8px, env(safe-area-inset-right));
-  bottom: max(8px, env(safe-area-inset-bottom));
-  max-width: 920px;
-  margin-inline: auto;
-  padding: 10px 14px;
-  border: 1px solid var(--player-border);
-  border-radius: 18px;
-  background: color-mix(in srgb, var(--color-bg) 94%, transparent);
-  -webkit-backdrop-filter: blur(14px) saturate(1.4);
-  backdrop-filter: blur(14px) saturate(1.4);
-  box-shadow:
-    0 1px 2px #0000000d,
-    0 10px 32px -8px #00000026;
+  inset-inline: 0;
+  bottom: 0;
   z-index: 100;
+  padding: var(--space-2) max(var(--space-3), env(safe-area-inset-right))
+    calc(var(--space-2) + env(safe-area-inset-bottom))
+    max(var(--space-3), env(safe-area-inset-left));
+  border-top: 1px solid var(--rule);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background-color: var(--paper-raised);
+  box-shadow: var(--shadow);
+  transition:
+    background-color var(--duration) var(--ease),
+    border-color var(--duration) var(--ease);
 }
 button,
 input {
@@ -1514,20 +1534,18 @@ input {
   touch-action: manipulation;
 }
 button {
-  cursor: pointer;
   color: inherit;
 }
 button:disabled,
 input:disabled {
-  cursor: default;
   opacity: 0.45;
 }
 button:focus-visible,
 input:focus-visible,
 a:focus-visible,
 .segmented input:focus-visible + span {
-  outline: 2px solid var(--accent-color) !important;
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 /* ---- Bar layout ---------------------------------------------------- */
@@ -1535,14 +1553,14 @@ a:focus-visible,
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-1);
 }
 .timeline {
   order: -1;
   display: flex;
   flex: 1 0 100%;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-3);
   min-width: 0;
 }
 .primary-play-button {
@@ -1552,7 +1570,7 @@ a:focus-visible,
   order: 1;
   flex: 1 1 0;
   min-width: 0;
-  margin-inline: 4px;
+  margin-inline: var(--space-1);
 }
 .skip-button--back {
   order: 2;
@@ -1572,26 +1590,27 @@ a:focus-visible,
   position: relative;
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 48px;
-  flex: 0 0 48px;
-  padding: 0;
-  border: 0;
+  width: 3rem;
+  height: 3rem;
+  flex: 0 0 3rem;
   border-radius: 50%;
-  background: var(--accent-color);
-  color: var(--accent-contrast, #fff);
-  font-size: 18px;
-  box-shadow: 0 2px 8px -2px
-    color-mix(in srgb, var(--accent-color) 60%, transparent);
+  background-color: var(--accent);
+  color: var(--on-accent);
+  font-size: 1.125rem;
+  box-shadow: var(--shadow-sm);
   transition:
-    transform 120ms ease,
-    filter 120ms ease;
+    transform 120ms var(--ease),
+    filter var(--duration) var(--ease);
 }
-.primary-play-button :deep(.fa-play) {
+/* The line icons read better solid at this size. */
+.primary-play-button .ui-icon {
+  fill: currentColor;
+}
+.primary-play-button .icon-play {
   margin-left: 2px; /* optical centre */
 }
 .primary-play-button:hover:not(:disabled) {
-  filter: brightness(1.08);
+  filter: brightness(1.08) saturate(1.05);
 }
 .primary-play-button:active:not(:disabled) {
   transform: scale(0.94);
@@ -1601,7 +1620,7 @@ a:focus-visible,
   position: absolute;
   inset: -4px;
   border: 2px solid transparent;
-  border-top-color: var(--accent-color);
+  border-top-color: var(--accent);
   border-radius: 50%;
   animation: player-spin 0.9s linear infinite;
 }
@@ -1616,63 +1635,60 @@ a:focus-visible,
   position: relative;
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 44px;
+  width: 2.75rem;
+  height: 2.75rem;
   flex: 0 0 auto;
-  padding: 0;
-  border: 0;
-  border-radius: 12px;
-  background: transparent;
+  border-radius: var(--radius);
+  color: var(--ink-soft);
+  transition:
+    background-color var(--duration) var(--ease),
+    color var(--duration) var(--ease);
 }
 .skip-button:hover:not(:disabled),
 .preferences-button:hover,
 .dismiss-button:hover,
 .section-button:hover:not(:disabled) {
-  background: var(--player-hover);
+  background-color: var(--paper-sunken);
+  color: var(--ink);
 }
 .skip-icon {
-  width: 28px;
-  height: 28px;
+  width: 1.75rem;
+  height: 1.75rem;
   overflow: visible;
 }
 .skip-arc {
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.7;
+  stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 .skip-icon text {
   fill: currentColor;
-  font-family:
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    sans-serif;
-  font-size: 7.5px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-family: var(--font-book);
+  font-size: 8.5px;
+  font-weight: 600;
+  font-variant-numeric: lining-nums;
 }
 .preferences-button {
   width: auto;
-  min-width: 40px;
-  padding-inline: 10px;
+  min-width: 2.75rem;
+  padding-inline: var(--space-3);
   grid-auto-flow: column;
-  gap: 6px;
-  font-size: 17px;
+  gap: var(--space-2);
+  font-size: 1.25rem;
 }
 .preferences-button[aria-expanded='true'] {
-  background: var(--player-tint);
-  color: var(--accent-color);
+  background-color: var(--accent-wash);
+  color: var(--accent);
 }
 .speed-badge {
-  font-size: 0.75rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
+  font-size: var(--text-sm);
+  font-variant-numeric: lining-nums tabular-nums;
 }
 .dismiss-button {
-  color: var(--player-muted);
-  font-size: 18px;
+  color: var(--ink-faint);
+  font-size: 1.125rem;
 }
 
 /* ---- Current section / jump menu ----------------------------------- */
@@ -1683,14 +1699,13 @@ a:focus-visible,
 .section-button {
   display: flex;
   width: 100%;
-  min-height: 44px;
+  min-height: 2.75rem;
   flex-direction: column;
   justify-content: center;
-  padding: 2px 8px;
-  border: 0;
-  border-radius: 12px;
-  background: transparent;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius);
   text-align: left;
+  transition: background-color var(--duration) var(--ease);
 }
 .section-button:disabled {
   opacity: 1;
@@ -1698,10 +1713,12 @@ a:focus-visible,
 .section-caption {
   display: block;
   overflow: hidden;
-  color: var(--player-muted);
-  font-size: 0.75rem;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.3;
+  color: var(--ink-faint);
+  font-size: var(--text-sm);
+  font-variant-caps: all-small-caps;
+  font-variant-numeric: oldstyle-nums tabular-nums;
+  letter-spacing: var(--tracking-caps);
+  line-height: 1.15;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1713,21 +1730,22 @@ a:focus-visible,
   min-width: 0;
   max-width: 100%;
   align-items: center;
-  gap: 6px;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  line-height: 1.3;
+  gap: var(--space-2);
+  color: var(--ink);
+  font-size: var(--text-md);
+  line-height: var(--leading-tight);
 }
 .section-name-text {
   overflow: hidden;
+  padding-top: 0.08em;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .section-chevron {
   flex: 0 0 auto;
-  width: 10px;
-  color: var(--player-muted);
-  transition: transform 150ms ease;
+  color: var(--ink-faint);
+  font-size: var(--text-xs);
+  transition: transform var(--duration) var(--ease);
 }
 .section-button[aria-expanded='true'] .section-chevron {
   transform: rotate(180deg);
@@ -1736,17 +1754,17 @@ a:focus-visible,
 /* ---- Popovers ------------------------------------------------------- */
 .popover {
   position: absolute;
-  bottom: calc(100% + 8px);
+  bottom: calc(100% + var(--space-2));
   z-index: 1;
   max-height: min(60dvh, 440px);
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 8px;
-  border: 1px solid var(--player-border);
-  border-radius: 16px;
-  background: var(--color-bg);
-  box-shadow: 0 12px 40px -8px #00000040;
-  animation: popover-in 140ms ease-out;
+  padding: var(--space-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  background-color: var(--paper-raised);
+  box-shadow: var(--shadow);
+  animation: popover-in 140ms var(--ease);
 }
 @keyframes popover-in {
   from {
@@ -1755,57 +1773,53 @@ a:focus-visible,
   }
 }
 .popover-title {
-  margin: 4px 8px 6px;
-  color: var(--player-muted);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  margin: var(--space-1) var(--space-2) var(--space-2);
+  color: var(--ink-faint);
+  font-size: var(--text-sm);
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
 }
 .section-menu {
-  inset-inline: 0;
-}
-.section-menu ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  inset-inline: var(--space-2);
 }
 .section-item {
   display: flex;
   width: 100%;
-  min-height: 44px;
+  min-height: 2.75rem;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 8px 10px;
-  border: 0;
-  border-radius: 10px;
-  background: transparent;
-  font-size: 0.9375rem;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  color: var(--ink);
+  font-size: var(--text-md);
+  line-height: var(--leading-tight);
   text-align: left;
+  transition: background-color var(--duration) var(--ease);
 }
 .section-item:hover,
 .section-item:focus-visible {
-  background: var(--player-hover);
+  background-color: var(--paper-sunken);
 }
-.section-item--current {
-  background: var(--player-tint);
-  color: var(--accent-color);
-  font-weight: 600;
-}
+.section-item--current,
 .section-item--current:hover {
-  background: var(--player-tint);
+  background-color: var(--accent-wash);
+  color: var(--accent);
+}
+.section-item-name {
+  padding-top: 0.08em;
 }
 .section-item-time {
   flex: 0 0 auto;
-  color: var(--player-muted);
-  font-size: 0.75rem;
-  font-variant-numeric: tabular-nums;
+  color: var(--ink-faint);
+  font-size: var(--text-sm);
+  font-variant-numeric: oldstyle-nums tabular-nums;
 }
 .preferences-panel {
-  right: 0;
-  width: min(320px, 100%);
-  padding: 6px 14px;
+  right: var(--space-2);
+  width: min(20rem, calc(100% - 2 * var(--space-2)));
+  padding: var(--space-1) var(--space-4);
 }
 
 /* ---- Listening options --------------------------------------------- */
@@ -1814,16 +1828,14 @@ a:focus-visible,
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  min-height: 56px;
-  margin: 0;
-  padding: 8px 0;
-  border: 0;
-  border-bottom: 1px solid var(--player-border);
+  gap: var(--space-3);
+  min-height: 3.5rem;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--rule);
 }
 .highlight-control {
   display: block;
-  padding-block: 10px 12px;
+  padding-block: var(--space-3);
 }
 .highlight-control legend {
   float: left; /* keeps the legend inside the fieldset's padding box */
@@ -1832,49 +1844,58 @@ a:focus-visible,
 .preference-label {
   display: flex;
   flex-direction: column;
-  padding: 0;
-  font-size: 0.9375rem;
-  font-weight: 600;
+  color: var(--ink);
+  font-size: var(--text-md);
+  font-variant-caps: all-small-caps;
+  letter-spacing: var(--tracking-caps);
+  line-height: var(--leading-tight);
 }
 .preference-label small {
-  color: var(--player-muted);
-  font-size: 0.75rem;
-  font-weight: 400;
+  margin-top: 2px;
+  color: var(--ink-faint);
+  font-size: var(--text-sm);
+  font-style: italic;
+  font-variant-caps: normal;
+  letter-spacing: normal;
 }
 .stepper {
   display: flex;
   align-items: center;
-  border: 1px solid var(--player-border);
-  border-radius: 999px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-pill);
+  background-color: var(--paper-raised);
 }
 .stepper button {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 36px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  font-size: 12px;
+  width: 2.75rem;
+  height: 2.5rem;
+  border-radius: var(--radius-pill);
+  color: var(--ink-soft);
+  font-size: var(--text-sm);
+  transition: background-color var(--duration) var(--ease);
 }
 .stepper button:hover:not(:disabled) {
-  background: var(--player-hover);
+  background-color: var(--paper-sunken);
+  color: var(--ink);
 }
 .speed-value {
   min-width: 3.25em;
-  font-size: 0.9375rem;
-  font-variant-numeric: tabular-nums;
-  font-weight: 600;
+  font-size: var(--text-md);
+  font-variant-numeric: lining-nums tabular-nums;
   text-align: center;
 }
+/* Mirrors UiSegmented's pill (native radios keep form semantics). */
 .segmented {
   display: grid;
   clear: both;
   grid-template-columns: repeat(3, 1fr);
-  margin-top: 8px;
+  gap: 2px;
+  margin-top: var(--space-2);
   padding: 3px;
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--color-text) 7%, var(--color-bg));
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background-color: var(--paper-sunken);
 }
 .segmented label {
   position: relative;
@@ -1887,45 +1908,57 @@ a:focus-visible,
 .segmented span {
   display: grid;
   place-items: center;
-  min-height: 36px;
-  border-radius: 9px;
+  min-height: 2.5rem;
+  padding-top: 0.08em;
+  border-radius: calc(var(--radius) - 3px);
+  color: var(--ink-soft);
   cursor: pointer;
-  font-size: 0.875rem;
-  transition: background-color 120ms ease;
+  font-size: var(--text-sm);
+  transition:
+    background-color var(--duration) var(--ease),
+    color var(--duration) var(--ease);
+}
+.segmented span:hover {
+  color: var(--ink);
 }
 .segmented input:checked + span {
-  background: var(--color-bg);
-  box-shadow: 0 1px 3px #00000026;
-  color: var(--accent-color);
-  font-weight: 600;
+  background-color: var(--paper-raised);
+  color: var(--ink);
+  box-shadow:
+    var(--shadow-sm),
+    0 0 0 1px var(--rule);
 }
+/* Mirrors UiSwitch. */
 .scroll-control {
   position: relative;
   flex: 0 0 auto;
-  width: 48px;
-  height: 28px;
-  padding: 0;
-  border: 0;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--color-text) 22%, var(--color-bg));
-  transition: background-color 150ms ease;
+  width: 2.75rem;
+  height: 1.625rem;
+  border-radius: var(--radius-pill);
+  background-color: var(--rule-strong);
+  transition: background-color var(--duration) var(--ease);
+}
+.scroll-control::before {
+  content: '';
+  position: absolute;
+  inset: -0.5625rem 0; /* a 44px-tall tap target */
 }
 .scroll-control[aria-checked='true'] {
-  background: var(--accent-color);
+  background-color: var(--accent);
 }
 .switch-thumb {
   position: absolute;
   top: 3px;
   left: 3px;
-  width: 22px;
-  height: 22px;
+  width: 1.25rem;
+  height: 1.25rem;
   border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 1px 3px #0000004d;
-  transition: transform 150ms ease;
+  background-color: var(--paper-raised);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--duration) var(--ease);
 }
 .scroll-control[aria-checked='true'] .switch-thumb {
-  transform: translateX(20px);
+  transform: translateX(1.125rem);
 }
 .preferences-panel > :last-child {
   border-bottom: 0;
@@ -1933,22 +1966,16 @@ a:focus-visible,
 .hide-player-button {
   display: flex;
   width: 100%;
-  min-height: 48px;
+  min-height: 3rem;
   align-items: center;
-  gap: 10px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--player-muted);
-  font-size: 0.875rem;
+  gap: var(--space-2);
+  color: var(--ink-soft);
+  font-size: var(--text-md);
   line-height: 1;
-}
-.hide-player-button :deep(svg) {
-  width: 14px;
-  height: 14px;
+  transition: color var(--duration) var(--ease);
 }
 .hide-player-button:hover {
-  color: var(--color-text);
+  color: var(--ink);
 }
 
 /* ---- Timeline ------------------------------------------------------- */
@@ -1956,9 +1983,9 @@ a:focus-visible,
   display: none;
   flex: 0 0 auto;
   min-width: 2.75em;
-  color: var(--player-muted);
-  font-size: 0.75rem;
-  font-variant-numeric: tabular-nums;
+  color: var(--ink-faint);
+  font-size: var(--text-sm);
+  font-variant-numeric: oldstyle-nums tabular-nums;
 }
 .time--remaining {
   text-align: right;
@@ -1967,56 +1994,68 @@ a:focus-visible,
   display: block;
   flex: 1;
   min-width: 0;
-  height: 18px;
-  margin: -4px 0 2px;
+  height: 1.5rem;
+  margin: -0.25rem 0 0;
   appearance: none;
+  -webkit-appearance: none;
   background: transparent;
   cursor: pointer;
 }
 .timeline-slider:disabled {
   opacity: 1;
+  cursor: default;
 }
 .timeline-slider::-webkit-slider-runnable-track {
-  height: 4px;
-  border-radius: 999px;
+  height: 3px;
+  border-radius: 2px;
   background: linear-gradient(
     to right,
-    var(--accent-color) 0 var(--progress),
-    color-mix(in srgb, var(--color-text) 16%, var(--color-bg)) var(--progress)
-      100%
+    var(--accent) 0 var(--progress),
+    var(--rule-strong) var(--progress) 100%
   );
 }
 .timeline-slider::-moz-range-track {
-  height: 4px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--color-text) 16%, var(--color-bg));
+  height: 3px;
+  border-radius: 2px;
+  background: var(--rule-strong);
 }
 .timeline-slider::-moz-range-progress {
-  height: 4px;
-  border-radius: 999px;
-  background: var(--accent-color);
+  height: 3px;
+  border-radius: 2px;
+  background: var(--accent);
 }
 .timeline-slider::-webkit-slider-thumb {
-  width: 14px;
-  height: 14px;
-  margin-top: -5px;
+  width: 0.875rem;
+  height: 0.875rem;
+  margin-top: calc((3px - 0.875rem) / 2);
   appearance: none;
-  border: 2px solid var(--color-bg);
+  -webkit-appearance: none;
+  border: 1.5px solid var(--accent);
   border-radius: 50%;
-  background: var(--accent-color);
-  box-shadow: 0 1px 3px #00000040;
-  transition: transform 120ms ease;
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-sm);
+  transition: transform 120ms var(--ease);
 }
 .timeline-slider::-moz-range-thumb {
-  width: 12px;
-  height: 12px;
-  border: 2px solid var(--color-bg);
+  width: 0.875rem;
+  height: 0.875rem;
+  box-sizing: border-box;
+  border: 1.5px solid var(--accent);
   border-radius: 50%;
-  background: var(--accent-color);
+  background: var(--paper-raised);
 }
 .timeline-slider:hover::-webkit-slider-thumb,
 .timeline-slider:active::-webkit-slider-thumb {
   transform: scale(1.2);
+}
+.timeline-slider:focus-visible {
+  box-shadow: none;
+}
+.timeline-slider:focus-visible::-webkit-slider-thumb {
+  box-shadow: var(--focus-ring);
+}
+.timeline-slider:focus-visible::-moz-range-thumb {
+  box-shadow: var(--focus-ring);
 }
 
 /* ---- Messages ------------------------------------------------------- */
@@ -2024,62 +2063,75 @@ a:focus-visible,
 .availability-note {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 0.875rem;
-  line-height: 1.5;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+  line-height: 1.45;
 }
 .audio-error {
   flex-wrap: wrap;
-  margin-bottom: 8px;
-  padding: 4px 4px 4px 12px;
-  border-radius: 10px;
-  background: var(--player-tint);
+  margin-bottom: var(--space-2);
+  padding: 2px 2px 2px var(--space-3);
+  border: 1px solid var(--accent-rule);
+  border-radius: var(--radius);
+  background-color: var(--accent-wash);
+  color: var(--ink);
 }
 .audio-error span {
-  flex: 1 1 200px;
+  flex: 1 1 12rem;
 }
 .audio-error button {
-  min-height: 40px;
-  padding: 8px;
-  border: 0;
-  background: transparent;
-  font-weight: 600;
-  text-decoration: underline;
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--accent);
+  font-size: var(--text-md);
+  font-variant-caps: all-small-caps;
+  letter-spacing: var(--tracking-caps);
 }
 .availability-note {
-  justify-content: space-between;
+  color: var(--ink-soft);
 }
-.availability-note p {
-  margin: 0;
+.note-icon {
+  color: var(--accent);
+  font-size: 1.25rem;
+}
+.note-text {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 .availability-note a {
-  text-decoration: underline;
+  color: var(--accent);
 }
 
 /* Small phones: the options popover carries "Hide audio player". */
 @media (max-width: 479px) {
   .controls.fixed-controls {
-    padding: 8px 10px 8px;
+    padding-inline: max(var(--space-2), env(safe-area-inset-left))
+      max(var(--space-2), env(safe-area-inset-right));
   }
   .player-bar > .dismiss-button {
     display: none;
   }
-  .skip-button {
-    width: 38px;
-  }
-  .preferences-panel {
-    width: 100%;
+  .preferences-button {
+    padding-inline: var(--space-2);
   }
 }
 
-/* Wide screens: a single row with the timeline inline. */
+/* Wide screens: a floating card, a single row with the timeline inline. */
 @media (min-width: 720px) {
   .controls.fixed-controls {
-    padding: 10px 12px;
+    inset-inline: max(var(--gutter), env(safe-area-inset-left))
+      max(var(--gutter), env(safe-area-inset-right));
+    bottom: calc(var(--space-3) + env(safe-area-inset-bottom));
+    max-width: 58rem;
+    margin-inline: auto;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-lg);
   }
   .player-bar {
     flex-wrap: nowrap;
-    gap: 6px;
+    gap: var(--space-1);
   }
   .skip-button--back {
     order: 0;
@@ -2093,12 +2145,14 @@ a:focus-visible,
   .now-playing {
     position: relative;
     order: 3;
-    flex: 0 1 220px;
-    margin-inline: 6px 2px;
+    flex: 0 1 14rem;
+    margin-inline: var(--space-2) 2px;
   }
   .timeline {
     order: 4;
     flex: 1 1 auto;
+    padding-inline: var(--space-2);
+    border-inline-start: 1px solid var(--rule);
   }
   .options-wrap {
     position: relative;
@@ -2106,10 +2160,6 @@ a:focus-visible,
   }
   .dismiss-button {
     order: 6;
-  }
-  .skip-button,
-  .dismiss-button {
-    width: 44px;
   }
   .time {
     display: block;
@@ -2125,16 +2175,19 @@ a:focus-visible,
   }
   /* Anchor popovers to their trigger, clear of the bar's top edge. */
   .popover {
-    bottom: calc(100% + 20px);
+    bottom: calc(100% + var(--space-5));
   }
   .section-menu {
     inset-inline: 0 auto;
-    width: 340px;
+    width: 21rem;
   }
   .preferences-panel {
-    width: 320px;
+    right: 0;
+    width: 20rem;
   }
 }
+
+/* Follow-along highlighting inside the office text. */
 :global(.audio-line) {
   position: relative;
   /* Paint breathing room without changing text width or punctuation spacing. */
@@ -2149,11 +2202,11 @@ a:focus-visible,
 }
 
 :global(.audio-line--active) {
-  background: color-mix(in srgb, var(--accent-color) 22%, transparent);
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
   box-shadow:
-    -0.12em 0 0 0.035em color-mix(in srgb, var(--accent-color) 22%, transparent),
-    0.12em 0 0 0.035em color-mix(in srgb, var(--accent-color) 22%, transparent);
-  color: color-mix(in srgb, var(--font-color) 88%, var(--accent-color));
+    -0.12em 0 0 0.035em color-mix(in srgb, var(--accent) 22%, transparent),
+    0.12em 0 0 0.035em color-mix(in srgb, var(--accent) 22%, transparent);
+  color: color-mix(in srgb, var(--ink) 88%, var(--accent));
 }
 
 /* Sentence fragments meet at word and markup boundaries. Do not extend
@@ -2164,7 +2217,7 @@ a:focus-visible,
 }
 
 :global([data-audio-sentence].audio-line--active) {
-  background: color-mix(in srgb, var(--accent-color) 22%, var(--color-bg));
+  background: color-mix(in srgb, var(--accent) 22%, var(--paper));
   box-shadow: none;
 }
 

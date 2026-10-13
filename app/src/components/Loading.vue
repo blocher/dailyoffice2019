@@ -1,125 +1,68 @@
 <template>
-  <div :class="wrapperClass">
-    <div :class="loadingSizeClass">
-      <div />
-      <div />
-      <div />
-      <div />
-    </div>
+  <div
+    class="loading"
+    :class="{ 'loading--small': small }"
+    role="status"
+    aria-live="polite"
+  >
+    <span class="loading__dots" aria-hidden="true">
+      <span class="ornament">t</span>
+      <span class="ornament">t</span>
+      <span class="ornament">t</span>
+    </span>
+    <span class="visually-hidden">Loading…</span>
   </div>
 </template>
 
-<script>
-// @ is an alias to /src
-
-export default {
-  name: 'Loading',
-  components: {},
-  props: { small: { type: Boolean, default: false } },
-  computed: {
-    loadingSizeClass() {
-      return this.small ? 'lds-ellipsis size-small' : 'lds-ellipsis size-large';
-    },
-    wrapperClass() {
-      return this.small
-        ? 'lds-ellipsis-wrapper size-small'
-        : 'lds-ellipsis-wrapper size-large';
-    },
-  },
-};
+<script setup>
+defineProps({ small: { type: Boolean, default: false } });
 </script>
 
-<style lang="scss">
-.lds-ellipsis-wrapper {
-  width: 100%;
-  margin: auto;
-  text-align: center;
+<style scoped>
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-7) 0;
 }
 
-.lds-ellipsis-wrapper.size-small {
-  width: 15px;
-  margin: inherit;
-  text-align: center;
+.loading--small {
+  display: inline-flex;
+  padding: 0;
 }
 
-.lds-ellipsis {
-  display: inline-block;
-  position: relative;
-  width: 80px;
-  height: 80px;
+.loading__dots {
+  display: inline-flex;
+  gap: 0.6em;
+  font-size: 1.1rem;
 }
 
-.lds-ellipsis.size-small {
-  display: inline-block;
-  position: relative;
-  width: 15px;
-  height: 15px;
+.loading--small .loading__dots {
+  gap: 0.3em;
+  font-size: 0.75rem;
 }
 
-.lds-ellipsis div {
-  position: absolute;
-  top: 33px;
-  width: 13px;
-  height: 13px;
-  border-radius: 50%;
-  background: #2c3e50;
-  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+.loading__dots .ornament {
+  opacity: 0.25;
+  animation: loading-pulse 1.2s var(--ease) infinite;
 }
 
-.lds-ellipsis.size-small div {
-  position: absolute;
-  top: 12px;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #2c3e50;
-  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+.loading__dots .ornament:nth-child(2) {
+  animation-delay: 0.2s;
 }
 
-.lds-ellipsis div:nth-child(1) {
-  left: 8px;
-  animation: lds-ellipsis1 0.6s infinite;
+.loading__dots .ornament:nth-child(3) {
+  animation-delay: 0.4s;
 }
 
-.lds-ellipsis div:nth-child(2) {
-  left: 8px;
-  animation: lds-ellipsis2 0.6s infinite;
-}
-
-.lds-ellipsis div:nth-child(3) {
-  left: 32px;
-  animation: lds-ellipsis2 0.6s infinite;
-}
-
-.lds-ellipsis div:nth-child(4) {
-  left: 56px;
-  animation: lds-ellipsis3 0.6s infinite;
-}
-
-@keyframes lds-ellipsis1 {
-  0% {
-    transform: scale(0);
-  }
+@keyframes loading-pulse {
+  0%,
   100% {
+    opacity: 0.25;
+    transform: scale(0.9);
+  }
+  40% {
+    opacity: 1;
     transform: scale(1);
-  }
-}
-
-@keyframes lds-ellipsis3 {
-  0% {
-    transform: scale(1);
-  }
-  100% {
-    transform: scale(0);
-  }
-}
-
-@keyframes lds-ellipsis2 {
-  0% {
-    transform: translate(0, 0);
-  }
-  100% {
-    transform: translate(24px, 0);
   }
 }
 </style>

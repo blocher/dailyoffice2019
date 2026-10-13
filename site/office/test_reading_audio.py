@@ -111,7 +111,9 @@ class ReadingAudioCompletenessTests(SimpleTestCase):
 
     def test_audio_endpoint_returns_503_without_partial_audio_then_succeeds_on_retry(self):
         today = datetime.date(2026, 10, 11)
-        request = APIRequestFactory().get("/", {"include_audio_links": "true"})
+        # A path of its own: build-status markers are keyed by path, and another
+        # test's background build of "/" may still be writing them.
+        request = APIRequestFactory().get("/test-reading-audio-retry", {"include_audio_links": "true"})
         with (
             patch.object(index, "TTS_PROVIDER", ElevenLabsTTSProvider()),
             patch.object(index, "MorningPrayer", return_value=self.office),

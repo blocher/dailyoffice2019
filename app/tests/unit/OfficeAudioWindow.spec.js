@@ -13,18 +13,26 @@ describe('office audio date window', () => {
     const post = vi.fn();
     const context = { isWithinSevenDays: true, $http: { get, post } };
     expect(Office.computed.audioLoadingEnabled()).toBe(false);
-    expect(await Office.methods.setAudioLinks.call(context, '/office?test=1')).toEqual([]);
-    expect(await Office.methods.getAudioLinkForLine.call(context, {
-      content: 'Test prayer', line_type: 'leader',
-    })).toBeNull();
+    expect(
+      await Office.methods.setAudioLinks.call(context, '/office?test=1')
+    ).toEqual([]);
+    expect(
+      await Office.methods.getAudioLinkForLine.call(context, {
+        content: 'Test prayer',
+        line_type: 'leader',
+      })
+    ).toBeNull();
     expect(get).not.toHaveBeenCalled();
     expect(post).not.toHaveBeenCalled();
   });
 
-  it.each(['true', undefined])('allows audio when the environment value is %s', (value) => {
-    vi.stubEnv('VITE_FETCH_AUDIO_ON', value);
-    expect(Office.computed.audioLoadingEnabled()).toBe(true);
-  });
+  it.each(['true', undefined])(
+    'allows audio when the environment value is %s',
+    (value) => {
+      vi.stubEnv('VITE_FETCH_AUDIO_ON', value);
+      expect(Office.computed.audioLoadingEnabled()).toBe(true);
+    }
+  );
 
   it('includes all of the boundary days and excludes dates beyond them', () => {
     vi.useFakeTimers();
@@ -36,7 +44,9 @@ describe('office audio date window', () => {
       [new Date(2026, 9, 13, 0, 0), false],
       [new Date(2050, 10, 17), false],
     ]) {
-      expect(Office.computed.isWithinSevenDays.call({ calendarDate: date })).toBe(expected);
+      expect(
+        Office.computed.isWithinSevenDays.call({ calendarDate: date })
+      ).toBe(expected);
     }
   });
 
@@ -44,7 +54,8 @@ describe('office audio date window', () => {
     for (const audioEnabled of [true, false]) {
       const get = vi.fn();
       const result = await Office.methods.setAudioLinks.call(
-        { audioEnabled, isWithinSevenDays: false, $http: { get } }, '/office?test=1'
+        { audioEnabled, isWithinSevenDays: false, $http: { get } },
+        '/office?test=1'
       );
       expect(result).toEqual([]);
       expect(get).not.toHaveBeenCalled();
@@ -53,10 +64,75 @@ describe('office audio date window', () => {
 
   it('still fetches audio for an eligible office', async () => {
     vi.stubEnv('VITE_FETCH_AUDIO_ON', 'true');
-    const get = vi.fn().mockResolvedValue({ data: { audio: { single_track: [] } } });
+    const get = vi
+      .fn()
+      .mockResolvedValue({ data: { audio: { single_track: [] } } });
     await Office.methods.setAudioLinks.call(
-      { audioEnabled: true, isWithinSevenDays: true, $http: { get } }, '/office?test=1'
+      { audioEnabled: true, isWithinSevenDays: true, $http: { get } },
+      '/office?test=1'
     );
     expect(get).toHaveBeenCalledWith('/office?test=1&include_audio_links=true');
+  });
+
+  it('polls while the server prepares audio, then uses the ready track', async () => {
+    vi.useFakeTimers();
+    vi.stubEnv('VITE_FETCH_AUDIO_ON', 'true');
+    const preparing = {
+      status: 202,
+      data: { audio: { status: 'preparing', retry_after: 5, single_track: [] } },
+    };
+    const get = vi
+      .fn()
+      .mockResolvedValueOnce(preparing)
+      .mockResolvedValueOnce(preparing)
+      .mockResolvedValueOnce({
+        data: { audio: { single_track: ['https://api.test/track.mp3', 'p'] } },
+      });
+    const context = {
+      isWithinSevenDays: true,
+      $http: { get },
+      resolveAudioUrl: (url) => `resolved:${url}`,
+    };
+    const result = Office.methods.setAudioLinks.call(context, '/office?a=1');
+    await vi.advanceTimersByTimeAsync(4000);
+    expect(get).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(get).toHaveBeenCalledTimes(2);
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(await result).toEqual(['resolved:https://api.test/track.mp3', 'p']);
+    expect(get).toHaveBeenCalledTimes(3);
+    expect(context.audioLinks).toEqual(await result);
+  });
+
+  it('stops polling once the office is closed', async () => {
+    vi.useFakeTimers();
+    vi.stubEnv('VITE_FETCH_AUDIO_ON', 'true');
+    const get = vi.fn().mockResolvedValue({
+      status: 202,
+      data: { audio: { status: 'preparing', retry_after: 5 } },
+    });
+    const context = { isWithinSevenDays: true, $http: { get } };
+    const result = Office.methods.setAudioLinks.call(context, '/office?a=1');
+    await vi.advanceTimersByTimeAsync(0);
+    Office.beforeUnmount.call(context);
+    await vi.advanceTimersByTimeAsync(60000);
+    expect(await result).toEqual([]);
+    expect(get).toHaveBeenCalledTimes(1);
+  });
+
+  it('gives up after ten minutes of preparing', async () => {
+    vi.useFakeTimers();
+    vi.stubEnv('VITE_FETCH_AUDIO_ON', 'true');
+    const get = vi.fn().mockResolvedValue({
+      status: 202,
+      data: { audio: { status: 'preparing', retry_after: 30 } },
+    });
+    const result = Office.methods.setAudioLinks.call(
+      { isWithinSevenDays: true, $http: { get } },
+      '/office?a=1'
+    );
+    await vi.advanceTimersByTimeAsync(11 * 60 * 1000);
+    expect(await result).toEqual([]);
+    expect(get.mock.calls.length).toBeLessThanOrEqual(22);
   });
 });

@@ -4,7 +4,63 @@ const SETTING_TYPE_DEFAULTS = {
   3: { category: 'Expert', priority: 820 },
 };
 
+/*
+  Settings are grouped on the Settings page by category, in this order.
+  Unknown categories from the API are shown after these, alphabetically.
+*/
+export const SETTING_CATEGORIES = [
+  { key: 'Language', label: 'Language & translation' },
+  { key: 'Readings', label: 'Readings & psalms' },
+  { key: 'Prayer', label: 'Prayers' },
+  { key: 'Calendar', label: 'Calendar & seasons' },
+  { key: 'Litany', label: 'The Great Litany' },
+  { key: 'Conclusion', label: 'Closing prayers' },
+  { key: 'Audio', label: 'Audio' },
+  { key: 'More Options', label: 'More options' },
+  { key: 'Expert', label: 'Advanced' },
+];
+
 export const SETTINGS_UI_FALLBACK_METADATA = {
+  display_language: {
+    category: 'Language',
+    priority: 1,
+    keywords: ['chinese', 'spanish', 'español', '中文'],
+  },
+  language_style: {
+    category: 'Language',
+    priority: 2,
+    keywords: ['traditional', 'contemporary', 'thee', 'you'],
+  },
+  bible_translation: {
+    category: 'Language',
+    priority: 3,
+    keywords: ['esv', 'kjv', 'rsv', 'nrsv', 'version'],
+  },
+  psalm_translation: {
+    category: 'Language',
+    priority: 4,
+    keywords: ['psalter', 'coverdale', 'traditional', 'contemporary'],
+  },
+  language_style_for_our_father: {
+    category: 'Language',
+    priority: 5,
+    keywords: ['lords prayer', 'our father', 'kyrie'],
+  },
+  psalm_style: {
+    category: 'Readings',
+    priority: 12,
+    keywords: ['antiphonal', 'unison', 'half verse', 'whole verse'],
+  },
+  commemoration_info: {
+    category: 'Calendar',
+    priority: 170,
+    keywords: ['saints', 'biography', 'hagiography', 'wikipedia', 'bios'],
+  },
+  great_litany_ending: {
+    category: 'Litany',
+    priority: 295,
+    keywords: ['supplication', 'short ending'],
+  },
   psalter: {
     category: 'Readings',
     priority: 10,
@@ -60,11 +116,6 @@ export const SETTINGS_UI_FALLBACK_METADATA = {
     category: 'Readings',
     priority: 220,
     keywords: ['esv headings', 'headings'],
-  },
-  language_style: {
-    category: 'Language',
-    priority: 230,
-    keywords: ['traditional', 'contemporary', 'our father', 'kyrie'],
   },
   national_holidays: {
     category: 'Calendar',

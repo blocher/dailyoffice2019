@@ -95,49 +95,16 @@ Django `collectstatic` and static serving remain necessary for admin/editor/API-
 patrons and Bible-study pages retain their standalone assets. Email MJML uses the configured HTTP
 service and Python packages. Do not reintroduce a Webpack build into backend deployment.
 
-### Frontend Setup - FONTAWESOME PRO AUTHENTICATION REQUIRED
+### Frontend Setup
 
 ```bash
 cd app
 npm install
 ```
 
-**EXPECTED ISSUE**: Fails with `ENOTFOUND npm.fontawesome.com` due to FontAwesome Pro dependencies requiring
-authentication.
-
-**SOLUTION**: Configure FontAwesome Pro credentials using GitHub Personal Access Token:
-
-1. **Create GitHub Personal Access Token**:
-   - Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
-   - Generate new token with `read:packages` scope
-   - Copy the token
-
-2. **Configure npm for FontAwesome Pro**:
-   ```bash
-   # Set FontAwesome Pro registry
-   npm config set "@fortawesome:registry" https://npm.fontawesome.com/
-   
-   # Configure authentication using GitHub token
-   npm config set "//npm.fontawesome.com/:_authToken" YOUR_GITHUB_TOKEN
-   
-   # Or use FontAwesome Pro token directly (if you have one)
-   npm config set "//npm.fontawesome.com/:_authToken" YOUR_FONTAWESOME_PRO_TOKEN
-   ```
-
-3. **Alternative: Use .npmrc file**:
-   Create `app/.npmrc` with:
-   ```
-   @fortawesome:registry=https://npm.fontawesome.com/
-   //npm.fontawesome.com/:_authToken=${FONTAWESOME_TOKEN}
-   ```
-
-4. **Environment variable approach**:
-   ```bash
-   export FONTAWESOME_TOKEN=your_github_token_or_fontawesome_pro_token
-   cd app && npm install
-   ```
-
-**Note**: FontAwesome Pro requires either a GitHub Personal Access Token with `read:packages` scope or a direct FontAwesome Pro token. Contact project maintainers if you don't have access to either.
+The frontend has no private-registry dependencies. Its UI kit, icons, and
+styles live in the repository (`app/src/ui/`, `app/src/styles/`); see
+AGENTS.md for the design system.
 
 ## Build Process - NEVER CANCEL BUILDS
 
@@ -173,12 +140,12 @@ python manage.py runsslserver
 
 **Note**: Requires `django-sslserver` package (part of requirements.txt)
 
-### Frontend Development (When FontAwesome Issues Resolved)
+### Frontend Development
 
 ```bash
 cd app
 npm run dev
-# Accessible at http://127.0.0.1:8080
+# Accessible at http://localhost:5176
 ```
 
 ## Complete Environment Setup
@@ -264,7 +231,6 @@ pre-commit run --all-files
 ### Network Timeouts - CRITICAL TIMING ISSUES
 
 - **PyPI timeouts**: Use `--timeout 1200 --retries 10` with pip
-- **FontAwesome Pro**: Frontend requires authentication to npm.fontawesome.com
 - **Build timeouts**: Static generation takes 5-45 minutes, **NEVER CANCEL**
 - **Solution**: Always use maximum timeouts (60+ minutes) and multiple retries
 
@@ -279,7 +245,6 @@ pre-commit run --all-files
 ### Authentication Issues
 
 - **PostgreSQL**: Use postgres user for database import
-- **FontAwesome**: Requires Pro license authentication for frontend builds
 
 ## Validation Scenarios
 
@@ -366,9 +331,8 @@ make clean build
 If you encounter persistent network timeouts:
 
 1. **For Python packages**: Use maximum timeouts and retries, install core packages individually
-2. **For FontAwesome**: Contact project maintainers for Pro license setup
-3. **For builds**: Use maximum timeouts (60+ minutes) and **NEVER CANCEL**
-4. **For database**: Import works reliably and is fast (~4 seconds)
+2. **For builds**: Use maximum timeouts (60+ minutes) and **NEVER CANCEL**
+3. **For database**: Import works reliably and is fast (~4 seconds)
 
 **NEVER CANCEL RULE**: If any build process is running for less than 60 minutes, do not cancel it. The project has
 complex dependency chains that require patience.

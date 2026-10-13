@@ -19,7 +19,7 @@ This project is a full-stack application divided into a modern Vue frontend and 
 
 - **`app/`**: The modern Vue 3 Frontend application.
   - Powered by **Vite**.
-  - Uses **TailwindCSS v4** and **Element Plus** for styling and UI components.
+  - Styled by its own design system: tokens in `app/src/styles/`, a small UI kit in `app/src/ui/`. No Tailwind, Element Plus, or Font Awesome.
   - State management via **Vuex**, routing via **Vue Router**.
   - Testing is handled by **Vitest** (Unit) and **Cypress** (E2E).
   - Also includes Capacitor for mobile builds.
@@ -31,9 +31,16 @@ This project is a full-stack application divided into a modern Vue frontend and 
 ## 💻 Vue Frontend Standards (`app/`)
 
 1. **Composition API**: Use Vue 3's Composition API. Prefer `<script setup>` syntax for all new components.
-2. **Styling**: Utilize TailwindCSS utility classes as the primary styling method. Avoid custom CSS unless absolutely necessary. Use Element Plus components for complex UI elements (modals, forms, tables).
-3. **State Management**: Adhere to the existing Vuex store structure. Do not mutate state directly outside of actions/mutations.
-4. **Testing**: Write tests for new components or complex logic using Vitest. Ensure tests pass before committing.
+2. **Design system**: The look comes from one place, so keep it consistent.
+   - **Tokens** (`src/styles/tokens.css`): every color, space, radius, and type size. Use `var(--paper)`, `var(--ink-soft)`, `var(--accent)`, `var(--space-4)`, `var(--text-sm)`, etc. Never hard-code hex colors; the light, sepia, and dark themes depend on it. `--accent` is the day's liturgical color.
+   - **UI kit** (`src/ui/`, registered globally): `UiButton`, `UiIcon`, `UiSegmented`, `UiSwitch`, `UiSheet` (drawers, bottom sheets, dialogs), `UiAlert`, `UiField`, `UiInput`, `UiSelect`, `UiCheckbox`, `UiTag`, `UiDisclosure`, `Ornament`. Use `toast`/`confirm` from `@/ui/feedback` for messages and confirmations. Icons are `<UiIcon name="calendar" />` (names in `src/ui/iconData.js`).
+   - **Shared classes** (`src/styles/base.css`): `.page`, `.page-header`, `.page-title`, `.page-lede`, `.section-title`, `.eyebrow`, `.surface`, `.divider`, `.stack`, `.cluster`, `.sheet-block`. Form controls use `.ui-control`, `.ui-check`, `.ui-range` (`src/styles/forms.css`).
+   - **Liturgical text** (`src/styles/book.css`): wrap prayers, readings, and psalms in `.book`. It follows the 2019 BCP: small-caps titles and citations, semibold congregational text, smaller italic rubrics. Keep changes here minimal and faithful to the printed book.
+   - **Component styles** go in `<style scoped>` using tokens. Typography is Adobe Caslon Pro throughout; labels use small caps (`font-variant-caps: all-small-caps`) rather than bold or uppercase.
+   - **Display preferences** (theme, text size, reading typeface, audio) live in `src/helpers/displayPreferences.js`. App-wide sheets (menu, display, share, email, feedback) open via `openPanel()` from `src/helpers/panels.js`.
+3. **Responsiveness**: Design for 320px phones up to wide desktops. Check every change at phone, tablet, and desktop widths, and respect safe-area insets.
+4. **State Management**: Adhere to the existing Vuex store structure. Do not mutate state directly outside of actions/mutations.
+5. **Testing**: Write tests for new components or complex logic using Vitest. Ensure tests pass before committing.
 
 ## 🐍 Django Backend Standards (`site/`)
 

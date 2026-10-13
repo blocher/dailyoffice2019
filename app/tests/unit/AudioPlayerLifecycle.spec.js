@@ -37,15 +37,13 @@ let audio;
 let wrapper;
 let actions;
 let mediaSession;
-const mountPlayer = () => {
+const mountPlayer = (
+  sections = [{ name: 'Reading', start_time: 60 }],
+  lines = []
+) => {
   wrapper = shallowMount(AudioPlayer, {
     props: {
-      audio: [
-        'https://example.com/office.mp3',
-        '',
-        [{ name: 'Reading', start_time: 60 }],
-        [],
-      ],
+      audio: ['https://example.com/office.mp3?cid=abc', '', sections, lines],
       audioReady: true,
       office: 'morning_prayer',
       isEsvOrKjv: true,
@@ -53,14 +51,7 @@ const mountPlayer = () => {
     },
     global: {
       renderStubDefaultSlot: true,
-      stubs: [
-        'font-awesome-icon',
-        'el-button',
-        'el-button-group',
-        'el-select',
-        'el-option',
-        'el-switch',
-      ],
+      stubs: ['UiIcon'],
     },
   });
   return wrapper.vm;
@@ -284,6 +275,76 @@ describe('AudioPlayer playback lifecycle', () => {
     audio.emit('playing');
     expect(wrapper.emitted('audio-play')).toHaveLength(1);
   });
+  it('offers a fresh reload instead of rewinding when the track ends early', async () => {
+    const vm = mountPlayer(
+      [{ name: 'Collects', start_time: 500 }],
+      [{ id: 'last', start_time: 880, end_time: 900 }]
+    );
+    vm.startAudio();
+    audio.paused = false;
+    audio.emit('playing');
+    audio.currentTime = 600;
+    audio.paused = true;
+    audio.emit('ended');
+    expect(vm.playbackError).toBe('The audio ended early. Try again?');
+    expect(audio.currentTime).toBe(600);
+    expect(vm.currentTime).toBe(600);
+    expect(vm.isPlaying).toBe(false);
+    await vm.$nextTick();
+    expect(wrapper.find('.audio-error').text()).toContain('ended early');
+
+    audio.load.mockImplementation(() => {
+      audio.currentTime = 0;
+    });
+    await wrapper.get('.audio-error button').trigger('click');
+    const reloaded = new window.URL(audio.src);
+    expect(reloaded.pathname).toBe('/office.mp3');
+    expect(reloaded.searchParams.get('cid')).toBe('abc');
+    expect(reloaded.searchParams.get('reload')).toBeTruthy();
+    expect(audio.load).toHaveBeenCalledTimes(2);
+    expect(audio.play).toHaveBeenCalledTimes(2);
+    // The refetched (rebuilt) track is complete and carries on from 600 s.
+    audio.duration = 900;
+    audio.emit('loadedmetadata');
+    expect(audio.currentTime).toBe(600);
+    expect(vm.trackIncomplete).toBe(false);
+  });
+  it('rewinds as before when a complete track ends', () => {
+    const vm = mountPlayer(
+      [{ name: 'Collects', start_time: 500 }],
+      [{ id: 'last', start_time: 580, end_time: 598 }]
+    );
+    audio.currentTime = 600;
+    audio.emit('ended');
+    expect(vm.playbackError).toBe('');
+    expect(audio.currentTime).toBe(0);
+    expect(vm.trackIncomplete).toBe(false);
+  });
+  it('does not start over when a section is past the end of the track', () => {
+    const vm = mountPlayer([{ name: 'Collects', start_time: 900 }]);
+    vm.jumpToSection(900);
+    expect(audio.play).not.toHaveBeenCalled();
+    expect(audio.currentTime).toBe(0);
+    expect(vm.playbackError).toBe(
+      'The audio ends before this section. Try again?'
+    );
+    expect(vm.cancelTrackSeek).toBeFalsy();
+    vm.retryAudio();
+    expect(audio.src).toContain('reload=');
+  });
+  it('abandons a pending jump once the track proves too short', () => {
+    audio.duration = NaN;
+    const vm = mountPlayer([{ name: 'Collects', start_time: 900 }]);
+    vm.currentTrackSegment = 900;
+    vm.handleTrackSegmentChange();
+    expect(audio.play).toHaveBeenCalledTimes(1);
+    audio.duration = 600;
+    audio.emit('loadedmetadata');
+    expect(audio.pause).toHaveBeenCalled();
+    expect(audio.currentTime).toBe(0);
+    expect(vm.cancelTrackSeek).toBe(null);
+    expect(vm.playbackError).toContain('ends before this section');
+  });
   it('preserves chapter lead-in and seekable-range gating', () => {
     const vm = mountPlayer();
     let seekableEnd = 20;
@@ -455,9 +516,9 @@ describe('AudioPlayer compact controls', () => {
     expect(options.attributes('aria-expanded')).toBe('false');
     expect(wrapper.get('.preferences-panel').isVisible()).toBe(false);
     await options.trigger('click');
-    expect(
-      wrapper.get('.highlight-control input:checked').element.value
-    ).toBe('sentence');
+    expect(wrapper.get('.highlight-control input:checked').element.value).toBe(
+      'sentence'
+    );
   });
 
   it('closes an open popover when the other one opens or on outside press', async () => {
@@ -496,8 +557,9 @@ describe('AudioPlayer compact controls', () => {
   });
 
   it('restores saved speed and auto-scroll preferences', async () => {
-    DynamicStorage.getItem.mockImplementation(async (key) =>
-      ({ audioPlaybackSpeed: '1.2x', audioAutoScroll: 'false' })[key]
+    DynamicStorage.getItem.mockImplementation(
+      async (key) =>
+        ({ audioPlaybackSpeed: '1.2x', audioAutoScroll: 'false' })[key]
     );
     const vm = mountPlayer();
     await Promise.resolve();

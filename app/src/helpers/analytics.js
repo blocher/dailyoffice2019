@@ -14,7 +14,7 @@ export async function trackEvent(
   payload = {},
   { toBackend = false, toGA = true } = {}
 ) {
-  let clientId = null;
+  let clientId;
   try {
     clientId = await getClientId();
   } catch {

@@ -75,7 +75,6 @@ const mountPlayer = (source = audio) =>
     global: {
       stubs: {
         Loading: true,
-        'font-awesome-icon': true,
       },
     },
   });
@@ -136,7 +135,7 @@ describe('AudioPlayer word synchronization', () => {
       );
     }
     wrapper.vm.handlePause();
-    expect(cancelAnimationFrame).toHaveBeenCalled();
+    expect(globalThis.cancelAnimationFrame).toHaveBeenCalled();
     wrapper.unmount();
   });
 

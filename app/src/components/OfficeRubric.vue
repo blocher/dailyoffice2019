@@ -12,10 +12,3 @@ export default {
   props: ['line'],
 };
 </script>
-
-<style lang="scss" scoped>
-.rubric {
-  font-size: 0.8em;
-  line-height: 1.2em;
-}
-</style>
