@@ -62,7 +62,10 @@
               aria-hidden="true"
             />
 
-            <div class="reader__window" :class="{ 'is-hidden': sceneActive }">
+            <div
+              class="reader__window"
+              :class="{ 'is-hidden': sceneActive && sceneCoversLive }"
+            >
               <div
                 ref="flow"
                 class="reader__flow book"
@@ -270,6 +273,10 @@ const turnStyle = ref('turn');
 const spreadPref = ref('auto');
 const dragOffset = ref(0);
 const sceneActive = ref(false);
+// During a single-page turn the live text serves as the page underneath:
+// it shifts ahead by this many pages, and only the turning page is copied.
+const liveShift = ref(0);
+const sceneCoversLive = ref(true);
 const turning = ref(false);
 const isFullscreen = ref(false);
 // Distance of a swipe-down-to-close, while it's happening.
@@ -296,7 +303,10 @@ const prefersReducedMotion =
 const viewCount = computed(() => countViews(totalPages.value, layout));
 const firstPage = computed(() => view.value * layout.cols);
 const pagesOnView = computed(() =>
-  Array.from({ length: layout.cols }, (_, i) => firstPage.value + i)
+  Array.from(
+    { length: layout.cols },
+    (_, i) => firstPage.value + liveShift.value + i
+  )
 );
 const currentSection = computed(() => sectionOn(firstPage.value));
 // Thickness of the page stacks, in px: about one line per five pages.
@@ -309,7 +319,7 @@ const edgeBehind = computed(() =>
 );
 
 const flowOffset = computed(
-  () => -firstPage.value * layout.step + dragOffset.value
+  () => -(firstPage.value + liveShift.value) * layout.step + dragOffset.value
 );
 
 const pageLabel = computed(() => {
@@ -592,12 +602,14 @@ function buildTurn(direction) {
     // a page back from just past upright down onto the stack. Its outer
     // edge then stays close to the finger.
     const SWING = 100;
+    // The live page shows what lies underneath, so only the turning page
+    // is copied: one copy of the text per turn instead of two.
+    sceneCoversLive.value = false;
     if (direction > 0) {
-      host.append(place(makeFace(first + 1, 'single'), 0));
+      liveShift.value = 1;
       front = makeFace(first, 'single');
       angle = (p) => -SWING * p;
     } else {
-      host.append(place(makeFace(first, 'single'), 0));
       front = makeFace(first - 1, 'single');
       angle = (p) => -SWING * (1 - p);
     }
@@ -605,6 +617,7 @@ function buildTurn(direction) {
     turner.style.transformOrigin = 'left center';
     place(turner, 0);
   } else if (direction > 0) {
+    sceneCoversLive.value = true;
     host.style.perspective = '';
     host.style.perspectiveOrigin = '';
     host.append(place(makeFace(first, 'left'), 0));
@@ -615,6 +628,7 @@ function buildTurn(direction) {
     place(turner, 1);
     angle = (p) => -180 * p;
   } else {
+    sceneCoversLive.value = true;
     host.style.perspective = '';
     host.style.perspectiveOrigin = '';
     host.append(place(makeFace(first - 2, 'left'), 0));
@@ -645,6 +659,8 @@ function buildTurn(direction) {
 
 function clearScene() {
   sceneActive.value = false;
+  liveShift.value = 0;
+  sceneCoversLive.value = true;
   scene.value?.replaceChildren();
 }
 
@@ -680,7 +696,10 @@ async function turn(direction, { fromProgress = 0, draw = null } = {}) {
       render,
       fromProgress > 0 ? easeOut : easeInOut
     );
+    // Advance and drop the live page's look-ahead together, so the page
+    // underneath doesn't jump for a frame.
     view.value += direction;
+    liveShift.value = 0;
     await nextTick();
     clearScene();
   }
@@ -999,6 +1018,7 @@ async function dismissHint() {
 /* ── Open / close ───────────────────────────────────── */
 
 let resizeObserver = null;
+let contentObserver = null;
 
 // Back (browser, Android gesture) closes the book view instead of leaving
 // the office.
@@ -1027,13 +1047,26 @@ async function onOpen() {
     DynamicStorage.getItem('readerSpread'),
     DynamicStorage.getItem('readerHintSeen2'),
   ]);
-  if (['turn', 'slide', 'none'].includes(style)) turnStyle.value = style;
+  // Closed again while settings were loading: do nothing more.
+  if (!props.open) return;
+  if (['turn', 'slide', 'none'].includes(style)) {
+    turnStyle.value = style;
+  } else if (
+    window.navigator?.deviceMemory &&
+    window.navigator.deviceMemory <= 2
+  ) {
+    // Low-memory phones get the lighter slide unless they choose otherwise.
+    turnStyle.value = 'slide';
+  }
   if (['auto', 'single', 'spread'].includes(spread)) spreadPref.value = spread;
   hint.value = seen !== 'true';
   chrome.value = false;
   view.value = 0;
   totalPages.value = 1;
   anchor = null;
+
+  // The audio player sits beneath the book; don't leave it playing unseen.
+  document.querySelectorAll('audio').forEach((audio) => audio.pause());
 
   window.history.pushState({ ...window.history.state, bookReader: true }, '');
   historyPushed = true;
@@ -1052,6 +1085,15 @@ async function onOpen() {
     resizeObserver = new window.ResizeObserver(queueRelayout);
     resizeObserver.observe(stage.value);
   }
+  // Content can change while open (e.g. a reading's length toggle).
+  if (typeof window.MutationObserver !== 'undefined' && flow.value) {
+    contentObserver = new window.MutationObserver(queueRelayout);
+    contentObserver.observe(flow.value, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+  }
 }
 
 function onClose() {
@@ -1063,6 +1105,8 @@ function onClose() {
   document.removeEventListener('fullscreenchange', onFullscreenChange);
   resizeObserver?.disconnect();
   resizeObserver = null;
+  contentObserver?.disconnect();
+  contentObserver = null;
   optionsOpen.value = false;
   if (document.fullscreenElement) document.exitFullscreen?.();
   if (historyPushed && window.history.state?.bookReader) {

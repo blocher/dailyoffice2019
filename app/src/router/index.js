@@ -227,6 +227,10 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
   scrollBehavior(to, from, savedPosition) {
+    // Same address (e.g. Back closing the book view): stay where we are.
+    if (from.matched.length && to.fullPath === from.fullPath) {
+      return false;
+    }
     if (savedPosition) {
       return savedPosition;
     } else if (routesToNotScrollToTop.includes(to.name)) {

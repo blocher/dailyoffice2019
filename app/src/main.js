@@ -13,6 +13,7 @@ import { installViewportCssVars } from './helpers/viewport';
 import { getClientId } from './helpers/clientId';
 import { loadDisplayPreferences } from './helpers/displayPreferences';
 import { loadDiscovery } from './helpers/discovery';
+import { requestBookView } from './helpers/panels';
 import { createGtag, event } from 'vue-gtag';
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
 import { Capacitor } from '@capacitor/core';
@@ -22,6 +23,17 @@ import { Capacitor } from '@capacitor/core';
 installViewportCssVars();
 
 router.beforeEach((to, from) => {
+  // ?book=1 opens an office in book view. Take the flag off the address
+  // before the page renders, so closing the book doesn't reload the office.
+  if (to.query.book) {
+    requestBookView();
+    const query = { ...to.query };
+    delete query.book;
+    return { path: to.path, query, hash: to.hash, replace: true };
+  }
+  // A navigation to the same address (e.g. Back closing the book view)
+  // changes nothing on the page.
+  if (from.matched.length && to.fullPath === from.fullPath) return;
   // This goes through the matched routes from last to first, finding the closest route with a title.
   // e.g., if we have `/some/deep/nested/route` and `/some`, `/deep`, and `/nested` have titles,
   // `/nested`'s will be chosen.
@@ -98,6 +110,7 @@ function updateMetaTag(attribute, value, content) {
 
 router.afterEach(async (to, from) => {
   if (!Capacitor.isNativePlatform()) return;
+  if (from.matched.length && to.fullPath === from.fullPath) return;
   const screenName = typeof to.name === 'string' ? to.name : to.path;
   const prevScreen = typeof from.name === 'string' ? from.name : from.path;
   const params = Object.keys(to.params || {}).length

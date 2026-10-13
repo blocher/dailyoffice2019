@@ -25,6 +25,16 @@ export function openPanel(name) {
   });
 }
 
-export function closePanel(name) {
-  panels[name] = false;
+// ?book=1 asks for an office to open in Book view. The router takes the
+// flag off the address and leaves this note for the office page to pick up.
+let bookViewRequested = false;
+
+export function requestBookView() {
+  bookViewRequested = true;
+}
+
+export function takeBookViewRequest() {
+  const requested = bookViewRequested;
+  bookViewRequested = false;
+  return requested;
 }

@@ -64,11 +64,20 @@
             <span class="psalm-entry__body">
               <span class="psalm-entry__latin">{{ psalm.latin_title }}</span>
               <span class="psalm-entry__first">{{ firstLine(psalm) }}</span>
-              <span v-if="psalm.topics.length" class="psalm-entry__topics">
-                {{ psalm.topics.map((t) => t.topic_name).join(' · ') }}
-              </span>
             </span>
           </router-link>
+          <p v-if="psalm.topics.length" class="psalm-entry__topics">
+            <button
+              v-for="topic in psalm.topics"
+              :key="topic.id"
+              type="button"
+              class="psalm-entry__topic"
+              :aria-label="`Show psalms about ${topic.topic_name}`"
+              @click="selectTopic(topic.id, { fromList: true })"
+            >
+              {{ topic.topic_name }}
+            </button>
+          </p>
         </li>
       </ol>
 
@@ -200,8 +209,13 @@ export default {
     },
     // Keep the chosen category in the URL so it can be shared and so the
     // topic links on a psalm page land on the same filtered list.
-    selectTopic(topicId) {
+    selectTopic(topicId, { fromList = false } = {}) {
       const query = topicId === 'all' ? {} : { topic: topicId };
+      // The category control filters in place; a topic tapped in the list
+      // goes back up to show the filtered results.
+      if (!fromList) {
+        window.sessionStorage.setItem('preventScroll', 'true');
+      }
       this.$router.replace({ name: 'Psalms', query });
       this.updateDisplayedTopic();
     },
@@ -346,11 +360,23 @@ export default {
 }
 
 .psalm-entry__topics {
-  margin-top: 0.15rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-3);
+  margin: -0.6rem 0 var(--space-2);
+  padding-left: calc(var(--space-1) + 2.25rem + var(--space-4));
+}
+
+.psalm-entry__topic {
+  min-height: 2rem;
   font-size: var(--text-xs);
   font-variant-caps: all-small-caps;
   letter-spacing: 0.08em;
   color: var(--ink-faint);
+}
+
+.psalm-entry__topic:hover {
+  color: var(--accent);
 }
 
 .psalter-empty {
