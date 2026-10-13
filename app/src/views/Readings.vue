@@ -654,10 +654,8 @@ export default {
       // No need to call initialize() here manually since we added a route watcher
       // that will fire when the route changes. If the route didn't change (rare),
       // we still need to update the view.
+      // Like the office tabs, switching service keeps the reader's place.
       this.setReadingsToShow();
-
-      await nextTick();
-      this.goto('readings-settings');
     },
     setReadingsToShow: function () {
       if (this.service) {
