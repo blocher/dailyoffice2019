@@ -590,6 +590,21 @@ the official Twilio pages before budgeting: [Twilio SMS quickstart](https://www.
 [Twilio US SMS pricing](https://www.twilio.com/en-us/sms/pricing/us), and
 [Twilio A2P 10DLC overview](https://www.twilio.com/en-us/phone-numbers/a2p-10dlc).
 
+### Error reporting (Bugsnag)
+
+Both sides report errors to Bugsnag, on by default in production and off in development:
+
+- **API** (`site/website/.env`): `BUGSNAG_KEY` and `BUGSNAG_ENABLED`. `BUGSNAG_ENABLED` defaults to on when
+  `DEBUG=False` and off when `DEBUG=True`; set `BUGSNAG_ENABLED=False` (or `True`) to override. When off, the
+  middleware isn't installed and no release stage is allowed to notify, so direct `bugsnag.notify()` calls and
+  management commands send nothing either.
+- **Frontend** (`app/.env.production`, `app/.env.development`, or a matching `.local` file):
+  `VITE_BUGSNAG_ENABLED` (`true` in production builds, including native ones; `false` in development) and
+  `VITE_BUGSNAG_API_KEY`, the key of a Bugsnag JavaScript project. Reporting starts only when both are set. Uncaught
+  errors, unhandled promise rejections, Vue errors, and diagnostics such as `BookViewSinglePage` (Book view laid out
+  as a single page) are reported; stale-chunk reloads, `ResizeObserver` warnings, extension errors, and offline
+  network failures are dropped. Changes take effect at the next `vite build`.
+
 ### Code formatting standard
 
 - Please use `black` to format code with a line length of 119 beore submitting a pull request

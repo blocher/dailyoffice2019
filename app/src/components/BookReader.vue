@@ -224,13 +224,14 @@
 import { computed, nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue';
 import { displayState } from '@/helpers/displayPreferences';
 import { markBookViewSeen } from '@/helpers/discovery';
+import { notifyOnce } from '@/helpers/errorReporting';
 import { openPanel, panels } from '@/helpers/panels';
 import {
   computeReaderLayout,
-  countPages,
   countViews,
   pageOfOffset,
   pagesLeftInSection,
+  resolvePageCount,
   sectionForPage,
   viewOfPage,
 } from '@/helpers/readerLayout';
@@ -426,6 +427,9 @@ function readSections() {
 }
 
 let relayoutQueued = false;
+// The latest page counts from both measures (see measurePages).
+let pageCounts = null;
+let layoutCheckTimer = null;
 // The first block on the current page, captured whenever the page changes,
 // before any reflow (text size, typeface, rotation) moves things around.
 let anchor = null;
@@ -460,11 +464,174 @@ async function relayout() {
   flow.value
     .querySelectorAll('[data-line-id]')
     .forEach((el) => el.removeAttribute('data-line-id'));
-  totalPages.value = countPages(flow.value.scrollWidth, layout);
+  pageCounts = measurePages();
+  totalPages.value = pageCounts.total;
   sections.value = readSections();
   const page =
     anchor && anchor.isConnected ? pageOfOffset(anchor.offsetLeft, layout) : 0;
   view.value = Math.min(viewCount.value - 1, viewOfPage(page, layout));
+  scheduleLayoutCheck();
+}
+
+// Count the pages two ways: the strip's scroll width (which should include
+// every overflow column) and where the text actually ends. Should a browser
+// under-report one, the other still lets the reader turn pages.
+function measurePages() {
+  const el = flow.value;
+  const contentEnd = measureContentEnd(el);
+  return {
+    ...resolvePageCount({ scrollWidth: el.scrollWidth, contentEnd }, layout),
+    scrollWidth: el.scrollWidth,
+    contentEnd: contentEnd === null ? null : Math.round(contentEnd),
+  };
+}
+
+// Distance along the strip, in px, to the middle of the text's last visible
+// character. Null when there's no visible text.
+function measureContentEnd(el) {
+  if (!el || typeof document.createRange !== 'function') return null;
+  const flowRect = el.getBoundingClientRect();
+  // The book scales a little as it opens; measure in unscaled px.
+  const scale = el.offsetWidth ? flowRect.width / el.offsetWidth : 1;
+  const walker = document.createTreeWalker(el, window.NodeFilter.SHOW_TEXT);
+  const range = document.createRange();
+  // Hidden text (e.g. a reading's options) has no boxes; step back past it.
+  let node = walker.lastChild();
+  for (let tries = 0; node && tries < 200; tries += 1) {
+    const end = node.data.trimEnd().length;
+    if (end) {
+      range.setStart(node, end - 1);
+      range.setEnd(node, end);
+      const rects = range.getClientRects();
+      const rect = rects[rects.length - 1];
+      if (rect && (rect.width || rect.height)) {
+        const middle = (rect.left + rect.right) / 2 - flowRect.left;
+        return middle / (scale || 1);
+      }
+    }
+    node = walker.previousNode();
+  }
+  return null;
+}
+
+/* ── Diagnostics ────────────────────────────────────── */
+
+// A long office laid out as a single page means the reader can't turn
+// pages at all (reported once on iOS Safari, never reproduced). Once the
+// layout has settled, report it with enough detail to find out why.
+function scheduleLayoutCheck() {
+  window.clearTimeout(layoutCheckTimer);
+  layoutCheckTimer = window.setTimeout(checkLayout, 1500);
+}
+
+function checkLayout() {
+  layoutCheckTimer = null;
+  if (!props.open || !flow.value || !pageCounts) return;
+  // Wait for the fonts; a relayout follows when they arrive.
+  if (document.fonts?.status === 'loading') {
+    scheduleLayoutCheck();
+    return;
+  }
+  const { fromScrollWidth, fromContentEnd } = pageCounts;
+  if (fromScrollWidth > 1 && fromContentEnd > 1) return;
+  const error = new Error(
+    `Book view laid out as one page (scroll width: ${fromScrollWidth}, text end: ${fromContentEnd})`
+  );
+  error.name = 'BookViewSinglePage';
+  notifyOnce(
+    'bookViewSinglePage',
+    error,
+    { bookView: diagnostics() },
+    {
+      context: `Book view: ${props.title || window.location.pathname}`,
+      severity: 'error',
+      groupingHash: 'BookViewSinglePage',
+    }
+  );
+}
+
+const round = (n) => (Number.isFinite(n) ? Math.round(n * 10) / 10 : null);
+
+// A compact picture of the page geometry, for error reports and debugging
+// (window.__bookViewDebug() while the book is open).
+function diagnostics() {
+  const el = flow.value;
+  const flowStyle = el ? window.getComputedStyle(el) : null;
+  const origin = el ? el.getBoundingClientRect() : { left: 0, top: 0 };
+  const stageRect = stage.value?.getBoundingClientRect();
+  const items = blocks();
+  const last = [...items].reverse().find((b) => b.getClientRects().length);
+  const vv = window.visualViewport;
+  const standalone =
+    window.navigator.standalone ??
+    window.matchMedia?.('(display-mode: standalone)').matches;
+  return {
+    pages: { total: totalPages.value, views: viewCount.value, ...pageCounts },
+    layout: {
+      cols: layout.cols,
+      spread: layout.spread,
+      isPhone: layout.isPhone,
+      sheetW: layout.sheetW,
+      sheetH: layout.sheetH,
+      pageW: layout.pageW,
+      pageH: layout.pageH,
+      step: layout.step,
+      gap: layout.gap,
+    },
+    flow: el && {
+      scrollWidth: el.scrollWidth,
+      clientWidth: el.clientWidth,
+      offsetWidth: el.offsetWidth,
+      offsetHeight: el.offsetHeight,
+      columnCount: flowStyle.columnCount,
+      columnWidth: flowStyle.columnWidth,
+      columnFill: flowStyle.columnFill,
+      height: flowStyle.height,
+      fontSize: flowStyle.fontSize,
+      blocks: items.length,
+      textLength: (el.textContent || '').length,
+    },
+    lastBlock: last && {
+      tag: last.tagName.toLowerCase(),
+      offsetLeft: last.offsetLeft,
+      rects: [...last.getClientRects()]
+        .slice(-3)
+        .map((r) =>
+          [r.left - origin.left, r.top - origin.top, r.width, r.height].map(
+            round
+          )
+        ),
+    },
+    stage: stageRect && {
+      width: round(stageRect.width),
+      height: round(stageRect.height),
+    },
+    viewport: {
+      width: window.innerWidth,
+      height: window.innerHeight,
+      visualWidth: round(vv?.width),
+      visualHeight: round(vv?.height),
+      visualScale: round(vv?.scale),
+      dpr: window.devicePixelRatio,
+    },
+    browser: {
+      userAgent: window.navigator.userAgent,
+      standalone: Boolean(standalone),
+      columnFillAuto: Boolean(window.CSS?.supports?.('column-fill', 'auto')),
+      fonts: document.fonts?.status,
+    },
+    prefs: {
+      fontSize: displayState.fontSize,
+      readingFont: displayState.readingFont,
+      turnStyle: turnStyle.value,
+      spread: spreadPref.value,
+    },
+    page: {
+      path: window.location.pathname,
+      title: props.title,
+      subtitle: props.subtitle,
+    },
+  };
 }
 
 watch(view, async () => {
@@ -500,6 +667,7 @@ function canGo(direction) {
 }
 
 function goToView(target) {
+  interrupt();
   view.value = Math.max(0, Math.min(viewCount.value - 1, target));
 }
 
@@ -508,13 +676,14 @@ const easeOut = (t) => 1 - Math.pow(1 - t, 3);
 const easeInOut = (t) =>
   t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
-function animate(from, to, duration, onFrame, ease = easeOut) {
+function animate(from, to, duration, onFrame, ease = easeOut, token = null) {
   return new Promise((resolve) => {
     let done = false;
     const finish = () => {
       if (done) return;
       done = true;
-      onFrame(to);
+      // An interrupted animation stops where it is.
+      if (!token?.cancelled) onFrame(to);
       resolve();
     };
     // Browsers pause animation frames in background tabs; never leave a
@@ -523,6 +692,11 @@ function animate(from, to, duration, onFrame, ease = easeOut) {
     const start = window.performance.now();
     const tick = (now) => {
       if (done) return;
+      if (token?.cancelled) {
+        window.clearTimeout(fallback);
+        finish();
+        return;
+      }
       // A frame's timestamp can predate the start; never run backwards.
       const t = Math.max(0, Math.min(1, (now - start) / Math.max(1, duration)));
       onFrame(from + (to - from) * ease(t));
@@ -672,6 +846,7 @@ function clearScene() {
 }
 
 async function turn(direction, { fromProgress = 0, draw = null } = {}) {
+  interrupt();
   if (turning.value && !draw) return;
   if (!canGo(direction)) {
     await bounce(direction);
@@ -715,9 +890,37 @@ async function turn(direction, { fromProgress = 0, draw = null } = {}) {
 
 async function bounce(direction) {
   if (effectiveStyle() === 'none') return;
+  const token = startInterruptible();
+  const move = (x) => (dragOffset.value = x);
+  await animate(0, -direction * 18, 120, move, easeOut, token);
+  if (token.cancelled) return;
+  await animate(-direction * 18, 0, 180, move, easeOut, token);
+  endInterruptible(token);
+}
+
+// The bounce and the first-run peek are only flourishes: a tap, swipe, or
+// key press during one stops it and goes ahead, rather than being ignored.
+let flourish = null;
+
+function startInterruptible() {
+  const token = { cancelled: false };
+  flourish = token;
   turning.value = true;
-  await animate(0, -direction * 18, 120, (x) => (dragOffset.value = x));
-  await animate(-direction * 18, 0, 180, (x) => (dragOffset.value = x));
+  return token;
+}
+
+function endInterruptible(token) {
+  if (flourish !== token) return;
+  flourish = null;
+  turning.value = false;
+}
+
+function interrupt() {
+  if (!flourish) return;
+  flourish.cancelled = true;
+  flourish = null;
+  clearScene();
+  dragOffset.value = 0;
   turning.value = false;
 }
 
@@ -751,9 +954,9 @@ function isInteractive(target) {
 }
 
 function onPointerDown(event) {
-  if (event.button !== 0 || turning.value || isInteractive(event.target)) {
-    return;
-  }
+  if (event.button !== 0 || isInteractive(event.target)) return;
+  interrupt();
+  if (turning.value) return;
   drag.id = event.pointerId;
   drag.x = event.clientX;
   drag.y = event.clientY;
@@ -926,17 +1129,23 @@ async function peekIfNew() {
   const seen = parseInt((await DynamicStorage.getItem('readerPeeks')) || 0, 10);
   if (seen >= 3) return;
   await DynamicStorage.setItem('readerPeeks', String(seen + 1));
-  turning.value = true;
+  // The reader may have started turning while that was saved.
+  if (!props.open || turning.value) return;
+  const token = startInterruptible();
   if (effectiveStyle() === 'turn') {
     const draw = buildTurn(1);
-    await animate(0, 0.22, 560, draw, easeInOut);
-    await animate(0.22, 0, 640, draw, easeInOut);
+    await animate(0, 0.22, 560, draw, easeInOut, token);
+    if (token.cancelled) return;
+    await animate(0.22, 0, 640, draw, easeInOut, token);
+    if (token.cancelled) return;
     clearScene();
   } else {
-    await animate(0, -36, 360, (x) => (dragOffset.value = x), easeInOut);
-    await animate(-36, 0, 420, (x) => (dragOffset.value = x), easeInOut);
+    const move = (x) => (dragOffset.value = x);
+    await animate(0, -36, 360, move, easeInOut, token);
+    if (token.cancelled) return;
+    await animate(-36, 0, 420, move, easeInOut, token);
   }
-  turning.value = false;
+  endInterruptible(token);
 }
 
 let wheelTotal = 0;
@@ -1072,6 +1281,7 @@ async function onOpen() {
   chrome.value = false;
   view.value = 0;
   totalPages.value = 1;
+  pageCounts = null;
   anchor = null;
 
   // The audio player sits beneath the book; don't leave it playing unseen.
@@ -1082,6 +1292,8 @@ async function onOpen() {
   window.addEventListener('popstate', onPopState);
   window.addEventListener('keydown', onKeydown);
   document.addEventListener('fullscreenchange', onFullscreenChange);
+
+  window.__bookViewDebug = diagnostics;
 
   await nextTick();
   await relayout();
@@ -1107,6 +1319,10 @@ async function onOpen() {
 
 function onClose() {
   cancelChromeFlash();
+  interrupt();
+  window.clearTimeout(layoutCheckTimer);
+  layoutCheckTimer = null;
+  if (window.__bookViewDebug === diagnostics) delete window.__bookViewDebug;
   window.setTimeout(() => (closeOffset.value = 0), 400);
   document.documentElement.classList.remove('has-reader');
   window.removeEventListener('popstate', onPopState);

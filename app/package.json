@@ -18,6 +18,8 @@
     "test:config": "node --test scripts/capacitor-config.check.mjs"
   },
   "dependencies": {
+    "@bugsnag/js": "9.1.0",
+    "@bugsnag/plugin-vue": "9.1.0",
     "@capacitor-community/electron": "^5.0.1",
     "@capacitor-firebase/analytics": "^8.5.2",
     "@capacitor/app": "^8.1.2",

@@ -17,6 +17,8 @@ import sys
 import environ
 from corsheaders.defaults import default_headers
 
+from website.error_reporting import bugsnag_config, with_bugsnag_middleware
+
 env = environ.Env(
     DEBUG=(bool, False),
     DEBUG_DATES=(bool, False),
@@ -45,6 +47,9 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", env("SECURE_PROXY_SSL_HEADE
 # SECURITY WARNING: d
 # Don't run with debug turned on in production!
 DEBUG = env("DEBUG")
+# Error reporting to Bugsnag: on in production, off in development, unless
+# BUGSNAG_ENABLED says otherwise (see website/error_reporting.py).
+BUGSNAG_ENABLED = env.bool("BUGSNAG_ENABLED", default=not DEBUG)
 DEBUG_DATES = env("DEBUG_DATES")
 USE_CALENDAR_CACHE = env("USE_CALENDAR_CACHE")
 MODE = env("MODE")
@@ -111,7 +116,6 @@ if DEBUG and not RUNNING_TESTS:
     INSTALLED_APPS = ["debug_toolbar"] + INSTALLED_APPS
 
 MIDDLEWARE = [
-    "bugsnag.django.middleware.BugsnagMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -123,6 +127,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "analytics.middleware.AnalyticsMiddleware",
 ]
+MIDDLEWARE = with_bugsnag_middleware(MIDDLEWARE, enabled=BUGSNAG_ENABLED)
 
 if DEBUG and not RUNNING_TESTS:
     MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE
@@ -377,12 +382,12 @@ mimetypes.add_type("image/svg+xml", ".svg", True)
 
 SWAGGER_SETTINGS = {"USE_SESSION_AUTH": False}
 
-BUGSNAG = {
-    "api_key": env("BUGSNAG_KEY"),
-    "project_root": BASE_DIR,
-    "release_stage": "development" if DEBUG else "production",
-    "send_environment": False,
-}
+BUGSNAG = bugsnag_config(
+    enabled=BUGSNAG_ENABLED,
+    api_key=env.str("BUGSNAG_KEY", default=""),
+    debug=DEBUG,
+    project_root=BASE_DIR,
+)
 
 DEFAULT_FROM_EMAIL = "donotreply@mail.dailyoffice2019.com"
 DEFAULT_REPLY_TO_EMAIL = "feedback@dailyoffice2019.com"
