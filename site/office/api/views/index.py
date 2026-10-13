@@ -35,6 +35,7 @@ from churchcal.calculations import get_calendar_date, get_church_year
 from churchcal.models import Commemoration
 from office.alternate_readings import alternate_first_lesson, scripture_translation
 from office.audio_ceremony import INTERCESSION_INVITATION, INTERCESSION_MODULE, frame_tracks
+from office.combined_track import ensure_combined_track
 from office.api.line import Line
 from office.api.serializers import UpdateNoticeSerializer, SiteMessageSerializer
 from office.api.translations import get_csv_suffix, is_chinese
@@ -3638,7 +3639,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                 start_time += sa_dur
 
         # Segment start_times are summed from each source clip's reported length,
-        # but the concatenated file is re-encoded (see below) and ends up a hair
+        # but the concatenated file is re-encoded (office/combined_track.py) and ends up a hair
         # shorter per clip; over a whole office that drift makes "jump to" land a
         # few seconds late. Rescale the timeline to the actual output duration so
         # timestamps line up with what the browser actually plays.
@@ -3659,68 +3660,27 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
 
         # The silence entries are part of the concat list, so the hash naturally
         # changes when gaps change and the concatenated file is rebuilt. The
-        # "cbr1" marker also busts the cache for the re-encode change below.
+        # "cbr1" marker also busts the cache for the CBR re-encode in office/combined_track.py.
         full_string = "cbr1 " + " ".join(concat_paths)
         audio_id = generate_uuid_from_string(full_string)
         filename = provider_media_name(f"{audio_id}.mp3")
         file_path = os.path.join(settings.MEDIA_ROOT, filename)
-        exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
         path = settings.MEDIA_URL + filename
         file_url = f"{audio_base_url()}/api/v1/audio_track/{filename}"
 
-        if exists:
-            rescale_segments(get_audio_duration(file_path))
-            return file_url, path, track_list, short_track_list, word_track_list
-
-        temp_file_list = os.path.join(settings.MEDIA_ROOT, f"{filename}.txt")
-        with open(temp_file_list, "w") as f:
-            for concat_path in concat_paths:
-                f.write(f"file '{concat_path}'\n")
-
-        # Re-encode (rather than `-c copy`) to a single constant-bitrate mp3 with
-        # a proper header. The per-clip sources vary in bitrate (gpt-4o-mini-tts
-        # ~128k vs the silence clips), and a stream-copied VBR mp3 with no Xing
-        # header is not reliably seekable in browsers (seeks snap to the start).
-        # A uniform CBR encode restores accurate time-based seeking.
-        ffmpeg_cmd = [
-            "ffmpeg",
-            "-y",
-            "-f",
-            "concat",
-            "-safe",
-            "0",
-            "-i",
-            temp_file_list,
-            "-c:a",
-            "libmp3lame",
-            "-b:a",
-            "160k",
-            "-ar",
-            str(TTS_SILENCE_SAMPLE_RATE),
-            "-ac",
-            "1",
-            file_path,
-        ]
-
-        result = subprocess.run(ffmpeg_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-
-        if result.returncode != 0:
-            if os.path.exists(file_path):
-                os.remove(file_path)
-            print(f"ffmpeg failed with return code {result.returncode}: {result.stderr}")
-        elif os.path.isfile(file_path):
-            rescale_segments(get_audio_duration(file_path))
-
-        # Cleanup temp file list
-        if os.path.exists(temp_file_list):
-            os.remove(temp_file_list)
+        # Reuse a complete track or build one atomically under a per-track lock,
+        # so a request never serves (or caches forever) a half-encoded file.
+        # See office/combined_track.py.
+        duration = ensure_combined_track(concat_paths, file_path, computed_total, TTS_SILENCE_SAMPLE_RATE)
 
         # Only advertise the combined track if it was actually produced. If
         # ffmpeg failed (or produced nothing), return empty so the client hides
         # the player instead of loading a 404 and throwing NotSupportedError.
-        if not (os.path.isfile(file_path) and os.path.getsize(file_path) > 0):
+        if not duration:
             return []
 
+        # The timeline must never run past the file: scale it to the real length.
+        rescale_segments(duration)
         return file_url, path, track_list, short_track_list, word_track_list
 
     def get_audio(self, obj):
