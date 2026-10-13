@@ -73,4 +73,66 @@ describe('office audio date window', () => {
     );
     expect(get).toHaveBeenCalledWith('/office?test=1&include_audio_links=true');
   });
+
+  it('polls while the server prepares audio, then uses the ready track', async () => {
+    vi.useFakeTimers();
+    vi.stubEnv('VITE_FETCH_AUDIO_ON', 'true');
+    const preparing = {
+      status: 202,
+      data: { audio: { status: 'preparing', retry_after: 5, single_track: [] } },
+    };
+    const get = vi
+      .fn()
+      .mockResolvedValueOnce(preparing)
+      .mockResolvedValueOnce(preparing)
+      .mockResolvedValueOnce({
+        data: { audio: { single_track: ['https://api.test/track.mp3', 'p'] } },
+      });
+    const context = {
+      isWithinSevenDays: true,
+      $http: { get },
+      resolveAudioUrl: (url) => `resolved:${url}`,
+    };
+    const result = Office.methods.setAudioLinks.call(context, '/office?a=1');
+    await vi.advanceTimersByTimeAsync(4000);
+    expect(get).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(get).toHaveBeenCalledTimes(2);
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(await result).toEqual(['resolved:https://api.test/track.mp3', 'p']);
+    expect(get).toHaveBeenCalledTimes(3);
+    expect(context.audioLinks).toEqual(await result);
+  });
+
+  it('stops polling once the office is closed', async () => {
+    vi.useFakeTimers();
+    vi.stubEnv('VITE_FETCH_AUDIO_ON', 'true');
+    const get = vi.fn().mockResolvedValue({
+      status: 202,
+      data: { audio: { status: 'preparing', retry_after: 5 } },
+    });
+    const context = { isWithinSevenDays: true, $http: { get } };
+    const result = Office.methods.setAudioLinks.call(context, '/office?a=1');
+    await vi.advanceTimersByTimeAsync(0);
+    Office.beforeUnmount.call(context);
+    await vi.advanceTimersByTimeAsync(60000);
+    expect(await result).toEqual([]);
+    expect(get).toHaveBeenCalledTimes(1);
+  });
+
+  it('gives up after ten minutes of preparing', async () => {
+    vi.useFakeTimers();
+    vi.stubEnv('VITE_FETCH_AUDIO_ON', 'true');
+    const get = vi.fn().mockResolvedValue({
+      status: 202,
+      data: { audio: { status: 'preparing', retry_after: 30 } },
+    });
+    const result = Office.methods.setAudioLinks.call(
+      { isWithinSevenDays: true, $http: { get } },
+      '/office?a=1'
+    );
+    await vi.advanceTimersByTimeAsync(11 * 60 * 1000);
+    expect(await result).toEqual([]);
+    expect(get.mock.calls.length).toBeLessThanOrEqual(22);
+  });
 });

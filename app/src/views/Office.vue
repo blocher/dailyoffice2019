@@ -165,6 +165,15 @@ const BookReader = defineAsyncComponent(
   () => import('@/components/BookReader.vue')
 );
 
+// How long to keep polling while the server prepares office audio.
+const AUDIO_PREPARE_TIMEOUT_MS = 10 * 60 * 1000;
+
+// Wait the server's suggested delay (seconds), clamped to 2–30 s.
+function waitForRetry(seconds) {
+  const delay = Math.min(Math.max(Number(seconds) || 5, 2), 30) * 1000;
+  return new Promise((resolve) => window.setTimeout(resolve, delay));
+}
+
 export default {
   name: 'Office',
   components: {
@@ -267,6 +276,10 @@ export default {
   },
   async mounted() {
     await DynamicStorage.setItem('serviceType', this.serviceType);
+  },
+  beforeUnmount() {
+    // Stop polling for audio that is still being prepared.
+    this.audioPollingStopped = true;
   },
 
   async created() {
@@ -445,14 +458,31 @@ export default {
       if (import.meta.env.VITE_FETCH_AUDIO_ON === 'false') return [];
       if (!this.isWithinSevenDays) return [];
       url = `${url}&include_audio_links=true`;
+      // Audio that isn't built yet is prepared in the background: the API
+      // answers 202 with audio.status "preparing" and a retry delay. Keep the
+      // "Preparing audio…" message up and ask again until it is ready.
+      const giveUpAt = Date.now() + AUDIO_PREPARE_TIMEOUT_MS;
       try {
-        const data = await this.$http.get(url);
-        const singleTrack = data.data.audio.single_track;
-        if (Array.isArray(singleTrack) && singleTrack.length) {
-          singleTrack[0] = this.resolveAudioUrl(singleTrack[0]);
+        for (;;) {
+          const data = await this.$http.get(url);
+          const audio = data.data.audio || {};
+          if (audio.status === 'preparing') {
+            if (this.audioPollingStopped || Date.now() >= giveUpAt) {
+              return [];
+            }
+            await waitForRetry(audio.retry_after);
+            if (this.audioPollingStopped) {
+              return [];
+            }
+            continue;
+          }
+          const singleTrack = audio.single_track;
+          if (Array.isArray(singleTrack) && singleTrack.length) {
+            singleTrack[0] = this.resolveAudioUrl(singleTrack[0]);
+          }
+          this.audioLinks = singleTrack;
+          return singleTrack;
         }
-        this.audioLinks = singleTrack;
-        return singleTrack;
       } catch {
         return [];
       }

@@ -81,6 +81,24 @@ export function countPages(scrollWidth, layout) {
   return Math.max(1, Math.round((scrollWidth + layout.gap) / layout.step));
 }
 
+/**
+ * Page count from two measures of the text strip, so one browser quirk
+ * can't hide pages: the strip's scroll width, and where the text ends
+ * (`contentEnd`, px from the strip's left edge to the middle of the last
+ * character; null when it couldn't be measured). The larger count wins.
+ */
+export function resolvePageCount({ scrollWidth, contentEnd }, layout) {
+  const fromScrollWidth = countPages(scrollWidth, layout);
+  const fromContentEnd = Number.isFinite(contentEnd)
+    ? pageOfOffset(contentEnd, layout) + 1
+    : null;
+  return {
+    total: Math.max(fromScrollWidth, fromContentEnd || 0),
+    fromScrollWidth,
+    fromContentEnd,
+  };
+}
+
 /** Which page (column) an element at this offsetLeft falls on. */
 export function pageOfOffset(offsetLeft, layout) {
   return Math.max(0, Math.floor((offsetLeft + 1) / layout.step));

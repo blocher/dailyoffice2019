@@ -284,6 +284,12 @@
 </template>
 
 <script>
+import {
+  beyondTrackEnd,
+  endedEarly,
+  freshTrackUrl,
+  timelineEnd,
+} from '@/helpers/audioTrack';
 import { DynamicStorage } from '@/helpers/storage';
 
 import UiIcon from '@/ui/UiIcon.vue';
@@ -350,6 +356,7 @@ export default {
       loading: true,
       audioElement: null,
       playbackError: '',
+      trackIncomplete: false, // the file ends before its timeline; retry refetches it
       pendingResumeTime: null,
       playbackRequested: false,
       playAttempt: 0,
@@ -601,7 +608,26 @@ export default {
       this.updateMediaPosition();
     },
     handleEnded() {
+      const el = this.audioElement;
+      const endedAt = el ? el.currentTime || el.duration : 0;
+      const expectedEnd = timelineEnd(
+        this.trackSegments,
+        this.detailedSegments
+      );
+      if (el && endedEarly(endedAt, expectedEnd)) {
+        // The file is shorter than its timeline (a truncated copy). Keep the
+        // place instead of rewinding, so a retry can carry on from here.
+        this.pauseAudio();
+        this.currentTime = endedAt;
+        this.markTrackIncomplete('The audio ended early. Try again?');
+        return;
+      }
       this.stopAudio();
+    },
+    markTrackIncomplete(message) {
+      this.trackIncomplete = true;
+      this.playbackError = message;
+      this.updateMediaPosition();
     },
     handleCanPlay() {
       this.loading = false;
@@ -639,6 +665,11 @@ export default {
       this.pendingResumeTime =
         this.pendingResumeTime ??
         (this.audioElement.currentTime || this.currentTime);
+      if (this.trackIncomplete) {
+        // Bypass the cached short copy and fetch the track again.
+        this.trackIncomplete = false;
+        this.audioElement.src = freshTrackUrl(this.audio[0]);
+      }
       this.audioElement.load();
       this.startAudio();
     },
@@ -814,6 +845,14 @@ export default {
       // the seek slightly earlier lands in that silence instead of mid-word.
       const LEAD_IN = 1.0;
       const target = Math.max(0, rawTarget - LEAD_IN);
+      const pastEndMessage = 'The audio ends before this section. Try again?';
+
+      // A truncated file can't reach later sections; say so rather than
+      // starting the office over from the top.
+      if (beyondTrackEnd(target, el.duration)) {
+        this.markTrackIncomplete(pastEndMessage);
+        return;
+      }
 
       // iOS (Safari & Chrome both run on WebKit) gates seeking on a known,
       // finite `duration` AND a `seekable` range that already reaches the
@@ -854,7 +893,15 @@ export default {
         if (Math.abs(el.currentTime - target) < 1) cleanup();
       };
       const trySeek = () => {
-        if (settled || !canReachTarget()) return;
+        if (settled) return;
+        if (beyondTrackEnd(target, el.duration)) {
+          // The length only became known after playback was requested.
+          cleanup();
+          this.pauseAudio();
+          this.markTrackIncomplete(pastEndMessage);
+          return;
+        }
+        if (!canReachTarget()) return;
         try {
           el.currentTime = Math.min(target, el.duration - 0.05);
         } catch {
@@ -1064,6 +1111,7 @@ export default {
       // timing by text length, then retain measured word anchors where present.
       const clips = new Map();
       this.detailedSegments.forEach((segment) => {
+        if (segment.highlighting_available === false) return;
         if (!clips.has(segment.start_time)) clips.set(segment.start_time, []);
         clips.get(segment.start_time).push(segment);
       });
@@ -1237,6 +1285,15 @@ export default {
       this.highlightElements.get(index).push(element);
     },
     activeWordAt(time) {
+      if (
+        this.detailedSegments.some(
+          (segment) =>
+            segment.highlighting_available === false &&
+            time >= segment.start_time &&
+            time < segment.end_time
+        )
+      )
+        return -1;
       let candidate = null;
       for (const segment of this.highlightSegments) {
         if (segment.start_time > time) break;

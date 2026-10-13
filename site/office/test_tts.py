@@ -9,6 +9,7 @@ import requests
 from django.core.management import call_command
 from django.test import SimpleTestCase, TestCase, override_settings
 
+from office import combined_track
 from office.api.views import index
 from office.api.views.tts import ElevenLabsRequestError, ElevenLabsTTSProvider, GeminiTTSProvider
 from office.models import AudioClip, PronunciationOverride
@@ -170,6 +171,8 @@ class ReadingVoiceTests(SimpleTestCase):
     @override_settings(
         ELEVENLABS_TTS_MODEL="eleven_v4",
         ELEVENLABS_TTS_VOICES_READER=("reader-one", "reader-two"),
+        ELEVENLABS_TTS_VOICE_LEADER="synthetic-leader",
+        ELEVENLABS_TTS_VOICE_CONGREGATION="synthetic-people",
         ELEVENLABS_PRONUNCIATION_DICTIONARY_ID="",
         GEMINI_TTS_VOICES_READER=("Kore", "Charon"),
     )
@@ -662,12 +665,13 @@ class CombinedTrackTimingTests(SimpleTestCase):
                 ),
                 patch.object(index, "TTS_PROVIDER", ElevenLabsTTSProvider()),
                 patch.object(index, "MP3", side_effect=fake_mp3),
+                patch.object(combined_track, "MP3", side_effect=fake_mp3),
                 patch.object(
                     index.GenericDailyOfficeSerializer,
                     "get_silence_clip",
                     side_effect=fake_silence,
                 ),
-                patch.object(index.subprocess, "run", side_effect=fake_ffmpeg),
+                patch.object(combined_track.subprocess, "run", side_effect=fake_ffmpeg),
                 patch.object(index, "generate_uuid_from_string", return_value="full"),
             ):
                 result = index.GenericDailyOfficeSerializer.get_single_track(tracks)

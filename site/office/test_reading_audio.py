@@ -11,7 +11,11 @@ from office.api.views import index
 from office.api.views.tts import ElevenLabsTTSProvider
 
 
-@override_settings(SITE_ADDRESS="https://example.test", REST_FRAMEWORK={"UNAUTHENTICATED_USER": None})
+@override_settings(
+    SITE_ADDRESS="https://example.test",
+    REST_FRAMEWORK={"UNAUTHENTICATED_USER": None},
+    ELEVENLABS_TTS_MODEL="eleven_multilingual_v2",
+)
 class ReadingAudioCompletenessTests(SimpleTestCase):
     html = "<p>First verse.</p><p>Second verse.</p><p>Third verse.</p>"
     clip = ("https://example.test/uploads/12345678.mp3", "/uploads/12345678.mp3")
@@ -107,7 +111,9 @@ class ReadingAudioCompletenessTests(SimpleTestCase):
 
     def test_audio_endpoint_returns_503_without_partial_audio_then_succeeds_on_retry(self):
         today = datetime.date(2026, 10, 11)
-        request = APIRequestFactory().get("/", {"include_audio_links": "true"})
+        # A path of its own: build-status markers are keyed by path, and another
+        # test's background build of "/" may still be writing them.
+        request = APIRequestFactory().get("/test-reading-audio-retry", {"include_audio_links": "true"})
         with (
             patch.object(index, "TTS_PROVIDER", ElevenLabsTTSProvider()),
             patch.object(index, "MorningPrayer", return_value=self.office),
@@ -182,6 +188,7 @@ class ReadingAudioCompletenessTests(SimpleTestCase):
         office.get_modules = lambda: [index.EPFirstReading(office)]
         return office
 
+    @override_settings(ELEVENLABS_TTS_MODEL="eleven_v4")
     def test_deuterocanonical_fallback_and_kjv_body_reach_the_audio_tracks(self):
         # Synthetic text exercises the actual reading/module path without
         # copying licensed passages or depending on production appointments.

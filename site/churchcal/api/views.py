@@ -139,5 +139,10 @@ class AudioTrackView(APIView):
         response["X-Audio-Title"] = "The Daily Office"
         response["X-Audio-Year"] = "2025"
         response["X-Audio-Duration"] = str(duration)  # Add duration in seconds
+        if not duration or duration == "Unknown":
+            # A track with no readable length was cut off mid-encode. Keep
+            # Cloudflare and browsers from holding on to it so the rebuilt file
+            # (same name) reaches listeners as soon as it exists.
+            response["Cache-Control"] = "no-store"
 
         return response

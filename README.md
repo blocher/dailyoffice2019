@@ -518,6 +518,44 @@ removed site npm owners are excluded. For names with multiple parents, example c
 
 </details>
 
+### Dialogue playback when alignment is unavailable
+
+If both raw and safely comparable normalized word timings fail validation, the dialogue
+path may retain the returned MP3 with `highlighting_available: false`. This requires every
+requested turn and voice in order, exact original or submitted transcript coverage, valid
+character bounds and finite ordered voice-segment times. FFmpeg must fully decode the
+bounded MP3, and decoded duration must reach the final independently supplied segment end.
+Corrupt audio, cut audio shorter than the declared segments, mismatched transcripts, missing
+turns or missing segment metadata reject the fallback. Structural metadata and decoding do
+not establish that every word was actually spoken; inconsistent provider metadata can still
+require listening or a separately authorized production review.
+
+Missing, empty or non-list character timing arrays and unequal array lengths are explicitly
+classified as unusable timing metadata. They can use the same independent playback guards;
+valid comparable normalized timing still takes priority. Missing/invalid character data,
+transcript mismatches and unrelated errors do not themselves enable the fallback.
+
+The player suppresses measured and estimated word/sentence highlights during explicitly
+unavailable chunks, retaining playback and highlights elsewhere. No word timestamps are
+invented. Valid fallback audio is cached with a versioned metadata envelope and an audio
+hash. Missing metadata or changed cached bytes fail clearly while retaining the file and
+without another synthesis request. Unrecoverable dialogue preparation or clip failure now
+returns HTTP 503 (`office_audio_unavailable`) instead of silently omitting office content.
+Sanitized diagnostics distinguish raw/normalized word timing failures and count positive
+or zero mapped character intervals; they contain no transcript or provider request ID.
+
+Fresh synthesis could improve nondeterministic alignment, but cannot be relied on to fix a
+deterministic mapping failure and may incur another charge. This fallback adds no synthesis
+retry. Any future regeneration policy needs explicit authorization, a per-content attempt
+and spending limit, shared-request deduplication/backoff, and retention of working audio
+until a replacement has passed validation. Normal HTTP transport retries remain separate.
+
+Validation uses mocked provider responses and offline synthetic MP3s, including rejection
+cases, cache replay without generation, real combined-track assembly and the player component.
+The full frontend install remains blocked by the private FontAwesome HTTP 403 documented
+above. Public-only player tests with icon stubs validate the changed component, but do not
+establish a complete application build, browser/native integration or real provider behavior.
+
 ### Setting up a development environment
 
 If you are using macOS, all the above requirements may be installed with Homebrew.
@@ -590,6 +628,21 @@ the official Twilio pages before budgeting: [Twilio SMS quickstart](https://www.
 [Twilio US SMS pricing](https://www.twilio.com/en-us/sms/pricing/us), and
 [Twilio A2P 10DLC overview](https://www.twilio.com/en-us/phone-numbers/a2p-10dlc).
 
+### Error reporting (Bugsnag)
+
+Both sides report errors to Bugsnag, on by default in production and off in development:
+
+- **API** (`site/website/.env`): `BUGSNAG_KEY` and `BUGSNAG_ENABLED`. `BUGSNAG_ENABLED` defaults to on when
+  `DEBUG=False` and off when `DEBUG=True`; set `BUGSNAG_ENABLED=False` (or `True`) to override. When off, the
+  middleware isn't installed and no release stage is allowed to notify, so direct `bugsnag.notify()` calls and
+  management commands send nothing either.
+- **Frontend** (`app/.env.production`, `app/.env.development`, or a matching `.local` file):
+  `VITE_BUGSNAG_ENABLED` (`true` in production builds, including native ones; `false` in development) and
+  `VITE_BUGSNAG_API_KEY`, the key of a Bugsnag JavaScript project. Reporting starts only when both are set. Uncaught
+  errors, unhandled promise rejections, Vue errors, and diagnostics such as `BookViewSinglePage` (Book view laid out
+  as a single page) are reported; stale-chunk reloads, `ResizeObserver` warnings, extension errors, and offline
+  network failures are dropped. Changes take effect at the next `vite build`.
+
 ### Code formatting standard
 
 - Please use `black` to format code with a line length of 119 beore submitting a pull request
@@ -607,6 +660,12 @@ tests, `vite build`) before anything ships, then
 uploaded to the `dailyoffice2019` Cloudflare Pages project with Wrangler (`npx wrangler login` once). Cloudflare
 does not build from Git. The API commit is pushed to the `production` remote and `deploy/server.sh` runs on the
 server over SSH. The deploy stops at the first failure and checks that both sites respond.
+
+Office API responses are cached for 60 seconds (`OFFICE_API_CACHE_SECONDS`), so database edits appear within about a
+minute; admin saves and every deploy (which flushes memcached) clear the cache at once, and
+`python manage.py clear_office_cache` clears it by hand. Office audio that is not built yet is prepared in the
+background while the app shows "Preparing audio…" (`site/office/audio_builds.py`). App-server and database
+connection limits are in `deploy/gunicorn_config.py` and `DATABASES` in `site/website/settings.py`.
 
 ## Quick overview
 
