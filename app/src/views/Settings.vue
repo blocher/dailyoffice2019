@@ -1,110 +1,157 @@
 <template>
-  <div class="settings-view">
+  <div class="page settings">
     <Loading v-if="loading" />
 
-    <main
-      v-if="!loading"
-      v-cloak
-      class="max-w-6xl mx-auto pt-8 pb-12 px-4 lg:pb-16"
-    >
-      <header class="settings-hero text-center">
-        <h1>Settings</h1>
-        <p class="settings-hero__description mx-auto">
-          Personalize prayer, readings, and display preferences in one place.
+    <template v-else>
+      <header class="page-header">
+        <h1 class="page-title">Settings</h1>
+        <p class="page-lede">
+          Shape the offices to the way you pray. Changes save as you go.
         </p>
       </header>
 
-      <div class="settings-search-top">
-        <label for="settings-global-search" class="settings-search-top__label">
+      <div class="settings-search">
+        <label for="settings-search" class="visually-hidden">
           Search settings
         </label>
-        <el-input
-          id="settings-global-search"
+        <UiInput
+          id="settings-search"
           v-model="searchQuery"
+          icon="search"
           clearable
-          class="settings-search-top__input"
-          :placeholder="`Search display and ${openTabLabel} settings`"
-        >
-          <template #prefix>
-            <el-icon><Search /></el-icon>
-          </template>
-        </el-input>
-      </div>
-      <div v-if="isFiltering" class="settings-filter-banner" role="status">
-        <span class="settings-filter-banner__text">
-          Filter active: “{{ searchQuery.trim() }}”
-        </span>
-        <button
-          type="button"
-          class="settings-filter-banner__clear"
-          @click="clearSearch"
-        >
-          Clear
-        </button>
+          placeholder="Search settings — e.g. “psalter”, “litany”, “KJV”"
+        />
       </div>
 
-      <el-tabs
-        v-model="openTab"
-        :tab-position="tabPosition"
-        class="settings-tabs"
-        @tab-change="toggleOffice"
+      <div class="settings-tabs">
+        <UiSegmented
+          :model-value="openTab"
+          :options="tabs"
+          variant="underline"
+          block
+          aria-label="Which settings to show"
+          @update:model-value="toggleOffice"
+        />
+        <p class="settings-tabs__note">{{ tabNote }}</p>
+      </div>
+
+      <p
+        v-if="isDisplayTab && isFiltering && !displayMatches"
+        class="settings-empty"
       >
-        <el-tab-pane label="Daily Office" name="office">
-          <section class="settings-tab-stack">
-            <div class="settings-display-narrow">
-              <DisplaySettingsModule
-                :search-query="searchQuery"
-                context-label="Daily Office"
-                :content-audio-enabled="dailyOfficeContentAudioEnabled"
-                :collapsible="false"
-              />
-            </div>
-            <SettingsPanel
-              :available-settings="availableSettings"
-              :search-query="searchQuery"
-              site="Daily Office"
-            />
-          </section>
-        </el-tab-pane>
-        <el-tab-pane label="Family Prayer" name="family">
-          <section class="settings-tab-stack">
-            <div class="settings-display-narrow">
-              <DisplaySettingsModule
-                :search-query="searchQuery"
-                context-label="Family Prayer"
-                :content-audio-enabled="familyPrayerContentAudioEnabled"
-                :collapsible="false"
-              />
-            </div>
-            <SettingsPanel
-              :available-settings="availableSettings"
-              :search-query="searchQuery"
-              site="Family Prayer"
-            />
-          </section>
-        </el-tab-pane>
-      </el-tabs>
-      <DonationPrompt variant="long" />
-    </main>
+        No display settings match your search.
+      </p>
+      <p
+        v-if="isFiltering && otherTabMatches.length"
+        class="settings-elsewhere"
+      >
+        Also found in
+        <template v-for="(match, index) in otherTabMatches" :key="match.value">
+          <span v-if="index" aria-hidden="true"> · </span>
+          <button
+            type="button"
+            class="settings-elsewhere__tab"
+            @click="toggleOffice(match.value)"
+          >
+            {{ match.label
+            }}<template v-if="match.count"> ({{ match.count }})</template>
+          </button>
+        </template>
+      </p>
+
+      <!-- Display: its own tab, and found by search from the other tabs -->
+      <section
+        v-if="isFiltering ? displayMatches : isDisplayTab"
+        class="settings-display"
+        aria-labelledby="settings-display-title"
+      >
+        <h2
+          v-if="!isDisplayTab"
+          id="settings-display-title"
+          class="section-title"
+        >
+          Display
+        </h2>
+        <h2 v-else id="settings-display-title" class="visually-hidden">
+          Display
+        </h2>
+        <div class="surface settings-display__body">
+          <DisplaySettings />
+        </div>
+      </section>
+
+      <section
+        v-if="!isDisplayTab"
+        class="settings-offices"
+        aria-label="Office settings"
+      >
+        <SettingsPanel
+          :key="`${openTab}-${panelVersion}`"
+          :available-settings="availableSettings"
+          :search-query="searchQuery"
+          :show-empty="!(isFiltering && displayMatches)"
+          :site="openTab === 'family' ? 'Family Prayer' : 'Daily Office'"
+        />
+      </section>
+
+      <footer class="settings-footer">
+        <UiButton v-if="!isDisplayTab" icon="share" @click="openPanel('share')">
+          Share these settings
+        </UiButton>
+        <UiButton variant="ghost" icon="reset" @click="restoreDefaults">
+          Restore defaults
+        </UiButton>
+      </footer>
+    </template>
   </div>
 </template>
 
 <script>
-import SettingsPanel from '@/components/SettingsPanel.vue';
+import DisplaySettings from '@/components/DisplaySettings.vue';
 import Loading from '@/components/Loading.vue';
+import SettingsPanel from '@/components/SettingsPanel.vue';
+import { resetDisplayPreferences } from '@/helpers/displayPreferences';
+import { openPanel } from '@/helpers/panels';
+import {
+  createNormalizedApiSetting,
+  matchesSettingSearch,
+} from '@/helpers/settingsUiMetadata';
 import { DynamicStorage } from '@/helpers/storage';
-import DonationPrompt from '@/components/DonationPrompt.vue';
-import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
-import { Search } from '@element-plus/icons-vue';
+import { confirm, toast } from '@/ui/feedback';
+
+const DISPLAY_TERMS = [
+  'display',
+  'theme',
+  'light',
+  'dark',
+  'sepia',
+  'text',
+  'size',
+  'font',
+  'typeface',
+  'caslon',
+  'garamond',
+  'baskerville',
+  'black letter',
+  'gothic',
+  'sans',
+  'legible',
+  'audio',
+  'player',
+  'rubric',
+  'italic',
+  'red',
+  'contents',
+  'margin',
+  'sections',
+];
 
 export default {
   name: 'Settings',
   components: {
-    SettingsPanel,
+    DisplaySettings,
     Loading,
-    DonationPrompt,
-    DisplaySettingsModule,
-    Search,
+    SettingsPanel,
   },
   data() {
     return {
@@ -113,23 +160,71 @@ export default {
       openTab: 'office',
       searchQuery: '',
       lastTrackedSearchTerm: '',
+      // Bumped to redraw the settings list after restoring defaults.
+      panelVersion: 0,
+      tabs: [
+        { value: 'office', label: 'Daily Office' },
+        { value: 'family', label: 'Family Prayer' },
+        { value: 'display', label: 'Display' },
+      ],
     };
   },
   computed: {
-    tabPosition() {
-      return 'top';
-    },
     openTabLabel() {
+      if (this.openTab === 'display') return 'Display';
       return this.openTab === 'family' ? 'Family Prayer' : 'Daily Office';
     },
+    isDisplayTab() {
+      return this.openTab === 'display';
+    },
     isFiltering() {
-      return this.searchQuery.trim().length > 0;
+      return Boolean(this.searchQuery.trim());
     },
-    dailyOfficeContentAudioEnabled() {
-      return this.getSettingValue('reading_audio') === 'on';
+    displayMatches() {
+      const query = this.searchQuery.trim().toLowerCase();
+      return DISPLAY_TERMS.some(
+        (term) => term.includes(query) || query.includes(term)
+      );
     },
-    familyPrayerContentAudioEnabled() {
-      return this.getSettingValue('family_reading_audio') === 'on';
+    // While searching, the other tabs that also have matches.
+    otherTabMatches() {
+      const countFor = (site) =>
+        (this.availableSettings || [])
+          .filter((setting) => setting.site_name === site)
+          .map((setting) => createNormalizedApiSetting(setting, () => {}))
+          .filter((setting) => matchesSettingSearch(setting, this.searchQuery))
+          .length;
+      return (
+        [
+          {
+            value: 'office',
+            label: 'Daily Office',
+            count: countFor('Daily Office'),
+          },
+          {
+            value: 'family',
+            label: 'Family Prayer',
+            count: countFor('Family Prayer'),
+          },
+          {
+            value: 'display',
+            label: 'Display',
+            count: this.displayMatches ? 1 : 0,
+          },
+        ]
+          .filter((tab) => tab.value !== this.openTab && tab.count)
+          // Display shows alongside the other tabs' results already.
+          .filter((tab) => tab.value !== 'display' || this.isDisplayTab)
+          .map((tab) => (tab.value === 'display' ? { ...tab, count: 0 } : tab))
+      );
+    },
+    tabNote() {
+      if (this.openTab === 'display') {
+        return 'How the prayers look on this device. Also under Aa at the top of every page.';
+      }
+      return this.openTab === 'family'
+        ? 'Short services for households and for children, from the Prayer Book’s Family Prayer.'
+        : 'Morning, Midday, and Evening Prayer and Compline.';
     },
   },
   watch: {
@@ -146,12 +241,7 @@ export default {
     await this.initialize();
   },
   methods: {
-    getSettingValue(settingName) {
-      const setting = this.availableSettings?.find(
-        (item) => item.name === settingName
-      );
-      return setting?.active;
-    },
+    openPanel,
     async initialize() {
       this.loading = true;
       this.availableSettings = this.$store.state.availableSettings || [];
@@ -165,7 +255,7 @@ export default {
       }
 
       const storedPane = await DynamicStorage.getItem('settingsPane');
-      if (storedPane) {
+      if (['office', 'family', 'display'].includes(storedPane)) {
         this.openTab = storedPane;
       } else {
         await DynamicStorage.setItem('settingsPane', 'office');
@@ -177,8 +267,41 @@ export default {
       this.openTab = value;
       await DynamicStorage.setItem('settingsPane', value);
     },
-    clearSearch() {
-      this.searchQuery = '';
+    async restoreDefaults() {
+      if (this.isDisplayTab) {
+        const ok = await confirm({
+          title: 'Restore display defaults?',
+          message:
+            'Theme, text size, typeface, rubrics, margin contents, and the audio player go back to their defaults.',
+          confirmText: 'Restore defaults',
+          tone: 'danger',
+        });
+        if (!ok) return;
+        await resetDisplayPreferences();
+        toast.success('Display settings restored to their defaults.');
+        return;
+      }
+      const site = this.openTabLabel;
+      const ok = await confirm({
+        title: `Restore ${site} defaults?`,
+        message: `Every ${site} setting goes back to the Prayer Book’s default. Display settings are not affected.`,
+        confirmText: 'Restore defaults',
+        tone: 'danger',
+      });
+      if (!ok) return;
+      const updated = { ...(this.$store.state.settings || {}) };
+      (this.availableSettings || [])
+        .filter((setting) => setting.site_name === site)
+        .forEach((setting) => {
+          const first = setting.options?.[0];
+          if (first) {
+            updated[setting.name] = first.value;
+            setting.active = first.value;
+          }
+        });
+      await this.$store.dispatch('saveSettings', updated);
+      this.panelVersion += 1;
+      toast.success(`${site} settings restored to their defaults.`);
     },
     trackSearch(query) {
       if (!this.$gtag?.event) {
@@ -194,92 +317,70 @@ export default {
 </script>
 
 <style scoped>
-[v-cloak] {
-  display: none;
-}
-
-.settings-hero {
-  margin-bottom: 1rem;
-}
-
-.settings-hero__description {
-  margin: 0.55rem 0 0;
-  max-width: 62ch;
-  color: var(--el-text-color-secondary);
-  font-size: 0.97rem;
-}
-
-.settings-tabs {
-  margin-bottom: 1rem;
-}
-
-.settings-tab-stack {
-  padding-top: 0.25rem;
-  display: grid;
-  gap: 1rem;
-}
-
-.settings-display-narrow {
-  width: min(100%, 58rem);
-}
-
-.settings-search-top {
-  border: 1px solid var(--el-border-color-light);
-  border-radius: 0.55rem;
-  background-color: var(--el-fill-color-blank);
-  padding: 0.58rem 0.66rem 0.66rem;
-  margin-bottom: 0.7rem;
-}
-
-.settings-search-top__label {
-  display: block;
-  margin-bottom: 0.26rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--el-text-color-secondary);
-}
-
-.settings-filter-banner {
-  margin-bottom: 0.9rem;
-  border: 1px solid var(--accent-color);
-  background-color: rgb(191 219 254 / 0.35);
-  border-radius: 0.5rem;
-  padding: 0.35rem 0.5rem;
+.settings {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
+  flex-direction: column;
+  gap: var(--space-6);
 }
 
-.settings-filter-banner__text {
-  color: var(--el-text-color-primary);
-  font-size: 0.82rem;
-  font-weight: 600;
+.settings .page-header {
+  margin-bottom: 0;
 }
 
-.settings-filter-banner__clear {
-  border: 1px solid var(--accent-color);
-  background-color: var(--el-fill-color-blank);
-  color: var(--accent-color);
-  border-radius: 0.4rem;
-  padding: 0.12rem 0.38rem;
-  font-size: 0.74rem;
-  font-weight: 700;
+.settings-display .section-title {
+  margin-left: var(--space-1);
 }
 
-@media (max-width: 768px) {
-  .settings-hero__description {
-    font-size: 0.92rem;
-  }
+.settings-display__body {
+  padding: var(--space-5);
+}
 
-  .settings-tab-stack {
-    gap: 0.85rem;
-  }
+.settings-offices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
 
-  .settings-display-narrow {
-    width: 100%;
+.settings-elsewhere {
+  margin-top: calc(-1 * var(--space-2));
+  font-size: var(--text-sm);
+  text-align: center;
+  color: var(--ink-faint);
+}
+
+.settings-elsewhere__tab {
+  min-height: 2.75rem;
+  padding: 0 var(--space-1);
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.settings-empty {
+  font-style: italic;
+  text-align: center;
+  color: var(--ink-faint);
+}
+
+.settings-tabs__note {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  font-style: italic;
+  text-align: center;
+  color: var(--ink-faint);
+}
+
+.settings-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+}
+
+@media (max-width: 559px) {
+  .settings-display__body {
+    padding: var(--space-4);
   }
 }
 </style>

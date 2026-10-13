@@ -1,8 +1,7 @@
 import { createStore } from 'vuex';
-import { ElMessage } from 'element-plus';
+import { toast } from '@/ui/feedback';
 import { DynamicStorage } from '@/helpers/storage';
 import router from '@/router';
-import { getMessageOffset } from '@/helpers/getMessageOffest';
 import { decodeSettingsString } from '@/helpers/decodeSettingsString';
 
 export default createStore({
@@ -78,13 +77,10 @@ export default createStore({
           setting_abbreviations
         );
         if (results.length === 0) {
-          ElMessage.warning({
-            title: 'Warning',
-            message: 'The settings link is invalid',
-            showClose: true,
+          toast.warning({
+            title: 'That settings link didn’t work',
+            message: 'Your own settings are unchanged.',
             duration: 0,
-            dangerouslyUseHTMLString: true,
-            offset: getMessageOffset(),
           });
         }
         results.forEach(function (value) {
@@ -101,16 +97,33 @@ export default createStore({
       state.settings = settings;
       state.settingAbbreviations = setting_abbreviations;
       await initializeAdditionalCollects();
-      router.push({ path: router.currentRoute._value.fullPath, query: {} });
+      // Drop only the query parameters consumed above (a share link's
+      // settings and extra collects) so other links, such as
+      // /calendar?subscribe=1, keep theirs. Replace rather than push so the
+      // cleanup doesn't add a history entry.
+      const currentQuery = router.currentRoute._value.query || {};
+      const settingNames = (availableSettings || []).map((s) => s.name);
+      const consumed = Object.keys(currentQuery).filter(
+        (key) =>
+          key === 'settings' ||
+          settingNames.includes(key) ||
+          key.endsWith('_prayer_collects') ||
+          key === 'compline_collects'
+      );
+      if (consumed.length) {
+        const remaining = { ...currentQuery };
+        consumed.forEach((key) => delete remaining[key]);
+        await router.replace({
+          path: router.currentRoute._value.path,
+          query: remaining,
+          hash: router.currentRoute._value.hash,
+        });
+      }
       if (applied) {
-        ElMessage.success({
-          title: 'Saved',
-          message:
-            "New settings have been applied from the share link.<br><small><a href='/settings'>Review your settings.</a></small>",
-          showClose: true,
+        toast.success({
+          title: 'Settings applied from the share link',
+          link: { to: '/settings', label: 'Review your settings' },
           duration: 0,
-          dangerouslyUseHTMLString: true,
-          offset: getMessageOffset(),
         });
       }
       commit('saveSettings', settings);

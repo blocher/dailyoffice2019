@@ -1,49 +1,45 @@
 <template>
-  <div v-show="show" :id="id" :class="wrapperClass">
-    <h3>
-      {{ displayName }}
-    </h3>
-    <h4 v-if="!abbreviated" :id="readingID(reading.full)">
-      {{ reading.full.citation }} <span v-html="scriptureLink()" />
+  <section v-show="show" :id="id" class="reading" :class="wrapperClass">
+    <h2>{{ displayName }}</h2>
+    <h4 :id="readingID(current)">
+      {{ current.citation }}
+      <a
+        v-if="source.url"
+        class="reading__source"
+        :href="source.url"
+        target="_blank"
+        rel="noopener noreferrer"
+        >({{ source.label }})</a
+      >
+      <span v-else class="reading__source">({{ source.label }})</span>
     </h4>
-    <h4 v-if="abbreviated" :id="readingID(reading.abbreviated)">
-      {{ reading.abbreviated.citation }}
-      <span v-html="scriptureLink((abbreviated = true))" />
-    </h4>
-    <div class="full-width text-center">
-      <el-switch
+    <div
+      v-if="showAbbreviatedToggle || showPsalterCycleToggle"
+      class="reading__options"
+    >
+      <UiSegmented
         v-if="showAbbreviatedToggle"
         v-model="abbreviated"
-        size="small"
-        inactive-text="Full Length"
-        active-text="Suggested Shortening"
-        class="content-center mb-5"
+        size="sm"
+        :options="lengthOptions"
+        aria-label="Length of the reading"
       />
-      <el-switch
+      <UiSegmented
         v-if="showPsalterCycleToggle"
         v-model="psalmCycle60"
-        size="small"
-        inactive-text="30 day cycle"
-        active-text="60 day cycle"
-        class="content-center mb-5"
+        size="sm"
+        :options="cycleOptions"
+        aria-label="Psalter cycle"
         @change="setCycle"
       />
     </div>
-    <div
-      v-if="!abbreviated"
-      class="readingText"
-      v-html="reading.full.text"
-    ></div>
-    <div
-      v-if="abbreviated"
-      class="readingText"
-      v-html="reading.abbreviated.text"
-    ></div>
-  </div>
+    <div class="readingText" v-html="current.text"></div>
+  </section>
 </template>
 
 <script>
 export default {
+  emits: ['cycle-30', 'cycle-60'],
   props: [
     'reading',
     'id',
@@ -57,9 +53,23 @@ export default {
     return {
       abbreviated: false,
       psalmCycle60: false,
+      lengthOptions: [
+        { value: false, label: 'Full length' },
+        { value: true, label: 'Suggested shortening' },
+      ],
+      cycleOptions: [
+        { value: false, label: '30-day cycle' },
+        { value: true, label: '60-day cycle' },
+      ],
     };
   },
   computed: {
+    current() {
+      return this.abbreviated ? this.reading.abbreviated : this.reading.full;
+    },
+    source() {
+      return this.scriptureLink(this.abbreviated);
+    },
     isChinese() {
       return ['cuvs', 'cuv', 'znsigao', 'sigao'].includes(this.translation);
     },
@@ -147,6 +157,8 @@ export default {
         this.$emit('cycle-30');
       }
     },
+    // The translation shown after the citation, linked to the passage on
+    // the publisher's site (psalms name the psalter instead).
     scriptureLink(abbreviated = false) {
       const reading = abbreviated
         ? this.reading.abbreviated
@@ -154,11 +166,11 @@ export default {
       if (reading.name.includes('The Psalm')) {
         const psalmsTranslation = this.psalmsTranslation;
         if (psalmsTranslation == 'traditional') {
-          return '(Traditional)';
+          return { url: null, label: 'Traditional' };
         }
-        return '(Contemporary)';
+        return { url: null, label: 'Contemporary' };
       }
-      let url = '';
+      let url;
       let abbreviation = this.translation.toLowerCase();
       if (
         ['cuvs', 'cuv'].includes(abbreviation) &&
@@ -187,62 +199,58 @@ export default {
       if (abbreviation == 'nrsvce') displayName = 'nrsv';
       else if (abbreviation == 'sigao') displayName = '思高本（繁體）';
       else if (abbreviation == 'znsigao') displayName = '思高本（简体）';
-      return `<a target="_blank" href="${url}">(${displayName.toUpperCase()})</a>`;
+      return { url, label: displayName.toUpperCase() };
     },
   },
 };
 </script>
 
-<style scoped lang="scss">
-h1,
-h2,
-h3,
-h4 {
-  margin: 0 0 0 !important;
-  padding: 0 !important;
+<style scoped>
+.reading {
+  margin-top: 1.5em;
 }
 
-h3 {
-  margin-top: 4rem !important;
+.reading__source {
+  font-style: normal;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.06em;
 }
 
-h4 {
-  margin-bottom: 1rem !important;
-}
-</style>
-
-<style lang="scss">
-//body h3.reading-heading {
-//  margin-top: 1rem !important;
-//  font-size: .75em !important;
-//  padding-top: 0 !important;
-//}
-
-.readingText {
-  p {
-    margin-bottom: 1rem !important;
-  }
-
-  h3,
-  h4 {
-    display: none !important;
-  }
-
-  .psalm {
-    h3 {
-      text-align: left !important;
-      display: block !important;
-      margin: 0 !important;
-      padding-top: 1rem !important;
-    }
-  }
+span.reading__source {
+  color: var(--ink-soft);
 }
 
-.psalm,
-.the_psalm,
-.the_psalms {
-  p {
-    margin-bottom: 0.25rem !important;
-  }
+.reading__options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  margin: 0 0 1em;
+}
+
+/*
+  Passage text from the API. The citation above already names the reading,
+  so the API's own headings are hidden, except psalm numbers. book.css
+  styles .book headings with an id selector, hence !important to override.
+*/
+.readingText :deep(p) {
+  margin-bottom: 0.8em;
+}
+
+.readingText :deep(h3),
+.readingText :deep(h4) {
+  display: none;
+}
+
+.readingText :deep(.psalm h3) {
+  display: block;
+  margin: 0 !important;
+  padding-top: 0.6em !important;
+  text-align: left !important;
+}
+
+.reading:is(.psalm, .the_psalm, .the_psalms) .readingText :deep(p),
+.readingText :deep(.psalm p) {
+  margin-bottom: 0.1em;
 }
 </style>

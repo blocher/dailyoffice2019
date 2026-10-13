@@ -1,48 +1,84 @@
 <template>
-  <div class="h-full flex flex-col">
-    <a
-      href="https://anglicanhousepublishers.org/shop/the-book-of-common-prayer-2019-pew-edition/"
-      target="_blank"
-      class="block group h-full"
-    >
-      <div
-        class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-center rounded-lg p-6 transition-colors duration-200 hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 space-y-4 h-full flex flex-col justify-center"
-      >
-        <p class="text-sm font-medium text-gray-600 dark:text-gray-300">
-          This site is generously supported by Anglican House Publishers
-        </p>
-
-        <img
-          src="@/assets/ahp_new.png"
-          alt="Anglican House Publishers Logo"
-          class="h-16 mx-auto object-contain"
-        />
-
-        <div class="text-sm text-gray-700 dark:text-gray-300">
-          <p>Publisher of the</p>
-          <p class="font-bold text-gray-900 dark:text-gray-100 mt-1">
-            Anglican Church in North America's<br />2019 Edition of the Book of
-            Common Prayer
-          </p>
-          <p class="mt-1">on which this website is based.</p>
-        </div>
-
-        <p
-          class="text-xs text-gray-600 dark:text-gray-300 font-medium group-hover:text-gray-800 dark:group-hover:text-gray-100"
-        >
-          Click to purchase a paper copy →
-        </p>
-      </div>
-    </a>
-  </div>
+  <a
+    href="https://anglicanhousepublishers.org/shop/the-book-of-common-prayer-2019-pew-edition/"
+    target="_blank"
+    rel="noopener"
+    class="ahp-card surface"
+  >
+    <p class="eyebrow">Generously supported by</p>
+    <span class="ahp-card__plate">
+      <img
+        src="@/assets/ahp_new.png"
+        alt="Anglican House Publishers"
+        class="ahp-card__logo"
+        width="320"
+        height="147"
+      />
+    </span>
+    <p class="ahp-card__copy">
+      Publisher of the Anglican Church in North America’s
+      <em>Book of Common Prayer (2019)</em>, on which this site is based.
+    </p>
+    <span class="ahp-card__cta">
+      Buy a printed copy
+      <UiIcon name="external" />
+    </span>
+  </a>
 </template>
 
-<script>
-export default {
-  name: 'AHPLogo',
-};
-</script>
+<script setup></script>
 
 <style scoped>
-/* Removed legacy styles */
+.ahp-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  height: 100%;
+  padding: var(--space-5);
+  color: var(--ink);
+  text-align: center;
+  text-decoration: none;
+  transition: border-color var(--duration) var(--ease);
+}
+
+.ahp-card:hover {
+  border-color: var(--rule-strong);
+}
+
+.ahp-card__plate {
+  display: block;
+  border-radius: var(--radius);
+}
+
+.ahp-card__logo {
+  width: 11rem;
+  height: auto;
+  mix-blend-mode: multiply;
+}
+
+:root.dark .ahp-card__plate {
+  padding: var(--space-2) var(--space-3);
+  background-color: #fff;
+}
+
+:root.dark .ahp-card__logo {
+  mix-blend-mode: normal;
+}
+
+.ahp-card__copy {
+  max-width: 22rem;
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+  line-height: 1.4;
+}
+
+.ahp-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: auto;
+  font-size: var(--text-sm);
+  color: var(--accent);
+}
 </style>

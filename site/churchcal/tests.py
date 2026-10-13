@@ -7,6 +7,7 @@ from unittest.mock import patch
 from django.test import SimpleTestCase, TestCase
 from icalendar import Calendar
 
+from churchcal.api.serializer import CommemorationSerializer
 from churchcal.calendar_feeds import (
     ChurchCalendarFeedBuilder,
     FeedDay,
@@ -80,6 +81,22 @@ class CeBceReplacementTests(SimpleTestCase):
         updated, replacements = replace_ce_bce_in_text(text)
         self.assertEqual(updated, "300 BC\nDied in 100 AD")
         self.assertEqual(len(replacements), 2)
+
+
+class CommemorationSaintNameTests(SimpleTestCase):
+    def test_uses_saint_name_when_set(self):
+        obj = SimpleNamespace(saint_name="Lancelot Andrewes", name="Lancelot Andrewes, Bishop")
+        self.assertEqual(CommemorationSerializer().get_saint_name(obj), "Lancelot Andrewes")
+
+    def test_falls_back_to_name_before_the_first_comma(self):
+        for obj in (
+            SimpleNamespace(saint_name="", name="Lancelot Andrewes, Bishop of Winchester"),
+            SimpleNamespace(name="The Holy Name"),
+        ):
+            self.assertEqual(
+                CommemorationSerializer().get_saint_name(obj),
+                obj.name.split(",")[0],
+            )
 
 
 class CalendarFeedWindowTests(SimpleTestCase):

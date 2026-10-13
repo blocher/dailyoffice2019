@@ -21,34 +21,3 @@ export default {
   props: ['line'],
 };
 </script>
-
-<style>
-.rubric {
-  font-size: 0.8em;
-  line-height: 1.2em;
-}
-
-.row {
-  display: flex;
-  align-items: baseline;
-  gap: 20px;
-}
-
-.column.left {
-  flex: 15%;
-}
-
-.column.right {
-  flex: 65%;
-}
-
-@media (min-width: 500px) {
-  .column.left {
-    flex: 15%;
-  }
-
-  .column.right {
-    flex: 65%;
-  }
-}
-</style>

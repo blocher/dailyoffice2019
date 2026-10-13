@@ -53,14 +53,7 @@ const mountPlayer = () => {
     },
     global: {
       renderStubDefaultSlot: true,
-      stubs: [
-        'font-awesome-icon',
-        'el-button',
-        'el-button-group',
-        'el-select',
-        'el-option',
-        'el-switch',
-      ],
+      stubs: ['UiIcon'],
     },
   });
   return wrapper.vm;
@@ -455,9 +448,9 @@ describe('AudioPlayer compact controls', () => {
     expect(options.attributes('aria-expanded')).toBe('false');
     expect(wrapper.get('.preferences-panel').isVisible()).toBe(false);
     await options.trigger('click');
-    expect(
-      wrapper.get('.highlight-control input:checked').element.value
-    ).toBe('sentence');
+    expect(wrapper.get('.highlight-control input:checked').element.value).toBe(
+      'sentence'
+    );
   });
 
   it('closes an open popover when the other one opens or on outside press', async () => {
@@ -496,8 +489,9 @@ describe('AudioPlayer compact controls', () => {
   });
 
   it('restores saved speed and auto-scroll preferences', async () => {
-    DynamicStorage.getItem.mockImplementation(async (key) =>
-      ({ audioPlaybackSpeed: '1.2x', audioAutoScroll: 'false' })[key]
+    DynamicStorage.getItem.mockImplementation(
+      async (key) =>
+        ({ audioPlaybackSpeed: '1.2x', audioAutoScroll: 'false' })[key]
     );
     const vm = mountPlayer();
     await Promise.resolve();

@@ -1,170 +1,159 @@
 <template>
-  <div class="small-container">
-    <Loading v-if="loading" />
-    <el-alert v-if="error" :title="error" type="error" />
+  <div class="psalm-page">
+    <header class="page psalm-head">
+      <div class="page-header">
+        <p class="eyebrow">
+          <router-link to="/psalms/" class="psalm-head__up">
+            The Psalter
+          </router-link>
+        </p>
+        <h1 class="page-title">
+          {{ psalm ? `Psalm ${psalm.number}` : 'Psalm' }}
+        </h1>
+        <p v-if="psalm && psalm.latin_title" class="page-lede">
+          {{ psalm.latin_title }}
+        </p>
+      </div>
 
-    <div v-if="loading || error">
-      <h1 class="text-center">Psalm</h1>
-    </div>
+      <Loading v-if="loading" />
+      <UiAlert v-if="error" tone="error" :title="error" />
 
-    <header v-if="!loading && !error" class="office-header mb-8">
-      <h1 class="text-center mt-8">Psalm {{ psalm.number }}</h1>
-      <h4 class="text-center">{{ psalm.latin_title }}</h4>
-      <div
-        v-if="psalm.topics && psalm.topics.length"
-        class="text-center mt-2 mb-6"
-      >
-        <router-link
-          v-for="topic in psalm.topics"
-          :key="topic.id"
-          :to="{ name: 'Psalms', query: { topic: topic.id } }"
-        >
-          <el-tag
-            class="mr-2 cursor-pointer hover:opacity-80 transition-opacity"
-            type="info"
-            size="small"
+      <template v-if="!loading && !error">
+        <p v-if="psalm.topics && psalm.topics.length" class="psalm-topics">
+          <router-link
+            v-for="topic in psalm.topics"
+            :key="topic.id"
+            :to="{ name: 'Psalms', query: { topic: topic.id } }"
+            class="psalm-topics__link"
           >
             {{ topic.topic_name }}
-          </el-tag>
-        </router-link>
-      </div>
-      <div class="space-y-6">
-        <div
-          class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-100 dark:border-gray-700 shadow-sm mt-6 mb-6"
+          </router-link>
+        </p>
+
+        <div class="psalm-tools">
+          <UiSegmented
+            :model-value="traditional"
+            :options="languageOptions"
+            size="sm"
+            aria-label="Language"
+            @update:model-value="changeLanguage"
+          />
+        </div>
+      </template>
+    </header>
+
+    <template v-if="!loading && !error">
+      <nav class="psalm-nav" aria-label="Psalms">
+        <router-link
+          v-if="psalm.number > 1"
+          :to="`/psalm/${psalm.number - 1}`"
+          class="psalm-nav__link psalm-nav__link--prev"
         >
-          <div
-            class="flex flex-col md:flex-row justify-center md:justify-between items-center gap-4"
+          <UiIcon name="chevron-left" />
+          <span
+            ><span class="psalm-nav__word">Psalm </span
+            >{{ psalm.number - 1 }}</span
           >
-            <h4
-              class="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-0"
-            >
-              Language
-            </h4>
-            <div class="flex items-center">
-              <el-switch
-                v-model="traditional"
-                size="large"
-                active-text="Traditional"
-                inactive-text="Contemporary"
-                @change="setTradtional"
-              />
-            </div>
-          </div>
+        </router-link>
+        <span v-else class="psalm-nav__spacer" />
+        <router-link to="/psalms/" class="psalm-nav__link psalm-nav__link--all">
+          All Psalms
+        </router-link>
+        <router-link
+          v-if="psalm.number < 150"
+          :to="`/psalm/${psalm.number + 1}`"
+          class="psalm-nav__link psalm-nav__link--next"
+        >
+          <span
+            ><span class="psalm-nav__word">Psalm </span
+            >{{ psalm.number + 1 }}</span
+          >
+          <UiIcon name="chevron-right" />
+        </router-link>
+        <span v-else class="psalm-nav__spacer" />
+      </nav>
+
+      <div class="book-opening">
+        <Ornament glyph="o" />
+      </div>
+
+      <!-- The psalm, set like the printed book -->
+      <div id="main" class="book psalm-text">
+        <div v-if="!traditional">
+          <span v-for="verse in psalm.verses" :key="verse.number">
+            <span v-if="verse.first_half">
+              <p class="hangingIndent extra-space-before">
+                <sup>{{ verse.number }}</sup> {{ verse.first_half }} *
+              </p>
+              <p class="indent">
+                {{ verse.second_half }}
+              </p>
+            </span>
+          </span>
+        </div>
+        <div v-if="traditional">
+          <span v-for="verse in psalm.verses" :key="verse.number">
+            <span v-if="verse.first_half_tle">
+              <p class="hangingIndent extra-space-before">
+                <sup>{{ verse.number }}</sup> {{ verse.first_half_tle }} *
+              </p>
+              <p class="indent">
+                {{ verse.second_half_tle }}
+              </p>
+            </span>
+          </span>
         </div>
       </div>
-      <DisplaySettingsModule />
-    </header>
-  </div>
 
-  <div v-if="!loading && !error" id="main" class="book-content">
-    <!-- Top Navigation -->
-    <div
-      class="flex justify-between items-center mb-8 text-sm md:text-base font-medium text-gray-600 dark:text-gray-400"
-    >
-      <div class="flex-1 text-left">
+      <nav class="psalm-nav psalm-nav--bottom" aria-label="Psalms">
         <router-link
           v-if="psalm.number > 1"
           :to="`/psalm/${psalm.number - 1}`"
-          class="inline-flex items-center gap-2 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+          class="psalm-nav__link psalm-nav__link--prev"
         >
-          <font-awesome-icon :icon="['fad', 'left']" />
-          <span class="hidden sm:inline">Psalm</span> {{ psalm.number - 1 }}
+          <UiIcon name="chevron-left" />
+          <span
+            ><span class="psalm-nav__word">Psalm </span
+            >{{ psalm.number - 1 }}</span
+          >
         </router-link>
-      </div>
-      <div class="flex-1 text-center">
-        <router-link
-          :to="`/psalms/`"
-          class="inline-block hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-        >
+        <span v-else class="psalm-nav__spacer" />
+        <router-link to="/psalms/" class="psalm-nav__link psalm-nav__link--all">
           All Psalms
         </router-link>
-      </div>
-      <div class="flex-1 text-right">
         <router-link
           v-if="psalm.number < 150"
           :to="`/psalm/${psalm.number + 1}`"
-          class="inline-flex items-center gap-2 justify-end hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+          class="psalm-nav__link psalm-nav__link--next"
         >
-          <span class="hidden sm:inline">Psalm</span> {{ psalm.number + 1 }}
-          <font-awesome-icon :icon="['fad', 'right']" />
+          <span
+            ><span class="psalm-nav__word">Psalm </span
+            >{{ psalm.number + 1 }}</span
+          >
+          <UiIcon name="chevron-right" />
         </router-link>
-      </div>
-    </div>
-
-    <div v-if="!traditional">
-      <span v-for="verse in psalm.verses" :key="verse.number">
-        <span v-if="verse.first_half">
-          <p class="hangingIndent extra-space-before">
-            <sup>{{ verse.number }}</sup> {{ verse.first_half }} *
-          </p>
-          <p class="indent">
-            {{ verse.second_half }}
-          </p>
-        </span>
-      </span>
-    </div>
-    <div v-if="traditional">
-      <span v-for="verse in psalm.verses" :key="verse.number">
-        <span v-if="verse.first_half_tle">
-          <p class="hangingIndent extra-space-before">
-            <sup>{{ verse.number }}</sup> {{ verse.first_half_tle }} *
-          </p>
-          <p class="indent">
-            {{ verse.second_half_tle }}
-          </p>
-        </span>
-      </span>
-    </div>
-    <el-divider class="my-8" />
-    <!-- Bottom Navigation -->
-    <div
-      class="flex justify-between items-center mt-8 mb-12 text-sm md:text-base font-medium text-gray-600 dark:text-gray-400"
-    >
-      <div class="flex-1 text-left">
-        <router-link
-          v-if="psalm.number > 1"
-          :to="`/psalm/${psalm.number - 1}`"
-          class="inline-flex items-center gap-2 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-        >
-          <font-awesome-icon :icon="['fad', 'left']" />
-          <span class="hidden sm:inline">Psalm</span> {{ psalm.number - 1 }}
-        </router-link>
-      </div>
-      <div class="flex-1 text-center">
-        <router-link
-          :to="`/psalms/`"
-          class="inline-block hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-        >
-          All Psalms
-        </router-link>
-      </div>
-      <div class="flex-1 text-right">
-        <router-link
-          v-if="psalm.number < 150"
-          :to="`/psalm/${psalm.number + 1}`"
-          class="inline-flex items-center gap-2 justify-end hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-        >
-          <span class="hidden sm:inline">Psalm</span> {{ psalm.number + 1 }}
-          <font-awesome-icon :icon="['fad', 'right']" />
-        </router-link>
-      </div>
-    </div>
+        <span v-else class="psalm-nav__spacer" />
+      </nav>
+    </template>
   </div>
 </template>
 
 <script>
 import Loading from '@/components/Loading.vue';
-import DisplaySettingsModule from '@/components/DisplaySettingsModule.vue';
 import { DynamicStorage } from '@/helpers/storage';
 
 export default {
-  components: { Loading, DisplaySettingsModule },
+  components: { Loading },
   data() {
     return {
       psalm: null,
       loading: true,
       error: false,
       traditional: false,
+      languageOptions: [
+        { value: false, label: 'Contemporary' },
+        { value: true, label: 'Traditional' },
+      ],
     };
   },
   async created() {
@@ -178,7 +167,7 @@ export default {
       this.traditional = false;
     }
     this.setTradtional();
-    let data = null;
+    let data;
     try {
       data = await this.$http.get(
         `${import.meta.env.VITE_API_URL}api/v1/psalms/${this.$route.params.number}/`
@@ -194,9 +183,129 @@ export default {
     this.loading = false;
   },
   methods: {
+    changeLanguage(value) {
+      this.traditional = value;
+      this.setTradtional();
+    },
     async setTradtional() {
       await DynamicStorage.setItem('traditionalPsalms', this.traditional);
     },
   },
 };
 </script>
+
+<style scoped>
+.psalm-head {
+  padding-bottom: 0;
+}
+
+.psalm-head .page-header {
+  margin-bottom: var(--space-4);
+}
+
+.psalm-head__up {
+  color: inherit;
+  text-decoration: none;
+}
+
+.psalm-head__up:hover {
+  color: var(--accent);
+}
+
+.psalm-topics {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  column-gap: var(--space-4);
+  font-size: var(--text-sm);
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.1em;
+}
+
+.psalm-topics__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+
+.psalm-topics__link:hover {
+  color: var(--accent);
+}
+
+.psalm-tools {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-2);
+}
+
+/* Previous · All · Next */
+.psalm-nav {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--space-2);
+  width: min(calc(100% - 2 * var(--gutter)), var(--content-width));
+  margin: var(--space-5) auto 0;
+  font-size: var(--text-sm);
+}
+
+.psalm-nav--bottom {
+  margin-top: 0;
+  margin-bottom: var(--space-7);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--rule);
+}
+
+.psalm-nav__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.75rem;
+  padding: 0 var(--space-2);
+  color: var(--ink-soft);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.psalm-nav__link:hover {
+  color: var(--accent);
+}
+
+.psalm-nav__link .ui-icon {
+  color: var(--accent);
+}
+
+.psalm-nav__link--prev {
+  justify-self: start;
+}
+
+.psalm-nav__link--all {
+  justify-self: center;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.1em;
+}
+
+.psalm-nav__link--next {
+  justify-self: end;
+}
+
+@media (max-width: 359px) {
+  .psalm-nav__word {
+    display: none;
+  }
+}
+
+/* The verse spacing the office uses (kept here so this page does not
+   depend on the office components being loaded). */
+.psalm-text .extra-space-before {
+  margin-top: 0.7em;
+}
+
+/* The bottom navigation supplies the space after the psalm. */
+.psalm-text {
+  margin-bottom: var(--space-6);
+}
+</style>
