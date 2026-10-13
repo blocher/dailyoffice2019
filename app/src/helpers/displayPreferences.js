@@ -12,6 +12,7 @@
 import { reactive } from 'vue';
 import { DynamicStorage } from '@/helpers/storage';
 import { refreshSeasonAccent } from '@/helpers/seasonAccent';
+import { Capacitor } from '@capacitor/core';
 
 export const THEMES = [
   { value: 'auto', label: 'Auto', icon: 'contrast', title: 'Match device' },
@@ -66,6 +67,27 @@ export const RUBRIC_STYLES = [
   { value: 'italic', label: 'Italic', note: 'As in the 2019 Prayer Book' },
   { value: 'red', label: 'Red', note: 'As in older Prayer Books' },
 ];
+
+const MIRRORED_KEYS = ['user-theme', 'fontSize', 'readingFont', 'rubricStyle'];
+
+/*
+  index.html applies the theme before the app loads by reading these values
+  from localStorage, where Capacitor keeps preferences on the web. Native
+  apps keep them elsewhere, so mirror them there too.
+*/
+function mirror(key, value) {
+  if (!MIRRORED_KEYS.includes(key) || !Capacitor.isNativePlatform()) return;
+  try {
+    window.localStorage.setItem(`CapacitorStorage.${key}`, String(value));
+  } catch {
+    // Storage unavailable; the app still applies preferences once loaded.
+  }
+}
+
+async function save(key, value) {
+  mirror(key, value);
+  await DynamicStorage.setItem(key, value);
+}
 
 const THEME_VALUES = THEMES.map((t) => t.value);
 const RUBRIC_VALUES = RUBRIC_STYLES.map((r) => r.value);
@@ -162,9 +184,15 @@ function watchSystemTheme() {
     return;
   }
   systemQuery = window.matchMedia('(prefers-color-scheme: dark)');
-  systemQuery.addEventListener?.('change', () => {
+  const onChange = () => {
     if (displayState.theme === 'auto') applyTheme();
-  });
+  };
+  if (systemQuery.addEventListener) {
+    systemQuery.addEventListener('change', onChange);
+  } else {
+    // Safari before 14
+    systemQuery.addListener?.(onChange);
+  }
 }
 
 function parseFontSize(raw) {
@@ -202,6 +230,10 @@ export async function loadDisplayPreferences() {
     audioEnabled === 'false' || audioEnabled === false
   );
   displayState.loaded = true;
+  mirror('user-theme', displayState.theme);
+  mirror('fontSize', displayState.fontSize);
+  mirror('readingFont', displayState.readingFont);
+  mirror('rubricStyle', displayState.rubricStyle);
   watchSystemTheme();
   applyAll();
   return displayState;
@@ -211,13 +243,13 @@ export async function setTheme(theme) {
   if (!THEME_VALUES.includes(theme)) return;
   displayState.theme = theme;
   applyTheme();
-  await DynamicStorage.setItem('user-theme', theme);
+  await save('user-theme', theme);
 }
 
 export async function setFontSize(size) {
   displayState.fontSize = parseFontSize(size);
   applyFontSize();
-  await DynamicStorage.setItem('fontSize', String(displayState.fontSize));
+  await save('fontSize', String(displayState.fontSize));
 }
 
 /** Move one notch along FONT_SIZES (direction is +1 or -1). */
@@ -240,14 +272,14 @@ export async function setReadingFont(font) {
   if (!FONT_VALUES.includes(font)) return;
   displayState.readingFont = font;
   applyReadingFont();
-  await DynamicStorage.setItem('readingFont', font);
+  await save('readingFont', font);
 }
 
 export async function setRubricStyle(style) {
   if (!RUBRIC_VALUES.includes(style)) return;
   displayState.rubricStyle = style;
   applyRubricStyle();
-  await DynamicStorage.setItem('rubricStyle', style);
+  await save('rubricStyle', style);
 }
 
 /** The list of an office's sections beside the text on wide screens. */

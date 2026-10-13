@@ -33,6 +33,13 @@ import { Capacitor } from '@capacitor/core';
 import Loading from '@/components/Loading.vue';
 
 const mode = Capacitor.getPlatform() !== 'web' ? 'app' : 'web';
+// Links that open a new tab must not get a handle on this page.
+DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+  if (node.tagName === 'A' && node.getAttribute('target') === '_blank') {
+    node.setAttribute('rel', 'noopener noreferrer');
+  }
+});
+
 const aboutItems = ref(null);
 const error = ref(null);
 const loading = ref(true);

@@ -62,7 +62,7 @@
         aria-label="Office settings"
       >
         <SettingsPanel
-          :key="openTab"
+          :key="`${openTab}-${panelVersion}`"
           :available-settings="availableSettings"
           :search-query="searchQuery"
           :site="openTab === 'family' ? 'Family Prayer' : 'Daily Office'"
@@ -131,6 +131,8 @@ export default {
       openTab: 'office',
       searchQuery: '',
       lastTrackedSearchTerm: '',
+      // Bumped to redraw the settings list after restoring defaults.
+      panelVersion: 0,
       tabs: [
         { value: 'office', label: 'Daily Office' },
         { value: 'family', label: 'Family Prayer' },
@@ -237,6 +239,7 @@ export default {
           }
         });
       await this.$store.dispatch('saveSettings', updated);
+      this.panelVersion += 1;
       toast.success(`${site} settings restored to their defaults.`);
     },
     trackSearch(query) {

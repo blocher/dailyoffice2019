@@ -5,7 +5,6 @@
         v-if="open"
         class="ui-sheet-root"
         :class="`ui-sheet-root--${resolvedSide}`"
-        @keydown.esc.stop="close"
       >
         <div class="ui-sheet-scrim" aria-hidden="true" @click="close" />
         <section
@@ -72,6 +71,65 @@ function unlockScroll() {
     document.documentElement.classList.remove('has-open-sheet');
   }
 }
+
+/*
+  Open sheets, top-most last. One document listener serves them all, so
+  Escape and Tab keep working even when focus has been lost (for example
+  when the button that had focus re-renders away).
+*/
+const sheetStack = [];
+
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])';
+
+function onDocumentKeydown(event) {
+  const top = sheetStack[sheetStack.length - 1];
+  if (!top) return;
+  const panel = top.panel();
+  if (event.key === 'Escape') {
+    event.stopPropagation();
+    top.close();
+    return;
+  }
+  if (event.key !== 'Tab' || !panel) return;
+  // Keep Tab inside the sheet, which is modal.
+  const items = [...panel.querySelectorAll(FOCUSABLE)].filter(
+    (el) => el.offsetParent !== null || el === document.activeElement
+  );
+  if (!items.length) {
+    event.preventDefault();
+    panel.focus();
+    return;
+  }
+  const first = items[0];
+  const last = items[items.length - 1];
+  const active = document.activeElement;
+  if (!panel.contains(active)) {
+    event.preventDefault();
+    (event.shiftKey ? last : first).focus();
+  } else if (event.shiftKey && active === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && active === last) {
+    event.preventDefault();
+    first.focus();
+  }
+}
+
+function pushSheet(entry) {
+  if (!sheetStack.length && typeof document !== 'undefined') {
+    document.addEventListener('keydown', onDocumentKeydown);
+  }
+  sheetStack.push(entry);
+}
+
+function removeSheet(entry) {
+  const index = sheetStack.indexOf(entry);
+  if (index !== -1) sheetStack.splice(index, 1);
+  if (!sheetStack.length && typeof document !== 'undefined') {
+    document.removeEventListener('keydown', onDocumentKeydown);
+  }
+}
 </script>
 
 <script setup>
@@ -114,6 +172,7 @@ const isPhone = ref(false);
 let media = null;
 let previouslyFocused = null;
 let locked = false;
+const stackEntry = { close: () => close(), panel: () => panel.value };
 
 const resolvedSide = computed(() => {
   if (props.side === 'auto') return isPhone.value ? 'bottom' : 'right';
@@ -134,6 +193,7 @@ async function onOpened() {
   if (!locked) {
     lockScroll();
     locked = true;
+    pushSheet(stackEntry);
   }
   previouslyFocused = document.activeElement;
   await nextTick();
@@ -147,6 +207,7 @@ async function onOpened() {
 function onClosed() {
   if (locked) {
     unlockScroll();
+    removeSheet(stackEntry);
     locked = false;
   }
   if (previouslyFocused && typeof previouslyFocused.focus === 'function') {

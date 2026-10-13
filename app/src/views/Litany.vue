@@ -234,7 +234,8 @@ export default {
         }
       });
       const link = this.serviceLink(service);
-      history.pushState({}, null, link);
+      // Update the address without discarding the router's history state.
+      window.history.replaceState(window.history.state, '', link);
     },
   },
 };

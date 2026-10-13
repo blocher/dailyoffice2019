@@ -81,6 +81,10 @@ export default {
       if (this.$route.name === 'calendar') {
         return 'calendar';
       }
+      // The Psalter filters by ?topic= in place.
+      if (this.$route.name === 'Psalms') {
+        return 'psalms';
+      }
       return this.$route.fullPath;
     },
     // Keep content clear of the fixed audio bar when it is showing.

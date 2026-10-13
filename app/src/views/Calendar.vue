@@ -536,15 +536,20 @@ export default {
       await this.$router.push({ path: this.getCalendarPath(year, month) });
     },
     async setCalendar() {
+      // Months can change faster than they load; only the latest request
+      // may update the page.
+      const token = (this.loadToken = (this.loadToken || 0) + 1);
+      const stale = () => token !== this.loadToken;
       this.loading = true;
       this.error = false;
       this.days = {};
-      this.includeMinorFeasts =
-        (await DynamicStorage.getItem(FEAST_FILTER_KEY)) !== 'major';
-      this.serviceType =
-        (await DynamicStorage.getItem('serviceType')) === 'family'
-          ? 'family'
-          : 'office';
+      const [feastFilter, serviceType] = await Promise.all([
+        DynamicStorage.getItem(FEAST_FILTER_KEY),
+        DynamicStorage.getItem('serviceType'),
+      ]);
+      if (stale()) return;
+      this.includeMinorFeasts = feastFilter !== 'major';
+      this.serviceType = serviceType === 'family' ? 'family' : 'office';
       let data;
       const today = new Date();
       let year = parseInt(this.$route.params.year);
@@ -568,6 +573,7 @@ export default {
           `${import.meta.env.VITE_API_URL}api/v1/calendar/${this.year}-${this.month}`
         );
       } catch {
+        if (stale()) return;
         this.error =
           'There was an error retrieving the calendar. Please try again.';
         this.loading = false;
@@ -580,6 +586,7 @@ export default {
         }
         return;
       }
+      if (stale()) return;
       const days = {};
       data.data.forEach((day) => {
         days[day.date] = day;
