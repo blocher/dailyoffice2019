@@ -159,8 +159,46 @@ DATABASES = {
         "PASSWORD": env("POSTGRES_PASSWORD"),
         "HOST": env("POSTGRES_HOST"),
         "PORT": env("POSTGRES_PORT"),
+        # Validate a connection before handing it to a request, so a Postgres
+        # restart surfaces as a reconnect rather than an error.
+        "CONN_HEALTH_CHECKS": True,
+        # Must stay 0 (the default) while the pool below is enabled.
+        "CONN_MAX_AGE": 0,
     }
 }
+
+# Connection pooling (psycopg 3 pool, built into Django). Each OS process --
+# every app-server worker, cron job, and management command -- has its own
+# pool, so the connections Postgres sees are bounded by
+#
+#     app workers x DB_POOL_MAX_SIZE  +  cron/management processes  +  admin/psql
+#
+# which must stay below Postgres max_connections (100 by default, 3 reserved
+# for superusers). The defaults match deploy/gunicorn.conf.py: 3 workers x 10
+# = 30 app connections, leaving ample room. A request that cannot get a
+# connection within DB_POOL_TIMEOUT seconds fails fast instead of piling up.
+# Set DB_POOL=False to fall back to one connection per request (the old
+# behavior). Sizing notes: deploy/gunicorn.conf.py.
+DB_POOL = env.bool("DB_POOL", default=True)
+if DB_POOL:
+    import importlib.util
+
+    if importlib.util.find_spec("psycopg_pool") is None:
+        import warnings
+
+        warnings.warn("DB_POOL is on but psycopg_pool is missing; run pip install -r requirements.txt.")
+    else:
+        DATABASES["default"]["OPTIONS"] = {
+            "pool": {
+                "min_size": env.int("DB_POOL_MIN_SIZE", default=1),
+                "max_size": env.int("DB_POOL_MAX_SIZE", default=10),
+                "timeout": env.float("DB_POOL_TIMEOUT", default=10.0),
+                # Recycle idle and long-lived connections so a quiet worker
+                # does not pin connections it no longer needs.
+                "max_idle": env.float("DB_POOL_MAX_IDLE", default=300.0),
+                "max_lifetime": env.float("DB_POOL_MAX_LIFETIME", default=1800.0),
+            }
+        }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -254,6 +292,23 @@ else:
             "LOCATION": "127.0.0.1:11211",
         }
     }
+
+# Office API responses (/api/v1/office/..., /api/v1/family/...) are kept in the
+# default cache above for this many seconds, keyed on the full path and query
+# string, so admin edits appear within about a minute. 0 disables it. Clear it
+# immediately with `python manage.py clear_office_cache`; deploys flush
+# memcached, and any Django admin save clears it too. See office/response_cache.py.
+OFFICE_API_CACHE_SECONDS = env.int("OFFICE_API_CACHE_SECONDS", default=0 if "test" in sys.argv[1:2] else 60)
+
+# On-demand office audio is built by a small per-process thread pool instead of
+# inside the web request (see office/audio_builds.py). Builds hold a DB pool
+# connection only between TTS/ffmpeg calls, so keep DB_POOL_MAX_SIZE at least
+# app threads + AUDIO_BUILD_WORKERS.
+AUDIO_BUILD_WORKERS = env.int("AUDIO_BUILD_WORKERS", default=2)
+AUDIO_BUILD_MAX_PENDING = env.int("AUDIO_BUILD_MAX_PENDING", default=16)
+AUDIO_BUILD_LOCK_SECONDS = env.int("AUDIO_BUILD_LOCK_SECONDS", default=900)
+AUDIO_BUILD_FAILURE_SECONDS = env.int("AUDIO_BUILD_FAILURE_SECONDS", default=300)
+AUDIO_BUILD_RETRY_AFTER = env.int("AUDIO_BUILD_RETRY_AFTER", default=5)
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 

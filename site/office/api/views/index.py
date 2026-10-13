@@ -14,6 +14,9 @@ import mailchimp_marketing as MailchimpMarketing
 from distutils.util import strtobool
 from django.conf import settings
 from django.contrib.sites.models import Site
+from django.http import HttpResponse
+from django.test import RequestFactory
+from django.urls import resolve
 from django.db.models import Prefetch, Q
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -33,7 +36,9 @@ from churchcal.api.permissions import ReadOnly
 from churchcal.api.serializer import DaySerializer, CommemorationSerializer
 from churchcal.calculations import get_calendar_date, get_church_year
 from churchcal.models import Commemoration
+from office import audio_builds, response_cache
 from office.alternate_readings import alternate_first_lesson, scripture_translation
+from office.audio_builds import AudioNotReady, ensure_generation_allowed, generation_deferred, release_db_connections
 from office.audio_ceremony import INTERCESSION_INVITATION, INTERCESSION_MODULE, frame_tracks
 from office.api.line import Line
 from office.api.serializers import UpdateNoticeSerializer, SiteMessageSerializer
@@ -62,6 +67,12 @@ class ReadingAudioUnavailable(APIException):
     status_code = 503
     default_detail = "Complete Scripture audio is unavailable. Please try again later."
     default_code = "reading_audio_unavailable"
+
+
+class AudioBuildFailed(APIException):
+    status_code = 503
+    default_detail = "Audio could not be prepared for this office. Please try again later."
+    default_code = "audio_build_failed"
 
 
 # --- Text-to-speech configuration -------------------------------------------
@@ -3074,6 +3085,90 @@ class OfficeAPIView(APIView):
     def get(self, request, year, month, day):
         raise NotImplementedError("You must implement this method.")
 
+    def office_response(self, request, office_class, year, month, day):
+        """Serve an office (text or audio metadata) for a GET request.
+
+        Successful JSON responses are kept for OFFICE_API_CACHE_SECONDS (see
+        office/response_cache.py). Audio requests never synthesize speech or run
+        ffmpeg here: when anything is missing, one background build is queued
+        and the client gets 202 with a Retry-After (see office/audio_builds.py).
+        The update_audio_files cron (``_audio_prewarm``) and the background
+        build itself (``_audio_build``) generate inline; neither attribute can
+        be set from HTTP input.
+        """
+        include_audio = bool(request.GET.get("include_audio_links"))
+        prewarm = getattr(request, "_audio_prewarm", False) is True
+        background = getattr(request, "_audio_build", False) is True
+        cache_key = None
+        if not prewarm and request.accepted_renderer.format == "json":
+            cache_key = response_cache.key_for(request, "json")
+        if cache_key and not background:
+            cached = response_cache.fetch(cache_key)
+            if cached is not None:
+                return cached
+
+        identity = request.get_full_path()
+        deferred = include_audio and not (prewarm or background)
+        if deferred:
+            if audio_builds.has_failed(identity):
+                raise AudioBuildFailed()
+            if audio_builds.is_building(identity):
+                return self.audio_preparing_response()
+
+        office = office_class(request, year, month, day)
+        if not include_audio:
+            data = OfficeSerializer(office).data
+        elif not deferred:
+            data = OfficeAudioSerializer(office).data
+        else:
+            try:
+                with audio_builds.deferred_generation():
+                    data = OfficeAudioSerializer(office).data
+            except AudioNotReady:
+                path, query = request.path_info, request.META.get("QUERY_STRING", "")
+                audio_builds.schedule(identity, lambda: build_office_audio(path, query))
+                return self.audio_preparing_response()
+
+        if not cache_key:
+            return Response(data)
+        renderer = request.accepted_renderer
+        content = renderer.render(data, request.accepted_media_type, self.get_renderer_context())
+        response_cache.store(cache_key, content)
+        return HttpResponse(content, content_type=renderer.media_type)
+
+    @staticmethod
+    def audio_preparing_response():
+        retry_after = settings.AUDIO_BUILD_RETRY_AFTER
+        return Response(
+            {
+                "audio": {
+                    "status": "preparing",
+                    "retry_after": retry_after,
+                    "tracks": [],
+                    "headings": [],
+                    "single_track": [],
+                }
+            },
+            status=202,
+            headers={"Retry-After": str(retry_after), "Cache-Control": "no-store"},
+        )
+
+
+def build_office_audio(path, query_string):
+    """Background job: render this office URL with audio generation allowed.
+
+    Runs the real view (so the same settings, date window, and serializer
+    apply) and, on success, leaves the response in the short-lived cache for
+    the polling client. Returns True when the office rendered with HTTP 200.
+    """
+    request = RequestFactory().get(path, QUERY_STRING=query_string)
+    request._audio_build = True
+    match = resolve(path)
+    response = match.func(request, *match.args, **match.kwargs)
+    if response.status_code != 200:
+        logger.warning("Background office audio build returned HTTP %s", response.status_code)
+    return response.status_code == 200
+
 
 class GenericDailyOfficeSerializer(serializers.Serializer):
     modules = serializers.SerializerMethodField()
@@ -3259,6 +3354,9 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
 
         Raises on failure and never leaves a partial file behind.
         """
+        ensure_generation_allowed()
+        # Synthesis can take minutes with retries; never hold a DB connection.
+        release_db_connections()
         word_timing = TTS_PROVIDER.synthesize(voice, text, file_path) or []
         if TTS_PROVIDER.name == "gemini":
             from office.gemini_alignment import align_clip
@@ -3274,6 +3372,8 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             return GenericDailyOfficeSerializer._get_or_create_clip(
                 content, line_type, kind, no_generate, raise_on_error=True, voice=voice
             )
+        except AudioNotReady:
+            raise
         except Exception as exc:
             try:
                 bugsnag.notify(
@@ -3313,7 +3413,12 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             return collector(normalized, line_type, kind, **kwargs)
         reusable_reader = None if voice else GenericDailyOfficeSerializer.find_reusable_reader(normalized, line_type)
         if reusable_reader:
-            if not no_generate and not reusable_reader.word_timing and TTS_PROVIDER.name == "gemini":
+            if (
+                not no_generate
+                and not generation_deferred()
+                and not reusable_reader.word_timing
+                and TTS_PROVIDER.name == "gemini"
+            ):
                 from office.gemini_alignment import align_clip
 
                 timing = align_clip(TTS_PROVIDER, normalized, reusable_reader.file_path)
@@ -3336,7 +3441,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         file_url = f"{audio_base_url()}{path}"
         if exists:
             word_timing = GenericDailyOfficeSerializer.get_clip_word_timing(path)
-            if not word_timing and not no_generate and TTS_PROVIDER.name == "gemini":
+            if not word_timing and not no_generate and not generation_deferred() and TTS_PROVIDER.name == "gemini":
                 from office.gemini_alignment import align_clip
 
                 word_timing = align_clip(TTS_PROVIDER, normalized, file_path)
@@ -3354,15 +3459,27 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             return file_url, path
         if no_generate:
             return file_url, path
-        try:
-            word_timing = GenericDailyOfficeSerializer.synthesize_speech(voice, normalized, file_path)
-        except Exception:
-            if raise_on_error:
-                raise
-            logger.warning(
-                "Audio clip generation failed (provider=%s, kind=%s)", TTS_PROVIDER.name, kind, exc_info=True
-            )
-            return None, None
+        ensure_generation_allowed()
+        import fcntl
+
+        # A process-safe lock so concurrent builds never pay twice for one clip.
+        with open(f"{file_path}.lock", "a") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            if os.path.isfile(file_path) and os.path.getsize(file_path) > 0:
+                word_timing = GenericDailyOfficeSerializer.get_clip_word_timing(path)
+            else:
+                try:
+                    word_timing = GenericDailyOfficeSerializer.synthesize_speech(voice, normalized, file_path)
+                except Exception:
+                    if raise_on_error:
+                        raise
+                    logger.warning(
+                        "Audio clip generation failed (provider=%s, kind=%s)",
+                        TTS_PROVIDER.name,
+                        kind,
+                        exc_info=True,
+                    )
+                    return None, None
         if not (os.path.isfile(file_path) and os.path.getsize(file_path) > 0):
             if raise_on_error:
                 raise RuntimeError("Audio synthesis returned without a nonempty clip.")
@@ -3396,6 +3513,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         file_path = os.path.join(settings.MEDIA_ROOT, filename)
         if os.path.isfile(file_path) and os.path.getsize(file_path) > 0:
             return file_path
+        ensure_generation_allowed()
         cmd = [
             "ffmpeg",
             "-y",
@@ -3492,6 +3610,8 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     raise_on_error=required,
                     voice=voice,
                 )
+            except AudioNotReady:
+                raise
             except Exception as exc:
                 if required:
                     raise ReadingAudioUnavailable() from exc
@@ -3671,6 +3791,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
         if exists:
             rescale_segments(get_audio_duration(file_path))
             return file_url, path, track_list, short_track_list, word_track_list
+        ensure_generation_allowed()  # Web requests defer the ffmpeg build (office/audio_builds.py).
 
         temp_file_list = os.path.join(settings.MEDIA_ROOT, f"{filename}.txt")
         with open(temp_file_list, "w") as f:
@@ -3969,6 +4090,9 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             return {"tracks": tracks, "headings": headings, "single_track": None}
         if TTS_PROVIDER.name in {"gemini", "elevenlabs"}:
             tracks = frame_tracks(obj, tracks, self, audio_base_url())
+        if not generation_deferred():
+            # Assembling the combined track runs ffmpeg; don't hold a DB connection.
+            release_db_connections()
         single_track = self.get_single_track(tracks)
 
         return {"tracks": tracks, "headings": headings, "single_track": single_track}
@@ -4461,93 +4585,58 @@ class AudioViewSet(ViewSet):
                 key, filename, normalized, line_type, voice, "line", file_path
             )
             return Response({"path": file_url})
-        try:
-            GenericDailyOfficeSerializer.synthesize_speech(voice, normalized, file_path)
-        except Exception as e:
-            return Response({"error": str(e)})
-        GenericDailyOfficeSerializer.record_audio_clip(key, filename, normalized, line_type, voice, "line", file_path)
-        return Response({"path": file_url})
+        # Synthesize outside the request (see office/audio_builds.py); the
+        # caller retries and then gets the same path through the branches above.
+        audio_builds.schedule(
+            f"clip:{filename}",
+            lambda: GenericDailyOfficeSerializer.get_or_create_clip(content, line_type, raise_on_error=True)[1],
+        )
+        retry_after = settings.AUDIO_BUILD_RETRY_AFTER
+        return Response(
+            {"path": "", "status": "preparing", "retry_after": retry_after},
+            status=202,
+            headers={"Retry-After": str(retry_after), "Cache-Control": "no-store"},
+        )
 
 
 class MorningPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
-
-        office = MorningPrayer(request, year, month, day)
-        if request.GET.get("include_audio_links"):
-            serializer = OfficeAudioSerializer(office)
-        else:
-            serializer = OfficeSerializer(office)
-        return Response(serializer.data)
+        return self.office_response(request, MorningPrayer, year, month, day)
 
 
 class FamilyMorningPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
-        office = FamilyMorningPrayer(request, year, month, day)
-        if request.GET.get("include_audio_links"):
-            serializer = OfficeAudioSerializer(office)
-        else:
-            serializer = OfficeSerializer(office)
-        return Response(serializer.data)
+        return self.office_response(request, FamilyMorningPrayer, year, month, day)
 
 
 class FamilyMiddayPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
-        office = FamilyMiddayPrayer(request, year, month, day)
-        if request.GET.get("include_audio_links"):
-            serializer = OfficeAudioSerializer(office)
-        else:
-            serializer = OfficeSerializer(office)
-        return Response(serializer.data)
+        return self.office_response(request, FamilyMiddayPrayer, year, month, day)
 
 
 class FamilyEarlyEveningPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
-        office = FamilyEarlyEveningPrayer(request, year, month, day)
-        if request.GET.get("include_audio_links"):
-            serializer = OfficeAudioSerializer(office)
-        else:
-            serializer = OfficeSerializer(office)
-        return Response(serializer.data)
+        return self.office_response(request, FamilyEarlyEveningPrayer, year, month, day)
 
 
 class FamilyCloseOfDayPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
-        office = FamilyCloseOfDayPrayer(request, year, month, day)
-        if request.GET.get("include_audio_links"):
-            serializer = OfficeAudioSerializer(office)
-        else:
-            serializer = OfficeSerializer(office)
-        return Response(serializer.data)
+        return self.office_response(request, FamilyCloseOfDayPrayer, year, month, day)
 
 
 class EveningPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
-        office = EveningPrayer(request, year, month, day)
-        if request.GET.get("include_audio_links"):
-            serializer = OfficeAudioSerializer(office)
-        else:
-            serializer = OfficeSerializer(office)
-        return Response(serializer.data)
+        return self.office_response(request, EveningPrayer, year, month, day)
 
 
 class MiddayPrayerView(OfficeAPIView):
     def get(self, request, year, month, day):
-        office = MiddayPrayer(request, year, month, day)
-        if request.GET.get("include_audio_links"):
-            serializer = OfficeAudioSerializer(office)
-        else:
-            serializer = OfficeSerializer(office)
-        return Response(serializer.data)
+        return self.office_response(request, MiddayPrayer, year, month, day)
 
 
 class ComplineView(OfficeAPIView):
     def get(self, request, year, month, day):
-        office = Compline(request, year, month, day)
-        if request.GET.get("include_audio_links"):
-            serializer = OfficeAudioSerializer(office)
-        else:
-            serializer = OfficeSerializer(office)
-        return Response(serializer.data)
+        return self.office_response(request, Compline, year, month, day)
 
 
 class ReadingsView(OfficeAPIView):
