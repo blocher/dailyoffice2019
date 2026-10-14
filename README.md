@@ -678,7 +678,7 @@ connection limits are in `deploy/gunicorn_config.py` and `DATABASES` in `site/we
 
 The site publishes 20 podcast feeds (`site/podcasts/`), listed at
 [dailyoffice2019.com/podcasts](https://www.dailyoffice2019.com/podcasts) and in the menu. Every feed comes in
-contemporary language (ESV, contemporary psalter) and in traditional language (KJV, traditional psalter):
+contemporary language (ESV, Renewed Coverdale Psalter) and in traditional language (KJV, Coverdale Psalter):
 *Morning Prayer*, *Morning Prayer (Traditional Language)*, and so on.
 
 - **The four offices and the four Family Prayer offices.** Each episode is the same audio the in-app player plays,

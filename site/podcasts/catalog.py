@@ -146,11 +146,11 @@ class PodcastFeed:
     def style_label(self):
         if self.is_readings:
             if self.style == TRADITIONAL:
-                return "King James Version (KJV), traditional-language psalms"
-            return "English Standard Version (ESV), contemporary-language psalms"
+                return "King James Version (KJV), Coverdale Psalter"
+            return "English Standard Version (ESV), Renewed Coverdale Psalter"
         if self.style == TRADITIONAL:
-            return "Traditional language, King James Version (KJV), traditional psalms"
-        return "Contemporary language, English Standard Version (ESV), contemporary psalms"
+            return "Traditional prayer-book language, King James Version (KJV), Coverdale Psalter"
+        return "Contemporary language, English Standard Version (ESV), Renewed Coverdale Psalter"
 
 
 def _office(slug, title, subtitle, about, group, service, office_name, evening=False, sort=0, keywords=()):
@@ -158,9 +158,9 @@ def _office(slug, title, subtitle, about, group, service, office_name, evening=F
     for style in (CONTEMPORARY, TRADITIONAL):
         traditional = style == TRADITIONAL
         language = (
-            "In traditional language (thee and thou), with the King James Version and the traditional psalter."
+            "In traditional prayer-book language (thee and thou), with the King James Version and the Coverdale Psalter."
             if traditional
-            else "In contemporary language, with the English Standard Version and the contemporary psalter."
+            else "In contemporary language, with the English Standard Version and the Renewed Coverdale Psalter."
         )
         feeds.append(
             PodcastFeed(
@@ -196,9 +196,9 @@ def _readings(
     for style in (CONTEMPORARY, TRADITIONAL):
         traditional = style == TRADITIONAL
         version = (
-            "King James Version, with the traditional psalter"
+            "King James Version, with the Coverdale Psalter"
             if traditional
-            else "English Standard Version, with the contemporary psalter"
+            else "English Standard Version, with the Renewed Coverdale Psalter"
         )
         feeds.append(
             PodcastFeed(
@@ -342,7 +342,7 @@ FEEDS = [
         "for the day in the Daily Office lectionary of the Book of Common Prayer (2019): Morning Prayer's "
         "psalms and Old and New Testament lessons, then Evening Prayer's. Just the readings, with no "
         "other prayers, for the commute, the gym, or alongside your own prayers.",
-        "{version} of the sixty-day cycle. A new episode every day, with a link to the day's readings at "
+        "{version} in the sixty-day cycle. A new episode every day, with a link to the day's readings at "
         "dailyoffice2019.com.",
         "readings/daily_office",
         "Readings for the Daily Office",

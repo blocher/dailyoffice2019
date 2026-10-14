@@ -178,9 +178,9 @@
         </p>
         <p>
           The contemporary podcasts, readings included, use the English Standard
-          Version and the contemporary psalter; the traditional-language
-          podcasts use the King James Version and the traditional psalter. To
-          pray with your own settings, turn on
+          Version and the Renewed Coverdale Psalter; the traditional-language
+          podcasts use the King James Version and the Coverdale Psalter. To pray
+          with your own settings, turn on
           <router-link to="/">Listen</router-link> in any office.
         </p>
       </UiDisclosure>
@@ -314,8 +314,8 @@ const styleOptions = [
 
 const styleNote = computed(() =>
   style.value === 'traditional'
-    ? 'King James Version, traditional psalter, thee and thou.'
-    : 'English Standard Version, contemporary psalter.'
+    ? 'Traditional prayer-book language, King James Version, Coverdale Psalter, thee and thou.'
+    : 'Contemporary language, English Standard Version, Renewed Coverdale Psalter.'
 );
 
 const groups = computed(() => catalog.value.groups);
