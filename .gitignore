@@ -32,3 +32,6 @@ site/.dev-certs/
 # Claude Code worktrees (local scratch checkouts).
 .claude/worktrees/
 .claude/settings.local.json
+
+# Local Codex config (holds personal tokens).
+.codex/config.toml

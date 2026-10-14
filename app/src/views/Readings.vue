@@ -609,7 +609,20 @@ export default {
     }
     await this.$store.dispatch('initializeSettings');
 
-    let translation = await DynamicStorage.getItem('readings_translation');
+    // A podcast's "Read along" link names the translation and psalter it was
+    // read in. Keep them as if chosen here, then drop them from the address
+    // so a later change of translation survives a reload.
+    const {
+      translation: linkedTranslation,
+      psalms: linkedPsalms,
+      ...otherQuery
+    } = this.$route.query;
+    const linked = (options, value) =>
+      options.some((option) => option.value === value) ? value : null;
+
+    let translation =
+      linked(this.translations, linkedTranslation) ||
+      (await DynamicStorage.getItem('readings_translation'));
     if (!translation || translation === 'undefined') {
       translation = this.$store.state.settings['bible_translation'];
     }
@@ -619,13 +632,22 @@ export default {
     await DynamicStorage.setItem('readings_translation', translation);
     this.translation = translation;
 
-    let psalmsTranslation = await DynamicStorage.getItem('psalms_translation');
+    let psalmsTranslation =
+      linked(this.psalmsTranslations, linkedPsalms) ||
+      (await DynamicStorage.getItem('psalms_translation'));
     if (!psalmsTranslation) {
       const settings = this.$store.state.settings;
       psalmsTranslation = settings['language_style'];
     }
     await DynamicStorage.setItem('psalms_translation', psalmsTranslation);
     this.psalmsTranslation = psalmsTranslation;
+    if (linkedTranslation !== undefined || linkedPsalms !== undefined) {
+      await this.$router.replace({
+        path: this.$route.path,
+        query: otherQuery,
+        hash: this.$route.hash,
+      });
+    }
 
     let psalmCycle = await DynamicStorage.getItem('psalter');
     if (!psalmCycle) {

@@ -24,6 +24,13 @@ class AudioWindowTests(SimpleTestCase):
         "family/midday_prayer",
         "family/close_of_day_prayer",
     )
+    # The Readings page's audio player and the readings podcasts share the window.
+    readings = (
+        "readings_audio/morning_prayer",
+        "readings_audio/evening_prayer",
+        "readings_audio/daily_office",
+        "readings_audio/holy_eucharist",
+    )
 
     def request(self, office, date, params=None, trusted=False):
         path = f"/api/v1/{office}/{date.year}-{date.month}-{date.day}"
@@ -36,7 +43,7 @@ class AudioWindowTests(SimpleTestCase):
 
     def test_all_offices_reject_outside_window_before_building_audio(self):
         with patch.object(index.OfficeAudioSerializer, "get_audio") as generate:
-            for office in self.offices:
+            for office in self.offices + self.readings:
                 for offset in (-4, 10, 9000):
                     with self.subTest(office=office, offset=offset):
                         response = self.request(

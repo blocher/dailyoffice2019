@@ -37,7 +37,7 @@
       <UiSegmented
         v-model="style"
         :options="styleOptions"
-        aria-label="Language of the offices"
+        aria-label="Language of the podcasts"
       />
       <p class="podcasts-style__note">{{ styleNote }}</p>
     </div>
@@ -166,11 +166,11 @@
           Fridays, and Sundays.
         </p>
         <p>
-          The contemporary podcasts use the English Standard Version and the
-          contemporary psalter; the traditional-language podcasts use the King
-          James Version and the traditional psalter. To pray with your own
-          settings, turn on <router-link to="/">Listen</router-link> in any
-          office.
+          The contemporary podcasts, readings included, use the English Standard
+          Version and the contemporary psalter; the traditional-language
+          podcasts use the King James Version and the traditional psalter. To
+          pray with your own settings, turn on
+          <router-link to="/">Listen</router-link> in any office.
         </p>
       </UiDisclosure>
       <UiDisclosure title="When do new episodes appear?">
@@ -310,11 +310,10 @@ const styleNote = computed(() =>
 const groups = computed(() => catalog.value.groups);
 const alternative = computed(() => catalog.value.live_alternative);
 
-// The offices follow the chosen language; the readings podcasts have one form.
+// Every podcast comes in both languages; show the chosen one.
 function feedsIn(group) {
   return catalog.value.feeds.filter(
-    (feed) =>
-      feed.group === group && (feed.is_readings || feed.style === style.value)
+    (feed) => feed.group === group && feed.style === style.value
   );
 }
 

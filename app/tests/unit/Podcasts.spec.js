@@ -61,6 +61,7 @@ const CATALOG = {
     }),
     feed('morning-prayer-traditional', 'daily-office', 'traditional'),
     feed('daily-office-readings', 'readings', 'contemporary'),
+    feed('daily-office-readings-traditional', 'readings', 'traditional'),
   ],
   live_alternative: {
     title: 'The Daily Office Podcast',
@@ -94,7 +95,7 @@ describe('Podcasts landing page', () => {
     settings.language_style = 'contemporary';
   });
 
-  it('lists the offices in the chosen language and the readings always', async () => {
+  it('lists the offices and readings in the chosen language', async () => {
     getItemMock.mockResolvedValue(null);
     const wrapper = await mountPage();
     expect(getMock).toHaveBeenCalledWith(
@@ -110,7 +111,7 @@ describe('Podcasts landing page', () => {
       .trigger('click');
     expect(cardTitles(wrapper)).toEqual([
       'morning-prayer-traditional',
-      'daily-office-readings',
+      'daily-office-readings-traditional',
     ]);
     expect(setItemMock).toHaveBeenCalledWith('podcastStyle', 'traditional');
     wrapper.unmount();

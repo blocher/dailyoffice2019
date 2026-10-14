@@ -676,18 +676,22 @@ connection limits are in `deploy/gunicorn_config.py` and `DATABASES` in `site/we
 
 ## Podcasts
 
-The site publishes 18 podcast feeds (`site/podcasts/`), listed at
-[dailyoffice2019.com/podcasts](https://www.dailyoffice2019.com/podcasts) and in the menu:
+The site publishes 20 podcast feeds (`site/podcasts/`), listed at
+[dailyoffice2019.com/podcasts](https://www.dailyoffice2019.com/podcasts) and in the menu. Every feed comes in
+contemporary language (ESV, contemporary psalter) and in traditional language (KJV, traditional psalter):
+*Morning Prayer*, *Morning Prayer (Traditional Language)*, and so on.
 
-- **The four offices and the four Family Prayer offices**, each in contemporary language (ESV) and in
-  traditional language (KJV): *Morning Prayer*, *Morning Prayer (Traditional Language)*, and so on. Each episode
-  is the same audio the in-app player plays, built with one fixed set of settings
-  (`CONTEMPORARY_SETTINGS`/`TRADITIONAL_SETTINGS` in `site/podcasts/catalog.py`). Every episode links to the
-  office for that day with those settings, so a listener can pray along.
+- **The four offices and the four Family Prayer offices.** Each episode is the same audio the in-app player plays,
+  built with one fixed set of settings (`CONTEMPORARY_SETTINGS`/`TRADITIONAL_SETTINGS` in
+  `site/podcasts/catalog.py`). Every episode links to the office for that day with those settings, so a listener
+  can pray along.
 - **Daily Office Readings**: Morning and Evening Prayer's psalms and lessons, every day.
 - **Holy Eucharist Readings**: the collect, lessons, psalm, and Gospel, only on days with their own Eucharistic
   readings (Sundays, principal feasts, holy days, Holy Week and Easter Week; precedence 1–4). Weekdays that repeat
   last Sunday's readings and lesser feasts that use a common are skipped.
+
+The readings episodes link to the Readings page with `?translation=…&psalms=…`, which it adopts as the reader's
+choice, so the text matches what they heard.
 
 The readings audio is also the audio player on the Readings page (`/api/v1/readings_audio/<kind>/<date>`,
 `site/office/readings_audio.py`). It opens with "Readings for Morning Prayer on …".
@@ -720,8 +724,10 @@ python manage.py build_podcast_episodes --start-date 2026-10-07 --days 10
 python manage.py build_podcast_episodes --feed holy-eucharist-readings --start-date 2026-09-01 --days 60
 ```
 
-Cover art (3000 × 3000 JPEG under 500 KB, plus a 600 px copy) is committed in `site/podcasts/artwork/`.
-Redraw it after changing the catalog with `python manage.py build_podcast_artwork`.
+Cover art (3000 × 3000 JPEG under 500 KB, plus a 600 px copy) is committed in `site/podcasts/artwork/`. The
+leather is red for the contemporary feeds and green for the traditional-language ones, like the two editions of the
+Prayer Book; a gold border marks the section (none for the Daily Office, rounded for Family Prayer, double for the
+readings). Redraw it after changing the catalog with `python manage.py build_podcast_artwork`.
 
 ### Publishing to podcast directories
 

@@ -1,6 +1,6 @@
 """Spoken Scripture readings, without the rest of the office.
 
-Used by the audio player on the Readings page and by the two readings podcasts
+Used by the audio player on the Readings page and by the readings podcasts
 (see ``podcasts.catalog``). A ``ReadingsAudioOffice`` is an ordinary ``Office``
 whose modules are only the appointed readings, so it goes through exactly the
 same audio pipeline as the offices: the same voices, clip cache, background

@@ -1,5 +1,10 @@
 """Draw the podcast cover art: the app's gold Jerusalem cross on bound leather.
 
+The leather follows the two editions of the Prayer Book: red for the
+contemporary (ESV) feeds, green for the traditional-language (KJV) ones. A gold
+border marks the section: none for the Daily Office, a rounded border for
+Family Prayer, and a double border for the readings.
+
 Writes ``podcasts/artwork/<slug>.jpg`` (3000 x 3000, the size Apple Podcasts
 prefers) and ``<slug>-600.jpg`` for the landing page and ID3 tags. The art is
 committed; re-run this only when the design or the catalog changes:
@@ -22,9 +27,15 @@ FONTS = APP / "public" / "assets" / "fonts"
 SIZE = 3000
 MAX_BYTES = 500 * 1024  # directories reject covers over about 512 KB
 
-# Leather colors by section: the Daily Office keeps the book's red.
-# (hue 0-1, saturation and value multipliers)
-LEATHER_TONE = {"daily-office": None, "family": (0.38, 0.62, 0.62), "readings": (0.61, 0.85, 0.72)}
+# Leather colors by language: the photo's red for the 2019 Prayer Book, green
+# for its traditional-language edition. (hue 0-1, saturation and value multipliers)
+LEATHER_TONE = {catalog.CONTEMPORARY: None, catalog.TRADITIONAL: (0.38, 0.62, 0.62)}
+# Gold borders by section, each rule as (inset, width, corner radius).
+BORDERS = {
+    "daily-office": [],
+    "family": [(95, 24, 150)],
+    "readings": [(80, 26, 0), (140, 10, 0)],
+}
 GOLD_LIGHT = (241, 226, 182)
 GOLD_DARK = (196, 165, 98)
 
@@ -98,6 +109,24 @@ def gold_text(canvas, text, typeface, center_x, top, tracking=0):
     for char in text:
         mask_draw.text((x, top), char, font=typeface, fill=255)
         x += draw.textlength(char, font=typeface) + tracking
+    gold_foil(canvas, mask)
+    bbox = mask.getbbox()
+    return bbox[3] if bbox else top
+
+
+def gold_border(canvas, rules):
+    """Gold rules around the edge of the cover, like a binder's fillets."""
+    mask = Image.new("L", canvas.size, 0)
+    draw = ImageDraw.Draw(mask)
+    for inset, width, radius in rules:
+        box = (inset, inset, SIZE - inset, SIZE - inset)
+        draw.rounded_rectangle(box, radius=radius, outline=255, width=width)
+    if rules:
+        gold_foil(canvas, mask)
+
+
+def gold_foil(canvas, mask):
+    """Stamp gold foil into the leather wherever the mask is drawn."""
     shadow = Image.new("RGB", canvas.size, (40, 8, 8))
     canvas.paste(
         shadow, (6, 8), ImageChops.multiply(mask, Image.new("L", canvas.size, 150)).filter(ImageFilter.GaussianBlur(5))
@@ -107,8 +136,6 @@ def gold_text(canvas, text, typeface, center_x, top, tracking=0):
         Image.new("RGB", canvas.size, GOLD_DARK), Image.new("RGB", canvas.size, GOLD_LIGHT), gradient
     )
     canvas.paste(gold, (0, 0), mask)
-    bbox = mask.getbbox()
-    return bbox[3] if bbox else top
 
 
 def text_width(draw, text, typeface, tracking=0):
@@ -151,7 +178,8 @@ def draw_cover(feed, photo):
     background.paste(patch, ((SIZE - patch_size[0]) // 2, 170), mask)
     # The photo is enlarged about threefold: soften its grain so the cover
     # compresses well; the lettering is drawn sharp afterwards.
-    canvas = recolor(background, LEATHER_TONE[feed.group]).filter(ImageFilter.GaussianBlur(2.4))
+    canvas = recolor(background, LEATHER_TONE[feed.style]).filter(ImageFilter.GaussianBlur(2.4))
+    gold_border(canvas, BORDERS[feed.group])
 
     group = {"daily-office": "The Daily Office", "family": "The Daily Office", "readings": "The Lectionary"}[
         feed.group
@@ -175,7 +203,7 @@ def draw_cover(feed, photo):
 
 
 def save_jpeg(image, path, max_bytes=None):
-    for quality in (90, 86, 82, 78, 74, 70, 66, 62, 58, 55, 52):
+    for quality in (90, 86, 82, 78, 74, 70, 66, 62, 58, 55, 52, 49, 46):
         image.save(path, "JPEG", quality=quality, optimize=True, progressive=True)
         if not max_bytes or path.stat().st_size <= max_bytes:
             return quality

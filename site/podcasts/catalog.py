@@ -67,8 +67,9 @@ TRADITIONAL_SETTINGS = {
     "bible_translation": "kjv",
 }
 
-# The readings podcasts read the Readings page's default choices.
+# The readings podcasts' choices on the Readings page, in the same two families.
 READINGS_SETTINGS = {"translation": "esv", "psalms": "contemporary", "style": "whole_verse", "psalter": "60"}
+TRADITIONAL_READINGS_SETTINGS = {**READINGS_SETTINGS, "translation": "kjv", "psalms": "traditional"}
 
 CONTEMPORARY = "contemporary"
 TRADITIONAL = "traditional"
@@ -100,9 +101,10 @@ class PodcastFeed:
 
     @property
     def settings(self):
+        traditional = self.style == TRADITIONAL
         if self.is_readings:
-            return dict(READINGS_SETTINGS)
-        return dict(TRADITIONAL_SETTINGS if self.style == TRADITIONAL else CONTEMPORARY_SETTINGS)
+            return dict(TRADITIONAL_READINGS_SETTINGS if traditional else READINGS_SETTINGS)
+        return dict(TRADITIONAL_SETTINGS if traditional else CONTEMPORARY_SETTINGS)
 
     @property
     def readings_kind(self):
@@ -129,8 +131,9 @@ class PodcastFeed:
         """The page that shows this episode's text, with the feed's own settings."""
         date_path = f"{day.year}/{day.month}/{day.day}"
         if self.is_readings:
-            # The Readings page keeps its own translation choices (ESV by default).
-            return f"{SITE_URL}/readings/{self.readings_kind}/{date_path}"
+            # The Readings page takes its translation and psalter from the link.
+            query = {key: self.settings[key] for key in ("translation", "psalms")}
+            return f"{SITE_URL}/readings/{self.readings_kind}/{date_path}?{urlencode(query)}"
         group, office = self.service.split("/")
         path = f"family/{office}" if group == "family" else office
         return f"{SITE_URL}/{path}/{date_path}?{urlencode(self.settings)}"
@@ -138,6 +141,8 @@ class PodcastFeed:
     @property
     def style_label(self):
         if self.is_readings:
+            if self.style == TRADITIONAL:
+                return "King James Version (KJV), traditional-language psalms"
             return "English Standard Version (ESV), contemporary-language psalms"
         if self.style == TRADITIONAL:
             return "Traditional language, King James Version (KJV), traditional psalms"
@@ -171,6 +176,39 @@ def _office(slug, title, subtitle, about, group, service, office_name, evening=F
                 evening=evening,
                 sort=sort * 2 + int(traditional),
                 keywords=keywords + (("traditional language", "King James Version") if traditional else ("ESV",)),
+            )
+        )
+    return feeds
+
+
+def _readings(
+    slug, title, subtitle, about, details, service, office_name, proper_days_only=False, sort=0, keywords=()
+):
+    """A readings podcast in the ESV and its traditional-language (KJV) twin.
+
+    ``details`` names the translation with a ``{version}`` placeholder.
+    """
+    feeds = []
+    for style in (CONTEMPORARY, TRADITIONAL):
+        traditional = style == TRADITIONAL
+        version = (
+            "King James Version, with the traditional psalter"
+            if traditional
+            else "English Standard Version, with the contemporary psalter"
+        )
+        feeds.append(
+            PodcastFeed(
+                slug=f"{slug}-traditional" if traditional else slug,
+                title=f"{title} (Traditional Language)" if traditional else title,
+                subtitle=subtitle + (" In the King James Version." if traditional else ""),
+                description=f"{about}\n\n{details.format(version=version)}\n\n{SYNTHESIZED_VOICE_NOTE}",
+                group="readings",
+                service=service,
+                office_name=office_name,
+                style=style,
+                proper_days_only=proper_days_only,
+                sort=sort * 2 + int(traditional),
+                keywords=keywords + (("King James Version", "KJV") if traditional else ("ESV",)),
             )
         )
     return feeds
@@ -292,45 +330,36 @@ FEEDS = [
         sort=7,
         keywords=COMMON_KEYWORDS + ("family prayer", "bedtime prayer", "night prayer", "kids"),
     ),
-    PodcastFeed(
-        slug="daily-office-readings",
-        title="Daily Office Readings",
-        subtitle="The psalms and lessons appointed for Morning and Evening Prayer, every day.",
-        description=(
-            "Hear the whole of Scripture over the year. Each episode reads the psalms and lessons appointed "
-            "for the day in the Daily Office lectionary of the Book of Common Prayer (2019): Morning Prayer's "
-            "psalms and Old and New Testament lessons, then Evening Prayer's. Just the readings, with no "
-            "other prayers, for the commute, the gym, or alongside your own prayers.\n\n"
-            "English Standard Version, with the contemporary psalter of the sixty-day cycle. A new episode "
-            "every day, with a link to the day's readings at dailyoffice2019.com.\n\n"
-            f"{SYNTHESIZED_VOICE_NOTE}"
-        ),
-        group="readings",
-        service="readings/daily_office",
-        office_name="Readings for the Daily Office",
-        sort=20,
-        keywords=COMMON_KEYWORDS + ("Bible reading", "lectionary", "Daily Office", "Bible in a year", "ESV"),
+    *_readings(
+        "daily-office-readings",
+        "Daily Office Readings",
+        "The psalms and lessons appointed for Morning and Evening Prayer, every day.",
+        "Hear the whole of Scripture over the year. Each episode reads the psalms and lessons appointed "
+        "for the day in the Daily Office lectionary of the Book of Common Prayer (2019): Morning Prayer's "
+        "psalms and Old and New Testament lessons, then Evening Prayer's. Just the readings, with no "
+        "other prayers, for the commute, the gym, or alongside your own prayers.",
+        "{version} of the sixty-day cycle. A new episode every day, with a link to the day's readings at "
+        "dailyoffice2019.com.",
+        "readings/daily_office",
+        "Readings for the Daily Office",
+        sort=8,
+        keywords=COMMON_KEYWORDS + ("Bible reading", "lectionary", "Daily Office", "Bible in a year"),
     ),
-    PodcastFeed(
-        slug="holy-eucharist-readings",
-        title="Holy Eucharist Readings",
-        subtitle="The collect and lessons for every Sunday and holy day, before you hear them in church.",
-        description=(
-            "Prepare for Sunday. Each episode reads the Collect of the Day, the Old Testament lesson, the "
-            "psalm, the Epistle, and the Holy Gospel appointed for the Holy Eucharist in the Book of Common "
-            "Prayer (2019) lectionary. Episodes appear only for days with their own readings: every Sunday, "
-            "the principal feasts, the holy days of the apostles and evangelists, and the days of Holy Week "
-            "and Easter Week.\n\n"
-            "English Standard Version, with the contemporary psalter. Each episode links to the day's "
-            "readings at dailyoffice2019.com.\n\n"
-            f"{SYNTHESIZED_VOICE_NOTE}"
-        ),
-        group="readings",
-        service="readings/holy_eucharist",
-        office_name="Readings for the Holy Eucharist",
+    *_readings(
+        "holy-eucharist-readings",
+        "Holy Eucharist Readings",
+        "The collect and lessons for every Sunday and holy day, before you hear them in church.",
+        "Prepare for Sunday. Each episode reads the Collect of the Day, the Old Testament lesson, the "
+        "psalm, the Epistle, and the Holy Gospel appointed for the Holy Eucharist in the Book of Common "
+        "Prayer (2019) lectionary. Episodes appear only for days with their own readings: every Sunday, "
+        "the principal feasts, the holy days of the apostles and evangelists, and the days of Holy Week "
+        "and Easter Week.",
+        "{version}. Each episode links to the day's readings at dailyoffice2019.com.",
+        "readings/holy_eucharist",
+        "Readings for the Holy Eucharist",
         proper_days_only=True,
-        sort=21,
-        keywords=COMMON_KEYWORDS + ("Sunday readings", "lectionary", "Eucharist", "Gospel", "sermon prep", "ESV"),
+        sort=9,
+        keywords=COMMON_KEYWORDS + ("Sunday readings", "lectionary", "Eucharist", "Gospel", "sermon prep"),
     ),
 ]
 

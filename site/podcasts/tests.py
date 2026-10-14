@@ -15,9 +15,11 @@ from django.test import SimpleTestCase, TestCase, override_settings
 from django.utils import timezone
 from mutagen.id3 import ID3
 
+from office.api.views.index import Office, OfficeAudioSerializer
 from office.audio_retention import is_permanent
-from office.readings_audio import KINDS, first_per_reading_number, spoken_psalm
+from office.readings_audio import KINDS, ReadingsAudioOffice, first_per_reading_number, spoken_psalm
 from podcasts import builder, catalog, episodes, rss
+from podcasts.management.commands import build_podcast_artwork as artwork
 from podcasts.models import PodcastEpisode
 
 HAS_FFMPEG = shutil.which("ffmpeg") is not None
@@ -48,18 +50,20 @@ class MediaRootMixin:
 
 
 class CatalogTests(SimpleTestCase):
-    def test_eighteen_feeds_with_unique_slugs(self):
-        self.assertEqual(len(catalog.FEEDS), 18)
-        self.assertEqual(len(catalog.FEEDS_BY_SLUG), 18)
+    def test_twenty_feeds_with_unique_slugs(self):
+        self.assertEqual(len(catalog.FEEDS), 20)
+        self.assertEqual(len(catalog.FEEDS_BY_SLUG), 20)
 
-    def test_offices_have_traditional_language_twins(self):
+    def test_every_feed_has_a_traditional_language_twin(self):
+        traditional = [feed for feed in catalog.FEEDS if feed.style == catalog.TRADITIONAL]
+        self.assertEqual(len(traditional), 10)
+        for feed in traditional:
+            twin = catalog.get_feed(feed.slug.removesuffix("-traditional"))
+            self.assertEqual(twin.style, catalog.CONTEMPORARY)
+            self.assertEqual(feed.title, f"{twin.title} (Traditional Language)")
+            self.assertEqual((feed.service, feed.group), (twin.service, twin.group))
         offices = [feed for feed in catalog.FEEDS if not feed.is_readings]
         self.assertEqual(len(offices), 16)
-        for feed in offices:
-            if feed.style == catalog.TRADITIONAL:
-                twin = catalog.get_feed(feed.slug.removesuffix("-traditional"))
-                self.assertEqual(feed.title, f"{twin.title} (Traditional Language)")
-                self.assertEqual(feed.service, twin.service)
         titles = {feed.title for feed in offices}
         self.assertTrue({"Morning Prayer", "Evening Prayer", "Midday Prayer", "Compline"} <= titles)
         self.assertIn("Morning Prayer (Traditional Language)", titles)
@@ -91,8 +95,40 @@ class CatalogTests(SimpleTestCase):
         self.assertEqual(eucharist.api_query()["position"], "principal")
         self.assertEqual(
             eucharist.follow_along_url(date(2026, 10, 18)),
-            "https://www.dailyoffice2019.com/readings/holy_eucharist/2026/10/18",
+            "https://www.dailyoffice2019.com/readings/holy_eucharist/2026/10/18?translation=esv&psalms=contemporary",
         )
+
+    def test_traditional_readings_are_the_kjv(self):
+        daily = catalog.get_feed("daily-office-readings-traditional")
+        eucharist = catalog.get_feed("holy-eucharist-readings-traditional")
+        self.assertEqual(daily.api_path, "/api/v1/readings_audio/daily_office")
+        self.assertEqual(daily.settings["translation"], "kjv")
+        self.assertEqual(daily.settings["psalms"], "traditional")
+        self.assertEqual(catalog.get_feed("daily-office-readings").settings["translation"], "esv")
+        self.assertTrue(eucharist.proper_days_only)
+        self.assertEqual(eucharist.api_query()["translation"], "kjv")
+        self.assertIn("King James Version", eucharist.description)
+        self.assertIn("King James Version", daily.style_label)
+        self.assertEqual(
+            parse_qs(urlparse(daily.follow_along_url(date(2026, 10, 18))).query),
+            {"translation": ["kjv"], "psalms": ["traditional"]},
+        )
+
+
+class ArtworkTests(SimpleTestCase):
+    def test_every_feed_has_cover_art(self):
+        for feed in catalog.FEEDS:
+            for name in (f"{feed.slug}.jpg", f"{feed.slug}-600.jpg"):
+                with self.subTest(name):
+                    self.assertTrue((builder.ARTWORK_DIR / name).is_file())
+            self.assertLessEqual((builder.ARTWORK_DIR / f"{feed.slug}.jpg").stat().st_size, 512 * 1024)
+
+    def test_leather_follows_the_language_and_borders_the_section(self):
+        self.assertEqual(set(artwork.LEATHER_TONE), {catalog.CONTEMPORARY, catalog.TRADITIONAL})
+        self.assertIsNone(artwork.LEATHER_TONE[catalog.CONTEMPORARY])
+        self.assertEqual(set(artwork.BORDERS), {group["slug"] for group in catalog.GROUPS})
+        borders = [tuple(rules) for rules in artwork.BORDERS.values()]
+        self.assertEqual(len(set(borders)), len(borders))
 
 
 class RetentionTests(MediaRootMixin, SimpleTestCase):
@@ -254,6 +290,28 @@ class ReadingsAudioHelperTests(TestCase):
         response = self.client.get("/api/v1/readings_audio/vespers/2026-10-13")
         self.assertEqual(response.status_code, 404)
 
+    def test_readings_audio_is_only_read_from_the_esv_or_kjv(self):
+        class Built(Exception):
+            pass
+
+        def bare_office(office, request, year, month, day):
+            office.settings = {"display_language": "english"}
+
+        serializer = OfficeAudioSerializer()
+        with (
+            patch.object(Office, "__init__", bare_office),
+            patch.object(OfficeAudioSerializer, "get_modules", side_effect=Built),
+        ):
+            for translation in ("esv", "kjv", "rsv", "nrsvce", "niv", "cuv"):
+                with self.subTest(translation=translation):
+                    request = SimpleNamespace(GET={"translation": translation})
+                    office = ReadingsAudioOffice(request, 2026, 10, 13, kind="daily_office")
+                    if translation in ("esv", "kjv"):
+                        with self.assertRaises(Built):
+                            serializer.get_audio(office)
+                    else:
+                        self.assertEqual(serializer.get_audio(office), [])
+
 
 @skipUnless(HAS_FFMPEG, "ffmpeg is required")
 class BuildEpisodeTests(MediaRootMixin, TestCase):
@@ -410,7 +468,7 @@ class FeedTests(MediaRootMixin, TestCase):
 
     def test_catalog_for_the_landing_page(self):
         data = self.client.get("/api/v1/podcasts").json()
-        self.assertEqual(len(data["feeds"]), 18)
+        self.assertEqual(len(data["feeds"]), 20)
         morning = next(feed for feed in data["feeds"] if feed["slug"] == "morning-prayer")
         self.assertEqual(morning["feed_url"], "https://api.example.org/podcasts/morning-prayer.xml")
         self.assertEqual(morning["episode_count"], 1)
