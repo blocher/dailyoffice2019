@@ -131,8 +131,12 @@ class PodcastFeed:
         """The page that shows this episode's text, with the feed's own settings."""
         date_path = f"{day.year}/{day.month}/{day.day}"
         if self.is_readings:
-            # The Readings page takes its translation and psalter from the link.
+            # The Readings page takes its translation, psalter, and (for the
+            # Daily Office's psalms) psalm cycle from the link. The cycle is
+            # ``cycle``, not ``psalter``, which the app applies as a site setting.
             query = {key: self.settings[key] for key in ("translation", "psalms")}
+            if self.readings_kind == "daily_office":
+                query["cycle"] = self.settings["psalter"]
             return f"{SITE_URL}/readings/{self.readings_kind}/{date_path}?{urlencode(query)}"
         group, office = self.service.split("/")
         path = f"family/{office}" if group == "family" else office

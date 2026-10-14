@@ -690,7 +690,7 @@ contemporary language (ESV, contemporary psalter) and in traditional language (K
   readings (Sundays, principal feasts, holy days, Holy Week and Easter Week; precedence 1–4). Weekdays that repeat
   last Sunday's readings and lesser feasts that use a common are skipped.
 
-The readings episodes link to the Readings page with `?translation=…&psalms=…`, which it adopts as the reader's
+The readings episodes link to the Readings page with `?translation=…&psalms=…` (and `&cycle=60` for the Daily Office), which it adopts as the reader's
 choice, so the text matches what they heard.
 
 The readings audio is also the audio player on the Readings page (`/api/v1/readings_audio/<kind>/<date>`,

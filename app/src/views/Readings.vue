@@ -609,12 +609,14 @@ export default {
     }
     await this.$store.dispatch('initializeSettings');
 
-    // A podcast's "Read along" link names the translation and psalter it was
-    // read in. Keep them as if chosen here, then drop them from the address
-    // so a later change of translation survives a reload.
+    // A podcast's "Read along" link names the translation, psalter, and psalm
+    // cycle it was read in. Keep them as if chosen here, then drop them from
+    // the address so a later change survives a reload. (The cycle is `cycle`:
+    // `psalter` would be taken as a site setting from a share link.)
     const {
       translation: linkedTranslation,
       psalms: linkedPsalms,
+      cycle: linkedCycle,
       ...otherQuery
     } = this.$route.query;
     const linked = (options, value) =>
@@ -641,21 +643,27 @@ export default {
     }
     await DynamicStorage.setItem('psalms_translation', psalmsTranslation);
     this.psalmsTranslation = psalmsTranslation;
-    if (linkedTranslation !== undefined || linkedPsalms !== undefined) {
-      await this.$router.replace({
-        path: this.$route.path,
-        query: otherQuery,
-        hash: this.$route.hash,
-      });
-    }
 
-    let psalmCycle = await DynamicStorage.getItem('psalter');
+    let psalmCycle =
+      (['30', '60'].includes(linkedCycle) && linkedCycle) ||
+      (await DynamicStorage.getItem('psalter'));
     if (!psalmCycle) {
       const settings = this.$store.state.settings;
       psalmCycle = settings['psalter'];
     }
     await DynamicStorage.setItem('psalter', psalmCycle);
     this.psalmCycle = psalmCycle;
+    if (
+      [linkedTranslation, linkedPsalms, linkedCycle].some(
+        (value) => value !== undefined
+      )
+    ) {
+      await this.$router.replace({
+        path: this.$route.path,
+        query: otherQuery,
+        hash: this.$route.hash,
+      });
+    }
 
     let psalmStyle = await DynamicStorage.getItem('psalm_style');
     if (!psalmStyle) {

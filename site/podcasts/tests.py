@@ -111,7 +111,7 @@ class CatalogTests(SimpleTestCase):
         self.assertIn("King James Version", daily.style_label)
         self.assertEqual(
             parse_qs(urlparse(daily.follow_along_url(date(2026, 10, 18))).query),
-            {"translation": ["kjv"], "psalms": ["traditional"]},
+            {"translation": ["kjv"], "psalms": ["traditional"], "cycle": ["60"]},
         )
 
 
