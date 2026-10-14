@@ -517,8 +517,8 @@ function measureContentEnd(el) {
 /* ── Diagnostics ────────────────────────────────────── */
 
 // A long office laid out as a single page means the reader can't turn
-// pages at all (reported once on iOS Safari, never reproduced). Once the
-// layout has settled, report it with enough detail to find out why.
+// pages at all (as on iOS 26 Safari before the strip set a column width).
+// Once the layout has settled, report it with enough detail to find out why.
 function scheduleLayoutCheck() {
   window.clearTimeout(layoutCheckTimer);
   layoutCheckTimer = window.setTimeout(checkLayout, 1500);
@@ -1584,6 +1584,10 @@ onBeforeUnmount(() => {
   margin: 0;
   padding: 0;
   column-count: var(--cols);
+  /* Safari on iOS 26 skips columns entirely for `column-count: 1` with an
+     auto width, leaving one tall, clipped page. A column width keeps it a
+     multi-column box; with the count it still gives --cols columns. */
+  column-width: var(--page-w);
   column-gap: var(--gap);
   column-fill: auto;
 }
