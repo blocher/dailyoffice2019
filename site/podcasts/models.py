@@ -1,5 +1,7 @@
 import uuid
+from urllib.parse import urlparse
 
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
@@ -41,7 +43,8 @@ class PodcastEpisode(models.Model):
 class PodcastDirectoryListing(models.Model):
     """Where a feed is listed (Apple Podcasts, Spotify, ...), once it is approved.
 
-    Shown on the landing page; edit in the admin as each directory approves a show.
+    Shown on the landing page. Record one as each directory approves a show, with
+    ``record_podcast_listing`` (scripts/podcast-directories.sh runs it) or in the admin.
     """
 
     APPLE = "apple"
@@ -68,6 +71,21 @@ class PodcastDirectoryListing(models.Model):
         (GOODPODS, "Goodpods"),
         (DEEZER, "Deezer"),
     ]
+    # Where each directory's public show pages live, so a pasted link is the
+    # listener's page and not the feed or the directory's dashboard.
+    PLATFORM_HOSTS = {
+        APPLE: ("podcasts.apple.com",),
+        SPOTIFY: ("open.spotify.com",),
+        YOUTUBE_MUSIC: ("music.youtube.com", "www.youtube.com", "youtube.com"),
+        AMAZON: ("music.amazon.com", "www.audible.com", "audible.com"),
+        POCKET_CASTS: ("pca.st", "pocketcasts.com", "play.pocketcasts.com"),
+        OVERCAST: ("overcast.fm",),
+        CASTRO: ("castro.fm",),
+        IHEART: ("www.iheart.com", "iheart.com"),
+        PODCAST_INDEX: ("podcastindex.org",),
+        GOODPODS: ("www.goodpods.com", "goodpods.com"),
+        DEEZER: ("www.deezer.com", "deezer.com"),
+    }
 
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     feed_slug = models.CharField(max_length=64, db_index=True)
@@ -81,3 +99,10 @@ class PodcastDirectoryListing(models.Model):
 
     def __str__(self):
         return f"{self.feed_slug} on {self.get_platform_display()}"
+
+    def clean(self):
+        hosts = self.PLATFORM_HOSTS.get(self.platform, ())
+        parsed = urlparse(self.url or "")
+        if hosts and (parsed.scheme != "https" or (parsed.hostname or "") not in hosts):
+            expected = " or ".join(f"https://{host}/" for host in hosts)
+            raise ValidationError({"url": f"{self.get_platform_display()} show links start with {expected}"})

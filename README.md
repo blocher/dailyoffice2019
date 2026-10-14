@@ -736,10 +736,17 @@ Every directory lists each feed as its own show, so each step below is repeated 
 Directories confirm ownership by emailing the feed's owner address, `feedback@dailyoffice2019.com`. Submit only
 after the first episodes are live: directories need at least one episode.
 
+**Run `scripts/podcast-directories.sh`** from your machine to be walked through it. It checks that every feed is
+live with an episode, submits to Podcast Index, then goes directory by directory and feed by feed, showing each feed
+URL (copied to the clipboard) and the steps below, and records each approved show's link in the production database
+(over SSH, on the host `deploy/deploy.sh` uses). Feeds already listed are skipped, so stop any time and run it again;
+`scripts/podcast-directories.sh apple` does one directory, and `--local` tries it out against your development
+database.
+
 1. **Podcast Index** (used by Podverse, Fountain, Castamatic, and other Podcasting 2.0 apps): get a free
    API key at [api.podcastindex.org](https://api.podcastindex.org), set `PODCAST_INDEX_API_KEY` and
    `PODCAST_INDEX_API_SECRET`, and run `python manage.py notify_podcast_directories --add-to-podcast-index`. This is
-   the one fully automated submission.
+   the one fully automated submission, and it records the listings too.
 2. **Apple Podcasts** (also how Overcast, Castro, Goodpods, and most other apps find shows): in
    [Podcasts Connect](https://podcastsconnect.apple.com), choose **+ › New Show › Add a show with an RSS feed**,
    paste the feed URL, check the preview and validation, and choose **Publish**. Review usually takes a few days.
@@ -754,8 +761,11 @@ after the first episodes are live: directories need at least one episode.
 7. **Pocket Casts**: [pocketcasts.com/submit](https://pocketcasts.com/submit/).
 8. **Deezer**: [podcasters.deezer.com](https://podcasters.deezer.com).
 
-As each directory approves a show, add its public URL in the Django admin under **Podcasts › Podcast directory
-listings** (feed slug, platform, URL). The landing page then shows it in that feed's Subscribe sheet. Until then the
+As each directory approves a show, record its public URL with
+`python manage.py record_podcast_listing <feed-slug> <platform> <url>` (the wizard does this for you) or in the Django
+admin under **Podcasts › Podcast directory listings**. The URL must be the directory's public show page, such as
+`https://podcasts.apple.com/…` or `https://open.spotify.com/show/…`. The landing page then shows it in that feed's
+Subscribe sheet. Until then the
 sheet offers direct "open in app" links (Apple Podcasts, Overcast, Pocket Casts, Castro, AntennaPod, Podcast Addict)
 and the RSS link, which work before any directory approves the show.
 

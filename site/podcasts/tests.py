@@ -10,7 +10,7 @@ from unittest import skipUnless
 from unittest.mock import patch
 from urllib.parse import parse_qs, urlparse
 
-from django.core.management import call_command
+from django.core.management import CommandError, call_command
 from django.test import SimpleTestCase, TestCase, override_settings
 from django.utils import timezone
 from mutagen.id3 import ID3
@@ -20,7 +20,7 @@ from office.audio_retention import is_permanent
 from office.readings_audio import KINDS, ReadingsAudioOffice, first_per_reading_number, spoken_psalm
 from podcasts import builder, catalog, episodes, rss
 from podcasts.management.commands import build_podcast_artwork as artwork
-from podcasts.models import PodcastEpisode
+from podcasts.models import PodcastDirectoryListing, PodcastEpisode
 
 HAS_FFMPEG = shutil.which("ffmpeg") is not None
 
@@ -494,3 +494,74 @@ class FeedTests(MediaRootMixin, TestCase):
         self.scheduled.refresh_from_db()
         self.assertIsNotNone(self.published.notified_at)
         self.assertIsNone(self.scheduled.notified_at)
+
+
+@override_settings(PODCAST_BASE_URL="https://api.example.org")
+class DirectoryListingTests(TestCase):
+    APPLE_URL = "https://podcasts.apple.com/us/podcast/morning-prayer/id1234567890"
+
+    def record(self, *args):
+        out = StringIO()
+        call_command("record_podcast_listing", *args, stdout=out)
+        return out.getvalue()
+
+    def test_record_listing_then_correct_it(self):
+        self.assertIn(
+            "Recorded: Morning Prayer on Apple Podcasts", self.record("morning-prayer", "apple", self.APPLE_URL)
+        )
+        self.assertIn("Already recorded", self.record("morning-prayer", "apple", self.APPLE_URL))
+        corrected = "https://podcasts.apple.com/us/podcast/morning-prayer/id42"
+        self.assertIn("Updated", self.record("morning-prayer", "apple", f" {corrected} "))
+        listing = PodcastDirectoryListing.objects.get()
+        self.assertEqual((listing.feed_slug, listing.platform, listing.url), ("morning-prayer", "apple", corrected))
+
+    def test_rejects_a_link_that_is_not_the_directorys_show_page(self):
+        for platform, url in [
+            ("apple", "https://api.dailyoffice2019.com/podcasts/morning-prayer.xml"),
+            ("spotify", "https://creators.spotify.com/pod/show/morning-prayer"),
+            ("youtube_music", "https://studio.youtube.com/channel/UC123/podcasts"),
+            ("apple", "http://podcasts.apple.com/us/podcast/morning-prayer/id1234567890"),
+            ("apple", "not a url"),
+        ]:
+            with self.subTest(url=url), self.assertRaises(CommandError):
+                self.record("morning-prayer", platform, url)
+        self.assertFalse(PodcastDirectoryListing.objects.exists())
+
+    def test_rejects_unknown_feeds_and_platforms(self):
+        with self.assertRaises(CommandError):
+            self.record("vespers", "apple", self.APPLE_URL)
+        with self.assertRaises(CommandError):
+            self.record("morning-prayer", "napster", self.APPLE_URL)
+
+    def test_checklist_lists_the_feeds_still_missing_from_a_directory(self):
+        self.record("morning-prayer", "apple", self.APPLE_URL)
+        out = StringIO()
+        call_command("podcast_submission_checklist", "--missing", "apple", stdout=out)
+        rows = [line.split("\t") for line in out.getvalue().splitlines()]
+        self.assertEqual(len(rows), len(catalog.FEEDS) - 1)
+        self.assertNotIn("morning-prayer", [slug for slug, _, _ in rows])
+        self.assertEqual(
+            rows[0],
+            [
+                "morning-prayer-traditional",
+                "Morning Prayer (Traditional Language)",
+                "https://api.example.org/podcasts/morning-prayer-traditional.xml",
+            ],
+        )
+        out = StringIO()
+        call_command("podcast_submission_checklist", "--missing", "spotify", stdout=out)
+        self.assertEqual(len(out.getvalue().splitlines()), len(catalog.FEEDS))
+
+    def test_adding_to_podcast_index_records_the_listings(self):
+        feed_ids = {feed.slug: index + 100 for index, feed in enumerate(catalog.FEEDS)}
+        feed_ids["compline"] = None
+        with patch("podcasts.directories.add_to_podcast_index", side_effect=feed_ids.get):
+            call_command("notify_podcast_directories", "--add-to-podcast-index", stdout=StringIO())
+            call_command("notify_podcast_directories", "--add-to-podcast-index", stdout=StringIO())
+        listings = PodcastDirectoryListing.objects.filter(platform=PodcastDirectoryListing.PODCAST_INDEX)
+        self.assertEqual(listings.count(), len(catalog.FEEDS) - 1)
+        self.assertEqual(
+            listings.get(feed_slug="morning-prayer").url,
+            f"https://podcastindex.org/podcast/{feed_ids['morning-prayer']}",
+        )
+        self.assertFalse(listings.filter(feed_slug="compline").exists())
