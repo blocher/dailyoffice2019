@@ -158,6 +158,14 @@ const routes = [
       import(/* webpackChunkName: "about" */ '../views/About.vue'),
   },
   {
+    path: '/podcasts',
+    name: 'Podcasts',
+    meta: {
+      title: 'Podcasts | The Daily Office',
+    },
+    component: () => import('../views/Podcasts.vue'),
+  },
+  {
     path: '/collects',
     name: 'Collects',
     meta: {

@@ -674,6 +674,88 @@ minute; admin saves and every deploy (which flushes memcached) clear the cache a
 background while the app shows "Preparing audio…" (`site/office/audio_builds.py`). App-server and database
 connection limits are in `deploy/gunicorn_config.py` and `DATABASES` in `site/website/settings.py`.
 
+## Podcasts
+
+The site publishes 18 podcast feeds (`site/podcasts/`), listed at
+[dailyoffice2019.com/podcasts](https://www.dailyoffice2019.com/podcasts) and in the menu:
+
+- **The four offices and the four Family Prayer offices**, each in contemporary language (ESV) and in
+  traditional language (KJV): *Morning Prayer*, *Morning Prayer (Traditional Language)*, and so on. Each episode
+  is the same audio the in-app player plays, built with one fixed set of settings
+  (`CONTEMPORARY_SETTINGS`/`TRADITIONAL_SETTINGS` in `site/podcasts/catalog.py`). Every episode links to the
+  office for that day with those settings, so a listener can pray along.
+- **Daily Office Readings**: Morning and Evening Prayer's psalms and lessons, every day.
+- **Holy Eucharist Readings**: the collect, lessons, psalm, and Gospel, only on days with their own Eucharistic
+  readings (Sundays, principal feasts, holy days, Holy Week and Easter Week; precedence 1–4). Weekdays that repeat
+  last Sunday's readings and lesser feasts that use a common are skipped.
+
+The readings audio is also the audio player on the Readings page (`/api/v1/readings_audio/<kind>/<date>`,
+`site/office/readings_audio.py`). It opens with "Readings for Morning Prayer on …".
+
+**Feeds and URLs.** Feeds are `https://api.dailyoffice2019.com/podcasts/<slug>.xml` (RSS with Apple Podcasts and
+Podcasting 2.0 tags: `podcast:guid`, chapters, funding, podroll, WebSub hub). Episode audio is
+`/podcasts/episodes/<slug>/<year>/<slug>-<date>.mp3`, cover art `/podcasts/artwork/<slug>.jpg`. These URLs and the
+feed slugs are permanent: podcast apps keep them forever. Never rename a slug or change the production
+`PODCAST_BASE_URL` (in development it defaults to `SITE_ADDRESS`, so the landing page loads art from the local API).
+
+**Episodes are permanent.** `build_podcast_episodes` renders each office through the real API view, then copies the
+combined track (re-encoded at `PODCAST_BITRATE`, 96 kbps mono) into `MEDIA_ROOT/podcasts/` with ID3 tags and
+chapters, and records a `PodcastEpisode`. Episodes are never rebuilt. The combined office tracks stay a disposable
+cache, but nothing under `uploads/podcasts/` is ever deleted: `cleanup_full_audio_files`, `audit_combined_audio`,
+`rebuild_audio_clip`, and `AudioClip.delete_file` all skip it (`site/office/audio_retention.py`). Back up
+`uploads/podcasts/` with the database.
+
+**Schedule (kronos, installed by `deploy/server.sh`).**
+
+- `build_podcast_episodes` at 10:30 daily builds any missing episodes from yesterday through three days ahead.
+  Episodes go live in their feed at 3 a.m. Eastern on their day (`PODCAST_PUBLISH_HOUR`).
+- `notify_podcast_directories` at ten past each hour pings WebSub, Podcast Index, and Overcast for feeds with newly
+  published episodes, so apps pick them up quickly. It only pings in production: `PODCAST_NOTIFY_DIRECTORIES`
+  defaults to on when `DEBUG` is off and to off otherwise, so a development machine never announces the public feeds.
+
+To start the feeds (or fill a gap), run from `site/` on the server; existing episodes are skipped:
+
+```sh
+python manage.py build_podcast_episodes --start-date 2026-10-07 --days 10
+python manage.py build_podcast_episodes --feed holy-eucharist-readings --start-date 2026-09-01 --days 60
+```
+
+Cover art (3000 × 3000 JPEG under 500 KB, plus a 600 px copy) is committed in `site/podcasts/artwork/`.
+Redraw it after changing the catalog with `python manage.py build_podcast_artwork`.
+
+### Publishing to podcast directories
+
+Every directory lists each feed as its own show, so each step below is repeated for all 18 feeds.
+`python manage.py podcast_submission_checklist` prints every feed URL and which listings are still missing.
+Directories confirm ownership by emailing the feed's owner address, `feedback@dailyoffice2019.com`. Submit only
+after the first episodes are live: directories need at least one episode.
+
+1. **Podcast Index** (used by Podverse, Fountain, Castamatic, and other Podcasting 2.0 apps): get a free
+   API key at [api.podcastindex.org](https://api.podcastindex.org), set `PODCAST_INDEX_API_KEY` and
+   `PODCAST_INDEX_API_SECRET`, and run `python manage.py notify_podcast_directories --add-to-podcast-index`. This is
+   the one fully automated submission.
+2. **Apple Podcasts** (also how Overcast, Castro, Goodpods, and most other apps find shows): in
+   [Podcasts Connect](https://podcastsconnect.apple.com), choose **+ › New Show › Add a show with an RSS feed**,
+   paste the feed URL, check the preview and validation, and choose **Publish**. Review usually takes a few days.
+3. **Spotify**: in [Spotify for Creators](https://creators.spotify.com), choose **Add a new show › Find an existing
+   show › Somewhere else**, paste the feed URL, and enter the 8-digit code sent to the feed's email address.
+4. **YouTube Music** (Google Podcasts closed in 2024; YouTube Music replaced it): in
+   [YouTube Studio](https://studio.youtube.com), choose **Create › New podcast › Submit RSS feed**, verify with the
+   emailed code, and import all episodes. YouTube makes static-image videos from the cover art; imported episodes
+   start out private, so review and publish them in Studio.
+5. **Amazon Music and Audible**: [podcasters.amazon.com](https://podcasters.amazon.com) › **Add your podcast**.
+6. **iHeartRadio**: [iheart.com/content/submit-your-podcast](https://www.iheart.com/content/submit-your-podcast/).
+7. **Pocket Casts**: [pocketcasts.com/submit](https://pocketcasts.com/submit/).
+8. **Deezer**: [podcasters.deezer.com](https://podcasters.deezer.com).
+
+As each directory approves a show, add its public URL in the Django admin under **Podcasts › Podcast directory
+listings** (feed slug, platform, URL). The landing page then shows it in that feed's Subscribe sheet. Until then the
+sheet offers direct "open in app" links (Apple Podcasts, Overcast, Pocket Casts, Castro, AntennaPod, Podcast Addict)
+and the RSS link, which work before any directory approves the show.
+
+Apple, Spotify, YouTube, and Amazon have no public API for submitting a new show, so steps 2–8 need someone signed in
+to the owner's accounts. After approval nothing more is needed: every directory polls the feed for new episodes.
+
 ## Quick overview
 
 The application is built around several Django "apps". The most important are:
@@ -687,6 +769,7 @@ The application is built around several Django "apps". The most important are:
   as the ESV API are coming soon)
 - *psalter*: This is used to retrieve passages from the Psalms (currently only the renewed Coverdale translation in the
   Book of Common Prayer 2019)
+- *podcasts*: The podcast feeds built from the office audio (see "Podcasts" above).
 
 NOTE: churchcal, bible, and psalter apps may be spun off as separate projects soon and added as dependencies to this
 project

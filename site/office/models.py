@@ -843,8 +843,10 @@ class AudioClip(BaseModel):
     def delete_file(self):
         import os
 
+        from office.audio_retention import is_permanent
+
         try:
-            if self.filename and os.path.isfile(self.file_path):
+            if self.filename and os.path.isfile(self.file_path) and not is_permanent(self.file_path):
                 os.remove(self.file_path)
                 sidecar = f"{self.file_path}.json"
                 if os.path.isfile(sidecar):

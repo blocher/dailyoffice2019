@@ -158,21 +158,12 @@ import { openPanel, takeBookViewRequest } from '@/helpers/panels';
 import { displayState, setAudioEnabled } from '@/helpers/displayPreferences';
 import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
 import { trackEvent } from '@/helpers/analytics';
-import { getCachedClientId } from '@/helpers/clientId';
+import { fetchAudioTrack, isWithinAudioWindow } from '@/helpers/officeAudio';
 
 // Book view loads separately, after the office is showing.
 const BookReader = defineAsyncComponent(
   () => import('@/components/BookReader.vue')
 );
-
-// How long to keep polling while the server prepares office audio.
-const AUDIO_PREPARE_TIMEOUT_MS = 10 * 60 * 1000;
-
-// Wait the server's suggested delay (seconds), clamped to 2–30 s.
-function waitForRetry(seconds) {
-  const delay = Math.min(Math.max(Number(seconds) || 5, 2), 30) * 1000;
-  return new Promise((resolve) => window.setTimeout(resolve, delay));
-}
 
 export default {
   name: 'Office',
@@ -261,17 +252,7 @@ export default {
       return import.meta.env.VITE_FETCH_AUDIO_ON !== 'false';
     },
     isWithinSevenDays() {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const yesterday = new Date(today);
-      yesterday.setDate(today.getDate() - 3);
-      const sevenDaysFromNow = new Date(today);
-      sevenDaysFromNow.setDate(today.getDate() + 9);
-      sevenDaysFromNow.setHours(23, 59, 59, 999);
-
-      return (
-        this.calendarDate >= yesterday && this.calendarDate <= sevenDaysFromNow
-      );
+      return isWithinAudioWindow(this.calendarDate);
     },
   },
   async mounted() {
@@ -417,26 +398,6 @@ export default {
         setSeasonAccent(liturgicalColor);
       }
     },
-    resolveAudioUrl(rawUrl) {
-      // The backend builds the track URL from Django's Site.domain (e.g.
-      // "example.com"), which is not reachable from the client. Resolve it
-      // against the same API host the office was fetched from so audio works
-      // in every environment.
-      if (!rawUrl) {
-        return rawUrl;
-      }
-      try {
-        const path = new window.URL(rawUrl, window.location.origin).pathname;
-        const base = (import.meta.env.VITE_API_URL || '/').replace(/\/$/, '');
-        // Append the anonymous client id so the backend can attribute the
-        // "audio loaded" event (the <audio> element can't send custom headers).
-        const clientId = getCachedClientId();
-        const query = clientId ? `?cid=${encodeURIComponent(clientId)}` : '';
-        return `${base}/${path.replace(/^\//, '')}${query}`;
-      } catch {
-        return rawUrl;
-      }
-    },
     onAudioPlay() {
       // First real play per office load; the player guards repeat presses too.
       if (this.audioPlayTracked) {
@@ -457,35 +418,12 @@ export default {
     async setAudioLinks(url) {
       if (import.meta.env.VITE_FETCH_AUDIO_ON === 'false') return [];
       if (!this.isWithinSevenDays) return [];
-      url = `${url}&include_audio_links=true`;
-      // Audio that isn't built yet is prepared in the background: the API
-      // answers 202 with audio.status "preparing" and a retry delay. Keep the
-      // "Preparing audio…" message up and ask again until it is ready.
-      const giveUpAt = Date.now() + AUDIO_PREPARE_TIMEOUT_MS;
-      try {
-        for (;;) {
-          const data = await this.$http.get(url);
-          const audio = data.data.audio || {};
-          if (audio.status === 'preparing') {
-            if (this.audioPollingStopped || Date.now() >= giveUpAt) {
-              return [];
-            }
-            await waitForRetry(audio.retry_after);
-            if (this.audioPollingStopped) {
-              return [];
-            }
-            continue;
-          }
-          const singleTrack = audio.single_track;
-          if (Array.isArray(singleTrack) && singleTrack.length) {
-            singleTrack[0] = this.resolveAudioUrl(singleTrack[0]);
-          }
-          this.audioLinks = singleTrack;
-          return singleTrack;
-        }
-      } catch {
-        return [];
-      }
+      this.audioLinks = await fetchAudioTrack(
+        this.$http,
+        `${url}&include_audio_links=true`,
+        () => this.audioPollingStopped
+      );
+      return this.audioLinks;
     },
     async setAudioLinksBak() {
       const audio_links = [];

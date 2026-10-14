@@ -88,18 +88,18 @@ describe('office audio date window', () => {
       .mockResolvedValueOnce({
         data: { audio: { single_track: ['https://api.test/track.mp3', 'p'] } },
       });
-    const context = {
-      isWithinSevenDays: true,
-      $http: { get },
-      resolveAudioUrl: (url) => `resolved:${url}`,
-    };
+    // Track URLs are resolved against the API host the office came from.
+    vi.stubEnv('VITE_API_URL', 'https://api.example/');
+    const context = { isWithinSevenDays: true, $http: { get } };
     const result = Office.methods.setAudioLinks.call(context, '/office?a=1');
     await vi.advanceTimersByTimeAsync(4000);
     expect(get).toHaveBeenCalledTimes(1);
     await vi.advanceTimersByTimeAsync(1000);
     expect(get).toHaveBeenCalledTimes(2);
     await vi.advanceTimersByTimeAsync(5000);
-    expect(await result).toEqual(['resolved:https://api.test/track.mp3', 'p']);
+    const [url, path] = await result;
+    expect(url).toMatch(/^https:\/\/api\.example\/track\.mp3(\?cid=.+)?$/);
+    expect(path).toBe('p');
     expect(get).toHaveBeenCalledTimes(3);
     expect(context.audioLinks).toEqual(await result);
   });

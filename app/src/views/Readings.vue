@@ -92,6 +92,16 @@
             Display
           </button>
           <button
+            v-if="audioLoadingEnabled"
+            type="button"
+            class="readings-tool"
+            :aria-pressed="audioEnabled ? 'true' : 'false'"
+            @click="setAudioEnabled(!audioEnabled)"
+          >
+            <UiIcon name="headphones" />
+            {{ audioEnabled ? 'Audio on' : 'Listen' }}
+          </button>
+          <button
             v-if="readingsToShow && readingsToShow.length"
             type="button"
             class="readings-tool"
@@ -225,6 +235,28 @@
             @cycle-30="setCycle30"
           />
         </BookReader>
+
+        <AudioPlayer
+          v-if="showAudioPlayer"
+          :key="audioKey"
+          :audio="audioLinks"
+          :audio-ready="audioReady"
+          :office="audioTitle"
+          :is-esv-or-kjv="isEsvOrKjv"
+          :is-within-seven-days="isWithinAudioDates"
+          @dismiss-audio="confirmDismissAudio"
+          @audio-play="onAudioPlay"
+        />
+        <AudioPlayerMessage
+          v-else-if="audioLoadingEnabled && audioEnabled"
+          context="readings"
+          :is-esv-or-kjv="isEsvOrKjv"
+          :is-english="true"
+          :is-within-seven-days="isWithinAudioDates"
+          :audio-ready="audioReady"
+          :has-audio-links="!!(audioLinks && audioLinks.length)"
+          @dismiss-audio="confirmDismissAudio"
+        />
       </template>
     </template>
   </div>
@@ -247,6 +279,12 @@ import { DynamicStorage } from '@/helpers/storage';
 import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
 import { openPanel } from '@/helpers/panels';
 import { nextTick } from 'vue';
+import AudioPlayer from '@/components/AudioPlayer.vue';
+import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue';
+import { confirm } from '@/ui/feedback';
+import { displayState, setAudioEnabled } from '@/helpers/displayPreferences';
+import { fetchAudioTrack, isWithinAudioWindow } from '@/helpers/officeAudio';
+import { trackEvent } from '@/helpers/analytics';
 
 const SERVICE_GROUPS = [
   {
@@ -285,6 +323,8 @@ export default {
     Reading,
     Collects,
     BookReader,
+    AudioPlayer,
+    AudioPlayerMessage,
   },
   props: {},
   data() {
@@ -349,9 +389,62 @@ export default {
         },
       ],
       notFound: false,
+      audioLinks: [],
+      audioReady: false,
+      audioRequest: 0,
+      audioPlayTracked: false,
     };
   },
   computed: {
+    audioEnabled() {
+      return displayState.audioEnabled;
+    },
+    audioLoadingEnabled() {
+      // Set VITE_FETCH_AUDIO_ON=false to avoid on-demand generation in dev.
+      return import.meta.env.VITE_FETCH_AUDIO_ON !== 'false';
+    },
+    isEsvOrKjv() {
+      return ['esv', 'kjv'].includes(this.translation);
+    },
+    isWithinAudioDates() {
+      return !!this.calendarDate && isWithinAudioWindow(this.calendarDate);
+    },
+    // Which readings to read aloud: the selected service, by kind and place.
+    audioService() {
+      if (!this.service) return null;
+      const { service_name, position } = this.getPositionAndServiceName(
+        this.service
+      );
+      return { kind: service_name, position: Math.max(position, 0) };
+    },
+    audioTitle() {
+      return `Readings for ${this.serviceTitle.title || 'the day'}`;
+    },
+    // Changing any of these asks for different audio.
+    audioKey() {
+      if (!this.audioService || !this.calendarDate) return '';
+      return [
+        datePath(this.calendarDate),
+        this.audioService.kind,
+        this.audioService.position,
+        this.translation,
+        this.psalmsTranslation,
+        this.psalmStyle,
+        this.psalmCycle,
+      ].join('|');
+    },
+    showAudioPlayer() {
+      return (
+        !this.loading &&
+        this.audioLoadingEnabled &&
+        this.audioEnabled &&
+        this.audioReady &&
+        this.isEsvOrKjv &&
+        this.isWithinAudioDates &&
+        this.audioLinks &&
+        this.audioLinks.length > 0
+      );
+    },
     bookSubtitle() {
       if (!this.calendarDate) return '';
       return this.calendarDate.toLocaleDateString('en-US', {
@@ -457,6 +550,12 @@ export default {
     },
   },
   watch: {
+    audioKey() {
+      this.loadAudio();
+    },
+    audioEnabled(enabled) {
+      if (enabled) this.loadAudio();
+    },
     '$route.params': {
       handler(newParams, oldParams) {
         if (this.$route.name && this.$route.name.startsWith('readings')) {
@@ -546,7 +645,77 @@ export default {
 
     await this.initialize();
   },
+  beforeUnmount() {
+    // Stop polling for audio that is still being prepared.
+    this.audioPollingStopped = true;
+  },
   methods: {
+    setAudioEnabled,
+    // The selected service's readings, read aloud like the offices. Only
+    // requested once the reader turns audio on.
+    async loadAudio() {
+      const request = ++this.audioRequest;
+      this.audioLinks = [];
+      this.audioReady = false;
+      this.audioPlayTracked = false;
+      if (
+        !this.audioLoadingEnabled ||
+        !this.audioEnabled ||
+        !this.audioService
+      ) {
+        return;
+      }
+      if (!this.isEsvOrKjv || !this.isWithinAudioDates) {
+        this.audioReady = true;
+        return;
+      }
+      const date = this.calendarDate;
+      const query = new window.URLSearchParams({
+        translation: this.translation,
+        psalms: this.psalmsTranslation,
+        style: this.psalmStyle,
+        psalter: this.psalmCycle,
+        position: String(this.audioService.position),
+        include_audio_links: 'true',
+      });
+      const url =
+        `${import.meta.env.VITE_API_URL}api/v1/readings_audio/` +
+        `${this.audioService.kind}/` +
+        `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}?${query}`;
+      const track = await fetchAudioTrack(
+        this.$http,
+        url,
+        () => this.audioPollingStopped || request !== this.audioRequest
+      );
+      if (request !== this.audioRequest) return;
+      this.audioLinks = track;
+      this.audioReady = true;
+    },
+    async confirmDismissAudio() {
+      const hide = await confirm({
+        title: 'Hide the audio player?',
+        message:
+          'You can bring it back any time with Listen, just above the readings, or from Display (Aa) at the top of the page.',
+        confirmText: 'Hide',
+      });
+      if (hide) {
+        await setAudioEnabled(false);
+      }
+    },
+    onAudioPlay() {
+      if (this.audioPlayTracked) return;
+      this.audioPlayTracked = true;
+      trackEvent(
+        'audio_play',
+        {
+          service_type: 'readings',
+          office: this.audioService ? this.audioService.kind : '',
+          office_date: this.calendarDate ? datePath(this.calendarDate) : '',
+          translation: this.translation,
+        },
+        { toBackend: false, toGA: true }
+      );
+    },
     applySeasonAccentFromCard(card) {
       const liturgicalColor = resolveColorFromCard(card, 'readings');
       if (liturgicalColor) {

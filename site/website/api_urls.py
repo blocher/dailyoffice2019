@@ -32,7 +32,9 @@ from office.api.views.resources import (
     GroupedCollectsViewSet,
 )
 from analytics.views import AnalyticsEventView
+from office.readings_audio import ReadingsAudioView
 from patrons import views as patron_views
+from podcasts.urls import urlpatterns as podcast_urlpatterns
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -55,7 +57,7 @@ router_v1.register(r"scripture", ScriptureViewSet, basename="scripture2")
 
 router_v1.register(r"collect_categories", CollectCategoryViewSet, basename="collect_category")
 
-urlpatterns = [
+urlpatterns = podcast_urlpatterns + [
     path("api/patrons/message/today", patron_views.message_today, name="patrons_message_today"),
     path("api/patrons/message/tomorrow", patron_views.message_tomorrow, name="patrons_message_tomorrow"),
     path(
@@ -74,6 +76,11 @@ urlpatterns = [
     ),
     path(r"api/v1/calendar/<int:year>-<int:month>-<int:day>", DayView.as_view(), name="day_view"),
     path(r"api/v1/readings/<int:year>-<int:month>-<int:day>", ReadingsView.as_view(), name="readings"),
+    path(
+        r"api/v1/readings_audio/<str:kind>/<int:year>-<int:month>-<int:day>",
+        ReadingsAudioView.as_view(),
+        name="readings_audio",
+    ),
     path(r"api/v1/commemorations/<uuid:uuid>", CommemorationsView.as_view(), name="commemoration"),
     path(r"api/v1/litany", GreatLitanyView.as_view(), name="litany"),
     path(r"api/v1/calendar/<int:year>-<int:month>", MonthView.as_view(), name="month_view"),

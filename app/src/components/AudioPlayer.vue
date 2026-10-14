@@ -255,6 +255,18 @@
                 </button>
               </div>
 
+              <router-link
+                to="/podcasts"
+                class="podcast-link"
+                @click="closePanels(false)"
+              >
+                <UiIcon name="podcast" />
+                <span
+                  >Listen in your podcast app
+                  <small>A new episode of every office, every day</small></span
+                >
+              </router-link>
+
               <button
                 v-if="!isPlaying"
                 class="hide-player-button"
@@ -1962,6 +1974,32 @@ a:focus-visible,
 }
 .preferences-panel > :last-child {
   border-bottom: 0;
+}
+.podcast-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 3.5rem;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-soft);
+  font-size: var(--text-md);
+  line-height: var(--leading-tight);
+  text-decoration: none;
+  transition: color var(--duration) var(--ease);
+}
+.podcast-link:hover {
+  color: var(--ink);
+}
+.podcast-link span {
+  display: flex;
+  flex-direction: column;
+}
+.podcast-link small {
+  margin-top: 2px;
+  color: var(--ink-faint);
+  font-size: var(--text-sm);
+  font-style: italic;
 }
 .hide-player-button {
   display: flex;

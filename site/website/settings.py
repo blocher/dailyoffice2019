@@ -105,6 +105,7 @@ INSTALLED_APPS = [
     "standrew",
     "patrons",
     "analytics",
+    "podcasts",
 ]
 
 if DEBUG:
@@ -314,6 +315,24 @@ AUDIO_BUILD_MAX_PENDING = env.int("AUDIO_BUILD_MAX_PENDING", default=16)
 AUDIO_BUILD_LOCK_SECONDS = env.int("AUDIO_BUILD_LOCK_SECONDS", default=900)
 AUDIO_BUILD_FAILURE_SECONDS = env.int("AUDIO_BUILD_FAILURE_SECONDS", default=300)
 AUDIO_BUILD_RETRY_AFTER = env.int("AUDIO_BUILD_RETRY_AFTER", default=5)
+
+# Podcasts (site/podcasts/). Feed, episode, and artwork URLs are built on this
+# base and are permanent once published, so production always uses the public
+# API host; development uses the local API (SITE_ADDRESS) so the landing page's
+# artwork and audio load from the server that has them. Episodes go live at
+# this hour (America/New_York) on their day.
+PODCAST_BASE_URL = env(
+    "PODCAST_BASE_URL", default=SITE_ADDRESS.rstrip("/") if DEBUG else "https://api.dailyoffice2019.com"
+)
+PODCAST_PUBLISH_HOUR = env.int("PODCAST_PUBLISH_HOUR", default=3)
+PODCAST_BITRATE = env("PODCAST_BITRATE", default="96k")  # mono MP3, re-encoded from the 160k office track
+# The hourly directory pings announce the public feeds, so only production
+# sends them; a development machine would announce production URLs.
+PODCAST_NOTIFY_DIRECTORIES = env.bool("PODCAST_NOTIFY_DIRECTORIES", default=not DEBUG)
+# Optional: a free read-write key from api.podcastindex.org, used only by
+# `notify_podcast_directories --add-to-podcast-index`.
+PODCAST_INDEX_API_KEY = env("PODCAST_INDEX_API_KEY", default="")
+PODCAST_INDEX_API_SECRET = env("PODCAST_INDEX_API_SECRET", default="")
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 

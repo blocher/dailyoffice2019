@@ -5,6 +5,7 @@ from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
 from office.api.views.tts import get_tts_provider, provider_names
+from office.audio_retention import is_permanent
 from office.models import AudioClip
 
 
@@ -142,8 +143,10 @@ class Command(BaseCommand):
             if os.path.isdir(target_dir):
                 for entry in os.listdir(target_dir):
                     full = os.path.join(target_dir, entry)
-                    if os.path.isfile(full) and (
-                        entry.endswith(".mp3") or entry.endswith(".mp3.txt") or entry.endswith(".mp3.json")
+                    if (
+                        os.path.isfile(full)
+                        and not is_permanent(full)
+                        and (entry.endswith(".mp3") or entry.endswith(".mp3.txt") or entry.endswith(".mp3.json"))
                     ):
                         files.append(entry)
             rows = AudioClip.objects.filter(filename__startswith=f"{media_subdir}/")
@@ -192,7 +195,7 @@ class Command(BaseCommand):
         for name in provider_names():
             media_subdir = get_tts_provider(name).media_subdir
             provider_dir = os.path.join(media_root, media_subdir)
-            if os.path.isdir(provider_dir):
+            if os.path.isdir(provider_dir) and not is_permanent(provider_dir):
                 scan_dirs.append((media_subdir, provider_dir))
 
         orphans = []  # (rel_name_for_known_lookup, absolute_path)
@@ -201,7 +204,7 @@ class Command(BaseCommand):
                 if not entry.endswith(".mp3"):
                     continue
                 full = os.path.join(directory, entry)
-                if not os.path.isfile(full):
+                if not os.path.isfile(full) or is_permanent(full):
                     continue
                 rel_name = f"{prefix}/{entry}" if prefix else entry
                 if rel_name in known:

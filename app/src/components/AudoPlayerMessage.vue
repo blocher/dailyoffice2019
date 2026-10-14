@@ -7,7 +7,16 @@
           class="message-icon"
           :class="{ 'is-preparing': isPreparing }"
         />
-        <span v-if="!isEnglish || !isEsvOrKjv" class="audio-message">
+        <span
+          v-if="context === 'readings' && !isEsvOrKjv"
+          class="audio-message"
+        >
+          <small>
+            Audio is available with the English Standard Version (ESV) or King
+            James Version (KJV). Choose one under Translation.
+          </small>
+        </span>
+        <span v-else-if="!isEnglish || !isEsvOrKjv" class="audio-message">
           <small>
             Audio is available when English is selected as the display language,
             along with the English Standard Version (ESV) or King James Version
@@ -25,7 +34,10 @@
           <small> Preparing audio… </small>
         </span>
         <span v-else-if="!hasAudioLinks" class="audio-message">
-          <small> Audio is not available for this office. </small>
+          <small>
+            Audio is not available for
+            {{ context === 'readings' ? 'these readings' : 'this office' }}.
+          </small>
         </span>
         <button
           class="dismiss-button"
@@ -72,6 +84,11 @@ export default {
       type: Boolean,
       required: false,
       default: false,
+    },
+    // 'office' or 'readings': what the messages talk about.
+    context: {
+      type: String,
+      default: 'office',
     },
   },
   computed: {

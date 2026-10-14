@@ -8,6 +8,7 @@ from django.core.management.base import BaseCommand
 from mutagen.mp3 import MP3, BitrateMode
 
 from office.api.views.tts import get_tts_provider, provider_names
+from office.audio_retention import is_permanent
 from office.combined_track import (
     CONCAT_LIST_RE,
     LOCK_SUFFIX,
@@ -45,7 +46,7 @@ class Command(BaseCommand):
         dirs = [media_root]
         for name in provider_names():
             path = os.path.join(media_root, get_tts_provider(name).media_subdir)
-            if path not in dirs and os.path.isdir(path):
+            if path not in dirs and os.path.isdir(path) and not is_permanent(path):
                 dirs.append(path)
         return dirs
 
@@ -71,7 +72,8 @@ class Command(BaseCommand):
             for name in sorted(os.listdir(directory)):
                 path = os.path.join(directory, name)
                 relative = os.path.relpath(path, media_root)
-                if not os.path.isfile(path):
+                # Published podcast episodes are permanent (office/audio_retention.py).
+                if not os.path.isfile(path) or is_permanent(path):
                     continue
 
                 if self._is_build_file(path, name) and os.path.getmtime(path) < cutoff:

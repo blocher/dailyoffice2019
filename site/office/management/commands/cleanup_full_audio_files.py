@@ -7,6 +7,7 @@ from mutagen.id3 import ID3NoHeaderError
 from mutagen.mp3 import MP3
 
 from office.api.views.tts import get_tts_provider, provider_names
+from office.audio_retention import is_permanent
 
 
 class Command(BaseCommand):
@@ -31,7 +32,7 @@ class Command(BaseCommand):
         for name in provider_names():
             subdir = get_tts_provider(name).media_subdir
             path = os.path.join(media_root, subdir)
-            if path not in dirs and os.path.isdir(path):
+            if path not in dirs and os.path.isdir(path) and not is_permanent(path):
                 dirs.append(path)
         return dirs
 
@@ -78,7 +79,9 @@ class Command(BaseCommand):
                     continue
 
                 file_path = os.path.join(scan_dir, filename)
-                if not os.path.isfile(file_path):
+                # Podcast episodes are ffmpeg-built full tracks too, but they are
+                # published forever and must never be deleted.
+                if not os.path.isfile(file_path) or is_permanent(file_path):
                     continue
 
                 # Check file age

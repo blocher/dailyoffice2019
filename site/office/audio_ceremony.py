@@ -65,12 +65,17 @@ def announcement(office):
         "Family Prayer at the Close of Day",
     }
     commemorations = office.date.all_evening if evening else office.date.all
+    # Readings audio (office/readings_audio.py) names the service whose
+    # readings these are: "Readings for Morning Prayer on Tuesday, ...".
+    readings = getattr(office, "tag", None) == "readings"
+    if readings:
+        commemorations = office.audio_commemorations
     # Expand historical years before the TTS pipeline expands ordinary quantities.
     names = " and ".join(
         re.sub(
             r"(?<![\w,])(?:\d{3,4}|\d,\d{3})(?![\w]|,\d)",
             lambda match: num2words(int(match.group().replace(",", "")), to="year", lang="en"),
-            commemoration.name,
+            re.sub(r"<[^>]+>", "", commemoration.name) if readings else commemoration.name,
         )
         for commemoration in commemorations
     )
@@ -79,7 +84,8 @@ def announcement(office):
     )
     day = office.date.date
     year = num2words(day.year, to="year", lang="en")
-    return f"{name} for {day:%A}, {day:%B} {spoken_day(day.day)}, {year}: {names}."
+    joiner = "on" if readings else "for"
+    return f"{name} {joiner} {day:%A}, {day:%B} {spoken_day(day.day)}, {year}: {names}."
 
 
 def bell_track(asset, module, identifier, base_url, before=0, after=0):
