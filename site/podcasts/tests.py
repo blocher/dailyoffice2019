@@ -375,6 +375,31 @@ class BuildEpisodeTests(MediaRootMixin, TestCase):
             self.assertIsNone(builder.build_episode(catalog.get_feed("holy-eucharist-readings"), self.day))
         self.mocks["podcasts.builder.render_office_audio"].assert_not_called()
 
+    def eucharist_days(self, *proper):
+        """Give only the ``proper`` days (YYYY-MM-DD) their own Eucharistic readings."""
+        calendar_date = self.mocks["podcasts.builder.get_calendar_date"]
+        calendar_date.side_effect = lambda day: SimpleNamespace(**vars(calendar_date.return_value), day=day)
+        patcher = patch("podcasts.builder.has_proper_eucharist", side_effect=lambda calendar: calendar.day in proper)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def test_first_episode_day_only_for_an_empty_feed_on_a_day_without_readings(self):
+        self.eucharist_days("2026-10-11", "2026-10-14")
+        eucharist = catalog.get_feed("holy-eucharist-readings")
+        self.assertEqual(builder.first_episode_day(eucharist, date(2026, 10, 13)), date(2026, 10, 11))
+        self.assertIsNone(builder.first_episode_day(eucharist, date(2026, 10, 14)))  # today has its own
+        self.assertIsNone(builder.first_episode_day(self.feed, date(2026, 10, 13)))  # publishes every day
+        builder.build_episode(eucharist, date(2026, 10, 11))
+        self.assertIsNone(builder.first_episode_day(eucharist, date(2026, 10, 13)))  # already has one
+
+    def test_an_empty_eucharist_feed_starts_with_the_most_recent_day_with_readings(self):
+        self.eucharist_days("2026-10-04", "2026-10-11")
+        with patch("django.utils.timezone.localdate", return_value=date(2026, 10, 14)):
+            for _ in range(2):
+                call_command("build_podcast_episodes", "--feed=holy-eucharist-readings", stdout=StringIO())
+        self.assertEqual(list(PodcastEpisode.objects.values_list("date", flat=True)), [date(2026, 10, 11)])
+        self.mocks["podcasts.builder.render_office_audio"].assert_called_once()
+
     def test_command_reports_and_continues_after_failures(self):
         self.mocks["podcasts.builder.render_office_audio"].side_effect = [builder.EpisodeBuildError("no"), self.data]
         out, err = StringIO(), StringIO()

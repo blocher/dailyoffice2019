@@ -18,6 +18,7 @@ import os
 import subprocess
 import tempfile
 from contextlib import contextmanager
+from datetime import timedelta
 from pathlib import Path
 
 from django.conf import settings
@@ -30,13 +31,15 @@ from churchcal.calculations import get_calendar_date
 from office.api.views.index import AUDIO_GENERATION_REQUIRED
 from office.audio_retention import podcast_media_root
 from office.readings_audio import has_proper_eucharist
-from podcasts import episodes
+from podcasts import episodes, rss
 from podcasts.catalog import AUTHOR
 from podcasts.models import PodcastEpisode
 
 logger = logging.getLogger(__name__)
 
 ARTWORK_DIR = Path(__file__).parent / "artwork"
+# How far back first_episode_day looks; every Sunday has its own readings.
+FIRST_EPISODE_SEARCH_DAYS = 60
 
 
 class EpisodeBuildError(Exception):
@@ -69,6 +72,23 @@ def build_lock():
 
 def is_publishable(feed, calendar_date):
     return not feed.proper_days_only or has_proper_eucharist(calendar_date)
+
+
+def first_episode_day(feed, today):
+    """The earlier day to build so a feed that skips days isn't left empty.
+
+    Holy Eucharist Readings publishes only on days with their own readings, so a
+    new feed could go a week with no episode, and directories turn down an empty
+    feed. While it has no published episode and today has no readings of its
+    own, its first episode is the most recent day that did. None otherwise.
+    """
+    if not feed.proper_days_only or rss.published_episodes(feed.slug).exists():
+        return None
+    for offset in range(FIRST_EPISODE_SEARCH_DAYS):
+        day = today - timedelta(days=offset)
+        if is_publishable(feed, get_calendar_date(day.strftime("%Y-%m-%d"))):
+            return day if offset else None
+    return None
 
 
 def render_office_audio(feed, day):

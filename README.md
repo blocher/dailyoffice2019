@@ -712,7 +712,9 @@ cache, but nothing under `uploads/podcasts/` is ever deleted: `cleanup_full_audi
 **Schedule (kronos, installed by `deploy/server.sh`).**
 
 - `build_podcast_episodes` at 10:30 daily builds any missing episodes from yesterday through three days ahead.
-  Episodes go live in their feed at 3 a.m. Eastern on their day (`PODCAST_PUBLISH_HOUR`).
+  Episodes go live in their feed at 3 a.m. Eastern on their day (`PODCAST_PUBLISH_HOUR`). A Holy Eucharist Readings
+  feed with no published episode yet, on a day without its own readings, also gets the most recent day that had them,
+  so a new feed isn't empty until Sunday (directories turn down an empty feed).
 - `notify_podcast_directories` at ten past each hour pings WebSub, Podcast Index, and Overcast for feeds with newly
   published episodes, so apps pick them up quickly. It only pings in production: `PODCAST_NOTIFY_DIRECTORIES`
   defaults to on when `DEBUG` is off and to off otherwise, so a development machine never announces the public feeds.
