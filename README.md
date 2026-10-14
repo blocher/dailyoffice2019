@@ -677,7 +677,7 @@ connection limits are in `deploy/gunicorn_config.py` and `DATABASES` in `site/we
 ## Podcasts
 
 The site publishes 20 podcast feeds (`site/podcasts/`), listed at
-[dailyoffice2019.com/podcasts](https://www.dailyoffice2019.com/podcasts) and in the menu. Every feed comes in
+[dailyoffice2019.com/podcasts](https://www.dailyoffice2019.com/podcasts). Every feed comes in
 contemporary language (ESV, Renewed Coverdale Psalter) and in traditional language (KJV, Coverdale Psalter):
 *Morning Prayer*, *Morning Prayer (Traditional Language)*, and so on.
 
@@ -731,7 +731,7 @@ readings). Redraw it after changing the catalog with `python manage.py build_pod
 
 ### Publishing to podcast directories
 
-Every directory lists each feed as its own show, so each step below is repeated for all 18 feeds.
+Every directory lists each feed as its own show, so each step below is repeated for all 20 feeds.
 `python manage.py podcast_submission_checklist` prints every feed URL and which listings are still missing.
 Directories confirm ownership by emailing the feed's owner address, `feedback@dailyoffice2019.com`. Submit only
 after the first episodes are live: directories need at least one episode.
@@ -758,6 +758,9 @@ As each directory approves a show, add its public URL in the Django admin under 
 listings** (feed slug, platform, URL). The landing page then shows it in that feed's Subscribe sheet. Until then the
 sheet offers direct "open in app" links (Apple Podcasts, Overcast, Pocket Casts, Castro, AntennaPod, Podcast Addict)
 and the RSS link, which work before any directory approves the show.
+
+Until the main listings are in, the app doesn't point to the page: the menu entry and the audio player's "Listen in
+your podcast app" link are off. Turn them on with `PODCASTS_PROMOTED` in `app/src/helpers/podcasts.js`.
 
 Apple, Spotify, YouTube, and Amazon have no public API for submitting a new show, so steps 2–8 need someone signed in
 to the owner's accounts. After approval nothing more is needed: every directory polls the feed for new episodes.
