@@ -125,6 +125,24 @@ describe('Podcasts landing page', () => {
     wrapper.unmount();
   });
 
+  it('offers the human-voice podcast before our own', async () => {
+    getItemMock.mockResolvedValue('contemporary');
+    const wrapper = await mountPage();
+    const aside = wrapper.find('.podcast-alternative');
+    const ours = wrapper.find('.podcasts-ours');
+    expect(aside.text()).toContain('Prefer a human voice?');
+    expect(aside.text()).toContain('The Daily Office Podcast.');
+    expect(aside.find('a').attributes('href')).toBe(
+      'https://example.com/spotify'
+    );
+    expect(
+      aside.element.compareDocumentPosition(ours.element) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+    expect(ours.find('.podcast-card').exists()).toBe(true);
+    wrapper.unmount();
+  });
+
   it('links the latest episode to the office inside the app', async () => {
     getItemMock.mockResolvedValue('contemporary');
     const wrapper = await mountPage();

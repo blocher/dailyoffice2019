@@ -4,144 +4,49 @@
       <p class="eyebrow">Listen</p>
       <h1 class="page-title">Podcasts</h1>
       <p class="page-lede">
-        Pray the Daily Office from your podcast app. A new episode of every
-        office arrives each day, with the same prayers, readings, and voices as
-        Listen in the app, and a link to pray along with the text.
+        The Daily Office’s audio player, delivered to your podcast app, with a
+        link to pray along with the text.
       </p>
     </header>
 
     <ul class="podcast-points" aria-label="About the podcasts">
       <li>
         <UiIcon name="calendar" class="podcast-points__icon" />
-        <span
-          ><strong>New every day.</strong> Each day’s episodes are ready by
-          3&nbsp;a.m. Eastern.</span
-        >
+        In your feed daily
       </li>
       <li>
-        <UiIcon name="book" class="podcast-points__icon" />
-        <span
-          ><strong>Pray along.</strong> Every episode links to that day’s office
-          with the podcast’s settings.</span
-        >
+        <UiIcon name="library" class="podcast-points__icon" />
+        Every office
+      </li>
+      <li>
+        <UiIcon name="book-text" class="podcast-points__icon" />
+        Contemporary or traditional
       </li>
       <li>
         <UiIcon name="heart" class="podcast-points__icon" />
-        <span
-          ><strong>Free.</strong> No ads, no account, in any podcast app.</span
-        >
+        Free
       </li>
     </ul>
 
-    <div class="podcasts-style">
-      <UiSegmented
-        v-model="style"
-        :options="styleOptions"
-        aria-label="Language of the podcasts"
-      />
-      <p class="podcasts-style__note">{{ styleNote }}</p>
-    </div>
-
-    <Loading v-if="loading" />
-    <UiAlert v-if="error" tone="error" :title="error">
-      <UiButton variant="secondary" size="sm" @click="load">Try again</UiButton>
-    </UiAlert>
-
-    <template v-if="!loading && !error">
-      <section
-        v-for="group in groups"
-        :key="group.slug"
-        class="podcast-group"
-        :aria-labelledby="`podcast-group-${group.slug}`"
-      >
-        <div class="podcast-group__head">
-          <h2 :id="`podcast-group-${group.slug}`" class="section-title">
-            {{ group.title }}
-          </h2>
-          <p class="podcast-group__lede">{{ group.description }}</p>
-        </div>
-        <ul class="podcast-grid">
-          <li
-            v-for="feed in feedsIn(group.slug)"
-            :key="feed.slug"
-            class="podcast-card surface"
-          >
-            <img
-              class="podcast-card__art"
-              :src="feed.artwork_small_url"
-              alt=""
-              width="600"
-              height="600"
-              loading="lazy"
-            />
-            <div class="podcast-card__body">
-              <h3 class="podcast-card__title">{{ feed.title }}</h3>
-              <p class="podcast-card__subtitle">{{ feed.subtitle }}</p>
-              <p v-if="feed.latest_episode" class="podcast-card__latest">
-                <span class="eyebrow">Latest</span>
-                {{ feed.latest_episode.title }}
-                <span class="podcast-card__duration"
-                  >({{ minutes(feed.latest_episode.duration) }})</span
-                >
-              </p>
-              <p v-else class="podcast-card__latest podcast-card__latest--soon">
-                The first episodes are on their way.
-              </p>
-            </div>
-            <div class="cluster podcast-card__actions">
-              <UiButton
-                variant="primary"
-                size="sm"
-                icon="podcast"
-                @click="openSubscribe(feed)"
-              >
-                Subscribe
-              </UiButton>
-              <UiButton
-                v-if="feed.latest_episode"
-                variant="ghost"
-                size="sm"
-                :icon="playing === feed.slug ? 'pause' : 'play'"
-                :aria-pressed="playing === feed.slug ? 'true' : 'false'"
-                @click="togglePreview(feed)"
-              >
-                {{ playing === feed.slug ? 'Pause' : 'Play latest' }}
-              </UiButton>
-              <UiButton
-                v-if="feed.latest_episode"
-                variant="quiet"
-                size="sm"
-                :to="followAlongHref(feed)"
-              >
-                {{ feed.is_readings ? 'Read along' : 'Pray along' }}
-              </UiButton>
-            </div>
-          </li>
-        </ul>
-      </section>
-    </template>
-
-    <div class="divider"><Ornament glyph="v" /></div>
-
-    <section
+    <aside
       v-if="alternative"
-      class="podcast-alternative surface"
+      class="podcast-alternative"
       aria-labelledby="podcast-alternative-title"
     >
       <UiIcon name="mic" class="podcast-alternative__icon" />
-      <div>
-        <h2 id="podcast-alternative-title" class="section-title">
+      <div class="podcast-alternative__body">
+        <h2 id="podcast-alternative-title" class="podcast-alternative__title">
           Prefer a human voice?
         </h2>
         <p>
           <strong>{{ alternative.title }}.</strong>
           {{ alternative.description }}
         </p>
-        <div class="cluster">
+        <div class="podcast-alternative__links">
           <UiButton
             v-for="link in alternative.links"
             :key="link.platform"
-            variant="secondary"
+            variant="quiet"
             size="sm"
             :icon="platformIcon(link.platform)"
             :href="link.url"
@@ -151,7 +56,113 @@
           </UiButton>
         </div>
       </div>
+    </aside>
+
+    <section class="podcasts-ours" aria-labelledby="podcasts-ours-title">
+      <div class="podcasts-ours__head">
+        <h2 id="podcasts-ours-title" class="podcasts-ours__title">
+          Our podcasts
+        </h2>
+        <p class="podcasts-ours__lede">
+          Choose a language, then subscribe to the offices you pray.
+        </p>
+      </div>
+
+      <div class="podcasts-style">
+        <UiSegmented
+          v-model="style"
+          :options="styleOptions"
+          aria-label="Language of the podcasts"
+        />
+        <p class="podcasts-style__note">{{ styleNote }}</p>
+      </div>
+
+      <Loading v-if="loading" />
+      <UiAlert v-if="error" tone="error" :title="error">
+        <UiButton variant="secondary" size="sm" @click="load"
+          >Try again</UiButton
+        >
+      </UiAlert>
+
+      <template v-if="!loading && !error">
+        <section
+          v-for="group in groups"
+          :key="group.slug"
+          class="podcast-group"
+          :aria-labelledby="`podcast-group-${group.slug}`"
+        >
+          <div class="podcast-group__head">
+            <h3 :id="`podcast-group-${group.slug}`" class="section-title">
+              {{ group.title }}
+            </h3>
+            <p class="podcast-group__lede">{{ group.description }}</p>
+          </div>
+          <ul class="podcast-grid">
+            <li
+              v-for="feed in feedsIn(group.slug)"
+              :key="feed.slug"
+              class="podcast-card surface"
+            >
+              <img
+                class="podcast-card__art"
+                :src="feed.artwork_small_url"
+                alt=""
+                width="600"
+                height="600"
+                loading="lazy"
+              />
+              <div class="podcast-card__body">
+                <h4 class="podcast-card__title">{{ feed.title }}</h4>
+                <p class="podcast-card__subtitle">{{ feed.subtitle }}</p>
+                <p v-if="feed.latest_episode" class="podcast-card__latest">
+                  <span class="eyebrow">Latest</span>
+                  {{ feed.latest_episode.title }}
+                  <span class="podcast-card__duration"
+                    >({{ minutes(feed.latest_episode.duration) }})</span
+                  >
+                </p>
+                <p
+                  v-else
+                  class="podcast-card__latest podcast-card__latest--soon"
+                >
+                  The first episodes are on their way.
+                </p>
+              </div>
+              <div class="cluster podcast-card__actions">
+                <UiButton
+                  variant="primary"
+                  size="sm"
+                  icon="podcast"
+                  @click="openSubscribe(feed)"
+                >
+                  Subscribe
+                </UiButton>
+                <UiButton
+                  v-if="feed.latest_episode"
+                  variant="ghost"
+                  size="sm"
+                  :icon="playing === feed.slug ? 'pause' : 'play'"
+                  :aria-pressed="playing === feed.slug ? 'true' : 'false'"
+                  @click="togglePreview(feed)"
+                >
+                  {{ playing === feed.slug ? 'Pause' : 'Play latest' }}
+                </UiButton>
+                <UiButton
+                  v-if="feed.latest_episode"
+                  variant="quiet"
+                  size="sm"
+                  :to="followAlongHref(feed)"
+                >
+                  {{ feed.is_readings ? 'Read along' : 'Pray along' }}
+                </UiButton>
+              </div>
+            </li>
+          </ul>
+        </section>
+      </template>
     </section>
+
+    <div class="divider"><Ornament glyph="v" /></div>
 
     <section class="podcast-faq" aria-labelledby="podcast-faq-title">
       <h2 id="podcast-faq-title" class="section-title">Questions</h2>
@@ -463,8 +474,10 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .podcast-points {
-  display: grid;
-  gap: var(--space-3);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3) var(--space-6);
   margin: 0 auto var(--space-6);
   padding: 0;
   max-width: 52rem;
@@ -473,29 +486,98 @@ onBeforeUnmount(() => {
 
 .podcast-points li {
   display: flex;
-  align-items: flex-start;
-  gap: var(--space-3);
-  color: var(--ink-soft);
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--ink);
   font-size: var(--text-md);
   line-height: var(--leading-ui);
-}
-
-.podcast-points strong {
-  color: var(--ink);
-  font-weight: 600;
+  white-space: nowrap;
 }
 
 .podcast-points__icon {
   flex: 0 0 auto;
-  margin-top: 0.2em;
   font-size: 1.15rem;
   color: var(--accent);
 }
 
-@media (min-width: 768px) {
-  .podcast-points {
-    grid-template-columns: repeat(3, 1fr);
+/* A neighbor's podcast, set apart before our own so it isn't buried. */
+.podcast-alternative {
+  display: flex;
+  gap: var(--space-3);
+  max-width: 52rem;
+  margin: 0 auto var(--space-7);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent-rule);
+  border-radius: var(--radius);
+  background-color: var(--paper-sunken);
+}
+
+.podcast-alternative__icon {
+  flex: 0 0 auto;
+  margin-top: 0.15em;
+  font-size: 1.25rem;
+  color: var(--accent);
+}
+
+.podcast-alternative__body {
+  min-width: 0;
+}
+
+.podcast-alternative__title {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+  color: var(--ink);
+}
+
+.podcast-alternative p {
+  margin: var(--space-1) 0 var(--space-3);
+  color: var(--ink-soft);
+  font-size: var(--text-sm);
+  line-height: var(--leading-prose);
+}
+
+.podcast-alternative strong {
+  color: var(--ink);
+}
+
+/* Borderless links pulled to the text's edge keep the box small. */
+.podcast-alternative__links {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: calc(-1 * 0.7rem);
+}
+
+@media (max-width: 480px) {
+  .podcast-alternative {
+    padding: var(--space-4);
   }
+
+  .podcast-alternative__icon {
+    display: none;
+  }
+}
+
+.podcasts-ours__head {
+  margin-bottom: var(--space-4);
+  text-align: center;
+}
+
+.podcasts-ours__title {
+  font-size: var(--text-xl);
+  font-weight: 400;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.1em;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.podcasts-ours__lede {
+  margin: var(--space-1) 0 0;
+  color: var(--ink-soft);
+  font-style: italic;
 }
 
 .podcasts-style {
@@ -627,29 +709,6 @@ onBeforeUnmount(() => {
 .podcast-card__actions {
   grid-column: 2;
   align-self: end;
-}
-
-.podcast-alternative {
-  display: flex;
-  gap: var(--space-4);
-  padding: var(--space-5);
-  margin-bottom: var(--space-7);
-}
-
-.podcast-alternative p {
-  margin: var(--space-2) 0 var(--space-4);
-  color: var(--ink-soft);
-  line-height: var(--leading-prose);
-}
-
-.podcast-alternative strong {
-  color: var(--ink);
-}
-
-.podcast-alternative__icon {
-  flex: 0 0 auto;
-  font-size: 1.5rem;
-  color: var(--accent);
 }
 
 .podcast-faq {
