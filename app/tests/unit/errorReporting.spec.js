@@ -144,6 +144,11 @@ describe('error reporting', () => {
             'ResizeObserver loop completed with undelivered notifications.',
         }),
         fakeEvent({
+          errorClass: 'SecurityError',
+          errorMessage:
+            "Failed to read the 'sessionStorage' property from 'Window': Access is denied for this document.",
+        }),
+        fakeEvent({
           stacktrace: [{ file: 'chrome-extension://abc/content.js' }],
         }),
         fakeEvent(

@@ -29,6 +29,11 @@ const STALE_CHUNK =
   /ChunkLoadError|Loading chunk \S+ failed|Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module|Unable to preload CSS/i;
 // A browser quirk, not a bug: the observer simply skipped a frame.
 const RESIZE_OBSERVER = /ResizeObserver loop/i;
+// The browser refusing storage access (blocked site data, restricted
+// embedded views). Reading the property throws inside vue-router and other
+// libraries, which the app can't wrap; our own storage use already copes.
+const STORAGE_DENIED =
+  /SecurityError.*Failed to read the '(local|session)Storage' property.*Access is denied/i;
 const EXTENSION_FILE =
   /^(chrome|moz|safari|safari-web|ms-browser)-extension:\/\//i;
 // Requests that never reached the server (offline, timed out, cancelled).
@@ -42,6 +47,7 @@ export function isNoise(event) {
   if (!error) return false;
   const text = `${error.errorClass || ''}: ${error.errorMessage || ''}`;
   if (STALE_CHUNK.test(text) || RESIZE_OBSERVER.test(text)) return true;
+  if (STORAGE_DENIED.test(text)) return true;
   if ((error.stacktrace || []).some((f) => EXTENSION_FILE.test(f.file || ''))) {
     return true;
   }
