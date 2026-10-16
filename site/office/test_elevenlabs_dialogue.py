@@ -175,6 +175,7 @@ class DialogueTests(SimpleTestCase):
         for failure, attempts in (
             (requests.Timeout("private"), 3),
             (requests.ConnectionError("private"), 3),
+            (requests.exceptions.ChunkedEncodingError("private"), 3),
             (Mock(status_code=503, headers={}), 3),
             (Mock(status_code=400, headers={}), 1),
         ):
