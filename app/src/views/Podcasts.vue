@@ -66,6 +66,15 @@
         <p class="podcasts-ours__lede">
           Choose a language, then subscribe to the offices you pray.
         </p>
+        <p v-if="customOptions" class="podcasts-ours__custom">
+          <UiIcon name="sliders" />
+          <span>
+            Want your own settings?
+            <button type="button" class="text-link" @click="showCustom">
+              Make your own podcast
+            </button>
+          </span>
+        </p>
       </div>
 
       <div class="podcasts-style">
@@ -162,6 +171,11 @@
       </template>
     </section>
 
+    <template v-if="!loading && !error && customOptions">
+      <div class="divider"><Ornament glyph="v" /></div>
+      <CustomPodcastBuilder :options="customOptions" />
+    </template>
+
     <div class="divider"><Ornament glyph="v" /></div>
 
     <section class="podcast-faq" aria-labelledby="podcast-faq-title">
@@ -181,8 +195,49 @@
           Version and the Renewed Coverdale Psalter; the traditional-language
           podcasts use the King James Version and the Coverdale Psalter. To pray
           with your own settings, turn on
-          <router-link to="/">Listen</router-link> in any office, or try making
-          your own podcast below.
+          <router-link to="/">Listen</router-link> in any office, or make your
+          own podcast above.
+        </p>
+      </UiDisclosure>
+      <UiDisclosure
+        v-if="customOptions"
+        title="How does making my own podcast work?"
+      >
+        <p>
+          Choose an office or the readings, then use your current settings or
+          customize them for that podcast alone; your own settings stay as they
+          are. You get a private feed link to add to your podcast app. It keeps
+          the last {{ customOptions.window_days || 7 }} days, with each new
+          day’s episode at {{ customOptions.publish_hour || 2 }}&nbsp;a.m.
+          Eastern, and it is read in English from the ESV or the KJV, the two
+          translations the voices read.
+        </p>
+        <p>
+          This is new and experimental, so please
+          <a href="mailto:feedback@dailyoffice2019.com">tell us</a> how it works
+          for you.
+        </p>
+      </UiDisclosure>
+      <UiDisclosure
+        v-if="customOptions"
+        title="Can I change my podcast’s settings later?"
+      >
+        <p>
+          Not in place. Make another podcast with the new settings, subscribe to
+          it, and unsubscribe from the old one. Making a podcast with the same
+          settings again gives you the same link.
+        </p>
+      </UiDisclosure>
+      <UiDisclosure
+        v-if="customOptions"
+        title="Is my own podcast private? Can I use it in Spotify?"
+      >
+        <p>
+          Your feed isn’t listed anywhere, but anyone with its link can listen,
+          so keep it to yourself. Spotify and YouTube Music can’t follow a
+          private feed like this one; use Apple Podcasts, Overcast, Pocket
+          Casts, or any app that adds a show by URL, or subscribe to our public
+          podcasts there instead.
         </p>
       </UiDisclosure>
       <UiDisclosure title="When do new episodes appear?">
@@ -217,11 +272,6 @@
         </p>
       </UiDisclosure>
     </section>
-
-    <template v-if="!loading && !error && customOptions">
-      <div class="divider"><Ornament glyph="v" /></div>
-      <CustomPodcastBuilder :options="customOptions" />
-    </template>
 
     <UiSheet
       :open="!!selected"
@@ -380,6 +430,13 @@ function appLinks(feed) {
     title: feed.title,
     appleUrl: apple ? apple.url : '',
   });
+}
+
+function showCustom() {
+  document
+    .getElementById('custom-podcast-title')
+    ?.closest('section')
+    ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function openSubscribe(feed) {
@@ -555,6 +612,28 @@ onBeforeUnmount(() => {
   margin: var(--space-1) 0 0;
   color: var(--ink-soft);
   font-style: italic;
+}
+
+.podcasts-ours__custom {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+
+.podcasts-ours__custom > .ui-icon {
+  flex: 0 0 auto;
+  color: var(--accent);
+}
+
+.text-link {
+  display: inline;
+  padding: 0;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
 }
 
 .podcasts-style {
