@@ -181,7 +181,8 @@
           Version and the Renewed Coverdale Psalter; the traditional-language
           podcasts use the King James Version and the Coverdale Psalter. To pray
           with your own settings, turn on
-          <router-link to="/">Listen</router-link> in any office.
+          <router-link to="/">Listen</router-link> in any office, or try making
+          your own podcast below.
         </p>
       </UiDisclosure>
       <UiDisclosure title="When do new episodes appear?">
@@ -216,6 +217,11 @@
         </p>
       </UiDisclosure>
     </section>
+
+    <template v-if="!loading && !error && customOptions">
+      <div class="divider"><Ornament glyph="v" /></div>
+      <CustomPodcastBuilder :options="customOptions" />
+    </template>
 
     <UiSheet
       :open="!!selected"
@@ -292,7 +298,9 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useStore } from 'vuex';
 import axios from 'axios';
 import { Clipboard } from '@capacitor/clipboard';
+import CustomPodcastBuilder from '@/components/CustomPodcastBuilder.vue';
 import Loading from '@/components/Loading.vue';
+import { podcastApps } from '@/helpers/podcasts';
 import { toast } from '@/ui/feedback';
 import { DynamicStorage } from '@/helpers/storage';
 
@@ -301,7 +309,12 @@ const STYLE_KEY = 'podcastStyle';
 const store = useStore();
 const loading = ref(true);
 const error = ref('');
-const catalog = ref({ groups: [], feeds: [], live_alternative: null });
+const catalog = ref({
+  groups: [],
+  feeds: [],
+  live_alternative: null,
+  custom: null,
+});
 const style = ref('contemporary');
 const selected = ref(null);
 const playing = ref(null);
@@ -320,6 +333,7 @@ const styleNote = computed(() =>
 
 const groups = computed(() => catalog.value.groups);
 const alternative = computed(() => catalog.value.live_alternative);
+const customOptions = computed(() => catalog.value.custom);
 
 // Every podcast comes in both languages; show the chosen one.
 function feedsIn(group) {
@@ -361,48 +375,11 @@ function platformIcon(platform) {
 
 // Subscribe links that work before (and without) a directory listing.
 function appLinks(feed) {
-  const url = feed.feed_url;
-  const bare = url.replace(/^https?:\/\//, '');
-  const encoded = encodeURIComponent(url);
   const apple = feed.listings.find((listing) => listing.platform === 'apple');
-  return [
-    {
-      name: 'Apple Podcasts',
-      platforms: 'iPhone, iPad, Mac',
-      icon: 'apple',
-      href: apple ? apple.url : `podcast://${bare}`,
-    },
-    {
-      name: 'Overcast',
-      platforms: 'iPhone, iPad',
-      icon: 'podcast',
-      href: `overcast://x-callback-url/add?url=${encoded}`,
-    },
-    {
-      name: 'Pocket Casts',
-      platforms: 'iPhone, Android',
-      icon: 'podcast',
-      href: `pktc://subscribe/${bare}`,
-    },
-    {
-      name: 'Castro',
-      platforms: 'iPhone',
-      icon: 'podcast',
-      href: `castros://subscribe/${bare}`,
-    },
-    {
-      name: 'AntennaPod',
-      platforms: 'Android',
-      icon: 'android',
-      href: `https://antennapod.org/deeplink/subscribe?url=${encoded}&title=${encodeURIComponent(feed.title)}`,
-    },
-    {
-      name: 'Podcast Addict',
-      platforms: 'Android',
-      icon: 'android',
-      href: `podcastaddict://${bare}`,
-    },
-  ];
+  return podcastApps(feed.feed_url, {
+    title: feed.title,
+    appleUrl: apple ? apple.url : '',
+  });
 }
 
 function openSubscribe(feed) {

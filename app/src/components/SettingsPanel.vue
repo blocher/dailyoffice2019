@@ -60,7 +60,14 @@ export default {
       type: Boolean,
       default: true,
     },
+    // A local copy of the settings to edit instead of the reader's own: the
+    // panel then reads these and emits update:values, and never saves.
+    values: {
+      type: Object,
+      default: null,
+    },
   },
+  emits: ['update:values'],
   data() {
     return {
       savedSettingName: '',
@@ -150,6 +157,9 @@ export default {
       await this.$store.dispatch('saveSettings', updatedSettings);
     },
     getActiveSettingValue(setting) {
+      if (this.values) {
+        return this.values[setting.name] ?? setting.options?.[0]?.value;
+      }
       if (
         Object.prototype.hasOwnProperty.call(
           this.localActiveSettingValues,
@@ -179,6 +189,10 @@ export default {
       }
     },
     onSettingChange(setting, value) {
+      if (this.values) {
+        this.$emit('update:values', { ...this.values, [setting.name]: value });
+        return;
+      }
       const previousValue = this.getActiveSettingValue(setting);
       this.setActiveSettingValue(setting.name, value);
       this.syncAvailableSettingActive(setting.name, value);
