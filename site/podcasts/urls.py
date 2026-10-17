@@ -1,6 +1,10 @@
 from django.urls import path
 
 from podcasts.views import (
+    CustomPodcastChaptersView,
+    CustomPodcastCreateView,
+    CustomPodcastEpisodeAudioView,
+    CustomPodcastFeedView,
     PodcastArtworkView,
     PodcastCatalogView,
     PodcastChaptersView,
@@ -20,4 +24,17 @@ urlpatterns = [
         name="podcast_chapters",
     ),
     path("podcasts/episodes/<path:path>", PodcastEpisodeAudioView.as_view(), name="podcast_episode_audio"),
+    # EXPERIMENTAL custom podcasts (podcasts/custom.py): private feeds behind a token.
+    path("api/v1/podcasts/custom", CustomPodcastCreateView.as_view(), name="custom_podcast_create"),
+    path("podcasts/custom/<slug:token>.xml", CustomPodcastFeedView.as_view(), name="custom_podcast_feed"),
+    path(
+        "podcasts/custom/<slug:token>/<int:year>-<int:month>-<int:day>.mp3",
+        CustomPodcastEpisodeAudioView.as_view(),
+        name="custom_podcast_episode_audio",
+    ),
+    path(
+        "podcasts/custom/<slug:token>/<int:year>-<int:month>-<int:day>.json",
+        CustomPodcastChaptersView.as_view(),
+        name="custom_podcast_chapters",
+    ),
 ]

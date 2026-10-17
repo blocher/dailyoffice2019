@@ -34,7 +34,7 @@ import uuid
 
 from mutagen.mp3 import MP3
 
-from office.audio_builds import ensure_generation_allowed
+from office.audio_builds import ensure_assembly_allowed
 
 logger = logging.getLogger(__name__)
 
@@ -116,7 +116,7 @@ def ensure_combined_track(concat_paths, file_path, expected_duration, sample_rat
     if duration:
         return duration
     # Web requests never encode; they defer the build (office/audio_builds.py).
-    ensure_generation_allowed()
+    ensure_assembly_allowed()
 
     with open(f"{file_path}{LOCK_SUFFIX}", "a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)

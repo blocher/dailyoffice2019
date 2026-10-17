@@ -66,12 +66,13 @@ def _sub(parent, tag, content=None, /, **attributes):
     return element
 
 
-def render_feed(feed, now=None):
-    """The feed XML as bytes."""
+def _channel(feed, self_url, artwork, private=False):
+    """The <rss> element and its <channel>, before any items."""
     rss = ET.Element("rss", {"version": "2.0"})
     channel = _sub(rss, "channel")
-    _sub(channel, f"{{{ATOM}}}link", href=feed_url(feed.slug), rel="self", type="application/rss+xml")
-    _sub(channel, f"{{{ATOM}}}link", href=WEBSUB_HUB, rel="hub")
+    _sub(channel, f"{{{ATOM}}}link", href=self_url, rel="self", type="application/rss+xml")
+    if not private:
+        _sub(channel, f"{{{ATOM}}}link", href=WEBSUB_HUB, rel="hub")
     _sub(channel, "title", feed.title)
     _sub(channel, "link", catalog.LANDING_PAGE_URL)
     _sub(channel, "description", feed.description)
@@ -80,7 +81,7 @@ def render_feed(feed, now=None):
     _sub(channel, "generator", "dailyoffice2019.com")
     _sub(channel, "ttl", 60)
     image = _sub(channel, "image")
-    _sub(image, "url", artwork_url(feed.slug))
+    _sub(image, "url", artwork)
     _sub(image, "title", feed.title)
     _sub(image, "link", catalog.LANDING_PAGE_URL)
 
@@ -90,15 +91,50 @@ def render_feed(feed, now=None):
     _sub(channel, f"{{{ITUNES}}}author", catalog.AUTHOR)
     _sub(channel, f"{{{ITUNES}}}type", "episodic")
     _sub(channel, f"{{{ITUNES}}}explicit", "false")
-    _sub(channel, f"{{{ITUNES}}}image", href=artwork_url(feed.slug))
+    _sub(channel, f"{{{ITUNES}}}image", href=artwork)
     _sub(channel, f"{{{ITUNES}}}keywords", ",".join(feed.keywords))
+    if private:
+        # Keep a listener's own feed out of Apple's directory and search.
+        _sub(channel, f"{{{ITUNES}}}block", "Yes")
     owner = _sub(channel, f"{{{ITUNES}}}owner")
     _sub(owner, f"{{{ITUNES}}}name", catalog.OWNER_NAME)
     _sub(owner, f"{{{ITUNES}}}email", catalog.OWNER_EMAIL)
     category, subcategory = catalog.CATEGORY
     parent = _sub(channel, f"{{{ITUNES}}}category", text=category)
     _sub(parent, f"{{{ITUNES}}}category", text=subcategory)
+    return rss, channel
 
+
+def _item(channel, episode, audio_url, artwork, chapters=None):
+    """One <item>. ``episode`` has the show notes, guid, size, and duration of a recorded episode."""
+    item = _sub(channel, "item")
+    _sub(item, "title", episode.title)
+    _sub(item, f"{{{ITUNES}}}title", episode.title)
+    _sub(item, "link", episode.follow_along_url)
+    _sub(item, "description", episode.description_html)
+    _sub(item, f"{{{CONTENT}}}encoded", episode.description_html)
+    _sub(item, f"{{{ITUNES}}}summary", episode.summary)
+    _sub(item, "guid", episode.guid, isPermaLink="false")
+    _sub(item, "pubDate", format_datetime(episode.published_at))
+    _sub(item, "enclosure", url=audio_url, length=episode.file_size, type="audio/mpeg")
+    _sub(item, f"{{{ITUNES}}}duration", itunes_duration(episode.duration))
+    _sub(item, f"{{{ITUNES}}}episodeType", "full")
+    _sub(item, f"{{{ITUNES}}}explicit", "false")
+    _sub(item, f"{{{ITUNES}}}image", href=artwork)
+    if chapters:
+        _sub(item, f"{{{PODCAST}}}chapters", url=chapters, type="application/json+chapters")
+    return item
+
+
+def _serialize(rss):
+    ET.indent(rss, space="  ")
+    return b'<?xml version="1.0" encoding="UTF-8"?>\n' + ET.tostring(rss, encoding="utf-8")
+
+
+def render_feed(feed, now=None):
+    """The feed XML as bytes."""
+    artwork = artwork_url(feed.slug)
+    rss, channel = _channel(feed, feed_url(feed.slug), artwork)
     _sub(channel, f"{{{PODCAST}}}guid", podcast_guid(feed.slug))
     _sub(channel, f"{{{PODCAST}}}locked", "yes", owner=catalog.OWNER_EMAIL)
     _sub(channel, f"{{{PODCAST}}}medium", "podcast")
@@ -109,22 +145,40 @@ def render_feed(feed, now=None):
             _sub(podroll, f"{{{PODCAST}}}remoteItem", feedGuid=podcast_guid(other.slug), feedUrl=feed_url(other.slug))
 
     for episode in published_episodes(feed.slug, now):
-        item = _sub(channel, "item")
-        _sub(item, "title", episode.title)
-        _sub(item, f"{{{ITUNES}}}title", episode.title)
-        _sub(item, "link", episode.follow_along_url)
-        _sub(item, "description", episode.description_html)
-        _sub(item, f"{{{CONTENT}}}encoded", episode.description_html)
-        _sub(item, f"{{{ITUNES}}}summary", episode.summary)
-        _sub(item, "guid", episode.guid, isPermaLink="false")
-        _sub(item, "pubDate", format_datetime(episode.published_at))
-        _sub(item, "enclosure", url=episode_audio_url(episode), length=episode.file_size, type="audio/mpeg")
-        _sub(item, f"{{{ITUNES}}}duration", itunes_duration(episode.duration))
-        _sub(item, f"{{{ITUNES}}}episodeType", "full")
-        _sub(item, f"{{{ITUNES}}}explicit", "false")
-        _sub(item, f"{{{ITUNES}}}image", href=artwork_url(feed.slug))
-        if episode.chapters:
-            _sub(item, f"{{{PODCAST}}}chapters", url=chapters_url(episode), type="application/json+chapters")
+        _item(
+            channel,
+            episode,
+            episode_audio_url(episode),
+            artwork,
+            chapters=chapters_url(episode) if episode.chapters else None,
+        )
+    return _serialize(rss)
 
-    ET.indent(rss, space="  ")
-    return b'<?xml version="1.0" encoding="UTF-8"?>\n' + ET.tostring(rss, encoding="utf-8")
+
+def custom_feed_url(token):
+    return f"{base_url()}/podcasts/custom/{token}.xml"
+
+
+def custom_episode_url(token, day, extension="mp3"):
+    return f"{base_url()}/podcasts/custom/{token}/{day:%Y-%m-%d}.{extension}"
+
+
+def render_custom_feed(feed, token, episodes):
+    """A listener's own feed (see ``podcasts.custom``): private, with only ``episodes``.
+
+    ``feed`` is the custom feed's ``PodcastFeed``; its ``slug`` names the public
+    feed whose cover art it borrows. No hub, guid, or podroll: it is never listed.
+    """
+    artwork = artwork_url(feed.slug)
+    rss, channel = _channel(feed, custom_feed_url(token), artwork, private=True)
+    _sub(channel, f"{{{PODCAST}}}medium", "podcast")
+    _sub(channel, f"{{{PODCAST}}}funding", "Support the Daily Office", url=catalog.SUPPORT_URL)
+    for episode in episodes:
+        _item(
+            channel,
+            episode,
+            custom_episode_url(token, episode.date),
+            artwork,
+            chapters=custom_episode_url(token, episode.date, "json") if episode.chapters else None,
+        )
+    return _serialize(rss)

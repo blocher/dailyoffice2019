@@ -32,6 +32,10 @@ from django.db import connections
 logger = logging.getLogger(__name__)
 
 GENERATION_DEFERRED = ContextVar("audio_generation_deferred", default=False)
+# Within deferred generation, whether the combined track may still be
+# assembled (ffmpeg concat of clips that all exist). Only a custom podcast's
+# episode request allows it (see podcasts.custom); speech is never synthesized.
+ASSEMBLY_ALLOWED = ContextVar("audio_assembly_allowed", default=False)
 
 
 class AudioNotReady(Exception):
@@ -48,12 +52,20 @@ def ensure_generation_allowed():
         raise AudioNotReady()
 
 
+def ensure_assembly_allowed():
+    """Call before concatenating existing clips into a combined track."""
+    if GENERATION_DEFERRED.get() and not ASSEMBLY_ALLOWED.get():
+        raise AudioNotReady()
+
+
 @contextmanager
-def deferred_generation():
+def deferred_generation(allow_assembly=False):
     token = GENERATION_DEFERRED.set(True)
+    assembly = ASSEMBLY_ALLOWED.set(allow_assembly)
     try:
         yield
     finally:
+        ASSEMBLY_ALLOWED.reset(assembly)
         GENERATION_DEFERRED.reset(token)
 
 
@@ -110,6 +122,12 @@ def _get_executor():
             max_workers=max(1, settings.AUDIO_BUILD_WORKERS), thread_name_prefix="office-audio-build"
         )
     return _executor
+
+
+def pending_count():
+    """Builds queued or running in this process."""
+    with _lock:
+        return len(_pending)
 
 
 def schedule(identity, build):

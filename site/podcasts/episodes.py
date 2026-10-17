@@ -38,9 +38,10 @@ def short_name(name):
     return plain(name).split(", or the ")[0].strip()
 
 
-def published_at(day):
-    """Episodes appear at PODCAST_PUBLISH_HOUR (Eastern) on their own day."""
-    hour = getattr(settings, "PODCAST_PUBLISH_HOUR", 3)
+def published_at(day, hour=None):
+    """Episodes appear at PODCAST_PUBLISH_HOUR (Eastern) on their own day, or at ``hour``."""
+    if hour is None:
+        hour = getattr(settings, "PODCAST_PUBLISH_HOUR", 3)
     return datetime.combine(day, time(hour, 0), tzinfo=ZoneInfo("America/New_York"))
 
 

@@ -333,6 +333,14 @@ PODCAST_NOTIFY_DIRECTORIES = env.bool("PODCAST_NOTIFY_DIRECTORIES", default=not 
 # `notify_podcast_directories --add-to-podcast-index`.
 PODCAST_INDEX_API_KEY = env("PODCAST_INDEX_API_KEY", default="")
 PODCAST_INDEX_API_SECRET = env("PODCAST_INDEX_API_SECRET", default="")
+# EXPERIMENTAL custom podcasts (podcasts/custom.py): a listener's own feed of the
+# last seven days. Each day appears at this hour (America/New_York). Builds a
+# feed fetch queues stop while this many audio builds are pending, leaving the
+# rest of AUDIO_BUILD_MAX_PENDING to the in-app player. A not-yet-built episode
+# answers 503 with this Retry-After (seconds).
+CUSTOM_PODCAST_PUBLISH_HOUR = env.int("CUSTOM_PODCAST_PUBLISH_HOUR", default=2)
+CUSTOM_PODCAST_MAX_PENDING = env.int("CUSTOM_PODCAST_MAX_PENDING", default=8)
+CUSTOM_PODCAST_RETRY_AFTER = env.int("CUSTOM_PODCAST_RETRY_AFTER", default=60)
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
@@ -390,7 +398,10 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"],
-    "DEFAULT_THROTTLE_RATES": {"analytics_event": "240/hour"},
+    "DEFAULT_THROTTLE_RATES": {
+        "analytics_event": "240/hour",
+        "custom_podcast": env("CUSTOM_PODCAST_CREATE_RATE", default="20/hour"),
+    },
 }
 # IS this right?
 

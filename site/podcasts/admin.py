@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from podcasts.models import PodcastDirectoryListing, PodcastEpisode
+from podcasts.models import CustomPodcastFeed, PodcastDirectoryListing, PodcastEpisode
 
 
 @admin.register(PodcastEpisode)
@@ -17,3 +17,11 @@ class PodcastEpisodeAdmin(admin.ModelAdmin):
 class PodcastDirectoryListingAdmin(admin.ModelAdmin):
     list_display = ("feed_slug", "platform", "url", "order")
     list_filter = ("platform", "feed_slug")
+
+
+@admin.register(CustomPodcastFeed)
+class CustomPodcastFeedAdmin(admin.ModelAdmin):
+    list_display = ("token", "service", "created_at", "last_fetched_at")
+    list_filter = ("service",)
+    search_fields = ("token",)
+    readonly_fields = ("token", "service", "settings", "settings_hash", "created_at", "last_fetched_at")

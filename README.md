@@ -731,6 +731,17 @@ leather is red for the contemporary feeds and green for the traditional-language
 Prayer Book; a gold border marks the section (none for the Daily Office, rounded for Family Prayer, double for the
 readings). Redraw it after changing the catalog with `python manage.py build_podcast_artwork`.
 
+**Custom podcasts (experimental).** At the bottom of `/podcasts`, a listener can make a private feed of any office
+or readings with their own settings (`site/podcasts/custom.py`). `POST /api/v1/podcasts/custom` saves the service
+and normalized settings as a `CustomPodcastFeed` behind a short token (the same settings always return the same
+feed; `CUSTOM_PODCAST_CREATE_RATE` limits new feeds per IP). The feed, `/podcasts/custom/<token>.xml`, lists the last
+seven days, each appearing at 2 a.m. Eastern (`CUSTOM_PODCAST_PUBLISH_HOUR`), and is marked `itunes:block`. Episodes
+are the shared combined track the in-app player plays, rendered through the same API view, so they reuse every clip
+the public podcasts and the player have made; nothing is copied, re-encoded, or tagged, and nothing is written under
+`uploads/podcasts/`. There is no cron: a feed fetch lists only days already built and queues background builds
+(`office/audio_builds.py`) for the rest, and `/podcasts/custom/<token>/<date>.mp3` serves the recorded track, joins
+existing clips again if the track was cleaned up, or answers 503 with Retry-After while a missing clip is built.
+
 ### Publishing to podcast directories
 
 Every directory lists each feed as its own show, so each step below is repeated for all 20 feeds.

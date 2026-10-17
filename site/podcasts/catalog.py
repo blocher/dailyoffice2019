@@ -94,6 +94,9 @@ class PodcastFeed:
     proper_days_only: bool = False  # publish only days with proper Eucharistic readings
     keywords: tuple = field(default_factory=tuple)
     sort: int = 0
+    # A listener's own settings (a custom feed, see ``podcasts.custom``) in
+    # place of the style's fixed ones. Public feeds never set this.
+    custom_settings: dict = field(default=None, compare=False)
 
     @property
     def is_readings(self):
@@ -101,6 +104,8 @@ class PodcastFeed:
 
     @property
     def settings(self):
+        if self.custom_settings is not None:
+            return dict(self.custom_settings)
         traditional = self.style == TRADITIONAL
         if self.is_readings:
             return dict(TRADITIONAL_READINGS_SETTINGS if traditional else READINGS_SETTINGS)
@@ -144,13 +149,23 @@ class PodcastFeed:
 
     @property
     def style_label(self):
+        """'Contemporary language, English Standard Version (ESV), Renewed Coverdale Psalter', from the settings."""
+        settings = self.settings
         if self.is_readings:
-            if self.style == TRADITIONAL:
-                return "King James Version (KJV), Coverdale Psalter"
-            return "English Standard Version (ESV), Renewed Coverdale Psalter"
-        if self.style == TRADITIONAL:
-            return "Traditional prayer-book language, King James Version (KJV), Coverdale Psalter"
-        return "Contemporary language, English Standard Version (ESV), Renewed Coverdale Psalter"
+            translation, psalms, language = settings["translation"], settings["psalms"], None
+        else:
+            translation, psalms = settings["bible_translation"], settings["psalm_translation"]
+            language = settings["language_style"]
+        parts = [BIBLE_VERSIONS.get(translation, translation.upper())]
+        parts.append("Coverdale Psalter" if psalms == "traditional" else "Renewed Coverdale Psalter")
+        if language:
+            parts.insert(
+                0, "Traditional prayer-book language" if language == "traditional" else "Contemporary language"
+            )
+        return ", ".join(parts)
+
+
+BIBLE_VERSIONS = {"esv": "English Standard Version (ESV)", "kjv": "King James Version (KJV)"}
 
 
 def _office(slug, title, subtitle, about, group, service, office_name, evening=False, sort=0, keywords=()):
