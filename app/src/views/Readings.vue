@@ -270,6 +270,7 @@ import PrayModeSwitch from '@/components/PrayModeSwitch.vue';
 import PageNotFound from '@/views/PageNotFound.vue';
 import Loading from '@/components/Loading.vue';
 import setCalendarDate from '@/helpers/setCalendarDate';
+import { SessionStore } from '@/helpers/sessionStore';
 import CitationGroup from '@/components/CitationGroup.vue';
 import Reading from '@/components/Reading.vue';
 import Collects from '@/components/Collects.vue';
@@ -904,7 +905,7 @@ export default {
         this.$route.params.service !== serviceValues.service_name ||
         this.$route.params.position !== serviceValues.position
       ) {
-        window.sessionStorage.setItem('preventScroll', 'true');
+        SessionStore.setItem('preventScroll', 'true');
         await this.$router.push({
           name: routeName,
           params: {

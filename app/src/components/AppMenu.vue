@@ -49,6 +49,7 @@ import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
 import { openPanel, panels } from '@/helpers/panels';
 import { PODCASTS_PROMOTED } from '@/helpers/podcasts';
+import { SessionStore } from '@/helpers/sessionStore';
 
 const route = useRoute();
 const router = useRouter();
@@ -75,7 +76,7 @@ async function openExternal(url) {
 
 async function openCalendarSubscription() {
   close();
-  window.sessionStorage.setItem('calendarSubscriptionPanelMode', 'quick');
+  SessionStore.setItem('calendarSubscriptionPanelMode', 'quick');
   const fire = () =>
     window.dispatchEvent(
       new window.CustomEvent('open-calendar-subscription', {
