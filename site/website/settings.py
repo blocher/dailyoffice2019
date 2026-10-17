@@ -391,6 +391,14 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"],
     "DEFAULT_THROTTLE_RATES": {"analytics_event": "240/hour"},
+    # Answer in JSON whatever the Accept header says. Proxies such as Google
+    # Translate's drop the app's `Accept: application/json`, and the browsable
+    # API's HTML then broke every page. The browsable API stays for local work.
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+        *(["rest_framework.renderers.BrowsableAPIRenderer"] if DEBUG else []),
+    ],
+    "DEFAULT_CONTENT_NEGOTIATION_CLASS": "website.api_negotiation.FirstRendererFallbackNegotiation",
 }
 # IS this right?
 

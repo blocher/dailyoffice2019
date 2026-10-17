@@ -5,7 +5,7 @@ from django.core.cache import cache
 from django.http import FileResponse
 from django.utils import timezone
 from mutagen.mp3 import MP3
-from rest_framework.renderers import BaseRenderer, BrowsableAPIRenderer, JSONRenderer
+from rest_framework.renderers import BaseRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -89,7 +89,7 @@ class YearView(APIView):
 
 class CalendarFeedView(APIView):
     permission_classes = [ReadOnly]
-    renderer_classes = [CalendarFeedRenderer, JSONRenderer, BrowsableAPIRenderer]
+    renderer_classes = [CalendarFeedRenderer, JSONRenderer]
 
     def get(self, request, scope, canceled=False):
         try:
