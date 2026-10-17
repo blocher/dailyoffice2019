@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "app-prod-api",
+      "runtimeExecutable": "zsh",
+      "runtimeArgs": [
+        "-c",
+        "cd app && VITE_API_URL=https://api.dailyoffice2019.com/ npx vite --port 5199 --strictPort"
+      ],
+      "port": 5199
+    },
+    {
+      "name": "app-local-api",
+      "runtimeExecutable": "zsh",
+      "runtimeArgs": [
+        "-c",
+        "node .claude/local-api-proxy.cjs & cd app && VITE_API_URL=http://127.0.0.1:8017/ npx vite --port 5198 --strictPort"
+      ],
+      "port": 5198
+    }
+  ]
+}
