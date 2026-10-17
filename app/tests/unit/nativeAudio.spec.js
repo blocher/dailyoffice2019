@@ -7,7 +7,7 @@ import {
 const URL = 'https://api.example.com/api/v1/audio_track/office.mp3';
 
 // The NativeAudio Capacitor plugin: records calls, and lets a test push the
-// `status` events the Android player would send.
+// `status` events the Android or iOS player would send.
 class FakePlugin {
   constructor() {
     this.calls = [];
@@ -75,6 +75,7 @@ beforeEach(() => {
   element = new NativeAudioElement(plugin, {
     title: 'Morning Prayer',
     artist: 'The Daily Office',
+    artwork: 'icon.png',
   });
   events = [];
   record(element);
@@ -96,7 +97,7 @@ const ready = (extra = {}) =>
   });
 
 describe('createAudioElement', () => {
-  it('uses a real Audio element outside the Android app', () => {
+  it('uses a real Audio element outside the apps', () => {
     const audio = createAudioElement({ title: 'Compline' });
     expect(audio).toBeInstanceOf(window.HTMLAudioElement);
   });
@@ -111,7 +112,7 @@ describe('NativeAudioElement', () => {
     expect(element.seekable.length).toBe(0);
   });
 
-  it('loads the source with lock-screen metadata, reusing only the first time', () => {
+  it('loads the source with lock-screen metadata', () => {
     element.load();
     expect(plugin.calls[0]).toEqual([
       'setSource',
@@ -119,12 +120,14 @@ describe('NativeAudioElement', () => {
         url: URL,
         title: 'Morning Prayer',
         artist: 'The Daily Office',
+        artwork: 'icon.png',
         rate: 1,
-        reuse: true,
       },
     ]);
-    element.load();
-    expect(plugin.calls[1][1].reuse).toBe(false);
+  });
+
+  it('says that it reconnects by itself', () => {
+    expect(element.recoversOnItsOwn).toBe(true);
   });
 
   it('reports metadata and readiness as media events', () => {
@@ -209,6 +212,24 @@ describe('NativeAudioElement', () => {
     resolvePlay({ url: URL, state: 'ready', duration: 1328, playWhenReady: true });
     await settle();
     expect(element.paused).toBe(false);
+  });
+
+  it('catches up with a lock-screen pause once a failed command settles', async () => {
+    element.load();
+    await settle();
+    ready({ playWhenReady: true, isPlaying: true, position: 5 });
+    let rejectRate;
+    plugin.setRate.mockImplementation(
+      () => new Promise((_, reject) => (rejectRate = reject))
+    );
+    element.playbackRate = 1.5;
+    // Paused from the lock screen while the command is in flight.
+    ready({ playWhenReady: false, isPlaying: false, position: 6 });
+    expect(element.paused).toBe(false);
+    rejectRate(new Error('bridge busy'));
+    await settle();
+    expect(element.paused).toBe(true);
+    expect(events).toContain('pause');
   });
 
   it('pauses at once and tells the player', () => {

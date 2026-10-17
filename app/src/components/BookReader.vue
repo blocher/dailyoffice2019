@@ -222,6 +222,7 @@
 
 <script setup>
 import { computed, nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue';
+import { pauseOfficeAudio } from '@/helpers/audioTrack';
 import { displayState } from '@/helpers/displayPreferences';
 import { markBookViewSeen } from '@/helpers/discovery';
 import { notifyOnce } from '@/helpers/errorReporting';
@@ -1285,7 +1286,7 @@ async function onOpen() {
   anchor = null;
 
   // The audio player sits beneath the book; don't leave it playing unseen.
-  document.querySelectorAll('audio').forEach((audio) => audio.pause());
+  pauseOfficeAudio();
 
   window.history.pushState({ ...window.history.state, bookReader: true }, '');
   historyPushed = true;

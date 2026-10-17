@@ -3,8 +3,8 @@ import { shallowMount } from '@vue/test-utils';
 import AudioPlayer from '@/components/AudioPlayer.vue';
 import { NativeAudioElement } from '@/helpers/nativeAudio';
 
-// AudioPlayer driving the Android app's native player through
-// NativeAudioElement, with the Capacitor plugin faked.
+// AudioPlayer driving the apps' native player through NativeAudioElement,
+// with the Capacitor plugin faked.
 const URL = 'https://api.example.com/api/v1/audio_track/office.mp3';
 
 const native = vi.hoisted(() => ({ plugin: null }));
@@ -110,7 +110,7 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe('AudioPlayer on the native Android player', () => {
+describe('AudioPlayer on the native app player', () => {
   it('loads the office with its lock-screen title', async () => {
     const vm = mountPlayer();
     await flush();
@@ -119,7 +119,7 @@ describe('AudioPlayer on the native Android player', () => {
       url: URL,
       title: 'Morning Prayer',
       artist: 'The Daily Office',
-      reuse: true,
+      artwork: 'android-chrome-512x512.png',
     });
   });
 
@@ -161,7 +161,7 @@ describe('AudioPlayer on the native Android player', () => {
     expect(vm.currentTime).toBeCloseTo(333);
   });
 
-  it('reconnects in place when the player stalls with nothing arriving', async () => {
+  it('leaves the player to reconnect by itself while it buffers', async () => {
     const vm = mountPlayer();
     await flush();
     vm.startAudio();
@@ -174,13 +174,35 @@ describe('AudioPlayer on the native Android player', () => {
       playWhenReady: true,
     });
     expect(vm.loading).toBe(true);
+    await vi.advanceTimersByTimeAsync(5 * 60 * 1000);
+    window.dispatchEvent(new window.Event('online'));
+    await flush();
+    expect(plugin.count('setSource')).toBe(1);
+    playingAt(308);
+    expect(vm.loading).toBe(false);
+    expect(vm.isPlaying).toBe(true);
+  });
+
+  it('reloads in place when the player service goes away', async () => {
+    const vm = mountPlayer();
+    await flush();
+    vm.startAudio();
+    await flush();
+    playingAt(640);
+    plugin.listeners.forEach((callback) =>
+      callback({
+        url: URL,
+        state: 'idle',
+        event: 'disconnected',
+        error: 'ERROR_CODE_DISCONNECTED',
+      })
+    );
+    expect(vm.isPlaying).toBe(false);
     await vi.advanceTimersByTimeAsync(10000);
     expect(plugin.count('setSource')).toBe(2);
-    expect(plugin.last('setSource').reuse).toBe(false);
     expect(plugin.count('play')).toBe(2);
-    // The fresh connection reports the track; the player returns to its place.
     plugin.send({ state: 'ready', position: 0, playWhenReady: true });
-    expect(plugin.last('seekTo').position).toBeCloseTo(307);
+    expect(plugin.last('seekTo').position).toBeCloseTo(640);
   });
 
   it('recovers from a player error during playback', async () => {

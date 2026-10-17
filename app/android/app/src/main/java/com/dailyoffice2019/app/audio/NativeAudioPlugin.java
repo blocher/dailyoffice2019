@@ -20,6 +20,9 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * The page's handle on PlaybackService. app/src/helpers/nativeAudio.js wraps it in an object that
@@ -51,6 +54,10 @@ public class NativeAudioPlugin extends Plugin {
     private MediaController controller;
 
     private boolean inForeground = true;
+
+    // The track last loaded, so the page can be told when the service goes away under it.
+    @Nullable
+    private String lastUrl;
 
     private final Player.Listener playerListener = new Player.Listener() {
         @Override
@@ -97,29 +104,36 @@ public class NativeAudioPlugin extends Plugin {
         }
         String title = call.getString("title", "");
         String artist = call.getString("artist", "");
-        boolean reuse = Boolean.TRUE.equals(call.getBoolean("reuse", false));
+        String artwork = call.getString("artwork", "");
         double rate = call.getDouble("rate", 1.0);
+        lastUrl = url;
+        // Read off the main thread; used only if the track is (re)loaded.
+        byte[] artworkData = readWebAsset(artwork);
         withController(call, (c) -> {
             MediaItem current = c.getCurrentMediaItem();
             boolean same = current != null && url.equals(current.mediaId);
-            // The page was reopened (Back, then the app again) while this office played on.
-            if (reuse && same && c.getPlaybackState() != Player.STATE_IDLE && c.getPlayerError() == null) {
+            // This track is already loaded and healthy: the page was reopened while the office
+            // played on, or the page is retrying while the player reconnects by itself
+            // (OfficeLoadErrorPolicy). Reloading would drop the connection and the buffer.
+            if (same && c.getPlaybackState() != Player.STATE_IDLE && c.getPlayerError() == null) {
                 return;
             }
             if (!same) {
                 c.setPlayWhenReady(false);
             }
-            MediaMetadata metadata = new MediaMetadata.Builder()
+            MediaMetadata.Builder metadata = new MediaMetadata.Builder()
                 .setTitle(title)
                 .setDisplayTitle(title)
                 .setArtist(artist)
                 .setSubtitle(artist)
-                .setMediaType(MediaMetadata.MEDIA_TYPE_PODCAST_EPISODE)
-                .build();
+                .setMediaType(MediaMetadata.MEDIA_TYPE_PODCAST_EPISODE);
+            if (artworkData != null) {
+                metadata.setArtworkData(artworkData, MediaMetadata.PICTURE_TYPE_FRONT_COVER);
+            }
             MediaItem item = new MediaItem.Builder()
                 .setMediaId(url)
                 .setUri(url)
-                .setMediaMetadata(metadata)
+                .setMediaMetadata(metadata.build())
                 // The session rebuilds the item from this (PlaybackService.Callback).
                 .setRequestMetadata(new MediaItem.RequestMetadata.Builder().setMediaUri(Uri.parse(url)).build())
                 .build();
@@ -180,9 +194,11 @@ public class NativeAudioPlugin extends Plugin {
     public void stop(PluginCall call) {
         if (controller == null) {
             // Nothing is playing; don't start the service just to stop it.
+            lastUrl = null;
             call.resolve(status("command"));
             return;
         }
+        lastUrl = null;
         withController(call, (c) -> {
             c.pause();
             c.stop();
@@ -216,15 +232,18 @@ public class NativeAudioPlugin extends Plugin {
     @Override
     protected void handleOnDestroy() {
         main.removeCallbacks(tick);
-        // Playback carries on in the service; only this page's connection ends.
-        if (controller != null) {
-            controller.removeListener(playerListener);
-        }
-        if (controllerFuture != null) {
-            MediaController.releaseFuture(controllerFuture);
-        }
-        controllerFuture = null;
+        // Playback carries on in the service; only this page's connection ends. Clear the fields
+        // first, so the disconnect this causes isn't reported to the page as a lost player.
+        MediaController c = controller;
+        ListenableFuture<MediaController> future = controllerFuture;
         controller = null;
+        controllerFuture = null;
+        if (c != null) {
+            c.removeListener(playerListener);
+        }
+        if (future != null) {
+            MediaController.releaseFuture(future);
+        }
         super.handleOnDestroy();
     }
 
@@ -290,11 +309,14 @@ public class NativeAudioPlugin extends Plugin {
                 new MediaController.Listener() {
                     @Override
                     public void onDisconnected(@NonNull MediaController disconnected) {
-                        // The service ended (swiped away, or stopped by the system); reconnect on the next call.
+                        // The service ended (stopped by the system); reconnect on the next call. Tell
+                        // the page, which would otherwise go on showing the office as playing; it
+                        // treats this like a dropped connection and reloads where it was.
                         if (controller == disconnected) {
                             controller = null;
                             controllerFuture = null;
                             main.removeCallbacks(tick);
+                            notifyListeners("status", disconnectedStatus());
                         }
                     }
                 }
@@ -346,6 +368,36 @@ public class NativeAudioPlugin extends Plugin {
             status.put("error", error.getErrorCodeName());
         }
         return status;
+    }
+
+    private JSObject disconnectedStatus() {
+        JSObject status = new JSObject();
+        status.put("event", "disconnected");
+        status.put("state", "idle");
+        if (lastUrl != null) {
+            status.put("url", lastUrl);
+        }
+        status.put("error", "ERROR_CODE_DISCONNECTED");
+        return status;
+    }
+
+    // An image from the app's bundled web assets (app/public), for the lock screen.
+    @Nullable
+    private byte[] readWebAsset(String path) {
+        if (path == null || path.isEmpty() || path.contains("..")) {
+            return null;
+        }
+        try (InputStream in = getContext().getAssets().open("public/" + path.replaceFirst("^/+", ""))) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            byte[] buffer = new byte[16 * 1024];
+            int read;
+            while ((read = in.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+            }
+            return out.toByteArray();
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     private static String stateName(int state) {

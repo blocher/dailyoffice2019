@@ -1,20 +1,24 @@
 /*
-  Native audio in the Android app
-  ===============================
+  Native audio in the Android and iOS apps
+  ========================================
   An Android WebView has no media service of its own: once the screen locks
   or another app comes forward, the system can cut the WebView's network and
-  an <audio> element plays what it has buffered and then waits forever. The
-  Android app therefore plays office audio through a native player
-  (android/.../audio/NativeAudioPlugin.java: Media3 in a media-playback
-  foreground service, with lock-screen and headset controls).
+  an <audio> element plays what it has buffered and then waits forever. On
+  iOS, WebKit keeps playing in the background, but a stalled download can't
+  be recovered while the app is suspended. Both apps therefore play office
+  audio through a native player with the same interface:
+  - Android: android/.../audio/NativeAudioPlugin.java (Media3 in a
+    media-playback foreground service);
+  - iOS: ios/App/App/NativeAudioPlugin.swift (AVPlayer).
+  Each reconnects a dropped download by itself, for a few minutes, and shows
+  the lock-screen, headset and Now Playing controls.
 
   NativeAudioElement stands in for the <audio> element AudioPlayer.vue drives:
   the same properties, methods and media events, backed by that plugin. The
   plugin reports its state as `status` events; this class turns changes in
   that state into the media events an <audio> element would fire.
 
-  createAudioElement() returns a real Audio everywhere else (browsers and the
-  iOS app, where WebKit keeps playing in the background on its own).
+  createAudioElement() returns a real Audio everywhere else (browsers).
 */
 import { Capacitor, registerPlugin } from '@capacitor/core';
 
@@ -34,13 +38,14 @@ const SEEK_SETTLE_MS = 3000;
 
 export function nativeAudioAvailable() {
   return (
-    Capacitor.getPlatform() === 'android' &&
+    ['android', 'ios'].includes(Capacitor.getPlatform()) &&
     Capacitor.isPluginAvailable('NativeAudio')
   );
 }
 
-// An <audio>-compatible element: native on Android, a real Audio elsewhere.
-// `metadata` ({ title, artist }) is shown on the lock screen and notification.
+// An <audio>-compatible element: native in the apps, a real Audio elsewhere.
+// `metadata` ({ title, artist, artwork }) is shown on the lock screen and
+// notification; `artwork` is an image file in the bundled web assets.
 export function createAudioElement(metadata = {}) {
   if (nativeAudioAvailable()) {
     return new NativeAudioElement(NativeAudio, metadata);
@@ -76,11 +81,16 @@ export class NativeAudioElement extends window.EventTarget {
     this.defaultPlaybackRate = 1;
     this.rate = 1;
     this.source = '';
-    this.loads = 0;
     this.listener = null;
+    // The native player retries a dropped connection itself; AudioPlayer
+    // leaves its buffering alone and only reloads it after an error.
+    this.recoversOnItsOwn = true;
     // Commands sent but not yet acknowledged; until they are, a status may
-    // predate them and must not undo the play/pause they asked for.
+    // predate them and must not undo the play/pause they asked for. The
+    // latest such status is kept in case the command fails and never
+    // reports a newer one.
     this.pendingCommands = 0;
+    this.deferredStatus = null;
     this.seekable = timeRanges(() => this.knownDuration);
     this.buffered = timeRanges(() => this.bufferedEnd);
     this.resetState();
@@ -159,7 +169,6 @@ export class NativeAudioElement extends window.EventTarget {
   }
 
   load() {
-    this.loads += 1;
     this.resetState();
     this.rate = this.defaultPlaybackRate;
     if (!this.source) {
@@ -172,11 +181,8 @@ export class NativeAudioElement extends window.EventTarget {
       url: this.source,
       title: this.metadata.title || '',
       artist: this.metadata.artist || '',
+      artwork: this.metadata.artwork || '',
       rate: this.rate,
-      // The first load may find this office already playing natively (the
-      // app was closed with Back and reopened); keep it going. Later loads
-      // are retries and must start a fresh connection.
-      reuse: this.loads === 1,
     });
   }
 
@@ -226,10 +232,19 @@ export class NativeAudioElement extends window.EventTarget {
     const settled = () => {
       this.pendingCommands = Math.max(0, this.pendingCommands - 1);
     };
-    call.then((status) => {
-      settled();
-      if (status?.state) this.applyStatus(status);
-    }, settled);
+    call.then(
+      (status) => {
+        settled();
+        if (status?.state) this.applyStatus(status);
+      },
+      () => {
+        settled();
+        // No status came back; catch up with the last one held back.
+        if (!this.pendingCommands && this.deferredStatus) {
+          this.applyStatus(this.deferredStatus);
+        }
+      }
+    );
     if (method !== 'play') {
       // Other commands never block the caller; failures surface as status.
       call.catch(() => {});
@@ -312,6 +327,7 @@ export class NativeAudioElement extends window.EventTarget {
 
     // Play or pause from outside the page: lock screen, notification,
     // headset buttons, unplugged headphones, a phone call.
+    this.deferredStatus = this.pendingCommands ? status : null;
     if (!this.pendingCommands && state !== 'ended') {
       if (status.playWhenReady && this.paused) {
         this.paused = false;

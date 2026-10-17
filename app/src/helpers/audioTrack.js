@@ -46,6 +46,21 @@ export const STALL_RESUME_DELAYS_MS = [10000, 20000, 40000];
 // Seconds of playback after an automatic resume that count as recovered, so
 // a later stall starts again from the first (shortest) delay.
 export const STALL_RECOVERED_SECONDS = 30;
+// Playback that moved at least this far since a stall was first suspected
+// was never stuck (a `stalled` event only says the download went quiet).
+export const STALL_PROGRESS_SECONDS = 0.5;
+// After giving up, the network returning or the app coming back resumes the
+// office only within this long; later, an office that suddenly speaks would
+// surprise the listener, so it waits for Retry.
+export const AUTO_RESUME_WINDOW_MS = 15 * 60 * 1000;
+
+// Asks the office audio player, if there is one, to pause. Its audio isn't
+// an element in the page (and in the apps isn't an <audio> at all), so other
+// components can't reach it directly.
+export const PAUSE_OFFICE_AUDIO = 'pause-office-audio';
+export function pauseOfficeAudio() {
+  document.dispatchEvent(new window.Event(PAUSE_OFFICE_AUDIO));
+}
 
 // True when a seek target lies past the end of a track of known length.
 export function beyondTrackEnd(

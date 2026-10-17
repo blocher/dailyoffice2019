@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { shallowMount } from '@vue/test-utils';
 import AudioPlayer from '@/components/AudioPlayer.vue';
+import { pauseOfficeAudio } from '@/helpers/audioTrack';
 import { DynamicStorage } from '@/helpers/storage';
 
 vi.mock('@/helpers/storage', () => ({
@@ -412,7 +413,20 @@ describe('AudioPlayer playback lifecycle', () => {
     audio.emit('playing');
     expect(vm.isPlaying).toBe(true);
   });
-  it('releases media and OS controls when leaving the office', () => {
+  it('pauses when another part of the page asks for quiet', () => {
+    const vm = mountPlayer();
+    pauseOfficeAudio();
+    expect(audio.pause).not.toHaveBeenCalled();
+    expect(vm.isPaused).toBe(false);
+    vm.startAudio();
+    audio.paused = false;
+    audio.emit('playing');
+    pauseOfficeAudio();
+    expect(audio.pause).toHaveBeenCalledTimes(1);
+    expect(vm.isPlaying).toBe(false);
+  });
+
+    it('releases media and OS controls when leaving the office', () => {
     const vm = mountPlayer();
     wrapper.unmount();
     wrapper = null;
@@ -696,15 +710,49 @@ describe('AudioPlayer stall recovery', () => {
     expect(audio.load).toHaveBeenCalledTimes(1);
   });
 
-  it('resumes at once when the app returns or the network comes back', () => {
+  it('resumes at once when the network comes back', () => {
     const vm = mountPlayer();
     startPlaying(vm);
     audio.emit('waiting');
-    document.dispatchEvent(new window.Event('visibilitychange'));
-    expect(audio.load).toHaveBeenCalledTimes(2);
-    audio.emit('waiting');
     window.dispatchEvent(new window.Event('online'));
-    expect(audio.load).toHaveBeenCalledTimes(3);
+    expect(audio.load).toHaveBeenCalledTimes(2);
+  });
+
+  it('lets a brief rebuffer finish when the app returns', () => {
+    const vm = mountPlayer();
+    startPlaying(vm);
+    audio.emit('waiting');
+    vi.advanceTimersByTime(2000);
+    document.dispatchEvent(new window.Event('visibilitychange'));
+    expect(audio.load).toHaveBeenCalledTimes(1);
+    audio.emit('playing');
+    vi.advanceTimersByTime(60000);
+    expect(audio.load).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps playing through a download that only went quiet', () => {
+    const vm = mountPlayer();
+    startPlaying(vm, 100);
+    // The download pauses (or ends) while the audio plays from its buffer.
+    audio.emit('stalled');
+    for (let second = 1; second <= 60; second += 1) {
+      audio.currentTime = 100 + second;
+      audio.emit('timeupdate');
+      vi.advanceTimersByTime(1000);
+    }
+    expect(audio.load).toHaveBeenCalledTimes(1);
+    expect(vm.autoResumeAttempts).toBe(0);
+  });
+
+  it('still reloads when a quiet download later runs dry', () => {
+    const vm = mountPlayer();
+    startPlaying(vm, 100);
+    audio.emit('stalled');
+    audio.currentTime = 104;
+    audio.readyState = 2;
+    audio.emit('waiting');
+    vi.advanceTimersByTime(10000);
+    expect(audio.load).toHaveBeenCalledTimes(2);
   });
 
   describe('without a connection', () => {
@@ -762,6 +810,22 @@ describe('AudioPlayer stall recovery', () => {
       vi.advanceTimersByTime(10000);
       online = true;
       document.dispatchEvent(new window.Event('visibilitychange'));
+      expect(audio.load).toHaveBeenCalledTimes(2);
+    });
+
+    it('waits for Retry once the outage has lasted too long', async () => {
+      const vm = mountPlayer();
+      startPlaying(vm);
+      online = false;
+      audio.emit('waiting');
+      vi.advanceTimersByTime(10000);
+      vi.advanceTimersByTime(15 * 60 * 1000);
+      goOnline();
+      document.dispatchEvent(new window.Event('visibilitychange'));
+      expect(audio.load).toHaveBeenCalledTimes(1);
+      await vm.$nextTick();
+      expect(wrapper.text()).toContain('Audio stopped loading');
+      vm.retryAudio();
       expect(audio.load).toHaveBeenCalledTimes(2);
     });
 

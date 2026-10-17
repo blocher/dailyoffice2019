@@ -12,9 +12,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Configure Firebase
         FirebaseApp.configure()
 
-        // Office audio is spoken-word playback: keep it going with the screen locked or the
-        // app in the background (with UIBackgroundModes "audio" in Info.plist), and play it
-        // even when the ring/silent switch is set to silent.
+        // Audio here is spoken word: keep it going with the screen locked or the app in the
+        // background (with UIBackgroundModes "audio" in Info.plist), and play it even when the
+        // ring/silent switch is set to silent. Office audio plays through NativeAudioPlugin,
+        // which sets the same category when it starts.
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
         } catch {
