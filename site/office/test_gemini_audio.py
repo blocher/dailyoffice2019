@@ -12,6 +12,8 @@ from types import SimpleNamespace
 from unittest import skipUnless
 from unittest.mock import Mock, patch
 
+import requests
+
 from django.test import SimpleTestCase, TestCase, override_settings
 
 from office.api.views import index
@@ -128,6 +130,20 @@ class GeminiProviderTests(SimpleTestCase):
         with self.assertRaisesMessage(RuntimeError, "HTTP 401"):
             self.provider._request({}, "placeholder")
         self.assertEqual(post.call_count, 1)
+
+    @override_settings(GEMINI_TTS_MAX_RETRIES=2)
+    @patch("office.api.views.tts.time.sleep")
+    @patch("office.api.views.tts.requests.post")
+    def test_retries_a_connection_reset_mid_response(self, post, sleep):
+        reset = requests.exceptions.ChunkedEncodingError("Connection broken")
+        post.side_effect = [reset, reset, self.response()]
+        self.provider._request({}, "placeholder")
+        self.assertEqual(post.call_count, 3)
+        post.reset_mock(side_effect=True)
+        post.side_effect = reset
+        with self.assertRaisesMessage(RuntimeError, "failed or timed out"):
+            self.provider._request({}, "placeholder")
+        self.assertEqual(post.call_count, 3)
 
     @override_settings(TTS_PROVIDER="gemini")
     def test_environment_selection_and_explicit_override(self):
