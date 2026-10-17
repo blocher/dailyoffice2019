@@ -597,3 +597,196 @@ describe('AudioPlayer compact controls', () => {
     document.removeEventListener('audio-player-visibility', event);
   });
 });
+
+describe('AudioPlayer stall recovery', () => {
+  const startPlaying = (vm, at = 307) => {
+    vm.startAudio();
+    audio.paused = false;
+    audio.emit('playing');
+    audio.currentTime = at;
+    audio.load.mockImplementation(() => {
+      audio.currentTime = 0;
+    });
+  };
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('reloads and resumes in place when buffering never recovers', () => {
+    const vm = mountPlayer();
+    startPlaying(vm);
+    audio.emit('waiting');
+    vi.advanceTimersByTime(9999);
+    expect(audio.load).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(1);
+    expect(audio.load).toHaveBeenCalledTimes(2);
+    expect(audio.play).toHaveBeenCalledTimes(2);
+    audio.emit('loadedmetadata');
+    expect(audio.currentTime).toBe(307);
+  });
+
+  it('leaves a slow but live download alone', () => {
+    const vm = mountPlayer();
+    startPlaying(vm);
+    audio.emit('waiting');
+    for (let i = 0; i < 5; i += 1) {
+      vi.advanceTimersByTime(8000);
+      audio.emit('progress');
+    }
+    expect(audio.load).toHaveBeenCalledTimes(1);
+    audio.emit('playing');
+    vi.advanceTimersByTime(60000);
+    expect(audio.load).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not resume after the listener or the OS pauses', () => {
+    const vm = mountPlayer();
+    startPlaying(vm);
+    audio.emit('stalled');
+    vm.pauseAudio();
+    vi.advanceTimersByTime(60000);
+    expect(audio.load).toHaveBeenCalledTimes(1);
+  });
+
+  it('backs off, then hands over to the Retry button', async () => {
+    const vm = mountPlayer();
+    startPlaying(vm);
+    for (const delay of [10000, 20000, 40000]) {
+      audio.emit('waiting');
+      vi.advanceTimersByTime(delay - 1);
+      const loads = audio.load.mock.calls.length;
+      vi.advanceTimersByTime(1);
+      expect(audio.load).toHaveBeenCalledTimes(loads + 1);
+    }
+    audio.emit('waiting');
+    vi.advanceTimersByTime(40000);
+    expect(audio.load).toHaveBeenCalledTimes(4);
+    await vm.$nextTick();
+    expect(wrapper.text()).toContain('Audio stopped loading');
+    vm.retryAudio();
+    expect(vm.autoResumeAttempts).toBe(0);
+  });
+
+  it('starts over from the shortest delay once playback recovers', () => {
+    const vm = mountPlayer();
+    startPlaying(vm);
+    audio.emit('waiting');
+    vi.advanceTimersByTime(10000);
+    expect(vm.autoResumeAttempts).toBe(1);
+    audio.currentTime = 307 + 31;
+    audio.emit('timeupdate');
+    expect(vm.autoResumeAttempts).toBe(0);
+  });
+
+  it('retries a network error during playback', () => {
+    const vm = mountPlayer();
+    startPlaying(vm);
+    audio.emit('error');
+    vi.advanceTimersByTime(10000);
+    expect(audio.load).toHaveBeenCalledTimes(2);
+    expect(audio.play).toHaveBeenCalledTimes(2);
+  });
+
+  it('leaves a paused office alone on a network error', () => {
+    mountPlayer();
+    audio.emit('error');
+    vi.advanceTimersByTime(60000);
+    expect(audio.load).toHaveBeenCalledTimes(1);
+  });
+
+  it('resumes at once when the app returns or the network comes back', () => {
+    const vm = mountPlayer();
+    startPlaying(vm);
+    audio.emit('waiting');
+    document.dispatchEvent(new window.Event('visibilitychange'));
+    expect(audio.load).toHaveBeenCalledTimes(2);
+    audio.emit('waiting');
+    window.dispatchEvent(new window.Event('online'));
+    expect(audio.load).toHaveBeenCalledTimes(3);
+  });
+
+  describe('without a connection', () => {
+    let online;
+    beforeEach(() => {
+      online = true;
+      Object.defineProperty(window.navigator, 'onLine', {
+        configurable: true,
+        get: () => online,
+      });
+    });
+    afterEach(() => {
+      delete window.navigator.onLine;
+    });
+    const goOnline = () => {
+      online = true;
+      window.dispatchEvent(new window.Event('online'));
+    };
+
+    it('waits for the network instead of spending its retries', async () => {
+      const vm = mountPlayer();
+      startPlaying(vm);
+      online = false;
+      audio.emit('waiting');
+      vi.advanceTimersByTime(120000);
+      expect(audio.load).toHaveBeenCalledTimes(1);
+      expect(vm.autoResumeAttempts).toBe(0);
+      await vm.$nextTick();
+      expect(wrapper.text()).toContain('Waiting for a connection');
+      goOnline();
+      expect(audio.load).toHaveBeenCalledTimes(2);
+      expect(audio.play).toHaveBeenCalledTimes(2);
+      audio.emit('loadedmetadata');
+      expect(audio.currentTime).toBe(307);
+    });
+
+    it('tries again when the network returns after its retries ran out', () => {
+      const vm = mountPlayer();
+      startPlaying(vm);
+      for (const delay of [10000, 20000, 40000, 40000]) {
+        audio.emit('waiting');
+        vi.advanceTimersByTime(delay);
+      }
+      expect(audio.load).toHaveBeenCalledTimes(4);
+      goOnline();
+      expect(audio.load).toHaveBeenCalledTimes(5);
+      expect(vm.autoResumeAttempts).toBe(1);
+    });
+
+    it('also tries again when the app comes back to the foreground', () => {
+      const vm = mountPlayer();
+      startPlaying(vm);
+      online = false;
+      audio.emit('stalled');
+      vi.advanceTimersByTime(10000);
+      online = true;
+      document.dispatchEvent(new window.Event('visibilitychange'));
+      expect(audio.load).toHaveBeenCalledTimes(2);
+    });
+
+    it('stays paused when the listener paused while offline', () => {
+      const vm = mountPlayer();
+      startPlaying(vm);
+      online = false;
+      audio.emit('waiting');
+      vi.advanceTimersByTime(10000);
+      vm.pauseAudio();
+      goOnline();
+      expect(audio.load).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('stops watching when the office is left', () => {
+    const vm = mountPlayer();
+    startPlaying(vm);
+    audio.emit('waiting');
+    wrapper.unmount();
+    wrapper = null;
+    const loads = audio.load.mock.calls.length;
+    vi.advanceTimersByTime(60000);
+    window.dispatchEvent(new window.Event('online'));
+    expect(audio.load).toHaveBeenCalledTimes(loads);
+  });
+});

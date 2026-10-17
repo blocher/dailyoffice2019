@@ -20,6 +20,18 @@
             </intent-filter>
         </activity>
 
+        <!-- Office audio: a media-playback foreground service, so it keeps playing and
+             downloading with the screen locked (audio/PlaybackService.java). Exported so the
+             lock screen, Bluetooth and system media controls can reach it. -->
+        <service
+            android:name=".audio.PlaybackService"
+            android:foregroundServiceType="mediaPlayback"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="androidx.media3.session.MediaSessionService" />
+            </intent-filter>
+        </service>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -32,4 +44,7 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 </manifest>

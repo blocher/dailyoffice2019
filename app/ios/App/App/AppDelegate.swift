@@ -1,4 +1,5 @@
 import UIKit
+import AVFoundation
 import Capacitor
 import Firebase
 
@@ -10,6 +11,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Configure Firebase
         FirebaseApp.configure()
+
+        // Office audio is spoken-word playback: keep it going with the screen locked or the
+        // app in the background (with UIBackgroundModes "audio" in Info.plist), and play it
+        // even when the ring/silent switch is set to silent.
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
+        } catch {
+            print("Could not set the audio session category: \(error)")
+        }
         
         // Override point for customization after application launch.
         return true

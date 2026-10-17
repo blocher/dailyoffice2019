@@ -39,6 +39,14 @@ export function endedEarly(
   return expectedEnd - endedAt > threshold;
 }
 
+// How long playback may sit buffering with no data arriving before the
+// player reloads the track and carries on from the same place, one delay per
+// attempt. After the last one the listener gets the Retry button instead.
+export const STALL_RESUME_DELAYS_MS = [10000, 20000, 40000];
+// Seconds of playback after an automatic resume that count as recovered, so
+// a later stall starts again from the first (shortest) delay.
+export const STALL_RECOVERED_SECONDS = 30;
+
 // True when a seek target lies past the end of a track of known length.
 export function beyondTrackEnd(
   target,
