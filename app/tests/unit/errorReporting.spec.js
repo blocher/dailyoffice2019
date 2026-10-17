@@ -150,6 +150,10 @@ describe('error reporting', () => {
         fakeEvent({
           stacktrace: [{ file: 'chrome-extension://abc/content.js' }],
         }),
+        fakeEvent({
+          errorClass: 'Error',
+          errorMessage: 'Invalid call to runtime.sendMessage(). Tab not found.',
+        }),
         fakeEvent(
           { errorClass: 'AxiosError', errorMessage: 'Network Error' },
           { isAxiosError: true, code: 'ERR_NETWORK' }
