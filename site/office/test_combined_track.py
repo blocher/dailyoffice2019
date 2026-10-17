@@ -402,7 +402,7 @@ class AudioTrackCacheHeaderTests(SimpleTestCase):
         self.assertEqual(response["X-Audio-Duration"], "0")
         self.assertEqual(response["Cache-Control"], "no-store")
 
-    def test_complete_track_keeps_default_caching(self):
+    def test_complete_track_is_cached_at_the_edge(self):
         response = self.get(905.2)
         self.assertEqual(response["X-Audio-Duration"], "905")
-        self.assertNotIn("no-store", response.get("Cache-Control", ""))
+        self.assertEqual(response["Cache-Control"], "public, max-age=86400, s-maxage=1209600")

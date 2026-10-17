@@ -298,11 +298,17 @@
 
 <script>
 import {
+  AUTO_RESUME_WINDOW_MS,
   beyondTrackEnd,
   endedEarly,
   freshTrackUrl,
+  PAUSE_OFFICE_AUDIO,
+  STALL_PROGRESS_SECONDS,
+  STALL_RECOVERED_SECONDS,
+  STALL_RESUME_DELAYS_MS,
   timelineEnd,
 } from '@/helpers/audioTrack';
+import { createAudioElement } from '@/helpers/nativeAudio';
 import { DynamicStorage } from '@/helpers/storage';
 import { PODCASTS_PROMOTED } from '@/helpers/podcasts';
 
@@ -312,6 +318,13 @@ const HIGHLIGHT_STORAGE_KEY = 'audioHighlightMode';
 const SPEED_STORAGE_KEY = 'audioPlaybackSpeed';
 const SCROLL_STORAGE_KEY = 'audioAutoScroll';
 const highlightModes = ['word', 'sentence', 'off'];
+// The app icon, for the lock screen, notification and Now Playing. The
+// native players read the file from the app's bundled web assets.
+const ARTWORK_FILE = 'android-chrome-512x512.png';
+const ARTWORK = [
+  { src: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
+  { src: `/${ARTWORK_FILE}`, sizes: '512x512', type: 'image/png' },
+];
 
 // Wrap node.data[start, end) in `wrapper` without a Range. Every live Range
 // is updated on each DOM mutation, so wrapping thousands of words through
@@ -373,6 +386,7 @@ export default {
       playbackError: '',
       trackIncomplete: false, // the file ends before its timeline; retry refetches it
       pendingResumeTime: null,
+      autoResumeAttempts: 0, // automatic reloads since playback last recovered
       playbackRequested: false,
       playAttempt: 0,
       playbackSpeed: '1.0x',
@@ -434,8 +448,14 @@ export default {
       Array.isArray(this.audio[3])
     ) {
       // Audio has no constructor options argument. Subscribe before loading
-      // so cached media events cannot race past the handlers.
-      this.audioElement = new Audio();
+      // so cached media events cannot race past the handlers. In the
+      // Android and iOS apps this is the native player, which keeps going
+      // with the screen locked (helpers/nativeAudio.js).
+      this.audioElement = createAudioElement({
+        title: this.officeTitle,
+        artist: 'The Daily Office',
+        artwork: ARTWORK_FILE,
+      });
       this.audioElement.preload = 'auto';
       this.audioElement.src = this.audio[0] || '';
       this.mediaListeners = {
@@ -445,7 +465,7 @@ export default {
         ended: this.handleEnded,
         loadedmetadata: this.handleMetadata,
         durationchange: this.handleMetadata,
-        progress: this.restorePosition,
+        progress: this.handleProgress,
         play: this.handlePlay,
         playing: this.handlePlaying,
         pause: this.handlePause,
@@ -462,6 +482,8 @@ export default {
         'visibilitychange',
         this.handleVisibilityChange
       );
+      window.addEventListener('online', this.resumeStalledNow);
+      document.addEventListener(PAUSE_OFFICE_AUDIO, this.handlePauseRequest);
       this.audioElement.load();
       if (this.audioElement.readyState >= 3) this.loading = false;
 
@@ -488,12 +510,15 @@ export default {
     this.controlsObserver?.disconnect();
     this.stopHighlightClock();
     this.cancelTrackSeek?.();
+    this.clearStallWatch();
     this.playbackRequested = false;
     document.removeEventListener('pointerdown', this.handleOutsidePointer);
     document.removeEventListener(
       'visibilitychange',
       this.handleVisibilityChange
     );
+    window.removeEventListener('online', this.resumeStalledNow);
+    document.removeEventListener(PAUSE_OFFICE_AUDIO, this.handlePauseRequest);
     window.visualViewport?.removeEventListener('resize', this.emitVisibility);
     window.visualViewport?.removeEventListener('scroll', this.emitVisibility);
     if (this.audioElement) {
@@ -572,6 +597,10 @@ export default {
       this.audioElement?.pause();
       this.handlePause();
     },
+    // Another part of the page (the book view) asks for quiet.
+    handlePauseRequest() {
+      if (this.isPlaying || this.playbackRequested) this.pauseAudio();
+    },
     stopAudio() {
       this.pauseAudio();
       if (this.audioElement) this.audioElement.currentTime = 0;
@@ -612,10 +641,15 @@ export default {
       }
       this.loading = false;
       this.playbackError = '';
+      this.clearStallWatch();
+      this.resumeWhenOnline = false;
     },
     handlePause() {
       this.stopHighlightClock();
       this.cancelTrackSeek?.();
+      this.clearStallWatch();
+      // A pause from the listener or the system cancels any automatic resume.
+      this.resumeWhenOnline = false;
       this.isPlaying = false;
       this.isPaused = true;
       this.playbackRequested = false;
@@ -655,16 +689,103 @@ export default {
       this.updateMediaPosition();
     },
     handleWaiting() {
-      if (this.playbackRequested) this.loading = true;
+      if (!this.playbackRequested) return;
+      this.loading = true;
+      this.watchForBufferingStall();
     },
     handleStalled() {
       if (!this.playbackRequested) return;
       this.loading = true;
       this.playbackError =
         'Audio is buffering. Check your connection if it does not resume.';
+      this.watchForBufferingStall();
+    },
+    handleProgress() {
+      // Data is still arriving, so a slow connection is not a stall.
+      if (this.stallTimer) this.watchForStall(true);
+      this.restorePosition();
+    },
+    watchForBufferingStall() {
+      // The app's native players reconnect by themselves and report an error
+      // if they can't; reloading them while they buffer would only drop the
+      // connection and what they have downloaded.
+      if (this.audioElement?.recoversOnItsOwn) return;
+      this.watchForStall();
+    },
+    // A dropped connection can leave the media element waiting forever (a
+    // phone that cut off the network while locked, a proxy that closed an
+    // idle stream). If nothing arrives for a while, reload the track and
+    // carry on from the same place, as the Retry button does.
+    watchForStall(restart = false) {
+      if (this.stallTimer && !restart) return;
+      if (!this.stallTimer) {
+        this.stallWatchFrom = this.audioElement?.currentTime || 0;
+      }
+      window.clearTimeout(this.stallTimer);
+      const attempt = Math.min(
+        this.autoResumeAttempts,
+        STALL_RESUME_DELAYS_MS.length - 1
+      );
+      this.stallTimer = window.setTimeout(
+        this.resumeStalledNow,
+        STALL_RESUME_DELAYS_MS[attempt]
+      );
+    },
+    clearStallWatch() {
+      window.clearTimeout(this.stallTimer);
+      this.stallTimer = null;
+    },
+    // Also called when the network comes back (and, after an outage, when the
+    // app returns to the foreground), so a stalled office resumes at once
+    // instead of after the delay.
+    resumeStalledNow() {
+      if (this.destroyed || !this.audioElement) return;
+      if (this.resumeWhenOnline && Date.now() >= this.resumeWhenOnlineUntil) {
+        // Given up too long ago to start speaking unasked; Retry continues.
+        this.resumeWhenOnline = false;
+        this.playbackError =
+          'Audio stopped loading. Retry to continue from your place.';
+      }
+      const afterOutage = this.resumeWhenOnline;
+      if (!this.stallTimer && !afterOutage) return;
+      this.clearStallWatch();
+      // The audio kept playing from what was buffered, so nothing is stuck.
+      if (!afterOutage && this.playbackAdvancing()) return;
+      // Offline or out of attempts: wait for the network to return or the app
+      // to come back to the foreground, then try once more from the start.
+      const offline = window.navigator.onLine === false;
+      if (
+        offline ||
+        (!afterOutage &&
+          this.autoResumeAttempts >= STALL_RESUME_DELAYS_MS.length)
+      ) {
+        if (!this.resumeWhenOnline) {
+          this.resumeWhenOnlineUntil = Date.now() + AUTO_RESUME_WINDOW_MS;
+        }
+        this.resumeWhenOnline = true;
+        this.loading = false;
+        this.playbackError = offline
+          ? 'Waiting for a connection to continue the audio.'
+          : 'Audio stopped loading. Retry to continue from your place.';
+        return;
+      }
+      this.resumeWhenOnline = false;
+      this.autoResumeAttempts = afterOutage ? 1 : this.autoResumeAttempts + 1;
+      this.resumedFrom = this.audioElement.currentTime || this.currentTime;
+      this.reloadAudio();
+    },
+    playbackAdvancing() {
+      const el = this.audioElement;
+      return (
+        !el.paused &&
+        !el.error &&
+        el.readyState >= 3 &&
+        el.currentTime - this.stallWatchFrom > STALL_PROGRESS_SECONDS
+      );
     },
     handleAudioError() {
       if (!this.audioElement) return;
+      const wasPlaying = this.playbackRequested;
       this.currentTime = this.audioElement.currentTime || this.currentTime;
       this.playbackRequested = false;
       this.isPlaying = false;
@@ -673,9 +794,16 @@ export default {
       this.playbackError =
         'Audio stopped loading. Retry to continue from your place.';
       this.updateMediaPosition();
+      if (wasPlaying) this.watchForStall();
     },
     retryAudio() {
+      this.autoResumeAttempts = 0;
+      this.resumeWhenOnline = false;
+      this.reloadAudio();
+    },
+    reloadAudio() {
       if (!this.audioElement) return;
+      this.clearStallWatch();
       this.cancelTrackSeek?.();
       this.pendingResumeTime =
         this.pendingResumeTime ??
@@ -709,6 +837,10 @@ export default {
     },
     handleVisibilityChange() {
       if (document.visibilityState !== 'visible' || !this.audioElement) return;
+      // Back after an outage: try again at once. A stall still being timed
+      // is left to its timer, which runs as soon as a frozen page wakes; a
+      // brief rebuffer shouldn't be cut short by switching apps.
+      if (this.resumeWhenOnline) this.resumeStalledNow();
       // Respect a user/OS pause; foregrounding must not restart playback.
       this.isPlaying = !this.audioElement.paused && !this.audioElement.ended;
       this.isPaused = this.audioElement.paused;
@@ -720,8 +852,9 @@ export default {
       const session = navigator.mediaSession;
       if (window.MediaMetadata) {
         session.metadata = new window.MediaMetadata({
-          title: this.office.replace(/_/g, ' '),
+          title: this.officeTitle,
           artist: 'The Daily Office',
+          artwork: ARTWORK,
         });
       }
       const actions = {
@@ -942,6 +1075,12 @@ export default {
 
       this.currentTime = this.audioElement.currentTime;
       this.updateMediaPosition();
+      if (
+        this.autoResumeAttempts &&
+        this.currentTime - this.resumedFrom > STALL_RECOVERED_SECONDS
+      ) {
+        this.autoResumeAttempts = 0;
+      }
       if (this.highlightSegments.length) {
         this.updateActiveWord(this.currentTime);
         return;
@@ -1456,6 +1595,13 @@ export default {
     },
   },
   computed: {
+    // "morning_prayer" -> "Morning Prayer", for the lock screen.
+    officeTitle() {
+      return this.office
+        .split('_')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    },
     playbackStatus() {
       if (this.transientStatus) return this.transientStatus;
       if (this.isPlaying) return 'Now listening';

@@ -3137,7 +3137,10 @@ class OfficeAPIView(APIView):
                 audio_builds.schedule(identity, lambda: build_office_audio(path, query))
                 return self.audio_preparing_response()
 
-        if not cache_key:
+        if not cache_key or (include_audio and not has_audio_track(data)):
+            # An audio answer without a track is a passing failure (clips not on
+            # disk yet, an encode that failed). Don't hand it to everyone with
+            # these settings for the next minute; the client asks again.
             return Response(data)
         renderer = request.accepted_renderer
         content = renderer.render(data, request.accepted_media_type, self.get_renderer_context())
@@ -3160,6 +3163,12 @@ class OfficeAPIView(APIView):
             status=202,
             headers={"Retry-After": str(retry_after), "Cache-Control": "no-store"},
         )
+
+
+def has_audio_track(data):
+    """True when serialized office data carries a combined audio track."""
+    audio = data.get("audio") if hasattr(data, "get") else None
+    return isinstance(audio, dict) and bool(audio.get("single_track"))
 
 
 def build_office_audio(path, query_string):

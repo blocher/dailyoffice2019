@@ -144,5 +144,12 @@ class AudioTrackView(APIView):
             # Cloudflare and browsers from holding on to it so the rebuilt file
             # (same name) reaches listeners as soon as it exists.
             response["Cache-Control"] = "no-store"
+        else:
+            # A complete track never changes: its name is a hash of its parts, and it is
+            # only moved into place once fully encoded (office/combined_track.py). Every
+            # listener requests the same URL, so let Cloudflare keep it for the two weeks an
+            # office's audio is offered. Browsers keep it a day, since only Cloudflare's copy
+            # can be purged if a track ever has to be replaced.
+            response["Cache-Control"] = "public, max-age=86400, s-maxage=1209600"
 
         return response

@@ -9,9 +9,11 @@ class AnalyticsEvent(models.Model):
     Office views are written server-side by ``AnalyticsMiddleware`` (so every
     app version is counted, and the two-request-per-office pattern is deduped by
     ignoring the ``include_audio_links`` request). ``audio_loaded`` is written by
-    ``AudioTrackView`` when an MP3 is first served (an upper bound, since the
-    player preloads audio). ``audio_play`` is posted by updated clients when the
-    user actually presses play. ``client_id`` is a first-party anonymous id and
+    ``AudioTrackView`` when an MP3 is first served by this server; since the
+    track URL no longer carries a per-client ``cid``, Cloudflare answers most
+    loads from its cache and only misses are counted. ``audio_play`` is posted
+    by updated clients when the user actually presses play, and is the measure
+    of listening. ``client_id`` is a first-party anonymous id and
     is blank for old clients that predate the header.
     """
 
