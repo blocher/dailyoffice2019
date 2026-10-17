@@ -27,6 +27,10 @@ const REPORTING_STAGES = ['production', 'staging'];
 // (see `vite:preloadError` in main.js), so these aren't worth reporting.
 const STALE_CHUNK =
   /ChunkLoadError|Loading chunk \S+ failed|Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module|Unable to preload CSS/i;
+// vue-router raises this when a lazy route's chunk loads but exports nothing
+// (a truncated or cached-stale file after a deploy). It is the same stale
+// build problem as a missing chunk; the next navigation fetches a good one.
+const EMPTY_ROUTE_CHUNK = /Couldn't resolve component "default" at/i;
 // A browser quirk, not a bug: the observer simply skipped a frame.
 const RESIZE_OBSERVER = /ResizeObserver loop/i;
 const EXTENSION_FILE =
@@ -41,7 +45,12 @@ export function isNoise(event) {
   const error = event.errors?.[0];
   if (!error) return false;
   const text = `${error.errorClass || ''}: ${error.errorMessage || ''}`;
-  if (STALE_CHUNK.test(text) || RESIZE_OBSERVER.test(text)) return true;
+  if (
+    STALE_CHUNK.test(text) ||
+    EMPTY_ROUTE_CHUNK.test(text) ||
+    RESIZE_OBSERVER.test(text)
+  )
+    return true;
   if ((error.stacktrace || []).some((f) => EXTENSION_FILE.test(f.file || ''))) {
     return true;
   }
