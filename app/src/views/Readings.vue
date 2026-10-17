@@ -278,7 +278,7 @@ import BookReader from '@/components/BookReader.vue';
 import { discoveryState } from '@/helpers/discovery';
 import { DynamicStorage } from '@/helpers/storage';
 import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
-import { openPanel } from '@/helpers/panels';
+import { onBookViewRequest, openPanel } from '@/helpers/panels';
 import { nextTick } from 'vue';
 import AudioPlayer from '@/components/AudioPlayer.vue';
 import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue';
@@ -603,6 +603,14 @@ export default {
     },
   },
   async created() {
+    // ?book=1 opens the book view directly (a shareable deep link).
+    onBookViewRequest(
+      this,
+      () => this.readingsToShow && this.readingsToShow.length,
+      () => {
+        this.bookOpen = true;
+      }
+    );
     this.calendarDate = setCalendarDate(this.$route);
     if (!this.calendarDate) {
       this.notFound = true;

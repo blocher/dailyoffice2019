@@ -42,6 +42,7 @@ const routes = [
     ],
     meta: {
       title: 'Readings | The Daily Office',
+      bookView: true,
     },
   },
   {
@@ -50,6 +51,7 @@ const routes = [
     component: Litany,
     meta: {
       title: 'The Great Litany | The Daily Office',
+      bookView: true,
     },
   },
   {
@@ -75,6 +77,7 @@ const routes = [
     component: Pray,
     meta: {
       title: 'Pray | Family Prayer',
+      bookView: true,
     },
   },
   {
@@ -83,6 +86,7 @@ const routes = [
     component: Pray,
     meta: {
       title: 'Pray | The Daily Office',
+      bookView: true,
     },
   },
   {
@@ -91,6 +95,7 @@ const routes = [
     component: Today,
     meta: {
       title: 'Pray | Family Prayer',
+      bookView: true,
     },
   },
   {
@@ -99,6 +104,7 @@ const routes = [
     component: Today,
     meta: {
       title: 'Pray | Family Prayer',
+      bookView: true,
     },
   },
   {
@@ -107,6 +113,7 @@ const routes = [
     component: Today,
     meta: {
       title: 'Pray | Family Prayer',
+      bookView: true,
     },
   },
   {
@@ -131,6 +138,7 @@ const routes = [
     component: Today,
     meta: {
       title: 'Today | The Daily Office',
+      bookView: true,
     },
   },
   { path: '/privacy', redirect: '/privacy-policy' },

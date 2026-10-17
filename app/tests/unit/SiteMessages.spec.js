@@ -40,3 +40,47 @@ describe('SiteMessages with blocked storage', () => {
     expect(wrapper.vm.visibleMessages).toHaveLength(0);
   });
 });
+
+describe('SiteMessages links', () => {
+  it('follows the link from the tag as well as the text', async () => {
+    const push = vi.fn();
+    const wrapper = mount(SiteMessages, {
+      global: {
+        mocks: {
+          $http: {
+            get: vi.fn(async () => ({
+              data: [{ ...message, tag_text: 'Book View!', link: '?book=1' }],
+            })),
+          },
+          $router: { push },
+        },
+        stubs: { UiIcon: true, UiButton: true, RouterLink: true },
+      },
+    });
+    await flushPromises();
+    await wrapper.find('.site-message__tag').trigger('click');
+    expect(push).toHaveBeenCalledWith('?book=1');
+  });
+
+  it('leaves a tag without a link inert', async () => {
+    const push = vi.fn();
+    const wrapper = mount(SiteMessages, {
+      global: {
+        mocks: {
+          $http: {
+            get: vi.fn(async () => ({
+              data: [{ ...message, tag_text: 'New', link: '' }],
+            })),
+          },
+          $router: { push },
+        },
+        stubs: { UiIcon: true, UiButton: true },
+      },
+    });
+    await flushPromises();
+    const tag = wrapper.find('.site-message__tag');
+    expect(tag.classes()).not.toContain('is-link');
+    await tag.trigger('click');
+    expect(push).not.toHaveBeenCalled();
+  });
+});

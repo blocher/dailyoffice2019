@@ -10,7 +10,9 @@
       <UiTag
         v-if="message.tag_text"
         class="site-message__tag"
+        :class="{ 'is-link': message.link }"
         :tone="tagTone(message.tag_color)"
+        @click="follow(message)"
       >
         {{ message.tag_text }}
       </UiTag>
@@ -21,11 +23,7 @@
         >
           {{ message.text }}
         </router-link>
-        <a
-          v-else-if="message.link"
-          href="#"
-          @click.prevent="openExternal(message.link)"
-        >
+        <a v-else-if="message.link" href="#" @click.prevent="follow(message)">
           {{ message.text }}
         </a>
         <span v-else>{{ message.text }}</span>
@@ -133,8 +131,14 @@ export default {
     isExternal(link) {
       return /^https?:\/\//i.test(link) || /^mailto:/i.test(link);
     },
-    async openExternal(link) {
-      await Browser.open({ url: link });
+    // The tag follows the link too: it reads like a button ("Book View!").
+    async follow(message) {
+      if (!message.link) return;
+      if (this.isExternal(message.link)) {
+        await Browser.open({ url: message.link });
+      } else {
+        await this.$router.push(message.link);
+      }
     },
     dismiss(message) {
       if (this.dismissedIds.includes(message.uuid)) {
@@ -189,6 +193,10 @@ export default {
   background-color: var(--paper-raised);
   font-size: var(--text-sm);
   line-height: 1.35;
+}
+
+.site-message__tag.is-link {
+  cursor: pointer;
 }
 
 .site-message__text {
