@@ -348,7 +348,9 @@ class DialogueSession:
                 if status < 400:
                     return response
                 retry_after = self._retry_after(response)
-            except (requests.ConnectionError, requests.Timeout):
+            except (requests.ConnectionError, requests.Timeout, requests.exceptions.ChunkedEncodingError):
+                # A reset mid-body raises ChunkedEncodingError, which is not a
+                # ConnectionError but is the same transient failure.
                 pass
             reason = None
             if status is not None and status not in self.provider._RETRY_STATUSES:
