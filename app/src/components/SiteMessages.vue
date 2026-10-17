@@ -60,6 +60,16 @@ const TAG_TONES = {
   gray: 'neutral',
 };
 
+// Reading the window.localStorage / window.sessionStorage property itself
+// throws a SecurityError when the browser denies storage access.
+function getStorage(name) {
+  try {
+    return typeof window === 'undefined' ? null : window[name] || null;
+  } catch {
+    return null;
+  }
+}
+
 function readStorage(storage, key) {
   try {
     const raw = storage.getItem(key);
@@ -95,17 +105,13 @@ export default {
   methods: {
     loadDismissed() {
       const ids = new Set();
-      if (typeof window !== 'undefined') {
-        if (window.localStorage) {
-          readStorage(window.localStorage, PERMANENT_STORAGE_KEY).forEach(
-            (id) => ids.add(id)
-          );
-        }
-        if (window.sessionStorage) {
-          readStorage(window.sessionStorage, SESSION_STORAGE_KEY).forEach(
-            (id) => ids.add(id)
-          );
-        }
+      const local = getStorage('localStorage');
+      if (local) {
+        readStorage(local, PERMANENT_STORAGE_KEY).forEach((id) => ids.add(id));
+      }
+      const session = getStorage('sessionStorage');
+      if (session) {
+        readStorage(session, SESSION_STORAGE_KEY).forEach((id) => ids.add(id));
       }
       this.dismissedIds = Array.from(ids);
     },
@@ -135,12 +141,9 @@ export default {
         return;
       }
       this.dismissedIds = [...this.dismissedIds, message.uuid];
-      if (typeof window === 'undefined') {
-        return;
-      }
-      const storage = message.dismiss_permanent
-        ? window.localStorage
-        : window.sessionStorage;
+      const storage = getStorage(
+        message.dismiss_permanent ? 'localStorage' : 'sessionStorage'
+      );
       if (!storage) {
         return;
       }
@@ -150,12 +153,16 @@ export default {
       );
       if (!stored.includes(message.uuid)) {
         stored.push(message.uuid);
-        storage.setItem(
-          message.dismiss_permanent
-            ? PERMANENT_STORAGE_KEY
-            : SESSION_STORAGE_KEY,
-          JSON.stringify(stored)
-        );
+        try {
+          storage.setItem(
+            message.dismiss_permanent
+              ? PERMANENT_STORAGE_KEY
+              : SESSION_STORAGE_KEY,
+            JSON.stringify(stored)
+          );
+        } catch {
+          // Storage full or blocked: the dismissal lasts for this page view.
+        }
       }
     },
   },
