@@ -205,6 +205,7 @@ import CalendarSubscriptionWizard from '@/components/CalendarSubscriptionWizard.
 import Loading from '@/components/Loading.vue';
 import { getCalendarWizardDefaultScope } from '@/helpers/calendarSubscription';
 import { DynamicStorage } from '@/helpers/storage';
+import { SessionStore } from '@/helpers/sessionStore';
 
 // 'all' (the default) or 'major'.
 const FEAST_FILTER_KEY = 'calendarFeastFilter';
@@ -663,7 +664,7 @@ export default {
       const panelMode =
         this.$route.query.panel ||
         this.pendingSubscriptionPanel ||
-        window.sessionStorage.getItem('calendarSubscriptionPanelMode') ||
+        SessionStore.getItem('calendarSubscriptionPanelMode') ||
         'quick';
       this.pendingSubscriptionPanel = null;
 
@@ -674,7 +675,7 @@ export default {
       const query = { ...this.$route.query };
       delete query.subscribe;
       delete query.panel;
-      window.sessionStorage.removeItem('calendarSubscriptionPanelMode');
+      SessionStore.removeItem('calendarSubscriptionPanelMode');
       await this.$router.replace({
         path: this.getCalendarPath(this.year, this.month),
         query,
