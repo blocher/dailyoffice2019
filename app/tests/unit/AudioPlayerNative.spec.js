@@ -5,7 +5,7 @@ import { NativeAudioElement } from '@/helpers/nativeAudio';
 
 // AudioPlayer driving the Android app's native player through
 // NativeAudioElement, with the Capacitor plugin faked.
-const URL = 'https://api.example.com/api/v1/audio_track/office.mp3?cid=abc';
+const URL = 'https://api.example.com/api/v1/audio_track/office.mp3';
 
 const native = vi.hoisted(() => ({ plugin: null }));
 

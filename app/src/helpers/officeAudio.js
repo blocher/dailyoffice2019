@@ -8,8 +8,6 @@
   answer with no track is asked again a few times before the page says audio
   is unavailable.
 */
-import { getCachedClientId } from '@/helpers/clientId';
-
 // How long to keep polling while the server prepares audio.
 export const AUDIO_PREPARE_TIMEOUT_MS = 10 * 60 * 1000;
 // Delays before asking again after a failed request or an answer with no
@@ -36,8 +34,8 @@ export function waitForRetry(seconds) {
 
 // The backend builds the track URL from its own address, which may not be
 // reachable from the client. Resolve it against the API host the page was
-// fetched from, and append the anonymous client id so the backend can
-// attribute the "audio loaded" event (<audio> can't send custom headers).
+// fetched from. The URL is the same for every listener, so Cloudflare serves
+// it from its cache; listening is counted by the page's audio_play event.
 export function resolveAudioUrl(rawUrl) {
   if (!rawUrl) {
     return rawUrl;
@@ -45,9 +43,7 @@ export function resolveAudioUrl(rawUrl) {
   try {
     const path = new window.URL(rawUrl, window.location.origin).pathname;
     const base = (import.meta.env.VITE_API_URL || '/').replace(/\/$/, '');
-    const clientId = getCachedClientId();
-    const query = clientId ? `?cid=${encodeURIComponent(clientId)}` : '';
-    return `${base}/${path.replace(/^\//, '')}${query}`;
+    return `${base}/${path.replace(/^\//, '')}`;
   } catch {
     return rawUrl;
   }

@@ -43,7 +43,7 @@ const mountPlayer = (
 ) => {
   wrapper = shallowMount(AudioPlayer, {
     props: {
-      audio: ['https://example.com/office.mp3?cid=abc', '', sections, lines],
+      audio: ['https://example.com/office.mp3', '', sections, lines],
       audioReady: true,
       office: 'morning_prayer',
       isEsvOrKjv: true,
@@ -299,7 +299,6 @@ describe('AudioPlayer playback lifecycle', () => {
     await wrapper.get('.audio-error button').trigger('click');
     const reloaded = new window.URL(audio.src);
     expect(reloaded.pathname).toBe('/office.mp3');
-    expect(reloaded.searchParams.get('cid')).toBe('abc');
     expect(reloaded.searchParams.get('reload')).toBeTruthy();
     expect(audio.load).toHaveBeenCalledTimes(2);
     expect(audio.play).toHaveBeenCalledTimes(2);

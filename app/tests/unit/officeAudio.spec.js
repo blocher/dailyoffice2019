@@ -1,8 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fetchAudioTrack } from '@/helpers/officeAudio';
 
-vi.mock('@/helpers/clientId', () => ({ getCachedClientId: () => 'abc' }));
-
 const TRACK = [
   'https://api.example.com/api/v1/audio_track/office.mp3',
   '/media/office.mp3',
@@ -26,10 +24,11 @@ afterEach(() => {
 });
 
 describe('fetchAudioTrack', () => {
-  it('returns the track with its URL resolved for this client', async () => {
+  it('returns the track with one URL for every listener', async () => {
     const http = { get: vi.fn(() => ok({ single_track: [...TRACK] })) };
     const track = await fetchAudioTrack(http, '/office?include_audio_links=true');
-    expect(track[0]).toContain('/api/v1/audio_track/office.mp3?cid=abc');
+    // No per-client query, so Cloudflare can answer from its cache.
+    expect(track[0]).toMatch(/\/api\/v1\/audio_track\/office\.mp3$/);
     expect(http.get).toHaveBeenCalledOnce();
   });
 

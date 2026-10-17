@@ -4,7 +4,7 @@ import {
   NativeAudioElement,
 } from '@/helpers/nativeAudio';
 
-const URL = 'https://api.example.com/api/v1/audio_track/office.mp3?cid=abc';
+const URL = 'https://api.example.com/api/v1/audio_track/office.mp3';
 
 // The NativeAudio Capacitor plugin: records calls, and lets a test push the
 // `status` events the Android player would send.

@@ -100,7 +100,7 @@ describe('office audio date window', () => {
     expect(get).toHaveBeenCalledTimes(2);
     await vi.advanceTimersByTimeAsync(5000);
     const [url, path] = await result;
-    expect(url).toMatch(/^https:\/\/api\.example\/track\.mp3(\?cid=.+)?$/);
+    expect(url).toBe('https://api.example/track.mp3');
     expect(path).toBe('p');
     expect(get).toHaveBeenCalledTimes(3);
     expect(context.audioLinks).toEqual(await result);
