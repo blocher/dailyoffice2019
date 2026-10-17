@@ -40,12 +40,15 @@
       </p>
       <div class="share-qr">
         <qrcode-vue
-          v-if="shareLink"
+          v-if="shareLink && fitsInQrCode(shareLink)"
           :value="shareLink"
           :size="240"
           render-as="svg"
           level="L"
         />
+        <p v-else-if="shareLink" class="sheet-block__text">
+          Your settings link is too long for a QR code. Copy the link instead.
+        </p>
       </div>
     </section>
   </UiSheet>
@@ -57,6 +60,7 @@ import { Clipboard } from '@capacitor/clipboard';
 import { Capacitor } from '@capacitor/core';
 import QrcodeVue from 'qrcode.vue';
 import { DynamicStorage } from '@/helpers/storage';
+import { fitsInQrCode } from '@/helpers/qrCapacity';
 import { createSettingsString } from '@/helpers/createSettingsString';
 import { panels } from '@/helpers/panels';
 import { toast } from '@/ui/feedback';
@@ -88,6 +92,7 @@ export default {
     }
   },
   methods: {
+    fitsInQrCode,
     async getCollectProps() {
       const extraCollects = JSON.parse(
         await DynamicStorage.getItem('extraCollects')

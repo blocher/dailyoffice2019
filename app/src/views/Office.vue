@@ -154,7 +154,7 @@ import { discoveryState } from '@/helpers/discovery';
 import DisplayDiscoveryCard from '@/components/DisplayDiscoveryCard.vue';
 import OfficeContents from '@/components/OfficeContents.vue';
 import { confirm } from '@/ui/feedback';
-import { openPanel, takeBookViewRequest } from '@/helpers/panels';
+import { onBookViewRequest, openPanel } from '@/helpers/panels';
 import { displayState, setAudioEnabled } from '@/helpers/displayPreferences';
 import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
 import { trackEvent } from '@/helpers/analytics';
@@ -264,6 +264,14 @@ export default {
   },
 
   async created() {
+    // ?book=1 opens the book view directly (a shareable deep link).
+    onBookViewRequest(
+      this,
+      () => this.modules,
+      () => {
+        this.bookOpen = true;
+      }
+    );
     const valid_daily_offices = [
       'morning_prayer',
       'midday_prayer',
@@ -325,13 +333,6 @@ export default {
     }
     this.setDocumentTitle();
     this.modules = data.data.modules;
-    // ?book=1 opens the book view directly (a shareable deep link). The
-    // router takes the flag off the address and leaves a note.
-    if (takeBookViewRequest()) {
-      this.$nextTick(() => {
-        this.bookOpen = true;
-      });
-    }
     this.card = data.data.calendar_day;
     this.applySeasonAccentFromCard(this.card);
     this.error = false;

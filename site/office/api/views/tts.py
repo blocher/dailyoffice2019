@@ -460,7 +460,9 @@ class ElevenLabsTTSProvider(BaseTTSProvider):
                     raise ElevenLabsRequestError(
                         status, attempt, "non_retryable_status", waited, retry_after
                     ) from None
-            except (requests.ConnectionError, requests.Timeout):
+            except (requests.ConnectionError, requests.Timeout, requests.exceptions.ChunkedEncodingError):
+                # A reset mid-body raises ChunkedEncodingError, which is not a
+                # ConnectionError but is the same transient failure.
                 pass
 
             delay = max(2 ** (attempt - 1), retry_after or 0)
@@ -655,7 +657,7 @@ class GeminiTTSProvider(BaseTTSProvider):
                     json=payload,
                     timeout=getattr(settings, "GEMINI_TTS_TIMEOUT", 180),
                 )
-            except (requests.ConnectionError, requests.Timeout) as exc:
+            except (requests.ConnectionError, requests.Timeout, requests.exceptions.ChunkedEncodingError) as exc:
                 if attempt == retries:
                     raise RuntimeError("Gemini TTS request failed or timed out.") from exc
             else:

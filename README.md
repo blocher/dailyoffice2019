@@ -205,8 +205,8 @@ rake-nltk; this does not constitute a code audit of the moving Git forks.
 Native pins retained for a coordinated platform migration:
 
 Xcode/Swift is unavailable and app installation is blocked. Do not hand-edit Capacitor-generated
-Swift projects or independently select latest Firebase children. Swift's manifest and lock still pin
-Capacitor 8.1.0 while npm uses 8.5.3: reconcile with supported `cap sync`, resolve, and build on macOS.
+Swift projects or independently select latest Firebase children. Swift's manifest and lock pin
+Capacitor 8.5.3, matching npm (reconciled with `cap sync` and a macOS simulator build).
 Android needs a tested Gradle/AGP/SDK migration. No native vulnerability scan was available, so these
 pins are not asserted secure. Numeric Swift tags are observations, not compatibility assurances.
 

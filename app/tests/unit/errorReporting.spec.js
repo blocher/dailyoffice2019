@@ -141,10 +141,18 @@ describe('error reporting', () => {
         fakeEvent({ errorMessage: 'Importing a module script failed.' }),
         fakeEvent({
           errorMessage:
+            'Couldn\'t resolve component "default" at "/privacy-policy"',
+        }),
+        fakeEvent({
+          errorMessage:
             'ResizeObserver loop completed with undelivered notifications.',
         }),
         fakeEvent({
           stacktrace: [{ file: 'chrome-extension://abc/content.js' }],
+        }),
+        fakeEvent({
+          errorClass: 'Error',
+          errorMessage: 'Invalid call to runtime.sendMessage(). Tab not found.',
         }),
         fakeEvent(
           { errorClass: 'AxiosError', errorMessage: 'Network Error' },

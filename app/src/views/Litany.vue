@@ -86,6 +86,7 @@ import OfficeSpacer from '@/components/OfficeSpacer.vue';
 import BookReader from '@/components/BookReader.vue';
 import { discoveryState } from '@/helpers/discovery';
 import OfficeLines from '@/components/OfficeLines.vue';
+import { onBookViewRequest } from '@/helpers/panels';
 
 const LANGUAGES = ['Contemporary', 'Traditional'];
 
@@ -158,6 +159,16 @@ export default {
         )
       ).map((language) => ({ value: language, label: language }));
     },
+  },
+  created() {
+    // ?book=1 opens the book view directly (a shareable deep link).
+    onBookViewRequest(
+      this,
+      () => !this.loading && !this.error && this.selected,
+      () => {
+        this.bookOpen = true;
+      }
+    );
   },
   async mounted() {
     this.loading = true;

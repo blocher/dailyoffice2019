@@ -270,6 +270,7 @@ import PrayModeSwitch from '@/components/PrayModeSwitch.vue';
 import PageNotFound from '@/views/PageNotFound.vue';
 import Loading from '@/components/Loading.vue';
 import setCalendarDate from '@/helpers/setCalendarDate';
+import { SessionStore } from '@/helpers/sessionStore';
 import CitationGroup from '@/components/CitationGroup.vue';
 import Reading from '@/components/Reading.vue';
 import Collects from '@/components/Collects.vue';
@@ -277,7 +278,7 @@ import BookReader from '@/components/BookReader.vue';
 import { discoveryState } from '@/helpers/discovery';
 import { DynamicStorage } from '@/helpers/storage';
 import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
-import { openPanel } from '@/helpers/panels';
+import { onBookViewRequest, openPanel } from '@/helpers/panels';
 import { nextTick } from 'vue';
 import AudioPlayer from '@/components/AudioPlayer.vue';
 import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue';
@@ -602,6 +603,14 @@ export default {
     },
   },
   async created() {
+    // ?book=1 opens the book view directly (a shareable deep link).
+    onBookViewRequest(
+      this,
+      () => this.readingsToShow && this.readingsToShow.length,
+      () => {
+        this.bookOpen = true;
+      }
+    );
     this.calendarDate = setCalendarDate(this.$route);
     if (!this.calendarDate) {
       this.notFound = true;
@@ -904,7 +913,7 @@ export default {
         this.$route.params.service !== serviceValues.service_name ||
         this.$route.params.position !== serviceValues.position
       ) {
-        window.sessionStorage.setItem('preventScroll', 'true');
+        SessionStore.setItem('preventScroll', 'true');
         await this.$router.push({
           name: routeName,
           params: {

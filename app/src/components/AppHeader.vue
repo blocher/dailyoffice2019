@@ -1,4 +1,9 @@
 <template>
+  <div
+    class="status-scrim"
+    :class="{ 'is-shown': hidden }"
+    aria-hidden="true"
+  />
   <header class="app-header" :class="{ 'is-hidden': hidden }">
     <div class="app-header__bar">
       <router-link to="/" class="wordmark" aria-label="The Daily Office, home">
@@ -177,8 +182,27 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll));
 }
 
 .app-header.is-hidden {
-  /* Slide the bar away but keep the strip under the status bar covered. */
-  transform: translateY(calc(-100% + env(safe-area-inset-top)));
+  transform: translateY(-100%);
+}
+
+/* While the bar is away, cover the strip under the status bar (the clock, the
+   camera) so the page doesn't scroll beneath them. It is its own element: a
+   strip inside the header would slide away with it. No height off iOS. */
+.status-scrim {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 101;
+  height: env(safe-area-inset-top);
+  background-color: var(--paper-overlay);
+  backdrop-filter: saturate(1.2) blur(10px);
+  -webkit-backdrop-filter: saturate(1.2) blur(10px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 260ms var(--ease);
+}
+
+.status-scrim.is-shown {
+  opacity: 1;
 }
 
 .app-header__bar {

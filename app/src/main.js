@@ -14,7 +14,7 @@ import { getClientId } from './helpers/clientId';
 import { identifyUser, startErrorReporting } from './helpers/errorReporting';
 import { loadDisplayPreferences } from './helpers/displayPreferences';
 import { loadDiscovery } from './helpers/discovery';
-import { requestBookView } from './helpers/panels';
+import { takeBookViewQuery } from './helpers/panels';
 import { createGtag, event } from 'vue-gtag';
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
 import { Capacitor } from '@capacitor/core';
@@ -39,14 +39,10 @@ window.addEventListener('vite:preloadError', (event) => {
 });
 
 router.beforeEach((to, from) => {
-  // ?book=1 opens an office in book view. Take the flag off the address
+  // ?book=1 opens a page in book view. Take the flag off the address
   // before the page renders, so closing the book doesn't reload the office.
-  if (to.query.book) {
-    requestBookView();
-    const query = { ...to.query };
-    delete query.book;
-    return { path: to.path, query, hash: to.hash, replace: true };
-  }
+  const bookRedirect = takeBookViewQuery(to);
+  if (bookRedirect) return bookRedirect;
   // A navigation to the same address (e.g. Back closing the book view)
   // changes nothing on the page.
   if (from.matched.length && to.fullPath === from.fullPath) return;

@@ -32,10 +32,6 @@
           </span>
         </p>
 
-        <figure v-if="portrait" class="saint-portrait">
-          <img :src="portrait" :alt="commemoration.name" loading="lazy" />
-        </figure>
-
         <p v-if="commemoration.ai_one_sentence" class="saint-header__summary">
           {{ commemoration.ai_one_sentence }}
         </p>
@@ -82,14 +78,6 @@
               — {{ commemoration.ai_quote_by }}
             </footer>
           </blockquote>
-
-          <figure v-if="validImages.image_link" class="saint-figure">
-            <img
-              :src="commemoration.image_link"
-              :alt="commemoration.name"
-              loading="lazy"
-            />
-          </figure>
 
           <section v-if="article.facts.length" id="key-facts">
             <h2>Key Facts</h2>
@@ -378,11 +366,6 @@ export default {
       commemoration: null,
       loading: true,
       error: null,
-      validImages: {
-        ai_image_1: false,
-        ai_image_2: false,
-        image_link: false,
-      },
     };
   },
   computed: {
@@ -414,11 +397,6 @@ export default {
       // Only a real name; some records have just a stray comma.
       const saintName = this.commemoration?.saint_name || '';
       return /\p{L}/u.test(saintName) ? saintName : this.title.name;
-    },
-    portrait() {
-      if (this.validImages.ai_image_1) return this.commemoration.ai_image_1;
-      if (this.validImages.ai_image_2) return this.commemoration.ai_image_2;
-      return null;
     },
     verse() {
       const verse = this.commemoration?.ai_verse;
@@ -512,7 +490,6 @@ export default {
         );
         this.commemoration = commemoration.data;
         document.title = `${String(this.commemoration?.name || 'Commemoration').replace(/<[^>]*>/g, '')} | The Daily Office`;
-        this.checkImages();
       } catch {
         this.error =
           'There was an error retrieving the commemoration. Please try again.';
@@ -520,23 +497,6 @@ export default {
         return;
       }
       this.loading = false;
-    },
-    checkImages() {
-      for (const key of Object.keys(this.validImages)) {
-        if (isWebUrl(this.commemoration[key])) {
-          this.validateImageUrl(this.commemoration[key], key);
-        }
-      }
-    },
-    validateImageUrl(url, key) {
-      const img = new window.Image();
-      img.onload = () => {
-        this.validImages[key] = true;
-      };
-      img.onerror = () => {
-        this.validImages[key] = false;
-      };
-      img.src = url;
     },
     scrollToSection(id) {
       const target = document.getElementById(id);
@@ -632,22 +592,6 @@ export default {
 .saint-swatch {
   margin-right: 0.45em;
   vertical-align: 0.05em;
-}
-
-.saint-portrait {
-  margin: 1.4em auto 0;
-  max-width: min(17rem, 100%);
-}
-
-.saint-portrait img,
-.saint-figure img {
-  display: block;
-  margin: 0 auto;
-  max-height: min(24rem, 55vh);
-  width: auto;
-  object-fit: contain;
-  border-radius: var(--radius-sm);
-  box-shadow: 0 0 0 1px var(--rule);
 }
 
 .saint-header__summary {
@@ -809,10 +753,6 @@ export default {
   font-variant-caps: all-small-caps;
   letter-spacing: 0.1em;
   color: var(--ink-faint);
-}
-
-.saint-figure {
-  margin: 2em auto 0;
 }
 
 .saint-life p {

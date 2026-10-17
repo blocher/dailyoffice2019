@@ -10,7 +10,9 @@
       <UiTag
         v-if="message.tag_text"
         class="site-message__tag"
+        :class="{ 'is-link': message.link }"
         :tone="tagTone(message.tag_color)"
+        @click="follow(message)"
       >
         {{ message.tag_text }}
       </UiTag>
@@ -21,11 +23,7 @@
         >
           {{ message.text }}
         </router-link>
-        <a
-          v-else-if="message.link"
-          href="#"
-          @click.prevent="openExternal(message.link)"
-        >
+        <a v-else-if="message.link" href="#" @click.prevent="follow(message)">
           {{ message.text }}
         </a>
         <span v-else>{{ message.text }}</span>
@@ -59,6 +57,16 @@ const TAG_TONES = {
   purple: 'accent',
   gray: 'neutral',
 };
+
+// Reading the window.localStorage / window.sessionStorage property itself
+// throws a SecurityError when the browser denies storage access.
+function getStorage(name) {
+  try {
+    return typeof window === 'undefined' ? null : window[name] || null;
+  } catch {
+    return null;
+  }
+}
 
 function readStorage(storage, key) {
   try {
@@ -95,17 +103,13 @@ export default {
   methods: {
     loadDismissed() {
       const ids = new Set();
-      if (typeof window !== 'undefined') {
-        if (window.localStorage) {
-          readStorage(window.localStorage, PERMANENT_STORAGE_KEY).forEach(
-            (id) => ids.add(id)
-          );
-        }
-        if (window.sessionStorage) {
-          readStorage(window.sessionStorage, SESSION_STORAGE_KEY).forEach(
-            (id) => ids.add(id)
-          );
-        }
+      const local = getStorage('localStorage');
+      if (local) {
+        readStorage(local, PERMANENT_STORAGE_KEY).forEach((id) => ids.add(id));
+      }
+      const session = getStorage('sessionStorage');
+      if (session) {
+        readStorage(session, SESSION_STORAGE_KEY).forEach((id) => ids.add(id));
       }
       this.dismissedIds = Array.from(ids);
     },
@@ -127,20 +131,23 @@ export default {
     isExternal(link) {
       return /^https?:\/\//i.test(link) || /^mailto:/i.test(link);
     },
-    async openExternal(link) {
-      await Browser.open({ url: link });
+    // The tag follows the link too: it reads like a button ("Book View!").
+    async follow(message) {
+      if (!message.link) return;
+      if (this.isExternal(message.link)) {
+        await Browser.open({ url: message.link });
+      } else {
+        await this.$router.push(message.link);
+      }
     },
     dismiss(message) {
       if (this.dismissedIds.includes(message.uuid)) {
         return;
       }
       this.dismissedIds = [...this.dismissedIds, message.uuid];
-      if (typeof window === 'undefined') {
-        return;
-      }
-      const storage = message.dismiss_permanent
-        ? window.localStorage
-        : window.sessionStorage;
+      const storage = getStorage(
+        message.dismiss_permanent ? 'localStorage' : 'sessionStorage'
+      );
       if (!storage) {
         return;
       }
@@ -150,12 +157,16 @@ export default {
       );
       if (!stored.includes(message.uuid)) {
         stored.push(message.uuid);
-        storage.setItem(
-          message.dismiss_permanent
-            ? PERMANENT_STORAGE_KEY
-            : SESSION_STORAGE_KEY,
-          JSON.stringify(stored)
-        );
+        try {
+          storage.setItem(
+            message.dismiss_permanent
+              ? PERMANENT_STORAGE_KEY
+              : SESSION_STORAGE_KEY,
+            JSON.stringify(stored)
+          );
+        } catch {
+          // Storage full or blocked: the dismissal lasts for this page view.
+        }
       }
     },
   },
@@ -182,6 +193,10 @@ export default {
   background-color: var(--paper-raised);
   font-size: var(--text-sm);
   line-height: 1.35;
+}
+
+.site-message__tag.is-link {
+  cursor: pointer;
 }
 
 .site-message__text {

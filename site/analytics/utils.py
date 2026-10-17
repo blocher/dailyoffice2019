@@ -86,9 +86,10 @@ def record_audio_loaded(request, is_initial_request):
     """Best-effort ``audio_loaded`` event for an MP3 serve.
 
     Only the initial (non-continuation) request is logged so range/seek requests
-    for the same track don't inflate the count. This counts audio that was
-    fetched by the player, which is an upper bound on plays because the client
-    preloads audio; the dashboard labels it accordingly.
+    for the same track don't inflate the count. Track URLs are the same for every
+    listener (no ``cid``) so Cloudflare can cache them; this sees only the loads
+    Cloudflare passes through, and ``cid`` is read only from older clients. Count
+    listening with ``audio_play`` instead; the dashboard labels this accordingly.
     """
     if not is_initial_request:
         return

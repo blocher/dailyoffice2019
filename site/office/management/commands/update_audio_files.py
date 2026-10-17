@@ -1,3 +1,7 @@
+import fcntl
+import os
+import tempfile
+import time
 from datetime import timedelta
 
 import kronos
@@ -8,8 +12,15 @@ from django.urls import resolve
 from django.utils import timezone
 from office.api.views.index import AUDIO_GENERATION_REQUIRED
 
+# Held for the whole run, so a run that starts while another is still going
+# skips instead of doubling the work. The OS releases it if the process dies.
+LOCK_PATH = os.path.join(tempfile.gettempdir(), "dailyoffice-update-audio-files.lock")
 
-@kronos.register("55 9 * * *")
+
+# Server time is US Eastern. Three tries overnight (11 pm, 1 am, 3 am), away
+# from morning and evening prayer: clips already made are reused, so a later
+# run only fills in what an earlier one missed (say, during a provider outage).
+@kronos.register("0 1,3,23 * * *")
 class Command(BaseCommand):
     help = "Pre-warm generated office audio for a range of days."
 
@@ -32,11 +43,23 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-
         days = options["days"]
         if days < 1:
             raise CommandError("--days must be at least 1.")
-        skip_yesterday = options["skip_yesterday"]
+        with open(LOCK_PATH, "a") as lock:
+            try:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                self.stdout.write("Audio warming is already running; skipping this run.")
+                return
+            try:
+                self.warm(days, options["skip_yesterday"])
+            finally:
+                fcntl.flock(lock, fcntl.LOCK_UN)
+
+    def warm(self, days, skip_yesterday):
+        started = time.monotonic()
+        self.stdout.write(f"Audio warming started at {time.strftime('%Y-%m-%d %H:%M %Z')}")
         completed = 0
         failures = 0
         reported_errors = set()
@@ -211,7 +234,8 @@ class Command(BaseCommand):
                         completed += 1
                         self.stdout.write(f"Completed {label}")
 
-        summary = f"Audio warming finished: {completed} succeeded, {failures} failed."
+        minutes = (time.monotonic() - started) / 60
+        summary = f"Audio warming finished in {minutes:.1f} min: {completed} succeeded, {failures} failed."
         self.stdout.write(summary)
         if failures:
             raise CommandError(summary)

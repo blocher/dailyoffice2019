@@ -46,7 +46,8 @@ export default createStore({
         : {};
       const setting_abbreviations = [];
       let applied = false;
-      if (availableSettings) {
+      // Not an array if the settings request failed or returned an error body.
+      if (Array.isArray(availableSettings)) {
         availableSettings.forEach((availableSetting) => {
           const key = availableSetting['name'];
           const value = availableSetting['options'][0]['value'];
@@ -102,7 +103,9 @@ export default createStore({
       // /calendar?subscribe=1, keep theirs. Replace rather than push so the
       // cleanup doesn't add a history entry.
       const currentQuery = router.currentRoute._value.query || {};
-      const settingNames = (availableSettings || []).map((s) => s.name);
+      const settingNames = (
+        Array.isArray(availableSettings) ? availableSettings : []
+      ).map((s) => s.name);
       const consumed = Object.keys(currentQuery).filter(
         (key) =>
           key === 'settings' ||

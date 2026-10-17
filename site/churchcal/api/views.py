@@ -5,7 +5,7 @@ from django.core.cache import cache
 from django.http import FileResponse
 from django.utils import timezone
 from mutagen.mp3 import MP3
-from rest_framework.renderers import BaseRenderer, BrowsableAPIRenderer, JSONRenderer
+from rest_framework.renderers import BaseRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -89,7 +89,7 @@ class YearView(APIView):
 
 class CalendarFeedView(APIView):
     permission_classes = [ReadOnly]
-    renderer_classes = [CalendarFeedRenderer, JSONRenderer, BrowsableAPIRenderer]
+    renderer_classes = [CalendarFeedRenderer, JSONRenderer]
 
     def get(self, request, scope, canceled=False):
         try:
@@ -144,5 +144,12 @@ class AudioTrackView(APIView):
             # Cloudflare and browsers from holding on to it so the rebuilt file
             # (same name) reaches listeners as soon as it exists.
             response["Cache-Control"] = "no-store"
+        else:
+            # A complete track never changes: its name is a hash of its parts, and it is
+            # only moved into place once fully encoded (office/combined_track.py). Every
+            # listener requests the same URL, so let Cloudflare keep it for the two weeks an
+            # office's audio is offered. Browsers keep it a day, since only Cloudflare's copy
+            # can be purged if a track ever has to be replaced.
+            response["Cache-Control"] = "public, max-age=86400, s-maxage=1209600"
 
         return response

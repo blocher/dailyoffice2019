@@ -92,6 +92,7 @@
 <script>
 import Loading from '@/components/Loading.vue';
 import { DynamicStorage } from '@/helpers/storage';
+import { SessionStore } from '@/helpers/sessionStore';
 
 export default {
   components: { Loading },
@@ -214,7 +215,7 @@ export default {
       // The category control filters in place; a topic tapped in the list
       // goes back up to show the filtered results.
       if (!fromList) {
-        window.sessionStorage.setItem('preventScroll', 'true');
+        SessionStore.setItem('preventScroll', 'true');
       }
       this.$router.replace({ name: 'Psalms', query });
       this.updateDisplayedTopic();

@@ -66,7 +66,9 @@ describe('office audio date window', () => {
     vi.stubEnv('VITE_FETCH_AUDIO_ON', 'true');
     const get = vi
       .fn()
-      .mockResolvedValue({ data: { audio: { single_track: [] } } });
+      .mockResolvedValue({
+        data: { audio: { single_track: ['https://api.test/track.mp3', 'p'] } },
+      });
     await Office.methods.setAudioLinks.call(
       { audioEnabled: true, isWithinSevenDays: true, $http: { get } },
       '/office?test=1'
@@ -98,7 +100,7 @@ describe('office audio date window', () => {
     expect(get).toHaveBeenCalledTimes(2);
     await vi.advanceTimersByTimeAsync(5000);
     const [url, path] = await result;
-    expect(url).toMatch(/^https:\/\/api\.example\/track\.mp3(\?cid=.+)?$/);
+    expect(url).toBe('https://api.example/track.mp3');
     expect(path).toBe('p');
     expect(get).toHaveBeenCalledTimes(3);
     expect(context.audioLinks).toEqual(await result);

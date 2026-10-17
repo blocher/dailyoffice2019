@@ -2,6 +2,7 @@ import Pray from '../views/Pray.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import Today from '@/views/Today.vue';
 import PageNotFound from '@/views/PageNotFound.vue';
+import { SessionStore } from '@/helpers/sessionStore';
 
 // The offices load with the app; other pages load when first visited.
 const Calendar = () => import('@/views/Calendar.vue');
@@ -41,6 +42,7 @@ const routes = [
     ],
     meta: {
       title: 'Readings | The Daily Office',
+      bookView: true,
     },
   },
   {
@@ -49,6 +51,7 @@ const routes = [
     component: Litany,
     meta: {
       title: 'The Great Litany | The Daily Office',
+      bookView: true,
     },
   },
   {
@@ -74,6 +77,7 @@ const routes = [
     component: Pray,
     meta: {
       title: 'Pray | Family Prayer',
+      bookView: true,
     },
   },
   {
@@ -82,6 +86,7 @@ const routes = [
     component: Pray,
     meta: {
       title: 'Pray | The Daily Office',
+      bookView: true,
     },
   },
   {
@@ -90,6 +95,7 @@ const routes = [
     component: Today,
     meta: {
       title: 'Pray | Family Prayer',
+      bookView: true,
     },
   },
   {
@@ -98,6 +104,7 @@ const routes = [
     component: Today,
     meta: {
       title: 'Pray | Family Prayer',
+      bookView: true,
     },
   },
   {
@@ -106,6 +113,7 @@ const routes = [
     component: Today,
     meta: {
       title: 'Pray | Family Prayer',
+      bookView: true,
     },
   },
   {
@@ -130,6 +138,7 @@ const routes = [
     component: Today,
     meta: {
       title: 'Today | The Daily Office',
+      bookView: true,
     },
   },
   { path: '/privacy', redirect: '/privacy-policy' },
@@ -252,8 +261,8 @@ const router = createRouter({
       return false;
     } else {
       // Check for explicit prevent scroll flag
-      if (window.sessionStorage.getItem('preventScroll') === 'true') {
-        window.sessionStorage.removeItem('preventScroll');
+      if (SessionStore.getItem('preventScroll') === 'true') {
+        SessionStore.removeItem('preventScroll');
         return false;
       }
       // always scroll to top

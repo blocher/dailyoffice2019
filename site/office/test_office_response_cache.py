@@ -1,6 +1,7 @@
 """Short-lived office response cache and out-of-request audio builds."""
 
 import datetime
+import json
 import os
 import tempfile
 import threading
@@ -182,6 +183,17 @@ class DeferredAudioViewTests(OfficeViewTestMixin, SimpleTestCase):
             response = self.get(self.audio)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response["X-Office-Cache"], "hit")
+
+    def test_answer_without_a_track_is_not_cached(self):
+        with patch.object(index.OfficeAudioSerializer, "data", new_callable=PropertyMock) as data:
+            data.return_value = {"audio": {"single_track": []}}
+            self.assertEqual(self.get(self.audio).status_code, 200)
+            data.return_value = {"audio": {"single_track": ["ready.mp3"]}}
+            response = self.get(self.audio)
+            self.assertEqual(json.loads(response.content)["audio"]["single_track"], ["ready.mp3"])
+            self.assertFalse(response.has_header("X-Office-Cache"))
+            self.assertEqual(self.get(self.audio)["X-Office-Cache"], "hit")
+        self.assertEqual(data.call_count, 2)
 
 
 @override_settings(

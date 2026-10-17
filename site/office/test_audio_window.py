@@ -1,7 +1,7 @@
 import datetime
 from io import StringIO
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from django.core.management import call_command
 from django.test import SimpleTestCase, override_settings
@@ -150,3 +150,38 @@ class AudioWindowTests(SimpleTestCase):
         self.assertIn("HTTP 429", errors.getvalue())
         self.assertIn("HTTP 500", errors.getvalue())
         self.assertIn("Bugsnag notification failed", errors.getvalue())
+
+    def test_management_job_skips_while_another_run_is_going(self):
+        import fcntl
+        import tempfile
+
+        from office.management.commands import update_audio_files
+
+        view = Mock()
+        output = StringIO()
+        with tempfile.NamedTemporaryFile() as held:
+            fcntl.flock(held, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            with (
+                patch.object(update_audio_files, "LOCK_PATH", held.name),
+                patch.object(
+                    update_audio_files, "resolve", return_value=SimpleNamespace(func=view, args=(), kwargs={})
+                ),
+            ):
+                call_command("update_audio_files", days=1, stdout=output)
+        view.assert_not_called()
+        self.assertIn("already running; skipping", output.getvalue())
+
+    def test_management_job_lock_is_released_after_a_run(self):
+        import tempfile
+
+        from office.management.commands import update_audio_files
+
+        view = Mock(return_value=SimpleNamespace(content=b"", status_code=200))
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            patch.object(update_audio_files, "LOCK_PATH", f"{directory}/warm.lock"),
+            patch.object(update_audio_files, "resolve", return_value=SimpleNamespace(func=view, args=(), kwargs={})),
+        ):
+            call_command("update_audio_files", days=1, stdout=StringIO())
+            call_command("update_audio_files", days=1, stdout=StringIO())
+        self.assertEqual(view.call_count, 2 * 8 * 2 * 12)
