@@ -27,14 +27,17 @@ const REPORTING_STAGES = ['production', 'staging'];
 // (see `vite:preloadError` in main.js), so these aren't worth reporting.
 const STALE_CHUNK =
   /ChunkLoadError|Loading chunk \S+ failed|Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module|Unable to preload CSS/i;
-// vue-router raises this when a lazy route's chunk loads but exports nothing
-// (a truncated or cached-stale file after a deploy). It is the same stale
-// build problem as a missing chunk; the next navigation fetches a good one.
+// When a route's chunk fails to load, the `vite:preloadError` handler cancels
+// the error and reloads, so the import resolves to nothing and vue-router
+// raises this just before the reload. Same stale-chunk case as above.
 const EMPTY_ROUTE_CHUNK = /Couldn't resolve component "default" at/i;
 // A browser quirk, not a bug: the observer simply skipped a frame.
 const RESIZE_OBSERVER = /ResizeObserver loop/i;
 const EXTENSION_FILE =
   /^(chrome|moz|safari|safari-web|ms-browser)-extension:\/\//i;
+// Extension errors that arrive with no stack, so EXTENSION_FILE can't match.
+// The app itself never calls the extension messaging API.
+const EXTENSION_MESSAGE = /Invalid call to runtime\.sendMessage\(\)/i;
 // Requests that never reached the server (offline, timed out, cancelled).
 const NETWORK_CODES = new Set(['ERR_NETWORK', 'ECONNABORTED', 'ERR_CANCELED']);
 
@@ -48,7 +51,8 @@ export function isNoise(event) {
   if (
     STALE_CHUNK.test(text) ||
     EMPTY_ROUTE_CHUNK.test(text) ||
-    RESIZE_OBSERVER.test(text)
+    RESIZE_OBSERVER.test(text) ||
+    EXTENSION_MESSAGE.test(text)
   )
     return true;
   if ((error.stacktrace || []).some((f) => EXTENSION_FILE.test(f.file || ''))) {
