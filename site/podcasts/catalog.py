@@ -74,6 +74,20 @@ TRADITIONAL_READINGS_SETTINGS = {**READINGS_SETTINGS, "translation": "kjv", "psa
 CONTEMPORARY = "contemporary"
 TRADITIONAL = "traditional"
 
+# Every office feed's description closes with this, after its own opening.
+INVITATION = (
+    "Join with Christians around the world in praying with the Church, at any time or in any place you may "
+    "find yourself. Each day's office comes to you complete: no flipping pages, no searching for Scripture "
+    "readings or calendars, no puzzling over rubrics. The prayers are from The Book of Common Prayer (2019) of "
+    "the Anglican Church in North America and follow the ancient pattern of daily prayer Christians have kept "
+    "since the earliest days of the Church."
+)
+READINGS_INVITATION = (
+    "Hear the Scriptures the Church reads, together with Christians around the world, at any time or in any "
+    "place you may find yourself, with no flipping pages and no searching lectionaries or calendars. The "
+    "readings are appointed by The Book of Common Prayer (2019) of the Anglican Church in North America, "
+    "following the ancient pattern of reading Scripture in the Church's prayer and worship."
+)
 SYNTHESIZED_VOICE_NOTE = (
     "Read with synthesized (AI) voices, produced by the free Daily Office website and app, "
     "so a fresh episode is ready every day of the year."
@@ -183,10 +197,8 @@ def _office(slug, title, subtitle, about, group, service, office_name, evening=F
                 title=f"{title} (Traditional Language)" if traditional else title,
                 subtitle=subtitle + (" In traditional language." if traditional else ""),
                 description=(
-                    f"{about}\n\n{language} A new episode every day, each the complete office for that day, "
-                    "with a link to pray along with the full text at dailyoffice2019.com.\n\n"
-                    f"{SYNTHESIZED_VOICE_NOTE} The Daily Office follows the Book of Common Prayer (2019) of the "
-                    "Anglican Church in North America."
+                    f"{about}\n\n{INVITATION}\n\n{language} A new episode every day, with a link to pray "
+                    f"along with the full text at dailyoffice2019.com.\n\n{SYNTHESIZED_VOICE_NOTE}"
                 ),
                 group=group,
                 service=service,
@@ -220,7 +232,10 @@ def _readings(
                 slug=f"{slug}-traditional" if traditional else slug,
                 title=f"{title} (Traditional Language)" if traditional else title,
                 subtitle=subtitle + (" In the King James Version." if traditional else ""),
-                description=f"{about}\n\n{details.format(version=version)}\n\n{SYNTHESIZED_VOICE_NOTE}",
+                description=(
+                    f"{about}\n\n{READINGS_INVITATION}\n\n{details.format(version=version)}\n\n"
+                    f"{SYNTHESIZED_VOICE_NOTE}"
+                ),
                 group="readings",
                 service=service,
                 office_name=office_name,
@@ -240,11 +255,10 @@ FEEDS = [
         "morning-prayer",
         "Morning Prayer",
         "Daily Morning Prayer from the Book of Common Prayer (2019), every day.",
-        "Begin the day with the Church's ancient office of Morning Prayer. Each episode prays the whole "
-        "office for the day: the opening sentence, the confession of sin, the Venite or Jubilate, the "
-        "psalms appointed in the sixty-day psalter, lessons from the Old and New Testaments in the Daily "
-        "Office lectionary, the canticles, the Apostles' Creed, the Lord's Prayer, the suffrages and "
-        "collects, and the Great Litany on Wednesdays, Fridays, and Sundays.",
+        "Begin the day with the Church's ancient office of Morning Prayer, offering its first hours to God. "
+        "Each morning brings confession and praise, the psalms and the lessons of Scripture appointed for the "
+        "day, the great canticles of the Church, and her prayers for the world, with the Great Litany on "
+        "Wednesdays, Fridays, and Sundays.",
         "daily-office",
         "office/morning_prayer",
         "Daily Morning Prayer",
@@ -255,9 +269,9 @@ FEEDS = [
         "midday-prayer",
         "Midday Prayer",
         "A short office of prayer at noon from the Book of Common Prayer (2019), every day.",
-        "Pause in the middle of the day for the brief office of Midday Prayer: a psalm, a short reading "
-        "of Scripture, the Lord's Prayer, and prayers and collects for the middle of the day. Short enough "
-        "to pray at your desk, on a walk, or over lunch.",
+        "Pause in the middle of the day and turn it back toward God. Midday Prayer is a brief office of psalm, "
+        "Scripture, and prayer, short enough to pray at your desk, on a walk, or over lunch, and a quiet place "
+        "to rest in the busiest of days.",
         "daily-office",
         "office/midday_prayer",
         "Daily Midday Prayer",
@@ -268,9 +282,9 @@ FEEDS = [
         "evening-prayer",
         "Evening Prayer",
         "Daily Evening Prayer (Evensong) from the Book of Common Prayer (2019), every day.",
-        "End the working day with Evening Prayer. Each episode prays the whole office for the day: the "
-        "opening sentence, the confession of sin, the Phos Hilaron, the psalms appointed in the sixty-day "
-        "psalter, the evening lessons from the Daily Office lectionary, the canticles, the Apostles' Creed, the Lord's Prayer, the suffrages and collects, and the dismissal.",
+        "As the day's work ends and the lamps are lit, Evening Prayer gathers it up in thanksgiving. With the "
+        "ancient hymn to Christ the joyful light, the psalms and lessons appointed for the evening, the Gospel "
+        "canticles, and the Church's prayers for the coming night, it is the Prayer Book's Evensong, every day.",
         "daily-office",
         "office/evening_prayer",
         "Daily Evening Prayer",
@@ -282,9 +296,9 @@ FEEDS = [
         "compline",
         "Compline",
         "Prayer at the close of the day from the Book of Common Prayer (2019), every night.",
-        "Close the day with Compline, the quiet office prayed before sleep: confession, the psalms of "
-        "trust, a short reading, “Into your hands, O Lord, I commend my spirit,” the Song of "
-        "Simeon, and prayers for protection through the night.",
+        "Close the day with Compline, the quiet office prayed before sleep. In psalms of trust, a short "
+        "reading, and the words “Into your hands, O Lord, I commend my spirit,” it commends the night, and "
+        "all who work or watch or weep, to God's keeping.",
         "daily-office",
         "office/compline",
         "Compline",
@@ -297,9 +311,8 @@ FEEDS = [
         "Family Prayer in the Morning",
         "Short morning devotions for households from the Book of Common Prayer (2019).",
         "Family Prayer is the Prayer Book's short form of daily prayer for households, families, and anyone "
-        "with only a few minutes. In the morning: an opening sentence, a psalm, a brief reading from "
-        "Scripture, the Apostles' Creed, the Lord's Prayer, and a collect for the morning. A few minutes "
-        "to pray together over breakfast or on the way to school.",
+        "with only a few minutes. In the morning, a psalm, a brief reading, and a collect send the household "
+        "into the day with God: a few minutes to pray together over breakfast or on the way to school.",
         "family",
         "family/morning_prayer",
         "Family Prayer in the Morning",
@@ -311,8 +324,8 @@ FEEDS = [
         "Family Prayer at Midday",
         "Short midday devotions for households from the Book of Common Prayer (2019).",
         "Family Prayer is the Prayer Book's short form of daily prayer for households, families, and anyone "
-        "with only a few minutes. At midday: an opening sentence, a psalm, a brief reading from Scripture, "
-        "the Lord's Prayer, and a collect for the middle of the day.",
+        "with only a few minutes. At midday, a moment of psalm, Scripture, and prayer turns the day back "
+        "toward God, wherever it finds you.",
         "family",
         "family/midday_prayer",
         "Family Prayer at Midday",
@@ -324,9 +337,8 @@ FEEDS = [
         "Family Prayer in the Early Evening",
         "Short evening devotions for households from the Book of Common Prayer (2019).",
         "Family Prayer is the Prayer Book's short form of daily prayer for households, families, and anyone "
-        "with only a few minutes. In the early evening: an opening sentence, the Phos Hilaron, a brief "
-        "reading from Scripture, the Apostles' Creed, the Lord's Prayer, and a collect for the evening. A few "
-        "minutes to pray together around the dinner table.",
+        "with only a few minutes. In the early evening, the ancient hymn to Christ the joyful light, a brief "
+        "reading, and prayers for the evening: a few minutes to pray together around the dinner table.",
         "family",
         "family/early_evening_prayer",
         "Family Prayer in the Early Evening",
@@ -339,9 +351,8 @@ FEEDS = [
         "Family Prayer at the Close of Day",
         "Short bedtime devotions for households from the Book of Common Prayer (2019).",
         "Family Prayer is the Prayer Book's short form of daily prayer for households, families, and anyone "
-        "with only a few minutes. At the close of day: an opening sentence, a psalm, a brief reading from "
-        "Scripture, the Apostles' Creed, prayers for the night, the Lord's Prayer, and the Song of Simeon. "
-        "A few minutes to pray together at bedtime.",
+        "with only a few minutes. At the close of day, a psalm, a brief reading, prayers for the night, and "
+        "the Song of Simeon commend the household to God's keeping: a few minutes to pray together at bedtime.",
         "family",
         "family/close_of_day_prayer",
         "Family Prayer at the Close of Day",
@@ -353,10 +364,9 @@ FEEDS = [
         "daily-office-readings",
         "Daily Office Readings",
         "The psalms and lessons appointed for Morning and Evening Prayer, every day.",
-        "Hear the whole of Scripture over the year. Each episode reads the psalms and lessons appointed "
-        "for the day in the Daily Office lectionary of the Book of Common Prayer (2019): Morning Prayer's "
-        "psalms and Old and New Testament lessons, then Evening Prayer's. Just the readings, with no "
-        "other prayers, for the commute, the gym, or alongside your own prayers.",
+        "Hear the whole of Scripture over the course of the year. Each episode reads the psalms and lessons "
+        "appointed for the day's Morning and Evening Prayer, just the readings, for the commute, a walk, or "
+        "alongside your own prayers.",
         "{version} in the sixty-day cycle. A new episode every day, with a link to the day's readings at "
         "dailyoffice2019.com.",
         "readings/daily_office",
@@ -368,10 +378,9 @@ FEEDS = [
         "holy-eucharist-readings",
         "Holy Eucharist Readings",
         "The collect and lessons for every Sunday and holy day, before you hear them in church.",
-        "Prepare for Sunday. Each episode reads the Collect of the Day, the Old Testament lesson, the "
-        "psalm, the Epistle, and the Holy Gospel appointed for the Holy Eucharist in the Book of Common "
-        "Prayer (2019) lectionary. Episodes appear only for days with their own readings: every Sunday, "
-        "the principal feasts, the holy days of the apostles and evangelists, and the days of Holy Week "
+        "Prepare your heart for Sunday. Each episode reads the collect, lessons, psalm, and Holy Gospel "
+        "appointed for the Holy Eucharist, so you come to the Lord's Table having already heard the Word. "
+        "Episodes appear for every Sunday, the principal feasts and holy days, and the days of Holy Week "
         "and Easter Week.",
         "{version}. Each episode links to the day's readings at dailyoffice2019.com.",
         "readings/holy_eucharist",

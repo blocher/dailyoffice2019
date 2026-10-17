@@ -23,7 +23,7 @@ from office.api.views.tts import get_tts_provider
 from office.models import Setting, SettingOption
 from office.audio_retention import is_permanent
 from office.readings_audio import KINDS, ReadingsAudioOffice, first_per_reading_number, spoken_psalm
-from podcasts import builder, catalog, custom, episodes, rss, views
+from podcasts import builder, catalog, custom, episodes, rss, transcripts, views
 from podcasts.management.commands import build_podcast_artwork as artwork
 from podcasts.models import CustomPodcastEpisode, CustomPodcastFeed, PodcastDirectoryListing, PodcastEpisode
 
@@ -278,6 +278,165 @@ class EpisodeTextTests(SimpleTestCase):
         )
 
 
+def words(line_id, speaker, start, *spoken, step=0.5):
+    """Provider word timings for ``spoken``, one every ``step`` seconds from ``start``."""
+    return [
+        {
+            "id": line_id,
+            "speaker": speaker,
+            "word": word,
+            "start_time": start + index * step,
+            "end_time": start + index * step + step * 0.8,
+        }
+        for index, word in enumerate(spoken)
+    ]
+
+
+LONG_PARAGRAPH = (
+    "<span data-line-id='lesson_p1'></span><p><sup class=\"verse-num\">1</sup> "
+    + 'In the beginning the <span class="divine-name">Lord</span> spoke, and it was so, and the waters were gathered. '
+    * 2
+    + '<sup class="verse-num">2</sup> And he said, \u201cLet there be light.\u201d Then evening came.</p>'
+    + "<span data-line-id='lesson_p2'></span><p><sup class=\"verse-num\">3</sup> A short second paragraph.</p>"
+)
+
+
+def office_data():
+    """An office API response: an announcement, bells, a psalm verse in two voices, and a two-paragraph lesson."""
+    paragraph = transcripts.clean(LONG_PARAGRAPH.split("<span data-line-id='lesson_p2'>")[0])
+    paragraph_words = words("lesson_p1", "reader", 20.0, *transcripts.WORD.findall(paragraph))
+    return {
+        "modules": [
+            {
+                "name": "Psalms",
+                "lines": [
+                    {"line_type": "heading", "content": "Psalm 23", "id": "psalms_0"},
+                    {"line_type": "leader", "content": "The Lᴏʀᴅ is my shepherd; *", "id": "psalms_1"},
+                    {"line_type": "congregation", "content": "I shall not be in want.", "id": "psalms_2"},
+                ],
+            },
+            {"name": "First Reading", "lines": [{"line_type": "html", "content": LONG_PARAGRAPH, "id": "lesson_0"}]},
+        ],
+        "audio": {
+            "tracks": [{"line_id": "audio_office_announcement", "text": "Morning Prayer for Monday."}],
+            "single_track": [
+                "https://x/a.mp3",
+                "/uploads/x.mp3",
+                [
+                    {"name": "Opening", "start_time": 0},
+                    {"name": "Psalms", "start_time": 6},
+                    {"name": "First Reading", "start_time": 19.5},
+                ],
+                [
+                    {"id": "audio_office_announcement", "start_time": 0, "end_time": 2},
+                    {"id": "audio_opening_bells", "start_time": 2, "end_time": 5},
+                    {"id": "audio_silence_begin", "start_time": 5, "end_time": 6},
+                    # One clip speaks both halves of the verse.
+                    {"id": "psalms_1", "start_time": 6, "end_time": 12},
+                    {"id": "psalms_2", "start_time": 6, "end_time": 12},
+                    {"id": "lesson_p1", "start_time": 20, "end_time": 20 + len(paragraph_words) * 0.5},
+                    {"id": "lesson_p2", "start_time": 60, "end_time": 63},
+                ],
+                [
+                    *words("psalms_1", "leader", 6.2, "The", "Lord", "is", "my", "shepherd"),
+                    *words("psalms_2", "congregation", 9.1, "I", "shall", "not", "be", "in", "want"),
+                    *paragraph_words,
+                ],
+            ],
+        },
+    }
+
+
+class TranscriptTests(SimpleTestCase):
+    def setUp(self):
+        self.cues = transcripts.cues(office_data(), duration=62.0)
+
+    def test_every_spoken_line_with_its_voice_and_timing(self):
+        self.assertEqual(self.cues[0], [0, 2, "", "Morning Prayer for Monday."])
+        self.assertEqual(self.cues[1], [2, 5, "", "[Bells]"])
+        # Timed from each line's own words, though one clip speaks both.
+        self.assertEqual(self.cues[2], [6.2, 8.6, "Officiant", "The Lord is my shepherd;"])
+        self.assertEqual(self.cues[3][:3], [9.1, 12.0, "People"])
+        self.assertEqual(self.cues[3][3], "I shall not be in want.")
+        self.assertNotIn("Psalm 23", [cue[3] for cue in self.cues])  # headings aren't read
+
+    def test_long_paragraphs_split_into_sentences_timed_by_their_words(self):
+        lesson = [cue for cue in self.cues if cue[2] == "Reader"]
+        self.assertGreater(len(lesson), 2)
+        joined = " ".join(cue[3] for cue in lesson)
+        self.assertNotIn("1", joined)  # verse numbers
+        self.assertIn("the Lord spoke", joined)
+        self.assertIn("\u201cLet there be light.\u201d", joined)
+        self.assertTrue(all(len(cue[3]) <= transcripts.CUE_CHARACTERS * 1.5 for cue in lesson))
+        self.assertEqual(lesson[0][0], 20.0)
+        # The second paragraph has no word timings: it keeps its clip's span, cut at the duration.
+        self.assertEqual(lesson[-1], [60, 62.0, "Reader", "A short second paragraph."])
+
+    def test_cues_are_ordered_and_never_overlap(self):
+        for cue, following in zip(self.cues, self.cues[1:]):
+            self.assertLessEqual(cue[0], cue[1])
+            self.assertLessEqual(cue[1], following[0])
+
+    def test_webvtt_and_srt(self):
+        sample = [[0, 2.5, "", "[Bells]"], [3661.25, 3662, "People", "Thanks be to God & <all>."]]
+        self.assertEqual(
+            transcripts.to_vtt(sample),
+            "WEBVTT\n\n1\n00:00:00.000 --> 00:00:02.500\n[Bells]\n\n"
+            "2\n01:01:01.250 --> 01:01:02.000\n<v People>Thanks be to God &amp; &lt;all&gt;.\n",
+        )
+        self.assertEqual(
+            transcripts.to_srt(sample),
+            "1\n00:00:00,000 --> 00:00:02,500\n[Bells]\n\n2\n01:01:01,250 --> 01:01:02,000\nPeople: Thanks be to God & <all>.\n",
+        )
+
+    def test_no_timeline_no_transcript(self):
+        self.assertEqual(transcripts.cues({"audio": {"single_track": ["u", "p", [], [], []]}}), [])
+        self.assertEqual(transcripts.cues({}), [])
+
+
+class ChapterTests(SimpleTestCase):
+    def test_titles_name_the_psalms_lessons_and_canticles(self):
+        modules = [
+            {"name": "Psalms", "lines": [{"line_type": "heading", "content": "Psalm 119:1-24"}]},
+            {"name": "First Reading", "lines": [{"line_type": "subheading", "content": "II KINGS 8"}]},
+            {"name": "First Canticle", "lines": [{"line_type": "heading", "content": "TE DEUM LAUDAMUS"}]},
+            {"name": "The Prayers", "lines": [{"line_type": "heading", "content": "The Prayers"}]},
+        ]
+        timeline = [
+            {"name": "Opening", "start_time": 0},
+            {"name": "Psalms", "start_time": 30},
+            {"name": "First Reading", "start_time": 200},
+            {"name": "First Canticle", "start_time": 400},
+            {"name": "The Prayers", "start_time": 500},
+        ]
+        self.assertEqual(
+            [chapter["title"] for chapter in episodes.chapters(timeline, modules)],
+            [
+                "Opening",
+                "Psalms (Psalm 119:1-24)",
+                "First Reading (II Kings 8)",
+                "First Canticle (Te Deum Laudamus)",
+                "The Prayers",
+            ],
+        )
+
+    def test_a_momentary_chapter_gives_way_to_the_next(self):
+        timeline = [
+            {"name": "Opening", "start_time": 0},
+            {"name": "Morning Prayer: The Second Lesson", "start_time": 471},
+            {"name": "Evening Prayer", "start_time": 641},
+            {"name": "Evening Prayer: The Psalms", "start_time": 644},
+        ]
+        self.assertEqual(
+            episodes.chapters(timeline),
+            [
+                {"startTime": 0, "title": "Opening"},
+                {"startTime": 471, "title": "Morning Prayer: The Second Lesson"},
+                {"startTime": 641, "title": "Evening Prayer: The Psalms"},
+            ],
+        )
+
+
 class ReadingsAudioHelperTests(TestCase):
     def test_psalms_are_announced_in_words(self):
         self.assertEqual(spoken_psalm("Psalm 96"), "Psalm ninety-six.")
@@ -361,11 +520,19 @@ class BuildEpisodeTests(MediaRootMixin, TestCase):
         self.assertEqual(tags.getall("TSSE"), [])  # not mistaken for a disposable track
         self.assertEqual(str(tags["TALB"]), "Evening Prayer")
         chapters = sorted(tags.getall("CHAP"), key=lambda chap: chap.start_time)
-        self.assertEqual([str(chap.sub_frames["TIT2"]) for chap in chapters], ["Opening", "Psalms"])
+        self.assertEqual([str(chap.sub_frames["TIT2"]) for chap in chapters], ["Opening", "Psalms (Psalm 108)"])
         self.assertEqual([chap.start_time for chap in chapters], [0, 1500])
         # The source combined track is untouched and still disposable.
         self.assertTrue(self.source.exists())
         self.assertFalse(is_permanent(self.source))
+
+    def test_records_the_transcript(self):
+        data = office_data()
+        data["audio"]["single_track"][1] = self.data["audio"]["single_track"][1]
+        self.data.update(data)
+        episode = builder.build_episode(self.feed, self.day)
+        self.assertEqual(episode.transcript[0], [0, 2, "", "Morning Prayer for Monday."])
+        self.assertTrue(all(cue[1] <= episode.duration for cue in episode.transcript))
 
     def test_existing_episodes_are_never_rebuilt(self):
         first = builder.build_episode(self.feed, self.day)
@@ -495,6 +662,43 @@ class FeedTests(MediaRootMixin, TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["chapters"], [{"startTime": 0, "title": "Opening"}])
         self.assertEqual(self.client.get("/podcasts/chapters/morning-prayer/2026-10-13.json").status_code, 404)
+
+    def test_transcripts_in_the_feed_and_as_webvtt_and_srt(self):
+        self.published.transcript = [[0, 1.5, "Officiant", "O Lord, open our lips."]]
+        self.published.save()
+        item = ET.fromstring(self.client.get("/podcasts/morning-prayer.xml").content).find("channel/item")
+        tags = item.findall(f"{{{rss.PODCAST}}}transcript")
+        self.assertEqual(
+            [(tag.get("url"), tag.get("type"), tag.get("rel"), tag.get("language")) for tag in tags],
+            [
+                (
+                    "https://api.example.org/podcasts/transcripts/morning-prayer/2026-10-12.vtt",
+                    "text/vtt",
+                    "captions",
+                    "en-us",
+                ),
+                (
+                    "https://api.example.org/podcasts/transcripts/morning-prayer/2026-10-12.srt",
+                    "application/x-subrip",
+                    "captions",
+                    "en-us",
+                ),
+            ],
+        )
+        vtt = self.client.get("/podcasts/transcripts/morning-prayer/2026-10-12.vtt")
+        self.assertEqual(vtt.status_code, 200)
+        self.assertEqual(vtt["Content-Type"], "text/vtt; charset=utf-8")
+        self.assertIn("<v Officiant>O Lord, open our lips.", vtt.content.decode())
+        srt = self.client.get("/podcasts/transcripts/morning-prayer/2026-10-12.srt")
+        self.assertIn("Officiant: O Lord, open our lips.", srt.content.decode())
+
+    def test_no_transcript_no_tag_and_404(self):
+        item = ET.fromstring(self.client.get("/podcasts/morning-prayer.xml").content).find("channel/item")
+        self.assertIsNone(item.find(f"{{{rss.PODCAST}}}transcript"))
+        self.assertEqual(self.client.get("/podcasts/transcripts/morning-prayer/2026-10-12.vtt").status_code, 404)
+        self.scheduled.transcript = [[0, 1, "", "Not yet."]]
+        self.scheduled.save()
+        self.assertEqual(self.client.get("/podcasts/transcripts/morning-prayer/2026-10-13.vtt").status_code, 404)
 
     def test_catalog_for_the_landing_page(self):
         data = self.client.get("/api/v1/podcasts").json()

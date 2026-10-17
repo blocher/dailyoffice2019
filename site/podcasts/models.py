@@ -23,6 +23,9 @@ class PodcastEpisode(models.Model):
     file_size = models.PositiveBigIntegerField()
     duration = models.FloatField(help_text="Seconds.")
     chapters = models.JSONField(default=list, blank=True)
+    transcript = models.JSONField(
+        default=list, blank=True, help_text="Timed cues: [start, end, speaker, text] (see podcasts/transcripts.py)."
+    )
     follow_along_url = models.URLField(max_length=4096)
     guid = models.CharField(max_length=255, unique=True)
     published_at = models.DateTimeField(db_index=True)
@@ -149,6 +152,7 @@ class CustomPodcastEpisode(models.Model):
     file_size = models.PositiveBigIntegerField(default=0)
     duration = models.FloatField(default=0, help_text="Seconds.")
     chapters = models.JSONField(default=list, blank=True)
+    transcript = models.JSONField(default=list, blank=True)
     title = models.CharField(max_length=512, blank=True)
     summary = models.TextField(blank=True)
     description_html = models.TextField(blank=True)

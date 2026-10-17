@@ -14,7 +14,7 @@ from rest_framework.views import APIView
 from churchcal.audio_streaming import audio_file_response
 from office.audio_builds import AudioNotReady
 from office.audio_retention import podcast_media_root
-from podcasts import catalog, custom, rss
+from podcasts import catalog, custom, rss, transcripts
 from podcasts.builder import ARTWORK_DIR, EpisodeBuildError
 from podcasts.models import CustomPodcastFeed, PodcastDirectoryListing
 
@@ -78,6 +78,34 @@ class PodcastChaptersView(View):
         response["Content-Type"] = "application/json+chapters"
         response["Cache-Control"] = "public, max-age=86400"
         return response
+
+
+def transcript_response(episode, extension, cache_control):
+    """An episode's timed transcript as WebVTT or SRT (see ``podcasts.transcripts``)."""
+    if not episode or not episode.transcript:
+        raise Http404("No transcript.")
+    if extension == "srt":
+        response = HttpResponse(
+            transcripts.to_srt(episode.transcript), content_type="application/x-subrip; charset=utf-8"
+        )
+    else:
+        response = HttpResponse(transcripts.to_vtt(episode.transcript), content_type="text/vtt; charset=utf-8")
+    response["Cache-Control"] = cache_control
+    response["Access-Control-Allow-Origin"] = "*"
+    return response
+
+
+class PodcastTranscriptView(View):
+    """``/podcasts/transcripts/<slug>/<date>.vtt`` (or ``.srt``): an episode's timed transcript."""
+
+    def get(self, request, slug, year, month, day, extension):
+        get_feed_or_404(slug)
+        try:
+            episode_date = date(year, month, day)
+        except ValueError:
+            raise Http404("No such episode.")
+        episode = rss.published_episodes(slug).filter(date=episode_date).first()
+        return transcript_response(episode, extension, "public, max-age=86400")
 
 
 class PodcastArtworkView(View):
@@ -282,4 +310,16 @@ class CustomPodcastChaptersView(View):
         response = JsonResponse({"version": "1.2.0", "chapters": episode.chapters})
         response["Content-Type"] = "application/json+chapters"
         response["Cache-Control"] = "private, max-age=86400"
+        return response
+
+
+class CustomPodcastTranscriptView(View):
+    """``/podcasts/custom/<token>/<date>.vtt`` (or ``.srt``): the timed transcript of a listed episode."""
+
+    def get(self, request, token, year, month, day, extension):
+        feed = get_custom_feed_or_404(token)
+        episode_date = custom_episode_day_or_404(year, month, day)
+        episode = feed.episodes.filter(date=episode_date).exclude(track_filename="").first()
+        response = transcript_response(episode, extension, "private, max-age=86400")
+        response["X-Robots-Tag"] = "noindex"
         return response

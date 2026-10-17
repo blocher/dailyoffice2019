@@ -7,6 +7,7 @@ https://podcastindex.org/namespace/1.0.
 import uuid
 import xml.etree.ElementTree as ET
 from email.utils import format_datetime
+from functools import partial
 
 from django.conf import settings
 from django.utils import timezone
@@ -44,6 +45,14 @@ def episode_audio_url(episode):
 
 def chapters_url(episode):
     return f"{base_url()}/podcasts/chapters/{episode.feed_slug}/{episode.date:%Y-%m-%d}.json"
+
+
+def transcript_url(episode, extension="vtt"):
+    return f"{base_url()}/podcasts/transcripts/{episode.feed_slug}/{episode.date:%Y-%m-%d}.{extension}"
+
+
+# Timed captions in both formats directories accept; WebVTT first, with speakers.
+TRANSCRIPT_FORMATS = (("vtt", "text/vtt"), ("srt", "application/x-subrip"))
 
 
 def podcast_guid(slug):
@@ -105,8 +114,11 @@ def _channel(feed, self_url, artwork, private=False):
     return rss, channel
 
 
-def _item(channel, episode, audio_url, artwork, chapters=None):
-    """One <item>. ``episode`` has the show notes, guid, size, and duration of a recorded episode."""
+def _item(channel, episode, audio_url, artwork, chapters=None, transcript=None):
+    """One <item>. ``episode`` has the show notes, guid, size, and duration of a recorded episode.
+
+    ``transcript`` makes a transcript URL from a file extension ("vtt", "srt").
+    """
     item = _sub(channel, "item")
     _sub(item, "title", episode.title)
     _sub(item, f"{{{ITUNES}}}title", episode.title)
@@ -123,6 +135,16 @@ def _item(channel, episode, audio_url, artwork, chapters=None):
     _sub(item, f"{{{ITUNES}}}image", href=artwork)
     if chapters:
         _sub(item, f"{{{PODCAST}}}chapters", url=chapters, type="application/json+chapters")
+    if transcript:
+        for extension, content_type in TRANSCRIPT_FORMATS:
+            _sub(
+                item,
+                f"{{{PODCAST}}}transcript",
+                url=transcript(extension),
+                type=content_type,
+                language=catalog.LANGUAGE,
+                rel="captions",
+            )
     return item
 
 
@@ -151,6 +173,7 @@ def render_feed(feed, now=None):
             episode_audio_url(episode),
             artwork,
             chapters=chapters_url(episode) if episode.chapters else None,
+            transcript=partial(transcript_url, episode) if episode.transcript else None,
         )
     return _serialize(rss)
 
@@ -180,5 +203,6 @@ def render_custom_feed(feed, token, episodes):
             custom_episode_url(token, episode.date),
             artwork,
             chapters=custom_episode_url(token, episode.date, "json") if episode.chapters else None,
+            transcript=partial(custom_episode_url, token, episode.date) if episode.transcript else None,
         )
     return _serialize(rss)

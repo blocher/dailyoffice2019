@@ -16,6 +16,8 @@ ESV_NOTICE = (
 WEEKDAY_AFTER = re.compile(r"^(?:Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday) after (?:the )?(.+)$")
 READING_MODULE = re.compile(r"Reading|Lesson|Scripture|Gospel|Epistle|Psalm", re.IGNORECASE)
 PSALM_HEADING = re.compile(r"^Psalms? \d")
+CANTICLE_MODULE = re.compile(r"Canticle|Invitatory", re.IGNORECASE)
+MIN_CHAPTER_SECONDS = 5
 
 
 def plain(text):
@@ -73,6 +75,20 @@ def episode_title(feed, day, calendar_date):
     return f"{long_date(day)}: {name}" if name else long_date(day)
 
 
+def module_citations(module):
+    """A reading module's psalm headings, or the first citation of its lesson."""
+    found = []
+    if READING_MODULE.search(module.get("name", "")):
+        for line in module.get("lines", []):
+            content = citation(plain(str(line.get("content", ""))))
+            kind = line.get("line_type")
+            if kind == "heading" and PSALM_HEADING.match(content):
+                found.append(content)
+            elif kind in ("subheading", "citation") and re.search(r"\d", content) and not found:
+                found.append(content)
+    return found
+
+
 def readings(modules):
     """[(section, [citations])] from the office text, in order.
 
@@ -83,15 +99,7 @@ def readings(modules):
     for module in modules or []:
         name = module.get("name", "")
         section = name.split(":")[0] if ":" in name else ""
-        found = []
-        if READING_MODULE.search(name):
-            for line in module.get("lines", []):
-                content = citation(plain(str(line.get("content", ""))))
-                kind = line.get("line_type")
-                if kind == "heading" and PSALM_HEADING.match(content):
-                    found.append(content)
-                elif kind in ("subheading", "citation") and re.search(r"\d", content) and not found:
-                    found.append(content)
+        found = module_citations(module)
         if not found:
             continue
         if sections and sections[-1][0] == section:
@@ -148,14 +156,47 @@ def show_notes(feed, day, calendar_date, modules):
     return "\n\n".join(text), "\n".join(html)
 
 
-def chapters(track_list):
-    """Podcasting 2.0 chapters from the player's section timeline."""
+def module_detail(module):
+    """What a chapter is: 'Psalm 119:1-24', 'II Kings 8', or a canticle's name ('Te Deum Laudamus')."""
+    found = module_citations(module)
+    if found:
+        return ", ".join(found)
+    if CANTICLE_MODULE.search(module.get("name", "")):
+        for line in module.get("lines", []):
+            if line.get("line_type") == "heading":
+                return citation(plain(str(line.get("content", ""))))
+    return ""
+
+
+def sections(track_list):
+    """[(start, title)]: the player's section timeline, one entry per named module.
+
+    Unnamed modules (the generic default) stay within the section before.
+    """
     result = []
     for section in track_list or []:
-        start = round(float(section.get("start_time") or 0), 2)
         title = plain(section.get("name", ""))
-        # Unnamed modules (the generic default) stay within the chapter before.
-        if not title or title == "Daily Office Module" or (result and result[-1]["title"] == title):
+        if not title or title == "Daily Office Module" or (result and result[-1][1] == title):
             continue
-        result.append({"startTime": start, "title": title})
+        result.append((round(float(section.get("start_time") or 0), 2), title))
+    return result
+
+
+def chapters(track_list, modules=None):
+    """Podcasting 2.0 chapters from the player's section timeline.
+
+    Titled by the office's modules, with the psalms, lesson, or canticle each one
+    holds ("First Reading (II Kings 8)"). A chapter only a moment long, such as a
+    heading spoken just before its first section, gives way to the next (never
+    the opening one).
+    """
+    details = {}
+    for module in modules or []:
+        details.setdefault(plain(module.get("name", "")), module_detail(module))
+    result = []
+    for start, title in sections(track_list):
+        if len(result) > 1 and start - result[-1]["startTime"] < MIN_CHAPTER_SECONDS:
+            start = result.pop()["startTime"]
+        detail = details.get(title, "")
+        result.append({"startTime": start, "title": f"{title} ({detail})" if detail else title})
     return result

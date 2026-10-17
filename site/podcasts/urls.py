@@ -5,11 +5,13 @@ from podcasts.views import (
     CustomPodcastCreateView,
     CustomPodcastEpisodeAudioView,
     CustomPodcastFeedView,
+    CustomPodcastTranscriptView,
     PodcastArtworkView,
     PodcastCatalogView,
     PodcastChaptersView,
     PodcastEpisodeAudioView,
     PodcastFeedView,
+    PodcastTranscriptView,
 )
 
 # Feed, episode, and artwork URLs are public and permanent: podcast apps keep
@@ -24,6 +26,15 @@ urlpatterns = [
         name="podcast_chapters",
     ),
     path("podcasts/episodes/<path:path>", PodcastEpisodeAudioView.as_view(), name="podcast_episode_audio"),
+    *(
+        path(
+            f"podcasts/transcripts/<slug:slug>/<int:year>-<int:month>-<int:day>.{extension}",
+            PodcastTranscriptView.as_view(),
+            {"extension": extension},
+            name=f"podcast_transcript_{extension}",
+        )
+        for extension in ("vtt", "srt")
+    ),
     # EXPERIMENTAL custom podcasts (podcasts/custom.py): private feeds behind a token.
     path("api/v1/podcasts/custom", CustomPodcastCreateView.as_view(), name="custom_podcast_create"),
     path("podcasts/custom/<slug:token>.xml", CustomPodcastFeedView.as_view(), name="custom_podcast_feed"),
@@ -36,5 +47,14 @@ urlpatterns = [
         "podcasts/custom/<slug:token>/<int:year>-<int:month>-<int:day>.json",
         CustomPodcastChaptersView.as_view(),
         name="custom_podcast_chapters",
+    ),
+    *(
+        path(
+            f"podcasts/custom/<slug:token>/<int:year>-<int:month>-<int:day>.{extension}",
+            CustomPodcastTranscriptView.as_view(),
+            {"extension": extension},
+            name=f"custom_podcast_transcript_{extension}",
+        )
+        for extension in ("vtt", "srt")
     ),
 ]

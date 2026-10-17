@@ -46,7 +46,7 @@ from office import audio_builds
 from office.api.views.index import AUDIO_BIBLE_TRANSLATIONS, audio_available
 from office.combined_track import mp3_duration
 from office.readings_audio import KINDS, SERVICE_NAMES
-from podcasts import builder, catalog, episodes
+from podcasts import builder, catalog, episodes, transcripts
 from podcasts.models import CustomPodcastEpisode, CustomPodcastFeed
 
 logger = logging.getLogger(__name__)
@@ -301,14 +301,16 @@ def record(custom, feed, day, calendar_date, data):
     filename = single_track[1].removeprefix(settings.MEDIA_URL).lstrip("/")
     path = builder.source_track_path(single_track)
     summary, description = episodes.show_notes(feed, day, calendar_date, data.get("modules"))
+    duration = mp3_duration(path)
     row, _ = CustomPodcastEpisode.objects.update_or_create(
         feed=custom,
         date=day,
         defaults={
             "track_filename": filename,
             "file_size": os.path.getsize(path),
-            "duration": mp3_duration(path),
-            "chapters": episodes.chapters(single_track[2] if len(single_track) > 2 else []),
+            "duration": duration,
+            "chapters": episodes.chapters(single_track[2] if len(single_track) > 2 else [], data.get("modules")),
+            "transcript": transcripts.cues(data, duration),
             "title": episodes.episode_title(feed, day, calendar_date),
             "summary": summary,
             "description_html": description,

@@ -697,7 +697,7 @@ The readings audio is also the audio player on the Readings page (`/api/v1/readi
 `site/office/readings_audio.py`). It opens with "Readings for Morning Prayer on …".
 
 **Feeds and URLs.** Feeds are `https://api.dailyoffice2019.com/podcasts/<slug>.xml` (RSS with Apple Podcasts and
-Podcasting 2.0 tags: `podcast:guid`, chapters, funding, podroll, WebSub hub). Episode audio is
+Podcasting 2.0 tags: `podcast:guid`, chapters, transcripts, funding, podroll, WebSub hub). Episode audio is
 `/podcasts/episodes/<slug>/<year>/<slug>-<date>.mp3`, cover art `/podcasts/artwork/<slug>.jpg`. These URLs and the
 feed slugs are permanent: podcast apps keep them forever. Never rename a slug or change the production
 `PODCAST_BASE_URL` (in development it defaults to `SITE_ADDRESS`, so the landing page loads art from the local API).
@@ -708,6 +708,19 @@ chapters, and records a `PodcastEpisode`. Episodes are never rebuilt. The combin
 cache, but nothing under `uploads/podcasts/` is ever deleted: `cleanup_full_audio_files`, `audit_combined_audio`,
 `rebuild_audio_clip`, and `AudioClip.delete_file` all skip it (`site/office/audio_retention.py`). Back up
 `uploads/podcasts/` with the database.
+
+**Chapters and transcripts.** Both come from the timeline the API already returns with the combined track
+(`single_track`: each module's start, each line's span, and the speech provider's timing for every word, scaled to the
+track's real length), so they need no speech recognition. Chapters (`/podcasts/chapters/<slug>/<date>.json`, and ID3
+`CHAP` frames in the file) are the office's modules, titled with what they hold: "Psalms (Psalm 119:1-24)", "First
+Reading (II Kings 8)", "First Canticle (Te Deum Laudamus)". The timed transcript (`site/podcasts/transcripts.py`) is
+every spoken line's printed text with its voice (Officiant, People, Reader), long paragraphs split into sentences
+timed by their words; it is stored on the episode and served as WebVTT and SRT at
+`/podcasts/transcripts/<slug>/<date>.vtt` and `.srt`, each linked by a `podcast:transcript` tag, which Apple Podcasts
+shows in place of its own machine transcript. Episodes built before transcripts existed get them (and titled chapters)
+from `python manage.py build_podcast_transcripts`, which renders the office again without synthesizing anything and
+fits the new timeline to the episode section by section through its recorded chapter times; an episode whose
+sections no longer line up is skipped, and its audio is never touched.
 
 **Schedule (kronos, installed by `deploy/server.sh`).**
 
@@ -731,7 +744,7 @@ leather is red for the contemporary feeds and green for the traditional-language
 Prayer Book; a gold border marks the section (none for the Daily Office, rounded for Family Prayer, double for the
 readings). Redraw it after changing the catalog with `python manage.py build_podcast_artwork`.
 
-**Custom podcasts (experimental).** At the bottom of `/podcasts`, a listener can make a private feed of any office
+**Custom podcasts (experimental).** On `/podcasts`, after the public feeds, a listener can make a private feed of any office
 or readings with their own settings (`site/podcasts/custom.py`). `POST /api/v1/podcasts/custom` saves the service
 and normalized settings as a `CustomPodcastFeed` behind a short token (the same settings always return the same
 feed; `CUSTOM_PODCAST_CREATE_RATE` limits new feeds per IP). The feed, `/podcasts/custom/<token>.xml`, lists the last
@@ -741,6 +754,7 @@ the public podcasts and the player have made; nothing is copied, re-encoded, or 
 `uploads/podcasts/`. There is no cron: a feed fetch lists only days already built and queues background builds
 (`office/audio_builds.py`) for the rest, and `/podcasts/custom/<token>/<date>.mp3` serves the recorded track, joins
 existing clips again if the track was cleaned up, or answers 503 with Retry-After while a missing clip is built.
+Custom episodes have chapters and transcripts too, at `/podcasts/custom/<token>/<date>.json`, `.vtt`, and `.srt`.
 
 ### Publishing to podcast directories
 
