@@ -145,6 +145,7 @@ class ElevenLabsRetryTests(SimpleTestCase):
         for failure, attempts in (
             (requests.Timeout("private"), 3),
             (requests.ConnectionError("private"), 3),
+            (requests.exceptions.ChunkedEncodingError("private"), 3),
             (self.failure(503), 3),
             (self.failure(400, "30"), 1),
         ):
