@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-100 -100 200 200">
+  <!-- The Jerusalem cross from the 2019 Book of Common Prayer cover:
+       a cross potent with four small crosses, drawn on a 200-unit square
+       centered on the origin. The fill is replaced per variant. -->
+  <defs>
+    <path id="jerusalem-cross" d="
+      M -8 -76 H -22 V -88 H 22 V -76 H 8 V -8 H 76 V -22 H 88 V 22 H 76 V 8 H 8 V 76 H 22 V 88 H -22 V 76 H -8 V 8 H -76 V 22 H -88 V -22 H -76 V -8 H -8 Z
+      M -48.5 -68 h 7 v 16.5 h 16.5 v 7 h -16.5 v 16.5 h -7 v -16.5 h -16.5 v -7 h 16.5 Z
+      M 41.5 -68 h 7 v 16.5 h 16.5 v 7 h -16.5 v 16.5 h -7 v -16.5 h -16.5 v -7 h 16.5 Z
+      M -48.5 22 h 7 v 16.5 h 16.5 v 7 h -16.5 v 16.5 h -7 v -16.5 h -16.5 v -7 h 16.5 Z
+      M 41.5 22 h 7 v 16.5 h 16.5 v 7 h -16.5 v 16.5 h -7 v -16.5 h -16.5 v -7 h 16.5 Z" />
+  </defs>
+  <use href="#jerusalem-cross" fill="#000" />
+</svg>

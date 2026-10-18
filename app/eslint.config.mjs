@@ -96,6 +96,16 @@ export default [
     },
   },
 
+  // Node scripts that build the store assets
+  {
+    files: ['store/scripts/**/*.mjs'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
+
   // Files to ignore
   {
     ignores: [
