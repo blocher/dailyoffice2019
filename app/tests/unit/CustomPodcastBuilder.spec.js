@@ -101,7 +101,12 @@ const OPTIONS = {
       psalter: ['30', '60'],
     },
   },
-  audio: { bible_translation: ['esv', 'kjv'], display_language: ['english'] },
+  audio: {
+    display_language: ['english'],
+    language_style: ['contemporary', 'traditional'],
+    bible_translation: ['esv', 'kjv'],
+    psalm_translation: ['contemporary', 'traditional'],
+  },
   window_days: 7,
   publish_hour: 2,
 };
@@ -126,6 +131,18 @@ const AVAILABLE = [
   setting('bible_translation', 'Daily Office', ['esv', 'rsv', 'kjv'], 1),
   setting('display_language', 'Daily Office', ['english', 'spanish'], 2),
   setting('psalter', 'Daily Office', ['60', '30'], 3),
+  setting(
+    'language_style',
+    'Daily Office',
+    ['contemporary', 'traditional', 'spanish'],
+    4
+  ),
+  setting(
+    'psalm_translation',
+    'Daily Office',
+    ['contemporary', 'traditional', 'spanish'],
+    5
+  ),
   setting(
     'family-creed',
     'Family Prayer',
@@ -202,7 +219,7 @@ describe('custom podcast builder', () => {
     const wrapper = mountBuilder();
     await choose(wrapper, 'type', 'daily-office');
     await choose(wrapper, 'office', 'office/morning_prayer');
-    expect(wrapper.text()).toContain('in place of your own translation');
+    expect(wrapper.text()).toContain('changes some of your settings to fit');
     await button(wrapper, 'Continue').trigger('click');
     await choose(wrapper, 'app', 'overcast');
     await button(wrapper, 'Make my podcast').trigger('click');
@@ -355,6 +372,29 @@ describe('custom podcast helpers', () => {
     const rows = customizableSettings(AVAILABLE, OPTIONS);
     const language = rows.find((row) => row.name === 'display_language');
     expect(language.options.map((option) => option.value)).toEqual(['english']);
+  });
+
+  it('keeps traditional or contemporary language and the Coverdale psalters', () => {
+    const { settings, adjusted } = snapshotSettings(OPTIONS, false, {
+      language_style: 'spanish',
+      psalm_translation: 'spanish',
+    });
+    expect(settings.language_style).toBe('contemporary');
+    expect(settings.psalm_translation).toBe('contemporary');
+    expect(adjusted).toEqual(['language_style', 'psalm_translation']);
+    const rows = customizableSettings(AVAILABLE, OPTIONS);
+    for (const name of ['language_style', 'psalm_translation']) {
+      const row = rows.find((candidate) => candidate.name === name);
+      expect(row.options.map((option) => option.value)).toEqual([
+        'contemporary',
+        'traditional',
+      ]);
+    }
+    const readings = snapshotSettings(OPTIONS, true, {
+      psalm_translation: 'spanish',
+    });
+    expect(readings.settings.psalms).toBe('contemporary');
+    expect(readings.adjusted).toEqual(['psalms']);
   });
 
   it('gives each app its subscribe link', () => {

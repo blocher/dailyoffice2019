@@ -856,7 +856,10 @@ class CustomFeedValidationTests(TestCase):
             ("office/morning_prayer", {"bible_translation": "rsv"}),
             ("office/morning_prayer", {"bible_translation": "niv"}),
             ("family/close_of_day_prayer", {"display_language": "spanish"}),
+            ("office/evening_prayer", {"language_style": "spanish"}),
+            ("office/compline", {"psalm_translation": "spanish"}),
             ("readings/daily_office", {"translation": "nrsvce"}),
+            ("readings/daily_office", {"psalms": "spanish"}),
         ]:
             with self.subTest(settings_), self.assertRaisesMessage(custom.InvalidCustomFeed, custom.AUDIO_ONLY):
                 custom.normalize(service, settings_)
@@ -888,7 +891,15 @@ class CustomFeedValidationTests(TestCase):
             offices["readings"],
             ["readings/daily_office", "readings/holy_eucharist", "readings/morning_prayer", "readings/evening_prayer"],
         )
-        self.assertEqual(options["audio"]["bible_translation"], ["esv", "kjv"])
+        self.assertEqual(
+            options["audio"],
+            {
+                "display_language": ["english"],
+                "language_style": ["contemporary", "traditional"],
+                "bible_translation": ["esv", "kjv"],
+                "psalm_translation": ["contemporary", "traditional"],
+            },
+        )
         self.assertEqual(options["office_settings"]["keys"], sorted(catalog.CONTEMPORARY_SETTINGS))
         self.assertEqual(options["publish_hour"], 2)
 

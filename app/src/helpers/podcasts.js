@@ -89,11 +89,15 @@ export function podcastApps(feedUrl, { title = '', appleUrl = '' } = {}) {
   ];
 }
 
-// The one setting group the audio can't follow: it is read only in English,
-// from the ESV or the KJV (audio_available on the server).
+// The settings the audio can't follow (AUDIO_SETTINGS on the server, which
+// sends them as options.audio): it is read only in English, in traditional or
+// contemporary language, from the ESV or the KJV, with the Coverdale or
+// Renewed Coverdale Psalter.
 export const AUDIO_SETTINGS = {
-  bible_translation: ['esv', 'kjv'],
   display_language: ['english'],
+  language_style: ['contemporary', 'traditional'],
+  bible_translation: ['esv', 'kjv'],
+  psalm_translation: ['contemporary', 'traditional'],
 };
 
 function pick(value, allowed, fallback) {
@@ -121,11 +125,8 @@ export function snapshotSettings(options, isReadings, current = {}) {
     for (const key of options.readings_settings.keys) {
       settings[key] = pick(wanted[key], choices[key], defaults[key]);
     }
-    if (
-      current.bible_translation &&
-      current.bible_translation !== settings.translation
-    ) {
-      adjusted.push('translation');
+    for (const key of ['translation', 'psalms']) {
+      if (wanted[key] && wanted[key] !== settings[key]) adjusted.push(key);
     }
     return { settings, adjusted };
   }

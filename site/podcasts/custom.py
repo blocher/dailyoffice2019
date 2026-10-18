@@ -65,8 +65,21 @@ READINGS_CHOICES = {
     "psalter": ("30", "60"),
 }
 READINGS_SETTING_KEYS = tuple(sorted(READINGS_CHOICES))
+# The only office settings the voices read, to keep generation costs down:
+# English in traditional or contemporary language, the ESV or the KJV, and
+# the Coverdale or Renewed Coverdale Psalter. (The Readings choices above are
+# limited the same way.)
+AUDIO_SETTINGS = {
+    "display_language": ("english",),
+    "language_style": ("contemporary", "traditional"),
+    "bible_translation": AUDIO_BIBLE_TRANSLATIONS,
+    "psalm_translation": ("contemporary", "traditional"),
+}
 SETTING_VALUE = re.compile(r"^[A-Za-z0-9_.-]{1,64}$")
-AUDIO_ONLY = "Audio is read only in English, from the ESV or the KJV."
+AUDIO_ONLY = (
+    "Audio is read only in English (traditional or contemporary), from the ESV or the KJV, "
+    "with the Coverdale or Renewed Coverdale Psalter."
+)
 
 
 class InvalidCustomFeed(ValueError):
@@ -109,7 +122,7 @@ def builder_options():
             "defaults": dict(catalog.READINGS_SETTINGS),
             "choices": {key: list(values) for key, values in READINGS_CHOICES.items()},
         },
-        "audio": {"bible_translation": list(AUDIO_BIBLE_TRANSLATIONS), "display_language": ["english"]},
+        "audio": {key: list(values) for key, values in AUDIO_SETTINGS.items()},
         "window_days": WINDOW_DAYS,
         "publish_hour": publish_hour(),
     }
@@ -151,9 +164,13 @@ def normalize(service, raw):
     if readings:
         for key, value in settings_.items():
             if value not in READINGS_CHOICES[key]:
-                raise InvalidCustomFeed(AUDIO_ONLY if key == "translation" else f"Invalid value for {key}.")
+                raise InvalidCustomFeed(
+                    AUDIO_ONLY if key in ("translation", "psalms") else f"Invalid value for {key}."
+                )
         return settings_
-    if not audio_available(settings_["bible_translation"], settings_["display_language"]):
+    if not audio_available(settings_["bible_translation"], settings_["display_language"]) or any(
+        settings_[key] not in allowed for key, allowed in AUDIO_SETTINGS.items()
+    ):
         raise InvalidCustomFeed(AUDIO_ONLY)
     options = _setting_options()
     for key in raw:

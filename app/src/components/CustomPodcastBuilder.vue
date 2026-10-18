@@ -156,10 +156,9 @@
         </UiButton>
         <p v-if="snapshot.adjusted.length" class="builder-hint">
           <UiIcon name="info" />
-          Audio is read only in English, from the ESV or the KJV, so this
-          podcast uses
-          {{ versionName(chosenSettings) }}
-          in place of your own translation.
+          Audio is read only in English (traditional or contemporary), from the
+          ESV or the KJV, with the Coverdale or Renewed Coverdale Psalter, so
+          this podcast changes some of your settings to fit.
         </p>
       </fieldset>
 
@@ -334,8 +333,9 @@
     >
       <div v-if="draft" class="customize">
         <UiAlert tone="info" title="Read in English, from the ESV or the KJV">
-          The voices only read those two translations, so they are the only ones
-          offered here.
+          The voices read only those two translations, in traditional or
+          contemporary language, with the Coverdale or Renewed Coverdale
+          Psalter, so only those are offered here.
         </UiAlert>
 
         <template v-if="isReadings">
@@ -554,13 +554,6 @@ function closeCustomize() {
 
 function resetDraft() {
   draft.value = { ...snapshot.value.settings };
-}
-
-const VERSIONS = { esv: 'the ESV', kjv: 'the KJV' };
-
-function versionName(settings) {
-  const version = settings.translation || settings.bible_translation;
-  return VERSIONS[version] || version;
 }
 
 function summarize(settings) {
