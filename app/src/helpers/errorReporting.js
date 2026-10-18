@@ -38,6 +38,13 @@ const EXTENSION_FILE =
 // Extension errors that arrive with no stack, so EXTENSION_FILE can't match.
 // The app itself never calls the extension messaging API.
 const EXTENSION_MESSAGE = /Invalid call to runtime\.sendMessage\(\)/i;
+// A fetch() that never got a response (offline, dropped connection, blocker)
+// rejects with a bare TypeError: "Load failed" in Safari, "Failed to fetch" in
+// Chrome, "NetworkError ..." in Firefox. When it is unhandled and has no stack
+// frame, as when a lazy asset such as a Capacitor web plugin fails to download,
+// there is nothing in the app to fix or locate.
+const BARE_NETWORK_FAILURE =
+  /^TypeError: (Load failed|Failed to fetch|NetworkError when attempting to fetch resource\.?)$/i;
 // Requests that never reached the server (offline, timed out, cancelled).
 const NETWORK_CODES = new Set(['ERR_NETWORK', 'ECONNABORTED', 'ERR_CANCELED']);
 
@@ -55,7 +62,13 @@ export function isNoise(event) {
     EXTENSION_MESSAGE.test(text)
   )
     return true;
-  if ((error.stacktrace || []).some((f) => EXTENSION_FILE.test(f.file || ''))) {
+  const frames = error.stacktrace || [];
+  if (
+    BARE_NETWORK_FAILURE.test(text) &&
+    frames.every((f) => !f.file || f.file === 'unknown file')
+  )
+    return true;
+  if (frames.some((f) => EXTENSION_FILE.test(f.file || ''))) {
     return true;
   }
   const original = event.originalError;

@@ -154,6 +154,12 @@ describe('error reporting', () => {
           errorClass: 'Error',
           errorMessage: 'Invalid call to runtime.sendMessage(). Tab not found.',
         }),
+        fakeEvent({
+          errorClass: 'TypeError',
+          errorMessage: 'Load failed',
+          stacktrace: [{ file: 'unknown file', lineNumber: 0 }],
+        }),
+        fakeEvent({ errorClass: 'TypeError', errorMessage: 'Failed to fetch' }),
         fakeEvent(
           { errorClass: 'AxiosError', errorMessage: 'Network Error' },
           { isAxiosError: true, code: 'ERR_NETWORK' }
@@ -163,6 +169,18 @@ describe('error reporting', () => {
       expect(
         onError(
           fakeEvent({ errorClass: 'TypeError', errorMessage: 'x is undefined' })
+        )
+      ).toBe(true);
+      // A failed fetch raised from our own code is still worth seeing.
+      expect(
+        onError(
+          fakeEvent({
+            errorClass: 'TypeError',
+            errorMessage: 'Load failed',
+            stacktrace: [
+              { file: 'https://www.dailyoffice2019.com/assets/x.js' },
+            ],
+          })
         )
       ).toBe(true);
       // A server error is a real problem, not an offline blip.
