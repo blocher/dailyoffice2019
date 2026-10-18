@@ -1059,6 +1059,27 @@ class CustomFeedFetchTests(MediaRootMixin, TestCase):
         self.assertEqual(urlparse(podcast.follow_along_url(date(2026, 10, 16))).path, "/evening_prayer/2026/10/16")
         self.assertIn("Contemporary language", podcast.description)
 
+    def test_settings_saved_before_a_limit_fall_back_for_the_audio_only(self):
+        saved = {
+            **catalog.CONTEMPORARY_SETTINGS,
+            "bible_translation": "rsv",
+            "language_style": "traditional",
+            "psalm_translation": "spanish",
+        }
+        self.feed.settings = saved
+        podcast = custom.as_podcast_feed(self.feed)
+        query = podcast.api_query()
+        self.assertEqual(query["bible_translation"], "esv")
+        self.assertEqual(query["psalm_translation"], "contemporary")
+        self.assertEqual(query["language_style"], "traditional")
+        self.assertEqual(podcast.slug, "evening-prayer")  # the ESV's art
+        link = parse_qs(urlparse(podcast.follow_along_url(date(2026, 10, 16))).query)
+        self.assertEqual(link["bible_translation"], ["rsv"])
+        self.assertEqual(link["psalm_translation"], ["spanish"])
+        readings = CustomPodcastFeed(service="readings/daily_office", settings={**catalog.READINGS_SETTINGS})
+        readings.settings["psalms"] = "spanish"
+        self.assertEqual(custom.audio_settings(readings)["psalms"], "contemporary")
+
     def test_unknown_token_is_404(self):
         self.assertEqual(self.client.get("/podcasts/custom/nope.xml").status_code, 404)
 

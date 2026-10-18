@@ -208,16 +208,33 @@ def get_or_create_feed(service, raw_settings):
     raise RuntimeError("Could not allocate a custom podcast token.")
 
 
+def audio_settings(custom):
+    """The settings the audio is made with: the feed's own, with any the voices don't read set back to the default.
+
+    New feeds can only be saved with settings the voices read (``normalize``),
+    but a feed saved before a setting was limited keeps its link: its audio
+    falls back, and its follow-along link keeps what the listener chose.
+    """
+    readings = custom.service.startswith("readings/")
+    allowed = READINGS_CHOICES if readings else AUDIO_SETTINGS
+    defaults = catalog.READINGS_SETTINGS if readings else catalog.CONTEMPORARY_SETTINGS
+    return {
+        key: defaults[key] if key in allowed and value not in allowed[key] else value
+        for key, value in custom.settings.items()
+    }
+
+
 def is_traditional(custom):
-    translation = custom.settings.get("translation") or custom.settings.get("bible_translation")
-    return translation == "kjv"
+    settings_ = audio_settings(custom)
+    return (settings_.get("translation") or settings_.get("bible_translation")) == "kjv"
 
 
 def as_podcast_feed(custom):
     """The ``PodcastFeed`` episodes, show notes, and the feed are written from.
 
     Its ``slug`` is the closest public feed's, for its cover art: red for the
-    ESV, green for the KJV. Its settings are the listener's.
+    ESV, green for the KJV. Its settings are the listener's, limited to what
+    the voices read (``audio_settings``); its follow-along links keep them all.
     """
     group, office_title, public = SERVICES[custom.service]
     traditional = is_traditional(custom)
@@ -231,7 +248,14 @@ def as_podcast_feed(custom):
         )
     art = f"{public.slug}-traditional" if traditional else public.slug
     style = catalog.TRADITIONAL if traditional else catalog.CONTEMPORARY
-    feed = replace(public, slug=art, style=style, custom_settings=dict(custom.settings), keywords=())
+    feed = replace(
+        public,
+        slug=art,
+        style=style,
+        custom_settings=audio_settings(custom),
+        link_settings=dict(custom.settings),
+        keywords=(),
+    )
     title = f"My {office_title} (Experimental) — {catalog.AUTHOR}"
     return replace(
         feed,

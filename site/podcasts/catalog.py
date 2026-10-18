@@ -111,6 +111,9 @@ class PodcastFeed:
     # A listener's own settings (a custom feed, see ``podcasts.custom``) in
     # place of the style's fixed ones. Public feeds never set this.
     custom_settings: dict = field(default=None, compare=False)
+    # The listener's settings as saved, when the audio falls back from some of
+    # them: the follow-along link keeps these, so the text reads as they chose.
+    link_settings: dict = field(default=None, compare=False)
 
     @property
     def is_readings(self):
@@ -149,17 +152,18 @@ class PodcastFeed:
     def follow_along_url(self, day):
         """The page that shows this episode's text, with the feed's own settings."""
         date_path = f"{day.year}/{day.month}/{day.day}"
+        settings = dict(self.link_settings) if self.link_settings is not None else self.settings
         if self.is_readings:
             # The Readings page takes its translation, psalter, and (for the
             # Daily Office's psalms) psalm cycle from the link. The cycle is
             # ``cycle``, not ``psalter``, which the app applies as a site setting.
-            query = {key: self.settings[key] for key in ("translation", "psalms")}
+            query = {key: settings[key] for key in ("translation", "psalms")}
             if self.readings_kind == "daily_office":
-                query["cycle"] = self.settings["psalter"]
+                query["cycle"] = settings["psalter"]
             return f"{SITE_URL}/readings/{self.readings_kind}/{date_path}?{urlencode(query)}"
         group, office = self.service.split("/")
         path = f"family/{office}" if group == "family" else office
-        return f"{SITE_URL}/{path}/{date_path}?{urlencode(self.settings)}"
+        return f"{SITE_URL}/{path}/{date_path}?{urlencode(settings)}"
 
     @property
     def style_label(self):
