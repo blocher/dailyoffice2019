@@ -796,8 +796,7 @@ Subscribe sheet. Until then the
 sheet offers direct "open in app" links (Apple Podcasts, Overcast, Pocket Casts, Castro, AntennaPod, Podcast Addict)
 and the RSS link, which work before any directory approves the show.
 
-Until the main listings are in, the app doesn't point to the page: the menu entry and the audio player's "Listen in
-your podcast app" link are off. Turn them on with `PODCASTS_PROMOTED` in `app/src/helpers/podcasts.js`.
+The app points to the page from the menu and from the audio player's "Listen in your podcast app" link.
 
 Apple, Spotify, YouTube, and Amazon have no public API for submitting a new show, so steps 2–8 need someone signed in
 to the owner's accounts. After approval nothing more is needed: every directory polls the feed for new episodes.

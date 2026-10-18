@@ -256,7 +256,6 @@
               </div>
 
               <router-link
-                v-if="podcastsPromoted"
                 to="/podcasts"
                 class="podcast-link"
                 @click="closePanels(false)"
@@ -310,7 +309,6 @@ import {
 } from '@/helpers/audioTrack';
 import { createAudioElement } from '@/helpers/nativeAudio';
 import { DynamicStorage } from '@/helpers/storage';
-import { PODCASTS_PROMOTED } from '@/helpers/podcasts';
 
 import UiIcon from '@/ui/UiIcon.vue';
 
@@ -368,7 +366,6 @@ export default {
   },
   data() {
     return {
-      podcastsPromoted: PODCASTS_PROMOTED,
       currentTrackSegment: null,
       isPlaying: false,
       isPaused: false,

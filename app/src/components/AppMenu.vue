@@ -48,7 +48,6 @@ import { useRoute, useRouter } from 'vue-router';
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
 import { openPanel, panels } from '@/helpers/panels';
-import { PODCASTS_PROMOTED } from '@/helpers/podcasts';
 import { SessionStore } from '@/helpers/sessionStore';
 
 const route = useRoute();
@@ -129,16 +128,12 @@ const groups = computed(() => {
         { label: 'Family Prayer', icon: 'home', to: '/family' },
         { label: "Today's Readings", icon: 'book-text', to: '/readings' },
         { label: 'The Great Litany', icon: 'scroll', to: '/litany' },
-        ...(PODCASTS_PROMOTED
-          ? [
-              {
-                label: 'Podcasts',
-                hint: 'Every office, every day',
-                icon: 'podcast',
-                to: '/podcasts',
-              },
-            ]
-          : []),
+        {
+          label: 'Podcasts',
+          hint: 'Every office, every day',
+          icon: 'podcast',
+          to: '/podcasts',
+        },
       ],
     },
     {
