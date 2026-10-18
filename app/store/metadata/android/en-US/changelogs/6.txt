@@ -1,0 +1,8 @@
+A new design modeled on the printed 2019 prayer book, plus:
+• Book view: turn the pages like a real book
+• Audio for every office with word-by-word highlighting; keeps playing with the screen locked
+• Podcasts of Morning and Evening Prayer and the daily readings
+• Light, sepia, and dark themes; six typefaces
+• A redesigned calendar you can add to your calendar app
+• Optional Apocrypha first lessons
+• Ready for Android 16, with a new icon and themed icon support
