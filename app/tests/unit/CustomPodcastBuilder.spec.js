@@ -4,8 +4,12 @@ import CustomPodcastBuilder from '../../src/components/CustomPodcastBuilder.vue'
 import UiKit from '../../src/ui';
 import {
   customizableSettings,
+  devicePlatform,
+  installLinks,
+  opensApp,
   podcastApps,
   snapshotSettings,
+  watchAppOpen,
 } from '../../src/helpers/podcasts';
 
 const { postMock, writeMock, store } = vi.hoisted(() => ({
@@ -248,6 +252,27 @@ describe('custom podcast builder', () => {
       `overcast://x-callback-url/add?url=${encodeURIComponent(FEED.feed_url)}`
     );
     expect(wrapper.text()).toContain('Tap + at the top, then Add URL.');
+
+    // Nothing opened: offer to install the app.
+    vi.useFakeTimers();
+    try {
+      subscribe.element.addEventListener('click', (event) =>
+        event.preventDefault()
+      );
+      await subscribe.trigger('click');
+      expect(wrapper.text()).not.toContain('Overcast didn’t open?');
+      vi.advanceTimersByTime(1500);
+      await flushPromises();
+    } finally {
+      vi.useRealTimers();
+    }
+    expect(wrapper.text()).toContain('Overcast didn’t open?');
+    expect(
+      wrapper
+        .findAll('.builder-add__missing a')
+        .map((link) => link.attributes('href'))
+    ).toEqual(['https://apps.apple.com/app/overcast/id888422857']);
+
     await button(wrapper, 'Copy').trigger('click');
     await flushPromises();
     expect(writeMock).toHaveBeenCalledWith({ string: FEED.feed_url });
@@ -395,6 +420,59 @@ describe('custom podcast helpers', () => {
     });
     expect(readings.settings.psalms).toBe('contemporary');
     expect(readings.adjusted).toEqual(['psalms']);
+  });
+
+  it('knows when an app link would do nothing without the app', () => {
+    const [apple, overcast, pocketCasts, , antennapod] = podcastApps(
+      'https://api.example/feed.xml'
+    );
+    expect(opensApp(overcast.href)).toBe(true);
+    expect(opensApp(antennapod.href)).toBe(false);
+    expect(
+      opensApp(
+        podcastApps('https://x/f.xml', { appleUrl: 'https://podcasts.apple.com/x' })[0].href
+      )
+    ).toBe(false);
+    expect(apple.install.ios).toMatch(/id525463029$/);
+
+    const iphone = { userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0)' };
+    const ipad = { userAgent: 'Mozilla/5.0 (Macintosh)', maxTouchPoints: 5 };
+    const mac = { userAgent: 'Mozilla/5.0 (Macintosh)', maxTouchPoints: 0 };
+    const android = { userAgent: 'Mozilla/5.0 (Linux; Android 15)' };
+    expect([iphone, ipad, mac, android].map(devicePlatform)).toEqual([
+      'ios',
+      'ios',
+      '',
+      'android',
+    ]);
+    expect(installLinks(pocketCasts, 'android')).toEqual([
+      {
+        platform: 'android',
+        label: 'Google Play',
+        href: 'https://play.google.com/store/apps/details?id=au.com.shiftyjelly.pocketcasts',
+      },
+    ]);
+    expect(installLinks(pocketCasts, '').map((link) => link.label)).toEqual([
+      'App Store',
+      'Google Play',
+    ]);
+    expect(installLinks(overcast, 'android')).toEqual([]);
+  });
+
+  it('only reports a missing app when the page stays in front', () => {
+    vi.useFakeTimers();
+    try {
+      const missing = vi.fn();
+      watchAppOpen(missing);
+      window.dispatchEvent(new Event('blur'));
+      vi.advanceTimersByTime(2000);
+      expect(missing).not.toHaveBeenCalled();
+      watchAppOpen(missing);
+      vi.advanceTimersByTime(1500);
+      expect(missing).toHaveBeenCalledTimes(1);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('gives each app its subscribe link', () => {

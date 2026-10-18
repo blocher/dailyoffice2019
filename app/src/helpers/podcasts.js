@@ -1,3 +1,5 @@
+import { onBeforeUnmount, ref } from 'vue';
+
 /*
   Podcasts
   ========
@@ -12,6 +14,9 @@ export const PODCASTS_PROMOTED = false;
   Podcast apps that subscribe to an RSS feed by its address, with a one-tap
   link where the app has one and the steps to add it by hand.
 
+  Each app also has `install`, its store pages ({ ios, android }), for when
+  the link does nothing because the app isn't installed (see watchAppOpen).
+
   Documented: Overcast (overcast://x-callback-url/add), Pocket Casts
   (pktc://subscribe/<feed without scheme>), AntennaPod (its https deeplink,
   which falls back to instructions without the app), Apple Podcasts
@@ -19,6 +24,10 @@ export const PODCASTS_PROMOTED = false;
   Podcast Addict (podcastaddict://) are the schemes the apps register but
   aren't documented; the steps cover them if a link does nothing.
 */
+const APP_STORE = (path) => `https://apps.apple.com/app/${path}`;
+const PLAY_STORE = (id) =>
+  `https://play.google.com/store/apps/details?id=${id}`;
+
 export function podcastApps(feedUrl, { title = '', appleUrl = '' } = {}) {
   const bare = feedUrl.replace(/^https?:\/\//, '');
   const encoded = encodeURIComponent(feedUrl);
@@ -29,6 +38,7 @@ export function podcastApps(feedUrl, { title = '', appleUrl = '' } = {}) {
       platforms: 'iPhone, iPad, Mac',
       icon: 'apple',
       href: appleUrl || `podcast://${bare}`,
+      install: { ios: APP_STORE('apple-podcasts/id525463029') },
       steps: [
         'In Library, tap the ⋯ button and choose Follow a Show by URL. On a Mac, choose File › Follow a Show by URL.',
         'Paste the link and tap Follow.',
@@ -40,6 +50,7 @@ export function podcastApps(feedUrl, { title = '', appleUrl = '' } = {}) {
       platforms: 'iPhone, iPad',
       icon: 'podcast',
       href: `overcast://x-callback-url/add?url=${encoded}`,
+      install: { ios: APP_STORE('overcast/id888422857') },
       steps: [
         'Tap + at the top, then Add URL.',
         'Paste the link and tap Done.',
@@ -51,6 +62,10 @@ export function podcastApps(feedUrl, { title = '', appleUrl = '' } = {}) {
       platforms: 'iPhone, Android',
       icon: 'podcast',
       href: `pktc://subscribe/${bare}`,
+      install: {
+        ios: APP_STORE('pocket-casts-podcast-player/id414834813'),
+        android: PLAY_STORE('au.com.shiftyjelly.pocketcasts'),
+      },
       steps: [
         'Tap Search (Discover), paste the link into the search field, and search.',
         'Tap the show, then Follow.',
@@ -62,6 +77,7 @@ export function podcastApps(feedUrl, { title = '', appleUrl = '' } = {}) {
       platforms: 'iPhone',
       icon: 'podcast',
       href: `castros://subscribe/${bare}`,
+      install: { ios: APP_STORE('castro-podcast-player/id1080840241') },
       steps: [
         'Open Library and tap Search, or the + button.',
         'Paste the link, then tap the show and Subscribe.',
@@ -73,6 +89,7 @@ export function podcastApps(feedUrl, { title = '', appleUrl = '' } = {}) {
       platforms: 'Android',
       icon: 'android',
       href: `https://antennapod.org/deeplink/subscribe?url=${encoded}&title=${encodeURIComponent(title)}`,
+      install: { android: PLAY_STORE('de.danoeh.antennapod') },
       steps: [
         'Tap + (Add podcast), then Add podcast by RSS address.',
         'Paste the link and tap Confirm, then Subscribe.',
@@ -84,9 +101,89 @@ export function podcastApps(feedUrl, { title = '', appleUrl = '' } = {}) {
       platforms: 'Android',
       icon: 'android',
       href: `podcastaddict://${bare}`,
+      install: { android: PLAY_STORE('com.bambuna.podcastaddict') },
       steps: ['Tap +, then RSS feed.', 'Paste the link and tap Add.'],
     },
   ];
+}
+
+// Whether the link opens an app by its own scheme, which does nothing at all
+// when the app isn't installed (an https link falls back to a web page).
+export function opensApp(href) {
+  return !/^https?:/i.test(href || '');
+}
+
+// 'ios', 'android', or '' (a computer, or we can't tell). iPads report a Mac
+// user agent, so a touch screen on a "Mac" counts as iOS.
+export function devicePlatform(nav = globalThis.navigator) {
+  const agent = nav?.userAgent || '';
+  if (/android/i.test(agent)) return 'android';
+  if (/iphone|ipad|ipod/i.test(agent)) return 'ios';
+  if (/macintosh/i.test(agent) && nav?.maxTouchPoints > 1) return 'ios';
+  return '';
+}
+
+/*
+  The store pages to offer when an app didn't open: the one for this device,
+  or every one the app has on a computer. [{ platform, label, href }]
+*/
+export function installLinks(app, platform = devicePlatform()) {
+  const labels = { ios: 'App Store', android: 'Google Play' };
+  return Object.entries(app.install || {})
+    .filter(([store]) => !platform || store === platform)
+    .map(([store, href]) => ({ platform: store, label: labels[store], href }));
+}
+
+/*
+  Call when a podcast app's link is followed. If the app opens, the page is
+  hidden or loses focus; if neither happens within `delay`, the app most
+  likely isn't installed and onMissing runs. Returns a function that stops
+  watching.
+*/
+export function watchAppOpen(onMissing, { delay = 1500, win = window } = {}) {
+  const doc = win.document;
+  let timer = null;
+  const stop = () => {
+    win.clearTimeout(timer);
+    win.removeEventListener('blur', stop);
+    win.removeEventListener('pagehide', stop);
+    doc.removeEventListener('visibilitychange', onVisibility);
+  };
+  const onVisibility = () => {
+    if (doc.visibilityState === 'hidden') stop();
+  };
+  win.addEventListener('blur', stop);
+  win.addEventListener('pagehide', stop);
+  doc.addEventListener('visibilitychange', onVisibility);
+  timer = win.setTimeout(() => {
+    stop();
+    if (doc.visibilityState !== 'hidden') onMissing();
+  }, delay);
+  return stop;
+}
+
+/*
+  For a component with podcast app links: call follow(app) when one is
+  followed; missing is the id of the app that didn't open, if any, until the
+  next link is followed or reset() is called.
+*/
+export function useMissingApp() {
+  const missing = ref(null);
+  let stop = null;
+  function reset() {
+    stop?.();
+    stop = null;
+    missing.value = null;
+  }
+  function follow(app) {
+    reset();
+    if (!opensApp(app.href)) return;
+    stop = watchAppOpen(() => {
+      missing.value = app.id;
+    });
+  }
+  onBeforeUnmount(() => stop?.());
+  return { missing, follow, reset };
 }
 
 // The settings the audio can't follow (AUDIO_SETTINGS on the server, which

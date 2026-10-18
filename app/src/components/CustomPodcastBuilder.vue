@@ -257,9 +257,36 @@
               :icon="selectedApp.icon"
               :href="selectedApp.href"
               class="builder-add__open"
+              @click="followApp(selectedApp)"
             >
               Subscribe in {{ selectedApp.name }}
             </UiButton>
+            <UiAlert
+              v-if="missingApp === selectedApp.id"
+              tone="info"
+              :title="`${selectedApp.name} didn’t open?`"
+              class="builder-add__missing"
+            >
+              <p>
+                It may not be installed on this device.
+                <template v-if="!selectedInstallLinks.length">
+                  {{ selectedApp.name }} is for {{ selectedApp.platforms }}.
+                </template>
+                Once it is, tap Subscribe again, or add the feed by hand below.
+              </p>
+              <div v-if="selectedInstallLinks.length" class="cluster">
+                <UiButton
+                  v-for="store in selectedInstallLinks"
+                  :key="store.platform"
+                  size="sm"
+                  icon="download"
+                  :href="store.href"
+                  target="_blank"
+                >
+                  Get {{ selectedApp.name }} on {{ store.label }}
+                </UiButton>
+              </div>
+            </UiAlert>
             <h4 class="builder-label">Or add it by hand</h4>
             <ol class="builder-add__steps">
               <li>Copy the feed link above.</li>
@@ -406,9 +433,11 @@ import SettingRow from '@/components/SettingRow.vue';
 import SettingsPanel from '@/components/SettingsPanel.vue';
 import {
   customizableSettings,
+  installLinks,
   podcastApps,
   readingsSettingRows,
   snapshotSettings,
+  useMissingApp,
 } from '@/helpers/podcasts';
 import { toast } from '@/ui/feedback';
 
@@ -494,6 +523,14 @@ const selectedApp = computed(() => {
     title: created.value.title,
   }).find((app) => app.id === appId.value);
 });
+const selectedInstallLinks = computed(() =>
+  selectedApp.value ? installLinks(selectedApp.value) : []
+);
+const {
+  missing: missingApp,
+  follow: followApp,
+  reset: resetMissingApp,
+} = useMissingApp();
 
 const feedbackHref = computed(() => {
   const body = created.value ? `\n\n(My feed: ${created.value.feed_url})` : '';
@@ -626,6 +663,7 @@ function startOver() {
   draft.value = null;
   settingsMode.value = 'current';
   appId.value = '';
+  resetMissingApp();
 }
 </script>
 
@@ -988,6 +1026,18 @@ function startOver() {
   margin-bottom: var(--space-4);
   max-width: 100%;
   white-space: normal;
+}
+
+.builder-add__missing {
+  margin-bottom: var(--space-4);
+}
+
+.builder-add__missing p {
+  margin: 0 0 var(--space-3);
+}
+
+.builder-add__missing p:last-child {
+  margin-bottom: 0;
 }
 
 .builder-add__steps {

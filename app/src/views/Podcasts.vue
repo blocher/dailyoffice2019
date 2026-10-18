@@ -303,12 +303,38 @@
           <h3 class="eyebrow">Open in your app</h3>
           <ul class="subscribe__list">
             <li v-for="app in appLinks(selected)" :key="app.name">
-              <a class="subscribe__link" :href="app.href">
+              <a
+                class="subscribe__link"
+                :href="app.href"
+                @click="followApp(app)"
+              >
                 <UiIcon :name="app.icon" />
                 <span
                   >{{ app.name }} <small>{{ app.platforms }}</small></span
                 >
               </a>
+              <div v-if="missingApp === app.id" class="subscribe__missing">
+                <p>
+                  {{ app.name }} didn’t open? It may not be installed on this
+                  device.
+                  <template v-if="!installLinks(app).length">
+                    It’s for {{ app.platforms }}.
+                  </template>
+                  You can also paste the RSS link below into any app.
+                </p>
+                <div v-if="installLinks(app).length" class="cluster">
+                  <UiButton
+                    v-for="store in installLinks(app)"
+                    :key="store.platform"
+                    size="sm"
+                    icon="download"
+                    :href="store.href"
+                    target="_blank"
+                  >
+                    Get it on {{ store.label }}
+                  </UiButton>
+                </div>
+              </div>
             </li>
           </ul>
         </section>
@@ -350,7 +376,7 @@ import axios from 'axios';
 import { Clipboard } from '@capacitor/clipboard';
 import CustomPodcastBuilder from '@/components/CustomPodcastBuilder.vue';
 import Loading from '@/components/Loading.vue';
-import { podcastApps } from '@/helpers/podcasts';
+import { installLinks, podcastApps, useMissingApp } from '@/helpers/podcasts';
 import { toast } from '@/ui/feedback';
 import { DynamicStorage } from '@/helpers/storage';
 
@@ -423,6 +449,12 @@ function platformIcon(platform) {
   return PLATFORMS[platform]?.icon || 'podcast';
 }
 
+const {
+  missing: missingApp,
+  follow: followApp,
+  reset: resetMissingApp,
+} = useMissingApp();
+
 // Subscribe links that work before (and without) a directory listing.
 function appLinks(feed) {
   const apple = feed.listings.find((listing) => listing.platform === 'apple');
@@ -440,6 +472,7 @@ function showCustom() {
 }
 
 function openSubscribe(feed) {
+  resetMissingApp();
   selected.value = feed;
 }
 
@@ -838,6 +871,23 @@ onBeforeUnmount(() => {
 .subscribe__external {
   font-size: 0.85rem;
   color: var(--ink-faint);
+}
+
+.subscribe__missing {
+  margin: var(--space-2) 0 var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  background: var(--paper-sunken);
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+}
+
+.subscribe__missing p {
+  margin: 0 0 var(--space-2);
+}
+
+.subscribe__missing p:last-child {
+  margin-bottom: 0;
 }
 
 .subscribe__hint {
