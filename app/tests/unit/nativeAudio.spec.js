@@ -1,8 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  createAudioElement,
-  NativeAudioElement,
-} from '@/helpers/nativeAudio';
+import { createAudioElement, NativeAudioElement } from '@/helpers/nativeAudio';
 
 const URL = 'https://api.example.com/api/v1/audio_track/office.mp3';
 
@@ -175,12 +172,27 @@ describe('NativeAudioElement', () => {
     element.play();
     expect(events).toContain('waiting');
     events = [];
-    plugin.send({ state: 'ready', duration: 1328, playWhenReady: true, isPlaying: true });
-    plugin.send({ state: 'buffering', duration: 1328, position: 30, playWhenReady: true });
+    plugin.send({
+      state: 'ready',
+      duration: 1328,
+      playWhenReady: true,
+      isPlaying: true,
+    });
+    plugin.send({
+      state: 'buffering',
+      duration: 1328,
+      position: 30,
+      playWhenReady: true,
+    });
     expect(events).toContain('waiting');
     expect(element.readyState).toBe(2);
     events = [];
-    plugin.send({ state: 'buffering', duration: 1328, position: 30, playWhenReady: true });
+    plugin.send({
+      state: 'buffering',
+      duration: 1328,
+      position: 30,
+      playWhenReady: true,
+    });
     expect(events).not.toContain('waiting');
   });
 
@@ -209,7 +221,12 @@ describe('NativeAudioElement', () => {
     element.play();
     ready({ playWhenReady: false });
     expect(element.paused).toBe(false);
-    resolvePlay({ url: URL, state: 'ready', duration: 1328, playWhenReady: true });
+    resolvePlay({
+      url: URL,
+      state: 'ready',
+      duration: 1328,
+      playWhenReady: true,
+    });
     await settle();
     expect(element.paused).toBe(false);
   });
@@ -283,12 +300,19 @@ describe('NativeAudioElement', () => {
     ready();
     element.play();
     events = [];
-    plugin.send({ state: 'ended', duration: 1328, position: 1328, playWhenReady: true });
+    plugin.send({
+      state: 'ended',
+      duration: 1328,
+      position: 1328,
+      playWhenReady: true,
+    });
     expect(events).toEqual(['timeupdate', 'pause', 'ended']);
     expect(element.ended).toBe(true);
     expect(element.paused).toBe(true);
     element.play();
-    expect(plugin.calls.some(([m, o]) => m === 'seekTo' && o.position === 0)).toBe(true);
+    expect(
+      plugin.calls.some(([m, o]) => m === 'seekTo' && o.position === 0)
+    ).toBe(true);
   });
 
   it('reports a player error once as a network error', () => {
@@ -306,7 +330,11 @@ describe('NativeAudioElement', () => {
 
   it('ignores status from another track or from no track', () => {
     element.load();
-    plugin.send({ url: 'https://other/track.mp3', state: 'ready', duration: 99 });
+    plugin.send({
+      url: 'https://other/track.mp3',
+      state: 'ready',
+      duration: 99,
+    });
     expect(Number.isNaN(element.duration)).toBe(true);
     ready({ position: 120 });
     plugin.send({ url: undefined, state: 'idle', position: 0 });

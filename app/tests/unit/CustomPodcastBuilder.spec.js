@@ -430,7 +430,9 @@ describe('custom podcast helpers', () => {
     expect(opensApp(antennapod.href)).toBe(false);
     expect(
       opensApp(
-        podcastApps('https://x/f.xml', { appleUrl: 'https://podcasts.apple.com/x' })[0].href
+        podcastApps('https://x/f.xml', {
+          appleUrl: 'https://podcasts.apple.com/x',
+        })[0].href
       )
     ).toBe(false);
     expect(apple.install.ios).toMatch(/id525463029$/);

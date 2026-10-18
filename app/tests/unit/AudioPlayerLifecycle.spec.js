@@ -426,7 +426,7 @@ describe('AudioPlayer playback lifecycle', () => {
     expect(vm.isPlaying).toBe(false);
   });
 
-    it('releases media and OS controls when leaving the office', () => {
+  it('releases media and OS controls when leaving the office', () => {
     const vm = mountPlayer();
     wrapper.unmount();
     wrapper = null;

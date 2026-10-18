@@ -50,7 +50,9 @@ async function setup() {
     ],
   });
   router.beforeEach((to) => takeBookViewQuery(to) || undefined);
-  const App = { render: () => h(RouterView, { key: router.currentRoute.value.path }) };
+  const App = {
+    render: () => h(RouterView, { key: router.currentRoute.value.path }),
+  };
   wrapper = mount(App, { global: { plugins: [router] } });
   return { router, wrapper, opened };
 }

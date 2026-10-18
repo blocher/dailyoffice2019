@@ -86,6 +86,16 @@ export default [
     },
   },
 
+  // Unit tests run in jsdom, so they may use any browser global
+  {
+    files: ['tests/**/*.js'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+      },
+    },
+  },
+
   // Files to ignore
   {
     ignores: [

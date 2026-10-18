@@ -64,11 +64,9 @@ describe('office audio date window', () => {
 
   it('still fetches audio for an eligible office', async () => {
     vi.stubEnv('VITE_FETCH_AUDIO_ON', 'true');
-    const get = vi
-      .fn()
-      .mockResolvedValue({
-        data: { audio: { single_track: ['https://api.test/track.mp3', 'p'] } },
-      });
+    const get = vi.fn().mockResolvedValue({
+      data: { audio: { single_track: ['https://api.test/track.mp3', 'p'] } },
+    });
     await Office.methods.setAudioLinks.call(
       { audioEnabled: true, isWithinSevenDays: true, $http: { get } },
       '/office?test=1'
@@ -81,7 +79,9 @@ describe('office audio date window', () => {
     vi.stubEnv('VITE_FETCH_AUDIO_ON', 'true');
     const preparing = {
       status: 202,
-      data: { audio: { status: 'preparing', retry_after: 5, single_track: [] } },
+      data: {
+        audio: { status: 'preparing', retry_after: 5, single_track: [] },
+      },
     };
     const get = vi
       .fn()
