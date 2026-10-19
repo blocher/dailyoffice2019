@@ -38,10 +38,35 @@ const EXTENSION_FILE =
 // Extension errors that arrive with no stack, so EXTENSION_FILE can't match.
 // The app itself never calls the extension messaging API.
 const EXTENSION_MESSAGE = /Invalid call to runtime\.sendMessage\(\)/i;
+// A fetch() that never got a response (offline, dropped connection, blocker)
+// rejects with a bare TypeError: "Load failed" in Safari, "Failed to fetch" in
+// Chrome, "NetworkError ..." in Firefox. Vite's modulepreload polyfill (for
+// browsers without <link rel="modulepreload">) fetches upcoming chunks this way
+// and never handles the failure; the real import, if it fails too, is caught as
+// STALE_CHUNK. So drop it only when it has no stack frame and the last failed
+// fetch was one of our own built assets. Other fetches (Firebase, Capacitor
+// plugins) failing the same way may be an outage, so they are still reported.
+const BARE_NETWORK_FAILURE =
+  /^TypeError: (Load failed|Failed to fetch|NetworkError when attempting to fetch resource\.?)$/i;
 // Requests that never reached the server (offline, timed out, cancelled).
 const NETWORK_CODES = new Set(['ERR_NETWORK', 'ECONNABORTED', 'ERR_CANCELED']);
 
 let started = false;
+
+/** Whether the most recent failed fetch() was for one of our built assets. */
+function lastFailedFetchWasOwnAsset(event) {
+  const failed = (event.breadcrumbs || [])
+    .filter((b) => b.type === 'request' && b.message === 'fetch() error')
+    .pop();
+  const url = failed?.metadata?.url;
+  if (!url) return false;
+  try {
+    const { origin, pathname } = new window.URL(url, window.location.href);
+    return origin === window.location.origin && pathname.startsWith('/assets/');
+  } catch {
+    return false;
+  }
+}
 
 /** Whether this report is noise to drop rather than a bug in the app. */
 export function isNoise(event) {
@@ -55,7 +80,14 @@ export function isNoise(event) {
     EXTENSION_MESSAGE.test(text)
   )
     return true;
-  if ((error.stacktrace || []).some((f) => EXTENSION_FILE.test(f.file || ''))) {
+  const frames = error.stacktrace || [];
+  if (
+    BARE_NETWORK_FAILURE.test(text) &&
+    frames.every((f) => !f.file || f.file === 'unknown file') &&
+    lastFailedFetchWasOwnAsset(event)
+  )
+    return true;
+  if (frames.some((f) => EXTENSION_FILE.test(f.file || ''))) {
     return true;
   }
   const original = event.originalError;
