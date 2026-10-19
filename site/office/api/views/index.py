@@ -4974,6 +4974,16 @@ class SiteMessageViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             queryset = queryset.filter(show_on_web=True)
         return queryset.order_by("order", "-created")
 
+    def filter_queryset(self, queryset):
+        queryset = super().filter_queryset(queryset)
+        platform = (self.request.query_params.get("platform") or "").strip().lower()
+        if platform not in ("ios", "android"):
+            return queryset
+        # Version rules compare dotted numbers, which the database can't order, and
+        # there are only ever a handful of live messages, so filter them here.
+        app_version = self.request.query_params.get("app_version") or ""
+        return [message for message in queryset if message.matches_app_version(platform, app_version)]
+
 
 class EmailSignupView(APIView):
     permission_classes = [AllowAny]

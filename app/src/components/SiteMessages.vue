@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import { App } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
 
@@ -63,6 +64,20 @@ const TAG_TONES = {
 function getStorage(name) {
   try {
     return typeof window === 'undefined' ? null : window[name] || null;
+  } catch {
+    return null;
+  }
+}
+
+// The store version (iOS CFBundleShortVersionString, Android versionName),
+// so the server can limit messages to some app versions. The web has none.
+async function nativeAppVersion() {
+  if (!Capacitor.isNativePlatform()) {
+    return null;
+  }
+  try {
+    const info = await App.getInfo();
+    return info.version || null;
   } catch {
     return null;
   }
@@ -116,9 +131,14 @@ export default {
     async fetchMessages() {
       try {
         const platform = Capacitor.getPlatform();
+        const params = { platform };
+        const appVersion = await nativeAppVersion();
+        if (appVersion) {
+          params.app_version = appVersion;
+        }
         const response = await this.$http.get(
           `${import.meta.env.VITE_API_URL}api/v1/site_messages/`,
-          { params: { platform } }
+          { params }
         );
         this.messages = Array.isArray(response.data) ? response.data : [];
       } catch {
