@@ -496,8 +496,15 @@ export default {
         .split(' ')
         .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
         .join(' ');
-      const extraCollects =
-        JSON.parse(await DynamicStorage.getItem('extraCollects')) || '';
+      let extraCollects;
+      try {
+        extraCollects =
+          JSON.parse(await DynamicStorage.getItem('extraCollects')) || '';
+      } catch {
+        // Storage can hold an empty or truncated value; treat it as unset
+        // rather than failing to load the office.
+        extraCollects = '';
+      }
       if (!extraCollects) {
         return '';
       }
