@@ -1,10 +1,17 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { mount, flushPromises } from '@vue/test-utils';
 
+const platform = vi.hoisted(() => ({ name: 'web' }));
 vi.mock('@capacitor/core', () => ({
-  Capacitor: { getPlatform: () => 'web' },
+  Capacitor: {
+    getPlatform: () => platform.name,
+    isNativePlatform: () => platform.name !== 'web',
+  },
 }));
 vi.mock('@capacitor/browser', () => ({ Browser: { open: vi.fn() } }));
+vi.mock('@capacitor/app', () => ({
+  App: { getInfo: vi.fn(async () => ({ version: '4.1.0', build: '7' })) },
+}));
 
 import SiteMessages from '@/components/SiteMessages.vue';
 
@@ -24,7 +31,35 @@ function mountComponent() {
   });
 }
 
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => {
+  platform.name = 'web';
+  vi.restoreAllMocks();
+});
+
+describe('SiteMessages request', () => {
+  function requestParams() {
+    const get = vi.fn(async () => ({ data: [] }));
+    mount(SiteMessages, {
+      global: {
+        mocks: { $http: { get } },
+        stubs: { UiIcon: true, UiTag: true },
+      },
+    });
+    return flushPromises().then(() => get.mock.calls[0][1].params);
+  }
+
+  it('sends only the platform from the web', async () => {
+    expect(await requestParams()).toEqual({ platform: 'web' });
+  });
+
+  it('sends the store version from the native apps', async () => {
+    platform.name = 'ios';
+    expect(await requestParams()).toEqual({
+      platform: 'ios',
+      app_version: '4.1.0',
+    });
+  });
+});
 
 describe('SiteMessages with blocked storage', () => {
   it('still shows messages when reading storage throws a SecurityError', async () => {
