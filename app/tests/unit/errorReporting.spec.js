@@ -23,12 +23,26 @@ async function load() {
   return import('@/helpers/errorReporting');
 }
 
-function fakeEvent(error = {}, originalError = new Error('x')) {
+function fakeEvent(
+  error = {},
+  originalError = new Error('x'),
+  breadcrumbs = []
+) {
   return {
     errors: [
       { errorClass: 'Error', errorMessage: '', stacktrace: [], ...error },
     ],
     originalError,
+    breadcrumbs,
+  };
+}
+
+// The breadcrumb BugSnag leaves when a fetch() gets no response.
+function fetchError(url) {
+  return {
+    type: 'request',
+    message: 'fetch() error',
+    metadata: { method: 'GET', url },
   };
 }
 
@@ -154,12 +168,20 @@ describe('error reporting', () => {
           errorClass: 'Error',
           errorMessage: 'Invalid call to runtime.sendMessage(). Tab not found.',
         }),
-        fakeEvent({
-          errorClass: 'TypeError',
-          errorMessage: 'Load failed',
-          stacktrace: [{ file: 'unknown file', lineNumber: 0 }],
-        }),
-        fakeEvent({ errorClass: 'TypeError', errorMessage: 'Failed to fetch' }),
+        fakeEvent(
+          {
+            errorClass: 'TypeError',
+            errorMessage: 'Load failed',
+            stacktrace: [{ file: 'unknown file', lineNumber: 0 }],
+          },
+          new TypeError('Load failed'),
+          [fetchError(`${window.location.origin}/assets/web-L0Bi5kY9.js`)]
+        ),
+        fakeEvent(
+          { errorClass: 'TypeError', errorMessage: 'Failed to fetch' },
+          new TypeError('Failed to fetch'),
+          [fetchError('/assets/index-abc123.js')]
+        ),
         fakeEvent(
           { errorClass: 'AxiosError', errorMessage: 'Network Error' },
           { isAxiosError: true, code: 'ERR_NETWORK' }
@@ -174,15 +196,39 @@ describe('error reporting', () => {
       // A failed fetch raised from our own code is still worth seeing.
       expect(
         onError(
-          fakeEvent({
-            errorClass: 'TypeError',
-            errorMessage: 'Load failed',
-            stacktrace: [
-              { file: 'https://www.dailyoffice2019.com/assets/x.js' },
-            ],
-          })
+          fakeEvent(
+            {
+              errorClass: 'TypeError',
+              errorMessage: 'Load failed',
+              stacktrace: [
+                { file: 'https://www.dailyoffice2019.com/assets/x.js' },
+              ],
+            },
+            new TypeError('Load failed'),
+            [fetchError('/assets/web-L0Bi5kY9.js')]
+          )
         )
       ).toBe(true);
+      // So is one from another service (it may be down), or one with no
+      // failed request to explain it.
+      [
+        [fetchError('https://firebaseinstallations.googleapis.com/v1/x')],
+        [
+          fetchError('/assets/web-L0Bi5kY9.js'),
+          fetchError('https://firebaseinstallations.googleapis.com/v1/x'),
+        ],
+        [],
+      ].forEach((breadcrumbs) =>
+        expect(
+          onError(
+            fakeEvent(
+              { errorClass: 'TypeError', errorMessage: 'Load failed' },
+              new TypeError('Load failed'),
+              breadcrumbs
+            )
+          )
+        ).toBe(true)
+      );
       // A server error is a real problem, not an offline blip.
       expect(
         onError(
