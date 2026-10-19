@@ -42,6 +42,7 @@ class SiteMessageAdmin(admin.ModelAdmin):
         "show_on_web",
         "show_on_android",
         "show_on_ios",
+        "app_versions",
         "expiration_date",
         "order",
     )
@@ -52,8 +53,29 @@ class SiteMessageAdmin(admin.ModelAdmin):
         ("Content", {"fields": ("tag_text", "tag_color", "text", "link")}),
         ("Dismissal", {"fields": ("dismissible", "dismiss_permanent")}),
         ("Platforms", {"fields": ("show_on_web", "show_on_android", "show_on_ios")}),
+        (
+            "App versions",
+            {
+                "fields": (
+                    ("ios_version_rule", "ios_version", "ios_version_to"),
+                    ("android_version_rule", "android_version", "android_version_to"),
+                ),
+                "description": (
+                    "Optional. Limit the message to some versions of the iOS and/or Android app, e.g. "
+                    "'Older than 4.0.0' for an upgrade notice, or '4.1.0 or newer' for a feature announcement. "
+                    "Versions are the store version shown in the App Store / Google Play (iOS "
+                    "CFBundleShortVersionString, Android versionName), not the build number. "
+                    "A message with a rule is hidden from apps that do not report their version. "
+                    "The website ignores these rules."
+                ),
+            },
+        ),
         ("Visibility", {"fields": ("active", "expiration_date", "order")}),
     )
+
+    @admin.display(description="App versions")
+    def app_versions(self, obj):
+        return "; ".join(filter(None, (obj.version_rule_summary(p) for p in ("ios", "android")))) or "Any"
 
 
 class StandardOfficeDayAdmin(admin.ModelAdmin):
