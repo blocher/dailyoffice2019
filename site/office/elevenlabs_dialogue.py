@@ -17,7 +17,6 @@ from django.conf import settings
 
 from office.audio_builds import AudioNotReady, generation_deferred, release_db_connections
 
-
 # The decoded MP3 can run slightly shorter than the end the API reports for the
 # last segment (encoder padding is a frame or two, about 26 ms each); anything
 # beyond this means the audio really was cut off.
