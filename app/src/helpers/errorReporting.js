@@ -48,6 +48,14 @@ const EXTENSION_MESSAGE = /Invalid call to runtime\.sendMessage\(\)/i;
 // plugins) failing the same way may be an outage, so they are still reported.
 const BARE_NETWORK_FAILURE =
   /^TypeError: (Load failed|Failed to fetch|NetworkError when attempting to fetch resource\.?)$/i;
+// Safari's Reader (and similar page-rewriting tools) swap out the document's
+// DOM behind Vue's back, so its renderer finds a node gone and throws
+// "Cannot read properties of null (reading 'nextSibling')" from inside Vue.
+// The breadcrumbs then show the reader's own "reader.self" request. Nothing
+// in the app can prevent it, so drop it only when both signs are present.
+const VUE_DOM_DETACHED =
+  /^TypeError: Cannot read properties of null \(reading '(nextSibling|parentNode|insertBefore)'\)$/i;
+const READER_MODE_URL = /^https?:\/\/reader\.self\b/i;
 // Requests that never reached the server (offline, timed out, cancelled).
 const NETWORK_CODES = new Set(['ERR_NETWORK', 'ECONNABORTED', 'ERR_CANCELED']);
 
@@ -68,6 +76,13 @@ function lastFailedFetchWasOwnAsset(event) {
   }
 }
 
+/** Whether the page was being rewritten by a browser reader mode. */
+function inReaderMode(event) {
+  return (event.breadcrumbs || []).some((b) =>
+    READER_MODE_URL.test(b.metadata?.url || '')
+  );
+}
+
 /** Whether this report is noise to drop rather than a bug in the app. */
 export function isNoise(event) {
   const error = event.errors?.[0];
@@ -80,6 +95,7 @@ export function isNoise(event) {
     EXTENSION_MESSAGE.test(text)
   )
     return true;
+  if (VUE_DOM_DETACHED.test(text) && inReaderMode(event)) return true;
   const frames = error.stacktrace || [];
   if (
     BARE_NETWORK_FAILURE.test(text) &&
