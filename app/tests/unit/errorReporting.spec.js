@@ -186,11 +186,30 @@ describe('error reporting', () => {
           { errorClass: 'AxiosError', errorMessage: 'Network Error' },
           { isAxiosError: true, code: 'ERR_NETWORK' }
         ),
+        fakeEvent(
+          {
+            errorClass: 'TypeError',
+            errorMessage:
+              "Cannot read properties of null (reading 'nextSibling')",
+          },
+          new TypeError('x'),
+          [fetchError('https://reader.self')]
+        ),
       ];
       noise.forEach((event) => expect(onError(event)).toBe(false));
       expect(
         onError(
           fakeEvent({ errorClass: 'TypeError', errorMessage: 'x is undefined' })
+        )
+      ).toBe(true);
+      // The same Vue error without reader mode is a real bug.
+      expect(
+        onError(
+          fakeEvent({
+            errorClass: 'TypeError',
+            errorMessage:
+              "Cannot read properties of null (reading 'nextSibling')",
+          })
         )
       ).toBe(true);
       // A failed fetch raised from our own code is still worth seeing.
