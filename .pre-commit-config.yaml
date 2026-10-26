@@ -55,7 +55,7 @@ repos:
 
   #
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v10.12.0
+    rev: v10.13.0
     hooks:
       - id: eslint
         files: ^app/src/
@@ -63,13 +63,13 @@ repos:
         types_or: [ javascript, jsx, ts, tsx, vue ]
         args: [ --config=app/eslint.config.mjs, --fix ]
         additional_dependencies:
-          - "eslint@10.12.0"
+          - "eslint@10.13.0"
           - "@eslint/js@10.0.1"
           - "globals@17.13.0"
           - "eslint-config-prettier@10.1.8"
-          - "eslint-plugin-prettier@5.5.6"
+          - "eslint-plugin-prettier@5.5.7"
           - "prettier@3.9.10"
-          - "eslint-plugin-vue@10.11.1"
+          - "eslint-plugin-vue@10.12.0"
           - "eslint-plugin-cypress@7.0.2"
           - "vue-eslint-parser@10.4.1"
 
