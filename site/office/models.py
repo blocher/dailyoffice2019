@@ -3,6 +3,8 @@ import re
 from functools import cached_property
 
 from bs4 import BeautifulSoup
+from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
 from django.db import models
 from django_ckeditor_5.fields import CKEditor5Field
 
@@ -182,6 +184,24 @@ class UpdateNotice(BaseModel):
         ordering = ["-version"]
 
 
+APP_VERSION_PATTERN = re.compile(r"^\s*v?(\d+(?:\.\d+)*)")
+
+
+def parse_app_version(value):
+    """Turn a version string such as "4.0.0" into a comparable tuple, padded so "4" == "4.0.0".
+
+    Returns None when the value does not start with a number.
+    """
+    match = APP_VERSION_PATTERN.match(value or "")
+    if not match:
+        return None
+    parts = [int(part) for part in match.group(1).split(".")][:4]
+    return tuple(parts + [0] * (4 - len(parts)))
+
+
+app_version_validator = RegexValidator(r"^\d+(\.\d+){0,3}$", "Enter a version number such as 4 or 4.1 or 4.1.2.")
+
+
 class SiteMessage(BaseModel):
     """A dynamic announcement/notice banner controlled from the Django admin.
 
@@ -231,6 +251,91 @@ class SiteMessage(BaseModel):
     show_on_android = models.BooleanField(default=True, help_text="Show this message in the Android app.")
     show_on_ios = models.BooleanField(default=True, help_text="Show this message in the iOS app.")
 
+    # Optional app version bounds, one rule per native platform. Versions are the
+    # store version (iOS CFBundleShortVersionString / Android versionName), which
+    # the app sends as ?app_version=. The website ignores these rules.
+    VERSION_ANY = ""
+    VERSION_LT = "lt"
+    VERSION_LTE = "lte"
+    VERSION_EQ = "eq"
+    VERSION_GTE = "gte"
+    VERSION_GT = "gt"
+    VERSION_BETWEEN = "between"
+    VERSION_RULE_CHOICES = (
+        (VERSION_ANY, "Any version"),
+        (VERSION_LT, "Older than (<)"),
+        (VERSION_LTE, "This version or older (≤)"),
+        (VERSION_EQ, "Exactly (=)"),
+        (VERSION_GTE, "This version or newer (≥)"),
+        (VERSION_GT, "Newer than (>)"),
+        (VERSION_BETWEEN, "Between, inclusive (≥ and ≤)"),
+    )
+    VERSION_RULE_SYMBOLS = {
+        VERSION_LT: "<",
+        VERSION_LTE: "≤",
+        VERSION_EQ: "=",
+        VERSION_GTE: "≥",
+        VERSION_GT: ">",
+    }
+    VERSION_RULE_TESTS = {
+        VERSION_LT: lambda current, low, high: current < low,
+        VERSION_LTE: lambda current, low, high: current <= low,
+        VERSION_EQ: lambda current, low, high: current == low,
+        VERSION_GTE: lambda current, low, high: current >= low,
+        VERSION_GT: lambda current, low, high: current > low,
+        VERSION_BETWEEN: lambda current, low, high: low <= current <= high,
+    }
+    PLATFORM_LABELS = {"ios": "iOS", "android": "Android"}
+
+    ios_version_rule = models.CharField(
+        "iOS version rule",
+        max_length=10,
+        choices=VERSION_RULE_CHOICES,
+        blank=True,
+        default=VERSION_ANY,
+        help_text="Limit the message to some iOS app versions. Leave as 'Any version' for all.",
+    )
+    ios_version = models.CharField(
+        "iOS version",
+        max_length=20,
+        blank=True,
+        default="",
+        validators=[app_version_validator],
+        help_text="e.g. 4.1.0. For 'Between' this is the lower bound.",
+    )
+    ios_version_to = models.CharField(
+        "iOS upper version",
+        max_length=20,
+        blank=True,
+        default="",
+        validators=[app_version_validator],
+        help_text="Only for 'Between': the upper bound (inclusive).",
+    )
+    android_version_rule = models.CharField(
+        "Android version rule",
+        max_length=10,
+        choices=VERSION_RULE_CHOICES,
+        blank=True,
+        default=VERSION_ANY,
+        help_text="Limit the message to some Android app versions. Leave as 'Any version' for all.",
+    )
+    android_version = models.CharField(
+        "Android version",
+        max_length=20,
+        blank=True,
+        default="",
+        validators=[app_version_validator],
+        help_text="e.g. 4.1.0. For 'Between' this is the lower bound.",
+    )
+    android_version_to = models.CharField(
+        "Android upper version",
+        max_length=20,
+        blank=True,
+        default="",
+        validators=[app_version_validator],
+        help_text="Only for 'Between': the upper bound (inclusive).",
+    )
+
     active = models.BooleanField(default=True, help_text="Uncheck to hide the message without deleting it.")
     expiration_date = models.DateTimeField(
         null=True,
@@ -244,6 +349,65 @@ class SiteMessage(BaseModel):
 
     def __str__(self):
         return self.text[:60] if self.text else "Site Message"
+
+    def _version_rule(self, platform):
+        return (
+            getattr(self, f"{platform}_version_rule"),
+            getattr(self, f"{platform}_version"),
+            getattr(self, f"{platform}_version_to"),
+        )
+
+    def clean(self):
+        super().clean()
+        errors = {}
+        for platform, label in self.PLATFORM_LABELS.items():
+            rule, version, version_to = self._version_rule(platform)
+            if not rule:
+                if version or version_to:
+                    errors[f"{platform}_version_rule"] = (
+                        f"Choose a rule for the {label} version, or clear the version."
+                    )
+                continue
+            if not version:
+                errors[f"{platform}_version"] = "Enter a version for this rule."
+            if rule == self.VERSION_BETWEEN:
+                low, high = parse_app_version(version), parse_app_version(version_to)
+                if not version_to:
+                    errors[f"{platform}_version_to"] = "Enter the upper version for 'Between'."
+                elif low and high and high < low:
+                    errors[f"{platform}_version_to"] = "The upper version must not be lower than the lower version."
+            elif version_to:
+                errors[f"{platform}_version_to"] = "The upper version is only used with 'Between'."
+        if errors:
+            raise ValidationError(errors)
+
+    def matches_app_version(self, platform, app_version):
+        """Whether an app on this platform ("ios" or "android") at this version should see the message.
+
+        Messages without a rule for the platform always match. A message with a rule is hidden
+        when the version is missing or unreadable, so it never reaches an app it was not meant for.
+        """
+        if platform not in self.PLATFORM_LABELS:
+            return True
+        rule, version, version_to = self._version_rule(platform)
+        if not rule:
+            return True
+        current = parse_app_version(app_version)
+        low = parse_app_version(version)
+        high = parse_app_version(version_to)
+        if current is None or low is None or (rule == self.VERSION_BETWEEN and high is None):
+            return False
+        return self.VERSION_RULE_TESTS[rule](current, low, high)
+
+    def version_rule_summary(self, platform):
+        """A short description such as "iOS ≥ 4.1.0", or "" when there is no rule."""
+        rule, version, version_to = self._version_rule(platform)
+        if not rule:
+            return ""
+        label = self.PLATFORM_LABELS[platform]
+        if rule == self.VERSION_BETWEEN:
+            return f"{label} {version}–{version_to}"
+        return f"{label} {self.VERSION_RULE_SYMBOLS[rule]} {version}"
 
 
 class Setting(BaseModel):

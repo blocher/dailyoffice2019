@@ -195,6 +195,19 @@ describe('error reporting', () => {
           new TypeError('x'),
           [fetchError('https://reader.self')]
         ),
+        // A script injected into the page document, not our bundle.
+        fakeEvent({
+          errorClass: 'RangeError',
+          errorMessage: 'Maximum call stack size exceeded.',
+          stacktrace: [
+            { file: `${window.location.href}`, lineNumber: 193 },
+            { file: '', lineNumber: 0 },
+            {
+              file: `${window.location.origin}${window.location.pathname}?x=1`,
+              lineNumber: 425,
+            },
+          ],
+        }),
       ];
       noise.forEach((event) => expect(onError(event)).toBe(false));
       expect(
@@ -209,6 +222,19 @@ describe('error reporting', () => {
             errorClass: 'TypeError',
             errorMessage:
               "Cannot read properties of null (reading 'nextSibling')",
+          })
+        )
+      ).toBe(true);
+      // A page-document frame next to one of our bundle's frames is ours.
+      expect(
+        onError(
+          fakeEvent({
+            errorClass: 'RangeError',
+            errorMessage: 'Maximum call stack size exceeded.',
+            stacktrace: [
+              { file: window.location.href, lineNumber: 5 },
+              { file: `${window.location.origin}/assets/index-abc.js` },
+            ],
           })
         )
       ).toBe(true);

@@ -593,6 +593,8 @@ class BuildEpisodeTests(MediaRootMixin, TestCase):
 class FeedTests(MediaRootMixin, TestCase):
     def setUp(self):
         self.use_temporary_media_root()
+        cache.clear()
+        self.addCleanup(cache.clear)
         self.feed = catalog.get_feed("morning-prayer")
         now = timezone.now()
         self.published = self.episode("2026-10-12", now - timedelta(hours=1))
@@ -636,6 +638,15 @@ class FeedTests(MediaRootMixin, TestCase):
         )
         self.assertEqual(channel.find(f"{{{rss.ITUNES}}}category").get("text"), "Religion & Spirituality")
         self.assertEqual(channel.findtext(f"{{{rss.PODCAST}}}guid"), rss.podcast_guid("morning-prayer"))
+
+    def test_feed_is_rendered_once_per_cache_window(self):
+        with patch("podcasts.views.rss.render_feed", wraps=rss.render_feed) as render:
+            first = self.client.get("/podcasts/morning-prayer.xml")
+            second = self.client.get("/podcasts/morning-prayer.xml")
+            self.assertEqual(render.call_count, 1)
+            self.assertEqual(first.content, second.content)
+            self.client.get("/podcasts/compline.xml")
+            self.assertEqual(render.call_count, 2)
 
     def test_podcast_guid_is_stable(self):
         self.assertEqual(rss.podcast_guid("morning-prayer"), rss.podcast_guid("morning-prayer"))
