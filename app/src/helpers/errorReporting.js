@@ -38,6 +38,25 @@ const EXTENSION_FILE =
 // Extension errors that arrive with no stack, so EXTENSION_FILE can't match.
 // The app itself never calls the extension messaging API.
 const EXTENSION_MESSAGE = /Invalid call to runtime\.sendMessage\(\)/i;
+// Our built page has one short inline script, wrapped in try/catch, so errors
+// whose every frame is in the page document itself come from a script the
+// browser or an extension injected (translation, reader and in-app browsers
+// on iOS): e.g. "Maximum call stack size exceeded" recursing between two
+// minified functions at line 400+ of /commemorations/<id>.
+function onlyInPageDocument(frames) {
+  let page;
+  try {
+    const { origin, pathname } = window.location;
+    page = origin + pathname;
+  } catch {
+    return false;
+  }
+  const stripped = (file) => String(file || '').split(/[?#]/)[0];
+  return (
+    frames.some((f) => stripped(f.file) === page) &&
+    frames.every((f) => !f.file || stripped(f.file) === page)
+  );
+}
 // A fetch() that never got a response (offline, dropped connection, blocker)
 // rejects with a bare TypeError: "Load failed" in Safari, "Failed to fetch" in
 // Chrome, "NetworkError ..." in Firefox. Vite's modulepreload polyfill (for
@@ -87,6 +106,7 @@ export function isNoise(event) {
     lastFailedFetchWasOwnAsset(event)
   )
     return true;
+  if (onlyInPageDocument(frames)) return true;
   if (frames.some((f) => EXTENSION_FILE.test(f.file || ''))) {
     return true;
   }
