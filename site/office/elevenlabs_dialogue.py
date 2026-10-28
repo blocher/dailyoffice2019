@@ -17,6 +17,11 @@ from django.conf import settings
 
 from office.audio_builds import AudioNotReady, generation_deferred, release_db_connections
 
+# The decoded MP3 can run slightly shorter than the end the API reports for the
+# last segment (encoder padding is a frame or two, about 26 ms each); anything
+# beyond this means the audio really was cut off.
+SEGMENT_END_TOLERANCE_SECONDS = 0.06
+
 
 class DialogueTimingError(ValueError):
     """Keep numeric failure evidence without logging prayer text or credentials."""
@@ -457,7 +462,9 @@ class DialogueSession:
                                 raise ValueError("not_word_timing_failure")
                             segment_end = self._fallback_segment_end(alignment, segments, speaking_turns, prepared)
                             duration = self._decoded_duration(audio, path.parent)
-                            if segment_end > duration + 1 / 16000:
+                            diagnostics["last_segment_end"] = segment_end
+                            diagnostics["decoded_duration"] = duration
+                            if segment_end > duration + SEGMENT_END_TOLERANCE_SECONDS:
                                 raise ValueError("audio_shorter_than_segments")
                         except ValueError as rejected:
                             diagnostics["fallback_rejected"] = str(rejected)
