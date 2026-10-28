@@ -3,6 +3,7 @@ import re
 from datetime import date
 
 from django.conf import settings
+from django.core.cache import cache
 from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.utils import timezone
 from django.views import View
@@ -21,6 +22,11 @@ from podcasts.models import CustomPodcastFeed, PodcastDirectoryListing
 logger = logging.getLogger(__name__)
 
 FEED_CACHE_SECONDS = 15 * 60
+# Podcast apps and directories poll feeds constantly, and every uncached render
+# queries the database; a short shared copy keeps those polls from exhausting
+# the connection pool (see DB_POOL_TIMEOUT in settings). Scheduled episodes
+# appear within this many seconds of their publish time.
+FEED_SERVER_CACHE_SECONDS = 60
 
 
 def get_feed_or_404(slug):
@@ -35,7 +41,12 @@ class PodcastFeedView(View):
 
     def get(self, request, slug):
         feed = get_feed_or_404(slug)
-        response = HttpResponse(rss.render_feed(feed), content_type="application/rss+xml; charset=utf-8")
+        key = f"podcast-feed:{feed.slug}"
+        body = cache.get(key)
+        if body is None:
+            body = rss.render_feed(feed)
+            cache.set(key, body, FEED_SERVER_CACHE_SECONDS)
+        response = HttpResponse(body, content_type="application/rss+xml; charset=utf-8")
         response["Cache-Control"] = f"public, max-age={FEED_CACHE_SECONDS}"
         return response
 
