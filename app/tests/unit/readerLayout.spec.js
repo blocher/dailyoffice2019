@@ -25,6 +25,26 @@ describe('reader layout', () => {
     expect(layout.windowW).toBe(layout.pageW);
   });
 
+  it('caps the page height at the window when the stage grew to fit the text', () => {
+    const layout = computeReaderLayout({
+      width: 393,
+      height: 31587,
+      fontSize: 24,
+      viewportHeight: 654,
+    });
+    expect(layout.sheetH).toBe(654 - 24);
+    expect(layout.pageH).toBeLessThan(654);
+    // A stage inside the window is untouched.
+    expect(
+      computeReaderLayout({
+        width: 393,
+        height: 600,
+        fontSize: 24,
+        viewportHeight: 654,
+      }).sheetH
+    ).toBe(600 - 24);
+  });
+
   it('opens a two-page spread on wide landscape screens', () => {
     const layout = computeReaderLayout({
       width: 1440,

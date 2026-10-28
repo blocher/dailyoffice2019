@@ -96,10 +96,6 @@ INSTALLED_APPS = [
     "bible",
     "meta",
     "office",
-    "djrichtextfield",
-    "taggit",
-    # "address",
-    "array_tags",
     "django_distill",
     "robots",
     "standrew",
@@ -259,17 +255,6 @@ JET_THEMES = [
     {"theme": "light-blue", "color": "#5EADDE", "title": "Light Blue"},
     {"theme": "light-gray", "color": "#222", "title": "Light Gray"},
 ]
-
-DJRICHTEXTFIELD_CONFIG = {
-    "js": ["//cdn.tinymce.com/4/tinymce.min.js"],
-    "init_template": "djrichtextfield/init/tinymce.js",
-    "settings": {
-        "menubar": True,
-        "toolbar": "formatselect | bold italic strikethrough forecolor backcolor permanentpen formatpainter | link image media pageembed | alignleft aligncenter alignright alignjustify  | numlist bullist outdent indent | removeformat | addcomment",
-        "width": "100%",
-        "height": 800,
-    },
-}
 
 GOOGLE_API_KEY = env("GOOGLE_API_KEY")
 GOOGLE_CUSTOM_SEARCH_ENGINE_KEY = env("GOOGLE_CUSTOM_SEARCH_ENGINE_KEY")

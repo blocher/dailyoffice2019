@@ -38,6 +38,25 @@ const EXTENSION_FILE =
 // Extension errors that arrive with no stack, so EXTENSION_FILE can't match.
 // The app itself never calls the extension messaging API.
 const EXTENSION_MESSAGE = /Invalid call to runtime\.sendMessage\(\)/i;
+// Our built page has one short inline script, wrapped in try/catch, so errors
+// whose every frame is in the page document itself come from a script the
+// browser or an extension injected (translation, reader and in-app browsers
+// on iOS): e.g. "Maximum call stack size exceeded" recursing between two
+// minified functions at line 400+ of /commemorations/<id>.
+function onlyInPageDocument(frames) {
+  let page;
+  try {
+    const { origin, pathname } = window.location;
+    page = origin + pathname;
+  } catch {
+    return false;
+  }
+  const stripped = (file) => String(file || '').split(/[?#]/)[0];
+  return (
+    frames.some((f) => stripped(f.file) === page) &&
+    frames.every((f) => !f.file || stripped(f.file) === page)
+  );
+}
 // A fetch() that never got a response (offline, dropped connection, blocker)
 // rejects with a bare TypeError: "Load failed" in Safari, "Failed to fetch" in
 // Chrome, "NetworkError ..." in Firefox. Vite's modulepreload polyfill (for
@@ -48,6 +67,14 @@ const EXTENSION_MESSAGE = /Invalid call to runtime\.sendMessage\(\)/i;
 // plugins) failing the same way may be an outage, so they are still reported.
 const BARE_NETWORK_FAILURE =
   /^TypeError: (Load failed|Failed to fetch|NetworkError when attempting to fetch resource\.?)$/i;
+// Safari's Reader (and similar page-rewriting tools) swap out the document's
+// DOM behind Vue's back, so its renderer finds a node gone and throws
+// "Cannot read properties of null (reading 'nextSibling')" from inside Vue.
+// The breadcrumbs then show the reader's own "reader.self" request. Nothing
+// in the app can prevent it, so drop it only when both signs are present.
+const VUE_DOM_DETACHED =
+  /^TypeError: Cannot read properties of null \(reading '(nextSibling|parentNode|insertBefore)'\)$/i;
+const READER_MODE_URL = /^https?:\/\/reader\.self\b/i;
 // Requests that never reached the server (offline, timed out, cancelled).
 const NETWORK_CODES = new Set(['ERR_NETWORK', 'ECONNABORTED', 'ERR_CANCELED']);
 
@@ -68,6 +95,13 @@ function lastFailedFetchWasOwnAsset(event) {
   }
 }
 
+/** Whether the page was being rewritten by a browser reader mode. */
+function inReaderMode(event) {
+  return (event.breadcrumbs || []).some((b) =>
+    READER_MODE_URL.test(b.metadata?.url || '')
+  );
+}
+
 /** Whether this report is noise to drop rather than a bug in the app. */
 export function isNoise(event) {
   const error = event.errors?.[0];
@@ -80,6 +114,7 @@ export function isNoise(event) {
     EXTENSION_MESSAGE.test(text)
   )
     return true;
+  if (VUE_DOM_DETACHED.test(text) && inReaderMode(event)) return true;
   const frames = error.stacktrace || [];
   if (
     BARE_NETWORK_FAILURE.test(text) &&
@@ -87,6 +122,7 @@ export function isNoise(event) {
     lastFailedFetchWasOwnAsset(event)
   )
     return true;
+  if (onlyInPageDocument(frames)) return true;
   if (frames.some((f) => EXTENSION_FILE.test(f.file || ''))) {
     return true;
   }

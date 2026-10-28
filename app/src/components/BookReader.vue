@@ -457,6 +457,7 @@ async function relayout() {
       height: innerHeight,
       fontSize,
       spread: spreadPref.value,
+      viewportHeight: window.visualViewport?.height || window.innerHeight,
     })
   );
   await nextTick();

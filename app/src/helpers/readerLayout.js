@@ -18,14 +18,20 @@ const PHONE_MAX = 639;
  * @param {number} options.width   stage width in px
  * @param {number} options.height  stage height in px
  * @param {number} options.fontSize reading font size in px
+ * @param {number} [options.viewportHeight] the window's height in px. The
+ *   reader fills the window, so a taller stage means the browser sized it to
+ *   its content (one 31,000px "page" on iOS in-app browsers); it is capped.
  * @param {'auto'|'single'|'spread'} [options.spread]
  */
 export function computeReaderLayout({
   width,
-  height,
+  height: stageHeight,
   fontSize,
   spread = 'auto',
+  viewportHeight,
 }) {
+  const height =
+    viewportHeight > 0 ? Math.min(stageHeight, viewportHeight) : stageHeight;
   const isPhone = width <= PHONE_MAX;
   // Phones show a little desk around the page too, so it reads as a book
   // lying open on a table.
