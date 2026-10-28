@@ -403,7 +403,6 @@ from website.api_urls import urlpatterns as api_urlpatterns
 urlpatterns = [
     # path("sermons", sermon_views.sermons, name="sermons"),
     # path("sermon/<uuid:id>", sermon_views.sermon, name="sermon"),
-    # path("djrichtextfild/", include("djrichtextfield.urls")),
     # path("jet/", include("jet.urls", "jet")),
     path("admin/", admin.site.urls),
     path("patrons/", include("patrons.urls")),
