@@ -186,6 +186,15 @@ describe('error reporting', () => {
           { errorClass: 'AxiosError', errorMessage: 'Network Error' },
           { isAxiosError: true, code: 'ERR_NETWORK' }
         ),
+        fakeEvent(
+          {
+            errorClass: 'TypeError',
+            errorMessage:
+              "Cannot read properties of null (reading 'nextSibling')",
+          },
+          new TypeError('x'),
+          [fetchError('https://reader.self')]
+        ),
         // A script injected into the page document, not our bundle.
         fakeEvent({
           errorClass: 'RangeError',
@@ -204,6 +213,16 @@ describe('error reporting', () => {
       expect(
         onError(
           fakeEvent({ errorClass: 'TypeError', errorMessage: 'x is undefined' })
+        )
+      ).toBe(true);
+      // The same Vue error without reader mode is a real bug.
+      expect(
+        onError(
+          fakeEvent({
+            errorClass: 'TypeError',
+            errorMessage:
+              "Cannot read properties of null (reading 'nextSibling')",
+          })
         )
       ).toBe(true);
       // A page-document frame next to one of our bundle's frames is ours.
