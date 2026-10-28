@@ -33,3 +33,6 @@ pnpm-debug.log*
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
+
+# Store videos and their simulator recordings (rebuild: node store/scripts/build-videos.mjs)
+store/video/
