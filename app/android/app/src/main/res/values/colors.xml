@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The leather of the 2019 Book of Common Prayer cover (store/scripts/build-icons.mjs). -->
+    <color name="splash_background">#8C1D22</color>
+</resources>

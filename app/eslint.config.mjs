@@ -86,6 +86,26 @@ export default [
     },
   },
 
+  // Unit tests run in jsdom, so they may use any browser global
+  {
+    files: ['tests/**/*.js'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+      },
+    },
+  },
+
+  // Node scripts that build the store assets
+  {
+    files: ['store/scripts/**/*.mjs'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
+
   // Files to ignore
   {
     ignores: [

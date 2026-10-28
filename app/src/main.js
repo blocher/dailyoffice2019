@@ -18,6 +18,7 @@ import { takeBookViewQuery } from './helpers/panels';
 import { createGtag, event } from 'vue-gtag';
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
 import { Capacitor } from '@capacitor/core';
+import { SplashScreen } from '@capacitor/splash-screen';
 
 // Stabilize viewport units on mobile browsers (notably iOS Chrome) where
 // the browser toolbars collapsing/expanding can cause fixed footers to “float”.
@@ -219,4 +220,11 @@ const bootstrap = async () => {
   app.mount('#app');
 };
 
-bootstrap();
+// The native apps keep the cover-art splash up until the first page renders
+// (capacitor.config.ts hides it after a few seconds regardless), so they
+// don't flash white while starting.
+bootstrap().finally(() => {
+  if (Capacitor.isNativePlatform()) {
+    SplashScreen.hide().catch(() => {});
+  }
+});

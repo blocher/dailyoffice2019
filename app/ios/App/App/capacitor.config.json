@@ -2,12 +2,23 @@
 	"appId": "com.dailyoffice.dailyoffice2019",
 	"appName": "daily_office",
 	"webDir": "dist",
+	"plugins": {
+		"SplashScreen": {
+			"launchShowDuration": 4000,
+			"launchAutoHide": true,
+			"launchFadeOutDuration": 250,
+			"backgroundColor": "#8c1d22",
+			"androidScaleType": "CENTER_CROP",
+			"showSpinner": false
+		}
+	},
 	"packageClassList": [
 		"FirebaseAnalyticsPlugin",
 		"AppPlugin",
 		"CAPBrowserPlugin",
 		"ClipboardPlugin",
 		"PreferencesPlugin",
-		"SharePlugin"
+		"SharePlugin",
+		"SplashScreenPlugin"
 	]
 }

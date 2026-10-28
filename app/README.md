@@ -56,38 +56,42 @@ separate terminal, then run `npm run capacitor:serve -- ios --live-reload --host
 
 ## Icons and splash screens
 
-Keep `@capacitor/assets` as development tooling. Native builds use the generated
-assets already committed to `ios/` and `android/`; regenerate only when source
-artwork in `assets/` changes, rather than during normal builds or deployments.
+The app icon is the gold Jerusalem cross of the 2019 prayer book's cover on
+oxblood leather, drawn as a vector in `store/scripts/build-icons.mjs`. That
+script writes every icon and splash screen from it:
 
-Generate in a disposable copy of the app with dependencies installed. Select
-one platform explicitly so native artwork changes do not also rewrite PWA assets:
 ```bash
-npm exec -- capacitor-assets generate --android
-npm exec -- capacitor-assets generate --ios
+node store/scripts/build-icons.mjs
 ```
-Inspect the output before copying it back: check every expected image exists,
-its dimensions, alpha/transparency, cropping, and appearance, along with asset
-catalog JSON and Android adaptive-icon XML. Review the diff and preview the
-affected platform before committing. The tool can log errors and still exit
-successfully, so its exit status alone is not sufficient validation.
 
-**Existing iOS regeneration limitation:** the current AppIcon catalog references
-some filenames more than once; version 3.0.5 attempts to delete those files twice
-and aborts. It also expects `Splash.imageset`, while this app uses
-`LaunchImage.imageset`. Do not regenerate directly over the committed iOS assets.
-An iOS catalog migration must preserve storyboard references and be checked in
-Xcode before replacing the existing catalogs. Normal native builds continue to
-use the committed assets without invoking this generator.
+- iOS: a single-size `AppIcon` (1024px) with dark and tinted appearances, and
+  the `Splash` launch image the launch storyboard and SplashScreen plugin use.
+- Android: adaptive icons (leather background, cross foreground, and a vector
+  monochrome layer for themed icons), legacy and round icons, the Android 12+
+  splash icon (`splash_icon`, on `@color/splash_background`), and full-screen
+  WebP splashes for older versions.
+- `assets/`: matching sources for `@capacitor/assets`, plus store icons and
+  Icon Composer layers in `store/icons/`.
 
-The package-scoped override pins only `@capacitor/assets`'s Sharp dependency to
-`0.35.5`, addressing its reported image-library vulnerabilities. On October 11,
-2026, isolated generation with this app's source artwork and compatible iOS test
-catalogs produced 41 images pixel-identical to Sharp 0.32.6, with matching dimensions,
-alpha channels, filenames, and Android XML. Both versions reproduced the same
-failure on the unmodified iOS catalog. Simulator/device appearance was not tested;
-no committed artwork or native catalogs were regenerated during this validation.
-Recheck the override when upstream publishes a dependency update.
+Review the diff and preview both platforms after changing the art. Keep
+`@capacitor/assets` as development tooling only; the build-icons script
+replaces its iOS output, which used to fail on this project's catalogs.
+
+The package-scoped override pins `@capacitor/assets`'s Sharp dependency to
+`0.35.5`, addressing its reported image-library vulnerabilities; the icon and
+store scripts use the same Sharp. Recheck the override when upstream publishes
+a dependency update.
+
+The native apps keep the splash up until the first page renders (`main.js`
+hides it; `capacitor.config.ts` hides it after four seconds regardless).
+
+## Store listings and release
+
+`store/` holds everything for the App Store and Google Play: listing text
+(`store/metadata/`, laid out for fastlane `deliver` and `supply`), framed
+screenshots for every required size, icons, the Play feature graphic, and the
+scripts that build them from real simulator captures. `store/RELEASE_GUIDE.md`
+walks through a release step by step.
 
 ## Email updates
 

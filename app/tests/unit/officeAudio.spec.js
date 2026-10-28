@@ -26,7 +26,10 @@ afterEach(() => {
 describe('fetchAudioTrack', () => {
   it('returns the track with one URL for every listener', async () => {
     const http = { get: vi.fn(() => ok({ single_track: [...TRACK] })) };
-    const track = await fetchAudioTrack(http, '/office?include_audio_links=true');
+    const track = await fetchAudioTrack(
+      http,
+      '/office?include_audio_links=true'
+    );
     // No per-client query, so Cloudflare can answer from its cache.
     expect(track[0]).toMatch(/\/api\/v1\/audio_track\/office\.mp3$/);
     expect(http.get).toHaveBeenCalledOnce();
