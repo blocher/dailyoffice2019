@@ -494,10 +494,14 @@ class DialogueSession:
                 with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as handle:
                     handle.write(audio)
                     temporary = handle.name
+                # mkstemp-style files are 0600; the web workers must read what a
+                # warm-up or management command (another user) published.
+                os.chmod(temporary, 0o644)
                 os.replace(temporary, path)
                 with tempfile.NamedTemporaryFile(mode="w", dir=path.parent, delete=False) as handle:
                     json.dump(cache_data if cache_data is not None else timing, handle)
                     temporary_metadata = handle.name
+                os.chmod(temporary_metadata, 0o644)
                 os.replace(temporary_metadata, sidecar)
                 rid = response.headers.get("request-id")
                 if rid:
