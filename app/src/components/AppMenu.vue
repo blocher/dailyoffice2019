@@ -45,7 +45,7 @@
 <script setup>
 import { computed, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { Browser } from '@capacitor/browser';
+import { openExternalLink } from '@/helpers/externalLink';
 import { Capacitor } from '@capacitor/core';
 import { openPanel, panels } from '@/helpers/panels';
 import { SessionStore } from '@/helpers/sessionStore';
@@ -70,7 +70,7 @@ function close() {
 
 async function openExternal(url) {
   close();
-  await Browser.open({ url });
+  await openExternalLink(url);
 }
 
 async function openCalendarSubscription() {
