@@ -228,11 +228,13 @@ import { markBookViewSeen } from '@/helpers/discovery';
 import { notifyOnce } from '@/helpers/errorReporting';
 import { openPanel, panels } from '@/helpers/panels';
 import {
+  canSwipeToClose,
   computeReaderLayout,
   countViews,
   pageOfOffset,
   pagesLeftInSection,
   resolvePageCount,
+  resumeBlockIndex,
   sectionForPage,
   viewOfPage,
 } from '@/helpers/readerLayout';
@@ -434,9 +436,37 @@ let layoutCheckTimer = null;
 // The first block on the current page, captured whenever the page changes,
 // before any reflow (text size, typeface, rotation) moves things around.
 let anchor = null;
+// Where the book was last left, so closing it by accident and opening it
+// again picks up on the same page: { key, index, count }.
+let lastPlace = null;
+
+function placeKey() {
+  return `${window.location.pathname}|${props.title}|${props.subtitle}`;
+}
 
 function rememberAnchor() {
   anchor = totalPages.value > 1 ? findAnchor() : null;
+  if (!anchor) return;
+  const all = blocks();
+  lastPlace = {
+    key: placeKey(),
+    index: all.indexOf(anchor),
+    count: all.length,
+  };
+}
+
+// Turn back to the block the book was left on, if the text is the same one.
+// Runs after the first layout, once the pages are measured.
+function restorePlace(saved) {
+  const all = blocks();
+  const index = resumeBlockIndex(saved, {
+    key: placeKey(),
+    count: all.length,
+  });
+  if (index === null) return;
+  anchor = all[index];
+  const page = pageOfOffset(anchor.offsetLeft, layout);
+  view.value = Math.min(viewCount.value - 1, viewOfPage(page, layout));
 }
 
 async function relayout() {
@@ -947,6 +977,7 @@ const drag = {
   progress: 0,
   bounce: false,
   closing: false,
+  canClose: false,
 };
 
 function isInteractive(target) {
@@ -969,6 +1000,7 @@ function onPointerDown(event) {
   drag.progress = 0;
   drag.bounce = false;
   drag.closing = false;
+  drag.canClose = canSwipeToClose(event.pointerType);
   cancelChromeFlash();
 }
 
@@ -976,8 +1008,14 @@ function onPointerMove(event) {
   if (drag.id !== event.pointerId) return;
   const dx = event.clientX - drag.x;
   const dy = event.clientY - drag.y;
-  // Swipe down to close, as with a sheet.
-  if (!drag.active && !drag.closing && dy > 12 && dy > Math.abs(dx) * 1.3) {
+  // Swipe down to close, as with a sheet (touch and pen only).
+  if (
+    drag.canClose &&
+    !drag.active &&
+    !drag.closing &&
+    dy > 12 &&
+    dy > Math.abs(dx) * 1.3
+  ) {
     drag.closing = true;
     hideChrome();
   }
@@ -1028,7 +1066,11 @@ async function onPointerUp(event) {
     return;
   }
   if (!drag.active) {
-    if (Math.abs(dx) < 10 && elapsed < 600) handleTap(event.clientX);
+    // A drag up or down (which a mouse can't use to close) isn't a tap.
+    const dy = event.clientY - drag.y;
+    if (Math.abs(dx) < 10 && Math.abs(dy) < 10 && elapsed < 600) {
+      handleTap(event.clientX);
+    }
     return;
   }
   // A drag that ends over a link shouldn't follow it.
@@ -1260,6 +1302,8 @@ function close() {
 }
 
 async function onOpen() {
+  // Read before anything below resets the page.
+  const resumeFrom = lastPlace;
   document.documentElement.classList.add('has-reader');
   markBookViewSeen();
   const [style, spread, seen] = await Promise.all([
@@ -1299,6 +1343,7 @@ async function onOpen() {
 
   await nextTick();
   await relayout();
+  if (props.open) restorePlace(resumeFrom);
   if (!hint.value) flashChrome();
   // Fonts can finish loading after the first layout.
   if (document.fonts?.ready) {

@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
+  canSwipeToClose,
   computeReaderLayout,
   countPages,
   countViews,
   pageOfOffset,
   pagesLeftInSection,
   resolvePageCount,
+  resumeBlockIndex,
   sectionForPage,
   viewOfPage,
 } from '@/helpers/readerLayout';
@@ -154,5 +156,34 @@ describe('reader layout', () => {
     expect(sectionForPage(4, sections).title).toBe('The Psalms');
     expect(pagesLeftInSection(2, sections, 9)).toBe(3);
     expect(pagesLeftInSection(7, sections, 9)).toBe(1);
+  });
+
+  it('lets a finger or pen swipe the book closed, but not a mouse', () => {
+    expect(canSwipeToClose('touch')).toBe(true);
+    expect(canSwipeToClose('pen')).toBe(true);
+    expect(canSwipeToClose('mouse')).toBe(false);
+    // Unknown pointer types keep the gesture.
+    expect(canSwipeToClose('')).toBe(true);
+  });
+
+  it('picks up where the same text was left, and only the same text', () => {
+    const saved = {
+      key: '/office/morning_prayer|Morning Prayer',
+      index: 42,
+      count: 300,
+    };
+    const same = { key: saved.key, count: 300 };
+    expect(resumeBlockIndex(saved, same)).toBe(42);
+    expect(resumeBlockIndex(null, same)).toBeNull();
+    expect(
+      resumeBlockIndex(saved, {
+        key: '/office/evening_prayer|Evening Prayer',
+        count: 300,
+      })
+    ).toBeNull();
+    // The text changed (e.g. a different reading length): start over.
+    expect(resumeBlockIndex(saved, { key: saved.key, count: 280 })).toBeNull();
+    expect(resumeBlockIndex({ ...saved, index: -1 }, same)).toBeNull();
+    expect(resumeBlockIndex({ ...saved, index: 300 }, same)).toBeNull();
   });
 });
