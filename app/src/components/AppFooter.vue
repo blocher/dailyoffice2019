@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-import { Browser } from '@capacitor/browser';
+import { openExternalLink } from '@/helpers/externalLink';
 import { Capacitor } from '@capacitor/core';
 import AHPLogo from '@/components/AHPLogo.vue';
 import DonationPrompt from '@/components/DonationPrompt.vue';
@@ -52,7 +52,7 @@ const links = {
 };
 
 async function open(url) {
-  await Browser.open({ url });
+  await openExternalLink(url);
 }
 </script>
 

@@ -80,7 +80,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { Browser } from '@capacitor/browser';
+import { openExternalLink } from '@/helpers/externalLink';
 import { discoveryState as discovery } from '@/helpers/discovery';
 import { openPanel, panels } from '@/helpers/panels';
 
@@ -143,7 +143,7 @@ function toggle(name) {
 }
 
 async function openSupport() {
-  await Browser.open({ url: 'https://ko-fi.com/dailyoffice' });
+  await openExternalLink('https://ko-fi.com/dailyoffice');
 }
 
 // Slide away while reading down the page; come back on any upward scroll.

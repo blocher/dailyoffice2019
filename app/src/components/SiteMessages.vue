@@ -43,7 +43,7 @@
 
 <script>
 import { App } from '@capacitor/app';
-import { Browser } from '@capacitor/browser';
+import { openExternalLink } from '@/helpers/externalLink';
 import { Capacitor } from '@capacitor/core';
 
 const PERMANENT_STORAGE_KEY = 'dismissedSiteMessages';
@@ -155,7 +155,7 @@ export default {
     async follow(message) {
       if (!message.link) return;
       if (this.isExternal(message.link)) {
-        await Browser.open({ url: message.link });
+        await openExternalLink(message.link);
       } else {
         await this.$router.push(message.link);
       }
