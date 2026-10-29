@@ -844,7 +844,9 @@ class ReadingModule(Module):
             text = Scripture.objects.get(passage=reading.short_citation)
             citation = reading.short_citation
 
-        text = getattr(text, translation)
+        # A passage missing in this translation falls back like the office readings.
+        text, _ = scripture_translation(text, translation)
+        text = text or ""
         text = self.remove_headings_if_needed(text)
         voice = GenericDailyOfficeSerializer.reading_voice(text)
         text = GenericDailyOfficeSerializer.handle_html(text, html=True, no_generate=True, voice=voice)
