@@ -139,3 +139,24 @@ export function pagesLeftInSection(page, sections, totalPages) {
   const end = next ? next.page : totalPages;
   return Math.max(0, end - page - 1);
 }
+
+/**
+ * Whether a drag from this kind of pointer may swipe the book closed. A
+ * finger or stylus swipes down to close, as with a sheet; a mouse doesn't,
+ * since a slightly heavy click and drag on a desktop shouldn't throw the
+ * reader out of the book. Mouse users have Done, the close button, and Escape.
+ */
+export function canSwipeToClose(pointerType) {
+  return pointerType !== 'mouse';
+}
+
+/**
+ * The block to reopen the book at, given where it was last left. Only the
+ * same text (same key, same number of blocks) picks up where it left off;
+ * anything else starts from the beginning. Returns a block index or null.
+ */
+export function resumeBlockIndex(saved, { key, count }) {
+  if (!saved || saved.key !== key || saved.count !== count) return null;
+  if (!Number.isInteger(saved.index) || saved.index < 0) return null;
+  return saved.index < count ? saved.index : null;
+}
