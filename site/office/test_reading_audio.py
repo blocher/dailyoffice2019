@@ -305,8 +305,7 @@ class ReadingAudioCompletenessTests(SimpleTestCase):
 
 
 class MassReadingMissingTextTests(SimpleTestCase):
-    def test_passage_without_text_in_translation_renders_empty(self):
-        """A Scripture row with no text for the translation must not raise."""
+    def mass_reading_lines(self, scripture):
         reading = SimpleNamespace(
             long_citation="Isa 1:1",
             short_citation="Isa 1:1",
@@ -323,9 +322,19 @@ class MassReadingMissingTextTests(SimpleTestCase):
             closing_response=lambda testament: "Thanks be to God.",
         )
         with (
-            patch.object(index.Scripture.objects, "get", return_value=SimpleNamespace(esv=None)),
+            patch.object(index.Scripture.objects, "get", return_value=scripture),
             patch.object(index.GenericDailyOfficeSerializer, "reading_voice", return_value=None),
             patch.object(index, "passage_to_citation", return_value="Isaiah 1:1"),
         ):
-            lines = index.ReadingModule.get_mass_reading_lines(view, reading)
+            return index.ReadingModule.get_mass_reading_lines(view, reading)
+
+    def test_passage_without_text_in_translation_falls_back(self):
+        """A passage missing in the chosen translation shows the fallback translation."""
+        lines = self.mass_reading_lines(SimpleNamespace(esv=None, nrsvce="<p>The vision of Isaiah.</p>"))
+        html = [line["content"] for line in lines if line["line_type"] == "html"]
+        self.assertTrue(any("The vision of Isaiah." in content for content in html))
+
+    def test_passage_without_text_in_any_translation_renders_empty(self):
+        """A Scripture row with no text in any translation must not raise."""
+        lines = self.mass_reading_lines(SimpleNamespace(esv=None, nrsvce=None))
         self.assertTrue(lines)
