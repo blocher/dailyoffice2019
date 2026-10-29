@@ -302,3 +302,30 @@ class ReadingAudioCompletenessTests(SimpleTestCase):
                     )
                     for path, original in preserved.items():
                         self.assertEqual(path.read_bytes(), original)
+
+
+class MassReadingMissingTextTests(SimpleTestCase):
+    def test_passage_without_text_in_translation_renders_empty(self):
+        """A Scripture row with no text for the translation must not raise."""
+        reading = SimpleNamespace(
+            long_citation="Isa 1:1",
+            short_citation="Isa 1:1",
+            short_text=False,
+            testament="OT",
+        )
+        view = SimpleNamespace(
+            bible_translation="esv",
+            language="en",
+            office=SimpleNamespace(settings={"reading_length": "full", "reading_headings": "on"}),
+            remove_headings_if_needed=lambda text: text,
+            audio=lambda citation, testament: None,
+            closing=lambda testament: "The Word of the Lord.",
+            closing_response=lambda testament: "Thanks be to God.",
+        )
+        with (
+            patch.object(index.Scripture.objects, "get", return_value=SimpleNamespace(esv=None)),
+            patch.object(index.GenericDailyOfficeSerializer, "reading_voice", return_value=None),
+            patch.object(index, "passage_to_citation", return_value="Isaiah 1:1"),
+        ):
+            lines = index.ReadingModule.get_mass_reading_lines(view, reading)
+        self.assertTrue(lines)
