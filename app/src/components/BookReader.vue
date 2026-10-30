@@ -1080,6 +1080,8 @@ function onClickCapture(event) {
 function handleTap(clientX) {
   const selection = window.getSelection?.();
   if (selection && String(selection).trim()) return;
+  // The reader can close between pointerup and the tap, unmounting the stage.
+  if (!stage.value) return;
   const rect = stage.value.getBoundingClientRect();
   const position = (clientX - rect.left) / rect.width;
   const edge = position < 0.3 || position > 0.7;
