@@ -220,6 +220,13 @@
   </UiSheet>
 </template>
 
+<script>
+// Where the book was last left, so closing it by accident and opening it
+// again picks up on the same page: { key, index, count }. Kept outside the
+// component so it outlasts the page being rebuilt; the key says which text.
+let lastPlace = null;
+</script>
+
 <script setup>
 import { computed, nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue';
 import { pauseOfficeAudio } from '@/helpers/audioTrack';
@@ -436,10 +443,6 @@ let layoutCheckTimer = null;
 // The first block on the current page, captured whenever the page changes,
 // before any reflow (text size, typeface, rotation) moves things around.
 let anchor = null;
-// Where the book was last left, so closing it by accident and opening it
-// again picks up on the same page: { key, index, count }.
-let lastPlace = null;
-
 function placeKey() {
   return `${window.location.pathname}|${props.title}|${props.subtitle}`;
 }

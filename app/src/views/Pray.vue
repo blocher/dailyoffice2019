@@ -33,7 +33,9 @@ export default {
     };
   },
   watch: {
-    $route(to) {
+    $route(to, from) {
+      // Back closing the book view lands on the same address; nothing changes.
+      if (from && to.fullPath === from.fullPath) return;
       if (to.params.serviceType) {
         this.serviceType = to.params.serviceType;
       } else {

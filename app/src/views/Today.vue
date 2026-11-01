@@ -40,7 +40,10 @@ export default {
   },
 
   watch: {
-    $route(to) {
+    $route(to, from) {
+      // Back closing the book view lands on the same address. Rebuilding the
+      // office then would reload it and lose the reader's place.
+      if (from && to.fullPath === from.fullPath) return;
       if (to.params.serviceType) {
         if (['office', 'family'].includes(to.params.serviceType)) {
           this.currentServiceType = to.params.serviceType;
