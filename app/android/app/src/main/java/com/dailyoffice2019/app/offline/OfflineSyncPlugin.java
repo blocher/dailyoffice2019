@@ -31,7 +31,7 @@ import org.json.JSONObject;
  *
  * <pre>
  * schedule({ plan, contentVersion, invalidations, fetched, audio })  -> { scheduled }
- * drain({ limit })  -> { entries, remaining, contentVersion, invalidations, audio, lastRunAt }
+ * drain({ limit })  -> { entries, remaining, contentVersion, invalidations, audio, lastRunAt, pendingAudio }
  * ack({ keys, invalidationsThrough, audio })
  * runNow()  (for testing: one run as soon as there is a connection)
  * </pre>

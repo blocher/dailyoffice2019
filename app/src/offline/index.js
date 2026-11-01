@@ -219,7 +219,7 @@ export function installOffline({ store }) {
         await ready;
         const drained = await drainInbox();
         if (network.online) syncIfDue('resume');
-        if (drained) refreshReadiness();
+        if (drained) refreshReadiness().catch(() => {});
       })
     ).catch(() => {});
   }

@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -142,11 +143,27 @@ public final class OfflineSyncStore {
 
     public boolean hasPlan() {
         synchronized (LOCK) {
-            JSONObject plan = read("state.json").optJSONObject("plan");
-            JSONArray tasks = plan == null ? null : plan.optJSONArray("tasks");
-            return tasks != null && tasks.length() > 0;
+            return planned(read("state.json"));
         }
     }
+
+    /** Whether tracks are wanted: a plan, with audio on. */
+    public boolean wantsAudio() {
+        synchronized (LOCK) {
+            JSONObject state = read("state.json");
+            JSONObject audio = state.optJSONObject("audio");
+            return planned(state) && audio != null && audio.optBoolean("enabled", false);
+        }
+    }
+
+    private static boolean planned(JSONObject state) {
+        JSONObject plan = state.optJSONObject("plan");
+        JSONArray tasks = plan == null ? null : plan.optJSONArray("tasks");
+        return tasks != null && tasks.length() > 0;
+    }
+
+    /** Track URLs the worker is downloading now (drain tells the page, so it doesn't too). */
+    public final Set<String> pendingAudio = ConcurrentHashMap.newKeySet();
 
     public JSONObject state() {
         synchronized (LOCK) {
@@ -201,6 +218,7 @@ public final class OfflineSyncStore {
                 }
                 write("learned.json", learned);
                 write("index.json", new JSONObject());
+                removePartials();
                 return;
             }
             JSONObject index = fetched;
@@ -221,15 +239,13 @@ public final class OfflineSyncStore {
         }
     }
 
-    public void setIndex(String key, double fetchedAt) {
-        synchronized (LOCK) {
-            JSONObject index = read("index.json");
-            try {
-                index.put(key, fetchedAt);
-            } catch (JSONException ignored) {
-                return;
-            }
-            write("index.json", index);
+    /** Temporary track downloads (the page's .part, the worker's .native-part). */
+    private void removePartials() {
+        File[] partials = audioDirectory.listFiles((dir, name) -> name.endsWith(".part") || name.endsWith(".native-part"));
+        if (partials == null) return;
+        for (File partial : partials) {
+            //noinspection ResultOfMethodCallIgnored
+            partial.delete();
         }
     }
 
@@ -259,7 +275,7 @@ public final class OfflineSyncStore {
         String path = track.optString("path", null);
         if (url == null || path == null) return false;
         synchronized (LOCK) {
-            if (!hasPlan() || !new File(audioDirectory.getParentFile(), path).exists()) return false;
+            if (!wantsAudio() || !new File(audioDirectory.getParentFile(), path).exists()) return false;
             JSONObject learned = read("learned.json");
             JSONArray list = learned.optJSONArray("audio");
             JSONArray kept = new JSONArray();
@@ -295,11 +311,23 @@ public final class OfflineSyncStore {
 
     // The inbox
 
+    /**
+     * Write one downloaded answer, whole or not at all, and index it at its fetchedAt. Not once the
+     * downloads were removed (checked in the same step, so a run under way can't put one back).
+     */
     public boolean putInbox(JSONObject entry) {
         String key = entry.optString("key", null);
         if (key == null) return false;
         synchronized (LOCK) {
-            return writeText(inboxFile(key), entry.toString());
+            if (!hasPlan() || !writeText(inboxFile(key), entry.toString())) return false;
+            JSONObject index = read("index.json");
+            try {
+                index.put(key, entry.optDouble("fetchedAt", 0));
+            } catch (JSONException ignored) {
+                return true;
+            }
+            write("index.json", index);
+            return true;
         }
     }
 
@@ -325,6 +353,7 @@ public final class OfflineSyncStore {
             result.put("invalidations", learned.has("invalidations") ? learned.get("invalidations") : new JSONArray());
             result.put("audio", learned.has("audio") ? learned.get("audio") : new JSONArray());
             result.put("lastRunAt", learned.has("lastRunAt") ? learned.get("lastRunAt") : JSONObject.NULL);
+            result.put("pendingAudio", new JSONArray(pendingAudio));
             return result;
         }
     }

@@ -145,7 +145,11 @@ describe('a sync run', () => {
 
   it('marks downloads from before the first check as out of date', async () => {
     offlinePrefs.audio = false;
-    await storeEntry('psalms', { kind: 'reference' }, '/api/v1/psalms', []);
+    // Downloaded a moment before the check (a note in the same millisecond
+    // wouldn't be later than it).
+    await storeEntry('psalms', { kind: 'reference' }, '/api/v1/psalms', [], {
+      fetchedAt: Date.now() - 1000,
+    });
     answer({ audio: trackFor });
     await requestSync('manual');
     expect(await db.meta.get('invalidations')).toEqual([

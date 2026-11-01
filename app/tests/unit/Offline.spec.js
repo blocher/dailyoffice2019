@@ -372,6 +372,22 @@ describe('the offline-aware adapter', () => {
     ).rejects.toMatchObject({ isOffline: true });
   });
 
+  it('keeps a one-off failure an error, not offline', async () => {
+    // Well after the other tests' failures (two within 20 s would mean the
+    // API can't be reached).
+    vi.spyOn(Date, 'now').mockReturnValue(Date.now() + 60 * 1000);
+    const timeout = Object.assign(new Error('timeout'), {
+      code: 'ECONNABORTED',
+    });
+    const error = await handle(
+      officeConfig(),
+      vi.fn().mockRejectedValue(timeout)
+    ).catch((e) => e);
+    vi.restoreAllMocks();
+    expect(error).toBe(timeout);
+    expect(network.online).toBe(true);
+  });
+
   it('still tries the network for what is not stored while requests fail', async () => {
     reportUnreachable();
     expect(network.online).toBe(false);

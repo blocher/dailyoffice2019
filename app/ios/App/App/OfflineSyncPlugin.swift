@@ -16,7 +16,8 @@ import Foundation
 /// The page calls:
 ///
 ///     schedule({ plan, contentVersion, invalidations, fetched, audio })  -> { scheduled }
-///     drain({ limit })  -> { entries, remaining, contentVersion, invalidations, audio, lastRunAt }
+///     drain({ limit })  -> { entries, remaining, contentVersion, invalidations, audio, lastRunAt,
+///                           pendingAudio (track URLs still downloading) }
 ///     ack({ keys, invalidationsThrough, audio })
 ///     runNow()  -> { finished }  (for testing: one run now, in the foreground)
 ///
@@ -47,8 +48,8 @@ public class OfflineSyncPlugin: CAPPlugin, CAPBridgedPlugin {
         ]
         let fetched = call.options["fetched"] as? [String: Any] ?? [:]
         OfflineSyncStore.shared.saveSchedule(state: state, fetched: fetched)
-        if !OfflineSyncStore.shared.hasPlan {
-            // Downloads removed (or turned off): stop the tracks on their way too.
+        if !OfflineSyncStore.shared.wantsAudio {
+            // Downloads removed, or audio turned off: stop the tracks on their way too.
             OfflineAudioDownloads.shared.cancelAll()
         }
         if let error = Self.scheduleNext() {
@@ -60,7 +61,12 @@ public class OfflineSyncPlugin: CAPPlugin, CAPBridgedPlugin {
 
     @objc func drain(_ call: CAPPluginCall) {
         let limit = max(1, call.getInt("limit") ?? 20)
-        call.resolve(OfflineSyncStore.shared.drain(limit: limit))
+        var result = OfflineSyncStore.shared.drain(limit: limit)
+        // Tracks still on their way, so the page doesn't download them too.
+        OfflineAudioDownloads.shared.pendingTracks { pending in
+            result["pendingAudio"] = pending
+            call.resolve(result)
+        }
     }
 
     @objc func ack(_ call: CAPPluginCall) {
@@ -190,10 +196,21 @@ final class OfflineSyncStore {
     }
 
     var hasPlan: Bool {
-        queue.sync {
-            let plan = read("state.json")["plan"] as? [String: Any]
-            return !((plan?["tasks"] as? [Any]) ?? []).isEmpty
-        }
+        queue.sync { planned(read("state.json")) }
+    }
+
+    /// Whether tracks are wanted: a plan, with audio on.
+    var wantsAudio: Bool {
+        queue.sync { audioWanted(read("state.json")) }
+    }
+
+    private func planned(_ state: [String: Any]) -> Bool {
+        let plan = state["plan"] as? [String: Any]
+        return !((plan?["tasks"] as? [Any]) ?? []).isEmpty
+    }
+
+    private func audioWanted(_ state: [String: Any]) -> Bool {
+        planned(state) && (state["audio"] as? [String: Any])?["enabled"] as? Bool == true
     }
 
     func state() -> [String: Any] {
@@ -266,7 +283,7 @@ final class OfflineSyncStore {
     @discardableResult
     func learnTrack(_ track: [String: Any], generation: Int) -> Bool {
         queue.sync {
-            guard generation == clearCount else { return false }
+            guard generation == clearCount, audioWanted(read("state.json")) else { return false }
             appendTrack(track)
             return true
         }
@@ -276,8 +293,7 @@ final class OfflineSyncStore {
     /// after `generation`. One step, so removing the downloads can't miss the file.
     func fileTrack(from location: URL, name: String, track: [String: Any], generation: Int) -> Bool {
         queue.sync {
-            guard generation == clearCount, !(((read("state.json")["plan"] as? [String: Any])?["tasks"] as? [Any]) ?? []).isEmpty
-            else { return false }
+            guard generation == clearCount, audioWanted(read("state.json")) else { return false }
             let file = audioDirectory.appendingPathComponent(name)
             do {
                 try fileManager.createDirectory(at: audioDirectory, withIntermediateDirectories: true)
@@ -672,8 +688,11 @@ final class OfflineAudioDownloads: NSObject, URLSessionDownloadDelegate {
     static let shared = OfflineAudioDownloads()
     static let identifier = "com.dailyoffice.dailyoffice2019.offline-audio"
 
-    /// iOS's handler from a relaunch to finish downloads: called once they're filed.
-    var backgroundCompletion: (() -> Void)?
+    /// iOS's handler from a relaunch to finish downloads: called once they're filed. Main thread.
+    private var backgroundCompletion: (() -> Void)?
+    /// The session delivered its events before iOS handed over the handler (the session opens at
+    /// launch, before handleEventsForBackgroundURLSession). Main thread.
+    private var eventsFinished = false
 
     /// Made once, with `shared` (whose creation Swift makes thread-safe): iOS allows one session per
     /// identifier.
@@ -704,8 +723,31 @@ final class OfflineAudioDownloads: NSObject, URLSessionDownloadDelegate {
         task.resume()
     }
 
+    /// From AppDelegate's handleEventsForBackgroundURLSession, on the main thread.
+    func handleEvents(completion: @escaping () -> Void) {
+        if eventsFinished {
+            eventsFinished = false
+            completion()
+        } else {
+            backgroundCompletion = completion
+        }
+    }
+
     func cancelAll() {
         session.getAllTasks { tasks in tasks.forEach { $0.cancel() } }
+    }
+
+    /// The track URLs still downloading.
+    func pendingTracks(_ done: @escaping ([String]) -> Void) {
+        session.getAllTasks { tasks in
+            done(tasks.compactMap { task in
+                guard task.state == .running || task.state == .suspended,
+                      let description = task.taskDescription?.data(using: .utf8),
+                      let track = (try? JSONSerialization.jsonObject(with: description)) as? [String: Any]
+                else { return nil }
+                return track["url"] as? String
+            })
+        }
     }
 
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
@@ -735,8 +777,12 @@ final class OfflineAudioDownloads: NSObject, URLSessionDownloadDelegate {
 
     func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
         DispatchQueue.main.async {
-            self.backgroundCompletion?()
-            self.backgroundCompletion = nil
+            if let completion = self.backgroundCompletion {
+                self.backgroundCompletion = nil
+                completion()
+            } else {
+                self.eventsFinished = true
+            }
         }
     }
 }

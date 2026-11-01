@@ -263,6 +263,32 @@ function monthEnd(isoFirst) {
   return `${isoFirst.slice(0, 8)}${String(last).padStart(2, '0')}`;
 }
 
+// Keep the change list to 50 notes by folding the oldest together, as
+// src/offline/staleness.js does: dropping one would unmark what it marked.
+function fold(list, max = 50) {
+  if (list.length <= max) return list;
+  const folded = list.slice(0, list.length - max + 1);
+  const merged = [];
+  folded
+    .flatMap((item) => item.dates || [])
+    .sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
+    .forEach(([first, last]) => {
+      const previous = merged[merged.length - 1];
+      if (previous && first <= previous[1]) {
+        if (last > previous[1]) previous[1] = last;
+      } else {
+        merged.push([first, last]);
+      }
+    });
+  const note = {
+    at: Math.max(...folded.map((item) => item.at)),
+    all: folded.some((item) => item.all),
+    urgent: folded.some((item) => item.all && item.urgent),
+    dates: merged,
+  };
+  return [note, ...list.slice(list.length - max + 1)];
+}
+
 // Same rule as src/offline/staleness.js.
 function staleness(record, invalidations) {
   let result = null;
@@ -309,7 +335,7 @@ async function backgroundRefresh() {
         !since &&
         (await run(db, 'responses', 'readonly', (store) => store.count())) > 0;
       if (unknown || (since && (summary.all || summary.dates?.length))) {
-        invalidations = [
+        invalidations = fold([
           ...invalidations,
           {
             at: Date.now(),
@@ -317,7 +343,7 @@ async function backgroundRefresh() {
             urgent: !unknown && Boolean(summary.urgent),
             dates: unknown ? [] : summary.dates || [],
           },
-        ].slice(-50);
+        ]);
         await run(db, 'meta', 'readwrite', (store) =>
           store.put(invalidations, 'invalidations')
         );

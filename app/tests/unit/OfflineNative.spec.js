@@ -184,7 +184,11 @@ describe('the background inbox', () => {
   });
 
   it('leaves entries in the inbox when storage is full', async () => {
-    const put = vi.spyOn(db, 'put').mockRejectedValueOnce(new Error('full'));
+    const put = vi
+      .spyOn(db, 'put')
+      .mockRejectedValueOnce(
+        Object.assign(new Error('full'), { name: 'QuotaExceededError' })
+      );
     plugin.drain.mockResolvedValueOnce(
       inbox([entry(KEY, 1), entry('calendar/2026-11-2', 2)], { remaining: 3 })
     );

@@ -38,7 +38,8 @@ export function takePanelQuery(to, from) {
   const name = to.query.panel;
   if (!name) return null;
   if (Object.hasOwn(panels, name)) openPanel(name);
-  if (to.redirectedFrom && from.matched.length) return false;
+  if (to.redirectedFrom?.path === '/offline' && from.matched.length)
+    return false;
   const query = { ...to.query };
   delete query.panel;
   return { path: to.path, query, hash: to.hash, replace: true };

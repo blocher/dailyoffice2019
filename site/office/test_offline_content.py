@@ -90,12 +90,13 @@ class ChangesSinceTests(TestCase):
         self.assertTrue(summary["all"])
         self.assertTrue(summary["urgent"])
 
-    def test_too_many_entries_refresh_everything_at_once(self):
+    def test_many_soft_edits_stay_soft_and_keep_their_dates(self):
         first = offline_content.record_change(start_date=datetime.date(2026, 12, 1))
-        for _ in range(offline_content.MAX_ENTRIES + 1):
+        for _ in range(250):
             offline_content.record_change()
         summary = offline_content.changes_since(first.id - 1)
-        self.assertEqual((summary["all"], summary["urgent"]), (True, True))
+        self.assertEqual((summary["all"], summary["urgent"]), (True, False))
+        self.assertEqual(summary["dates"], [["2026-12-01", "2026-12-01"]])
 
     def test_reversed_dates_are_put_in_order(self):
         change = offline_content.record_change(

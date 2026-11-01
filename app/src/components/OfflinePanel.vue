@@ -538,7 +538,12 @@ async function removeDownloads() {
     tone: 'danger',
   });
   if (!ok) return;
-  await clearDownloads();
+  try {
+    await clearDownloads();
+  } catch {
+    toast.error('Some downloads couldn’t be removed. Try again.');
+    return;
+  }
   toast.success('Downloads removed from this device.');
 }
 </script>

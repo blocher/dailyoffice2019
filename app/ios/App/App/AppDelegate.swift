@@ -60,8 +60,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             completionHandler()
             return
         }
-        OfflineAudioDownloads.shared.backgroundCompletion = completionHandler
-        OfflineAudioDownloads.shared.reconnect()
+        OfflineAudioDownloads.shared.handleEvents(completion: completionHandler)
     }
 
     // The window, and links that open the app, belong to the scene now (SceneDelegate.swift).

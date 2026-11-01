@@ -273,7 +273,6 @@ public class OfflineSyncWorker extends Worker {
             entry.put("fetchedAt", fetchedAt);
             entry.put("body", text);
             if (!store.putInbox(entry)) return null;
-            store.setIndex(key, fetchedAt);
             fetched += 1;
             return body;
         } catch (JSONException error) {
@@ -338,7 +337,16 @@ public class OfflineSyncWorker extends Worker {
             // A file at its final name is whole: the page and saveTrack both download to a
             // temporary name and rename it once complete.
             boolean downloaded = !file.exists();
-            if (downloaded && !saveTrack(track, file)) continue;
+            if (downloaded) {
+                store.pendingAudio.add(track);
+                boolean saved;
+                try {
+                    saved = saveTrack(track, file);
+                } finally {
+                    store.pendingAudio.remove(track);
+                }
+                if (!saved) continue;
+            }
             JSONObject item = new JSONObject();
             try {
                 item.put("url", track);

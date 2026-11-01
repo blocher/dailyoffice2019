@@ -10,6 +10,7 @@ function setup() {
     routes: [
       { path: '/', component: page },
       { path: '/settings', component: page },
+      { path: '/old-settings', redirect: '/settings' },
       {
         path: '/offline',
         redirect: { path: '/', query: { panel: 'offline' } },
@@ -46,6 +47,14 @@ describe('a link to a panel', () => {
     await router.push('/settings?panel=offline&x=1');
     expect(router.currentRoute.value.fullPath).toBe('/settings?x=1');
     expect(panels.offline).toBe(true);
+  });
+
+  it('follows other redirects as usual', async () => {
+    const router = setup();
+    await router.push('/');
+    await router.push('/old-settings?panel=feedback');
+    expect(router.currentRoute.value.fullPath).toBe('/settings');
+    expect(panels.feedback).toBe(true);
   });
 
   it('ignores names that are not panels', async () => {

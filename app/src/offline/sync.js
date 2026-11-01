@@ -76,7 +76,12 @@ import {
   trackKey,
 } from './audio';
 import { resolveAudioUrl } from '@/helpers/officeAudio';
-import { drainInbox, scheduleBackground } from './native';
+import {
+  drainInbox,
+  drainSettled,
+  nativePendingAudio,
+  scheduleBackground,
+} from './native';
 
 const CONCURRENCY = 2;
 const REQUEST_TIMEOUT_MS = 45000;
@@ -384,6 +389,7 @@ async function syncAudio(context, current, today, signal) {
   const unresolved = new Set();
   let finished = true;
   let full = false;
+  let waitingForNative = false;
   const state = syncState.audio;
   state.preparing = 0;
   state.ready = 0;
@@ -421,6 +427,11 @@ async function syncAudio(context, current, today, signal) {
       if (!raw) continue;
       track = trackKey(resolveAudioUrl(raw));
       keep.add(track);
+      if (nativePendingAudio().has(track)) {
+        // The apps' background run is downloading it: take it from there.
+        waitingForNative = true;
+        continue;
+      }
       if (!(await hasTrack(track))) {
         syncState.current = `Audio: ${item.office.replace(/_/g, ' ')}`;
         await saveTrack(
@@ -454,7 +465,8 @@ async function syncAudio(context, current, today, signal) {
     state.bytes = summary.bytes;
   }
   state.active = false;
-  if (state.preparing && current === runId) scheduleAudioRetry();
+  if ((state.preparing || waitingForNative) && current === runId)
+    scheduleAudioRetry();
   return full;
 }
 
@@ -821,12 +833,20 @@ async function removeEverything() {
 export async function clearDownloads() {
   endRun();
   queued = null;
-  await removeEverything();
+  // The apps' background downloads first, so a drain can't move them back
+  // in after the clear; and wait for one already moving them.
+  await scheduleBackground(null);
+  await drainSettled();
+  let failure = null;
+  try {
+    await removeEverything();
+    await db.meta.set('plan', null);
+  } catch (error) {
+    failure = error;
+  }
   // A run's last downloads can land after the clear: clear again once it
   // has stopped.
   if (running) running.then(removeEverything).catch(() => {});
-  await db.meta.set('plan', null);
-  await scheduleBackground(null);
   syncState.storageBytes = 0;
   syncState.readyDays = 0;
   syncState.readyThrough = null;
@@ -834,4 +854,7 @@ export async function clearDownloads() {
   syncState.audio.ready = 0;
   syncState.status = 'idle';
   syncState.current = '';
+  // The page says it didn't work (the Offline panel); the next run
+  // measures what is left.
+  if (failure) throw failure;
 }

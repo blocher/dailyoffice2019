@@ -13,6 +13,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="analyticsevent",
             name="view_id",
-            field=models.CharField(blank=True, db_index=True, default="", max_length=40),
+            field=models.CharField(blank=True, default="", max_length=40),
+        ),
+        # Unique where set (only offline views have one), so the index stays
+        # small on this busy table.
+        migrations.AddConstraint(
+            model_name="analyticsevent",
+            constraint=models.UniqueConstraint(
+                condition=models.Q(("view_id", ""), _negated=True),
+                fields=("view_id",),
+                name="analytics_event_unique_view_id",
+            ),
         ),
     ]

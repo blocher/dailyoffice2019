@@ -50,6 +50,14 @@ export const nativeSyncState = reactive({
   drained: 0,
 });
 
+// Tracks the background run is still downloading, as of the last drain: the
+// page leaves them to it rather than download them a second time.
+let pendingAudio = new Set();
+
+export function nativePendingAudio() {
+  return pendingAudio;
+}
+
 export function nativeSyncAvailable() {
   return (
     Capacitor.isNativePlatform() && Capacitor.isPluginAvailable('OfflineSync')
@@ -186,6 +194,9 @@ async function drain() {
   let stored = 0;
   for (let round = 0; round < MAX_DRAIN_ROUNDS; round += 1) {
     const result = (await OfflineSync.drain({ limit: DRAIN_BATCH })) || {};
+    pendingAudio = new Set(
+      Array.isArray(result.pendingAudio) ? result.pendingAudio : []
+    );
     const learned = await mergeLearned(result);
     const keys = [];
     let full = false;
@@ -205,6 +216,11 @@ async function drain() {
 }
 
 let draining = null;
+
+// Resolves once any drain under way has finished.
+export function drainSettled() {
+  return draining || Promise.resolve(0);
+}
 
 /*
   Move what the background task downloaded into storage. Resolves to the

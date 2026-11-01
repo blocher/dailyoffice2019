@@ -25,10 +25,6 @@ IGNORED_MODELS = {
     ("office", "updatenotice"),
 }
 
-# More entries than this after a version: the device refreshes everything,
-# rather than reading a long list.
-MAX_ENTRIES = 200
-
 # Entries are kept this long: longer than any device keeps a download (60
 # days ahead). A device that last synced before the oldest one refreshes
 # everything (changes_since).
@@ -111,23 +107,19 @@ def changes_since(since):
         # is unknown, so everything is out of date.
         summary.update({"all": True, "urgent": True})
         return summary
-    entries = list(
-        ContentChange.objects.filter(id__gt=since)
-        .order_by("id")
-        .values("start_date", "end_date", "urgent")[: MAX_ENTRIES + 1]
-    )
-    if len(entries) > MAX_ENTRIES:
-        # Too many to list: the dated ones would be lost in a soft "all", so
-        # refresh everything at once, as for removed entries above.
-        summary.update({"all": True, "urgent": True})
-        return summary
-    ranges = []
-    for entry in entries:
-        if not entry["start_date"]:
-            summary["all"] = True
-            summary["urgent"] = summary["urgent"] or entry["urgent"]
-            continue
-        ranges.append((entry["start_date"], entry["end_date"] or entry["start_date"]))
+    # However many entries there are (a long admin session writes one per
+    # save), the answer stays small: two flags, and the dated ranges merged.
+    entries = ContentChange.objects.filter(id__gt=since)
+    every_date = entries.filter(start_date__isnull=True)
+    summary["all"] = every_date.exists()
+    summary["urgent"] = summary["all"] and every_date.filter(urgent=True).exists()
+    ranges = [
+        (start, end or start)
+        for start, end in entries.filter(start_date__isnull=False)
+        .order_by()
+        .values_list("start_date", "end_date")
+        .distinct()
+    ]
     summary["dates"] = [[start.isoformat(), end.isoformat()] for start, end in merge_ranges(ranges)]
     return summary
 

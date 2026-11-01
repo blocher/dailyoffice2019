@@ -263,8 +263,8 @@ export async function readEntry(key) {
 
 // `fetchedAt` is when the answer was asked for (a change noted while it was
 // on its way may not be in it), or downloaded in the apps' background
-// (native.js); `bytes` its size, when known. Resolves to null when it
-// couldn't be stored (storage full).
+// (native.js); `bytes` its size, when known. Resolves to null when storage
+// is full; rejects when storage fails otherwise.
 export async function storeEntry(
   key,
   info,
@@ -285,8 +285,8 @@ export async function storeEntry(
   };
   try {
     await db.put('responses', record);
-  } catch {
-    // Storage full: the page still gets its answer.
+  } catch (error) {
+    if (error?.name !== 'QuotaExceededError') throw error;
     return null;
   }
   const summary = summaryOf(record);
@@ -358,7 +358,8 @@ function refreshBehind(networkAdapter, config, key, info, url, query) {
   const askedAt = Date.now();
   const promise = callNetwork(networkAdapter, config)
     .then(async (response) => {
-      await keep(key, info, url, response, askedAt);
+      // Not storing it isn't a lost connection (below).
+      await keep(key, info, url, response, askedAt).catch(() => {});
     })
     .catch((error) => {
       // The view still happened; count it once the app is online again.
@@ -430,10 +431,13 @@ export async function handle(config, networkAdapter) {
   });
 
   if (!stored) {
-    // No connection and nothing stored: the page says so as it would
-    // offline (OfflineMiss), rather than show a bare error.
+    // The failure took the app offline (no connection) and nothing is
+    // stored: the page says so as it would offline (OfflineMiss), rather
+    // than show a bare error. A one-off failure (a timeout) stays an error.
     return request.catch((error) => {
-      throw isNetworkFailure(error) ? offlineError(config, error) : error;
+      throw isNetworkFailure(error) && !network.online
+        ? offlineError(config, error)
+        : error;
     });
   }
 
