@@ -368,6 +368,13 @@ class DeferredGenerationPointTests(SimpleTestCase):
 
 @override_settings(CACHES=LOCMEM, SITE_ADDRESS="https://example.test")
 class LineAudioEndpointTests(SimpleTestCase):
+    def test_empty_or_malformed_body_gets_no_audio_instead_of_an_error(self):
+        for body in (b"", b"not json", b"[1, 2]"):
+            request = APIRequestFactory().post("/audio/", body, content_type="application/json")
+            response = index.AudioViewSet().retrieve(request)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.data["path"], "")
+
     def test_missing_clip_is_built_in_the_background(self):
         with (
             tempfile.TemporaryDirectory() as media,
