@@ -263,6 +263,7 @@
 </template>
 
 <script>
+import { readingsUrl } from '@/offline/urls';
 // @ is an alias to /src
 import CalendarCard from '@/components/CalendarCard.vue';
 import DayLine from '@/components/DayLine.vue';
@@ -768,23 +769,20 @@ export default {
         this.availableSettings = await this.$store.state.availableSettings;
         await this.$store.dispatch('initializeSettings');
         const settings = await this.$store.state.settings;
-        const queryString = Object.keys(settings)
-          .map((key) => key + '=' + settings[key])
-          .join('&');
-
-        const today_str =
-          this.calendarDate.getFullYear() +
-          '-' +
-          (this.calendarDate.getMonth() + 1) +
-          '-' +
-          this.calendarDate.getDate();
+        // Built with the sync engine's helper, so downloaded readings are found.
         data = await this.$http.get(
-          `${import.meta.env.VITE_API_URL}api/v1/readings/${today_str}?translation=${this.translation}&psalms=${this.psalmsTranslation}&style=${this.psalmStyle}&` +
-            queryString
+          readingsUrl({
+            date: this.calendarDate,
+            translation: this.translation,
+            psalms: this.psalmsTranslation,
+            style: this.psalmStyle,
+            settings,
+          })
         );
-      } catch {
-        this.error =
-          'There was an error retrieving the readings. Please try again.';
+      } catch (error) {
+        this.error = error?.isOffline
+          ? 'These readings haven’t been downloaded, and you’re offline. Today’s and the coming days’ readings are kept once you’ve opened Readings online.'
+          : 'There was an error retrieving the readings. Please try again.';
         this.loading = false;
         this.readingsLoading = false;
         return;

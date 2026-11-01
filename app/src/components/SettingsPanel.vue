@@ -20,6 +20,8 @@
           :value="getActiveSettingValue(setting)"
           :open="isOpen(setting)"
           :saved="savedSettingName === setting.name"
+          :offline="offlineEditing"
+          :unavailable="offlineUnavailable[setting.name] || []"
           @update:open="(open) => toggleOpen(setting.name, open)"
           @change="(value) => onSettingChange(setting, value)"
         />
@@ -36,6 +38,8 @@ import {
   matchesSettingSearch,
 } from '@/helpers/settingsUiMetadata';
 import { toast } from '@/ui/feedback';
+import { DynamicStorage } from '@/helpers/storage';
+import { canPrayOfflineWith, network } from '@/offline';
 
 export default {
   name: 'SettingsPanel',
@@ -75,9 +79,15 @@ export default {
       openSettingName: '',
       saveRequestVersionBySetting: {},
       localActiveSettingValues: {},
+      // Offline: per setting, the choices with nothing downloaded for them.
+      offlineUnavailable: {},
     };
   },
   computed: {
+    // Editing the reader's own settings without a connection.
+    offlineEditing() {
+      return !network.online && !this.values;
+    },
     normalizedSettings() {
       return (this.availableSettings || [])
         .filter((setting) => setting.site_name === this.site)
@@ -124,6 +134,14 @@ export default {
         }));
     },
   },
+  watch: {
+    offlineEditing: {
+      immediate: true,
+      handler(offline) {
+        if (offline) this.measureOfflineChoices();
+      },
+    },
+  },
   beforeUnmount() {
     if (this.savedSettingTimeoutId) {
       window.clearTimeout(this.savedSettingTimeoutId);
@@ -147,6 +165,43 @@ export default {
         return;
       }
       this.openSettingName = open ? settingName : '';
+    },
+    // Which choices would still have today's office downloaded. Every other
+    // choice waits for a connection.
+    async measureOfflineChoices() {
+      const current = { ...(this.$store.state.settings || {}) };
+      let extraCollects;
+      try {
+        extraCollects = JSON.parse(
+          (await DynamicStorage.getItem('extraCollects')) || 'null'
+        );
+      } catch {
+        extraCollects = null;
+      }
+      // Until measured, nothing but the current choices.
+      const locked = {};
+      for (const setting of this.normalizedSettings) {
+        locked[setting.name] = (setting.options || [])
+          .map((option) => option.value)
+          .filter((value) => value !== current[setting.name]);
+      }
+      if (!Object.keys(this.offlineUnavailable).length) {
+        this.offlineUnavailable = locked;
+      }
+      const result = {};
+      for (const setting of this.normalizedSettings) {
+        const unavailable = [];
+        for (const option of setting.options || []) {
+          if (option.value === current[setting.name]) continue;
+          const ok = await canPrayOfflineWith(
+            { ...current, [setting.name]: option.value },
+            extraCollects
+          );
+          if (!ok) unavailable.push(option.value);
+        }
+        result[setting.name] = unavailable;
+      }
+      this.offlineUnavailable = result;
     },
     async persistSettingChange(settingName, value) {
       const currentSettings = this.$store.state.settings || {};
@@ -189,6 +244,12 @@ export default {
       }
     },
     onSettingChange(setting, value) {
+      if (
+        this.offlineEditing &&
+        (this.offlineUnavailable[setting.name] || []).includes(value)
+      ) {
+        return;
+      }
       if (this.values) {
         this.$emit('update:values', { ...this.values, [setting.name]: value });
         return;
@@ -213,6 +274,7 @@ export default {
           }
           this.markSaved(setting.name);
           this.trackSettingChange(setting);
+          if (this.offlineEditing) this.measureOfflineChoices();
         })
         .catch(() => {
           if (

@@ -27,6 +27,14 @@
             class="ui-toast__link"
             >{{ item.link.label }}</a
           >
+          <button
+            v-else-if="item.link && item.link.action"
+            type="button"
+            class="ui-toast__link ui-toast__action"
+            @click="runAction(item)"
+          >
+            {{ item.link.label }}
+          </button>
         </div>
         <button
           type="button"
@@ -75,6 +83,11 @@ const ICONS = {
   warning: 'warning',
   error: 'error',
 };
+
+function runAction(item) {
+  dismissToast(item.id);
+  item.link.action();
+}
 
 function iconFor(tone) {
   return ICONS[tone] || ICONS.info;
@@ -148,6 +161,12 @@ function answer(value) {
 .ui-toast__link {
   display: inline-block;
   margin-top: var(--space-1);
+}
+
+.ui-toast__action {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
 }
 
 .ui-toast__close {

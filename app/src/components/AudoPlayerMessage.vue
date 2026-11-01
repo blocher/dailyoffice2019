@@ -30,6 +30,18 @@
             <a href="/"> Go to today </a>
           </small>
         </span>
+        <span v-else-if="offline" class="audio-message">
+          <small>
+            You’re offline, and this office’s audio isn’t downloaded.
+            <button
+              type="button"
+              class="audio-message__link"
+              @click="openPanel('offline')"
+            >
+              Listen offline
+            </button>
+          </small>
+        </span>
         <span v-else-if="!audioReady" class="audio-message">
           <small> Preparing audio… </small>
         </span>
@@ -55,12 +67,18 @@
 
 <script>
 import UiIcon from '@/ui/UiIcon.vue';
+import { openPanel } from '@/helpers/panels';
 
 export default {
   name: 'AudioPlayerMessage',
   components: { UiIcon },
   emits: ['dismiss-audio'],
   props: {
+    // Offline, and the track isn't on the device (offline/audio.js).
+    offline: {
+      type: Boolean,
+      default: false,
+    },
     audioReady: {
       type: Boolean,
       required: true,
@@ -121,6 +139,7 @@ export default {
     this.emitVisibility(false);
   },
   methods: {
+    openPanel,
     emitVisibility(forceState) {
       const isVisible = forceState !== undefined ? forceState : true;
       const controls = this.$el?.querySelector('.controls.fixed-controls');
@@ -188,9 +207,15 @@ export default {
 .audio-message small {
   font-size: inherit;
 }
-.audio-message a {
+.audio-message a,
+.audio-message__link {
   color: var(--accent);
   white-space: nowrap;
+}
+
+.audio-message__link {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
 }
 .dismiss-button {
   display: grid;

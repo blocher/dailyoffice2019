@@ -7,6 +7,7 @@
     share     share your settings
     email     email updates sign-up
     feedback  send feedback
+    offline   offline downloads and installing the app
   Each is mounted once in App.vue. Call openPanel('share') to show one.
 */
 import { reactive } from 'vue';
@@ -17,6 +18,7 @@ export const panels = reactive({
   share: false,
   email: false,
   feedback: false,
+  offline: false,
 });
 
 export function openPanel(name) {

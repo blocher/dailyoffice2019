@@ -19,6 +19,12 @@
         </span>
       </span>
       <span class="setting-row__value">
+        <UiIcon
+          v-if="offlineLocked"
+          name="cloud-off"
+          class="setting-row__offline"
+          title="Needs a connection to change"
+        />
         <Transition name="setting-saved" mode="out-in">
           <span v-if="saved" key="saved" class="setting-row__saved">
             <UiIcon name="check" /> Saved
@@ -45,6 +51,17 @@
         {{ setting.helpShort }}
       </p>
 
+      <p v-if="offline" class="setting-row__offline-note">
+        <UiIcon name="cloud-off" />
+        <span v-if="offlineLocked"
+          >Changing this needs a connection, to download the offices it
+          changes.</span
+        >
+        <span v-else
+          >Offline, you can choose only what’s already downloaded.</span
+        >
+      </p>
+
       <div
         class="setting-options"
         role="radiogroup"
@@ -54,7 +71,10 @@
           v-for="(option, index) in setting.options"
           :key="option.uuid || option.value"
           class="setting-option"
-          :class="{ 'is-selected': option.value === value }"
+          :class="{
+            'is-selected': option.value === value,
+            'is-unavailable': isUnavailable(option.value),
+          }"
         >
           <input
             type="radio"
@@ -62,6 +82,7 @@
             :name="baseId"
             :value="option.value"
             :checked="option.value === value"
+            :disabled="isUnavailable(option.value)"
             @change="$emit('change', option.value)"
           />
           <span class="setting-option__mark" aria-hidden="true" />
@@ -70,6 +91,15 @@
               {{ option.name }}
               <span v-if="index === 0" class="setting-option__default"
                 >default</span
+              >
+              <span
+                v-if="
+                  offline &&
+                  !isUnavailable(option.value) &&
+                  option.value !== value
+                "
+                class="setting-option__default setting-option__ready"
+                >downloaded</span
               >
             </span>
             <span
@@ -97,6 +127,9 @@ const props = defineProps({
   value: { type: [String, Number, Boolean], default: null },
   open: { type: Boolean, default: false },
   saved: { type: Boolean, default: false },
+  // Offline: the choices that would leave nothing downloaded to pray.
+  offline: { type: Boolean, default: false },
+  unavailable: { type: Array, default: () => [] },
 });
 defineEmits(['update:open', 'change']);
 
@@ -108,6 +141,23 @@ const currentLabel = computed(() => {
   );
   return match ? match.name : '';
 });
+
+function isUnavailable(optionValue) {
+  return (
+    props.offline &&
+    optionValue !== props.value &&
+    props.unavailable.includes(optionValue)
+  );
+}
+
+// Offline with no other choice downloaded.
+const offlineLocked = computed(
+  () =>
+    props.offline &&
+    (props.setting.options || []).every(
+      (o) => o.value === props.value || props.unavailable.includes(o.value)
+    )
+);
 
 const isChanged = computed(() => {
   const first = (props.setting.options || [])[0];
@@ -335,6 +385,50 @@ const isChanged = computed(() => {
 
 .setting-option__description :deep(p + p) {
   margin-top: var(--space-1);
+}
+
+/* Offline */
+.setting-row__offline {
+  margin-right: 0.35rem;
+  font-size: 0.9em;
+  font-style: normal;
+  color: var(--ink-faint);
+  vertical-align: -0.1em;
+}
+
+.setting-row__offline-note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  background-color: var(--paper);
+  border: 1px dashed var(--rule-strong);
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+  line-height: 1.4;
+}
+
+.setting-row__offline-note .ui-icon {
+  flex-shrink: 0;
+  margin-top: 0.15em;
+  color: var(--accent);
+}
+
+.setting-option.is-unavailable {
+  cursor: not-allowed;
+  opacity: 0.55;
+  background-color: transparent;
+  border-style: dashed;
+}
+
+.setting-option.is-unavailable:hover {
+  border-color: var(--rule);
+}
+
+.setting-option__ready {
+  color: var(--accent);
 }
 
 .setting-saved-enter-active,

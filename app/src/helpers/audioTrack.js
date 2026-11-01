@@ -77,6 +77,13 @@ export function beyondTrackEnd(
 // the CDN can answer from a stale (truncated) cached copy.
 export function freshTrackUrl(url, token = Date.now()) {
   if (!url) return url;
+  // A track stored on the device (offline/audio.js) is complete already.
+  if (
+    /^(blob|file|capacitor|data):/.test(url) ||
+    url.includes('/_capacitor_file_')
+  ) {
+    return url;
+  }
   try {
     const parsed = new window.URL(url, window.location.href);
     parsed.searchParams.set('reload', String(token));

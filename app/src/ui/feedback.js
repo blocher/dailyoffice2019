@@ -7,6 +7,7 @@
 
     toast.success('Saved')
     toast.warning({ title: 'Heads up', message: '…', link: { to: '/settings', label: 'Review' } })
+    toast.info({ title: 'Update ready', link: { label: 'Reload', action: () => location.reload() } })
     if (await confirm({ title: 'Hide audio?', message: '…', confirmText: 'Hide' })) { … }
 */
 import { reactive } from 'vue';

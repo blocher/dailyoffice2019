@@ -19,6 +19,8 @@ import { createGtag, event } from 'vue-gtag';
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
 import { Capacitor } from '@capacitor/core';
 import { SplashScreen } from '@capacitor/splash-screen';
+import { installOffline } from './offline';
+import { installPwa } from './offline/pwa';
 
 // Stabilize viewport units on mobile browsers (notably iOS Chrome) where
 // the browser toolbars collapsing/expanding can cause fixed footers to “float”.
@@ -198,6 +200,11 @@ const app = createApp(App)
   .use(createMetaManager());
 
 app.config.globalProperties.$gtag = { event };
+
+// Offline mode: stored answers for every API request, the days-ahead sync,
+// and (on the web) the service worker. See src/offline/index.js.
+installOffline({ store });
+installPwa();
 
 // Report uncaught errors to Bugsnag (production builds with a key only).
 startErrorReporting(app);

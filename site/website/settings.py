@@ -385,6 +385,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"],
     "DEFAULT_THROTTLE_RATES": {
         "analytics_event": "240/hour",
+        "analytics_offline_views": "60/hour",
         "custom_podcast": env("CUSTOM_PODCAST_CREATE_RATE", default="20/hour"),
     },
     # Answer in JSON whatever the Accept header says. Proxies such as Google
@@ -400,7 +401,9 @@ REST_FRAMEWORK = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 # Custom analytics headers must be explicitly allowed even with allow-all origins.
-CORS_ALLOW_HEADERS = (*default_headers, "x-client-id", "x-client-platform")
+# x-offline-sync marks the app's offline downloads, which are not office views
+# (analytics/middleware.py).
+CORS_ALLOW_HEADERS = (*default_headers, "x-client-id", "x-client-platform", "x-offline-sync")
 mimetypes.add_type("image/svg+xml", ".svg", True)
 
 SWAGGER_SETTINGS = {"USE_SESSION_AUTH": False}

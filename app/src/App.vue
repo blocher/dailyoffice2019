@@ -21,6 +21,7 @@
   <ShareSettings />
   <EmailSignup />
   <SubmitFeedback />
+  <OfflinePanel />
   <UiFeedbackHost />
 </template>
 
@@ -35,10 +36,12 @@ import BackToTop from '@/components/BackToTop.vue';
 import DisplayPanel from '@/components/DisplayPanel.vue';
 import EmailSignup from '@/components/EmailSignup.vue';
 import Loading from '@/components/Loading.vue';
+import OfflinePanel from '@/components/OfflinePanel.vue';
 import SiteMessages from '@/components/SiteMessages.vue';
 import SubmitFeedback from '@/components/SubmitFeedback.vue';
 import UiFeedbackHost from '@/ui/UiFeedbackHost.vue';
 import { applyAll } from '@/helpers/displayPreferences';
+import { network } from '@/offline';
 
 // The share panel (with its QR code library) loads after the first page.
 const ShareSettings = defineAsyncComponent(
@@ -54,6 +57,7 @@ export default {
     DisplayPanel,
     EmailSignup,
     Loading,
+    OfflinePanel,
     ShareSettings,
     SiteMessages,
     SubmitFeedback,
@@ -130,8 +134,9 @@ export default {
       await this.$store.commit('saveAvailableSettings', settingsData.data);
       await this.$store.dispatch('initializeSettings');
     } catch {
-      this.error =
-        'There was an error loading the settings. Please try refreshing the page.';
+      this.error = network.online
+        ? 'There was an error loading the settings. Please try refreshing the page.'
+        : 'You’re offline, and the app hasn’t been opened online on this device yet. Connect once and it will keep the days ahead for offline use.';
     }
     this.loading = false;
     await this.$nextTick();

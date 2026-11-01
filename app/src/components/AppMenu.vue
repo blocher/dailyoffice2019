@@ -49,6 +49,9 @@ import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
 import { openPanel, panels } from '@/helpers/panels';
 import { SessionStore } from '@/helpers/sessionStore';
+import { effectiveDays, network, syncState } from '@/offline';
+import { friendlyDate } from '@/offline/format';
+import { pwaState } from '@/offline/pwa';
 
 const route = useRoute();
 const router = useRouter();
@@ -94,6 +97,19 @@ async function openCalendarSubscription() {
   await nextTick();
   fire();
 }
+
+const offlineHint = computed(() => {
+  if (!network.online) {
+    return syncState.readyThrough
+      ? `Offline · ready through ${friendlyDate(syncState.readyThrough)}`
+      : 'Offline';
+  }
+  if (effectiveDays() === 0) return 'Downloads off';
+  if (syncState.status === 'syncing') return 'Downloading…';
+  return syncState.readyThrough
+    ? `Ready through ${friendlyDate(syncState.readyThrough)}`
+    : 'Keep the days ahead';
+});
 
 const groups = computed(() => {
   const apps = isWeb
@@ -164,6 +180,24 @@ const groups = computed(() => {
           icon: 'calendar-plus',
           action: openCalendarSubscription,
         },
+        {
+          label: 'Offline',
+          hint: offlineHint.value,
+          icon: network.online ? 'cloud-check' : 'cloud-off',
+          action: () => openPanel('offline'),
+        },
+        ...(isWeb &&
+        !pwaState.installed &&
+        (pwaState.canPrompt || pwaState.iosManual)
+          ? [
+              {
+                label: 'Install the app',
+                hint: 'Home screen, works offline',
+                icon: 'download',
+                action: () => openPanel('offline'),
+              },
+            ]
+          : []),
       ],
     },
     {

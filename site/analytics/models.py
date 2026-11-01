@@ -60,6 +60,10 @@ class AnalyticsEvent(models.Model):
     # captured from the request query params. Used for "most common setting"
     # distributions in the dashboard.
     settings = models.JSONField(default=dict, blank=True)
+    # An office_view prayed from the app's offline downloads, reported by the
+    # app once it was back online (analytics/views.py OfflineOfficeViewsView);
+    # ``created`` is then when it was viewed.
+    offline = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True, db_index=True)
 
     class Meta:

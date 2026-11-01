@@ -56,6 +56,17 @@ function isTransientFailure(error) {
   return !status || status >= 500 || status === 408 || status === 429;
 }
 
+// A track downloaded for offline listening plays from the device
+// (offline/audio.js), online or not.
+async function preferStoredTrack(url) {
+  try {
+    const { localTrackUrl } = await import('@/offline/audio');
+    return (await localTrackUrl(url)) || url;
+  } catch {
+    return url;
+  }
+}
+
 // The combined track ([url, path, sections, lines, words]) for an
 // include_audio_links URL, or [] when it can't be had. `isStopped` ends the
 // polling early (the page was left).
@@ -68,7 +79,8 @@ export async function fetchAudioTrack(http, url, isStopped = () => false) {
       const data = await http.get(url);
       audio = data?.data?.audio || {};
     } catch (error) {
-      if (!isTransientFailure(error)) return [];
+      // Offline with no stored track: nothing to wait for.
+      if (error?.isOffline || !isTransientFailure(error)) return [];
     }
     if (audio?.status === 'preparing') {
       if (isStopped() || Date.now() >= giveUpAt) {
@@ -82,7 +94,7 @@ export async function fetchAudioTrack(http, url, isStopped = () => false) {
     }
     const singleTrack = audio?.single_track;
     if (Array.isArray(singleTrack) && singleTrack.length) {
-      singleTrack[0] = resolveAudioUrl(singleTrack[0]);
+      singleTrack[0] = await preferStoredTrack(resolveAudioUrl(singleTrack[0]));
       return singleTrack;
     }
     if (

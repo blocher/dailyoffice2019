@@ -674,6 +674,34 @@ minute; admin saves and every deploy (which flushes memcached) clear the cache a
 background while the app shows "Preparing audio…" (`site/office/audio_builds.py`). App-server and database
 connection limits are in `deploy/gunicorn_config.py` and `DATABASES` in `site/website/settings.py`.
 
+### Offline mode
+
+The app keeps the coming days of offices on the device (7 days in a browser tab, 30 in the iOS and Android apps and
+in the installed web app; the reader chooses 0–60 under Offline), for the reader's own settings, and works without a
+connection: in a browser, as an installed web app, and in the native apps. The code and its overview are in
+`app/src/offline/` (`index.js`). In short:
+
+- Every API request goes through an axios adapter (`cacheAdapter.js`) that answers from IndexedDB when it should.
+- A sync engine (`sync.js`) downloads the days ahead when the app opens or returns, when the connection returns, when
+  settings change, and after midnight. Its requests carry `X-Offline-Sync`, which `analytics/middleware.py` does not
+  count as office views; views prayed offline are reported later to `/api/v1/analytics/offline_views` and stored with
+  `offline=True`.
+- Offline, display settings work as always; other settings are disabled unless that choice is already downloaded.
+- Audio for chosen offices, today and tomorrow, downloads only when the reader turns it on (about 25–30 MB a track).
+- On the web, `dist/sw.js` (built from `app/src/offline/serviceWorker.js` by `vite.config.mjs`) keeps the app shell
+  and, where the browser allows, refreshes downloads in the background. New versions wait for the reader to reload.
+
+Devices refresh their downloads from the content change log (`ContentChange`, `site/office/offline_content.py`):
+
+- Every admin save records a soft change: devices refresh today and tomorrow at once, and the other days as they come
+  near (or when opened online).
+- `python manage.py invalidate_offline --dates 2026-12-01:2026-12-07` refreshes those dates on every device at its next
+  sync; `--all --urgent` refreshes everything. Run it after editing content outside the admin, or after a deploy that
+  changes how offices are put together. Entries can also be added in the admin (Offline content changes).
+
+Deploy the API before the frontend when a release first adds a request header (`make deploy` does), since browsers
+refuse headers the API's CORS settings don't allow.
+
 ## Podcasts
 
 The site publishes 20 podcast feeds (`site/podcasts/`), listed at

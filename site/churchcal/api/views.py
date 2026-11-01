@@ -130,7 +130,10 @@ class AudioTrackView(APIView):
         from analytics.utils import record_audio_loaded
 
         initial_request = response.status_code == 200 or response.get("Content-Range", "").startswith("bytes 0-")
-        record_audio_loaded(request, is_initial_request=initial_request)
+        # The app downloading audio for offline use isn't a listen
+        # (analytics/middleware.py); listening is counted by audio_play.
+        if not request.headers.get("X-Offline-Sync"):
+            record_audio_loaded(request, is_initial_request=initial_request)
 
         # Set Content-Disposition for inline playback
         response["Content-Disposition"] = f'inline; filename="{filename}"'

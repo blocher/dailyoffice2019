@@ -18,6 +18,7 @@ from office.models import (
     SiteMessage,
     AudioClip,
     PronunciationOverride,
+    ContentChange,
 )
 
 
@@ -281,3 +282,34 @@ admin.site.register(Setting, OfficeSettingAdmin)
 admin.site.register(CollectTag, CollectTagAdmin)
 admin.site.register(CollectTagCategory, CollectTagCategoryAdmin)
 admin.site.register(Collect, CollectAdmin)
+
+
+@admin.register(ContentChange)
+class ContentChangeAdmin(admin.ModelAdmin):
+    """The log devices read to refresh offline downloads (office/offline_content.py).
+
+    Admin edits add a soft, every-date entry by themselves. Add one here to
+    refresh particular dates, or everything at once (urgent).
+    """
+
+    list_display = ("id", "created", "scope", "urgent", "source", "note")
+    list_filter = ("urgent", "source")
+    fields = ("start_date", "end_date", "urgent", "note")
+
+    @admin.display(description="Dates")
+    def scope(self, obj):
+        if not obj.start_date:
+            return "Every date"
+        if not obj.end_date or obj.end_date == obj.start_date:
+            return obj.start_date.isoformat()
+        return f"{obj.start_date.isoformat()} – {obj.end_date.isoformat()}"
+
+    def save_model(self, request, obj, form, change):
+        if obj.start_date and not obj.end_date:
+            obj.end_date = obj.start_date
+        obj.source = ContentChange.SOURCE_MANUAL
+        super().save_model(request, obj, form, change)
+
+    def has_change_permission(self, request, obj=None):
+        # Entries are versions devices have already read; add a new one instead.
+        return False
