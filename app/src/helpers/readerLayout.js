@@ -7,7 +7,9 @@
   and map positions in the strip back to page numbers.
 
   Each column is one page. On wide, landscape screens two pages show side by
-  side as a spread, like an open book.
+  side as a spread, like an open book. On a foldable held like a book (iPhone
+  Duo's inner screen, half open), the spread opens across the fold: one page
+  on each side, the spine on the hinge.
 */
 
 const PHONE_MAX = 639;
@@ -22,6 +24,9 @@ const PHONE_MAX = 639;
  *   reader fills the window, so a taller stage means the browser sized it to
  *   its content (one 31,000px "page" on iOS in-app browsers); it is capped.
  * @param {'auto'|'single'|'spread'} [options.spread]
+ * @param {{x: number, width: number, active: boolean}|null} [options.fold]
+ *   a vertical fold across the stage, in px from the stage's left edge;
+ *   `active` while the device is partly folded (see helpers/fold.js)
  */
 export function computeReaderLayout({
   width,
@@ -29,9 +34,12 @@ export function computeReaderLayout({
   fontSize,
   spread = 'auto',
   viewportHeight,
+  fold = null,
 }) {
   const height =
     viewportHeight > 0 ? Math.min(stageHeight, viewportHeight) : stageHeight;
+  const foldSpread = spreadAcrossFold({ width, fontSize, spread, fold });
+  if (foldSpread) return pageGeometry({ ...foldSpread, height, fontSize });
   const isPhone = width <= PHONE_MAX;
   // Phones show a little desk around the page too, so it reads as a book
   // lying open on a table.
@@ -58,6 +66,28 @@ export function computeReaderLayout({
   const cols = isSpread ? 2 : 1;
 
   const sheetW = Math.floor(Math.min(availableW / cols, maxPageW + padX * 2));
+  return pageGeometry({
+    isPhone,
+    cols,
+    sheetW,
+    height,
+    outerY,
+    padX,
+    padTop,
+    padBottom,
+  });
+}
+
+function pageGeometry({
+  isPhone,
+  cols,
+  sheetW,
+  height,
+  outerY,
+  padX,
+  padTop,
+  padBottom,
+}) {
   const sheetH = Math.floor(height - outerY * 2);
   const pageW = Math.max(120, sheetW - padX * 2);
   const pageH = Math.max(120, sheetH - padTop - padBottom);
@@ -65,7 +95,7 @@ export function computeReaderLayout({
 
   return {
     isPhone,
-    spread: isSpread,
+    spread: cols === 2,
     cols,
     sheetW,
     sheetH,
@@ -79,6 +109,33 @@ export function computeReaderLayout({
     step: pageW + gap,
     // Width of the visible text window across all pages on screen.
     windowW: pageW * cols + gap * (cols - 1),
+  };
+}
+
+/*
+  A spread across a fold, or null. Half open like a book, the device opens
+  to two pages (as Safari shows a PDF there); laid flat it keeps one large
+  page unless the reader chose Two. The book is centered, so the fold has
+  to sit near the middle of the stage. Each half is about a phone's width,
+  so the pages take a phone's margins, with the gutter wide enough to clear
+  the hinge; very large text keeps a single page.
+*/
+function spreadAcrossFold({ width, fontSize, spread, fold }) {
+  if (!fold || spread === 'single') return null;
+  if (!fold.active && spread !== 'spread') return null;
+  const middle = fold.x + fold.width / 2;
+  if (Math.abs(middle - width / 2) > Math.max(24, width * 0.04)) return null;
+  const padX = Math.max(20, Math.ceil(fold.width / 2) + 8);
+  const sheetW = Math.floor(Math.min(middle - 10, width - middle - 10));
+  if (sheetW - padX * 2 < Math.max(220, Math.round(fontSize * 11))) return null;
+  return {
+    isPhone: true,
+    cols: 2,
+    sheetW: Math.min(sheetW, Math.round(fontSize * 30) + padX * 2),
+    outerY: 12,
+    padX,
+    padTop: 46,
+    padBottom: 46,
   };
 }
 

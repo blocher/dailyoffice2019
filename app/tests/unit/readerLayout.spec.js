@@ -12,6 +12,52 @@ import {
   viewOfPage,
 } from '@/helpers/readerLayout';
 
+// iPhone Duo's inner screen in portrait: 669 x 951 points, folding down the
+// middle.
+const DUO = { width: 669, height: 900, fontSize: 24 };
+const HINGE = { x: 322, width: 24 };
+
+describe('reader layout across a fold', () => {
+  it('opens to two pages, spine on the hinge, when half folded like a book', () => {
+    const layout = computeReaderLayout({
+      ...DUO,
+      fold: { ...HINGE, active: true },
+    });
+    expect(layout.spread).toBe(true);
+    expect(layout.sheetW * 2).toBeLessThanOrEqual(DUO.width);
+    // The text gutter clears the hinge.
+    expect(layout.gap).toBeGreaterThanOrEqual(HINGE.width + 16);
+    expect(layout.pageW).toBeGreaterThanOrEqual(DUO.fontSize * 11);
+  });
+
+  it('keeps one large page when laid flat, unless Two was chosen', () => {
+    const flat = { ...HINGE, active: false };
+    expect(computeReaderLayout({ ...DUO, fold: flat }).spread).toBe(false);
+    expect(
+      computeReaderLayout({ ...DUO, fold: flat, spread: 'spread' }).spread
+    ).toBe(true);
+  });
+
+  it('keeps one page when One was chosen or the text is very large', () => {
+    const fold = { ...HINGE, active: true };
+    expect(computeReaderLayout({ ...DUO, fold, spread: 'single' }).spread).toBe(
+      false
+    );
+    expect(computeReaderLayout({ ...DUO, fold, fontSize: 30 }).spread).toBe(
+      false
+    );
+  });
+
+  it('ignores a fold away from the middle of the stage', () => {
+    const fold = { x: 100, width: 24, active: true };
+    expect(computeReaderLayout({ ...DUO, fold }).spread).toBe(false);
+  });
+
+  it('without a fold, keeps one page on a screen that size', () => {
+    expect(computeReaderLayout(DUO).spread).toBe(false);
+  });
+});
+
 describe('reader layout', () => {
   it('uses a single page with a little desk around it on phones', () => {
     const layout = computeReaderLayout({

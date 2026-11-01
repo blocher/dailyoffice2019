@@ -14,6 +14,7 @@ import { getClientId } from './helpers/clientId';
 import { identifyUser, startErrorReporting } from './helpers/errorReporting';
 import { loadDisplayPreferences } from './helpers/displayPreferences';
 import { loadDiscovery } from './helpers/discovery';
+import { watchFold } from './helpers/fold';
 import { takeBookViewQuery, takePanelQuery } from './helpers/panels';
 import { createGtag, event } from 'vue-gtag';
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
@@ -215,6 +216,7 @@ startErrorReporting(app);
 const bootstrap = async () => {
   await loadDisplayPreferences();
   loadDiscovery();
+  watchFold();
   // Attach the anonymous client id + platform to every API request so the
   // backend can attribute office views to a unique user (updated clients only).
   try {

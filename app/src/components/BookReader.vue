@@ -233,6 +233,7 @@ import { pauseOfficeAudio } from '@/helpers/audioTrack';
 import { displayState } from '@/helpers/displayPreferences';
 import { markBookViewSeen } from '@/helpers/discovery';
 import { notifyOnce } from '@/helpers/errorReporting';
+import { foldState } from '@/helpers/fold';
 import { openPanel, panels } from '@/helpers/panels';
 import {
   canSwipeToClose,
@@ -491,6 +492,10 @@ async function relayout() {
       fontSize,
       spread: spreadPref.value,
       viewportHeight: window.visualViewport?.height || window.innerHeight,
+      fold: foldState.fold && {
+        ...foldState.fold,
+        x: foldState.fold.x - rect.left,
+      },
     })
   );
   await nextTick();
@@ -613,6 +618,7 @@ function diagnostics() {
       step: layout.step,
       gap: layout.gap,
     },
+    fold: foldState.fold,
     flow: el && {
       scrollWidth: el.scrollWidth,
       clientWidth: el.clientWidth,
@@ -680,6 +686,9 @@ watch(turning, async (value) => {
     rememberAnchor();
   }
 });
+
+// Folding or unfolding a foldable can leave the stage the same size.
+watch(() => foldState.fold, queueRelayout, { deep: true });
 
 function queueRelayout() {
   if (relayoutQueued) return;
