@@ -174,6 +174,7 @@ import { fetchAudioTrack, isWithinAudioWindow } from '@/helpers/officeAudio';
 import { isLocalTrackUrl } from '@/helpers/audioTrack';
 import { officeUrl } from '@/offline/urls';
 import { network } from '@/offline';
+import { isNetworkFailure } from '@/offline/network';
 import OfflineMiss from '@/components/OfflineMiss.vue';
 
 // Book view loads separately, after the office is showing.
@@ -218,6 +219,8 @@ export default {
       card: '',
       notFound: false,
       offlineMiss: false,
+      // The office failed to load for want of a connection (not offline).
+      networkError: false,
       // Offline without this office's audio downloaded.
       audioOffline: false,
       audioLinks: [],
@@ -282,13 +285,19 @@ export default {
     // Back online: load what couldn't be had offline.
     online(isOnline) {
       if (!isOnline || !this.officeRequestUrl) return;
-      if (this.offlineMiss) {
+      if (this.offlineMiss || this.networkError) {
         this.offlineMiss = false;
+        this.networkError = false;
+        this.error = false;
         this.loading = true;
         this.loadOffice();
       } else if (this.audioOffline) {
         this.audioOffline = false;
-        this.setAudioLinks(this.officeRequestUrl);
+        // "Loading audio" until the track is found, not "not available".
+        this.audioReady = false;
+        this.setAudioLinks(this.officeRequestUrl).finally(() => {
+          if (!this.isUnmounted) this.audioReady = true;
+        });
       }
     },
   },
@@ -296,8 +305,10 @@ export default {
     await DynamicStorage.setItem('serviceType', this.serviceType);
   },
   beforeUnmount() {
-    // Stop polling for audio that is still being prepared.
+    // Stop polling for audio that is still being prepared, and let a load
+    // still under way finish without touching the page that replaced this one.
     this.audioPollingStopped = true;
+    this.isUnmounted = true;
   },
 
   async created() {
@@ -369,6 +380,10 @@ export default {
     openPanel,
     setAudioEnabled,
     async loadOffice() {
+      // Only the latest load of a mounted page may change it (and the
+      // document title and accent color, which outlive it).
+      const load = (this.loadCount = (this.loadCount || 0) + 1);
+      const current = () => !this.isUnmounted && load === this.loadCount;
       const office_url = this.officeRequestUrl;
       const settings = this.officeSettings;
       const today_str =
@@ -381,14 +396,20 @@ export default {
       try {
         data = await this.$http.get(office_url);
       } catch (error) {
-        this.offlineMiss = Boolean(error?.isOffline);
+        if (!current()) return;
+        const networkFailure = isNetworkFailure(error);
+        this.offlineMiss =
+          Boolean(error?.isOffline) || (networkFailure && !network.online);
+        this.networkError = networkFailure && !this.offlineMiss;
         this.error = this.offlineMiss
           ? false
           : 'There was an error retrieving the office. Please try again.';
         this.loading = false;
         return;
       }
+      if (!current()) return;
       this.offlineMiss = false;
+      this.networkError = false;
       this.setDocumentTitle();
       this.modules = data.data.modules;
       this.card = data.data.calendar_day;
@@ -415,8 +436,9 @@ export default {
         this.isEsvOrKjv &&
         this.isEnglish
       ) {
-        this.audioLinks = await this.setAudioLinks(office_url);
+        await this.setAudioLinks(office_url);
       }
+      if (!current()) return;
       this.audioReady = true;
     },
     setDocumentTitle() {
@@ -478,6 +500,7 @@ export default {
         `${url}&include_audio_links=true`,
         () => this.audioPollingStopped
       );
+      if (this.isUnmounted) return [];
       // Offline, only a track kept on the device can play.
       if (!network.online && !isLocalTrackUrl(links[0])) {
         links = [];

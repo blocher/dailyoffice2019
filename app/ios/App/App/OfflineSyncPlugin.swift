@@ -142,7 +142,8 @@ final class OfflineSyncStore {
 
     private let queue = DispatchQueue(label: "com.dailyoffice2019.offline-sync.store")
     private let fileManager = FileManager.default
-    /// Goes up when the page removes the downloads, so a run under way stops writing.
+    /// Goes up when the page removes the downloads, so a run under way, or a track on its way,
+    /// stops writing. Kept on disk: a track can finish downloading after a relaunch.
     private var clearCount = 0
     private let root: URL
     private let inbox: URL
@@ -159,6 +160,7 @@ final class OfflineSyncStore {
         values.isExcludedFromBackup = true
         try? root.setResourceValues(values)
         self.root = root
+        clearCount = (read("learned.json")["generation"] as? NSNumber)?.intValue ?? 0
     }
 
     private func url(_ name: String) -> URL {
@@ -235,6 +237,7 @@ final class OfflineSyncStore {
                 }
                 learned["audio"] = []
                 learned["invalidations"] = []
+                learned["generation"] = clearCount
                 write("learned.json", learned)
                 write("index.json", [:])
                 return
@@ -250,14 +253,6 @@ final class OfflineSyncStore {
         }
     }
 
-    func setIndex(_ key: String, _ fetchedAt: Double) {
-        queue.sync {
-            var index = read("index.json")
-            index[key] = fetchedAt
-            write("index.json", index)
-        }
-    }
-
     func updateLearned(_ change: (inout [String: Any]) -> Void) {
         queue.sync {
             var learned = read("learned.json")
@@ -267,14 +262,45 @@ final class OfflineSyncStore {
     }
 
     /// A track saved to `audioDirectory`, for the page to take: { url, path, bytes, date, office, savedAt }.
-    func learnTrack(_ track: [String: Any]) {
-        guard let url = track["url"] as? String else { return }
-        updateLearned { learned in
-            var list = learned["audio"] as? [[String: Any]] ?? []
-            list.removeAll { $0["url"] as? String == url }
-            list.append(track)
-            learned["audio"] = list
+    /// Not when the downloads were removed after `generation` (checked in the same step).
+    @discardableResult
+    func learnTrack(_ track: [String: Any], generation: Int) -> Bool {
+        queue.sync {
+            guard generation == clearCount else { return false }
+            appendTrack(track)
+            return true
         }
+    }
+
+    /// Move a finished download into place and record it, unless the downloads were removed
+    /// after `generation`. One step, so removing the downloads can't miss the file.
+    func fileTrack(from location: URL, name: String, track: [String: Any], generation: Int) -> Bool {
+        queue.sync {
+            guard generation == clearCount, !(((read("state.json")["plan"] as? [String: Any])?["tasks"] as? [Any]) ?? []).isEmpty
+            else { return false }
+            let file = audioDirectory.appendingPathComponent(name)
+            do {
+                try fileManager.createDirectory(at: audioDirectory, withIntermediateDirectories: true)
+                try? fileManager.removeItem(at: file)
+                try fileManager.moveItem(at: location, to: file)
+            } catch {
+                print("Offline audio could not be saved: \(error)")
+                return false
+            }
+            appendTrack(track)
+            return true
+        }
+    }
+
+    /// On `queue`.
+    private func appendTrack(_ track: [String: Any]) {
+        guard let url = track["url"] as? String else { return }
+        var learned = read("learned.json")
+        var list = learned["audio"] as? [[String: Any]] ?? []
+        list.removeAll { $0["url"] as? String == url }
+        list.append(track)
+        learned["audio"] = list
+        write("learned.json", learned)
     }
 
     /// Whether an earlier run saved this office's track, and it waits for the page to take it.
@@ -288,17 +314,28 @@ final class OfflineSyncStore {
         }
     }
 
-    /// Write one downloaded answer, whole or not at all.
-    func putInbox(_ entry: [String: Any]) -> Bool {
+    enum InboxWrite {
+        case saved, failed
+        /// The downloads were removed after the run began.
+        case stale
+    }
+
+    /// Write one downloaded answer, whole or not at all, and index it at `fetchedAt`. Not when the
+    /// downloads were removed after `generation` (checked in the same step).
+    func putInbox(_ entry: [String: Any], fetchedAt: Double, generation: Int) -> InboxWrite {
         guard let key = entry["key"] as? String,
-              let data = try? JSONSerialization.data(withJSONObject: entry) else { return false }
+              let data = try? JSONSerialization.data(withJSONObject: entry) else { return .failed }
         return queue.sync {
+            guard generation == clearCount else { return .stale }
             do {
                 try data.write(to: inboxFile(key), options: .atomic)
-                return true
             } catch {
-                return false
+                return .failed
             }
+            var index = read("index.json")
+            index[key] = fetchedAt
+            write("index.json", index)
+            return .saved
         }
     }
 
@@ -540,13 +577,8 @@ actor OfflineSyncRunner {
                   task["kind"] as? String != "audio" || Self.hasTrack(body),
                   let text = String(data: data, encoding: .utf8)
             else { return nil }
-            // The downloads were removed while this was on its way.
-            guard store.generation == generation else {
-                stopped = true
-                return nil
-            }
             let fetchedAt = Self.now()
-            let saved = store.putInbox([
+            let write = store.putInbox([
                 "key": key,
                 "url": address,
                 "kind": task["kind"] ?? NSNull(),
@@ -554,11 +586,18 @@ actor OfflineSyncRunner {
                 "profile": task["profile"] ?? NSNull(),
                 "fetchedAt": fetchedAt,
                 "body": text,
-            ])
-            guard saved else { return nil }
-            store.setIndex(key, fetchedAt)
-            fetched += 1
-            return body
+            ], fetchedAt: fetchedAt, generation: generation)
+            switch write {
+            case .saved:
+                fetched += 1
+                return body
+            case .failed:
+                return nil
+            case .stale:
+                // The downloads were removed while this was on its way.
+                stopped = true
+                return nil
+            }
         } catch {
             // Offline again, or out of time: the next run tries again.
             print("Offline download failed: \(error)")
@@ -609,13 +648,15 @@ actor OfflineSyncRunner {
                 "date": date,
                 "office": task["office"] ?? NSNull(),
             ]
-            guard store.generation == generation else { return }
             if fileManager.fileExists(atPath: file.path) {
                 record["bytes"] = (try? fileManager.attributesOfItem(atPath: file.path)[.size] as? NSNumber)?.intValue ?? 0
                 record["savedAt"] = Self.now()
-                store.learnTrack(record)
+                guard store.learnTrack(record, generation: generation) else { return }
             } else if let url = URL(string: track) {
+                guard store.generation == generation else { return }
                 record["name"] = name
+                // Checked again when the file arrives (OfflineAudioDownloads).
+                record["generation"] = generation
                 await OfflineAudioDownloads.shared.start(request(url), track: record)
             }
         }
@@ -634,14 +675,20 @@ final class OfflineAudioDownloads: NSObject, URLSessionDownloadDelegate {
     /// iOS's handler from a relaunch to finish downloads: called once they're filed.
     var backgroundCompletion: (() -> Void)?
 
-    private lazy var session: URLSession = {
+    /// Made once, with `shared` (whose creation Swift makes thread-safe): iOS allows one session per
+    /// identifier.
+    private var session: URLSession!
+
+    private override init() {
+        super.init()
         let configuration = URLSessionConfiguration.background(withIdentifier: Self.identifier)
         configuration.sessionSendsLaunchEvents = true
         configuration.isDiscretionary = false
-        return URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
-    }()
+        session = URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
+    }
 
-    /// Open the session again after a relaunch, so iOS can hand over what finished.
+    /// Open the session at launch, and after a relaunch for its events, so iOS can hand over what
+    /// finished while the app wasn't running.
     func reconnect() {
         _ = session
     }
@@ -668,23 +715,15 @@ final class OfflineAudioDownloads: NSObject, URLSessionDownloadDelegate {
         guard (downloadTask.response as? HTTPURLResponse)?.statusCode == 200,
               let description = downloadTask.taskDescription?.data(using: .utf8),
               var track = (try? JSONSerialization.jsonObject(with: description)) as? [String: Any],
-              let name = track.removeValue(forKey: "name") as? String,
-              store.hasPlan
+              let name = track.removeValue(forKey: "name") as? String
         else { return }
+        let generation = (track.removeValue(forKey: "generation") as? NSNumber)?.intValue ?? -1
         let size = ((try? fileManager.attributesOfItem(atPath: location.path))?[.size] as? NSNumber)?.intValue ?? 0
         guard size > 0 else { return }
-        let file = store.audioDirectory.appendingPathComponent(name)
-        do {
-            try fileManager.createDirectory(at: store.audioDirectory, withIntermediateDirectories: true)
-            try? fileManager.removeItem(at: file)
-            try fileManager.moveItem(at: location, to: file)
-        } catch {
-            print("Offline audio could not be saved: \(error)")
-            return
-        }
         track["bytes"] = size
         track["savedAt"] = (Date().timeIntervalSince1970 * 1000).rounded()
-        store.learnTrack(track)
+        // Not when the downloads were removed (or turned off) since it started.
+        _ = store.fileTrack(from: location, name: name, track: track, generation: generation)
     }
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {

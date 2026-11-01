@@ -64,8 +64,9 @@ class AnalyticsEvent(models.Model):
     # app once it was back online (analytics/views.py OfflineOfficeViewsView);
     # ``created`` is then when it was viewed.
     offline = models.BooleanField(default=False)
-    # The app's id for an offline view, so a batch it sends twice counts once.
-    view_id = models.CharField(max_length=40, blank=True, default="", db_index=True)
+    # The app's id for an offline view, so a batch it sends twice counts once
+    # (unique where set; see Meta).
+    view_id = models.CharField(max_length=40, blank=True, default="")
     created = models.DateTimeField(auto_now_add=True, db_index=True)
 
     class Meta:
@@ -73,6 +74,11 @@ class AnalyticsEvent(models.Model):
         indexes = [
             models.Index(fields=["event_type", "created"]),
             models.Index(fields=["office", "created"]),
+        ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["view_id"], condition=~models.Q(view_id=""), name="analytics_event_unique_view_id"
+            ),
         ]
 
     def __str__(self):

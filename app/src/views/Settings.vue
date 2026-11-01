@@ -201,6 +201,7 @@ export default {
   data() {
     return {
       network,
+      now: Date.now(),
       availableSettings: null,
       loading: true,
       openTab: 'office',
@@ -230,7 +231,11 @@ export default {
         return `Downloading the days ahead… ${syncState.done} of ${syncState.total}`;
       }
       if (syncState.readyThrough) {
-        return `Ready offline through ${friendlyDate(syncState.readyThrough)} · ${days} days kept`;
+        const through = friendlyDate(
+          syncState.readyThrough,
+          new Date(this.now)
+        );
+        return `Ready offline through ${through} · ${days} days kept`;
       }
       return `Keeps ${days} days ahead on this device.`;
     },
@@ -302,7 +307,16 @@ export default {
     },
   },
   async mounted() {
+    // "Ready through tomorrow" moves on when the page is shown again (after
+    // midnight, say).
+    this.onVisible = () => {
+      if (document.visibilityState === 'visible') this.now = Date.now();
+    };
+    document.addEventListener('visibilitychange', this.onVisible);
     await this.initialize();
+  },
+  beforeUnmount() {
+    document.removeEventListener('visibilitychange', this.onVisible);
   },
   methods: {
     openPanel,

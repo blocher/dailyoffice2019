@@ -3,7 +3,9 @@
   =================================
     days          how many days ahead to keep: 0 (off), 3, 7, 14, 30, 60.
                   Unset, it is 30 in the apps and an installed web app, and
-                  7 in a browser tab.
+                  7 in a browser tab (30 there too once the installed web
+                  app has run: the two share storage and the plan, and each
+                  would prune what the other downloads).
     family        'auto' (when Family Prayer has been used lately), 'on', 'off'
     audio         download audio for today and tomorrow (opt-in)
     audioOffices  which daily offices' audio to download
@@ -27,6 +29,8 @@ const KEYS = {
   audio: 'offline_audio',
   audioOffices: 'offline_audio_offices',
 };
+const INSTALLED_KEY = 'offline_installed';
+let installedBefore = false;
 
 export const offlinePrefs = reactive({
   loaded: false,
@@ -50,7 +54,7 @@ export function isInstalledApp() {
 }
 
 export function defaultDays() {
-  return isInstalledApp() ? 30 : 7;
+  return isInstalledApp() || installedBefore ? 30 : 7;
 }
 
 export function effectiveDays() {
@@ -69,6 +73,11 @@ export async function loadOfflinePrefs() {
       ? family
       : 'auto';
     offlinePrefs.audio = audio === 'true';
+    installedBefore = (await DynamicStorage.getItem(INSTALLED_KEY)) === 'true';
+    if (!installedBefore && isInstalledApp() && !Capacitor.isNativePlatform()) {
+      installedBefore = true;
+      await DynamicStorage.setItem(INSTALLED_KEY, 'true');
+    }
     try {
       const offices = JSON.parse(audioOffices || 'null');
       if (Array.isArray(offices)) {

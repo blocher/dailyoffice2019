@@ -21,6 +21,9 @@ import { SYNC_HEADER } from './cacheAdapter';
 import { nativeAudioAvailable } from '@/helpers/nativeAudio';
 
 const NATIVE_DIR = 'offline-audio';
+// A web download that receives nothing for this long has stalled (a captive
+// portal, a half-open connection): give up, and try again next run.
+const STALLED_MS = 60 * 1000;
 const objectUrls = new Map();
 
 function isNative() {
@@ -46,20 +49,76 @@ export function trackKey(url) {
   }
 }
 
+/*
+  The stored record for a track, or null. In the apps, a record whose file
+  is gone (the files aren't backed up, but the web view's storage is, so a
+  restored phone has records without files) is removed, and the track
+  counts as not stored.
+*/
+async function storedRecord(url) {
+  const record = await db.get('audio', url);
+  if (!record?.path || !isNative()) return record || null;
+  try {
+    const { Filesystem, Directory } = await nativeModules();
+    await Filesystem.stat({
+      path: record.path,
+      directory: Directory.LibraryNoCloud,
+    });
+    return record;
+  } catch {
+    await db.remove('audio', url).catch(() => {});
+    return null;
+  }
+}
+
 export async function hasTrack(url) {
   try {
-    return Boolean(await db.get('audio', trackKey(url)));
+    return Boolean(await storedRecord(trackKey(url)));
   } catch {
     return false;
   }
 }
 
-async function saveWeb(url, info) {
-  const response = await window.fetch(url, { headers: { [SYNC_HEADER]: '1' } });
-  if (!response.ok)
-    throw new Error(`Audio download failed (${response.status})`);
-  const expected = Number(response.headers.get('content-length')) || 0;
-  const blob = await response.blob();
+// The body of a download, given up on when it stalls or `signal` aborts.
+async function readBody(url, signal) {
+  const controller = new window.AbortController();
+  const stop = () => controller.abort();
+  if (signal?.aborted) stop();
+  signal?.addEventListener('abort', stop, { once: true });
+  let timer = null;
+  const stillGoing = () => {
+    window.clearTimeout(timer);
+    timer = window.setTimeout(stop, STALLED_MS);
+  };
+  try {
+    stillGoing();
+    const response = await window.fetch(url, {
+      headers: { [SYNC_HEADER]: '1' },
+      signal: controller.signal,
+    });
+    if (!response.ok)
+      throw new Error(`Audio download failed (${response.status})`);
+    const expected = Number(response.headers.get('content-length')) || 0;
+    const type = response.headers.get('content-type') || 'audio/mpeg';
+    if (!response.body?.getReader)
+      return { blob: await response.blob(), expected };
+    const reader = response.body.getReader();
+    const chunks = [];
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+      stillGoing();
+    }
+    return { blob: new window.Blob(chunks, { type }), expected };
+  } finally {
+    window.clearTimeout(timer);
+    signal?.removeEventListener('abort', stop);
+  }
+}
+
+async function saveWeb(url, info, { signal } = {}) {
+  const { blob, expected } = await readBody(url, signal);
   if (expected && blob.size < expected) {
     throw new Error('Audio download was cut off');
   }
@@ -86,20 +145,45 @@ async function saveNative(url, info) {
   } catch {
     // Already there.
   }
+  // Downloaded beside the track and moved into place once whole: a file at
+  // `path` is always a finished track (the Android background run trusts
+  // that too). Android's transfer writes straight into its target and
+  // leaves what it got when cut off.
+  const partial = `${path}.part`;
   const { uri } = await Filesystem.getUri({
-    path,
+    path: partial,
     directory: Directory.LibraryNoCloud,
   });
-  await FileTransfer.downloadFile({
-    url,
-    path: uri,
-    headers: { [SYNC_HEADER]: '1' },
-  });
-  const stat = await Filesystem.stat({
-    path,
-    directory: Directory.LibraryNoCloud,
-  });
-  if (!stat.size) throw new Error('Audio download was empty');
+  let stat;
+  try {
+    await FileTransfer.downloadFile({
+      url,
+      path: uri,
+      headers: { [SYNC_HEADER]: '1' },
+    });
+    stat = await Filesystem.stat({
+      path: partial,
+      directory: Directory.LibraryNoCloud,
+    });
+    if (!stat.size) throw new Error('Audio download was empty');
+    // The background run may have put the same track there meanwhile.
+    await Filesystem.deleteFile({
+      path,
+      directory: Directory.LibraryNoCloud,
+    }).catch(() => {});
+    await Filesystem.rename({
+      from: partial,
+      to: path,
+      directory: Directory.LibraryNoCloud,
+      toDirectory: Directory.LibraryNoCloud,
+    });
+  } catch (error) {
+    await Filesystem.deleteFile({
+      path: partial,
+      directory: Directory.LibraryNoCloud,
+    }).catch(() => {});
+    throw error;
+  }
   // Only the path: the app's folder can move when the app is updated.
   await db.put('audio', {
     url,
@@ -112,12 +196,13 @@ async function saveNative(url, info) {
   return Number(stat.size) || 0;
 }
 
-// Download one track; resolves to its size in bytes.
-export async function saveTrack(rawUrl, info = {}) {
+// Download one track; resolves to its size in bytes. `signal` stops a web
+// download (the apps' transfers run to the end).
+export async function saveTrack(rawUrl, info = {}, { signal } = {}) {
   const url = trackKey(rawUrl);
-  const existing = await db.get('audio', url);
+  const existing = await storedRecord(url);
   if (existing) return existing.bytes || 0;
-  return isNative() ? saveNative(url, info) : saveWeb(url, info);
+  return isNative() ? saveNative(url, info) : saveWeb(url, info, { signal });
 }
 
 /*
@@ -129,7 +214,7 @@ export async function localTrackUrl(rawUrl) {
   const url = trackKey(rawUrl);
   let record;
   try {
-    record = await db.get('audio', url);
+    record = await storedRecord(url);
   } catch {
     return null;
   }
@@ -190,6 +275,16 @@ export async function pruneTracks(keep) {
   const all = await db.getAll('audio');
   await Promise.all(
     all.filter((record) => !keep.has(record.url)).map(deleteRecord)
+  );
+}
+
+// Remove stored tracks for days before `isoDate`.
+export async function removeTracksBefore(isoDate) {
+  const all = await db.getAll('audio');
+  await Promise.all(
+    all
+      .filter((record) => record.date && record.date < isoDate)
+      .map(deleteRecord)
   );
 }
 

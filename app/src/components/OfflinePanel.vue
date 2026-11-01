@@ -388,7 +388,9 @@ const footnote = computed(() => {
   return `Downloads refresh ${when}. Corrections reach this device the next time it’s online. Display settings always work offline; other settings need a connection.`;
 });
 
-const readyThroughLabel = computed(() => friendlyDate(sync.readyThrough));
+const readyThroughLabel = computed(() =>
+  friendlyDate(sync.readyThrough, new Date(now.value))
+);
 
 const progressPercent = computed(() =>
   sync.total ? Math.round((sync.done / sync.total) * 100) : 0

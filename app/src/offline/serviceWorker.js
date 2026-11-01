@@ -58,12 +58,26 @@ function isHtmlFor(path, response) {
   );
 }
 
+// Built files carry a hash of their contents in their names (Vite's
+// /assets/name-hash.js): one already kept by an earlier version is the same
+// file, so a new version needn't download it again.
+function isHashedAsset(path) {
+  return /^\/assets\/[^/]+-[A-Za-z0-9_-]{8,}\.[a-z0-9]+$/.test(path);
+}
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
     (async () => {
       const cache = await caches.open(SHELL_CACHE);
       await Promise.all(
         PRECACHE.map(async (path) => {
+          if (isHashedAsset(path)) {
+            const kept = await caches.match(path, { ignoreVary: true });
+            if (kept?.ok) {
+              await cache.put(path, kept);
+              return;
+            }
+          }
           const response = await fetch(path, { cache: 'reload' });
           // A file not there yet (a deploy half done): fail the install, and
           // the version in use carries on until the next check.
@@ -289,14 +303,19 @@ async function backgroundRefresh() {
     );
     if (response.ok) {
       const summary = await response.json();
-      if (since && (summary.all || summary.dates?.length)) {
+      // Never checked before (src/offline/sync.js does the same): what was
+      // downloaded meanwhile is refreshed as its day comes near.
+      const unknown =
+        !since &&
+        (await run(db, 'responses', 'readonly', (store) => store.count())) > 0;
+      if (unknown || (since && (summary.all || summary.dates?.length))) {
         invalidations = [
           ...invalidations,
           {
             at: Date.now(),
-            all: Boolean(summary.all),
-            urgent: Boolean(summary.urgent),
-            dates: summary.dates || [],
+            all: unknown || Boolean(summary.all),
+            urgent: !unknown && Boolean(summary.urgent),
+            dates: unknown ? [] : summary.dates || [],
           },
         ].slice(-50);
         await run(db, 'meta', 'readwrite', (store) =>
@@ -316,6 +335,8 @@ async function backgroundRefresh() {
   const today = isoToday();
   const tomorrow = isoToday(1);
   let fetched = 0;
+  // What was stored, for the open pages' lists (cacheAdapter.js summaryOf).
+  const stored = [];
   for (const task of plan.tasks) {
     if (fetched >= BACKGROUND_LIMIT) break;
     if (task.date && task.kind !== 'month' && task.date < today) continue;
@@ -328,25 +349,27 @@ async function backgroundRefresh() {
       if (stale === 'soft' && (!task.date || task.date > tomorrow)) continue;
     }
     try {
+      // When it was asked for: a change noted meanwhile may not be in it.
+      const askedAt = Date.now();
       const response = await fetch(task.url, {
         headers: { 'X-Offline-Sync': '1' },
       });
       if (!response.ok) continue;
       const text = await response.text();
       const data = JSON.parse(text);
+      const summary = {
+        key: task.key,
+        fetchedAt: askedAt,
+        schema: SCHEMA,
+        kind: task.kind,
+        date: task.date,
+        profile: task.profile ?? null,
+        bytes: text.length,
+      };
       await run(db, 'responses', 'readwrite', (store) =>
-        store.put({
-          key: task.key,
-          url: task.url,
-          data,
-          kind: task.kind,
-          date: task.date,
-          profile: task.profile ?? null,
-          fetchedAt: Date.now(),
-          bytes: text.length,
-          schema: SCHEMA,
-        })
+        store.put({ ...summary, url: task.url, data })
       );
+      stored.push(summary);
       fetched += 1;
     } catch {
       // Offline again, or a bad answer: the next run tries again.
@@ -358,14 +381,25 @@ async function backgroundRefresh() {
   );
   const windows = await clients.matchAll({ type: 'window' });
   windows.forEach((client) =>
-    client.postMessage({ type: 'OFFLINE_BACKGROUND_SYNCED', fetched })
+    client.postMessage({ type: 'OFFLINE_BACKGROUND_SYNCED', fetched, stored })
+  );
+}
+
+// Not while an open page is syncing (they share its lock, sync.js): both
+// would download the same plan.
+function refreshUnlessSyncing() {
+  if (!self.navigator?.locks?.request) return backgroundRefresh();
+  return self.navigator.locks.request(
+    'dailyoffice-offline-sync',
+    { ifAvailable: true },
+    (lock) => (lock ? backgroundRefresh() : null)
   );
 }
 
 self.addEventListener('periodicsync', (event) => {
-  if (event.tag === SYNC_TAG) event.waitUntil(backgroundRefresh());
+  if (event.tag === SYNC_TAG) event.waitUntil(refreshUnlessSyncing());
 });
 
 self.addEventListener('sync', (event) => {
-  if (event.tag === SYNC_TAG) event.waitUntil(backgroundRefresh());
+  if (event.tag === SYNC_TAG) event.waitUntil(refreshUnlessSyncing());
 });

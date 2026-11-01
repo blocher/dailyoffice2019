@@ -30,6 +30,14 @@
             <a href="/"> Go to today </a>
           </small>
         </span>
+        <span
+          v-else-if="offline && context === 'readings'"
+          class="audio-message"
+        >
+          <small>
+            You’re offline. Audio for the readings needs a connection.
+          </small>
+        </span>
         <span v-else-if="offline" class="audio-message">
           <small>
             You’re offline, and this office’s audio isn’t downloaded.

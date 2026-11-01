@@ -13,7 +13,7 @@
 import { reactive } from 'vue';
 import { Capacitor } from '@capacitor/core';
 import { toast } from '@/ui/feedback';
-import { resetStoredIndex } from './cacheAdapter';
+import { applyStoredSummaries } from './cacheAdapter';
 import { onConnectivityChange } from './network';
 import { isInstalledApp } from './preferences';
 import { requestSync, syncState } from './sync';
@@ -180,8 +180,8 @@ export function installPwa() {
   navigator.serviceWorker.addEventListener('message', (event) => {
     if (event.data?.type === 'OFFLINE_BACKGROUND_SYNCED') {
       // It wrote to storage behind this page's back.
-      resetStoredIndex();
-      requestSync('background');
+      applyStoredSummaries(event.data.stored);
+      if (event.data.fetched) requestSync('background');
     }
   });
   document.addEventListener('visibilitychange', () => {

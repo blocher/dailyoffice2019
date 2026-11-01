@@ -78,8 +78,42 @@ async function save(change) {
     ...invalidations,
     ...stored.filter((item) => !known.has(signature(item))),
   ].sort((a, b) => a.at - b.at);
-  invalidations = change(merged).slice(-MAX_KEPT);
+  invalidations = fold(change(merged));
   await db.meta.set('invalidations', invalidations);
+}
+
+/*
+  Keep the list to MAX_KEPT by folding the oldest notes into one, rather
+  than dropping them: an answer older than all of them would otherwise lose
+  its mark. The folded note is as late as the latest of them and covers all
+  they covered, so it marks at least what they did.
+*/
+function fold(list) {
+  if (list.length <= MAX_KEPT) return list;
+  const folded = list.slice(0, list.length - MAX_KEPT + 1);
+  const note = {
+    at: Math.max(...folded.map((item) => item.at)),
+    all: folded.some((item) => item.all),
+    urgent: folded.some((item) => item.all && item.urgent),
+    dates: mergeDates(folded.flatMap((item) => item.dates || [])),
+  };
+  return [note, ...list.slice(list.length - MAX_KEPT + 1)];
+}
+
+// ISO [first, last] ranges, overlapping ones merged.
+function mergeDates(ranges) {
+  const merged = [];
+  [...ranges]
+    .sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
+    .forEach(([first, last]) => {
+      const previous = merged[merged.length - 1];
+      if (previous && first <= previous[1]) {
+        if (last > previous[1]) previous[1] = last;
+      } else {
+        merged.push([first, last]);
+      }
+    });
+  return merged;
 }
 
 function monthEnd(isoFirst) {

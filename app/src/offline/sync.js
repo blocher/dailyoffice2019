@@ -35,10 +35,10 @@ import * as db from './db';
 import {
   SCHEMA,
   SYNC_HEADER,
+  clearEntries,
   readEntry,
   readStoredInfo,
   removeEntries,
-  resetStoredIndex,
   storedInfos,
 } from './cacheAdapter';
 import {
@@ -71,11 +71,12 @@ import {
   audioSummary,
   hasTrack,
   pruneTracks,
+  removeTracksBefore,
   saveTrack,
   trackKey,
 } from './audio';
 import { resolveAudioUrl } from '@/helpers/officeAudio';
-import { scheduleBackground } from './native';
+import { drainInbox, scheduleBackground } from './native';
 
 const CONCURRENCY = 2;
 const REQUEST_TIMEOUT_MS = 45000;
@@ -118,6 +119,9 @@ export const syncState = reactive({
 
 let contextProvider = async () => null;
 let runId = 0;
+// Aborted when its run is replaced or the downloads are removed, so a
+// download in flight (a 30 MB track) stops then, not when it finishes.
+let runAbort = null;
 let running = null;
 let queued = null;
 let audioRetryTimer = null;
@@ -125,6 +129,16 @@ let audioRetryTimer = null;
 export function configureSync({ getContext }) {
   contextProvider = getContext;
 }
+
+// End the current run at its next step, and stop its downloads.
+function endRun() {
+  runId += 1;
+  runAbort?.abort();
+  runAbort = null;
+}
+
+const STORAGE_FULL =
+  'There’s no room left on this device for more downloads. Choose fewer days, or free up space.';
 
 function startOfDay(date) {
   const copy = new Date(date);
@@ -276,35 +290,53 @@ async function checkContentChanges() {
     timeout: 15000,
   });
   if (!data || typeof data.version !== 'number') return;
-  if (since) await addInvalidation(data);
+  if (since) {
+    await addInvalidation(data);
+  } else if ((await storedInfos()).length) {
+    // Downloads made before the first check got through: what changed since
+    // then is unknown, so they are refreshed as their days come near.
+    await addInvalidation({ all: true, urgent: false, dates: [] });
+  }
   await db.meta.set('contentVersion', data.version);
 }
 
-async function download(item) {
+// 'ok', 'failed' (tried again next run) or 'full' (couldn't be stored).
+async function download(item, signal) {
   try {
     await axios.get(item.url, {
       headers: { [SYNC_HEADER]: '1' },
       timeout: REQUEST_TIMEOUT_MS,
+      signal,
     });
-    return true;
+    return 'ok';
   } catch (error) {
+    if (error?.code === 'ERR_NOT_STORED') return 'full';
     // Not there (a date outside the calendar): nothing to keep.
-    return error?.response?.status === 404;
+    return error?.response?.status === 404 ? 'ok' : 'failed';
   }
 }
 
-async function runQueue(items, current, onDone) {
+// Resolves to true when storage filled up (the rest wasn't downloaded).
+async function runQueue(items, current, signal, onDone) {
   let index = 0;
+  let full = false;
   const worker = async () => {
-    while (index < items.length && current === runId && network.online) {
+    while (
+      index < items.length &&
+      current === runId &&
+      network.online &&
+      !full
+    ) {
       const item = items[index];
       index += 1;
       syncState.current = item.label;
-      const ok = await download(item);
-      onDone(item, ok);
+      const outcome = await download(item, signal);
+      if (outcome === 'full') full = true;
+      onDone(item, outcome === 'ok');
     }
   };
   await Promise.all(Array.from({ length: CONCURRENCY }, worker));
+  return full;
 }
 
 function audioWanted(settings) {
@@ -344,18 +376,22 @@ function audioItems(context, today, count) {
 
 const slotOf = (date, office) => `${date}|${office}`;
 
-async function syncAudio(context, current, today) {
+// Resolves to true when storage filled up.
+async function syncAudio(context, current, today, signal) {
   const keep = new Set();
   // Offices whose track couldn't be worked out this run (still being
   // prepared, or the request failed): whatever is stored for them stays.
   const unresolved = new Set();
   let finished = true;
+  let full = false;
   const state = syncState.audio;
   state.preparing = 0;
   state.ready = 0;
   const items = audioItems(context, today, AUDIO_DAYS);
   state.wanted = items.length;
   state.active = items.length > 0;
+  // Past days' tracks first, to make room for today's and tomorrow's.
+  await removeTracksBefore(isoOf(today));
   for (const item of items) {
     if (current !== runId || !network.online) {
       finished = false;
@@ -372,6 +408,7 @@ async function syncAudio(context, current, today) {
         const response = await axios.get(item.url, {
           headers: { [SYNC_HEADER]: '1' },
           timeout: REQUEST_TIMEOUT_MS,
+          signal,
         });
         data = response.data;
       }
@@ -386,10 +423,20 @@ async function syncAudio(context, current, today) {
       keep.add(track);
       if (!(await hasTrack(track))) {
         syncState.current = `Audio: ${item.office.replace(/_/g, ' ')}`;
-        await saveTrack(track, { date: isoOf(item.date), office: item.office });
+        await saveTrack(
+          track,
+          { date: isoOf(item.date), office: item.office },
+          { signal }
+        );
       }
       state.ready += 1;
-    } catch {
+    } catch (error) {
+      // No room for another 30 MB: downloading the rest would only fail too.
+      if (error?.name === 'QuotaExceededError') {
+        full = true;
+        finished = false;
+        break;
+      }
       // Try again on the next run.
       if (!track) unresolved.add(slot);
     }
@@ -408,6 +455,7 @@ async function syncAudio(context, current, today) {
   }
   state.active = false;
   if (state.preparing && current === runId) scheduleAudioRetry();
+  return full;
 }
 
 function scheduleAudioRetry() {
@@ -424,6 +472,8 @@ function scheduleAudioRetry() {
 */
 async function prune(planKeys, keepProfiles, today, days) {
   const oldest = isoOf(addDays(today, -KEEP_PAST_DAYS));
+  const todayIso = isoOf(today);
+  const planEnd = isoOf(addDays(today, days - 1));
   const windowEnd = isoOf(addDays(today, Math.max(days, 1) + 1));
   const now = Date.now();
   let bytes = 0;
@@ -437,6 +487,13 @@ async function prune(planKeys, keepProfiles, today, days) {
         (record.kind === 'month' &&
           record.date.slice(0, 7) < oldest.slice(0, 7)) ||
         (record.profile && !keepProfiles.includes(record.profile)) ||
+        // An office in the window, for these settings, that the plan no
+        // longer asks for: other extra collects (not part of the profile),
+        // or Family Prayer no longer used.
+        (record.kind === 'office' &&
+          record.profile === keepProfiles[0] &&
+          record.date >= todayIso &&
+          record.date <= planEnd) ||
         (record.kind === 'audio' && record.date > windowEnd) ||
         (record.date &&
           record.date > windowEnd &&
@@ -556,6 +613,9 @@ async function persistStorage() {
 
 async function runOnce(reason) {
   const current = ++runId;
+  const abort = new window.AbortController();
+  runAbort = abort;
+  const { signal } = abort;
   syncState.reason = reason;
   syncState.error = null;
   const context = await contextProvider();
@@ -588,6 +648,12 @@ async function runOnce(reason) {
     return;
   }
 
+  // What the apps downloaded in the background goes in first, so it isn't
+  // downloaded again (their background runs can finish while the app is
+  // open).
+  await drainInbox();
+  if (current !== runId) return;
+
   if (!network.online) {
     syncState.status = days === 0 ? 'off' : 'offline';
     await measureReadiness(plan, today, days);
@@ -616,9 +682,10 @@ async function runOnce(reason) {
   syncState.total = missing.length;
   syncState.done = 0;
   syncState.failed = 0;
+  let full = false;
   if (missing.length) {
     syncState.status = 'syncing';
-    await runQueue(missing, current, (item, ok) => {
+    full = await runQueue(missing, current, signal, (item, ok) => {
       if (current !== runId) return;
       syncState.done += 1;
       if (!ok) syncState.failed += 1;
@@ -626,7 +693,7 @@ async function runOnce(reason) {
   }
   if (current !== runId) return;
 
-  await syncAudio(context, current, today);
+  if (!full) full = await syncAudio(context, current, today, signal);
   if (current !== runId) return;
 
   const profile = profileForSettings(context.settings);
@@ -660,12 +727,15 @@ async function runOnce(reason) {
       ? 'off'
       : !network.online
         ? 'offline'
-        : syncState.failed
+        : syncState.failed || full
           ? 'error'
           : 'done';
-  if (syncState.failed) {
+  if (full) {
+    syncState.error = STORAGE_FULL;
+  } else if (syncState.failed) {
     syncState.error = `${syncState.failed} download${syncState.failed === 1 ? '' : 's'} didn’t finish. They’ll be tried again.`;
   }
+  if (runAbort === abort) runAbort = null;
 }
 
 const LOCKED = Symbol('locked');
@@ -691,7 +761,7 @@ function withSyncLock(run) {
 export function requestSync(reason = 'manual') {
   if (running) {
     if (['settings', 'preferences', 'manual'].includes(reason)) {
-      runId += 1; // ends the current run at its next step
+      endRun();
     }
     queued = reason;
     return running;
@@ -735,18 +805,21 @@ export function syncIfDue(reason) {
 }
 
 export async function loadSyncStatus() {
-  syncState.lastSyncAt = (await db.meta.get('lastSyncAt')) || null;
+  try {
+    syncState.lastSyncAt = (await db.meta.get('lastSyncAt')) || null;
+  } catch {
+    syncState.lastSyncAt = null;
+  }
 }
 
 async function removeEverything() {
-  await db.clear('responses');
-  resetStoredIndex();
+  await clearEntries();
   await pruneTracks(new Set());
 }
 
 // Remove every download (the Offline panel's "Remove downloads").
 export async function clearDownloads() {
-  runId += 1; // ends the current run at its next step
+  endRun();
   queued = null;
   await removeEverything();
   // A run's last downloads can land after the clear: clear again once it

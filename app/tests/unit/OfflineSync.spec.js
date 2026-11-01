@@ -4,7 +4,12 @@ const axios = vi.hoisted(() => ({ get: vi.fn(), post: vi.fn() }));
 vi.mock('axios', () => ({ default: axios }));
 
 import * as db from '@/offline/db';
-import { resetStoredIndex } from '@/offline/cacheAdapter';
+import {
+  readStoredInfo,
+  resetStoredIndex,
+  storeEntry,
+} from '@/offline/cacheAdapter';
+import { profileForSettings } from '@/offline/keys';
 import { setBrowserOnlineForTests } from '@/offline/network';
 import { offlinePrefs } from '@/offline/preferences';
 import { resetInvalidationsForTests } from '@/offline/staleness';
@@ -123,6 +128,43 @@ describe('a sync run', () => {
     await requestSync('manual');
     expect(await storedTracks()).toEqual([trackUrl('today.mp3')]);
     expect(syncState.audio.preparing).toBe(2);
+  });
+
+  it('stops, and says so, when storage is full', async () => {
+    axios.get.mockImplementation(async (url) => {
+      if (url.includes('content_changes')) return { data: { version: 1 } };
+      throw Object.assign(new Error('full'), { code: 'ERR_NOT_STORED' });
+    });
+    await requestSync('manual');
+    expect(syncState.status).toBe('error');
+    expect(syncState.error).toMatch(/no room/);
+    // The two workers' first downloads, and nothing after them (no audio).
+    expect(axios.get.mock.calls.length).toBeLessThanOrEqual(3);
+    expect(window.fetch).not.toHaveBeenCalled();
+  });
+
+  it('marks downloads from before the first check as out of date', async () => {
+    offlinePrefs.audio = false;
+    await storeEntry('psalms', { kind: 'reference' }, '/api/v1/psalms', []);
+    answer({ audio: trackFor });
+    await requestSync('manual');
+    expect(await db.meta.get('invalidations')).toEqual([
+      expect.objectContaining({ all: true, urgent: false }),
+    ]);
+  });
+
+  it('removes offices of these settings that the plan no longer asks for', async () => {
+    offlinePrefs.audio = false;
+    const key = `office/morning_prayer/${today}?bible_translation=esv&extra_collects=old`;
+    await storeEntry(
+      key,
+      { kind: 'office', date: today, profile: profileForSettings(SETTINGS) },
+      `/api/v1/${key}`,
+      {}
+    );
+    answer({ audio: trackFor });
+    await requestSync('manual');
+    expect(await readStoredInfo(key)).toBeNull();
   });
 
   it('downloads nothing where storage would be lost on reload', async () => {

@@ -44,6 +44,7 @@
 import { computed, ref, watch } from 'vue';
 import { DynamicStorage } from '@/helpers/storage';
 import { toast } from '@/ui/feedback';
+import { requestSync } from '@/offline';
 
 /*
   One collect in the library. Choosing offices stores the collect's uuid in
@@ -124,6 +125,8 @@ async function handleCheckChange() {
     }
   });
   await DynamicStorage.setItem('extraCollects', JSON.stringify(extraCollects));
+  // Offline downloads include the extra collects: download them again.
+  requestSync('settings');
   emit('extraCollectsChanged');
   toast.success({
     title: 'Saved',

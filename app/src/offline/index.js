@@ -150,8 +150,8 @@ export function installOffline({ store }) {
     if (started) return;
     started = true;
     await ready;
-    // What the apps downloaded in the background goes in first.
-    const begin = () => drainInbox().finally(() => requestSync('start'));
+    // Each run first moves in what the apps downloaded in the background.
+    const begin = () => requestSync('start');
     if (typeof window !== 'undefined' && window.requestIdleCallback) {
       window.requestIdleCallback(begin, { timeout: 4000 });
     } else {

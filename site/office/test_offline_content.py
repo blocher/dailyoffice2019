@@ -2,12 +2,13 @@
 
 import datetime
 from io import StringIO
+from unittest import mock
 
 from django.contrib.admin.models import ADDITION, CHANGE, DELETION, LogEntry
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.management import call_command
-from django.test import RequestFactory, SimpleTestCase, TestCase
+from django.test import RequestFactory, SimpleTestCase, TestCase, TransactionTestCase
 from django.utils import timezone
 from rest_framework.test import APIClient
 
@@ -88,6 +89,13 @@ class ChangesSinceTests(TestCase):
         self.assertTrue(summary["all"])
         self.assertTrue(summary["urgent"])
 
+    def test_too_many_entries_refresh_everything_at_once(self):
+        first = offline_content.record_change(start_date=datetime.date(2026, 12, 1))
+        for _ in range(offline_content.MAX_ENTRIES + 1):
+            offline_content.record_change()
+        summary = offline_content.changes_since(first.id - 1)
+        self.assertEqual((summary["all"], summary["urgent"]), (True, True))
+
     def test_reversed_dates_are_put_in_order(self):
         change = offline_content.record_change(
             start_date=datetime.date(2026, 12, 5), end_date=datetime.date(2026, 12, 1)
@@ -134,11 +142,11 @@ class AdminEditsTests(TestCase):
         self.assertIsNone(change.start_date)
         self.assertIn("office.aboutitem", change.note)
 
-    def test_bulk_deletes_record_a_change(self):
+    def test_bulk_deletes_record_one_change(self):
         items = [AboutItem.objects.create(question=q, answer="x", order=i) for i, q in enumerate(["One", "Two"])]
         with self.captureOnCommitCallbacks(execute=True):
             LogEntry.objects.log_actions(self.user.pk, items, DELETION)
-        self.assertEqual(ContentChange.objects.filter(source=ContentChange.SOURCE_ADMIN).count(), 2)
+        self.assertEqual(ContentChange.objects.filter(source=ContentChange.SOURCE_ADMIN).count(), 1)
 
     def test_edits_that_never_change_an_office_are_ignored(self):
         with self.captureOnCommitCallbacks(execute=True):
@@ -146,6 +154,29 @@ class AdminEditsTests(TestCase):
             self.log(ContentChange)
             self.log(get_user_model())
         self.assertFalse(ContentChange.objects.exists())
+
+
+class AdminDeleteSelectedTests(TransactionTestCase):
+    """In autocommit, like the admin: after-commit work runs at once outside a transaction."""
+
+    def test_the_change_is_recorded_after_the_rows_are_gone(self):
+        admin_user = get_user_model().objects.create_superuser("admin", password="x")
+        items = [AboutItem.objects.create(question=q, answer="x", order=i) for i, q in enumerate(["One", "Two"])]
+        remaining_when_recorded = []
+        record = offline_content.record_admin_change
+
+        def spy(log_entry):
+            remaining_when_recorded.append(AboutItem.objects.count())
+            return record(log_entry)
+
+        self.client.force_login(admin_user)
+        with mock.patch.object(offline_content, "record_admin_change", spy):
+            self.client.post(
+                "/admin/office/aboutitem/",
+                {"action": "delete_selected", "_selected_action": [i.pk for i in items], "post": "yes"},
+            )
+        self.assertEqual(remaining_when_recorded, [0])
+        self.assertEqual(ContentChange.objects.filter(source=ContentChange.SOURCE_ADMIN).count(), 1)
 
 
 class InvalidateOfflineCommandTests(TestCase):
@@ -271,9 +302,9 @@ class OfflineSyncAnalyticsTests(TestCase):
         self.assertEqual(AnalyticsEvent.objects.get().view_id, "v1")
 
     def test_views_are_capped_per_device_and_day(self):
-        from analytics.views import OfflineOfficeViewsView
+        from analytics import offline_views
 
-        cap = OfflineOfficeViewsView.MAX_PER_DAY
+        cap = offline_views.MAX_PER_DAY
         viewed_at = (timezone.now() - datetime.timedelta(days=1)).isoformat()
         view = {"service_type": "office", "office": "compline", "viewed_at": viewed_at}
 
@@ -286,6 +317,37 @@ class OfflineSyncAnalyticsTests(TestCase):
         self.assertEqual(post("abc", 5).json(), {"accepted": 2})
         self.assertEqual(post("other", 5).json(), {"accepted": 5})
         self.assertEqual(AnalyticsEvent.objects.filter(client_id="abc").count(), cap)
+
+    def test_values_postgres_cannot_store_are_cleaned(self):
+        response = APIClient().post(
+            "/api/v1/analytics/offline_views",
+            {
+                "client_id": "a\x00bc",
+                "views": [
+                    {
+                        "service_type": "office",
+                        "office": "compline",
+                        "office_date": "99999999999999999999-1-1",
+                        "translation": "es\x00v",
+                    }
+                ],
+            },
+            format="json",
+        )
+        self.assertEqual(response.json(), {"accepted": 1})
+        event = AnalyticsEvent.objects.get()
+        self.assertEqual((event.client_id, event.translation, event.office_date), ("abc", "esv", None))
+
+    def test_a_view_stored_by_another_request_at_once_is_retried(self):
+        from django.db import IntegrityError
+
+        with mock.patch("analytics.offline_views.record", side_effect=IntegrityError):
+            response = APIClient().post(
+                "/api/v1/analytics/offline_views",
+                {"client_id": "abc", "views": [{"service_type": "office", "office": "compline"}]},
+                format="json",
+            )
+        self.assertEqual(response.status_code, 503)
 
     def test_views_must_be_a_list(self):
         response = APIClient().post("/api/v1/analytics/offline_views", {"views": "x"}, format="json")

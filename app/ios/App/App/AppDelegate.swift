@@ -23,7 +23,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Offline downloads keep fresh in the background (OfflineSyncPlugin.swift). iOS requires
         // the handler to be registered before launching finishes.
         OfflineSyncPlugin.registerBackgroundTask()
-        
+        // Audio downloads that finish while the app is open are only filed once their session
+        // exists again; open it now rather than waiting for the next background run.
+        OfflineAudioDownloads.shared.reconnect()
+
         // Override point for customization after application launch.
         return true
     }

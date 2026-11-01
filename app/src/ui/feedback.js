@@ -40,7 +40,14 @@ export function dismissToast(id) {
 function show(input, tone = 'info') {
   const item = normalize(input, tone);
   feedbackState.toasts.push(item);
-  if (feedbackState.toasts.length > 3) feedbackState.toasts.shift();
+  if (feedbackState.toasts.length > 3) {
+    // Make room by dropping the oldest toast that would go by itself, so one
+    // kept until dismissed ("A new version is ready") isn't lost.
+    const timed = feedbackState.toasts.findIndex(
+      (t) => t.duration > 0 && t !== item
+    );
+    feedbackState.toasts.splice(Math.max(timed, 0), 1);
+  }
   if (item.duration > 0 && typeof window !== 'undefined') {
     window.setTimeout(() => dismissToast(item.id), item.duration);
   }

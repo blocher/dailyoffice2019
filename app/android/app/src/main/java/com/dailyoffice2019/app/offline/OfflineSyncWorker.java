@@ -39,6 +39,7 @@ public class OfflineSyncWorker extends Worker {
     private static final int TIMEOUT_MS = 20000;
     private static final String SYNC_HEADER = "X-Offline-Sync";
     private static final String TAG = "OfflineSync";
+    private static final long STALE_PARTIAL_MS = 24L * 3600 * 1000;
 
     private final OfflineSyncStore store;
     private int fetched = 0;
@@ -315,6 +316,7 @@ public class OfflineSyncWorker extends Worker {
         File directory = store.audioDirectory();
         //noinspection ResultOfMethodCallIgnored
         directory.mkdirs();
+        removeStalePartials(directory);
         for (int i = 0; i < tasks.length(); i++) {
             if (offline || isStopped() || fetched >= LIMIT) return;
             JSONObject task = tasks.optJSONObject(i);
@@ -333,15 +335,12 @@ public class OfflineSyncWorker extends Worker {
             String track = resolveTrack(raw, base);
             String name = hashString(track) + ".mp3";
             File file = new File(directory, name);
-            if (!file.exists() && !saveTrack(track, file)) continue;
-            store.updateLearned((learned) -> {
-                JSONArray list = learned.optJSONArray("audio");
-                JSONArray kept = new JSONArray();
-                for (int j = 0; list != null && j < list.length(); j++) {
-                    JSONObject item = list.optJSONObject(j);
-                    if (item != null && !track.equals(item.optString("url"))) kept.put(item);
-                }
-                JSONObject item = new JSONObject();
+            // A file at its final name is whole: the page and saveTrack both download to a
+            // temporary name and rename it once complete.
+            boolean downloaded = !file.exists();
+            if (downloaded && !saveTrack(track, file)) continue;
+            JSONObject item = new JSONObject();
+            try {
                 item.put("url", track);
                 // Only the path, as on iOS: the page finds the file from it (app/src/offline/audio.js).
                 item.put("path", "offline-audio/" + name);
@@ -349,14 +348,38 @@ public class OfflineSyncWorker extends Worker {
                 item.put("date", date);
                 item.put("office", office == null ? JSONObject.NULL : office);
                 item.put("savedAt", (double) System.currentTimeMillis());
-                kept.put(item);
-                learned.put("audio", kept);
-            });
+            } catch (JSONException error) {
+                continue;
+            }
+            if (!store.learnTrack(item) && downloaded) {
+                // The downloads were removed meanwhile, or it couldn't be recorded: nothing would
+                // ever remove it.
+                //noinspection ResultOfMethodCallIgnored
+                file.delete();
+            }
+        }
+    }
+
+    /**
+     * Remove temporary downloads left by a run that was cut off (the page's end in .part, this
+     * worker's in .native-part). Only old ones: the page may be downloading now.
+     */
+    private static void removeStalePartials(File directory) {
+        File[] partials = directory.listFiles((dir, name) -> name.endsWith(".part") || name.endsWith(".native-part"));
+        if (partials == null) return;
+        long before = System.currentTimeMillis() - STALE_PARTIAL_MS;
+        for (File partial : partials) {
+            if (partial.lastModified() < before) {
+                //noinspection ResultOfMethodCallIgnored
+                partial.delete();
+            }
         }
     }
 
     private boolean saveTrack(String address, File file) {
-        File partial = new File(file.getPath() + ".part");
+        // Not .part: that is the page's name for the same track (app/src/offline/audio.js), and the
+        // two can download it at once.
+        File partial = new File(file.getPath() + ".native-part");
         try {
             HttpURLConnection connection = open(address, true);
             try {

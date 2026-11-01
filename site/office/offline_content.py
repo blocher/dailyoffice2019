@@ -117,7 +117,9 @@ def changes_since(since):
         .values("start_date", "end_date", "urgent")[: MAX_ENTRIES + 1]
     )
     if len(entries) > MAX_ENTRIES:
-        summary.update({"all": True, "urgent": any(e["urgent"] for e in entries)})
+        # Too many to list: the dated ones would be lost in a soft "all", so
+        # refresh everything at once, as for removed entries above.
+        summary.update({"all": True, "urgent": True})
         return summary
     ranges = []
     for entry in entries:

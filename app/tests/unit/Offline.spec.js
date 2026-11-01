@@ -8,8 +8,18 @@ import {
   profileForSettings,
 } from '@/offline/keys';
 import { officeUrl, readingsUrl } from '@/offline/urls';
-import { handle, resetStoredIndex, SYNC_HEADER } from '@/offline/cacheAdapter';
-import { setBrowserOnlineForTests, network } from '@/offline/network';
+import {
+  applyStoredSummaries,
+  handle,
+  readStoredInfo,
+  resetStoredIndex,
+  SYNC_HEADER,
+} from '@/offline/cacheAdapter';
+import {
+  reportUnreachable,
+  setBrowserOnlineForTests,
+  network,
+} from '@/offline/network';
 import {
   addInvalidation,
   resetInvalidationsForTests,
@@ -241,6 +251,30 @@ describe('the change list', () => {
       50, 100,
     ]);
   });
+
+  it('folds the oldest changes together rather than forget them', async () => {
+    await addInvalidation(
+      { all: false, urgent: false, dates: [['2026-11-02', '2026-11-03']] },
+      1
+    );
+    for (let at = 2; at <= 60; at += 1) {
+      await addInvalidation(
+        { all: false, urgent: false, dates: [['2026-12-01', '2026-12-01']] },
+        at
+      );
+    }
+    const list = await db.meta.get('invalidations');
+    expect(list).toHaveLength(50);
+    expect(list[0]).toMatchObject({
+      at: 11,
+      dates: [
+        ['2026-11-02', '2026-11-03'],
+        ['2026-12-01', '2026-12-01'],
+      ],
+    });
+    // An answer older than every change still knows its date changed.
+    expect(stalenessOf({ date: '2026-11-03', fetchedAt: 0 })).toBe('hard');
+  });
 });
 
 describe('noting what is used', () => {
@@ -330,6 +364,48 @@ describe('the offline-aware adapter', () => {
     await expect(handle(officeConfig(), vi.fn())).rejects.toMatchObject({
       isOffline: true,
     });
+  });
+
+  it('says offline when the connection fails and nothing is stored', async () => {
+    await expect(
+      handle(officeConfig(), vi.fn().mockRejectedValue(networkError()))
+    ).rejects.toMatchObject({ isOffline: true });
+  });
+
+  it('still tries the network for what is not stored while requests fail', async () => {
+    reportUnreachable();
+    expect(network.online).toBe(false);
+    const response = await handle(
+      officeConfig(),
+      vi.fn().mockResolvedValue(ok({ modules: [1] }))
+    );
+    expect(JSON.parse(response.data)).toEqual({ modules: [1] });
+    expect(network.online).toBe(true);
+  });
+
+  it('dates a download from when it was asked for', async () => {
+    let now = 1000;
+    vi.spyOn(Date, 'now').mockImplementation(() => now);
+    const slow = vi.fn().mockImplementation(async () => {
+      now = 5000;
+      return ok({ modules: [1] });
+    });
+    await handle(officeConfig({ headers: { [SYNC_HEADER]: '1' } }), slow);
+    vi.restoreAllMocks();
+    const stored = await db.get(
+      'responses',
+      'office/morning_prayer/2026-11-2?bible_translation=esv&extra_collects='
+    );
+    expect(stored.fetchedAt).toBe(1000);
+  });
+
+  it('learns what another tab or the service worker stored', async () => {
+    const key = 'psalms';
+    expect(await readStoredInfo(key)).toBeNull();
+    applyStoredSummaries([
+      { key, fetchedAt: 1, schema: 1, kind: 'reference', bytes: 2 },
+    ]);
+    expect(await readStoredInfo(key)).toMatchObject({ key, fetchedAt: 1 });
   });
 
   it('falls back to storage when the network fails', async () => {

@@ -255,6 +255,7 @@
           :is-within-seven-days="isWithinAudioDates"
           :audio-ready="audioReady"
           :has-audio-links="!!(audioLinks && audioLinks.length)"
+          :offline="audioOffline"
           @dismiss-audio="confirmDismissAudio"
         />
       </template>
@@ -264,6 +265,8 @@
 
 <script>
 import { readingsUrl } from '@/offline/urls';
+import { network } from '@/offline';
+import { isNetworkFailure } from '@/offline/network';
 // @ is an alias to /src
 import CalendarCard from '@/components/CalendarCard.vue';
 import DayLine from '@/components/DayLine.vue';
@@ -394,12 +397,19 @@ export default {
       audioLinks: [],
       audioReady: false,
       audioRequest: 0,
+      // Offline without the readings' audio (it isn't downloaded).
+      audioOffline: false,
+      // The readings failed to load for want of a connection.
+      networkError: false,
       audioPlayTracked: false,
     };
   },
   computed: {
     audioEnabled() {
       return displayState.audioEnabled;
+    },
+    online() {
+      return network.online;
     },
     audioLoadingEnabled() {
       // Set VITE_FETCH_AUDIO_ON=false to avoid on-demand generation in dev.
@@ -555,6 +565,15 @@ export default {
     audioKey() {
       this.loadAudio();
     },
+    // Back online: load what couldn't be had offline.
+    online(isOnline) {
+      if (!isOnline) return;
+      if (this.networkError) {
+        this.retry();
+      } else if (this.audioOffline) {
+        this.loadAudio();
+      }
+    },
     audioEnabled(enabled) {
       if (enabled) this.loadAudio();
     },
@@ -697,6 +716,7 @@ export default {
       const request = ++this.audioRequest;
       this.audioLinks = [];
       this.audioReady = false;
+      this.audioOffline = false;
       this.audioPlayTracked = false;
       if (
         !this.audioLoadingEnabled ||
@@ -729,6 +749,7 @@ export default {
       );
       if (request !== this.audioRequest) return;
       this.audioLinks = track;
+      this.audioOffline = !network.online && !track.length;
       this.audioReady = true;
     },
     async confirmDismissAudio() {
@@ -780,9 +801,11 @@ export default {
           })
         );
       } catch (error) {
-        this.error = error?.isOffline
-          ? 'These readings haven’t been downloaded, and you’re offline. Today’s and the coming days’ readings are kept once you’ve opened Readings online.'
-          : 'There was an error retrieving the readings. Please try again.';
+        this.networkError = isNetworkFailure(error);
+        this.error =
+          error?.isOffline || (this.networkError && !network.online)
+            ? 'These readings haven’t been downloaded, and you’re offline. Today’s and the coming days’ readings are kept once you’ve opened Readings online.'
+            : 'There was an error retrieving the readings. Please try again.';
         this.loading = false;
         this.readingsLoading = false;
         return;
@@ -832,11 +855,13 @@ export default {
       }
       this.setReadingsToShow();
       this.error = false;
+      this.networkError = false;
       this.loading = false;
       this.readingsLoading = false;
     },
     retry: async function () {
       this.error = false;
+      this.networkError = false;
       this.loading = true;
       await this.initialize();
     },

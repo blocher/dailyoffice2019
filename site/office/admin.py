@@ -313,3 +313,9 @@ class ContentChangeAdmin(admin.ModelAdmin):
     def has_change_permission(self, request, obj=None):
         # Entries are versions devices have already read; add a new one instead.
         return False
+
+    def has_delete_permission(self, request, obj=None):
+        # Deleting the newest entry would move the version back, and any other
+        # would hide its change from devices yet to read it. Old entries are
+        # removed by themselves (offline_content.KEEP_FOR).
+        return False

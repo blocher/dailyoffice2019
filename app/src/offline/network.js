@@ -53,6 +53,7 @@ export function reportReachable() {
 }
 
 let probeTimer = null;
+let probing = false;
 
 export function reportUnreachable() {
   if (!network.browserOnline || network.unreachable) return;
@@ -64,13 +65,15 @@ export function reportUnreachable() {
 // While "unreachable", check now and then whether the API answers again.
 function scheduleProbe(delay = 15000) {
   if (probeTimer || typeof window === 'undefined') return;
+  const next = Math.min(Math.max(delay * 2, 15000), 120000);
   probeTimer = window.setTimeout(async () => {
     probeTimer = null;
-    if (!network.unreachable) return;
+    if (!network.unreachable || probing) return;
     if (!network.browserOnline) {
-      scheduleProbe(delay);
+      scheduleProbe(next);
       return;
     }
+    probing = true;
     try {
       const base = import.meta.env.VITE_API_URL || '/';
       const response = await window.fetch(
@@ -85,9 +88,20 @@ function scheduleProbe(delay = 15000) {
       }
     } catch {
       // Still nothing.
+    } finally {
+      probing = false;
     }
-    scheduleProbe(Math.min(delay * 2, 120000));
+    scheduleProbe(next);
   }, delay);
+}
+
+// Back in front (a request cut off as the app went to the background can be
+// what made it "unreachable"): check now rather than wait for the timer.
+function probeNow() {
+  if (!network.unreachable || probing || typeof window === 'undefined') return;
+  window.clearTimeout(probeTimer);
+  probeTimer = null;
+  scheduleProbe(0);
 }
 
 export function isNetworkFailure(error) {
@@ -109,6 +123,9 @@ export function installNetworkListeners() {
   window.addEventListener('offline', () => {
     network.browserOnline = false;
     notify();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') probeNow();
   });
 }
 

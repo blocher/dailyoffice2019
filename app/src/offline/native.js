@@ -34,7 +34,7 @@ import {
 } from './cacheAdapter';
 import { describe, parseApiUrl, keyFor } from './keys';
 import { currentInvalidations, mergeInvalidations } from './staleness';
-import { trackKey } from './audio';
+import { hasTrack, trackKey } from './audio';
 import { resolveAudioUrl } from '@/helpers/officeAudio';
 
 const OfflineSync = registerPlugin('OfflineSync');
@@ -62,11 +62,7 @@ async function storedTrack(key) {
   const raw = record?.data?.audio?.single_track?.[0];
   if (!raw) return null;
   const url = trackKey(resolveAudioUrl(raw));
-  try {
-    return (await db.get('audio', url)) ? url : null;
-  } catch {
-    return null;
-  }
+  return (await hasTrack(url)) ? url : null;
 }
 
 async function audioTasks(items) {

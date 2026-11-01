@@ -15,7 +15,8 @@
     the network and are stored.
 
   Answers from storage carry `response.offline = { fetchedAt, stale }`.
-  Offline with nothing stored, the request fails with `error.isOffline`.
+  Offline with nothing stored (or when the connection fails and nothing is
+  stored), the request fails with `error.isOffline`.
 */
 import axios from 'axios';
 import * as db from './db';
@@ -54,10 +55,19 @@ function headerValue(headers, name) {
   return key ? headers[key] : undefined;
 }
 
-export function offlineError(config) {
+export function offlineError(config, cause) {
   const error = new Error('You are offline and this has not been downloaded.');
   error.isOffline = true;
   error.code = 'ERR_OFFLINE';
+  error.config = config;
+  if (cause) error.cause = cause;
+  return error;
+}
+
+// A sync download that arrived but couldn't be stored (storage is full).
+export function notStoredError(config) {
+  const error = new Error('There is no room left to store downloads.');
+  error.code = 'ERR_NOT_STORED';
   error.config = config;
   return error;
 }
@@ -120,13 +130,16 @@ function sizeOf(data) {
   What is stored, without the answers themselves. A sync run checks hundreds
   of keys, and reading each answer whole (often hundreds of KB) just to see
   when it was downloaded is slow on a phone. Filled from storage once, then
-  kept in step by storeEntry and removeEntries. Writes from elsewhere (the
-  service worker, pwa.js) call resetStoredIndex.
+  kept in step by storeEntry, removeEntries and clearEntries, which also
+  tell the app's other tabs (they share the storage). The service worker's
+  writes come in through applyStoredSummaries (pwa.js).
 */
 let storedIndex = null;
 let indexing = null;
+// Bumped by a reset, so a scan that started before it isn't kept.
+let indexGeneration = 0;
 
-function summaryOf(record) {
+export function summaryOf(record) {
   const { key, fetchedAt, schema, kind, date, profile, bytes } = record;
   return { key, fetchedAt, schema, kind, date, profile, bytes };
 }
@@ -134,8 +147,9 @@ function summaryOf(record) {
 function loadStoredIndex() {
   if (storedIndex) return Promise.resolve(storedIndex);
   if (!indexing) {
+    const generation = indexGeneration;
     const map = new Map();
-    indexing = db
+    const scan = db
       .eachRecord(
         'responses',
         (record) => {
@@ -145,14 +159,15 @@ function loadStoredIndex() {
         'readonly'
       )
       .then(() => {
-        storedIndex = map;
+        if (generation === indexGeneration) storedIndex = map;
         return map;
       })
       // Unreadable: answer from what was read, and try again next time.
       .catch(() => map)
       .finally(() => {
-        indexing = null;
+        if (indexing === scan) indexing = null;
       });
+    indexing = scan;
   }
   return indexing;
 }
@@ -164,6 +179,43 @@ function updateIndex(change) {
 
 export function resetStoredIndex() {
   storedIndex = null;
+  indexing = null;
+  indexGeneration += 1;
+}
+
+const channel =
+  typeof window !== 'undefined' && typeof window.BroadcastChannel === 'function'
+    ? new window.BroadcastChannel('dailyoffice-offline-responses')
+    : null;
+
+function tellOtherTabs(message) {
+  try {
+    channel?.postMessage(message);
+  } catch {
+    // They find out when they next load.
+  }
+}
+
+// Answers another writer stored (another tab, the service worker).
+export function applyStoredSummaries(summaries) {
+  if (!Array.isArray(summaries)) {
+    resetStoredIndex();
+    return;
+  }
+  updateIndex((map) =>
+    summaries.forEach((summary) => {
+      if (summary?.key) map.set(summary.key, summary);
+    })
+  );
+}
+
+if (channel) {
+  channel.onmessage = ({ data }) => {
+    if (data?.type === 'stored') applyStoredSummaries([data.summary]);
+    else if (data?.type === 'removed' && Array.isArray(data.keys))
+      updateIndex((map) => data.keys.forEach((key) => map.delete(key)));
+    else if (data?.type === 'cleared') resetStoredIndex();
+  };
 }
 
 // A stored answer's details (not its data), with its staleness; or null.
@@ -184,8 +236,17 @@ export async function storedInfos() {
 }
 
 export async function removeEntries(keys) {
+  if (!keys.length) return;
   await Promise.all(keys.map((key) => db.remove('responses', key)));
   updateIndex((map) => keys.forEach((key) => map.delete(key)));
+  tellOtherTabs({ type: 'removed', keys });
+}
+
+// Remove every stored answer.
+export async function clearEntries() {
+  await db.clear('responses');
+  resetStoredIndex();
+  tellOtherTabs({ type: 'cleared' });
 }
 
 export async function readEntry(key) {
@@ -200,8 +261,10 @@ export async function readEntry(key) {
   }
 }
 
-// `fetchedAt` is when the answer was downloaded, when that was earlier (the
-// apps' background downloads, native.js); `bytes` its size, when known.
+// `fetchedAt` is when the answer was asked for (a change noted while it was
+// on its way may not be in it), or downloaded in the apps' background
+// (native.js); `bytes` its size, when known. Resolves to null when it
+// couldn't be stored (storage full).
 export async function storeEntry(
   key,
   info,
@@ -226,18 +289,22 @@ export async function storeEntry(
     // Storage full: the page still gets its answer.
     return null;
   }
-  updateIndex((map) => map.set(key, summaryOf(record)));
+  const summary = summaryOf(record);
+  updateIndex((map) => map.set(key, summary));
+  tellOtherTabs({ type: 'stored', summary });
   return record;
 }
 
-// Store a network answer worth keeping.
-async function keep(key, info, url, response) {
+// Store a network answer worth keeping. Resolves to false when it was worth
+// keeping but couldn't be stored.
+async function keep(key, info, url, response, fetchedAt) {
   const data = bodyOf(response);
-  if (storable(info, response, data)) {
-    await storeEntry(key, info, url, data, {
-      bytes: typeof response.data === 'string' ? response.data.length : 0,
-    });
-  }
+  if (!storable(info, response, data)) return true;
+  const record = await storeEntry(key, info, url, data, {
+    fetchedAt,
+    bytes: typeof response.data === 'string' ? response.data.length : 0,
+  });
+  return Boolean(record);
 }
 
 function fromStorage(record, config) {
@@ -288,9 +355,10 @@ const refreshing = new Map();
 
 function refreshBehind(networkAdapter, config, key, info, url, query) {
   if (refreshing.has(key)) return refreshing.get(key);
+  const askedAt = Date.now();
   const promise = callNetwork(networkAdapter, config)
     .then(async (response) => {
-      await keep(key, info, url, response);
+      await keep(key, info, url, response, askedAt);
     })
     .catch((error) => {
       // The view still happened; count it once the app is online again.
@@ -322,8 +390,11 @@ export async function handle(config, networkAdapter) {
   const isSync = Boolean(headerValue(config.headers, SYNC_HEADER));
 
   if (isSync) {
+    const askedAt = Date.now();
     const response = await callNetwork(networkAdapter, config, { quiet: true });
-    await keep(key, info, url, response);
+    if (!(await keep(key, info, url, response, askedAt))) {
+      throw notStoredError(config);
+    }
     return response;
   }
 
@@ -337,7 +408,10 @@ export async function handle(config, networkAdapter) {
       if (info.kind === 'office') queueView(info, parsed.query);
       return fromStorage(stored, config);
     }
-    throw offlineError(config);
+    // Requests have been failing, but the browser has a network: one more
+    // try rather than "offline" for a request that may well get through
+    // (iOS cuts requests off when the app goes to the background).
+    if (!network.browserOnline) throw offlineError(config);
   }
 
   if (info.policy === 'cache-first' && stored && !stored.stale) {
@@ -349,12 +423,19 @@ export async function handle(config, networkAdapter) {
   }
 
   // The page has its answer before it is saved.
+  const askedAt = Date.now();
   const request = callNetwork(networkAdapter, config).then((response) => {
-    keep(key, info, url, response).catch(() => {});
+    keep(key, info, url, response, askedAt).catch(() => {});
     return response;
   });
 
-  if (!stored) return request;
+  if (!stored) {
+    // No connection and nothing stored: the page says so as it would
+    // offline (OfflineMiss), rather than show a bare error.
+    return request.catch((error) => {
+      throw isNetworkFailure(error) ? offlineError(config, error) : error;
+    });
+  }
 
   // A stored copy is waiting: the network gets a few seconds, then the copy
   // answers (and the request still refreshes it when it lands).

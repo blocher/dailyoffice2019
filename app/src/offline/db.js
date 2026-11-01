@@ -97,9 +97,15 @@ export function openDb() {
   return current;
 }
 
-// What a lost connection throws: worth opening again once.
-const CONNECTION_ERRORS = ['InvalidStateError', 'UnknownError'];
+// What a lost connection throws (an AbortError when it closes mid
+// transaction): worth opening again once.
+const CONNECTION_ERRORS = ['InvalidStateError', 'UnknownError', 'AbortError'];
 
+/*
+  Memory stands in only when IndexedDB can't be opened at all. A database
+  that opened but fails an operation rejects: answering that one from memory
+  would mix the two (a write "saved" where no later read looks).
+*/
 async function withStore(name, mode, run, retried = false) {
   const db = await openDb();
   if (!db) return run(null);
@@ -113,7 +119,6 @@ async function withStore(name, mode, run, retried = false) {
     const [result] = await Promise.all([run(tx.objectStore(name)), done]);
     return result;
   } catch (error) {
-    if (error?.name === 'QuotaExceededError') throw error;
     if (!retried && CONNECTION_ERRORS.includes(error?.name)) {
       try {
         db.close();
@@ -123,8 +128,7 @@ async function withStore(name, mode, run, retried = false) {
       opening = null;
       return withStore(name, mode, run, true);
     }
-    // A broken database: answer from memory this time.
-    return run(null);
+    throw error;
   }
 }
 

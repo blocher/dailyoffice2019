@@ -86,7 +86,7 @@ function toggle() {
   background-color: var(--paper-sunken);
 }
 
-.offline-status.is-offline .header-action__icon {
+.offline-status.is-offline .offline-status__icon {
   color: var(--accent);
 }
 

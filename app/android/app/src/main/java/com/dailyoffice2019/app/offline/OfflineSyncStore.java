@@ -8,7 +8,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -86,12 +85,16 @@ public final class OfflineSyncStore {
         }
     }
 
-    /** Whole or not at all: a temporary file renamed over the old one. */
+    /**
+     * Whole or not at all: a temporary file renamed over the old one. Synced to the disk first, so a
+     * power cut can't leave an empty file in its place.
+     */
     private static boolean writeText(File file, String text) {
         File temporary = new File(file.getPath() + ".tmp");
-        try (OutputStream out = new FileOutputStream(temporary)) {
+        try (FileOutputStream out = new FileOutputStream(temporary)) {
             out.write(text.getBytes(StandardCharsets.UTF_8));
             out.flush();
+            out.getFD().sync();
         } catch (IOException error) {
             //noinspection ResultOfMethodCallIgnored
             temporary.delete();
@@ -111,8 +114,8 @@ public final class OfflineSyncStore {
         }
     }
 
-    private void write(String name, JSONObject object) {
-        writeText(new File(root, name), object.toString());
+    private boolean write(String name, JSONObject object) {
+        return writeText(new File(root, name), object.toString());
     }
 
     private File inboxFile(String key) {
@@ -243,6 +246,34 @@ public final class OfflineSyncStore {
                 return;
             }
             write("learned.json", learned);
+        }
+    }
+
+    /**
+     * Record a track saved to the audio directory, for the page to take: { url, path, bytes, date,
+     * office, savedAt }. Not when the downloads were removed (or turned off) meanwhile, or the file
+     * is gone: false then.
+     */
+    public boolean learnTrack(JSONObject track) {
+        String url = track.optString("url", null);
+        String path = track.optString("path", null);
+        if (url == null || path == null) return false;
+        synchronized (LOCK) {
+            if (!hasPlan() || !new File(audioDirectory.getParentFile(), path).exists()) return false;
+            JSONObject learned = read("learned.json");
+            JSONArray list = learned.optJSONArray("audio");
+            JSONArray kept = new JSONArray();
+            for (int i = 0; list != null && i < list.length(); i++) {
+                JSONObject item = list.optJSONObject(i);
+                if (item != null && !url.equals(item.optString("url"))) kept.put(item);
+            }
+            kept.put(track);
+            try {
+                learned.put("audio", kept);
+            } catch (JSONException error) {
+                return false;
+            }
+            return write("learned.json", learned);
         }
     }
 

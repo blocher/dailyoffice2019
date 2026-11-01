@@ -154,5 +154,10 @@ class AudioTrackView(APIView):
             # office's audio is offered. Browsers keep it a day, since only Cloudflare's copy
             # can be purged if a track ever has to be replaced.
             response["Cache-Control"] = "public, max-age=86400, s-maxage=1209600"
+        # Always, not just for requests with an Origin (the CORS middleware's
+        # rule): Cloudflare keeps one copy for everyone, usually first asked for
+        # by an <audio> element (no Origin), and the app's offline download
+        # (fetch) needs the header on that copy too.
+        response["Access-Control-Allow-Origin"] = "*"
 
         return response
