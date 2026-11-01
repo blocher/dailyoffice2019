@@ -11,6 +11,7 @@
     cacheAdapter.js axios adapter: answers from storage when it should
     network.js      online / offline
     sync.js         downloads the days ahead; keeps them fresh
+    native.js       background downloads in the iOS and Android apps
     staleness.js    the API's content change log, applied to storage
     audio.js        office audio for offline listening (opt-in)
     preferences.js  offline preferences
@@ -19,6 +20,12 @@
 
   installOffline() is called once from main.js; the Offline panel
   (components/OfflinePanel.vue) shows the state and the preferences.
+
+  Syncs run when the app opens, comes back to the front, or reconnects (and
+  see sync.js). In the background, the web app has its service worker
+  (serviceWorker.js); the iOS and Android apps have the OfflineSync plugin,
+  whose downloads are moved into storage first thing on opening and on
+  coming back to the front (native.js).
 */
 import { watch } from 'vue';
 import { App as CapacitorApp } from '@capacitor/app';
@@ -31,7 +38,14 @@ import {
   onConnectivityChange,
 } from './network';
 import { loadOfflinePrefs, offlinePrefs } from './preferences';
-import { configureSync, loadSyncStatus, requestSync, syncIfDue } from './sync';
+import {
+  configureSync,
+  loadSyncStatus,
+  refreshReadiness,
+  requestSync,
+  syncIfDue,
+} from './sync';
+import { drainInbox } from './native';
 import { flushViews } from './viewQueue';
 import { friendlyDate } from './format';
 import { syncState } from './sync';
@@ -39,6 +53,7 @@ import { openPanel, panels } from '@/helpers/panels';
 import { toast } from '@/ui/feedback';
 
 export { network } from './network';
+export { nativeSyncState } from './native';
 export {
   syncState,
   requestSync,
@@ -135,7 +150,8 @@ export function installOffline({ store }) {
     if (started) return;
     started = true;
     await ready;
-    const begin = () => requestSync('start');
+    // What the apps downloaded in the background goes in first.
+    const begin = () => drainInbox().finally(() => requestSync('start'));
     if (typeof window !== 'undefined' && window.requestIdleCallback) {
       window.requestIdleCallback(begin, { timeout: 4000 });
     } else {
@@ -188,7 +204,9 @@ export function installOffline({ store }) {
     ready.then(() => window.setTimeout(announceOffline, 3500));
   }
 
-  if (typeof document !== 'undefined') {
+  // The apps hear of it from appStateChange, below, and move the background
+  // downloads in before syncing.
+  if (typeof document !== 'undefined' && !Capacitor.isNativePlatform()) {
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible' && network.online)
         syncIfDue('resume');
@@ -196,8 +214,12 @@ export function installOffline({ store }) {
   }
   if (Capacitor.isNativePlatform()) {
     Promise.resolve(
-      CapacitorApp.addListener('appStateChange', ({ isActive }) => {
-        if (isActive && network.online) syncIfDue('resume');
+      CapacitorApp.addListener('appStateChange', async ({ isActive }) => {
+        if (!isActive || !started) return;
+        await ready;
+        const drained = await drainInbox();
+        if (network.online) syncIfDue('resume');
+        if (drained) refreshReadiness();
       })
     ).catch(() => {});
   }

@@ -9,7 +9,8 @@
     'soft'  every-date changes from admin edits: download again once its day
             is today or tomorrow, or whenever it is opened online
   Stored answers are never rewritten to mark them; staleness is worked out
-  when they are read.
+  when they are read. The apps' background downloads keep their own copy of
+  this list and hand back what they learned (native.js).
 */
 import * as db from './db';
 
@@ -71,6 +72,46 @@ export async function addInvalidation(summary, at = Date.now()) {
     },
   ].slice(-MAX_KEPT);
   await db.meta.set('invalidations', invalidations);
+}
+
+// The changes known now (for the apps' background downloads, native.js).
+export async function currentInvalidations() {
+  await loadInvalidations();
+  return invalidations.slice();
+}
+
+function signature(invalidation) {
+  return JSON.stringify([
+    invalidation.at,
+    invalidation.all,
+    invalidation.urgent,
+    invalidation.dates,
+  ]);
+}
+
+/*
+  Add changes learned elsewhere (the apps' background downloads, native.js),
+  skipping ones already noted. Returns how many were new.
+*/
+export async function mergeInvalidations(list) {
+  await loadInvalidations();
+  const known = new Set(invalidations.map(signature));
+  const added = (Array.isArray(list) ? list : [])
+    .filter((item) => item && typeof item.at === 'number')
+    .map((item) => ({
+      at: item.at,
+      all: Boolean(item.all),
+      urgent: Boolean(item.urgent),
+      dates: item.all ? [] : Array.isArray(item.dates) ? item.dates : [],
+    }))
+    .filter((item) => item.all || item.dates.length)
+    .filter((item) => !known.has(signature(item)));
+  if (!added.length) return 0;
+  invalidations = [...invalidations, ...added]
+    .sort((a, b) => a.at - b.at)
+    .slice(-MAX_KEPT);
+  await db.meta.set('invalidations', invalidations);
+  return added.length;
 }
 
 // Forget changes older than every stored answer.

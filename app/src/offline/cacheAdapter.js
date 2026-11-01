@@ -130,7 +130,9 @@ export async function readEntry(key) {
   }
 }
 
-export async function storeEntry(key, info, url, data) {
+// `fetchedAt` is when the answer was downloaded, when that was earlier (the
+// apps' background downloads, native.js).
+export async function storeEntry(key, info, url, data, { fetchedAt } = {}) {
   const previous = await readEntry(key);
   const bytes = sizeOf(data);
   const record = {
@@ -140,7 +142,7 @@ export async function storeEntry(key, info, url, data) {
     kind: info.kind,
     date: info.date,
     profile: info.profile,
-    fetchedAt: Date.now(),
+    fetchedAt: fetchedAt || Date.now(),
     bytes,
     schema: SCHEMA,
   };

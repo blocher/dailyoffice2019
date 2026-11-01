@@ -19,6 +19,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } catch {
             print("Could not set the audio session category: \(error)")
         }
+
+        // Offline downloads keep fresh in the background (OfflineSyncPlugin.swift). iOS requires
+        // the handler to be registered before launching finishes.
+        OfflineSyncPlugin.registerBackgroundTask()
         
         // Override point for customization after application launch.
         return true

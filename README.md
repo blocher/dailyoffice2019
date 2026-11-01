@@ -690,6 +690,17 @@ connection: in a browser, as an installed web app, and in the native apps. The c
 - Audio for chosen offices, today and tomorrow, downloads only when the reader turns it on (about 25–30 MB a track).
 - On the web, `dist/sw.js` (built from `app/src/offline/serviceWorker.js` by `vite.config.mjs`) keeps the app shell
   and, where the browser allows, refreshes downloads in the background. New versions wait for the reader to reload.
+- In the iOS and Android apps, the local `OfflineSync` plugin refreshes downloads in the background
+  (`app/ios/App/App/OfflineSyncPlugin.swift`, a `BGAppRefreshTask` about every 6 hours when iOS allows;
+  `app/android/.../offline/`, a WorkManager job every 12 hours on a connection with the battery not low). It follows
+  the same plan and rules as the service worker, but background code can't reach the web view's IndexedDB, so it
+  downloads into files (an inbox) that `app/src/offline/native.js` moves into IndexedDB when the app opens or comes
+  back to the front. To try it on iOS (a device: the Simulator has no `BGTaskScheduler`), background the app, pause
+  in Xcode and run
+  `e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"com.dailyoffice.dailyoffice2019.offline-refresh"]`.
+  Anywhere, `await Capacitor.Plugins.OfflineSync.runNow()` in the web inspector starts one run (on Android, a
+  one-time WorkManager job: WorkManager won't start the periodic one early, even from `adb shell cmd jobscheduler run`).
+  The plugin's files are in `Library/Application Support/offline-sync/` (iOS) and `no_backup/offline-sync/` (Android).
 
 Devices refresh their downloads from the content change log (`ContentChange`, `site/office/offline_content.py`):
 

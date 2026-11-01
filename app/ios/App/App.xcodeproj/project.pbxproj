@@ -13,6 +13,7 @@
 		504EC3081FED79650016851F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504EC3071FED79650016851F /* AppDelegate.swift */; };
 		7A1C0E0B2F9B4D0100A1B2C3 /* NativeAudioPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C0E0A2F9B4D0100A1B2C3 /* NativeAudioPlugin.swift */; };
 		7A1C0E0D2F9B4D0100A1B2C3 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C0E0C2F9B4D0100A1B2C3 /* MainViewController.swift */; };
+		9A8FA4CD69B94EA288243887 /* OfflineSyncPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC94AD4BDAF949AC9A70D95B /* OfflineSyncPlugin.swift */; };
 		7A1C0E0F2F9B4D0100A1B2C3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C0E0E2F9B4D0100A1B2C3 /* SceneDelegate.swift */; };
 		504EC30D1FED79650016851F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30B1FED79650016851F /* Main.storyboard */; };
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
@@ -29,6 +30,7 @@
 		504EC3071FED79650016851F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7A1C0E0A2F9B4D0100A1B2C3 /* NativeAudioPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeAudioPlugin.swift; sourceTree = "<group>"; };
 		7A1C0E0C2F9B4D0100A1B2C3 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		FC94AD4BDAF949AC9A70D95B /* OfflineSyncPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineSyncPlugin.swift; sourceTree = "<group>"; };
 		7A1C0E0E2F9B4D0100A1B2C3 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		504EC30C1FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		504EC30E1FED79650016851F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -76,6 +78,7 @@
 				7A1C0E0E2F9B4D0100A1B2C3 /* SceneDelegate.swift */,
 				7A1C0E0C2F9B4D0100A1B2C3 /* MainViewController.swift */,
 				7A1C0E0A2F9B4D0100A1B2C3 /* NativeAudioPlugin.swift */,
+				FC94AD4BDAF949AC9A70D95B /* OfflineSyncPlugin.swift */,
 				504EC30B1FED79650016851F /* Main.storyboard */,
 				504EC30E1FED79650016851F /* Assets.xcassets */,
 				504EC3101FED79650016851F /* LaunchScreen.storyboard */,
@@ -174,6 +177,7 @@
 				7A1C0E0F2F9B4D0100A1B2C3 /* SceneDelegate.swift in Sources */,
 				7A1C0E0D2F9B4D0100A1B2C3 /* MainViewController.swift in Sources */,
 				7A1C0E0B2F9B4D0100A1B2C3 /* NativeAudioPlugin.swift in Sources */,
+				9A8FA4CD69B94EA288243887 /* OfflineSyncPlugin.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

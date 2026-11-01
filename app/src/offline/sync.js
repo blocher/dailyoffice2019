@@ -24,7 +24,10 @@
   them as views.
 
   The plan is also written to storage for the service worker, which follows
-  it in the background where the browser allows (public/sw.js).
+  it in the background where the browser allows (public/sw.js). In the iOS
+  and Android apps it goes to the OfflineSync plugin instead, whose
+  background task downloads into an inbox the app empties into storage the
+  next time it opens (native.js).
 */
 import axios from 'axios';
 import { reactive } from 'vue';
@@ -63,6 +66,7 @@ import {
   trackKey,
 } from './audio';
 import { resolveAudioUrl } from '@/helpers/officeAudio';
+import { scheduleBackground } from './native';
 
 const CONCURRENCY = 2;
 const REQUEST_TIMEOUT_MS = 45000;
@@ -304,19 +308,11 @@ function audioWanted(settings) {
   );
 }
 
-async function syncAudio(context, current, today) {
-  const keep = new Set();
-  const state = syncState.audio;
-  state.preparing = 0;
-  state.ready = 0;
-  if (!audioWanted(context.settings) || effectiveDays() === 0) {
-    state.wanted = 0;
-    state.active = false;
-    await pruneTracks(keep);
-    return;
-  }
+// The offices whose audio is wanted, for `count` days from today.
+function audioItems(context, today, count) {
   const items = [];
-  for (let offset = 0; offset < AUDIO_DAYS; offset += 1) {
+  if (!audioWanted(context.settings) || effectiveDays() === 0) return items;
+  for (let offset = 0; offset < count; offset += 1) {
     const date = addDays(today, offset);
     offlinePrefs.audioOffices.forEach((office) => {
       items.push({
@@ -332,6 +328,21 @@ async function syncAudio(context, current, today) {
           }) + '&include_audio_links=true',
       });
     });
+  }
+  return items;
+}
+
+async function syncAudio(context, current, today) {
+  const keep = new Set();
+  const state = syncState.audio;
+  state.preparing = 0;
+  state.ready = 0;
+  const items = audioItems(context, today, AUDIO_DAYS);
+  if (!items.length) {
+    state.wanted = 0;
+    state.active = false;
+    await pruneTracks(keep);
+    return;
   }
   state.wanted = items.length;
   state.active = true;
@@ -476,9 +487,19 @@ async function measureReadiness(plan, today, days) {
   syncState.readyThrough = readyThrough;
 }
 
+// How far ahead every planned office is stored, after downloads arrived
+// from outside a run (the apps' background downloads, native.js).
+export async function refreshReadiness() {
+  const plan = await db.meta.get('plan');
+  if (!plan?.tasks) return;
+  await loadInvalidations();
+  await measureReadiness(plan.tasks, startOfDay(new Date()), plan.days || 0);
+}
+
 async function writeBackgroundPlan(plan, days) {
-  // The service worker follows this list in the background.
-  await db.meta.set('plan', {
+  // The service worker (and, in the apps, the OfflineSync plugin) follows
+  // this list in the background.
+  const background = {
     createdAt: Date.now(),
     days,
     apiBase: import.meta.env.VITE_API_URL || '/',
@@ -490,7 +511,9 @@ async function writeBackgroundPlan(plan, days) {
       profile,
       priority,
     })),
-  });
+  };
+  await db.meta.set('plan', background);
+  return background;
 }
 
 async function persistStorage() {
@@ -582,7 +605,15 @@ async function runOnce(reason) {
   await trimInvalidations(oldestFetched);
   syncState.storageBytes = bytes;
   await measureReadiness(plan, today, days);
-  await writeBackgroundPlan(plan, days);
+  const background = await writeBackgroundPlan(plan, days);
+  // Days after today count too: a background run tomorrow wants tomorrow's.
+  await scheduleBackground(background, {
+    audio: audioItems(context, today, AUDIO_DAYS + 2).map((item) => ({
+      url: item.url,
+      date: isoOf(item.date),
+      office: item.office,
+    })),
+  });
   if (days > 0) persistStorage();
 
   syncState.current = '';
@@ -663,6 +694,7 @@ export async function clearDownloads() {
   await db.clear('responses');
   await pruneTracks(new Set());
   await db.meta.set('plan', null);
+  await scheduleBackground(null);
   syncState.storageBytes = 0;
   syncState.readyDays = 0;
   syncState.readyThrough = null;

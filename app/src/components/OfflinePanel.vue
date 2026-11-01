@@ -203,6 +203,7 @@ import {
   DAY_CHOICES,
   clearDownloads,
   effectiveDays,
+  nativeSyncState as nativeSync,
   network,
   offlinePrefs as prefs,
   requestSync,
@@ -359,7 +360,7 @@ const installText = computed(
 
 const footnote = computed(() => {
   const when =
-    pwa.backgroundSync === 'on'
+    pwa.backgroundSync === 'on' || nativeSync.scheduled
       ? 'whenever the app opens, and in the background'
       : 'whenever the app opens';
   return `Downloads refresh ${when}. Corrections reach this device the next time it’s online. Display settings always work offline; other settings need a connection.`;

@@ -6,5 +6,7 @@ class MainViewController: CAPBridgeViewController {
     override open func capacitorDidLoad() {
         // Office audio (NativeAudioPlugin.swift).
         bridge?.registerPluginInstance(NativeAudioPlugin())
+        // Background downloads for offline use (OfflineSyncPlugin.swift).
+        bridge?.registerPluginInstance(OfflineSyncPlugin())
     }
 }
