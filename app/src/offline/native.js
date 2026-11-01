@@ -26,7 +26,7 @@
 import { reactive } from 'vue';
 import { Capacitor, registerPlugin } from '@capacitor/core';
 import * as db from './db';
-import { readEntry, storeEntry } from './cacheAdapter';
+import { keepable, readEntry, storeEntry } from './cacheAdapter';
 import { describe, parseApiUrl, keyFor } from './keys';
 import { currentInvalidations, mergeInvalidations } from './staleness';
 import { trackKey } from './audio';
@@ -127,7 +127,7 @@ async function keepEntry(entry) {
   } catch {
     return 'skipped';
   }
-  if (!data || typeof data !== 'object') return 'skipped';
+  if (!keepable(entry.kind, data)) return 'skipped';
   const existing = await readEntry(entry.key);
   if (existing && existing.fetchedAt >= entry.fetchedAt) return 'skipped';
   const record = await storeEntry(

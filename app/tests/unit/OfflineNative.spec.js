@@ -154,6 +154,21 @@ describe('the background inbox', () => {
     expect(plugin.ack.mock.calls[0][0].keys).toEqual([KEY]);
   });
 
+  it('lets go of audio answers whose track is still being prepared', async () => {
+    const audioKey = `${KEY}&include_audio_links=true`;
+    plugin.drain.mockResolvedValueOnce(
+      inbox([
+        {
+          ...entry(audioKey, 1, { audio: { status: 'preparing' } }),
+          kind: 'audio',
+        },
+      ])
+    );
+    expect(await drainInbox()).toBe(0);
+    expect(await readEntry(audioKey)).toBeNull();
+    expect(plugin.ack.mock.calls[0][0].keys).toEqual([audioKey]);
+  });
+
   it('leaves entries in the inbox when storage is full', async () => {
     const put = vi.spyOn(db, 'put').mockRejectedValueOnce(new Error('full'));
     plugin.drain.mockResolvedValueOnce(

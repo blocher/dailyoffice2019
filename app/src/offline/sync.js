@@ -332,22 +332,26 @@ function audioItems(context, today, count) {
   return items;
 }
 
+const slotOf = (date, office) => `${date}|${office}`;
+
 async function syncAudio(context, current, today) {
   const keep = new Set();
+  // Offices whose track couldn't be worked out this run (still being
+  // prepared, or the request failed): whatever is stored for them stays.
+  const unresolved = new Set();
+  let finished = true;
   const state = syncState.audio;
   state.preparing = 0;
   state.ready = 0;
   const items = audioItems(context, today, AUDIO_DAYS);
-  if (!items.length) {
-    state.wanted = 0;
-    state.active = false;
-    await pruneTracks(keep);
-    return;
-  }
   state.wanted = items.length;
-  state.active = true;
+  state.active = items.length > 0;
   for (const item of items) {
-    if (current !== runId || !network.online) break;
+    if (current !== runId || !network.online) {
+      finished = false;
+      break;
+    }
+    const slot = slotOf(isoOf(item.date), item.office);
     let track = null;
     try {
       const parsed = parseApiUrl(item.url);
@@ -363,6 +367,7 @@ async function syncAudio(context, current, today) {
       }
       if (data?.audio?.status === 'preparing') {
         state.preparing += 1;
+        unresolved.add(slot);
         continue;
       }
       const raw = data?.audio?.single_track?.[0];
@@ -376,12 +381,21 @@ async function syncAudio(context, current, today) {
       state.ready += 1;
     } catch {
       // Try again on the next run.
-      if (track) keep.add(track);
+      if (!track) unresolved.add(slot);
     }
   }
-  await pruneTracks(keep);
   const summary = await audioSummary();
-  state.bytes = summary.bytes;
+  // A run cut short hasn't seen every office: removing tracks now would drop
+  // the ones it didn't reach (going offline mid-run would empty the audio).
+  if (finished) {
+    summary.tracks
+      .filter((record) => unresolved.has(slotOf(record.date, record.office)))
+      .forEach((record) => keep.add(record.url));
+    await pruneTracks(keep);
+    state.bytes = (await audioSummary()).bytes;
+  } else {
+    state.bytes = summary.bytes;
+  }
   state.active = false;
   if (state.preparing && current === runId) scheduleAudioRetry();
 }

@@ -239,7 +239,18 @@ public class OfflineSyncWorker extends Worker {
         }
     }
 
-    /** Download one answer into the inbox. Returns its parsed body (a JSONObject or JSONArray). */
+    /** A finished track: "preparing" answers aren't kept (keepable in app/src/offline/cacheAdapter.js). */
+    private static boolean hasTrack(Object body) {
+        JSONObject audio = body instanceof JSONObject ? ((JSONObject) body).optJSONObject("audio") : null;
+        if (audio == null || "preparing".equals(audio.optString("status"))) return false;
+        JSONArray single = audio.optJSONArray("single_track");
+        return single != null && single.length() > 0;
+    }
+
+    /**
+     * Download one answer into the inbox. Returns its parsed body (a JSONObject or JSONArray). Audio
+     * answers are only kept once their track is ready.
+     */
     @Nullable
     private Object download(JSONObject task) {
         String address = optString(task, "url");
@@ -250,6 +261,7 @@ public class OfflineSyncWorker extends Worker {
             if (text == null) return null;
             Object body = new JSONTokener(text).nextValue();
             if (!(body instanceof JSONObject) && !(body instanceof JSONArray)) return null;
+            if ("audio".equals(optString(task, "kind")) && !hasTrack(body)) return null;
             double fetchedAt = System.currentTimeMillis();
             JSONObject entry = new JSONObject();
             entry.put("key", key);

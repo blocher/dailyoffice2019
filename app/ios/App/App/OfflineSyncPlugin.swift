@@ -477,7 +477,16 @@ actor OfflineSyncRunner {
         return request
     }
 
-    /// Download one answer into the inbox. Returns its parsed body (an object or a list).
+    /// A finished track: "preparing" answers aren't kept (keepable in app/src/offline/cacheAdapter.js).
+    private static func hasTrack(_ body: Any) -> Bool {
+        guard let audio = (body as? [String: Any])?["audio"] as? [String: Any],
+              audio["status"] as? String != "preparing",
+              let single = audio["single_track"] as? [Any] else { return false }
+        return !single.isEmpty
+    }
+
+    /// Download one answer into the inbox. Returns its parsed body (an object or a list). Audio
+    /// answers are only kept once their track is ready.
     @discardableResult
     private func download(_ task: [String: Any]) async -> Any? {
         guard let address = task["url"] as? String, let key = task["key"] as? String,
@@ -487,6 +496,7 @@ actor OfflineSyncRunner {
             guard (response as? HTTPURLResponse)?.statusCode == 200,
                   let body = try? JSONSerialization.jsonObject(with: data),
                   body is [String: Any] || body is [Any],
+                  task["kind"] as? String != "audio" || Self.hasTrack(body),
                   let text = String(data: data, encoding: .utf8)
             else { return nil }
             let fetchedAt = Self.now()

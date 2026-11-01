@@ -99,15 +99,21 @@ function bodyOf(response) {
   }
 }
 
-function storable(info, response, data) {
-  if (!response || response.status !== 200) return false;
+// Whether a parsed answer of this kind is worth keeping (also for the apps'
+// background downloads, native.js).
+export function keepable(kind, data) {
   if (!data || typeof data !== 'object') return false;
-  if (info.kind === 'audio') {
+  if (kind === 'audio') {
     // Only a finished track; "preparing" answers are asked again later.
     const track = data.audio?.single_track;
     return Array.isArray(track) && track.length > 0;
   }
   return true;
+}
+
+function storable(info, response, data) {
+  if (!response || response.status !== 200) return false;
+  return keepable(info.kind, data);
 }
 
 function sizeOf(data) {
