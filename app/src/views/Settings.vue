@@ -490,6 +490,8 @@ export default {
   font-size: var(--text-sm);
   font-style: italic;
   color: var(--ink-soft);
+  /* The download count changes as it goes: figures of one width. */
+  font-variant-numeric: oldstyle-nums tabular-nums;
 }
 
 .settings-offline-card__chevron {

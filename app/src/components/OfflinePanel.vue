@@ -15,7 +15,16 @@
         <!-- Only the title is announced: the text changes with every download
              (the progress bar carries the count). -->
         <p class="offline-hero__title" aria-live="polite">{{ hero.title }}</p>
-        <p v-if="hero.text" class="offline-hero__text">{{ hero.text }}</p>
+        <!-- One line, whatever is downloading: the count in figures of one
+             width, then the item, cut short when long (a line that wrapped
+             or not as items changed made the panel jump). -->
+        <p v-if="hero.progress" class="offline-hero__text offline-hero__status">
+          <span class="offline-hero__count">{{ hero.progress.count }}</span>
+          <span v-if="hero.progress.current" class="offline-hero__current">
+            · {{ hero.progress.current }}
+          </span>
+        </p>
+        <p v-else-if="hero.text" class="offline-hero__text">{{ hero.text }}</p>
         <div
           v-if="showProgress"
           class="offline-progress"
@@ -442,9 +451,10 @@ const hero = computed(() => {
         sync.reason === 'settings'
           ? 'Downloading for your new settings'
           : 'Downloading the days ahead',
-      text: sync.current
-        ? `${sync.done} of ${sync.total} · ${capitalize(sync.current)}`
-        : `${sync.done} of ${sync.total}`,
+      progress: {
+        count: `${sync.done} of ${sync.total}`,
+        current: sync.current ? capitalize(sync.current) : '',
+      },
     };
   }
   if (sync.status === 'checking') {
@@ -625,6 +635,23 @@ async function removeDownloads() {
   line-height: 1.4;
   color: var(--ink-soft);
   overflow-wrap: anywhere;
+}
+
+.offline-hero__status {
+  display: flex;
+  gap: 0.3em;
+  white-space: nowrap;
+}
+
+.offline-hero__count {
+  flex-shrink: 0;
+  font-variant-numeric: oldstyle-nums tabular-nums;
+}
+
+.offline-hero__current {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .offline-progress {
