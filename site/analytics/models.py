@@ -64,6 +64,8 @@ class AnalyticsEvent(models.Model):
     # app once it was back online (analytics/views.py OfflineOfficeViewsView);
     # ``created`` is then when it was viewed.
     offline = models.BooleanField(default=False)
+    # The app's id for an offline view, so a batch it sends twice counts once.
+    view_id = models.CharField(max_length=40, blank=True, default="", db_index=True)
     created = models.DateTimeField(auto_now_add=True, db_index=True)
 
     class Meta:

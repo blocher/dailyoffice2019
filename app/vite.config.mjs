@@ -1,5 +1,5 @@
 /* global process */
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import path from 'path';
 import fs from 'fs';
@@ -11,17 +11,42 @@ import crypto from 'crypto';
   them. The Caslon faces and icons come from public/; the other typefaces
   are cached the first time they're used. See src/offline/pwa.js.
 */
+// With VITE_SERVICE_WORKER=false: a worker that takes itself away. Browsers
+// keep a worker until its script changes; this one empties its caches,
+// unregisters, and reloads the open pages from the network.
+const REMOVE_SERVICE_WORKER = `self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    (async () => {
+      const names = await caches.keys();
+      await Promise.all(names.map((name) => caches.delete(name)));
+      await self.registration.unregister();
+      const windows = await self.clients.matchAll({ type: 'window' });
+      windows.forEach((client) => client.navigate(client.url));
+    })()
+  );
+});
+`;
+
 function offlineServiceWorker() {
   let outDir;
   let root;
+  let disabled = false;
   return {
     name: 'offline-service-worker',
     apply: 'build',
     configResolved(config) {
       root = config.root;
       outDir = path.resolve(config.root, config.build.outDir);
+      disabled =
+        loadEnv(config.mode, config.envDir || root, 'VITE_')
+          .VITE_SERVICE_WORKER === 'false';
     },
     writeBundle(_options, bundle) {
+      if (disabled) {
+        fs.writeFileSync(path.join(outDir, 'sw.js'), REMOVE_SERVICE_WORKER);
+        return;
+      }
       // Scripts, styles, and the images they use (not the alternative
       // typefaces' many font files, which are cached when first used).
       const built = Object.keys(bundle).filter((file) =>
@@ -40,13 +65,17 @@ function offlineServiceWorker() {
           .filter((file) => file.endsWith('.woff2'))
           .map((file) => `assets/fonts/${file}`),
       ].filter((file) => fs.existsSync(path.join(outDir, file)));
-      const precache = ['/', ...[...built, ...fromPublic].sort().map((f) => `/${f}`)];
-      const version = crypto
-        .createHash('sha256')
-        .update(precache.join('\n'))
-        .update(fs.readFileSync(path.join(outDir, 'index.html')))
-        .digest('hex')
-        .slice(0, 12);
+      const precache = [
+        '/',
+        ...[...built, ...fromPublic].sort().map((f) => `/${f}`),
+      ];
+      // The files' contents, not just their names: public/ files keep their
+      // names when they change (the manifest, an icon, a font).
+      const hash = crypto.createHash('sha256').update(precache.join('\n'));
+      ['index.html', ...built, ...fromPublic].forEach((file) =>
+        hash.update(fs.readFileSync(path.join(outDir, file)))
+      );
+      const version = hash.digest('hex').slice(0, 12);
       const template = fs.readFileSync(
         path.join(root, 'src/offline/serviceWorker.js'),
         'utf8'

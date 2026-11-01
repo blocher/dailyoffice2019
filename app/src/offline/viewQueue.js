@@ -15,6 +15,15 @@ const MAX_QUEUED = 500;
 const BATCH = 100;
 let flushing = null;
 
+function newViewId() {
+  try {
+    if (window.crypto?.randomUUID) return window.crypto.randomUUID();
+  } catch {
+    // Below.
+  }
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+}
+
 export async function queueView(info, query) {
   try {
     const all = await db.getAll('views');
@@ -23,6 +32,8 @@ export async function queueView(info, query) {
     delete settings.extra_collects;
     delete settings.include_audio_links;
     await db.put('views', {
+      // So a batch sent twice (its answer lost) counts once.
+      view_id: newViewId(),
       service_type: info.serviceType,
       office: info.office,
       office_date: info.date,

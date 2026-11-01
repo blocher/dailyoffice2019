@@ -97,7 +97,8 @@ class OfflineOfficeViewsView(APIView):
     don't name a known office are skipped. Anyone can post here, so views
     need a ``client_id`` and each device counts at most ``MAX_PER_DAY`` a day
     (eight offices, each opened twice); the rest are skipped. Skipped views
-    still get a 200, so the app lets them go.
+    still get a 200, so the app lets them go. A ``view_id`` already stored
+    (a batch sent again after its answer was lost) is skipped too.
     """
 
     permission_classes = [AllowAny]
@@ -130,6 +131,10 @@ class OfflineOfficeViewsView(APIView):
             .annotate(count=Count("id"))
         )
         per_day = {row["day"]: row["count"] for row in counted}
+        view_ids = [clean_text(view.get("view_id"), 40) for view in views[: self.MAX_VIEWS] if isinstance(view, dict)]
+        seen = set(
+            AnalyticsEvent.objects.filter(view_id__in=[v for v in view_ids if v]).values_list("view_id", flat=True)
+        )
 
         events = []
         for view in views[: self.MAX_VIEWS]:
@@ -139,6 +144,11 @@ class OfflineOfficeViewsView(APIView):
             office = str(view.get("office") or "")
             if (service_type, office) not in known_offices:
                 continue
+            view_id = clean_text(view.get("view_id"), 40)
+            if view_id and view_id in seen:
+                continue
+            if view_id:
+                seen.add(view_id)
             viewed_at = parse_viewed_at(view.get("viewed_at"), now)
             viewed_at = min(max(viewed_at, now - self.MAX_AGE), now)
             day = timezone.localdate(viewed_at)
@@ -161,6 +171,7 @@ class OfflineOfficeViewsView(APIView):
                 translation=clean_text(view.get("translation"), 20),
                 settings=settings,
                 offline=True,
+                view_id=view_id,
             )
             events.append((event, viewed_at))
 

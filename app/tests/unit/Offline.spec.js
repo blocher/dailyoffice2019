@@ -51,6 +51,15 @@ describe('request keys', () => {
     );
   });
 
+  it('keys padded and unpadded dates alike', () => {
+    expect(keyFor('calendar/2026-11-02', {})).toBe('calendar/2026-11-2');
+    expect(keyFor('calendar/2026-01', {})).toBe('calendar/2026-1');
+    expect(keyFor('office/compline/2026-11-02', { a: '1' })).toBe(
+      'office/compline/2026-11-2?a=1'
+    );
+    expect(keyFor('psalms/topics', {})).toBe('psalms/topics');
+  });
+
   it('describes what each request is', () => {
     const office = describeRequest('office/evening_prayer/2026-11-2', SETTINGS);
     expect(office).toMatchObject({

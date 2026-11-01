@@ -8,6 +8,8 @@ entries after a version for ``/api/v1/content_changes``.
 import datetime
 import logging
 
+from django.utils import timezone
+
 from office.models import ContentChange
 
 logger = logging.getLogger(__name__)
@@ -27,12 +29,18 @@ IGNORED_MODELS = {
 # rather than reading a long list.
 MAX_ENTRIES = 200
 
+# Entries are kept this long: longer than any device keeps a download (60
+# days ahead). A device that last synced before the oldest one refreshes
+# everything (changes_since).
+KEEP_FOR = datetime.timedelta(days=180)
+
 
 def record_change(start_date=None, end_date=None, urgent=False, source=ContentChange.SOURCE_MANUAL, note=""):
     if start_date and not end_date:
         end_date = start_date
     if start_date and end_date and end_date < start_date:
         start_date, end_date = end_date, start_date
+    ContentChange.objects.filter(created__lt=timezone.now() - KEEP_FOR).delete()
     return ContentChange.objects.create(
         start_date=start_date,
         end_date=end_date,
@@ -72,6 +80,9 @@ def record_admin_change(log_entry):
 
 
 def latest_version():
+    # Ids as versions: two entries saved at the same moment could commit out
+    # of order, and a device reading between them would miss the first. Each
+    # entry is one short autocommit insert, so the window is tiny; accepted.
     return ContentChange.objects.order_by("-id").values_list("id", flat=True).first() or 0
 
 
@@ -93,6 +104,12 @@ def changes_since(since):
     version = latest_version()
     summary = {"version": version, "all": False, "urgent": False, "dates": []}
     if not since or since >= version:
+        return summary
+    oldest = ContentChange.objects.order_by("id").values_list("id", flat=True).first()
+    if oldest and since < oldest - 1:
+        # Entries after `since` have been removed (KEEP_FOR): what they said
+        # is unknown, so everything is out of date.
+        summary.update({"all": True, "urgent": True})
         return summary
     entries = list(
         ContentChange.objects.filter(id__gt=since)

@@ -25,7 +25,7 @@
           />
         </svg>
       </span>
-      <UiIcon v-else name="cloud-off" class="header-action__icon" />
+      <UiIcon v-else name="cloud-off" class="offline-status__icon" />
       <span class="offline-status__label">{{ shortLabel }}</span>
     </button>
   </Transition>
@@ -112,6 +112,14 @@ function toggle() {
   .offline-status__label {
     display: inline;
   }
+}
+
+/* As AppHeader's .header-action__icon, whose scoped style can't reach in
+   here (only this component's root). */
+.offline-status__icon {
+  position: relative;
+  top: -0.09em;
+  font-size: 1.1rem;
 }
 
 .offline-status__ring {

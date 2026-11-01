@@ -76,6 +76,18 @@ class ChangesSinceTests(TestCase):
         self.assertFalse(summary["urgent"])
         self.assertEqual(summary["dates"], [["2026-12-01", "2026-12-01"]])
 
+    def test_old_entries_are_removed_and_their_devices_refresh_everything(self):
+        first = offline_content.record_change(start_date=datetime.date(2026, 1, 1))
+        second = offline_content.record_change(start_date=datetime.date(2026, 1, 2))
+        ContentChange.objects.filter(pk__in=[first.pk, second.pk]).update(
+            created=timezone.now() - offline_content.KEEP_FOR - datetime.timedelta(days=1)
+        )
+        offline_content.record_change(start_date=datetime.date(2026, 12, 1))
+        self.assertFalse(ContentChange.objects.filter(pk__in=[first.pk, second.pk]).exists())
+        summary = offline_content.changes_since(first.pk)
+        self.assertTrue(summary["all"])
+        self.assertTrue(summary["urgent"])
+
     def test_reversed_dates_are_put_in_order(self):
         change = offline_content.record_change(
             start_date=datetime.date(2026, 12, 5), end_date=datetime.date(2026, 12, 1)
@@ -246,6 +258,17 @@ class OfflineSyncAnalyticsTests(TestCase):
         )
         self.assertEqual(response.json(), {"accepted": 0})
         self.assertFalse(AnalyticsEvent.objects.exists())
+
+    def test_a_view_sent_twice_counts_once(self):
+        view = {"view_id": "v1", "service_type": "office", "office": "compline"}
+        payload = {"client_id": "abc", "views": [view, view]}
+
+        def post():
+            return APIClient().post("/api/v1/analytics/offline_views", payload, format="json").json()
+
+        self.assertEqual(post(), {"accepted": 1})
+        self.assertEqual(post(), {"accepted": 0})
+        self.assertEqual(AnalyticsEvent.objects.get().view_id, "v1")
 
     def test_views_are_capped_per_device_and_day(self):
         from analytics.views import OfflineOfficeViewsView

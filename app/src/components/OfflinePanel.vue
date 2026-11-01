@@ -54,8 +54,15 @@
           day.ready ? 'ready offline' : 'not yet downloaded'
         }}</span>
       </li>
-      <li v-if="days > strip.length" class="offline-day offline-day--more">
-        +{{ days - strip.length }}
+      <li
+        v-if="days > strip.length"
+        class="offline-day offline-day--more"
+        :title="`${days - strip.length} more days`"
+      >
+        <span aria-hidden="true">+{{ days - strip.length }}</span>
+        <span class="visually-hidden"
+          >and {{ days - strip.length }} more days</span
+        >
       </li>
     </ol>
 
@@ -196,7 +203,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { useStore } from 'vuex';
 import { Capacitor } from '@capacitor/core';
 import { panels } from '@/helpers/panels';
@@ -227,12 +234,25 @@ const store = useStore();
 const familyUsed = ref(false);
 const readingsUsed = ref(false);
 const now = ref(Date.now());
+// "Today" and "checked … ago" move on while the panel stays open.
+let clock = null;
+
+function stopClock() {
+  window.clearInterval(clock);
+  clock = null;
+}
+
+onBeforeUnmount(stopClock);
 
 watch(
   () => panels.offline,
   async (open) => {
+    stopClock();
     if (!open) return;
     now.value = Date.now();
+    clock = window.setInterval(() => {
+      now.value = Date.now();
+    }, 60 * 1000);
     [familyUsed.value, readingsUsed.value] = await Promise.all([
       usedRecently('family'),
       usedRecently('readings'),
@@ -554,7 +574,7 @@ async function removeDownloads() {
   background-color: var(--paper);
   border: 1px solid var(--rule);
   color: var(--accent);
-  font-size: 1.25rem;
+  font-size: var(--text-lg);
 }
 
 .offline-hero.is-offline .offline-hero__icon,
@@ -657,7 +677,7 @@ async function removeDownloads() {
   display: grid;
   place-items: center;
   height: 0.9rem;
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   color: var(--accent);
 }
 
@@ -753,8 +773,10 @@ async function removeDownloads() {
   gap: var(--space-3);
 }
 
+/* Labels in small caps, as elsewhere, not bold. */
 .offline-steps strong {
-  font-weight: 600;
+  font-weight: inherit;
+  font-variant-caps: all-small-caps;
   color: var(--ink);
 }
 

@@ -151,7 +151,15 @@ export function installPwa() {
   });
 
   if (!('serviceWorker' in navigator) || !import.meta.env.PROD) return;
-  if (import.meta.env.VITE_SERVICE_WORKER === 'false') return;
+  if (import.meta.env.VITE_SERVICE_WORKER === 'false') {
+    // Switched off: take away a worker an earlier version installed, or it
+    // would keep answering from its cache.
+    navigator.serviceWorker
+      .getRegistrations()
+      .then((registrations) => registrations.forEach((r) => r.unregister()))
+      .catch(() => {});
+    return;
+  }
   pwaState.supported = true;
 
   const register = async () => {

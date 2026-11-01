@@ -139,6 +139,7 @@ export default {
       immediate: true,
       handler(offline) {
         if (offline) this.measureOfflineChoices();
+        else this.offlineUnavailable = {};
       },
     },
   },
@@ -169,6 +170,8 @@ export default {
     // Which choices would still have today's office downloaded. Every other
     // choice waits for a connection.
     async measureOfflineChoices() {
+      // A newer measure (after another save) wins.
+      const run = (this.offlineMeasureRun = (this.offlineMeasureRun || 0) + 1);
       const current = { ...(this.$store.state.settings || {}) };
       let extraCollects;
       try {
@@ -178,16 +181,15 @@ export default {
       } catch {
         extraCollects = null;
       }
-      // Until measured, nothing but the current choices.
+      // Until measured, nothing but the current choices (the last measure
+      // was for other settings).
       const locked = {};
       for (const setting of this.normalizedSettings) {
         locked[setting.name] = (setting.options || [])
           .map((option) => option.value)
           .filter((value) => value !== current[setting.name]);
       }
-      if (!Object.keys(this.offlineUnavailable).length) {
-        this.offlineUnavailable = locked;
-      }
+      this.offlineUnavailable = locked;
       const result = {};
       for (const setting of this.normalizedSettings) {
         const unavailable = [];
@@ -201,6 +203,7 @@ export default {
         }
         result[setting.name] = unavailable;
       }
+      if (run !== this.offlineMeasureRun || !this.offlineEditing) return;
       this.offlineUnavailable = result;
     },
     async persistSettingChange(settingName, value) {

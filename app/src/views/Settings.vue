@@ -393,7 +393,7 @@ export default {
 .settings-offline__icon {
   flex-shrink: 0;
   margin-top: 0.15rem;
-  font-size: 1.25rem;
+  font-size: var(--text-lg);
   color: var(--accent);
 }
 
@@ -455,7 +455,7 @@ export default {
 
 .settings-offline-card__icon {
   flex-shrink: 0;
-  font-size: 1.25rem;
+  font-size: var(--text-lg);
   color: var(--accent);
 }
 

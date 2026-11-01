@@ -171,6 +171,7 @@ import { displayState, setAudioEnabled } from '@/helpers/displayPreferences';
 import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
 import { trackEvent } from '@/helpers/analytics';
 import { fetchAudioTrack, isWithinAudioWindow } from '@/helpers/officeAudio';
+import { isLocalTrackUrl } from '@/helpers/audioTrack';
 import { officeUrl } from '@/offline/urls';
 import { network } from '@/offline';
 import OfflineMiss from '@/components/OfflineMiss.vue';
@@ -219,7 +220,6 @@ export default {
       offlineMiss: false,
       // Offline without this office's audio downloaded.
       audioOffline: false,
-      fromStorage: null,
       audioLinks: [],
       audioReady: false,
       isEsvOrKjv: false,
@@ -389,7 +389,6 @@ export default {
         return;
       }
       this.offlineMiss = false;
-      this.fromStorage = data.offline || null;
       this.setDocumentTitle();
       this.modules = data.data.modules;
       this.card = data.data.calendar_day;
@@ -480,7 +479,7 @@ export default {
         () => this.audioPollingStopped
       );
       // Offline, only a track kept on the device can play.
-      if (!network.online && (!links.length || /^https?:/.test(links[0]))) {
+      if (!network.online && !isLocalTrackUrl(links[0])) {
         links = [];
         this.audioOffline = true;
       }

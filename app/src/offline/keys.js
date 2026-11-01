@@ -77,12 +77,23 @@ export function parseApiUrl(url, params = null) {
   return { path, query };
 }
 
+// Dates in a path as urls.js writes them (2026-11-2): a page that pads them
+// (a shared /calendar/2026/11/02 link) still finds what the sync stored.
+function unpadDates(path) {
+  return path.replace(
+    /(^|\/)(\d{4})-(\d{1,2})(?:-(\d{1,2}))?(?=$|\/)/g,
+    (_, start, year, month, day) =>
+      `${start}${year}-${Number(month)}${day ? `-${Number(day)}` : ''}`
+  );
+}
+
 export function keyFor(path, query) {
   const parts = Object.keys(query)
     .filter((key) => key !== 'reload')
     .sort()
     .map((key) => `${key}=${query[key]}`);
-  return parts.length ? `${path}?${parts.join('&')}` : path;
+  const normal = unpadDates(path);
+  return parts.length ? `${normal}?${parts.join('&')}` : normal;
 }
 
 // FNV-1a: a short, stable name for a combination of settings.

@@ -668,13 +668,17 @@ async function runOnce(reason) {
   }
 }
 
-// Only one tab syncs at a time.
+const LOCKED = Symbol('locked');
+const LOCKED_RETRY_MS = 30 * 1000;
+let lockedRetryTimer = null;
+
+// Only one tab syncs at a time. Resolves to LOCKED when another tab is.
 function withSyncLock(run) {
   if (typeof navigator !== 'undefined' && navigator.locks?.request) {
     return navigator.locks.request(
       'dailyoffice-offline-sync',
       { ifAvailable: true },
-      (lock) => (lock ? run() : undefined)
+      (lock) => (lock ? run() : LOCKED)
     );
   }
   return run();
@@ -693,6 +697,16 @@ export function requestSync(reason = 'manual') {
     return running;
   }
   running = withSyncLock(() => runOnce(reason))
+    .then((result) => {
+      // Another tab is syncing (for its own settings, maybe): try again
+      // once it is likely done, rather than drop this request.
+      if (result === LOCKED && !lockedRetryTimer) {
+        lockedRetryTimer = window.setTimeout(() => {
+          lockedRetryTimer = null;
+          requestSync(reason);
+        }, LOCKED_RETRY_MS);
+      }
+    })
     .catch((error) => {
       syncState.status = 'error';
       syncState.error =
@@ -724,12 +738,20 @@ export async function loadSyncStatus() {
   syncState.lastSyncAt = (await db.meta.get('lastSyncAt')) || null;
 }
 
-// Remove every download (the Offline panel's "Remove downloads").
-export async function clearDownloads() {
-  runId += 1;
+async function removeEverything() {
   await db.clear('responses');
   resetStoredIndex();
   await pruneTracks(new Set());
+}
+
+// Remove every download (the Offline panel's "Remove downloads").
+export async function clearDownloads() {
+  runId += 1; // ends the current run at its next step
+  queued = null;
+  await removeEverything();
+  // A run's last downloads can land after the clear: clear again once it
+  // has stopped.
+  if (running) running.then(removeEverything).catch(() => {});
   await db.meta.set('plan', null);
   await scheduleBackground(null);
   syncState.storageBytes = 0;
@@ -737,4 +759,6 @@ export async function clearDownloads() {
   syncState.readyThrough = null;
   syncState.audio.bytes = 0;
   syncState.audio.ready = 0;
+  syncState.status = 'idle';
+  syncState.current = '';
 }

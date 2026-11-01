@@ -1069,7 +1069,8 @@ class ContentChange(models.Model):
     each day comes near, or as it is opened online. ``urgent`` changes refresh
     everything at the next sync; record those with
     ``manage.py invalidate_offline --urgent``. A change with no dates covers
-    every date.
+    every date. Entries older than ``offline_content.KEEP_FOR`` are removed as
+    new ones are recorded.
     """
 
     SOURCE_ADMIN = "admin"

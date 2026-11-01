@@ -142,6 +142,8 @@ final class OfflineSyncStore {
 
     private let queue = DispatchQueue(label: "com.dailyoffice2019.offline-sync.store")
     private let fileManager = FileManager.default
+    /// Goes up when the page removes the downloads, so a run under way stops writing.
+    private var clearCount = 0
     private let root: URL
     private let inbox: URL
     let audioDirectory: URL
@@ -196,6 +198,11 @@ final class OfflineSyncStore {
         queue.sync { read("state.json") }
     }
 
+    /// For a run to check, before writing, that the downloads weren't removed since it began.
+    var generation: Int {
+        queue.sync { clearCount }
+    }
+
     func index() -> [String: Double] {
         queue.sync {
             var index: [String: Double] = [:]
@@ -218,6 +225,7 @@ final class OfflineSyncStore {
             write("state.json", state)
             let tasks = (state["plan"] as? [String: Any])?["tasks"] as? [Any] ?? []
             if tasks.isEmpty {
+                clearCount += 1
                 inboxFiles().forEach { try? fileManager.removeItem(at: $0) }
                 var learned = read("learned.json")
                 (learned["audio"] as? [[String: Any]] ?? []).forEach { track in
@@ -355,6 +363,8 @@ actor OfflineSyncRunner {
 
     private var fetched = 0
     private var stopped = false
+    /// The store's generation when this run began (see OfflineSyncStore.generation).
+    private var generation = 0
 
     private static func now() -> Double {
         (Date().timeIntervalSince1970 * 1000).rounded()
@@ -367,6 +377,9 @@ actor OfflineSyncRunner {
 
     /// Returns false when the run was cut short (to tell iOS the work isn't done).
     func run() async -> Bool {
+        // Each run has its own session: let it go when the run ends.
+        defer { session.finishTasksAndInvalidate() }
+        generation = store.generation
         let state = store.state()
         guard let plan = state["plan"] as? [String: Any],
               let tasks = plan["tasks"] as? [[String: Any]], !tasks.isEmpty,
@@ -378,8 +391,10 @@ actor OfflineSyncRunner {
         invalidations += await checkContentChanges(base: base, state: state)
         if Task.isCancelled { return false }
 
-        let today = Self.isoDay(Date())
-        let tomorrow = Self.isoDay(Date(timeIntervalSinceNow: 24 * 3600))
+        let now = Date()
+        let today = Self.isoDay(now)
+        // The next calendar day (24 hours from now isn't, on the day the clocks go back).
+        let tomorrow = Self.isoDay(Calendar(identifier: .gregorian).date(byAdding: .day, value: 1, to: now) ?? now)
         let index = store.index()
         let wanted = tasks.filter { task in
             needsDownload(task, index: index, invalidations: invalidations, today: today, tomorrow: tomorrow)
@@ -525,6 +540,11 @@ actor OfflineSyncRunner {
                   task["kind"] as? String != "audio" || Self.hasTrack(body),
                   let text = String(data: data, encoding: .utf8)
             else { return nil }
+            // The downloads were removed while this was on its way.
+            guard store.generation == generation else {
+                stopped = true
+                return nil
+            }
             let fetchedAt = Self.now()
             let saved = store.putInbox([
                 "key": key,
@@ -589,6 +609,7 @@ actor OfflineSyncRunner {
                 "date": date,
                 "office": task["office"] ?? NSNull(),
             ]
+            guard store.generation == generation else { return }
             if fileManager.fileExists(atPath: file.path) {
                 record["bytes"] = (try? fileManager.attributesOfItem(atPath: file.path)[.size] as? NSNumber)?.intValue ?? 0
                 record["savedAt"] = Self.now()

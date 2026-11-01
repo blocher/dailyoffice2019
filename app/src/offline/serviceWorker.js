@@ -27,6 +27,8 @@ const SHELL_CACHE = `shell-${VERSION}`;
 const RUNTIME_CACHE = 'runtime-assets';
 const FONT_CACHE = 'google-fonts';
 const RUNTIME_LIMIT = 80;
+// Google's Chinese faces come in many small pieces; keep the latest.
+const FONT_LIMIT = 120;
 
 const DB_NAME = 'dailyoffice-offline';
 const DB_VERSION = 1;
@@ -45,6 +47,17 @@ async function cleanCopy(response) {
   });
 }
 
+// A missing script or style can come back as the app's index.html with a
+// 200 (the host's fallback for unknown paths); that is not worth keeping.
+function isHtmlFor(path, response) {
+  const type = response.headers.get('Content-Type') || '';
+  return (
+    type.includes('text/html') &&
+    /\.[a-z0-9]+$/i.test(path) &&
+    !path.endsWith('.html')
+  );
+}
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
     (async () => {
@@ -52,7 +65,10 @@ self.addEventListener('install', (event) => {
       await Promise.all(
         PRECACHE.map(async (path) => {
           const response = await fetch(path, { cache: 'reload' });
-          if (!response.ok) throw new Error(`Precache failed: ${path}`);
+          // A file not there yet (a deploy half done): fail the install, and
+          // the version in use carries on until the next check.
+          if (!response.ok || isHtmlFor(path, response))
+            throw new Error(`Precache failed: ${path}`);
           await cache.put(path, await cleanCopy(response));
         })
       );
@@ -63,10 +79,13 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     (async () => {
+      // Old shells, and anything this worker doesn't use: the 2022 site's
+      // Workbox worker (/service-worker.js) left caches behind.
+      const kept = [SHELL_CACHE, RUNTIME_CACHE, FONT_CACHE];
       const names = await caches.keys();
       await Promise.all(
         names
-          .filter((name) => name.startsWith('shell-') && name !== SHELL_CACHE)
+          .filter((name) => !kept.includes(name))
           .map((name) => caches.delete(name))
       );
       await self.clients.claim();
@@ -115,7 +134,11 @@ async function cacheFirst(request, cacheName) {
     (await caches.match(request, { ignoreVary: true }));
   if (cached) return cached;
   const response = await fetch(request);
-  if (response.ok || response.type === 'opaque') {
+  const path = new URL(request.url).pathname;
+  if (
+    (response.ok && !isHtmlFor(path, response)) ||
+    response.type === 'opaque'
+  ) {
     const cache = await caches.open(cacheName);
     await cache.put(request, response.clone());
     trim(cacheName, RUNTIME_LIMIT);
@@ -128,8 +151,13 @@ async function staleWhileRevalidate(request, cacheName) {
   const cached = await cache.match(request, { ignoreVary: true });
   const network = fetch(request)
     .then((response) => {
-      if (response.ok || response.type === 'opaque')
-        cache.put(request, response.clone());
+      // Only readable answers: an opaque one counts as megabytes against
+      // the storage quota. (The stylesheet and the fonts are sent with CORS.)
+      if (response.ok) {
+        cache
+          .put(request, response.clone())
+          .then(() => trim(cacheName, FONT_LIMIT));
+      }
       return response;
     })
     .catch(() => cached);

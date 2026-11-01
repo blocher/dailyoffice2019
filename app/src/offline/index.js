@@ -44,11 +44,11 @@ import {
   refreshReadiness,
   requestSync,
   syncIfDue,
+  syncState,
 } from './sync';
 import { drainInbox } from './native';
 import { flushViews } from './viewQueue';
 import { friendlyDate } from './format';
-import { syncState } from './sync';
 import { openPanel, panels } from '@/helpers/panels';
 import { toast } from '@/ui/feedback';
 
@@ -159,6 +159,7 @@ export function installOffline({ store }) {
     }
   };
 
+  let watchTimer = null;
   watch(
     () => store.state.settings,
     (settings, previous) => {
@@ -174,8 +175,8 @@ export function installOffline({ store }) {
     },
     { immediate: true }
   );
-  let watchTimer = null;
 
+  let prefsTimer = null;
   watch(
     () => [
       offlinePrefs.days,
@@ -189,7 +190,6 @@ export function installOffline({ store }) {
       prefsTimer = window.setTimeout(() => requestSync('preferences'), 600);
     }
   );
-  let prefsTimer = null;
 
   onConnectivityChange((online) => {
     if (online) {
