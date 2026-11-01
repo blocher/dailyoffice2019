@@ -24,7 +24,8 @@
         </router-link>
       </nav>
 
-      <div class="header-actions">
+      <div class="header-actions" :class="{ 'is-offline': !network.online }">
+        <OfflineStatus />
         <button
           type="button"
           class="header-action"
@@ -83,6 +84,8 @@ import { useRoute } from 'vue-router';
 import { Browser } from '@capacitor/browser';
 import { discoveryState as discovery } from '@/helpers/discovery';
 import { openPanel, panels } from '@/helpers/panels';
+import OfflineStatus from '@/components/OfflineStatus.vue';
+import { network } from '@/offline';
 
 const PRAY_ROUTES = [
   'Home',
@@ -398,6 +401,14 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll));
    which takes the accent color instead. */
 .header-action__label--always {
   display: inline;
+}
+
+/* Offline on a phone, the offline sign takes Support's place: the Support
+   page can't be reached without a connection anyway. */
+@media (max-width: 479px) {
+  .header-actions.is-offline .header-action--support {
+    display: none;
+  }
 }
 
 @media (max-width: 639px) {

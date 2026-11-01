@@ -14,11 +14,13 @@ import { getClientId } from './helpers/clientId';
 import { identifyUser, startErrorReporting } from './helpers/errorReporting';
 import { loadDisplayPreferences } from './helpers/displayPreferences';
 import { loadDiscovery } from './helpers/discovery';
-import { takeBookViewQuery } from './helpers/panels';
+import { takeBookViewQuery, takePanelQuery } from './helpers/panels';
 import { createGtag, event } from 'vue-gtag';
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
 import { Capacitor } from '@capacitor/core';
 import { SplashScreen } from '@capacitor/splash-screen';
+import { installOffline } from './offline';
+import { installPwa } from './offline/pwa';
 
 // Stabilize viewport units on mobile browsers (notably iOS Chrome) where
 // the browser toolbars collapsing/expanding can cause fixed footers to “float”.
@@ -44,6 +46,9 @@ router.beforeEach((to, from) => {
   // before the page renders, so closing the book doesn't reload the office.
   const bookRedirect = takeBookViewQuery(to);
   if (bookRedirect) return bookRedirect;
+  // ?panel=offline (and /offline) opens a panel, as above.
+  const panelRedirect = takePanelQuery(to, from);
+  if (panelRedirect !== null) return panelRedirect;
   // A navigation to the same address (e.g. Back closing the book view)
   // changes nothing on the page.
   if (from.matched.length && to.fullPath === from.fullPath) return;
@@ -198,6 +203,11 @@ const app = createApp(App)
   .use(createMetaManager());
 
 app.config.globalProperties.$gtag = { event };
+
+// Offline mode: stored answers for every API request, the days-ahead sync,
+// and (on the web) the service worker. See src/offline/index.js.
+installOffline({ store });
+installPwa();
 
 // Report uncaught errors to Bugsnag (production builds with a key only).
 startErrorReporting(app);

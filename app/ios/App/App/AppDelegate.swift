@@ -19,7 +19,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } catch {
             print("Could not set the audio session category: \(error)")
         }
-        
+
+        // Offline downloads keep fresh in the background (OfflineSyncPlugin.swift). iOS requires
+        // the handler to be registered before launching finishes.
+        OfflineSyncPlugin.registerBackgroundTask()
+        // Audio downloads that finish while the app is open are only filed once their session
+        // exists again; open it now rather than waiting for the next background run.
+        OfflineAudioDownloads.shared.reconnect()
+
         // Override point for customization after application launch.
         return true
     }
@@ -44,6 +51,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+
+    // Offline audio finished downloading while the app was suspended or not running
+    // (OfflineAudioDownloads in OfflineSyncPlugin.swift).
+    func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
+        guard identifier == OfflineAudioDownloads.identifier else {
+            completionHandler()
+            return
+        }
+        OfflineAudioDownloads.shared.handleEvents(completion: completionHandler)
     }
 
     // The window, and links that open the app, belong to the scene now (SceneDelegate.swift).

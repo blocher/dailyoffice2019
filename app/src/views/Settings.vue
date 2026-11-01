@@ -10,6 +10,41 @@
         </p>
       </header>
 
+      <Transition name="settings-offline">
+        <div v-if="!network.online" class="settings-offline">
+          <UiIcon name="cloud-off" class="settings-offline__icon" />
+          <div>
+            <p class="settings-offline__title">You’re offline</p>
+            <p class="settings-offline__text">
+              Display settings work as always. Other settings change the offices
+              themselves, so they wait for a connection, except choices already
+              downloaded.
+              <button
+                type="button"
+                class="settings-offline__link"
+                @click="openPanel('offline')"
+              >
+                What’s downloaded
+              </button>
+            </p>
+          </div>
+        </div>
+      </Transition>
+
+      <button
+        v-if="network.online"
+        type="button"
+        class="settings-offline-card"
+        @click="openPanel('offline')"
+      >
+        <UiIcon :name="offlineIcon" class="settings-offline-card__icon" />
+        <span class="settings-offline-card__copy">
+          <span class="settings-offline-card__title">Offline</span>
+          <span class="settings-offline-card__text">{{ offlineSummary }}</span>
+        </span>
+        <UiIcon name="chevron-right" class="settings-offline-card__chevron" />
+      </button>
+
       <div class="settings-search">
         <label for="settings-search" class="visually-hidden">
           Search settings
@@ -98,7 +133,15 @@
         <UiButton v-if="!isDisplayTab" icon="share" @click="openPanel('share')">
           Share these settings
         </UiButton>
-        <UiButton variant="ghost" icon="reset" @click="restoreDefaults">
+        <UiButton
+          variant="ghost"
+          icon="reset"
+          :disabled="!isDisplayTab && !network.online"
+          :title="
+            !isDisplayTab && !network.online ? 'Needs a connection' : null
+          "
+          @click="restoreDefaults"
+        >
           Restore defaults
         </UiButton>
       </footer>
@@ -118,6 +161,8 @@ import {
 } from '@/helpers/settingsUiMetadata';
 import { DynamicStorage } from '@/helpers/storage';
 import { confirm, toast } from '@/ui/feedback';
+import { effectiveDays, network, syncState } from '@/offline';
+import { friendlyDate } from '@/offline/format';
 
 const DISPLAY_TERMS = [
   'display',
@@ -155,6 +200,8 @@ export default {
   },
   data() {
     return {
+      network,
+      now: Date.now(),
       availableSettings: null,
       loading: true,
       openTab: 'office',
@@ -170,6 +217,28 @@ export default {
     };
   },
   computed: {
+    offlineIcon() {
+      if (effectiveDays() === 0) return 'cloud-off';
+      return syncState.status === 'syncing' ? 'cloud-download' : 'cloud-check';
+    },
+    offlineSummary() {
+      const days = effectiveDays();
+      if (days === 0)
+        return 'Downloads are off. Keep the days ahead on this device.';
+      if (syncState.status === 'unavailable')
+        return 'This browser can’t keep downloads (a private window, or blocked site data).';
+      if (syncState.status === 'syncing') {
+        return `Downloading the days ahead… ${syncState.done} of ${syncState.total}`;
+      }
+      if (syncState.readyThrough) {
+        const through = friendlyDate(
+          syncState.readyThrough,
+          new Date(this.now)
+        );
+        return `Ready offline through ${through} · ${days} days kept`;
+      }
+      return `Keeps ${days} days ahead on this device.`;
+    },
     openTabLabel() {
       if (this.openTab === 'display') return 'Display';
       return this.openTab === 'family' ? 'Family Prayer' : 'Daily Office';
@@ -238,7 +307,16 @@ export default {
     },
   },
   async mounted() {
+    // "Ready through tomorrow" moves on when the page is shown again (after
+    // midnight, say).
+    this.onVisible = () => {
+      if (document.visibilityState === 'visible') this.now = Date.now();
+    };
+    document.addEventListener('visibilitychange', this.onVisible);
     await this.initialize();
+  },
+  beforeUnmount() {
+    document.removeEventListener('visibilitychange', this.onVisible);
   },
   methods: {
     openPanel,
@@ -317,6 +395,108 @@ export default {
 </script>
 
 <style scoped>
+.settings-offline {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-lg);
+  background-color: var(--paper-sunken);
+}
+
+.settings-offline__icon {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+  font-size: var(--text-lg);
+  color: var(--accent);
+}
+
+.settings-offline__title {
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.1em;
+  font-size: var(--text-md);
+  color: var(--ink);
+}
+
+.settings-offline__text {
+  margin-top: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+  line-height: 1.45;
+}
+
+.settings-offline__link {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.settings-offline-enter-active,
+.settings-offline-leave-active {
+  transition: opacity 200ms var(--ease);
+}
+
+.settings-offline-enter-from,
+.settings-offline-leave-to {
+  opacity: 0;
+}
+
+/* The Offline panel, from Settings */
+.settings-offline-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  background-color: var(--paper-raised);
+  text-align: left;
+  transition:
+    border-color var(--duration) var(--ease),
+    background-color var(--duration) var(--ease);
+}
+
+.settings-offline-card:hover {
+  border-color: var(--rule-strong);
+  background-color: var(--paper-sunken);
+}
+
+.settings-offline-card:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.settings-offline-card__icon {
+  flex-shrink: 0;
+  font-size: var(--text-lg);
+  color: var(--accent);
+}
+
+.settings-offline-card__copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.settings-offline-card__title {
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.1em;
+  color: var(--ink);
+}
+
+.settings-offline-card__text {
+  font-size: var(--text-sm);
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+.settings-offline-card__chevron {
+  flex-shrink: 0;
+  color: var(--ink-faint);
+}
+
 .settings {
   display: flex;
   flex-direction: column;

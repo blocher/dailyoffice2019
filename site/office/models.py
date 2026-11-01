@@ -1053,3 +1053,56 @@ class AlternateReading(BaseModel):
     short_evening = models.ForeignKey(
         Scripture, on_delete=models.PROTECT, related_name="alternate_short_evening", null=True, blank=True
     )
+
+
+class ContentChange(models.Model):
+    """One entry in the log devices read to refresh what they downloaded for offline use.
+
+    The app keeps days of offices on the device (app/src/offline/). Each sync
+    asks ``/api/v1/content_changes?since=<version>`` for what changed after the
+    last entry it has seen (``id`` is the version) and marks those downloads
+    stale; nothing is deleted, so a device that is offline keeps praying from
+    what it has.
+
+    ``soft`` changes (every admin edit records one, see ``OfficeConfig.ready``)
+    refresh today and tomorrow at once and the rest of the download window as
+    each day comes near, or as it is opened online. ``urgent`` changes refresh
+    everything at the next sync; record those with
+    ``manage.py invalidate_offline --urgent``. A change with no dates covers
+    every date. Entries older than ``offline_content.KEEP_FOR`` are removed as
+    new ones are recorded.
+    """
+
+    SOURCE_ADMIN = "admin"
+    SOURCE_MANUAL = "manual"
+    SOURCE_CHOICES = [(SOURCE_ADMIN, "Admin edit"), (SOURCE_MANUAL, "Manual")]
+
+    created = models.DateTimeField(auto_now_add=True, db_index=True)
+    start_date = models.DateField(
+        null=True, blank=True, help_text="First date affected. Leave both dates empty for every date."
+    )
+    end_date = models.DateField(null=True, blank=True, help_text="Last date affected (defaults to the first).")
+    urgent = models.BooleanField(
+        default=False,
+        help_text="Refresh every downloaded day at once, rather than as each day comes near.",
+    )
+    source = models.CharField(max_length=20, choices=SOURCE_CHOICES, default=SOURCE_MANUAL)
+    note = models.CharField(max_length=255, blank=True)
+
+    class Meta:
+        ordering = ["-id"]
+        verbose_name = "offline content change"
+        verbose_name_plural = "offline content changes"
+
+    def __str__(self):
+        if self.start_date:
+            scope = f"{self.start_date}–{self.end_date or self.start_date}"
+        else:
+            scope = "every date"
+        return f"v{self.id}: {scope}{' (urgent)' if self.urgent else ''} {self.note}".strip()
+
+    def clean(self):
+        if self.end_date and not self.start_date:
+            raise ValidationError({"start_date": "Give a first date, or leave both dates empty for every date."})
+        if self.start_date and self.end_date and self.end_date < self.start_date:
+            raise ValidationError({"end_date": "The last date can't be before the first."})

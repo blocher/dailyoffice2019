@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 11 and older. Offline audio (offline/OfflineSyncStore.java, app/src/offline/audio.js)
+     downloads again; a backup holding it would pass the 25 MB limit and be skipped whole. -->
+<full-backup-content>
+    <exclude domain="file" path="offline-audio/" />
+</full-backup-content>

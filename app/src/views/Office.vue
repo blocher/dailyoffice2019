@@ -10,15 +10,22 @@
         />
         <Loading v-if="loading" />
         <UiAlert v-if="error" tone="error" :title="error" />
+        <OfflineMiss
+          v-if="offlineMiss"
+          what="office"
+          :date="calendarDate"
+          :office="office"
+          :service-type="serviceType"
+        />
         <CalendarCard
-          v-if="!loading && !error"
+          v-if="!loading && !error && !offlineMiss"
           :office="office"
           :calendar-date="calendarDate"
           :card="card"
           :service-type="serviceType"
         />
         <div
-          v-if="!loading"
+          v-if="!loading && !offlineMiss"
           class="office-tools"
           role="toolbar"
           aria-label="Reading tools"
@@ -100,6 +107,8 @@
   <AudioPlayer
     v-if="
       !loading &&
+      !offlineMiss &&
+      !audioOffline &&
       audioLoadingEnabled &&
       audioEnabled &&
       audioReady &&
@@ -120,9 +129,11 @@
   <AudioPlayerMessage
     v-if="
       !loading &&
+      !offlineMiss &&
       audioLoadingEnabled &&
       audioEnabled &&
-      (!isWithinSevenDays ||
+      (audioOffline ||
+        !isWithinSevenDays ||
         !isEsvOrKjv ||
         !isEnglish ||
         !audioLinks ||
@@ -134,6 +145,7 @@
     :isWithinSevenDays="isWithinSevenDays"
     :audioReady="audioReady"
     :hasAudioLinks="!!(audioLinks && audioLinks.length)"
+    :offline="audioOffline"
     @dismiss-audio="confirmDismissAudio"
   />
 </template>
@@ -159,6 +171,11 @@ import { displayState, setAudioEnabled } from '@/helpers/displayPreferences';
 import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
 import { trackEvent } from '@/helpers/analytics';
 import { fetchAudioTrack, isWithinAudioWindow } from '@/helpers/officeAudio';
+import { isLocalTrackUrl } from '@/helpers/audioTrack';
+import { officeUrl } from '@/offline/urls';
+import { network } from '@/offline';
+import { isNetworkFailure } from '@/offline/network';
+import OfflineMiss from '@/components/OfflineMiss.vue';
 
 // Book view loads separately, after the office is showing.
 const BookReader = defineAsyncComponent(
@@ -179,6 +196,7 @@ export default {
     CalendarCard,
     OfficeNav,
     PageNotFound,
+    OfflineMiss,
   },
   props: {
     office: {
@@ -200,6 +218,11 @@ export default {
       error: false,
       card: '',
       notFound: false,
+      offlineMiss: false,
+      // The office failed to load for want of a connection (not offline).
+      networkError: false,
+      // Offline without this office's audio downloaded.
+      audioOffline: false,
       audioLinks: [],
       audioReady: false,
       isEsvOrKjv: false,
@@ -254,13 +277,38 @@ export default {
     isWithinSevenDays() {
       return isWithinAudioWindow(this.calendarDate);
     },
+    online() {
+      return network.online;
+    },
+  },
+  watch: {
+    // Back online: load what couldn't be had offline.
+    online(isOnline) {
+      if (!isOnline || !this.officeRequestUrl) return;
+      if (this.offlineMiss || this.networkError) {
+        this.offlineMiss = false;
+        this.networkError = false;
+        this.error = false;
+        this.loading = true;
+        this.loadOffice();
+      } else if (this.audioOffline) {
+        this.audioOffline = false;
+        // "Loading audio" until the track is found, not "not available".
+        this.audioReady = false;
+        this.setAudioLinks(this.officeRequestUrl).finally(() => {
+          if (!this.isUnmounted) this.audioReady = true;
+        });
+      }
+    },
   },
   async mounted() {
     await DynamicStorage.setItem('serviceType', this.serviceType);
   },
   beforeUnmount() {
-    // Stop polling for audio that is still being prepared.
+    // Stop polling for audio that is still being prepared, and let a load
+    // still under way finish without touching the page that replaced this one.
     this.audioPollingStopped = true;
+    this.isUnmounted = true;
   },
 
   async created() {
@@ -290,12 +338,6 @@ export default {
       this.notFound = true;
       return;
     }
-    const today_str =
-      this.calendarDate.getFullYear() +
-      '-' +
-      (this.calendarDate.getMonth() + 1) +
-      '-' +
-      this.calendarDate.getDate();
     this.availableSettings = await this.$store.state.availableSettings;
     await this.$store.dispatch('initializeSettings');
     const settings = await this.$store.state.settings;
@@ -312,59 +354,93 @@ export default {
         ? settings.display_language
         : 'english';
     this.isEnglish = displayLanguage === 'english';
-    const queryString = Object.keys(settings)
-      .map((key) => key + '=' + settings[key])
-      .join('&');
-    let data;
-    const office_url =
-      `${import.meta.env.VITE_API_URL}api/v1/${this.serviceType}/${this.office}/` +
-      today_str +
-      '?' +
-      queryString +
-      '&extra_collects=' +
-      (await this.extraCollects());
+    let extraCollects;
     try {
-      data = await this.$http.get(office_url);
+      extraCollects = JSON.parse(
+        (await DynamicStorage.getItem('extraCollects')) || 'null'
+      );
     } catch {
-      this.error =
-        'There was an error retrieving the office. Please try again.';
-      this.loading = false;
-      return;
+      // Storage can hold an empty or truncated value; treat it as unset
+      // rather than failing to load the office.
+      extraCollects = null;
     }
-    this.setDocumentTitle();
-    this.modules = data.data.modules;
-    this.card = data.data.calendar_day;
-    this.applySeasonAccentFromCard(this.card);
-    this.error = false;
-    this.loading = false;
-    // Fire once, on the text request only, so the include_audio_links request
-    // below is never double-counted. Backend logs the view; GA gets the mirror.
-    this.officeDateStr = today_str;
-    this.bibleTranslation = settings.bible_translation;
-    trackEvent(
-      'office_view',
-      {
-        service_type: this.serviceType,
-        office: this.office,
-        office_date: today_str,
-        translation: settings.bible_translation,
-      },
-      { toBackend: false, toGA: true }
-    );
-    if (
-      this.audioLoadingEnabled &&
-      this.isWithinSevenDays &&
-      this.isEsvOrKjv &&
-      this.isEnglish
-    ) {
-      this.audioLinks = await this.setAudioLinks(office_url);
-    }
-    this.audioReady = true;
+    // Built with the sync engine's helper, so a downloaded office is found.
+    this.officeRequestUrl = officeUrl({
+      serviceType: this.serviceType,
+      office: this.office,
+      date: this.calendarDate,
+      settings,
+      extraCollects,
+    });
+    this.officeSettings = settings;
+    await this.loadOffice();
   },
 
   methods: {
     openPanel,
     setAudioEnabled,
+    async loadOffice() {
+      // Only the latest load of a mounted page may change it (and the
+      // document title and accent color, which outlive it).
+      const load = (this.loadCount = (this.loadCount || 0) + 1);
+      const current = () => !this.isUnmounted && load === this.loadCount;
+      const office_url = this.officeRequestUrl;
+      const settings = this.officeSettings;
+      const today_str =
+        this.calendarDate.getFullYear() +
+        '-' +
+        (this.calendarDate.getMonth() + 1) +
+        '-' +
+        this.calendarDate.getDate();
+      let data;
+      try {
+        data = await this.$http.get(office_url);
+      } catch (error) {
+        if (!current()) return;
+        const networkFailure = isNetworkFailure(error);
+        this.offlineMiss =
+          Boolean(error?.isOffline) || (networkFailure && !network.online);
+        this.networkError = networkFailure && !this.offlineMiss;
+        this.error = this.offlineMiss
+          ? false
+          : 'There was an error retrieving the office. Please try again.';
+        this.loading = false;
+        return;
+      }
+      if (!current()) return;
+      this.offlineMiss = false;
+      this.networkError = false;
+      this.setDocumentTitle();
+      this.modules = data.data.modules;
+      this.card = data.data.calendar_day;
+      this.applySeasonAccentFromCard(this.card);
+      this.error = false;
+      this.loading = false;
+      // Fire once, on the text request only, so the include_audio_links request
+      // below is never double-counted. Backend logs the view; GA gets the mirror.
+      this.officeDateStr = today_str;
+      this.bibleTranslation = settings.bible_translation;
+      trackEvent(
+        'office_view',
+        {
+          service_type: this.serviceType,
+          office: this.office,
+          office_date: today_str,
+          translation: settings.bible_translation,
+        },
+        { toBackend: false, toGA: true }
+      );
+      if (
+        this.audioLoadingEnabled &&
+        this.isWithinSevenDays &&
+        this.isEsvOrKjv &&
+        this.isEnglish
+      ) {
+        await this.setAudioLinks(office_url);
+      }
+      if (!current()) return;
+      this.audioReady = true;
+    },
     setDocumentTitle() {
       const names = {
         morning_prayer: 'Morning Prayer',
@@ -419,11 +495,18 @@ export default {
     async setAudioLinks(url) {
       if (import.meta.env.VITE_FETCH_AUDIO_ON === 'false') return [];
       if (!this.isWithinSevenDays) return [];
-      this.audioLinks = await fetchAudioTrack(
+      let links = await fetchAudioTrack(
         this.$http,
         `${url}&include_audio_links=true`,
         () => this.audioPollingStopped
       );
+      if (this.isUnmounted) return [];
+      // Offline, only a track kept on the device can play.
+      if (!network.online && !isLocalTrackUrl(links[0])) {
+        links = [];
+        this.audioOffline = true;
+      }
+      this.audioLinks = links;
       return this.audioLinks;
     },
     async setAudioLinksBak() {
@@ -485,35 +568,6 @@ export default {
       } catch {
         return null;
       }
-    },
-    async extraCollects() {
-      if (this.serviceType !== 'office') {
-        return '';
-      }
-      const full_office_name = this.office
-        .replace('_', ' ')
-        .toLowerCase()
-        .split(' ')
-        .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
-        .join(' ');
-      let extraCollects;
-      try {
-        extraCollects =
-          JSON.parse(await DynamicStorage.getItem('extraCollects')) || '';
-      } catch {
-        // Storage can hold an empty or truncated value; treat it as unset
-        // rather than failing to load the office.
-        extraCollects = '';
-      }
-      if (!extraCollects) {
-        return '';
-      }
-      return Object.prototype.hasOwnProperty.call(
-        extraCollects,
-        full_office_name
-      )
-        ? extraCollects[full_office_name].join(',')
-        : [];
     },
   },
 };

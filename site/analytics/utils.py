@@ -64,6 +64,14 @@ def parse_client_meta(request, declared_platform=None):
     return platform, browser, os_family
 
 
+def clean_text(value, length):
+    """A client-sent string, trimmed and cut to ``length``; anything else is ``""``.
+
+    NUL characters are dropped: Postgres can't store them.
+    """
+    return value.replace("\x00", "").strip()[:length] if isinstance(value, str) else ""
+
+
 def parse_office_date(value):
     """Parse a loose ``YYYY-M-D`` string into a ``date`` (or ``None``)."""
     if not value:
@@ -71,7 +79,7 @@ def parse_office_date(value):
     try:
         year, month, day = (int(part) for part in str(value).split("-")[:3])
         return datetime.date(year, month, day)
-    except (ValueError, TypeError):
+    except (ValueError, TypeError, OverflowError):
         return None
 
 

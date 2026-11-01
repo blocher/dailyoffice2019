@@ -43,12 +43,15 @@
 </template>
 
 <script setup>
-import { computed, nextTick } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
 import { openPanel, panels } from '@/helpers/panels';
 import { SessionStore } from '@/helpers/sessionStore';
+import { effectiveDays, network, syncState } from '@/offline';
+import { friendlyDate } from '@/offline/format';
+import { pwaState } from '@/offline/pwa';
 
 const route = useRoute();
 const router = useRouter();
@@ -94,6 +97,29 @@ async function openCalendarSubscription() {
   await nextTick();
   fire();
 }
+
+// "Ready through tomorrow" is reckoned from when the menu opens, so it moves
+// on after midnight (the menu stays mounted).
+const openedAt = ref(Date.now());
+watch(
+  () => panels.menu,
+  (open) => {
+    if (open) openedAt.value = Date.now();
+  }
+);
+
+const offlineHint = computed(() => {
+  const readyThrough = friendlyDate(
+    syncState.readyThrough,
+    new Date(openedAt.value)
+  );
+  if (!network.online) {
+    return readyThrough ? `Offline · ready through ${readyThrough}` : 'Offline';
+  }
+  if (effectiveDays() === 0) return 'Downloads off';
+  if (syncState.status === 'syncing') return 'Downloading…';
+  return readyThrough ? `Ready through ${readyThrough}` : 'Keep the days ahead';
+});
 
 const groups = computed(() => {
   const apps = isWeb
@@ -164,6 +190,24 @@ const groups = computed(() => {
           icon: 'calendar-plus',
           action: openCalendarSubscription,
         },
+        {
+          label: 'Offline',
+          hint: offlineHint.value,
+          icon: network.online ? 'cloud-check' : 'cloud-off',
+          action: () => openPanel('offline'),
+        },
+        ...(isWeb &&
+        !pwaState.installed &&
+        (pwaState.canPrompt || pwaState.iosManual)
+          ? [
+              {
+                label: 'Install the app',
+                hint: 'Home screen, works offline',
+                icon: 'download',
+                action: () => openPanel('offline'),
+              },
+            ]
+          : []),
       ],
     },
     {

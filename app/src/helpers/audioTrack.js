@@ -73,10 +73,21 @@ export function beyondTrackEnd(
   return target > duration + tolerance;
 }
 
+// A track stored on the device (offline/audio.js): a blob, a file, or a file
+// served by Capacitor (https://localhost/_capacitor_file_/… on Android).
+export function isLocalTrackUrl(url) {
+  return (
+    /^(blob|file|capacitor|data):/.test(url || '') ||
+    (url || '').includes('/_capacitor_file_')
+  );
+}
+
 // The same track URL with a fresh query value, so neither the browser nor
 // the CDN can answer from a stale (truncated) cached copy.
 export function freshTrackUrl(url, token = Date.now()) {
   if (!url) return url;
+  // A stored track is complete already.
+  if (isLocalTrackUrl(url)) return url;
   try {
     const parsed = new window.URL(url, window.location.href);
     parsed.searchParams.set('reload', String(token));

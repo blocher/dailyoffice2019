@@ -406,3 +406,8 @@ class AudioTrackCacheHeaderTests(SimpleTestCase):
         response = self.get(905.2)
         self.assertEqual(response["X-Audio-Duration"], "905")
         self.assertEqual(response["Cache-Control"], "public, max-age=86400, s-maxage=1209600")
+
+    def test_every_answer_allows_any_origin(self):
+        # Cloudflare's one copy also answers the app's offline download (fetch).
+        response = self.get(905.2)
+        self.assertEqual(response["Access-Control-Allow-Origin"], "*")

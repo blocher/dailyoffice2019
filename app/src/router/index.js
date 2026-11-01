@@ -142,6 +142,9 @@ const routes = [
     },
   },
   { path: '/privacy', redirect: '/privacy-policy' },
+  // A link to the Offline panel (for site messages and emails), over today's
+  // office. See takePanelQuery in helpers/panels.js.
+  { path: '/offline', redirect: { path: '/', query: { panel: 'offline' } } },
   {
     path: '/privacy-policy',
     name: 'Privacy Policy',

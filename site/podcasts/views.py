@@ -18,6 +18,7 @@ from office.audio_retention import podcast_media_root
 from podcasts import catalog, custom, rss, transcripts
 from podcasts.builder import ARTWORK_DIR, EpisodeBuildError
 from podcasts.models import CustomPodcastFeed, PodcastDirectoryListing
+from website.client_ip import ClientIpThrottleMixin
 
 logger = logging.getLogger(__name__)
 
@@ -189,7 +190,7 @@ class PodcastCatalogView(View):
 # --- EXPERIMENTAL custom podcasts (see podcasts/custom.py) -------------------
 
 
-class CustomPodcastThrottle(SimpleRateThrottle):
+class CustomPodcastThrottle(ClientIpThrottleMixin, SimpleRateThrottle):
     """New custom feeds per IP address, signed in or not."""
 
     scope = "custom_podcast"

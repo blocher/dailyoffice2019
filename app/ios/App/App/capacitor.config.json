@@ -17,6 +17,8 @@
 		"AppPlugin",
 		"CAPBrowserPlugin",
 		"ClipboardPlugin",
+		"FileTransferPlugin",
+		"FilesystemPlugin",
 		"PreferencesPlugin",
 		"SharePlugin",
 		"SplashScreenPlugin"

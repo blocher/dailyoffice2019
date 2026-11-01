@@ -49,6 +49,12 @@ class AnalyticsMiddleware:
         if request.GET.get("include_audio_links"):
             return
 
+        # The app downloading days ahead for offline use: nobody is praying
+        # yet. Views of those downloads are reported later, in a batch
+        # (analytics.views.OfflineOfficeViewsView).
+        if request.headers.get("X-Offline-Sync"):
+            return
+
         service_type, office = OFFICE_VIEW_URL_NAMES[match.url_name]
         platform, browser, os_family = parse_client_meta(request)
         client_id = (request.headers.get("X-Client-Id") or "").strip()

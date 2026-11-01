@@ -101,6 +101,24 @@
       }
     },
     {
+      "identity" : "ion-ios-filesystem",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ionic-team/ion-ios-filesystem.git",
+      "state" : {
+        "revision" : "549c18ad9d9bb70d05df37cc3f6f7aa7f5d0ee52",
+        "version" : "2.0.1"
+      }
+    },
+    {
+      "identity" : "ion-ios-filetransfer",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ionic-team/ion-ios-filetransfer.git",
+      "state" : {
+        "revision" : "b4c0765f3932aa0b70d07bb463bbac82b7e9ad42",
+        "version" : "2.0.0"
+      }
+    },
+    {
       "identity" : "leveldb",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/leveldb.git",

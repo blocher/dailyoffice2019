@@ -39,8 +39,9 @@ This project is a full-stack application divided into a modern Vue frontend and 
    - **Component styles** go in `<style scoped>` using tokens. Typography is Adobe Caslon Pro throughout; labels use small caps (`font-variant-caps: all-small-caps`) rather than bold or uppercase.
    - **Display preferences** (theme, text size, reading typeface, audio) live in `src/helpers/displayPreferences.js`. App-wide sheets (menu, display, share, email, feedback) open via `openPanel()` from `src/helpers/panels.js`.
 3. **Responsiveness**: Design for 320px phones up to wide desktops. Check every change at phone, tablet, and desktop widths, and respect safe-area insets.
-4. **State Management**: Adhere to the existing Vuex store structure. Do not mutate state directly outside of actions/mutations.
-5. **Testing**: Write tests for new components or complex logic using Vitest. Ensure tests pass before committing.
+4. **Offline**: API reads go through `src/offline/` (an axios adapter stores them for offline use; see `src/offline/index.js`). Build office and readings URLs with `src/offline/urls.js` so pages find what the sync engine downloaded, and handle `error.isOffline` with `OfflineMiss` or a clear message.
+5. **State Management**: Adhere to the existing Vuex store structure. Do not mutate state directly outside of actions/mutations.
+6. **Testing**: Write tests for new components or complex logic using Vitest. Ensure tests pass before committing.
 
 ## 🐍 Django Backend Standards (`site/`)
 

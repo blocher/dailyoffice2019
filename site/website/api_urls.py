@@ -31,7 +31,8 @@ from office.api.views.resources import (
     ScriptureViewSet,
     GroupedCollectsViewSet,
 )
-from analytics.views import AnalyticsEventView
+from analytics.views import AnalyticsEventView, OfflineOfficeViewsView
+from office.api.views.offline import ContentChangesView
 from office.readings_audio import ReadingsAudioView
 from patrons import views as patron_views
 from podcasts.urls import urlpatterns as podcast_urlpatterns
@@ -87,6 +88,8 @@ urlpatterns = podcast_urlpatterns + [
     path(r"api/v1/calendar/<int:year>", YearView.as_view(), name="month_view"),
     path(r"api/v1/audio_track/<path:track>", AudioTrackView.as_view(), name="audio_track"),
     path(r"api/v1/analytics/event", AnalyticsEventView.as_view(), name="analytics_event"),
+    path(r"api/v1/analytics/offline_views", OfflineOfficeViewsView.as_view(), name="analytics_offline_views"),
+    path(r"api/v1/content_changes", ContentChangesView.as_view(), name="content_changes"),
     path(
         r"api/v1/audio",
         AudioViewSet.as_view({"post": "retrieve"}),

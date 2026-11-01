@@ -1,0 +1,7 @@
+# Cloudflare Pages headers. The service worker and manifest must be checked
+# for updates on every visit (src/offline/pwa.js).
+/sw.js
+  Cache-Control: no-cache
+  Service-Worker-Allowed: /
+/site.webmanifest
+  Cache-Control: no-cache

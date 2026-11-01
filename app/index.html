@@ -10,6 +10,11 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
+    <!-- Installed from Safari's Share menu (Add to Home Screen) -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Daily Office">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>The Daily Office</title>
     <meta name="theme-color" content="#fdfcf9">
     <link rel="preload" href="/assets/fonts/ACaslonPro-Regular.woff2" as="font" type="font/woff2" crossorigin>
@@ -52,9 +57,11 @@
         }
       })();
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
+    <!-- crossorigin: a readable answer, which the service worker can keep for offline use
+         without the size penalty browsers put on opaque ones. -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet" crossorigin>
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
