@@ -695,7 +695,8 @@ connection: in a browser, as an installed web app, and in the native apps. The c
   `app/android/.../offline/`, a WorkManager job every 12 hours on a connection with the battery not low). It follows
   the same plan and rules as the service worker, but background code can't reach the web view's IndexedDB, so it
   downloads into files (an inbox) that `app/src/offline/native.js` moves into IndexedDB when the app opens or comes
-  back to the front. To try it on iOS (a device: the Simulator has no `BGTaskScheduler`), background the app, pause
+  back to the front. On iOS, audio tracks download in a background `URLSession`, which iOS finishes after the refresh
+  task's 30 seconds are up. To try it on iOS (a device: the Simulator has no `BGTaskScheduler`), background the app, pause
   in Xcode and run
   `e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"com.dailyoffice.dailyoffice2019.offline-refresh"]`.
   Anywhere, `await Capacitor.Plugins.OfflineSync.runNow()` in the web inspector starts one run (on Android, a
@@ -705,7 +706,7 @@ connection: in a browser, as an installed web app, and in the native apps. The c
 Devices refresh their downloads from the content change log (`ContentChange`, `site/office/offline_content.py`):
 
 - Every admin save records a soft change: devices refresh today and tomorrow at once, and the other days as they come
-  near (or when opened online).
+  near (or when opened online). "Delete selected" records one per object deleted.
 - `python manage.py invalidate_offline --dates 2026-12-01:2026-12-07` refreshes those dates on every device at its next
   sync; `--all --urgent` refreshes everything. Run it after editing content outside the admin, or after a deploy that
   changes how offices are put together. Entries can also be added in the admin (Offline content changes).

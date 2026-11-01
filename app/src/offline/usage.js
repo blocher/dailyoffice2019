@@ -18,12 +18,14 @@ export function loadUsage() {
   return loaded;
 }
 
-export function noteUse(kind) {
+export async function noteUse(kind) {
+  // Load first: saving before then would drop the other kinds' times.
+  await loadUsage();
   const now = Date.now();
   // Once an hour is plenty.
   if (usage[kind] && now - usage[kind] < 3600 * 1000) return;
   usage[kind] = now;
-  db.meta.set('usage', { ...usage }).catch(() => {});
+  await db.meta.set('usage', { ...usage }).catch(() => {});
 }
 
 export async function usedRecently(kind) {

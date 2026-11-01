@@ -3,7 +3,7 @@
 import datetime
 from io import StringIO
 
-from django.contrib.admin.models import ADDITION, CHANGE, LogEntry
+from django.contrib.admin.models import ADDITION, CHANGE, DELETION, LogEntry
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.management import call_command
@@ -58,7 +58,16 @@ class ChangesSinceTests(TestCase):
         summary = offline_content.changes_since(first.id - 1)
         self.assertTrue(summary["all"])
         self.assertTrue(summary["urgent"])
-        self.assertEqual(summary["dates"], [])
+        # The dated change is still named, so devices refresh it at once.
+        self.assertEqual(summary["dates"], [["2026-12-01", "2026-12-01"]])
+
+    def test_a_dated_urgent_change_does_not_make_everything_urgent(self):
+        first = offline_content.record_change(start_date=datetime.date(2026, 12, 1), urgent=True)
+        offline_content.record_change()
+        summary = offline_content.changes_since(first.id - 1)
+        self.assertTrue(summary["all"])
+        self.assertFalse(summary["urgent"])
+        self.assertEqual(summary["dates"], [["2026-12-01", "2026-12-01"]])
 
     def test_only_changes_after_the_version_count(self):
         old = offline_content.record_change(urgent=True)
@@ -112,6 +121,12 @@ class AdminEditsTests(TestCase):
         self.assertFalse(change.urgent)
         self.assertIsNone(change.start_date)
         self.assertIn("office.aboutitem", change.note)
+
+    def test_bulk_deletes_record_a_change(self):
+        items = [AboutItem.objects.create(question=q, answer="x", order=i) for i, q in enumerate(["One", "Two"])]
+        with self.captureOnCommitCallbacks(execute=True):
+            LogEntry.objects.log_actions(self.user.pk, items, DELETION)
+        self.assertEqual(ContentChange.objects.filter(source=ContentChange.SOURCE_ADMIN).count(), 2)
 
     def test_edits_that_never_change_an_office_are_ignored(self):
         with self.captureOnCommitCallbacks(execute=True):
@@ -195,11 +210,59 @@ class OfflineSyncAnalyticsTests(TestCase):
     def test_times_are_clamped(self):
         APIClient().post(
             "/api/v1/analytics/offline_views",
-            {"views": [{"service_type": "family", "office": "morning_prayer", "viewed_at": "1999-01-01T00:00:00Z"}]},
+            {
+                "client_id": "abc",
+                "views": [{"service_type": "family", "office": "morning_prayer", "viewed_at": "1999-01-01T00:00:00Z"}],
+            },
             format="json",
         )
         event = AnalyticsEvent.objects.get()
         self.assertGreater(event.created, timezone.now() - datetime.timedelta(days=61))
+
+    def test_bad_values_are_skipped_not_errors(self):
+        view = {"service_type": "office", "office": "compline"}
+        response = APIClient().post(
+            "/api/v1/analytics/offline_views",
+            {
+                "client_id": "abc",
+                "platform": 123,
+                "views": [
+                    {**view, "viewed_at": "2026-02-30T07:00:00Z", "translation": 5},
+                    {**view, "viewed_at": "2026-11-02T25:00:00"},
+                    {**view, "viewed_at": 7},
+                ],
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"accepted": 3})
+        self.assertEqual(AnalyticsEvent.objects.filter(translation="", platform="unknown").count(), 3)
+
+    def test_a_client_id_that_is_not_text_is_no_client_id(self):
+        response = APIClient().post(
+            "/api/v1/analytics/offline_views",
+            {"client_id": 123, "views": [{"service_type": "office", "office": "compline"}]},
+            format="json",
+        )
+        self.assertEqual(response.json(), {"accepted": 0})
+        self.assertFalse(AnalyticsEvent.objects.exists())
+
+    def test_views_are_capped_per_device_and_day(self):
+        from analytics.views import OfflineOfficeViewsView
+
+        cap = OfflineOfficeViewsView.MAX_PER_DAY
+        viewed_at = (timezone.now() - datetime.timedelta(days=1)).isoformat()
+        view = {"service_type": "office", "office": "compline", "viewed_at": viewed_at}
+
+        def post(client_id, count):
+            return APIClient().post(
+                "/api/v1/analytics/offline_views", {"client_id": client_id, "views": [view] * count}, format="json"
+            )
+
+        self.assertEqual(post("abc", cap - 2).json(), {"accepted": cap - 2})
+        self.assertEqual(post("abc", 5).json(), {"accepted": 2})
+        self.assertEqual(post("other", 5).json(), {"accepted": 5})
+        self.assertEqual(AnalyticsEvent.objects.filter(client_id="abc").count(), cap)
 
     def test_views_must_be_a_list(self):
         response = APIClient().post("/api/v1/analytics/offline_views", {"views": "x"}, format="json")

@@ -8,9 +8,14 @@ import {
   profileForSettings,
 } from '@/offline/keys';
 import { officeUrl, readingsUrl } from '@/offline/urls';
-import { handle, SYNC_HEADER } from '@/offline/cacheAdapter';
+import { handle, resetStoredIndex, SYNC_HEADER } from '@/offline/cacheAdapter';
 import { setBrowserOnlineForTests, network } from '@/offline/network';
-import { resetInvalidationsForTests, stalenessOf } from '@/offline/staleness';
+import {
+  addInvalidation,
+  resetInvalidationsForTests,
+  stalenessOf,
+} from '@/offline/staleness';
+import { noteUse, usedRecently } from '@/offline/usage';
 import { buildPlan, officeOrderFor } from '@/offline/sync';
 import { estimateBytes, formatBytes, friendlyDate } from '@/offline/format';
 
@@ -191,6 +196,55 @@ describe('staleness', () => {
     ]);
     expect(stalenessOf({ date: '2026-12-25', fetchedAt: 50 })).toBe('hard');
   });
+
+  it('keeps dated changes hard when every date also changed', () => {
+    resetInvalidationsForTests([
+      {
+        at: 100,
+        all: true,
+        urgent: false,
+        dates: [['2026-11-20', '2026-11-20']],
+      },
+    ]);
+    expect(stalenessOf({ date: '2026-11-20', fetchedAt: 50 })).toBe('hard');
+    expect(stalenessOf({ date: '2026-11-21', fetchedAt: 50 })).toBe('soft');
+  });
+});
+
+describe('the change list', () => {
+  beforeEach(() => {
+    db.resetForTests();
+    resetStoredIndex();
+    resetInvalidationsForTests([]);
+  });
+
+  it('keeps changes the service worker saved behind its back', async () => {
+    await db.meta.set('invalidations', [
+      {
+        at: 50,
+        all: false,
+        urgent: false,
+        dates: [['2026-11-02', '2026-11-02']],
+      },
+    ]);
+    await addInvalidation({ all: true, urgent: false, dates: [] }, 100);
+    expect((await db.meta.get('invalidations')).map((i) => i.at)).toEqual([
+      50, 100,
+    ]);
+  });
+});
+
+describe('noting what is used', () => {
+  it('keeps the other kinds when the first use comes before loading', async () => {
+    db.resetForTests();
+    await db.meta.set('usage', { family: Date.now() - 1000 });
+    await noteUse('office');
+    expect(await usedRecently('family')).toBe(true);
+    expect(Object.keys(await db.meta.get('usage')).sort()).toEqual([
+      'family',
+      'office',
+    ]);
+  });
 });
 
 describe('the offline-aware adapter', () => {
@@ -203,6 +257,7 @@ describe('the offline-aware adapter', () => {
 
   beforeEach(async () => {
     db.resetForTests();
+    resetStoredIndex();
     resetInvalidationsForTests([]);
     setBrowserOnlineForTests(true);
   });
@@ -216,12 +271,14 @@ describe('the offline-aware adapter', () => {
     const network = vi.fn().mockResolvedValue(ok({ modules: [1] }));
     const response = await handle(officeConfig(), network);
     expect(JSON.parse(response.data)).toEqual({ modules: [1] });
-    const stored = await db.get(
-      'responses',
-      'office/morning_prayer/2026-11-2?bible_translation=esv&extra_collects='
-    );
-    expect(stored.data).toEqual({ modules: [1] });
-    expect(stored).toMatchObject({ kind: 'office', date: '2026-11-02' });
+    await vi.waitFor(async () => {
+      const stored = await db.get(
+        'responses',
+        'office/morning_prayer/2026-11-2?bible_translation=esv&extra_collects='
+      );
+      expect(stored.data).toEqual({ modules: [1] });
+      expect(stored).toMatchObject({ kind: 'office', date: '2026-11-02' });
+    });
   });
 
   it('answers an office from storage at once, and refreshes it behind', async () => {
@@ -276,6 +333,39 @@ describe('the offline-aware adapter', () => {
     expect(network.mock.calls.length).toBe(2);
     expect(network.mock.results[1].type).toBe('return');
     expect(networkStateOnline()).toBe(false);
+  });
+
+  it('falls back to storage when the server errors', async () => {
+    const config = { method: 'get', url: '/api/v1/psalms', headers: {} };
+    await handle(config, vi.fn().mockResolvedValue(ok([{ number: 1 }])));
+    await vi.waitFor(async () =>
+      expect(await db.getAll('responses')).toHaveLength(1)
+    );
+    const failing = vi
+      .fn()
+      .mockRejectedValue(
+        Object.assign(new Error('Bad Gateway'), { response: { status: 502 } })
+      );
+    const response = await handle(config, failing);
+    expect(response.data).toEqual([{ number: 1 }]);
+    expect(networkStateOnline()).toBe(true);
+  });
+
+  it('stays online when a write or an unstored request fails', async () => {
+    const failing = vi.fn().mockRejectedValue(networkError());
+    await expect(
+      handle(
+        { method: 'post', url: '/api/v1/analytics/event', headers: {} },
+        failing
+      )
+    ).rejects.toThrow();
+    await expect(
+      handle(
+        { method: 'get', url: '/api/v1/podcasts/custom/abc', headers: {} },
+        failing
+      )
+    ).rejects.toThrow();
+    expect(networkStateOnline()).toBe(true);
   });
 
   it('always asks the network for sync downloads', async () => {

@@ -4,6 +4,7 @@ const axios = vi.hoisted(() => ({ get: vi.fn(), post: vi.fn() }));
 vi.mock('axios', () => ({ default: axios }));
 
 import * as db from '@/offline/db';
+import { resetStoredIndex } from '@/offline/cacheAdapter';
 import { setBrowserOnlineForTests } from '@/offline/network';
 import { offlinePrefs } from '@/offline/preferences';
 import { resetInvalidationsForTests } from '@/offline/staleness';
@@ -17,7 +18,8 @@ function isoOf(date) {
 }
 
 const today = isoOf(new Date());
-const trackUrl = (name) => `${window.location.origin}/api/v1/audio_track/${name}`;
+const trackUrl = (name) =>
+  `${window.location.origin}/api/v1/audio_track/${name}`;
 
 async function storeTrack(name, date = today, office = 'morning_prayer') {
   await db.put('audio', {
@@ -34,9 +36,10 @@ async function storedTracks() {
   return (await db.getAll('audio')).map((record) => record.url).sort();
 }
 
-describe('downloading office audio', () => {
+describe('a sync run', () => {
   beforeEach(() => {
-    db.resetForTests();
+    db.resetForTests({ persistent: true });
+    resetStoredIndex();
     resetInvalidationsForTests([]);
     setBrowserOnlineForTests(true);
     axios.get.mockReset();
@@ -114,9 +117,19 @@ describe('downloading office audio', () => {
     await requestSync('manual');
     expect(await storedTracks()).toEqual([trackUrl('today.mp3')]);
 
-    answer({ audio: async () => ({ data: { audio: { status: 'preparing' } } }) });
+    answer({
+      audio: async () => ({ data: { audio: { status: 'preparing' } } }),
+    });
     await requestSync('manual');
     expect(await storedTracks()).toEqual([trackUrl('today.mp3')]);
     expect(syncState.audio.preparing).toBe(2);
+  });
+
+  it('downloads nothing where storage would be lost on reload', async () => {
+    db.resetForTests({ persistent: false });
+    answer({ audio: trackFor });
+    await requestSync('manual');
+    expect(syncState.status).toBe('unavailable');
+    expect(axios.get).not.toHaveBeenCalled();
   });
 });

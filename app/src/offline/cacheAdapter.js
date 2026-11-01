@@ -46,14 +46,6 @@ const REFRESH_AFTER_MS = {
 
 export const SYNC_HEADER = 'X-Offline-Sync';
 
-const listeners = new Set();
-
-// Called with (key, record) whenever a stored answer changes.
-export function onStored(listener) {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-}
-
 function headerValue(headers, name) {
   if (!headers) return undefined;
   if (typeof headers.get === 'function') return headers.get(name);
@@ -124,6 +116,78 @@ function sizeOf(data) {
   }
 }
 
+/*
+  What is stored, without the answers themselves. A sync run checks hundreds
+  of keys, and reading each answer whole (often hundreds of KB) just to see
+  when it was downloaded is slow on a phone. Filled from storage once, then
+  kept in step by storeEntry and removeEntries. Writes from elsewhere (the
+  service worker, pwa.js) call resetStoredIndex.
+*/
+let storedIndex = null;
+let indexing = null;
+
+function summaryOf(record) {
+  const { key, fetchedAt, schema, kind, date, profile, bytes } = record;
+  return { key, fetchedAt, schema, kind, date, profile, bytes };
+}
+
+function loadStoredIndex() {
+  if (storedIndex) return Promise.resolve(storedIndex);
+  if (!indexing) {
+    const map = new Map();
+    indexing = db
+      .eachRecord(
+        'responses',
+        (record) => {
+          map.set(record.key, summaryOf(record));
+          return null;
+        },
+        'readonly'
+      )
+      .then(() => {
+        storedIndex = map;
+        return map;
+      })
+      // Unreadable: answer from what was read, and try again next time.
+      .catch(() => map)
+      .finally(() => {
+        indexing = null;
+      });
+  }
+  return indexing;
+}
+
+function updateIndex(change) {
+  if (storedIndex) change(storedIndex);
+  else if (indexing) indexing.then(change);
+}
+
+export function resetStoredIndex() {
+  storedIndex = null;
+}
+
+// A stored answer's details (not its data), with its staleness; or null.
+export async function readStoredInfo(key) {
+  try {
+    await loadInvalidations();
+    const info = (await loadStoredIndex()).get(key);
+    if (!info || info.schema !== SCHEMA) return null;
+    return { ...info, stale: stalenessOf(info) };
+  } catch {
+    return null;
+  }
+}
+
+// Every stored answer's details (for pruning).
+export async function storedInfos() {
+  return [...(await loadStoredIndex()).values()];
+}
+
+export async function removeEntries(keys) {
+  await Promise.all(keys.map((key) => db.remove('responses', key)));
+  updateIndex((map) => keys.forEach((key) => map.delete(key)));
+}
+
 export async function readEntry(key) {
   try {
     await loadInvalidations();
@@ -137,10 +201,14 @@ export async function readEntry(key) {
 }
 
 // `fetchedAt` is when the answer was downloaded, when that was earlier (the
-// apps' background downloads, native.js).
-export async function storeEntry(key, info, url, data, { fetchedAt } = {}) {
-  const previous = await readEntry(key);
-  const bytes = sizeOf(data);
+// apps' background downloads, native.js); `bytes` its size, when known.
+export async function storeEntry(
+  key,
+  info,
+  url,
+  data,
+  { fetchedAt, bytes } = {}
+) {
   const record = {
     key,
     url,
@@ -149,7 +217,7 @@ export async function storeEntry(key, info, url, data, { fetchedAt } = {}) {
     date: info.date,
     profile: info.profile,
     fetchedAt: fetchedAt || Date.now(),
-    bytes,
+    bytes: bytes || sizeOf(data),
     schema: SCHEMA,
   };
   try {
@@ -158,14 +226,7 @@ export async function storeEntry(key, info, url, data, { fetchedAt } = {}) {
     // Storage full: the page still gets its answer.
     return null;
   }
-  const changed = !previous || previous.bytes !== bytes;
-  listeners.forEach((listener) => {
-    try {
-      listener(key, record, changed);
-    } catch {
-      // Listeners look after themselves.
-    }
-  });
+  updateIndex((map) => map.set(key, summaryOf(record)));
   return record;
 }
 
@@ -173,7 +234,9 @@ export async function storeEntry(key, info, url, data, { fetchedAt } = {}) {
 async function keep(key, info, url, response) {
   const data = bodyOf(response);
   if (storable(info, response, data)) {
-    await storeEntry(key, info, url, data);
+    await storeEntry(key, info, url, data, {
+      bytes: typeof response.data === 'string' ? response.data.length : 0,
+    });
   }
 }
 
@@ -202,8 +265,9 @@ function noteFailure(error) {
   }
 }
 
-// Background downloads (`quiet`) never decide that the app is offline on
-// their own: only the pages' requests do.
+// Only the pages' reads of what is stored decide that the app is offline:
+// background downloads, writes and other requests are `quiet` (a blocked
+// analytics post isn't a lost connection).
 async function callNetwork(networkAdapter, config, { quiet = false } = {}) {
   try {
     const response = await networkAdapter(config);
@@ -245,11 +309,13 @@ function delay(ms) {
 
 export async function handle(config, networkAdapter) {
   const method = (config.method || 'get').toLowerCase();
-  if (method !== 'get') return callNetwork(networkAdapter, config);
+  if (method !== 'get') {
+    return callNetwork(networkAdapter, config, { quiet: true });
+  }
 
   const parsed = parseApiUrl(config.url, config.params);
   const info = parsed && describe(parsed.path, parsed.query);
-  if (!info) return callNetwork(networkAdapter, config);
+  if (!info) return callNetwork(networkAdapter, config, { quiet: true });
 
   const key = keyFor(parsed.path, parsed.query);
   const url = absoluteUrl(config);
@@ -282,8 +348,9 @@ export async function handle(config, networkAdapter) {
     return fromStorage(stored, config);
   }
 
-  const request = callNetwork(networkAdapter, config).then(async (response) => {
-    await keep(key, info, url, response);
+  // The page has its answer before it is saved.
+  const request = callNetwork(networkAdapter, config).then((response) => {
+    keep(key, info, url, response).catch(() => {});
     return response;
   });
 
@@ -301,7 +368,9 @@ export async function handle(config, networkAdapter) {
     request.catch(() => {});
     return fromStorage(stored, config);
   } catch (error) {
-    if (isNetworkFailure(error)) {
+    // No connection, or the API is down (a 502 during a deploy): the stored
+    // copy is better than an error.
+    if (isNetworkFailure(error) || error?.response?.status >= 500) {
       if (info.kind === 'office') queueView(info, parsed.query);
       return fromStorage(stored, config);
     }

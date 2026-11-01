@@ -7,12 +7,14 @@
     subtitle="Pray without a connection"
     @update:open="(value) => (panels.offline = value)"
   >
-    <section class="offline-hero" :class="`is-${hero.tone}`" aria-live="polite">
+    <section class="offline-hero" :class="`is-${hero.tone}`">
       <span class="offline-hero__icon" aria-hidden="true">
         <UiIcon :name="hero.icon" />
       </span>
       <div class="offline-hero__copy">
-        <p class="offline-hero__title">{{ hero.title }}</p>
+        <!-- Only the title is announced: the text changes with every download
+             (the progress bar carries the count). -->
+        <p class="offline-hero__title" aria-live="polite">{{ hero.title }}</p>
         <p v-if="hero.text" class="offline-hero__text">{{ hero.text }}</p>
         <div
           v-if="showProgress"
@@ -400,6 +402,14 @@ const hero = computed(() => {
       icon: 'cloud-off',
       title: 'Downloads are off',
       text: 'Choose how many days to keep, and the app works without a connection.',
+    };
+  }
+  if (sync.status === 'unavailable') {
+    return {
+      tone: 'warning',
+      icon: 'warning',
+      title: 'This browser can’t keep downloads',
+      text: 'A private window, or blocked site data, keeps the app from saving offices on this device. Pages still work while you’re online.',
     };
   }
   if (sync.status === 'syncing') {

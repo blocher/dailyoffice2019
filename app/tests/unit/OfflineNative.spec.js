@@ -17,7 +17,11 @@ vi.mock('@capacitor/core', () => ({
 }));
 
 import * as db from '@/offline/db';
-import { readEntry, storeEntry } from '@/offline/cacheAdapter';
+import {
+  readEntry,
+  resetStoredIndex,
+  storeEntry,
+} from '@/offline/cacheAdapter';
 import {
   currentInvalidations,
   mergeInvalidations,
@@ -58,6 +62,7 @@ function inbox(entries, extra = {}) {
 describe('merging content changes', () => {
   beforeEach(() => {
     db.resetForTests();
+    resetStoredIndex();
     resetInvalidationsForTests([]);
   });
 
@@ -77,13 +82,21 @@ describe('merging content changes', () => {
         urgent: false,
         dates: [['2026-11-02', '2026-11-02']],
       },
-      { at: 100, all: true, urgent: false, dates: [['ignored', 'ignored']] },
+      {
+        at: 100,
+        all: true,
+        urgent: false,
+        dates: [['2026-12-25', '2026-12-25']],
+      },
       { at: 300, all: false, urgent: false, dates: [] },
       null,
     ]);
     expect(added).toBe(1);
     expect((await currentInvalidations()).map((i) => i.at)).toEqual([100, 200]);
-    expect((await currentInvalidations())[0].dates).toEqual([]);
+    // An every-date change keeps its dated ranges: those dates are urgent.
+    expect((await currentInvalidations())[0].dates).toEqual([
+      ['2026-12-25', '2026-12-25'],
+    ]);
     expect(await db.meta.get('invalidations')).toHaveLength(2);
   });
 });
@@ -91,6 +104,7 @@ describe('merging content changes', () => {
 describe('the background inbox', () => {
   beforeEach(() => {
     db.resetForTests();
+    resetStoredIndex();
     resetInvalidationsForTests([]);
     plugin.schedule.mockReset();
     plugin.drain.mockReset();
@@ -191,7 +205,6 @@ describe('the background inbox', () => {
     const track = {
       url: 'https://api.example.com/audio/mp.mp3',
       path: 'offline-audio/abc.mp3',
-      uri: 'file:///Library/NoCloud/offline-audio/abc.mp3',
       bytes: 42,
       date: '2026-11-02',
       office: 'morning_prayer',
@@ -229,6 +242,7 @@ describe('the background inbox', () => {
 describe('scheduling background downloads', () => {
   beforeEach(() => {
     db.resetForTests();
+    resetStoredIndex();
     resetInvalidationsForTests([]);
     plugin.schedule.mockReset().mockResolvedValue({ scheduled: true });
   });

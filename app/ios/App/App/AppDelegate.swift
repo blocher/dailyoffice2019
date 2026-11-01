@@ -50,6 +50,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
 
+    // Offline audio finished downloading while the app was suspended or not running
+    // (OfflineAudioDownloads in OfflineSyncPlugin.swift).
+    func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
+        guard identifier == OfflineAudioDownloads.identifier else {
+            completionHandler()
+            return
+        }
+        OfflineAudioDownloads.shared.backgroundCompletion = completionHandler
+        OfflineAudioDownloads.shared.reconnect()
+    }
+
     // The window, and links that open the app, belong to the scene now (SceneDelegate.swift).
 
 }

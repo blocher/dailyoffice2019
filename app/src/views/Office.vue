@@ -274,6 +274,23 @@ export default {
     isWithinSevenDays() {
       return isWithinAudioWindow(this.calendarDate);
     },
+    online() {
+      return network.online;
+    },
+  },
+  watch: {
+    // Back online: load what couldn't be had offline.
+    online(isOnline) {
+      if (!isOnline || !this.officeRequestUrl) return;
+      if (this.offlineMiss) {
+        this.offlineMiss = false;
+        this.loading = true;
+        this.loadOffice();
+      } else if (this.audioOffline) {
+        this.audioOffline = false;
+        this.setAudioLinks(this.officeRequestUrl);
+      }
+    },
   },
   async mounted() {
     await DynamicStorage.setItem('serviceType', this.serviceType);
@@ -310,12 +327,6 @@ export default {
       this.notFound = true;
       return;
     }
-    const today_str =
-      this.calendarDate.getFullYear() +
-      '-' +
-      (this.calendarDate.getMonth() + 1) +
-      '-' +
-      this.calendarDate.getDate();
     this.availableSettings = await this.$store.state.availableSettings;
     await this.$store.dispatch('initializeSettings');
     const settings = await this.$store.state.settings;
@@ -342,60 +353,73 @@ export default {
       // rather than failing to load the office.
       extraCollects = null;
     }
-    let data;
     // Built with the sync engine's helper, so a downloaded office is found.
-    const office_url = officeUrl({
+    this.officeRequestUrl = officeUrl({
       serviceType: this.serviceType,
       office: this.office,
       date: this.calendarDate,
       settings,
       extraCollects,
     });
-    try {
-      data = await this.$http.get(office_url);
-    } catch (error) {
-      this.offlineMiss = Boolean(error?.isOffline);
-      this.error = this.offlineMiss
-        ? false
-        : 'There was an error retrieving the office. Please try again.';
-      this.loading = false;
-      return;
-    }
-    this.fromStorage = data.offline || null;
-    this.setDocumentTitle();
-    this.modules = data.data.modules;
-    this.card = data.data.calendar_day;
-    this.applySeasonAccentFromCard(this.card);
-    this.error = false;
-    this.loading = false;
-    // Fire once, on the text request only, so the include_audio_links request
-    // below is never double-counted. Backend logs the view; GA gets the mirror.
-    this.officeDateStr = today_str;
-    this.bibleTranslation = settings.bible_translation;
-    trackEvent(
-      'office_view',
-      {
-        service_type: this.serviceType,
-        office: this.office,
-        office_date: today_str,
-        translation: settings.bible_translation,
-      },
-      { toBackend: false, toGA: true }
-    );
-    if (
-      this.audioLoadingEnabled &&
-      this.isWithinSevenDays &&
-      this.isEsvOrKjv &&
-      this.isEnglish
-    ) {
-      this.audioLinks = await this.setAudioLinks(office_url);
-    }
-    this.audioReady = true;
+    this.officeSettings = settings;
+    await this.loadOffice();
   },
 
   methods: {
     openPanel,
     setAudioEnabled,
+    async loadOffice() {
+      const office_url = this.officeRequestUrl;
+      const settings = this.officeSettings;
+      const today_str =
+        this.calendarDate.getFullYear() +
+        '-' +
+        (this.calendarDate.getMonth() + 1) +
+        '-' +
+        this.calendarDate.getDate();
+      let data;
+      try {
+        data = await this.$http.get(office_url);
+      } catch (error) {
+        this.offlineMiss = Boolean(error?.isOffline);
+        this.error = this.offlineMiss
+          ? false
+          : 'There was an error retrieving the office. Please try again.';
+        this.loading = false;
+        return;
+      }
+      this.offlineMiss = false;
+      this.fromStorage = data.offline || null;
+      this.setDocumentTitle();
+      this.modules = data.data.modules;
+      this.card = data.data.calendar_day;
+      this.applySeasonAccentFromCard(this.card);
+      this.error = false;
+      this.loading = false;
+      // Fire once, on the text request only, so the include_audio_links request
+      // below is never double-counted. Backend logs the view; GA gets the mirror.
+      this.officeDateStr = today_str;
+      this.bibleTranslation = settings.bible_translation;
+      trackEvent(
+        'office_view',
+        {
+          service_type: this.serviceType,
+          office: this.office,
+          office_date: today_str,
+          translation: settings.bible_translation,
+        },
+        { toBackend: false, toGA: true }
+      );
+      if (
+        this.audioLoadingEnabled &&
+        this.isWithinSevenDays &&
+        this.isEsvOrKjv &&
+        this.isEnglish
+      ) {
+        this.audioLinks = await this.setAudioLinks(office_url);
+      }
+      this.audioReady = true;
+    },
     setDocumentTitle() {
       const names = {
         morning_prayer: 'Morning Prayer',

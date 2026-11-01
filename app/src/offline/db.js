@@ -57,7 +57,7 @@ export function upgrade(db) {
 export function openDb() {
   if (unavailable) return Promise.resolve(null);
   if (opening) return opening;
-  opening = new Promise((resolve) => {
+  const current = new Promise((resolve) => {
     let request;
     try {
       if (typeof window.indexedDB === 'undefined')
@@ -76,6 +76,11 @@ export function openDb() {
         db.close();
         opening = null;
       };
+      // Closed under us (Safari and iOS drop the connection now and then
+      // while the app is in the background): open again next time.
+      db.onclose = () => {
+        if (opening === current) opening = null;
+      };
       resolve(db);
     };
     request.onerror = () => {
@@ -88,10 +93,14 @@ export function openDb() {
       resolve(null);
     };
   });
-  return opening;
+  opening = current;
+  return current;
 }
 
-async function withStore(name, mode, run) {
+// What a lost connection throws: worth opening again once.
+const CONNECTION_ERRORS = ['InvalidStateError', 'UnknownError'];
+
+async function withStore(name, mode, run, retried = false) {
   const db = await openDb();
   if (!db) return run(null);
   try {
@@ -105,7 +114,16 @@ async function withStore(name, mode, run) {
     return result;
   } catch (error) {
     if (error?.name === 'QuotaExceededError') throw error;
-    // A closed or broken database: answer from memory this time.
+    if (!retried && CONNECTION_ERRORS.includes(error?.name)) {
+      try {
+        db.close();
+      } catch {
+        // Already closed.
+      }
+      opening = null;
+      return withStore(name, mode, run, true);
+    }
+    // A broken database: answer from memory this time.
     return run(null);
   }
 }
@@ -159,9 +177,10 @@ export function clear(name) {
 }
 
 // Visit every record without loading them all at once; `visit` returns
-// 'delete' to remove one, or an updated record to replace it.
-export function eachRecord(name, visit) {
-  return withStore(name, 'readwrite', (store) => {
+// 'delete' to remove one, or an updated record to replace it (both need
+// the 'readwrite' mode).
+export function eachRecord(name, visit, mode = 'readwrite') {
+  return withStore(name, mode, (store) => {
     if (!store) {
       for (const [key, value] of [...memory[name].entries()]) {
         const result = visit(value);
@@ -194,13 +213,16 @@ export const meta = {
   set: (key, value) => put('meta', value, key),
 };
 
+let memoryIsPersistent = false;
+
 export function isPersistent() {
-  return !unavailable;
+  return !unavailable || memoryIsPersistent;
 }
 
-// Tests only.
-export function resetForTests() {
+// Tests only. `persistent`: treat memory as lasting storage.
+export function resetForTests({ persistent = false } = {}) {
   opening = null;
   unavailable = false;
+  memoryIsPersistent = persistent;
   Object.values(memory).forEach((map) => map.clear());
 }

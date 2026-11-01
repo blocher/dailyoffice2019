@@ -26,7 +26,12 @@
 import { reactive } from 'vue';
 import { Capacitor, registerPlugin } from '@capacitor/core';
 import * as db from './db';
-import { keepable, readEntry, storeEntry } from './cacheAdapter';
+import {
+  keepable,
+  readEntry,
+  readStoredInfo,
+  storeEntry,
+} from './cacheAdapter';
 import { describe, parseApiUrl, keyFor } from './keys';
 import { currentInvalidations, mergeInvalidations } from './staleness';
 import { trackKey } from './audio';
@@ -95,7 +100,9 @@ export async function scheduleBackground(plan, { audio = [] } = {}) {
   try {
     const tasks = plan?.tasks || [];
     const fetched = {};
-    const records = await Promise.all(tasks.map((task) => readEntry(task.key)));
+    const records = await Promise.all(
+      tasks.map((task) => readStoredInfo(task.key))
+    );
     records.forEach((record, index) => {
       if (record) fetched[tasks[index].key] = record.fetchedAt;
     });
@@ -128,7 +135,7 @@ async function keepEntry(entry) {
     return 'skipped';
   }
   if (!keepable(entry.kind, data)) return 'skipped';
-  const existing = await readEntry(entry.key);
+  const existing = await readStoredInfo(entry.key);
   if (existing && existing.fetchedAt >= entry.fetchedAt) return 'skipped';
   const record = await storeEntry(
     entry.key,
@@ -164,7 +171,6 @@ async function mergeLearned(result) {
     await db.put('audio', {
       url: track.url,
       path: track.path,
-      uri: track.uri,
       bytes: Number(track.bytes) || 0,
       date: track.date,
       office: track.office,

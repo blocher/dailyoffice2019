@@ -78,11 +78,17 @@ def latest_version():
 def changes_since(since):
     """What changed after version ``since``, for devices.
 
-    Returns ``{"version", "all", "urgent", "dates"}``: ``all`` is true when
-    some change covers every date; ``dates`` lists ``[first, last]`` ISO date
-    ranges otherwise (merged where they touch). A device that has never synced
-    (``since`` missing or 0) only learns the current version: it has nothing
-    old to refresh.
+    Returns ``{"version", "all", "urgent", "dates"}``:
+
+    - ``dates`` lists the ``[first, last]`` ISO date ranges of dated changes
+      (merged where they touch). Devices always refresh these at once.
+    - ``all`` is true when some change covers every date, and ``urgent`` when
+      one of those is urgent (devices refresh everything at once rather than
+      as each day comes near). Dated changes don't make ``all`` urgent, and
+      an every-date change doesn't hide the dated ones.
+
+    A device that has never synced (``since`` missing or 0) only learns the
+    current version: it has nothing old to refresh.
     """
     version = latest_version()
     summary = {"version": version, "all": False, "urgent": False, "dates": []}
@@ -98,13 +104,12 @@ def changes_since(since):
         return summary
     ranges = []
     for entry in entries:
-        summary["urgent"] = summary["urgent"] or entry["urgent"]
         if not entry["start_date"]:
             summary["all"] = True
+            summary["urgent"] = summary["urgent"] or entry["urgent"]
             continue
         ranges.append((entry["start_date"], entry["end_date"] or entry["start_date"]))
-    if not summary["all"]:
-        summary["dates"] = [[start.isoformat(), end.isoformat()] for start, end in merge_ranges(ranges)]
+    summary["dates"] = [[start.isoformat(), end.isoformat()] for start, end in merge_ranges(ranges)]
     return summary
 
 

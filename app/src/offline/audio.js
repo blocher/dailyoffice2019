@@ -7,9 +7,10 @@
 
   - Web and installed web app: the MP3 is kept in IndexedDB and played from
     a blob: URL.
-  - iOS and Android apps: the MP3 is downloaded natively to a file outside
-    the iCloud backup (Library/NoCloud on iOS, app files on Android) and the
-    native player (helpers/nativeAudio.js) plays the file.
+  - iOS and Android apps: the MP3 is downloaded natively to a file kept out
+    of backups (Library/NoCloud on iOS; on Android, app files excluded by
+    res/xml/backup_rules.xml) and the native player (helpers/nativeAudio.js)
+    plays the file.
 
   A stored track plays even online: it starts at once and saves the data.
 */
@@ -99,10 +100,10 @@ async function saveNative(url, info) {
     directory: Directory.LibraryNoCloud,
   });
   if (!stat.size) throw new Error('Audio download was empty');
+  // Only the path: the app's folder can move when the app is updated.
   await db.put('audio', {
     url,
     path,
-    uri,
     bytes: Number(stat.size) || 0,
     date: info.date,
     office: info.office,
@@ -139,12 +140,30 @@ export async function localTrackUrl(rawUrl) {
     }
     return objectUrls.get(url);
   }
-  if (record.uri) {
-    return nativeAudioAvailable()
-      ? record.uri
-      : Capacitor.convertFileSrc(record.uri);
+  const uri = await nativeFileUri(record);
+  if (uri) {
+    return nativeAudioAvailable() ? uri : Capacitor.convertFileSrc(uri);
   }
   return null;
+}
+
+// Where a natively stored track is now. iOS moves the app's folder when the
+// app is updated, so the address is worked out from the path each time
+// (older downloads also kept the address they were saved at).
+async function nativeFileUri(record) {
+  if (record.path && isNative()) {
+    try {
+      const { Filesystem, Directory } = await nativeModules();
+      const { uri } = await Filesystem.getUri({
+        path: record.path,
+        directory: Directory.LibraryNoCloud,
+      });
+      if (uri) return uri;
+    } catch {
+      // Fall back to the saved address.
+    }
+  }
+  return record.uri || null;
 }
 
 async function deleteRecord(record) {

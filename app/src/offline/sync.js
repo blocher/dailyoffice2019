@@ -32,7 +32,15 @@
 import axios from 'axios';
 import { reactive } from 'vue';
 import * as db from './db';
-import { SCHEMA, SYNC_HEADER, readEntry } from './cacheAdapter';
+import {
+  SCHEMA,
+  SYNC_HEADER,
+  readEntry,
+  readStoredInfo,
+  removeEntries,
+  resetStoredIndex,
+  storedInfos,
+} from './cacheAdapter';
 import {
   describe,
   isoDate,
@@ -45,6 +53,7 @@ import { AUDIO_DAYS, effectiveDays, offlinePrefs } from './preferences';
 import {
   addInvalidation,
   loadInvalidations,
+  reloadInvalidations,
   stalenessOf,
   trimInvalidations,
 } from './staleness';
@@ -89,7 +98,8 @@ const REFERENCE_PATHS = [
 ];
 
 export const syncState = reactive({
-  // idle | checking | syncing | done | offline | error | off
+  // idle | checking | syncing | done | offline | error | off | unavailable
+  // (this browser can't keep anything: a private window, blocked site data)
   status: 'idle',
   reason: '',
   done: 0,
@@ -418,29 +428,29 @@ async function prune(planKeys, keepProfiles, today, days) {
   const now = Date.now();
   let bytes = 0;
   let oldestFetched = now;
-  await db.eachRecord('responses', (record) => {
-    if (planKeys.has(record.key)) {
+  const dropped = [];
+  for (const record of await storedInfos()) {
+    const drop =
+      !planKeys.has(record.key) &&
+      (record.schema !== SCHEMA ||
+        (record.date && record.kind !== 'month' && record.date < oldest) ||
+        (record.kind === 'month' &&
+          record.date.slice(0, 7) < oldest.slice(0, 7)) ||
+        (record.profile && !keepProfiles.includes(record.profile)) ||
+        (record.kind === 'audio' && record.date > windowEnd) ||
+        (record.date &&
+          record.date > windowEnd &&
+          now - record.fetchedAt > KEEP_VISITED_MS) ||
+        (record.kind === 'reference' &&
+          now - record.fetchedAt > 60 * 24 * 3600 * 1000));
+    if (drop) {
+      dropped.push(record.key);
+    } else {
       bytes += record.bytes || 0;
       oldestFetched = Math.min(oldestFetched, record.fetchedAt);
-      return null;
     }
-    const dropped =
-      record.schema !== SCHEMA ||
-      (record.date && record.kind !== 'month' && record.date < oldest) ||
-      (record.kind === 'month' &&
-        record.date.slice(0, 7) < oldest.slice(0, 7)) ||
-      (record.profile && !keepProfiles.includes(record.profile)) ||
-      (record.kind === 'audio' && record.date > windowEnd) ||
-      (record.date &&
-        record.date > windowEnd &&
-        now - record.fetchedAt > KEEP_VISITED_MS) ||
-      (record.kind === 'reference' &&
-        now - record.fetchedAt > 60 * 24 * 3600 * 1000);
-    if (dropped) return 'delete';
-    bytes += record.bytes || 0;
-    oldestFetched = Math.min(oldestFetched, record.fetchedAt);
-    return null;
-  });
+  }
+  await removeEntries(dropped);
   return { bytes, oldestFetched };
 }
 
@@ -473,8 +483,7 @@ export async function canPrayOfflineWith(settings, extraCollects = null) {
   });
   const parsed = parseApiUrl(url);
   if (!parsed) return false;
-  const record = await readEntry(keyFor(parsed.path, parsed.query));
-  return Boolean(record);
+  return Boolean(await readStoredInfo(keyFor(parsed.path, parsed.query)));
 }
 
 // How far ahead every planned office is stored, from today.
@@ -492,7 +501,9 @@ async function measureReadiness(plan, today, days) {
     const iso = isoOf(addDays(today, offset));
     const items = byDate.get(iso) || [];
     if (!items.length) break;
-    const records = await Promise.all(items.map((item) => readEntry(item.key)));
+    const records = await Promise.all(
+      items.map((item) => readStoredInfo(item.key))
+    );
     if (records.some((record) => !record || record.stale === 'hard')) break;
     readyDays += 1;
     readyThrough = iso;
@@ -552,7 +563,8 @@ async function runOnce(reason) {
     syncState.status = 'idle';
     return;
   }
-  await loadInvalidations();
+  // The service worker may have noted changes since the last run.
+  await reloadInvalidations();
   const days = effectiveDays();
   const now = new Date();
   const today = startOfDay(now);
@@ -567,6 +579,14 @@ async function runOnce(reason) {
     readings: (await usedRecently('readings')) ? context.readings : null,
   });
   syncState.plannedDays = days;
+
+  // Nowhere to keep downloads: they would be lost on reload, so spend no
+  // data on them.
+  await db.openDb();
+  if (!db.isPersistent()) {
+    syncState.status = days === 0 ? 'off' : 'unavailable';
+    return;
+  }
 
   if (!network.online) {
     syncState.status = days === 0 ? 'off' : 'offline';
@@ -586,7 +606,9 @@ async function runOnce(reason) {
 
   const todayIso = isoOf(today);
   const tomorrowIso = isoOf(addDays(today, 1));
-  const records = await Promise.all(plan.map((item) => readEntry(item.key)));
+  const records = await Promise.all(
+    plan.map((item) => readStoredInfo(item.key))
+  );
   const missing = plan.filter((item, i) =>
     needsDownload(records[i], item, todayIso, tomorrowIso)
   );
@@ -706,6 +728,7 @@ export async function loadSyncStatus() {
 export async function clearDownloads() {
   runId += 1;
   await db.clear('responses');
+  resetStoredIndex();
   await pruneTracks(new Set());
   await db.meta.set('plan', null);
   await scheduleBackground(null);

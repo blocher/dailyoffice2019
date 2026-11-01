@@ -1,7 +1,6 @@
 package com.dailyoffice2019.app.offline;
 
 import android.content.Context;
-import android.net.Uri;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -130,7 +129,7 @@ public class OfflineSyncWorker extends Worker {
                 change.put("at", (double) System.currentTimeMillis());
                 change.put("all", all);
                 change.put("urgent", answer.optBoolean("urgent", false));
-                change.put("dates", all || dates == null ? new JSONArray() : dates);
+                change.put("dates", dates == null ? new JSONArray() : dates);
                 changes.put(change);
                 while (changes.length() > MAX_INVALIDATIONS) changes.remove(0);
             }
@@ -143,26 +142,27 @@ public class OfflineSyncWorker extends Worker {
 
     // What to download
 
-    /** Same rule as app/src/offline/staleness.js. */
+    /**
+     * Same rule as app/src/offline/staleness.js: a change's dated ranges are refreshed at once; an
+     * every-date change ("all") soon, or at once when urgent.
+     */
     @Nullable
     private static String staleness(double fetchedAt, @Nullable String kind, @Nullable String date, JSONArray invalidations) {
         String result = null;
         for (int i = 0; i < invalidations.length(); i++) {
             JSONObject change = invalidations.optJSONObject(i);
             if (change == null || change.optDouble("at", 0) <= fetchedAt) continue;
-            boolean all = change.optBoolean("all", false);
-            boolean covered = all;
-            if (!covered && date != null) {
+            if (date != null) {
                 String end = "month".equals(kind) ? monthEnd(date) : date;
                 JSONArray ranges = change.optJSONArray("dates");
-                for (int j = 0; ranges != null && j < ranges.length() && !covered; j++) {
+                for (int j = 0; ranges != null && j < ranges.length(); j++) {
                     JSONArray range = ranges.optJSONArray(j);
                     if (range == null || range.length() < 2) continue;
-                    covered = range.optString(0).compareTo(end) <= 0 && range.optString(1).compareTo(date) >= 0;
+                    if (range.optString(0).compareTo(end) <= 0 && range.optString(1).compareTo(date) >= 0) return "hard";
                 }
             }
-            if (!covered) continue;
-            if (change.optBoolean("urgent", false) || !all) return "hard";
+            if (!change.optBoolean("all", false)) continue;
+            if (change.optBoolean("urgent", false)) return "hard";
             result = "soft";
         }
         return result;
@@ -321,6 +321,9 @@ public class OfflineSyncWorker extends Worker {
             if (task == null || optString(task, "track") != null) continue;
             String date = optString(task, "date");
             if (date == null || date.compareTo(today) < 0 || date.compareTo(tomorrow) > 0) continue;
+            final String office = optString(task, "office");
+            // Saved by an earlier run; the page hasn't taken it yet.
+            if (store.hasLearnedTrack(date, office)) continue;
             Object body = download(task);
             JSONObject audio = body instanceof JSONObject ? ((JSONObject) body).optJSONObject("audio") : null;
             if (audio == null || "preparing".equals(audio.optString("status"))) continue;
@@ -331,7 +334,6 @@ public class OfflineSyncWorker extends Worker {
             String name = hashString(track) + ".mp3";
             File file = new File(directory, name);
             if (!file.exists() && !saveTrack(track, file)) continue;
-            final String office = optString(task, "office");
             store.updateLearned((learned) -> {
                 JSONArray list = learned.optJSONArray("audio");
                 JSONArray kept = new JSONArray();
@@ -341,8 +343,8 @@ public class OfflineSyncWorker extends Worker {
                 }
                 JSONObject item = new JSONObject();
                 item.put("url", track);
+                // Only the path, as on iOS: the page finds the file from it (app/src/offline/audio.js).
                 item.put("path", "offline-audio/" + name);
-                item.put("uri", Uri.fromFile(file).toString());
                 item.put("bytes", file.length());
                 item.put("date", date);
                 item.put("office", office == null ? JSONObject.NULL : office);

@@ -215,19 +215,26 @@ function isoToday(offset = 0) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 }
 
+function monthEnd(isoFirst) {
+  const [year, month] = isoFirst.split('-').map(Number);
+  const last = new Date(year, month, 0).getDate();
+  return `${isoFirst.slice(0, 8)}${String(last).padStart(2, '0')}`;
+}
+
 // Same rule as src/offline/staleness.js.
 function staleness(record, invalidations) {
   let result = null;
   for (const change of invalidations) {
     if (change.at <= record.fetchedAt) continue;
-    let covered = change.all;
-    if (!covered && record.date) {
-      covered = change.dates.some(
-        ([first, last]) => first <= record.date && last >= record.date
+    if (record.date) {
+      const end = record.kind === 'month' ? monthEnd(record.date) : record.date;
+      const dated = (change.dates || []).some(
+        ([first, last]) => first <= end && last >= record.date
       );
+      if (dated) return 'hard';
     }
-    if (!covered) continue;
-    if (change.urgent || !change.all) return 'hard';
+    if (!change.all) continue;
+    if (change.urgent) return 'hard';
     result = 'soft';
   }
   return result;
@@ -259,9 +266,9 @@ async function backgroundRefresh() {
           ...invalidations,
           {
             at: Date.now(),
-            all: summary.all,
-            urgent: summary.urgent,
-            dates: summary.all ? [] : summary.dates,
+            all: Boolean(summary.all),
+            urgent: Boolean(summary.urgent),
+            dates: summary.dates || [],
           },
         ].slice(-50);
         await run(db, 'meta', 'readwrite', (store) =>

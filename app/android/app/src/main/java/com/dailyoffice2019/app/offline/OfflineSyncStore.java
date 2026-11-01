@@ -246,6 +246,22 @@ public final class OfflineSyncStore {
         }
     }
 
+    /** Whether an earlier run saved this office's track, and it waits for the page to take it. */
+    public boolean hasLearnedTrack(String date, @Nullable String office) {
+        synchronized (LOCK) {
+            JSONArray tracks = read("learned.json").optJSONArray("audio");
+            for (int i = 0; tracks != null && i < tracks.length(); i++) {
+                JSONObject track = tracks.optJSONObject(i);
+                if (track == null || !date.equals(track.optString("date"))) continue;
+                String trackOffice = track.isNull("office") ? null : track.optString("office", null);
+                if (office == null ? trackOffice != null : !office.equals(trackOffice)) continue;
+                String path = track.optString("path", "");
+                if (!path.isEmpty() && new File(audioDirectory.getParentFile(), path).exists()) return true;
+            }
+            return false;
+        }
+    }
+
     // The inbox
 
     public boolean putInbox(JSONObject entry) {

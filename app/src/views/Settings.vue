@@ -224,6 +224,8 @@ export default {
       const days = effectiveDays();
       if (days === 0)
         return 'Downloads are off. Keep the days ahead on this device.';
+      if (syncState.status === 'unavailable')
+        return 'This browser can’t keep downloads (a private window, or blocked site data).';
       if (syncState.status === 'syncing') {
         return `Downloading the days ahead… ${syncState.done} of ${syncState.total}`;
       }

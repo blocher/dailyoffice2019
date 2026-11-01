@@ -10,7 +10,8 @@ import Foundation
 /// (app/src/offline/native.js). The run follows the same rules as the web app's service worker
 /// (app/src/offline/serviceWorker.js, backgroundRefresh): ask the API what content changed, then
 /// download up to 80 missing or stale answers for today onward, and audio for today and tomorrow
-/// when offline audio is on. android/.../offline/ does the same on Android.
+/// when offline audio is on (tracks go to a background URLSession, OfflineAudioDownloads, which iOS
+/// finishes on its own time). android/.../offline/ does the same on Android.
 ///
 /// The page calls:
 ///
@@ -46,6 +47,10 @@ public class OfflineSyncPlugin: CAPPlugin, CAPBridgedPlugin {
         ]
         let fetched = call.options["fetched"] as? [String: Any] ?? [:]
         OfflineSyncStore.shared.saveSchedule(state: state, fetched: fetched)
+        if !OfflineSyncStore.shared.hasPlan {
+            // Downloads removed (or turned off): stop the tracks on their way too.
+            OfflineAudioDownloads.shared.cancelAll()
+        }
         if let error = Self.scheduleNext() {
             call.resolve(["scheduled": false, "error": error.localizedDescription])
         } else {
@@ -253,6 +258,28 @@ final class OfflineSyncStore {
         }
     }
 
+    /// A track saved to `audioDirectory`, for the page to take: { url, path, bytes, date, office, savedAt }.
+    func learnTrack(_ track: [String: Any]) {
+        guard let url = track["url"] as? String else { return }
+        updateLearned { learned in
+            var list = learned["audio"] as? [[String: Any]] ?? []
+            list.removeAll { $0["url"] as? String == url }
+            list.append(track)
+            learned["audio"] = list
+        }
+    }
+
+    /// Whether an earlier run saved this office's track, and it waits for the page to take it.
+    func hasLearnedTrack(date: String, office: String?) -> Bool {
+        let tracks = learned()["audio"] as? [[String: Any]] ?? []
+        return tracks.contains { track in
+            guard track["date"] as? String == date, track["office"] as? String == office,
+                  let path = track["path"] as? String else { return false }
+            let file = audioDirectory.deletingLastPathComponent().appendingPathComponent(path)
+            return fileManager.fileExists(atPath: file.path)
+        }
+    }
+
     /// Write one downloaded answer, whole or not at all.
     func putInbox(_ entry: [String: Any]) -> Bool {
         guard let key = entry["key"] as? String,
@@ -403,7 +430,7 @@ actor OfflineSyncRunner {
                     "at": Self.now(),
                     "all": all,
                     "urgent": summary["urgent"] as? Bool ?? false,
-                    "dates": all ? [] : dates,
+                    "dates": dates,
                 ])
                 list = Array(list.suffix(Self.maxInvalidations))
             }
@@ -416,20 +443,19 @@ actor OfflineSyncRunner {
 
     // MARK: What to download
 
-    /// Same rule as app/src/offline/staleness.js.
+    /// Same rule as app/src/offline/staleness.js: a change's dated ranges are refreshed at once; an
+    /// every-date change (`all`) soon, or at once when urgent.
     private func staleness(fetchedAt: Double, kind: String?, date: String?, invalidations: [[String: Any]]) -> String? {
         var result: String?
         for change in invalidations {
             guard let at = (change["at"] as? NSNumber)?.doubleValue, at > fetchedAt else { continue }
-            let all = change["all"] as? Bool ?? false
-            var covered = all
-            if !covered, let date {
+            if let date {
                 let end = kind == "month" ? monthEnd(date) : date
                 let ranges = change["dates"] as? [[String]] ?? []
-                covered = ranges.contains { $0.count == 2 && $0[0] <= end && $0[1] >= date }
+                if ranges.contains(where: { $0.count == 2 && $0[0] <= end && $0[1] >= date }) { return "hard" }
             }
-            if !covered { continue }
-            if change["urgent"] as? Bool == true || !all { return "hard" }
+            guard change["all"] as? Bool == true else { continue }
+            if change["urgent"] as? Bool == true { return "hard" }
             result = "soft"
         }
         return result
@@ -546,45 +572,111 @@ actor OfflineSyncRunner {
             if stopped || Task.isCancelled || fetched >= Self.limit { return }
             guard let date = task["date"] as? String, date >= today, date <= tomorrow,
                   task["track"] as? String == nil else { continue }
+            // Saved by an earlier run; the page hasn't taken it yet.
+            if store.hasLearnedTrack(date: date, office: task["office"] as? String) { continue }
             guard let body = await download(task) as? [String: Any],
                   let audio = body["audio"] as? [String: Any],
-                  audio["status"] as? String != "preparing",
                   // [url, file path, chapters, timings, ...]: only the first is wanted.
                   let raw = (audio["single_track"] as? [Any])?.first as? String
             else { continue }
             let track = resolveTrack(raw, base: base)
             let name = "\(Self.hashString(track)).mp3"
             let file = store.audioDirectory.appendingPathComponent(name)
-            if !fileManager.fileExists(atPath: file.path) {
-                guard let url = URL(string: track) else { continue }
-                do {
-                    let (temporary, response) = try await session.download(for: request(url))
-                    defer { try? fileManager.removeItem(at: temporary) }
-                    let size = (try fileManager.attributesOfItem(atPath: temporary.path)[.size] as? NSNumber)?.intValue ?? 0
-                    guard (response as? HTTPURLResponse)?.statusCode == 200, size > 0 else { continue }
-                    try? fileManager.removeItem(at: file)
-                    try fileManager.moveItem(at: temporary, to: file)
-                } catch {
-                    print("Offline audio download failed: \(error)")
-                    stopped = Task.isCancelled
-                    continue
-                }
+            // Only the path: the app's folder moves when the app is updated (app/src/offline/audio.js).
+            var record: [String: Any] = [
+                "url": track,
+                "path": "offline-audio/\(name)",
+                "date": date,
+                "office": task["office"] ?? NSNull(),
+            ]
+            if fileManager.fileExists(atPath: file.path) {
+                record["bytes"] = (try? fileManager.attributesOfItem(atPath: file.path)[.size] as? NSNumber)?.intValue ?? 0
+                record["savedAt"] = Self.now()
+                store.learnTrack(record)
+            } else if let url = URL(string: track) {
+                record["name"] = name
+                await OfflineAudioDownloads.shared.start(request(url), track: record)
             }
-            let bytes = (try? fileManager.attributesOfItem(atPath: file.path)[.size] as? NSNumber)?.intValue ?? 0
-            store.updateLearned { learned in
-                var list = learned["audio"] as? [[String: Any]] ?? []
-                list.removeAll { $0["url"] as? String == track }
-                list.append([
-                    "url": track,
-                    "path": "offline-audio/\(name)",
-                    "uri": file.absoluteString,
-                    "bytes": bytes,
-                    "date": date,
-                    "office": task["office"] ?? NSNull(),
-                    "savedAt": Self.now(),
-                ])
-                learned["audio"] = list
-            }
+        }
+    }
+}
+
+// MARK: - Audio
+
+/// Office audio downloads in a background URLSession. A track can be 30 MB, more than a refresh task
+/// (about 30 seconds) can fetch on a slow connection; iOS finishes background transfers on its own
+/// time, waking the app (AppDelegate's handleEventsForBackgroundURLSession) to file them.
+final class OfflineAudioDownloads: NSObject, URLSessionDownloadDelegate {
+    static let shared = OfflineAudioDownloads()
+    static let identifier = "com.dailyoffice.dailyoffice2019.offline-audio"
+
+    /// iOS's handler from a relaunch to finish downloads: called once they're filed.
+    var backgroundCompletion: (() -> Void)?
+
+    private lazy var session: URLSession = {
+        let configuration = URLSessionConfiguration.background(withIdentifier: Self.identifier)
+        configuration.sessionSendsLaunchEvents = true
+        configuration.isDiscretionary = false
+        return URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
+    }()
+
+    /// Open the session again after a relaunch, so iOS can hand over what finished.
+    func reconnect() {
+        _ = session
+    }
+
+    /// Download a track, unless it is on its way already. `track` is what the page is told once
+    /// the file is saved, plus its file `name`.
+    func start(_ request: URLRequest, track: [String: Any]) async {
+        let pending = await session.allTasks
+        if pending.contains(where: { $0.originalRequest?.url == request.url }) { return }
+        guard let description = try? JSONSerialization.data(withJSONObject: track) else { return }
+        let task = session.downloadTask(with: request)
+        task.taskDescription = String(data: description, encoding: .utf8)
+        task.resume()
+    }
+
+    func cancelAll() {
+        session.getAllTasks { tasks in tasks.forEach { $0.cancel() } }
+    }
+
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        // The file at `location` is deleted when this returns: move it now.
+        let fileManager = FileManager.default
+        let store = OfflineSyncStore.shared
+        guard (downloadTask.response as? HTTPURLResponse)?.statusCode == 200,
+              let description = downloadTask.taskDescription?.data(using: .utf8),
+              var track = (try? JSONSerialization.jsonObject(with: description)) as? [String: Any],
+              let name = track.removeValue(forKey: "name") as? String,
+              store.hasPlan
+        else { return }
+        let size = ((try? fileManager.attributesOfItem(atPath: location.path))?[.size] as? NSNumber)?.intValue ?? 0
+        guard size > 0 else { return }
+        let file = store.audioDirectory.appendingPathComponent(name)
+        do {
+            try fileManager.createDirectory(at: store.audioDirectory, withIntermediateDirectories: true)
+            try? fileManager.removeItem(at: file)
+            try fileManager.moveItem(at: location, to: file)
+        } catch {
+            print("Offline audio could not be saved: \(error)")
+            return
+        }
+        track["bytes"] = size
+        track["savedAt"] = (Date().timeIntervalSince1970 * 1000).rounded()
+        store.learnTrack(track)
+    }
+
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        if let error, (error as? URLError)?.code != .cancelled {
+            // The next run asks again.
+            print("Offline audio download failed: \(error)")
+        }
+    }
+
+    func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
+        DispatchQueue.main.async {
+            self.backgroundCompletion?()
+            self.backgroundCompletion = nil
         }
     }
 }
