@@ -9,6 +9,8 @@
     feedback  send feedback
     offline   offline downloads and installing the app
   Each is mounted once in App.vue. Call openPanel('share') to show one.
+  A link can open one too: ?panel=offline on any page, or /offline (today's
+  office with the Offline panel open).
 */
 import { reactive } from 'vue';
 
@@ -25,6 +27,21 @@ export function openPanel(name) {
   Object.keys(panels).forEach((key) => {
     panels[key] = key === name;
   });
+}
+
+/*
+  For a route with ?panel=<name>: opens that panel and returns where to go
+  instead, without the flag. Followed from inside the app (a site message
+  linking to /offline), it stays on the page the reader is on.
+*/
+export function takePanelQuery(to, from) {
+  const name = to.query.panel;
+  if (!name) return null;
+  if (Object.hasOwn(panels, name)) openPanel(name);
+  if (to.redirectedFrom && from.matched.length) return false;
+  const query = { ...to.query };
+  delete query.panel;
+  return { path: to.path, query, hash: to.hash, replace: true };
 }
 
 // ?book=1 asks for a page to open in Book view. The router takes the flag

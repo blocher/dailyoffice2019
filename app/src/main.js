@@ -14,7 +14,7 @@ import { getClientId } from './helpers/clientId';
 import { identifyUser, startErrorReporting } from './helpers/errorReporting';
 import { loadDisplayPreferences } from './helpers/displayPreferences';
 import { loadDiscovery } from './helpers/discovery';
-import { takeBookViewQuery } from './helpers/panels';
+import { takeBookViewQuery, takePanelQuery } from './helpers/panels';
 import { createGtag, event } from 'vue-gtag';
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
 import { Capacitor } from '@capacitor/core';
@@ -46,6 +46,9 @@ router.beforeEach((to, from) => {
   // before the page renders, so closing the book doesn't reload the office.
   const bookRedirect = takeBookViewQuery(to);
   if (bookRedirect) return bookRedirect;
+  // ?panel=offline (and /offline) opens a panel, as above.
+  const panelRedirect = takePanelQuery(to, from);
+  if (panelRedirect !== null) return panelRedirect;
   // A navigation to the same address (e.g. Back closing the book view)
   // changes nothing on the page.
   if (from.matched.length && to.fullPath === from.fullPath) return;
