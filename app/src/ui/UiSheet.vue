@@ -374,8 +374,13 @@ function onClosed() {
     removeSheet(stackEntry);
     locked = false;
   }
-  if (previouslyFocused && typeof previouslyFocused.focus === 'function') {
-    previouslyFocused.focus({ preventScroll: true });
+  // The control that opened the sheet may be gone by now (a banner the
+  // sheet dismissed); the page's content takes focus instead.
+  const returnTo = previouslyFocused?.isConnected
+    ? previouslyFocused
+    : document.getElementById('content');
+  if (returnTo && typeof returnTo.focus === 'function') {
+    returnTo.focus({ preventScroll: true });
   }
   previouslyFocused = null;
 }

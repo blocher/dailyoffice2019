@@ -130,6 +130,34 @@ class SiteMessageApiTests(TestCase):
         self.assertEqual(self.texts(platform="ios"), ["Everyone"])
 
 
+class SiteMessageWhatsNewApiTests(TestCase):
+    def setUp(self):
+        SiteMessage.objects.create(text="Notice", order=0)
+        SiteMessage.objects.create(text="Pray offline", title="Offline mode", kind=SiteMessage.KIND_WHATS_NEW, order=1)
+
+    def get(self, **params):
+        request = APIRequestFactory().get("/api/v1/site_messages/", params)
+        response = SiteMessageViewSet.as_view({"get": "list"})(request)
+        self.assertEqual(response.status_code, 200)
+        return response.data
+
+    def test_apps_that_dont_ask_get_notices_only(self):
+        # The 4.0.0 apps (and older web builds) send no ?kinds=.
+        self.assertEqual([m["text"] for m in self.get(platform="ios", app_version="4.0.0")], ["Notice"])
+
+    def test_current_app_gets_both_kinds(self):
+        data = self.get(platform="web", kinds="notice,whats_new")
+        self.assertEqual([(m["kind"], m["title"]) for m in data], [("notice", ""), ("whats_new", "Offline mode")])
+
+    def test_unknown_kinds_are_ignored(self):
+        self.assertEqual(self.get(platform="web", kinds="banner"), [])
+
+    def test_whats_new_entries_need_a_title(self):
+        with self.assertRaises(ValidationError) as caught:
+            SiteMessage(text="x", kind=SiteMessage.KIND_WHATS_NEW).full_clean(exclude=["uuid"])
+        self.assertIn("title", caught.exception.message_dict)
+
+
 class SiteMessageAdminTests(TestCase):
     def test_change_form_and_list_show_version_rules(self):
         user = get_user_model().objects.create_superuser("admin", "admin@example.com", "password")

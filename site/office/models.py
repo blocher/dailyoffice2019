@@ -218,6 +218,37 @@ class SiteMessage(BaseModel):
         ("gray", "Gray"),
     )
 
+    # A notice is a banner of its own. A What's New entry joins the others in one
+    # "What's new" banner and sheet; apps older than that sheet never receive them.
+    KIND_NOTICE = "notice"
+    KIND_WHATS_NEW = "whats_new"
+    KIND_CHOICES = (
+        (KIND_NOTICE, "Notice (a banner of its own)"),
+        (KIND_WHATS_NEW, "What's New entry (grouped with the others)"),
+    )
+
+    kind = models.CharField(
+        max_length=20,
+        choices=KIND_CHOICES,
+        default=KIND_NOTICE,
+        help_text=(
+            "Notices show as their own banner, as before. What's New entries are gathered into one "
+            "'What's new' banner that opens a sheet listing them all; app versions without that sheet "
+            "(before 4.1.0) never receive them."
+        ),
+    )
+    title = models.CharField(
+        max_length=80,
+        blank=True,
+        default="",
+        help_text="What's New entries only: a short name for the feature (e.g. 'Offline mode').",
+    )
+    link_text = models.CharField(
+        max_length=40,
+        blank=True,
+        default="",
+        help_text="What's New entries only: the label of the link button (e.g. 'Try it'). Defaults to 'Try it'.",
+    )
     tag_text = models.CharField(
         max_length=40,
         blank=True,
@@ -360,6 +391,8 @@ class SiteMessage(BaseModel):
     def clean(self):
         super().clean()
         errors = {}
+        if self.kind == self.KIND_WHATS_NEW and not self.title:
+            errors["title"] = "Give a What's New entry a title."
         for platform, label in self.PLATFORM_LABELS.items():
             rule, version, version_to = self._version_rule(platform)
             if not rule:

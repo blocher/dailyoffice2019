@@ -146,6 +146,10 @@ const routes = [
   // office. See takePanelQuery in helpers/panels.js.
   { path: '/offline', redirect: { path: '/', query: { panel: 'offline' } } },
   {
+    path: '/whats-new',
+    redirect: { path: '/', query: { panel: 'whatsNew' } },
+  },
+  {
     path: '/privacy-policy',
     name: 'Privacy Policy',
     meta: {

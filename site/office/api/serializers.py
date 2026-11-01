@@ -16,6 +16,9 @@ class SiteMessageSerializer(serializers.ModelSerializer):
         model = SiteMessage
         fields = [
             "uuid",
+            "kind",
+            "title",
+            "link_text",
             "tag_text",
             "tag_color",
             "text",

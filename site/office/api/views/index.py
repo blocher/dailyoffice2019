@@ -4965,6 +4965,10 @@ class SiteMessageViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         queryset = SiteMessage.objects.filter(active=True).filter(
             Q(expiration_date__isnull=True) | Q(expiration_date__gt=now)
         )
+        # Apps that predate the What's New sheet don't ask for its entries, and get
+        # notices only; the current app asks with ?kinds=notice,whats_new.
+        kinds = [kind.strip() for kind in (self.request.query_params.get("kinds") or "").split(",") if kind.strip()]
+        queryset = queryset.filter(kind__in=kinds or [SiteMessage.KIND_NOTICE])
         platform = (self.request.query_params.get("platform") or "").strip().lower()
         if platform == "ios":
             queryset = queryset.filter(show_on_ios=True)

@@ -22,6 +22,7 @@
   <EmailSignup />
   <SubmitFeedback />
   <OfflinePanel />
+  <WhatsNewPanel />
   <UiFeedbackHost />
 </template>
 
@@ -39,6 +40,7 @@ import Loading from '@/components/Loading.vue';
 import OfflinePanel from '@/components/OfflinePanel.vue';
 import SiteMessages from '@/components/SiteMessages.vue';
 import SubmitFeedback from '@/components/SubmitFeedback.vue';
+import WhatsNewPanel from '@/components/WhatsNewPanel.vue';
 import UiFeedbackHost from '@/ui/UiFeedbackHost.vue';
 import { applyAll } from '@/helpers/displayPreferences';
 import { network } from '@/offline';
@@ -62,6 +64,7 @@ export default {
     SiteMessages,
     SubmitFeedback,
     UiFeedbackHost,
+    WhatsNewPanel,
   },
   setup() {
     const route = useRoute();
