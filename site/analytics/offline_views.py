@@ -14,13 +14,16 @@ Views are stored with ``offline=True`` and ``created`` set to when they were
 viewed (within the last 60 days). At most ``MAX_VIEWS`` per request; views that
 don't name a known office are skipped. Anyone can post here, so views need a
 ``client_id`` and each device counts at most ``MAX_PER_DAY`` a day (eight
-offices, each opened twice); the rest are skipped. A ``view_id`` already stored
+offices, each opened twice). A device id is the client's own choice, so each
+address also counts at most ``MAX_PER_IP_PER_DAY`` a day (room for a household
+or a church on one connection). The rest are skipped. A ``view_id`` already stored
 (a batch sent again after its answer was lost) is skipped too. Skipped views
 still count as handled, so the app lets them go.
 """
 
 import datetime
 
+from django.core.cache import cache
 from django.db import transaction
 from django.db.models import Count
 from django.db.models.functions import TruncDate
@@ -33,6 +36,7 @@ from analytics.utils import clean_text, known_setting_names, parse_office_date
 
 MAX_VIEWS = 100
 MAX_PER_DAY = 16
+MAX_PER_IP_PER_DAY = 300
 MAX_AGE = datetime.timedelta(days=60)
 
 
@@ -50,13 +54,21 @@ def parse_viewed_at(value, default):
     return parsed
 
 
-def record(views, client_id, platform, browser, os_family):
+def ip_count_key(ip):
+    return f"analytics_offline_views_ip:{ip}:{timezone.localdate().isoformat()}"
+
+
+def record(views, client_id, ip, platform, browser, os_family):
     """Store the views worth counting; returns how many were stored.
 
     Raises ``IntegrityError`` when another request stored one of the same
     ``view_id``s at the same moment; nothing is stored then.
     """
     if not client_id:
+        return 0
+    ip_key = ip_count_key(ip or "unknown")
+    room = MAX_PER_IP_PER_DAY - (cache.get(ip_key) or 0)
+    if room <= 0:
         return 0
     views = [view for view in views[:MAX_VIEWS] if isinstance(view, dict)]
     allowed_settings = known_setting_names()
@@ -106,7 +118,11 @@ def record(views, client_id, platform, browser, os_family):
             view_id=view_id,
         )
         events.append((event, viewed_at))
+        if len(events) >= room:
+            break
 
+    if not events:
+        return 0
     with transaction.atomic():
         created = AnalyticsEvent.objects.bulk_create([event for event, _ in events])
         # ``created`` is auto_now_add, so set the viewing time afterwards, in
@@ -114,4 +130,11 @@ def record(views, client_id, platform, browser, os_family):
         for event, (_, viewed_at) in zip(created, events):
             event.created = viewed_at
         AnalyticsEvent.objects.bulk_update(created, ["created"])
+    # Memcached adds atomically; the key lasts the day it counts.
+    cache.add(ip_key, 0, timeout=24 * 3600)
+    try:
+        cache.incr(ip_key, len(created))
+    except ValueError:
+        # Gone between the two calls (evicted): start again from these.
+        cache.set(ip_key, len(created), timeout=24 * 3600)
     return len(created)

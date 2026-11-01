@@ -7,6 +7,7 @@ from unittest import mock
 from django.contrib.admin.models import ADDITION, CHANGE, DELETION, LogEntry
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
+from django.core.cache import cache
 from django.core.management import call_command
 from django.test import RequestFactory, SimpleTestCase, TestCase, TransactionTestCase
 from django.utils import timezone
@@ -197,6 +198,10 @@ class InvalidateOfflineCommandTests(TestCase):
 
 
 class OfflineSyncAnalyticsTests(TestCase):
+    def setUp(self):
+        # Views are also counted per address and day, in the cache.
+        cache.clear()
+
     def test_offline_downloads_are_not_office_views(self):
         factory = RequestFactory()
         request = factory.get("/api/v1/office/morning_prayer/2026-11-2", HTTP_X_OFFLINE_SYNC="1")

@@ -7,9 +7,10 @@ from rest_framework.views import APIView
 from analytics import offline_views
 from analytics.models import AnalyticsEvent
 from analytics.utils import clean_text, parse_client_meta, parse_office_date
+from website.client_ip import ClientIpThrottleMixin, client_ip
 
 
-class AnalyticsEventThrottle(AnonRateThrottle):
+class AnalyticsEventThrottle(ClientIpThrottleMixin, AnonRateThrottle):
     scope = "analytics_event"
 
 
@@ -53,7 +54,7 @@ class AnalyticsEventView(APIView):
         return Response(status=204)
 
 
-class OfflineOfficeViewsThrottle(AnonRateThrottle):
+class OfflineOfficeViewsThrottle(ClientIpThrottleMixin, AnonRateThrottle):
     scope = "analytics_offline_views"
 
 
@@ -81,7 +82,12 @@ class OfflineOfficeViewsView(APIView):
         client_id = clean_text(data.get("client_id"), 64) or clean_text(request.headers.get("X-Client-Id"), 64)
         try:
             accepted = offline_views.record(
-                views, client_id=client_id, platform=platform, browser=browser, os_family=os_family
+                views,
+                client_id=client_id,
+                ip=client_ip(request),
+                platform=platform,
+                browser=browser,
+                os_family=os_family,
             )
         except IntegrityError:
             # Another request stored some of these views at the same moment

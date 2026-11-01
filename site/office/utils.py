@@ -322,12 +322,10 @@ def testament_to_closing_response(testament):
 
 
 def get_client_ip(request):
-    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(",")[0]
-    else:
-        ip = request.META.get("REMOTE_ADDR")
-    return ip
+    # Not X-Forwarded-For's first entry: the client writes that (website/client_ip.py).
+    from website.client_ip import client_ip
+
+    return client_ip(request) or None
 
 
 # https://www.geeksforgeeks.org/convert-string-to-title-case-in-python/
