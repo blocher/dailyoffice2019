@@ -10,12 +10,22 @@
         <section
           ref="panel"
           class="ui-sheet"
-          :class="[`ui-sheet--${resolvedSide}`, `ui-sheet--${size}`]"
+          :class="[
+            `ui-sheet--${resolvedSide}`,
+            `ui-sheet--${size}`,
+            { 'is-dragging': dragging, 'is-offset': dragOffset > 0 },
+          ]"
+          :style="dragOffset ? { '--sheet-drag': `${dragOffset}px` } : null"
           role="dialog"
           aria-modal="true"
           :aria-labelledby="title ? titleId : null"
           :aria-label="title ? null : ariaLabel"
           tabindex="-1"
+          @touchstart="onTouchStart"
+          @touchmove="onTouchMove"
+          @touchend="onTouchEnd"
+          @touchcancel="cancelDrag"
+          @pointerdown="onPointerDown"
         >
           <span
             v-if="resolvedSide === 'bottom'"
@@ -185,6 +195,160 @@ function close() {
   emit('close');
 }
 
+/*
+  Swipe down to dismiss a bottom sheet. The grabber and header always drag;
+  the body drags only when it is already scrolled to the top, so scrolling
+  the content still works. Form controls (sliders especially) never drag.
+*/
+const DRAG_START = 6; // px of movement before a touch counts as a drag
+const DISMISS_FRACTION = 0.25; // of the sheet's height
+const DISMISS_VELOCITY = 0.5; // px per ms, for a quick flick
+const NO_DRAG = 'input, select, textarea, [contenteditable], [data-no-drag]';
+
+const dragOffset = ref(0);
+const dragging = ref(false);
+let drag = null;
+
+const now = () => window.performance?.now?.() ?? Date.now();
+
+function isHandle(target) {
+  return Boolean(
+    target.closest('.ui-sheet__grabber, .ui-sheet__header') &&
+    !target.closest('.ui-sheet__close')
+  );
+}
+
+function scrolledAncestor(target) {
+  for (let el = target; el && el !== panel.value; el = el.parentElement) {
+    if (el.scrollTop > 0) return el;
+  }
+  return null;
+}
+
+function beginTracking(x, y, target) {
+  if (resolvedSide.value !== 'bottom' || !panel.value) return false;
+  if (typeof target?.closest !== 'function' || target.closest(NO_DRAG))
+    return false;
+  drag = {
+    startX: x,
+    startY: y,
+    lastY: y,
+    lastTime: now(),
+    velocity: 0,
+    handle: isHandle(target),
+    target,
+  };
+  return true;
+}
+
+// Returns true while the gesture belongs to the sheet.
+function trackMove(x, y) {
+  if (!drag) return false;
+  const dx = x - drag.startX;
+  const dy = y - drag.startY;
+  if (!dragging.value) {
+    if (Math.abs(dy) < DRAG_START && Math.abs(dx) < DRAG_START) return false;
+    const downward = dy > 0 && dy > Math.abs(dx);
+    if (!downward || (!drag.handle && scrolledAncestor(drag.target))) {
+      drag = null;
+      return false;
+    }
+    dragging.value = true;
+    drag.startY += DRAG_START; // follow the finger without a jump
+  }
+  const time = now();
+  const elapsed = time - drag.lastTime;
+  if (elapsed > 0) drag.velocity = (y - drag.lastY) / elapsed;
+  drag.lastY = y;
+  drag.lastTime = time;
+  dragOffset.value = Math.max(0, y - drag.startY);
+  return true;
+}
+
+function finishDrag() {
+  if (!drag) return;
+  const wasDragging = dragging.value;
+  const height = panel.value?.offsetHeight || 1;
+  const dismiss =
+    wasDragging &&
+    (dragOffset.value > height * DISMISS_FRACTION ||
+      (drag.velocity > DISMISS_VELOCITY && dragOffset.value > DRAG_START));
+  drag = null;
+  dragging.value = false;
+  if (wasDragging) suppressNextClick();
+  if (dismiss) {
+    // Keep the offset so the sheet slides away from where the finger let go.
+    close();
+  } else {
+    dragOffset.value = 0;
+  }
+}
+
+function cancelDrag() {
+  drag = null;
+  dragging.value = false;
+  dragOffset.value = 0;
+}
+
+// A drag that ends over a button should not also press it.
+function suppressNextClick() {
+  const el = panel.value;
+  if (!el) return;
+  const swallow = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+  };
+  el.addEventListener('click', swallow, { capture: true, once: true });
+  window.setTimeout(() => el.removeEventListener('click', swallow, true), 0);
+}
+
+function onTouchStart(event) {
+  if (event.touches.length !== 1) {
+    cancelDrag();
+    return;
+  }
+  const touch = event.touches[0];
+  beginTracking(touch.clientX, touch.clientY, event.target);
+}
+
+function onTouchMove(event) {
+  const touch = event.touches[0];
+  if (!touch) return;
+  if (trackMove(touch.clientX, touch.clientY) && event.cancelable) {
+    event.preventDefault();
+  }
+}
+
+function onTouchEnd() {
+  finishDrag();
+}
+
+// Mouse and pen drag from the grabber or header only.
+function onPointerDown(event) {
+  if (event.pointerType === 'touch' || event.button !== 0) return;
+  if (typeof event.target?.closest !== 'function' || !isHandle(event.target))
+    return;
+  if (!beginTracking(event.clientX, event.clientY, event.target)) return;
+  const onMove = (move) => {
+    if (trackMove(move.clientX, move.clientY)) move.preventDefault();
+  };
+  const onUp = () => {
+    window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerup', onUp);
+    window.removeEventListener('pointercancel', onCancel);
+    finishDrag();
+  };
+  const onCancel = () => {
+    window.removeEventListener('pointermove', onMove);
+    window.removeEventListener('pointerup', onUp);
+    window.removeEventListener('pointercancel', onCancel);
+    cancelDrag();
+  };
+  window.addEventListener('pointermove', onMove);
+  window.addEventListener('pointerup', onUp);
+  window.addEventListener('pointercancel', onCancel);
+}
+
 function updatePhone() {
   isPhone.value = Boolean(media?.matches);
 }
@@ -218,7 +382,17 @@ function onClosed() {
 
 watch(
   () => props.open,
-  (value) => (value ? onOpened() : onClosed())
+  (value) => {
+    if (value) {
+      cancelDrag();
+      onOpened();
+    } else {
+      // Closed from elsewhere mid-drag: let the leave transition run cleanly.
+      drag = null;
+      dragging.value = false;
+      onClosed();
+    }
+  }
 );
 
 onMounted(() => {
@@ -376,18 +550,43 @@ onBeforeUnmount(() => {
 
 .ui-sheet--bottom {
   width: 100%;
+  transition: transform 260ms var(--ease);
   max-height: calc(var(--vvh) - env(safe-area-inset-top) - 2.5rem);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* The bar is small; the padding gives it a finger-sized target. */
 .ui-sheet__grabber {
   align-self: center;
+  flex-shrink: 0;
+  padding: var(--space-2) var(--space-6) var(--space-1);
+  cursor: grab;
+  touch-action: none;
+}
+
+.ui-sheet__grabber::before {
+  content: '';
+  display: block;
   width: 2.5rem;
   height: 4px;
-  margin-top: var(--space-2);
   border-radius: 2px;
   background-color: var(--rule-strong);
+}
+
+.ui-sheet--bottom .ui-sheet__header {
+  cursor: grab;
+  touch-action: none;
+}
+
+.ui-sheet--bottom.is-offset {
+  transform: translateY(var(--sheet-drag, 0px));
+}
+
+.ui-sheet--bottom.is-dragging {
+  transition: none;
+  cursor: grabbing;
+  user-select: none;
 }
 
 .ui-sheet--bottom .ui-sheet__header {
