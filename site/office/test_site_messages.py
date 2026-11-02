@@ -158,6 +158,67 @@ class SiteMessageWhatsNewApiTests(TestCase):
         self.assertIn("title", caught.exception.message_dict)
 
 
+class SiteMessageUpdateApiTests(TestCase):
+    def setUp(self):
+        SiteMessage.objects.create(text="Pray offline", title="Offline mode", kind=SiteMessage.KIND_WHATS_NEW, order=0)
+        SiteMessage.objects.create(
+            text="On your home screen",
+            title="Widgets",
+            kind=SiteMessage.KIND_UPDATE,
+            order=1,
+            ios_version_rule="lt",
+            ios_version="4.2.0",
+            android_version_rule="lt",
+            android_version="4.2.0",
+        )
+
+    def titles(self, **params):
+        request = APIRequestFactory().get("/api/v1/site_messages/", {"kinds": "notice,whats_new,update", **params})
+        response = SiteMessageViewSet.as_view({"get": "list"})(request)
+        self.assertEqual(response.status_code, 200)
+        return [(m["kind"], m["title"]) for m in response.data]
+
+    def test_older_apps_get_the_update_entry(self):
+        self.assertEqual(
+            self.titles(platform="ios", app_version="4.1.0"), [("whats_new", "Offline mode"), ("update", "Widgets")]
+        )
+        self.assertIn(("update", "Widgets"), self.titles(platform="android", app_version="4.1.0"))
+
+    def test_apps_that_have_the_feature_dont(self):
+        self.assertEqual(self.titles(platform="ios", app_version="4.2.0"), [("whats_new", "Offline mode")])
+
+    def test_the_website_never_gets_update_entries(self):
+        self.assertEqual(self.titles(platform="web"), [("whats_new", "Offline mode")])
+        self.assertEqual(self.titles(), [("whats_new", "Offline mode")])
+
+    def test_apps_that_dont_ask_for_them_dont_get_them(self):
+        request = APIRequestFactory().get(
+            "/api/v1/site_messages/", {"platform": "ios", "app_version": "4.1.0", "kinds": "notice,whats_new"}
+        )
+        response = SiteMessageViewSet.as_view({"get": "list"})(request)
+        self.assertEqual([m["kind"] for m in response.data], ["whats_new"])
+
+
+class SiteMessageUpdateCleanTests(SimpleTestCase):
+    def errors(self, **fields):
+        try:
+            SiteMessage(text="x", kind=SiteMessage.KIND_UPDATE, **fields).full_clean(exclude=["uuid"])
+        except ValidationError as error:
+            return error.message_dict
+        return {}
+
+    def test_needs_a_title_and_a_version_rule_for_each_app_it_shows_on(self):
+        errors = self.errors()
+        self.assertIn("title", errors)
+        self.assertIn("ios_version_rule", errors)
+        self.assertIn("android_version_rule", errors)
+
+    def test_an_app_it_doesnt_show_on_needs_no_rule(self):
+        self.assertEqual(
+            self.errors(title="Widgets", show_on_android=False, ios_version_rule="lt", ios_version="4.2.0"), {}
+        )
+
+
 class SiteMessageAdminTests(TestCase):
     def test_change_form_and_list_show_version_rules(self):
         user = get_user_model().objects.create_superuser("admin", "admin@example.com", "password")

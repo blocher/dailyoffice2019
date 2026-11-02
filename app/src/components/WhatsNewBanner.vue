@@ -20,10 +20,16 @@
             v-for="(entry, index) in named.shown"
             :key="entry.uuid"
             class="whats-new-banner__title"
-            :class="{ 'is-wide-only': index >= namedOnPhone.shown.length }"
+            :class="{
+              'is-wide-only': index >= namedOnPhone.shown.length,
+              'is-update': needsUpdate(entry),
+            }"
             :style="{ '--i': index }"
           >
             {{ entry.title || entry.text }}
+            <span v-if="needsUpdate(entry)" class="visually-hidden">
+              (needs an update)
+            </span>
           </li>
           <li
             v-if="named.more"
@@ -67,6 +73,7 @@ import { openPanel } from '@/helpers/panels';
 import {
   dismissAllWhatsNew,
   nameForBanner,
+  needsUpdate,
   newWhatsNew,
 } from '@/helpers/whatsNew';
 
@@ -244,6 +251,12 @@ const countLabel = computed(() =>
   height: 0.36em;
   background-color: var(--accent);
   transform: translateY(-0.12em) rotate(45deg);
+}
+
+/* A feature that needs an update: an open lozenge, as in the sheet. */
+.whats-new-banner__title.is-update::before {
+  background-color: transparent;
+  box-shadow: inset 0 0 0 1px var(--accent);
 }
 
 .whats-new-banner__title.is-more {

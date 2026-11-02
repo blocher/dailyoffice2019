@@ -130,6 +130,47 @@ describe('WhatsNewPanel', () => {
     );
   });
 
+  it('groups features that need an update, with one link to the store', async () => {
+    setWhatsNew([
+      ...entries,
+      { uuid: 'u', kind: 'update', title: 'Widgets', text: 'At a glance.' },
+    ]);
+    const wrapper = mountPanel();
+    panels.whatsNew = true;
+    await wrapper.vm.$nextTick();
+    const section = wrapper.find('.whats-new__updates');
+    expect(section.text()).toContain('Update to get');
+    expect(section.text()).toContain('latest version');
+    expect(section.findAll('.whats-new-entry')).toHaveLength(1);
+    expect(section.find('.whats-new-entry__new').text()).toBe(
+      'Needs the update'
+    );
+    expect(wrapper.find('.subtitle').text()).toBe('3 new features');
+
+    // Going to the store dismisses nothing: the update itself retires it.
+    await button(section, 'Update in the App Store').trigger('click');
+    expect(Browser.open).toHaveBeenCalledWith({
+      url: expect.stringContaining('apps.apple.com'),
+    });
+    expect(newWhatsNew.value).toHaveLength(3);
+  });
+
+  it('dismisses an Update entry into Earlier, linking to the store', async () => {
+    setWhatsNew([
+      { uuid: 'u', kind: 'update', title: 'Widgets', text: 'At a glance.' },
+    ]);
+    const wrapper = mountPanel();
+    panels.whatsNew = true;
+    await wrapper.vm.$nextTick();
+    await wrapper.find('.whats-new__updates [data-got-it]').trigger('click');
+    expect(wrapper.find('.whats-new__updates').exists()).toBe(false);
+    const earlier = wrapper.find('.whats-new__earlier');
+    await button(earlier, 'Update to get it').trigger('click');
+    expect(Browser.open).toHaveBeenCalledWith({
+      url: expect.stringContaining('apps.apple.com'),
+    });
+  });
+
   it('follows a link in the app or the browser, and dismisses that entry', async () => {
     const wrapper = await open();
     await button(wrapper, 'Set it up').trigger('click');

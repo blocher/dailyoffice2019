@@ -10,6 +10,11 @@
   the banner returns only when a new entry is added. Dismissed entries stay
   in the sheet under "Earlier".
 
+  Update entries (kind "update") are features that need a newer app. The
+  server sends them only to the app versions without the feature. They count
+  in the same banner, and the sheet groups them under "Update to get", with
+  a link to the store.
+
   Before the sheet, every announcement was its own banner, dismissed into
   'dismissedSiteMessages'. An entry whose old banner was dismissed counts as
   dismissed, so turning an announcement into an entry doesn't show it again.
@@ -41,11 +46,23 @@ export function setWhatsNew(entries, { failed = false } = {}) {
   whatsNewState.status = failed && !entries.length ? 'failed' : 'ready';
 }
 
-export const newWhatsNew = computed(() =>
-  whatsNewState.entries.filter(
+export const KIND_UPDATE = 'update';
+
+export function needsUpdate(entry) {
+  return entry.kind === KIND_UPDATE;
+}
+
+// The features to try come first, then those that need an update, as the
+// sheet groups them.
+export const newWhatsNew = computed(() => {
+  const fresh = whatsNewState.entries.filter(
     (entry) => !whatsNewState.dismissed.includes(entry.uuid)
-  )
-);
+  );
+  return [
+    ...fresh.filter((entry) => !needsUpdate(entry)),
+    ...fresh.filter(needsUpdate),
+  ];
+});
 
 export const earlierWhatsNew = computed(() =>
   whatsNewState.entries.filter((entry) =>

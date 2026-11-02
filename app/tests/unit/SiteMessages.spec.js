@@ -65,7 +65,7 @@ describe('SiteMessages request', () => {
   it('sends only the platform from the web', async () => {
     expect(await requestParams()).toEqual({
       platform: 'web',
-      kinds: 'notice,whats_new',
+      kinds: 'notice,whats_new,update',
     });
   });
 
@@ -73,7 +73,7 @@ describe('SiteMessages request', () => {
     platform.name = 'ios';
     expect(await requestParams()).toEqual({
       platform: 'ios',
-      kinds: 'notice,whats_new',
+      kinds: 'notice,whats_new,update',
       app_version: '4.1.0',
     });
   });
@@ -235,6 +235,22 @@ describe("What's New entries", () => {
     await flushPromises();
     expect(banner(wrapper).text()).toContain('Widgets');
     expect(banner(wrapper).text()).not.toContain('Offline');
+  });
+
+  it('share the banner with Update entries, which follow the features', async () => {
+    const wrapper = mountWith([
+      { ...entry('u', 'Widgets'), kind: 'update' },
+      entry('a', 'Offline mode'),
+    ]);
+    await flushPromises();
+    expect(wrapper.findAll('.site-message')).toHaveLength(0);
+    expect(banner(wrapper).find('.whats-new-banner__count').text()).toBe('2');
+    const titles = banner(wrapper).findAll('.whats-new-banner__title');
+    expect(titles.map((li) => li.text().replace(/\s+/g, ' '))).toEqual([
+      'Offline mode',
+      'Widgets (needs an update)',
+    ]);
+    expect(titles[1].classes()).toContain('is-update');
   });
 
   it('come as notices from a server that predates them', async () => {

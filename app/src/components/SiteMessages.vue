@@ -51,11 +51,13 @@ import { Capacitor } from '@capacitor/core';
 
 import WhatsNewBanner from '@/components/WhatsNewBanner.vue';
 import { addToStoredList, readStoredList } from '@/helpers/storedList';
-import { newWhatsNew, setWhatsNew } from '@/helpers/whatsNew';
+import { KIND_UPDATE, newWhatsNew, setWhatsNew } from '@/helpers/whatsNew';
 
 const PERMANENT_STORAGE_KEY = 'dismissedSiteMessages';
 const SESSION_STORAGE_KEY = 'dismissedSiteMessages';
 const WHATS_NEW = 'whats_new';
+// Both kinds share the What's New banner and sheet.
+const GROUPED = [WHATS_NEW, KIND_UPDATE];
 
 // Admin-chosen tag colors mapped onto the app's tones.
 const TAG_TONES = {
@@ -91,11 +93,11 @@ export default {
     };
   },
   computed: {
-    // Notices, each its own banner. What's New entries share one banner.
+    // Notices, each its own banner. What's New and Update entries share one.
     visibleMessages() {
       return this.messages.filter(
         (message) =>
-          message.kind !== WHATS_NEW &&
+          !GROUPED.includes(message.kind) &&
           !this.dismissedIds.includes(message.uuid)
       );
     },
@@ -119,9 +121,10 @@ export default {
     async fetchMessages() {
       try {
         const platform = Capacitor.getPlatform();
-        // Asking for What's New entries too; without ?kinds= the server
-        // sends notices only, as the 4.0.0 apps expect.
-        const params = { platform, kinds: `notice,${WHATS_NEW}` };
+        // Asking for What's New and Update entries too; without ?kinds= the
+        // server sends notices only, as the 4.0.0 apps expect. The website
+        // never gets Update entries.
+        const params = { platform, kinds: ['notice', ...GROUPED].join(',') };
         const appVersion = await nativeAppVersion();
         if (appVersion) {
           params.app_version = appVersion;
@@ -137,7 +140,7 @@ export default {
         return;
       }
       setWhatsNew(
-        this.messages.filter((message) => message.kind === WHATS_NEW)
+        this.messages.filter((message) => GROUPED.includes(message.kind))
       );
     },
     tagTone(color) {

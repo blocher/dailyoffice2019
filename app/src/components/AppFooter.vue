@@ -40,14 +40,13 @@ import { Capacitor } from '@capacitor/core';
 import AHPLogo from '@/components/AHPLogo.vue';
 import DonationPrompt from '@/components/DonationPrompt.vue';
 import { openPanel } from '@/helpers/panels';
+import { APP_STORE_URLS } from '@/helpers/appStores';
 
 const isWeb = Capacitor.getPlatform() === 'web';
 
 const links = {
   github: 'https://github.com/blocher/dailyoffice2019',
-  ios: 'https://apps.apple.com/us/app/the-daily-office/id1513851259',
-  android:
-    'https://play.google.com/store/apps/details?id=com.dailyoffice2019.app&hl=en_US',
+  ...APP_STORE_URLS,
   web: 'https://dailyoffice2019.com/',
 };
 

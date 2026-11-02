@@ -220,12 +220,19 @@ class SiteMessage(BaseModel):
 
     # A notice is a banner of its own. A What's New entry joins the others in one
     # "What's new" banner and sheet; apps older than that sheet never receive them.
+    # An Update entry is a feature that needs a newer app: it joins the same banner,
+    # and the sheet groups it under "Update to get" with a link to the store. Only
+    # the apps receive Update entries, and only the versions their rules name.
     KIND_NOTICE = "notice"
     KIND_WHATS_NEW = "whats_new"
+    KIND_UPDATE = "update"
     KIND_CHOICES = (
         (KIND_NOTICE, "Notice (a banner of its own)"),
         (KIND_WHATS_NEW, "What's New entry (grouped with the others)"),
+        (KIND_UPDATE, "Update entry (a feature that needs a newer app)"),
     )
+    GROUPED_KINDS = (KIND_WHATS_NEW, KIND_UPDATE)
+    APP_ONLY_KINDS = (KIND_UPDATE,)
 
     kind = models.CharField(
         max_length=20,
@@ -234,20 +241,25 @@ class SiteMessage(BaseModel):
         help_text=(
             "Notices show as their own banner, as before. What's New entries are gathered into one "
             "'What's new' banner that opens a sheet listing them all; app versions without that sheet "
-            "(before 4.1.0) never receive them."
+            "(before 4.1.0) never receive them. Update entries join the same banner and are grouped in "
+            "the sheet under 'Update to get', with a link to the App Store or Google Play; give them "
+            "version rules naming the app versions that lack the feature."
         ),
     )
     title = models.CharField(
         max_length=80,
         blank=True,
         default="",
-        help_text="What's New entries only: a short name for the feature (e.g. 'Offline mode').",
+        help_text="What's New and Update entries only: a short name for the feature (e.g. 'Offline mode').",
     )
     link_text = models.CharField(
         max_length=40,
         blank=True,
         default="",
-        help_text="What's New entries only: the label of the link button (e.g. 'Try it'). Defaults to 'Try it'.",
+        help_text=(
+            "What's New entries only: the label of the link button (e.g. 'Try it'). Defaults to 'Try it'. "
+            "Update entries always link to the store."
+        ),
     )
     tag_text = models.CharField(
         max_length=40,
@@ -391,8 +403,16 @@ class SiteMessage(BaseModel):
     def clean(self):
         super().clean()
         errors = {}
-        if self.kind == self.KIND_WHATS_NEW and not self.title:
-            errors["title"] = "Give a What's New entry a title."
+        if self.kind in self.GROUPED_KINDS and not self.title:
+            errors["title"] = "Give a What's New or Update entry a title."
+        if self.kind == self.KIND_UPDATE:
+            # Without a rule, apps that already have the feature would be told to update.
+            for platform, label in self.PLATFORM_LABELS.items():
+                if getattr(self, f"show_on_{platform}") and not getattr(self, f"{platform}_version_rule"):
+                    errors[f"{platform}_version_rule"] = (
+                        f"Choose the {label} versions that need the update (e.g. 'Older than 4.2.0'), "
+                        f"or don't show it on {label}."
+                    )
         for platform, label in self.PLATFORM_LABELS.items():
             rule, version, version_to = self._version_rule(platform)
             if not rule:

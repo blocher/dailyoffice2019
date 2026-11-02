@@ -59,7 +59,11 @@ class SiteMessageAdmin(admin.ModelAdmin):
                 "description": (
                     "A notice is its own banner: tag, text, and link. A What's New entry shows in the "
                     "'What's new' banner and sheet with its title, text, and a link button (link text); "
-                    "the tag is not used. Apps before 4.1.0 never receive What's New entries, so keep "
+                    "the tag is not used. An Update entry is a feature that needs a newer app: it joins "
+                    "the same banner, and the sheet lists it under 'Update to get' with a link to the App "
+                    "Store or Google Play (its own link is not used). Give it App version rules below "
+                    "naming the versions without the feature, e.g. 'Older than 4.2.0'; the website never "
+                    "shows it. Apps before 4.1.0 never receive What's New or Update entries, so keep "
                     "anything older apps must see as a notice. Leave order at 0 to list the newest first."
                 ),
             },
@@ -68,7 +72,9 @@ class SiteMessageAdmin(admin.ModelAdmin):
             "Dismissal",
             {
                 "fields": ("dismissible", "dismiss_permanent"),
-                "description": "Notices only. What's New entries can always be dismissed, and stay dismissed.",
+                "description": (
+                    "Notices only. What's New and Update entries can always be dismissed, and stay dismissed."
+                ),
             },
         ),
         ("Platforms", {"fields": ("show_on_web", "show_on_android", "show_on_ios")}),

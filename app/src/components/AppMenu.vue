@@ -53,6 +53,7 @@ import { effectiveDays, network, syncState } from '@/offline';
 import { friendlyDate } from '@/offline/format';
 import { pwaState } from '@/offline/pwa';
 import { newWhatsNew, whatsNewState } from '@/helpers/whatsNew';
+import { APP_STORE_URLS } from '@/helpers/appStores';
 
 const route = useRoute();
 const router = useRouter();
@@ -62,9 +63,7 @@ const isWeb = platform === 'web';
 const LINKS = {
   kofi: 'https://ko-fi.com/dailyoffice',
   github: 'https://github.com/blocher/dailyoffice2019',
-  ios: 'https://apps.apple.com/us/app/the-daily-office/id1513851259',
-  android:
-    'https://play.google.com/store/apps/details?id=com.dailyoffice2019.app&hl=en_US',
+  ...APP_STORE_URLS,
   web: 'https://dailyoffice2019.com/',
 };
 

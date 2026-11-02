@@ -4966,10 +4966,13 @@ class SiteMessageViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             Q(expiration_date__isnull=True) | Q(expiration_date__gt=now)
         )
         # Apps that predate the What's New sheet don't ask for its entries, and get
-        # notices only; the current app asks with ?kinds=notice,whats_new.
+        # notices only; the current app asks with ?kinds=notice,whats_new,update.
         kinds = [kind.strip() for kind in (self.request.query_params.get("kinds") or "").split(",") if kind.strip()]
-        queryset = queryset.filter(kind__in=kinds or [SiteMessage.KIND_NOTICE])
         platform = (self.request.query_params.get("platform") or "").strip().lower()
+        if platform not in ("ios", "android"):
+            # The website is always the latest version: there's nothing to update.
+            kinds = [kind for kind in kinds if kind not in SiteMessage.APP_ONLY_KINDS]
+        queryset = queryset.filter(kind__in=kinds or [SiteMessage.KIND_NOTICE])
         if platform == "ios":
             queryset = queryset.filter(show_on_ios=True)
         elif platform == "android":
