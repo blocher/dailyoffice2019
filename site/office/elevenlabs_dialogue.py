@@ -21,6 +21,7 @@ from office.audio_builds import AudioNotReady, generation_deferred, release_db_c
 # last segment (encoder padding is a frame or two, about 26 ms each); anything
 # beyond this means the audio really was cut off.
 SEGMENT_END_TOLERANCE_SECONDS = 0.06
+MAX_REQUEST_CHARACTERS = 2000
 
 
 class DialogueTimingError(ValueError):
@@ -89,29 +90,51 @@ class DialogueSession:
                 turns.append({"voice": voice, "text": line["content"], "ranges": [(0, len(line["content"]), index)]})
         return turns
 
-    def chunks(self, lines, normalize):
+    def size(self, lines):
+        """Characters billed for one request: every speaking turn as submitted."""
+        return sum(len(self.provider.prepare_text(turn["text"])[0]) for turn in self.speaking_turns(lines))
+
+    def _pack(self, pieces, target=None):
         chunk = []
+        for piece in pieces:
+            if chunk and (
+                self.size(chunk + [piece]) > MAX_REQUEST_CHARACTERS or (target and self.size(chunk) >= target)
+            ):
+                yield chunk
+                chunk = []
+            chunk.append(piece)
+        if chunk:
+            yield chunk
+
+    def chunks(self, lines, normalize):
+        """Cut only at printed line boundaries, into chunks of similar size.
+
+        The cuts depend on nothing but these lines, so a fixed text (a psalm,
+        a canticle) gives the same chunks, and cache keys, on every date. A
+        line too long for one request is the only thing cut between words.
+        """
+        pieces = []
         for line in lines:
             words = normalize(line["content"]).split()
             part = []
             for word in words:
-                candidate = {**line, "content": " ".join(part + [word])}
-                proposed = chunk + [candidate]
-                size = sum(len(self.provider.prepare_text(turn["text"])[0]) for turn in self.speaking_turns(proposed))
-                if size > 2000:
-                    if part:
-                        chunk.append({**line, "content": " ".join(part)})
-                    if not chunk:
+                if self.size([{**line, "content": " ".join(part + [word])}]) > MAX_REQUEST_CHARACTERS:
+                    if not part:
                         raise ValueError("A dialogue word exceeds the request size limit")
-                    yield chunk
-                    chunk, part = [], []
-                    if len(self.provider.prepare_text(word)[0]) > 2000:
+                    pieces.append({**line, "content": " ".join(part)})
+                    part = []
+                    if self.size([{**line, "content": word}]) > MAX_REQUEST_CHARACTERS:
                         raise ValueError("A dialogue word exceeds the request size limit")
                 part.append(word)
             if part:
-                chunk.append({**line, "content": " ".join(part)})
-        if chunk:
-            yield chunk
+                pieces.append({**line, "content": " ".join(part)})
+        greedy = list(self._pack(pieces))
+        if len(greedy) > 1:
+            # Even out the split (say 1100 + 1000 rather than 2000 + 100).
+            balanced = list(self._pack(pieces, target=self.size(pieces) / len(greedy)))
+            if len(balanced) == len(greedy):
+                return balanced
+        return greedy
 
     def clip(self, lines):
         """Return audio/timing, or a failure sentinel the caller must handle explicitly."""
