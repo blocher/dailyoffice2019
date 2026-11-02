@@ -66,10 +66,9 @@ export function dismissAllWhatsNew() {
   dismiss(newWhatsNew.value.map((entry) => entry.uuid));
 }
 
-// "Offline mode", "Offline mode and Book view",
-// "Offline mode, Book view, and 2 more"
-export function summarizeTitles(entries) {
-  const titles = entries.map((entry) => entry.title || entry.text);
-  if (titles.length <= 2) return titles.join(' and ');
-  return `${titles[0]}, ${titles[1]}, and ${titles.length - 2} more`;
+// Up to `max` entries for the banner to name; past that, one fewer and
+// "and 2 more", so the list never runs longer than `max` lines.
+export function nameForBanner(entries, max) {
+  if (entries.length <= max) return { shown: entries, more: 0 };
+  return { shown: entries.slice(0, max - 1), more: entries.length - max + 1 };
 }

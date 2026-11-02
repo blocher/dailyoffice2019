@@ -37,7 +37,6 @@ function mountPanel() {
           props: ['subtitle'],
           template: '<div><p class="subtitle">{{ subtitle }}</p><slot /></div>',
         },
-        UiTag: { template: '<span class="tag"><slot /></span>' },
         UiIcon: true,
         UiButton: {
           template: '<button @click="$emit(\'click\')"><slot /></button>',
@@ -97,17 +96,29 @@ describe('WhatsNewPanel', () => {
     const wrapper = await open();
     expect(newWhatsNew.value).toHaveLength(2);
     expect(wrapper.find('.subtitle').text()).toBe('2 new features');
-    expect(wrapper.findAll('.whats-new-entry .tag')).toHaveLength(2);
+    expect(wrapper.findAll('.whats-new-entry__new')).toHaveLength(2);
   });
 
   it('dismisses one entry with Got it, moving it under Earlier', async () => {
     const wrapper = await open();
-    await wrapper.find('.whats-new-entry button:last-child').trigger('click');
+    await wrapper.find('[data-got-it]').trigger('click');
     expect(newWhatsNew.value.map((e) => e.uuid)).toEqual(['b']);
     expect(wrapper.find('.whats-new__earlier').text()).toContain(
       'Offline mode'
     );
     expect(wrapper.find('.subtitle').text()).toBe('1 new feature');
+  });
+
+  it('dismisses one entry with its ×, moving focus to the next ×', async () => {
+    const wrapper = await open();
+    document.body.appendChild(wrapper.element);
+    await wrapper.find('[data-dismiss]').trigger('click');
+    await wrapper.vm.$nextTick();
+    await wrapper.vm.$nextTick();
+    expect(newWhatsNew.value.map((e) => e.uuid)).toEqual(['b']);
+    expect(document.activeElement.getAttribute('aria-label')).toBe(
+      'Dismiss: Book view'
+    );
   });
 
   it('dismisses them all at once', async () => {

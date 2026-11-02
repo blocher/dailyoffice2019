@@ -20,7 +20,7 @@ import {
   dismissWhatsNew,
   earlierWhatsNew,
   newWhatsNew,
-  summarizeTitles,
+  nameForBanner,
   whatsNewState,
 } from '@/helpers/whatsNew';
 
@@ -170,9 +170,11 @@ describe("What's New entries", () => {
     await flushPromises();
     expect(wrapper.findAll('.site-message')).toHaveLength(1);
     expect(banner(wrapper).find('.whats-new-banner__count').text()).toBe('3');
-    expect(banner(wrapper).text()).toContain(
-      'Offline mode, Book view, and 1 more'
-    );
+    expect(
+      banner(wrapper)
+        .findAll('.whats-new-banner__title')
+        .map((li) => li.text())
+    ).toEqual(['Offline mode', 'Book view', 'Podcasts']);
   });
 
   it('open the sheet from the banner without dismissing anything', async () => {
@@ -245,13 +247,18 @@ describe("What's New entries", () => {
   });
 });
 
-describe('summarizeTitles', () => {
-  it('names one, two, or the first two and a count', () => {
+describe('nameForBanner', () => {
+  it('names up to the most it may, or one fewer and a count', () => {
     const e = (title) => ({ title });
-    expect(summarizeTitles([e('A')])).toBe('A');
-    expect(summarizeTitles([e('A'), e('B')])).toBe('A and B');
-    expect(summarizeTitles([e('A'), e('B'), e('C'), e('D')])).toBe(
-      'A, B, and 2 more'
-    );
+    const titles = (entries, max) => {
+      const { shown, more } = nameForBanner(entries, max);
+      return [shown.map((entry) => entry.title), more];
+    };
+    const six = ['A', 'B', 'C', 'D', 'E', 'F'].map(e);
+    expect(titles(six.slice(0, 1), 3)).toEqual([['A'], 0]);
+    expect(titles(six.slice(0, 3), 3)).toEqual([['A', 'B', 'C'], 0]);
+    expect(titles(six, 3)).toEqual([['A', 'B'], 4]);
+    expect(titles(six, 6)).toEqual([['A', 'B', 'C', 'D', 'E', 'F'], 0]);
+    expect(titles([...six, e('G')], 6)).toEqual([['A', 'B', 'C', 'D', 'E'], 2]);
   });
 });
