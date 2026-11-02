@@ -386,6 +386,7 @@ const closeStyle = computed(() => {
 const bookStyle = computed(() => ({
   width: `${layout.sheetW * layout.cols}px`,
   height: `${layout.sheetH}px`,
+  left: layout.offsetX ? `${layout.offsetX}px` : null,
 }));
 
 function sheetSideClass(slot) {
@@ -499,6 +500,7 @@ async function relayout() {
         ...foldState.fold,
         x: foldState.fold.x - rect.left - padLeft,
       },
+      screenWidth: rect.width,
     })
   );
   await nextTick();

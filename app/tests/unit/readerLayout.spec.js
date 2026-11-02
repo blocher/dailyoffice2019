@@ -53,6 +53,28 @@ describe('reader layout across a fold', () => {
     expect(computeReaderLayout({ ...DUO, fold }).spread).toBe(false);
   });
 
+  it('puts the spine on the hinge when the fold is a little off center', () => {
+    const layout = computeReaderLayout({
+      ...DUO,
+      fold: { x: 312, width: 24, active: true },
+    });
+    expect(layout.spread).toBe(true);
+    // Book centered on the stage, then moved: the spine lands mid-fold.
+    const spine = DUO.width / 2 + layout.offsetX;
+    expect(Math.abs(spine - (312 + 12))).toBeLessThanOrEqual(1);
+    expect(layout.sheetW * 2).toBeLessThanOrEqual(DUO.width);
+  });
+
+  it('decides an automatic spread on the whole screen, not the stage', () => {
+    // A landscape screen 956 wide whose safe areas leave the stage 880:
+    // room enough for two pages, so it spreads as the whole screen would.
+    const base = { width: 880, height: 420, fontSize: 14 };
+    expect(computeReaderLayout(base).spread).toBe(false);
+    expect(computeReaderLayout({ ...base, screenWidth: 956 }).spread).toBe(
+      true
+    );
+  });
+
   it('without a fold, keeps one page on a screen that size', () => {
     expect(computeReaderLayout(DUO).spread).toBe(false);
   });

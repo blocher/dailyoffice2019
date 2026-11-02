@@ -27,6 +27,9 @@ const PHONE_MAX = 639;
  * @param {{x: number, width: number, active: boolean}|null} [options.fold]
  *   a vertical fold across the stage, in px from the stage's left edge;
  *   `active` while the device is partly folded (see helpers/fold.js)
+ * @param {number} [options.screenWidth] the width that decides an automatic
+ *   spread, when it differs from the stage (which leaves out the safe areas
+ *   at the sides); defaults to `width`
  */
 export function computeReaderLayout({
   width,
@@ -35,6 +38,7 @@ export function computeReaderLayout({
   spread = 'auto',
   viewportHeight,
   fold = null,
+  screenWidth = width,
 }) {
   const height =
     viewportHeight > 0 ? Math.min(stageHeight, viewportHeight) : stageHeight;
@@ -61,7 +65,7 @@ export function computeReaderLayout({
   const canSpread = !isPhone && spreadPageW >= minSpreadPageW;
   const wantsSpread =
     spread === 'spread' ||
-    (spread === 'auto' && width >= 900 && width > height * 1.15);
+    (spread === 'auto' && screenWidth >= 900 && screenWidth > height * 1.15);
   const isSpread = canSpread && wantsSpread;
   const cols = isSpread ? 2 : 1;
 
@@ -87,6 +91,7 @@ function pageGeometry({
   padX,
   padTop,
   padBottom,
+  offsetX = 0,
 }) {
   const sheetH = Math.floor(height - outerY * 2);
   const pageW = Math.max(120, sheetW - padX * 2);
@@ -109,16 +114,20 @@ function pageGeometry({
     step: pageW + gap,
     // Width of the visible text window across all pages on screen.
     windowW: pageW * cols + gap * (cols - 1),
+    // How far the book sits right of center: across a fold, the spine is
+    // on the hinge rather than in the middle of the stage.
+    offsetX,
   };
 }
 
 /*
   A spread across a fold, or null. Half open like a book, the device opens
   to two pages (as Safari shows a PDF there); laid flat it keeps one large
-  page unless the reader chose Two. The book is centered, so the fold has
-  to sit near the middle of the stage. Each half is about a phone's width,
-  so the pages take a phone's margins, with the gutter wide enough to clear
-  the hinge; very large text keeps a single page.
+  page unless the reader chose Two. The spine goes on the hinge (offsetX
+  moves the book off center if the fold is), so the fold has to sit near
+  the middle of the stage. Each half is about a phone's width, so the pages
+  take a phone's margins, with the gutter wide enough to clear the hinge;
+  very large text keeps a single page.
 */
 function spreadAcrossFold({ width, fontSize, spread, fold }) {
   if (!fold || spread === 'single') return null;
@@ -136,6 +145,7 @@ function spreadAcrossFold({ width, fontSize, spread, fold }) {
     padX,
     padTop: 46,
     padBottom: 46,
+    offsetX: Math.round(middle - width / 2),
   };
 }
 
