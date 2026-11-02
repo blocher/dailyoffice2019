@@ -30,12 +30,9 @@ describe('reader layout across a fold', () => {
     expect(layout.pageW).toBeGreaterThanOrEqual(DUO.fontSize * 11);
   });
 
-  it('keeps one large page when laid flat, unless Two was chosen', () => {
+  it('opens across the fold laid flat too', () => {
     const flat = { ...HINGE, active: false };
-    expect(computeReaderLayout({ ...DUO, fold: flat }).spread).toBe(false);
-    expect(
-      computeReaderLayout({ ...DUO, fold: flat, spread: 'spread' }).spread
-    ).toBe(true);
+    expect(computeReaderLayout({ ...DUO, fold: flat }).spread).toBe(true);
   });
 
   it('keeps one page when One was chosen or the text is very large', () => {
@@ -48,9 +45,25 @@ describe('reader layout across a fold', () => {
     );
   });
 
-  it('ignores a fold away from the middle of the stage', () => {
+  it('keeps one page when a side of the fold is too narrow for a page', () => {
     const fold = { x: 100, width: 24, active: true };
     expect(computeReaderLayout({ ...DUO, fold }).spread).toBe(false);
+  });
+
+  it('follows the fold when a side control column moves it off center', () => {
+    // iPhone Duo's inner screen in landscape: 951 wide, less an 84px
+    // column on the right; the crease is at 475.5.
+    const layout = computeReaderLayout({
+      width: 867,
+      height: 620,
+      fontSize: 24,
+      fold: { x: 475.5, width: 0, active: false },
+    });
+    expect(layout.spread).toBe(true);
+    expect(Math.abs(867 / 2 + layout.offsetX - 475.5)).toBeLessThanOrEqual(1);
+    expect(
+      layout.sheetW * 2 + Math.abs(layout.offsetX) * 2
+    ).toBeLessThanOrEqual(867);
   });
 
   it('puts the spine on the hinge when the fold is a little off center', () => {

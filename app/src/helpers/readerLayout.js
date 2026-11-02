@@ -8,8 +8,8 @@
 
   Each column is one page. On wide, landscape screens two pages show side by
   side as a spread, like an open book. On a foldable held like a book (iPhone
-  Duo's inner screen, half open), the spread opens across the fold: one page
-  on each side, the spine on the hinge.
+  Duo's inner screen, in landscape), the spread opens across the fold: one
+  page on each side, the spine on the hinge.
 */
 
 const PHONE_MAX = 639;
@@ -121,19 +121,17 @@ function pageGeometry({
 }
 
 /*
-  A spread across a fold, or null. Half open like a book, the device opens
-  to two pages (as Safari shows a PDF there); laid flat it keeps one large
-  page unless the reader chose Two. The spine goes on the hinge (offsetX
-  moves the book off center if the fold is), so the fold has to sit near
-  the middle of the stage. Each half is about a phone's width, so the pages
-  take a phone's margins, with the gutter wide enough to clear the hinge;
-  very large text keeps a single page.
+  A spread across a fold, or null. Open or half open like a book, the
+  device shows two pages, one on each side, with the spine on the hinge
+  (offsetX moves the book off center when the fold is, as when a side
+  control column narrows the stage), so no line of text runs across the
+  crease. Each half is about a phone's width, so the pages take a phone's
+  margins, with the gutter wide enough to clear the hinge. One page if the
+  reader chose One, or when the text is too large for two.
 */
 function spreadAcrossFold({ width, fontSize, spread, fold }) {
   if (!fold || spread === 'single') return null;
-  if (!fold.active && spread !== 'spread') return null;
   const middle = fold.x + fold.width / 2;
-  if (Math.abs(middle - width / 2) > Math.max(24, width * 0.04)) return null;
   const padX = Math.max(20, Math.ceil(fold.width / 2) + 8);
   const sheetW = Math.floor(Math.min(middle - 10, width - middle - 10));
   if (sheetW - padX * 2 < Math.max(220, Math.round(fontSize * 11))) return null;
