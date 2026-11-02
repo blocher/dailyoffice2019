@@ -52,6 +52,7 @@ import { SessionStore } from '@/helpers/sessionStore';
 import { effectiveDays, network, syncState } from '@/offline';
 import { friendlyDate } from '@/offline/format';
 import { pwaState } from '@/offline/pwa';
+import { newWhatsNew, whatsNewState } from '@/helpers/whatsNew';
 
 const route = useRoute();
 const router = useRouter();
@@ -213,6 +214,18 @@ const groups = computed(() => {
     {
       title: 'Stay in touch',
       items: [
+        ...(whatsNewState.entries.length
+          ? [
+              {
+                label: 'What’s new',
+                hint: newWhatsNew.value.length
+                  ? `${newWhatsNew.value.length} new`
+                  : '',
+                icon: 'star',
+                action: () => openPanel('whatsNew'),
+              },
+            ]
+          : []),
         {
           label: 'Support the Daily Office',
           icon: 'heart',

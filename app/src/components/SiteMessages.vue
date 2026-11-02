@@ -1,44 +1,47 @@
 <template>
-  <div v-if="visibleMessages.length" class="site-messages">
-    <div
-      v-for="message in visibleMessages"
-      :key="message.uuid"
-      class="site-message"
-      role="region"
-      aria-label="Announcement"
-    >
-      <UiTag
-        v-if="message.tag_text"
-        class="site-message__tag"
-        :class="{ 'is-link': message.link }"
-        :tone="tagTone(message.tag_color)"
-        @click="follow(message)"
+  <Transition name="site-messages">
+    <div v-if="visibleMessages.length || hasNew" class="site-messages">
+      <WhatsNewBanner />
+      <div
+        v-for="message in visibleMessages"
+        :key="message.uuid"
+        class="site-message"
+        role="region"
+        aria-label="Announcement"
       >
-        {{ message.tag_text }}
-      </UiTag>
-      <p class="site-message__text">
-        <router-link
-          v-if="message.link && !isExternal(message.link)"
-          :to="message.link"
+        <UiTag
+          v-if="message.tag_text"
+          class="site-message__tag"
+          :class="{ 'is-link': message.link }"
+          :tone="tagTone(message.tag_color)"
+          @click="follow(message)"
         >
-          {{ message.text }}
-        </router-link>
-        <a v-else-if="message.link" href="#" @click.prevent="follow(message)">
-          {{ message.text }}
-        </a>
-        <span v-else>{{ message.text }}</span>
-      </p>
-      <button
-        v-if="message.dismissible"
-        type="button"
-        class="site-message__close"
-        aria-label="Dismiss"
-        @click="dismiss(message)"
-      >
-        <UiIcon name="close" />
-      </button>
+          {{ message.tag_text }}
+        </UiTag>
+        <p class="site-message__text">
+          <router-link
+            v-if="message.link && !isExternal(message.link)"
+            :to="message.link"
+          >
+            {{ message.text }}
+          </router-link>
+          <a v-else-if="message.link" href="#" @click.prevent="follow(message)">
+            {{ message.text }}
+          </a>
+          <span v-else>{{ message.text }}</span>
+        </p>
+        <button
+          v-if="message.dismissible"
+          type="button"
+          class="site-message__close"
+          aria-label="Dismiss"
+          @click="dismiss(message)"
+        >
+          <UiIcon name="close" />
+        </button>
+      </div>
     </div>
-  </div>
+  </Transition>
 </template>
 
 <script>
@@ -46,8 +49,13 @@ import { App } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
 
+import WhatsNewBanner from '@/components/WhatsNewBanner.vue';
+import { addToStoredList, readStoredList } from '@/helpers/storedList';
+import { newWhatsNew, setWhatsNew } from '@/helpers/whatsNew';
+
 const PERMANENT_STORAGE_KEY = 'dismissedSiteMessages';
 const SESSION_STORAGE_KEY = 'dismissedSiteMessages';
+const WHATS_NEW = 'whats_new';
 
 // Admin-chosen tag colors mapped onto the app's tones.
 const TAG_TONES = {
@@ -58,16 +66,6 @@ const TAG_TONES = {
   purple: 'accent',
   gray: 'neutral',
 };
-
-// Reading the window.localStorage / window.sessionStorage property itself
-// throws a SecurityError when the browser denies storage access.
-function getStorage(name) {
-  try {
-    return typeof window === 'undefined' ? null : window[name] || null;
-  } catch {
-    return null;
-  }
-}
 
 // The store version (iOS CFBundleShortVersionString, Android versionName),
 // so the server can limit messages to some app versions. The web has none.
@@ -83,21 +81,9 @@ async function nativeAppVersion() {
   }
 }
 
-function readStorage(storage, key) {
-  try {
-    const raw = storage.getItem(key);
-    if (!raw) {
-      return [];
-    }
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
 export default {
   name: 'SiteMessages',
+  components: { WhatsNewBanner },
   data() {
     return {
       messages: [],
@@ -105,10 +91,16 @@ export default {
     };
   },
   computed: {
+    // Notices, each its own banner. What's New entries share one banner.
     visibleMessages() {
       return this.messages.filter(
-        (message) => !this.dismissedIds.includes(message.uuid)
+        (message) =>
+          message.kind !== WHATS_NEW &&
+          !this.dismissedIds.includes(message.uuid)
       );
+    },
+    hasNew() {
+      return newWhatsNew.value.length > 0;
     },
   },
   async created() {
@@ -117,21 +109,19 @@ export default {
   },
   methods: {
     loadDismissed() {
-      const ids = new Set();
-      const local = getStorage('localStorage');
-      if (local) {
-        readStorage(local, PERMANENT_STORAGE_KEY).forEach((id) => ids.add(id));
-      }
-      const session = getStorage('sessionStorage');
-      if (session) {
-        readStorage(session, SESSION_STORAGE_KEY).forEach((id) => ids.add(id));
-      }
-      this.dismissedIds = Array.from(ids);
+      this.dismissedIds = Array.from(
+        new Set([
+          ...readStoredList('localStorage', PERMANENT_STORAGE_KEY),
+          ...readStoredList('sessionStorage', SESSION_STORAGE_KEY),
+        ])
+      );
     },
     async fetchMessages() {
       try {
         const platform = Capacitor.getPlatform();
-        const params = { platform };
+        // Asking for What's New entries too; without ?kinds= the server
+        // sends notices only, as the 4.0.0 apps expect.
+        const params = { platform, kinds: `notice,${WHATS_NEW}` };
         const appVersion = await nativeAppVersion();
         if (appVersion) {
           params.app_version = appVersion;
@@ -143,7 +133,12 @@ export default {
         this.messages = Array.isArray(response.data) ? response.data : [];
       } catch {
         this.messages = [];
+        setWhatsNew([], { failed: true });
+        return;
       }
+      setWhatsNew(
+        this.messages.filter((message) => message.kind === WHATS_NEW)
+      );
     },
     tagTone(color) {
       return TAG_TONES[color] || 'neutral';
@@ -165,35 +160,26 @@ export default {
         return;
       }
       this.dismissedIds = [...this.dismissedIds, message.uuid];
-      const storage = getStorage(
-        message.dismiss_permanent ? 'localStorage' : 'sessionStorage'
+      addToStoredList(
+        message.dismiss_permanent ? 'localStorage' : 'sessionStorage',
+        message.dismiss_permanent ? PERMANENT_STORAGE_KEY : SESSION_STORAGE_KEY,
+        [message.uuid]
       );
-      if (!storage) {
-        return;
-      }
-      const stored = readStorage(
-        storage,
-        message.dismiss_permanent ? PERMANENT_STORAGE_KEY : SESSION_STORAGE_KEY
-      );
-      if (!stored.includes(message.uuid)) {
-        stored.push(message.uuid);
-        try {
-          storage.setItem(
-            message.dismiss_permanent
-              ? PERMANENT_STORAGE_KEY
-              : SESSION_STORAGE_KEY,
-            JSON.stringify(stored)
-          );
-        } catch {
-          // Storage full or blocked: the dismissal lasts for this page view.
-        }
-      }
     },
   },
 };
 </script>
 
 <style scoped>
+/* The whole block fades when its last banner goes. */
+.site-messages-leave-active {
+  transition: opacity 220ms var(--ease);
+}
+
+.site-messages-leave-to {
+  opacity: 0;
+}
+
 .site-messages {
   display: flex;
   flex-direction: column;

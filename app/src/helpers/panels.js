@@ -8,9 +8,10 @@
     email     email updates sign-up
     feedback  send feedback
     offline   offline downloads and installing the app
+    whatsNew  new features, gathered from the site messages
   Each is mounted once in App.vue. Call openPanel('share') to show one.
-  A link can open one too: ?panel=offline on any page, or /offline (today's
-  office with the Offline panel open).
+  A link can open one too: ?panel=offline on any page, or /offline and
+  /whats-new (today's office with that panel open).
 */
 import { reactive } from 'vue';
 
@@ -21,6 +22,7 @@ export const panels = reactive({
   email: false,
   feedback: false,
   offline: false,
+  whatsNew: false,
 });
 
 export function openPanel(name) {
@@ -34,11 +36,14 @@ export function openPanel(name) {
   instead, without the flag. Followed from inside the app (a site message
   linking to /offline), it stays on the page the reader is on.
 */
+// Short links that open a panel over today's office (see router/index).
+const PANEL_LINKS = ['/offline', '/whats-new'];
+
 export function takePanelQuery(to, from) {
   const name = to.query.panel;
   if (!name) return null;
   if (Object.hasOwn(panels, name)) openPanel(name);
-  if (to.redirectedFrom?.path === '/offline' && from.matched.length)
+  if (PANEL_LINKS.includes(to.redirectedFrom?.path) && from.matched.length)
     return false;
   const query = { ...to.query };
   delete query.panel;

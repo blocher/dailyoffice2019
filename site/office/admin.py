@@ -37,6 +37,7 @@ class UpdateNoticeAdmin(admin.ModelAdmin):
 class SiteMessageAdmin(admin.ModelAdmin):
     list_display = (
         "text",
+        "kind",
         "tag_text",
         "tag_color",
         "active",
@@ -47,12 +48,29 @@ class SiteMessageAdmin(admin.ModelAdmin):
         "expiration_date",
         "order",
     )
-    list_filter = ("active", "tag_color", "show_on_web", "show_on_android", "show_on_ios")
-    search_fields = ("text", "tag_text", "link")
+    list_filter = ("active", "kind", "tag_color", "show_on_web", "show_on_android", "show_on_ios")
+    search_fields = ("text", "title", "tag_text", "link")
     list_editable = ("active", "order")
     fieldsets = (
-        ("Content", {"fields": ("tag_text", "tag_color", "text", "link")}),
-        ("Dismissal", {"fields": ("dismissible", "dismiss_permanent")}),
+        (
+            "Content",
+            {
+                "fields": ("kind", "title", "tag_text", "tag_color", "text", "link", "link_text"),
+                "description": (
+                    "A notice is its own banner: tag, text, and link. A What's New entry shows in the "
+                    "'What's new' banner and sheet with its title, text, and a link button (link text); "
+                    "the tag is not used. Apps before 4.1.0 never receive What's New entries, so keep "
+                    "anything older apps must see as a notice. Leave order at 0 to list the newest first."
+                ),
+            },
+        ),
+        (
+            "Dismissal",
+            {
+                "fields": ("dismissible", "dismiss_permanent"),
+                "description": "Notices only. What's New entries can always be dismissed, and stay dismissed.",
+            },
+        ),
         ("Platforms", {"fields": ("show_on_web", "show_on_android", "show_on_ios")}),
         (
             "App versions",

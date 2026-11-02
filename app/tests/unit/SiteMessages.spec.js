@@ -14,6 +14,15 @@ vi.mock('@capacitor/app', () => ({
 }));
 
 import SiteMessages from '@/components/SiteMessages.vue';
+import { panels } from '@/helpers/panels';
+import {
+  dismissAllWhatsNew,
+  dismissWhatsNew,
+  earlierWhatsNew,
+  newWhatsNew,
+  nameForBanner,
+  whatsNewState,
+} from '@/helpers/whatsNew';
 
 const message = {
   uuid: 'abc',
@@ -34,6 +43,11 @@ function mountComponent() {
 afterEach(() => {
   platform.name = 'web';
   vi.restoreAllMocks();
+  window.localStorage.clear();
+  window.sessionStorage.clear();
+  whatsNewState.entries = [];
+  whatsNewState.dismissed = [];
+  panels.whatsNew = false;
 });
 
 describe('SiteMessages request', () => {
@@ -49,13 +63,17 @@ describe('SiteMessages request', () => {
   }
 
   it('sends only the platform from the web', async () => {
-    expect(await requestParams()).toEqual({ platform: 'web' });
+    expect(await requestParams()).toEqual({
+      platform: 'web',
+      kinds: 'notice,whats_new',
+    });
   });
 
   it('sends the store version from the native apps', async () => {
     platform.name = 'ios';
     expect(await requestParams()).toEqual({
       platform: 'ios',
+      kinds: 'notice,whats_new',
       app_version: '4.1.0',
     });
   });
@@ -117,5 +135,130 @@ describe('SiteMessages links', () => {
     expect(tag.classes()).not.toContain('is-link');
     await tag.trigger('click');
     expect(push).not.toHaveBeenCalled();
+  });
+});
+
+const entry = (uuid, title) => ({
+  uuid,
+  kind: 'whats_new',
+  title,
+  text: `${title} is here.`,
+  link: '',
+  dismissible: true,
+  dismiss_permanent: true,
+});
+
+function mountWith(data) {
+  return mount(SiteMessages, {
+    global: {
+      mocks: { $http: { get: vi.fn(async () => ({ data })) } },
+      stubs: { UiIcon: true, UiTag: true },
+    },
+  });
+}
+
+describe("What's New entries", () => {
+  const banner = (wrapper) => wrapper.find('.whats-new-banner');
+
+  it('share one banner, with a count, instead of a banner each', async () => {
+    const wrapper = mountWith([
+      { ...message, uuid: 'notice', text: 'A notice' },
+      entry('a', 'Offline mode'),
+      entry('b', 'Book view'),
+      entry('c', 'Podcasts'),
+    ]);
+    await flushPromises();
+    expect(wrapper.findAll('.site-message')).toHaveLength(1);
+    expect(banner(wrapper).find('.whats-new-banner__count').text()).toBe('3');
+    expect(
+      banner(wrapper)
+        .findAll('.whats-new-banner__title')
+        .map((li) => li.text())
+    ).toEqual(['Offline mode', 'Book view', 'Podcasts']);
+  });
+
+  it('open the sheet from the banner without dismissing anything', async () => {
+    const wrapper = mountWith([entry('a', 'Offline mode')]);
+    await flushPromises();
+    await banner(wrapper).find('.whats-new-banner__open').trigger('click');
+    expect(panels.whatsNew).toBe(true);
+    expect(newWhatsNew.value).toHaveLength(1);
+    expect(banner(wrapper).exists()).toBe(true);
+  });
+
+  it('are all dismissed by the banner’s close button, for good', async () => {
+    const wrapper = mountWith([
+      entry('a', 'Offline mode'),
+      entry('b', 'Book view'),
+    ]);
+    await flushPromises();
+    await banner(wrapper).find('.whats-new-banner__close').trigger('click');
+    expect(banner(wrapper).exists()).toBe(false);
+    expect(
+      JSON.parse(window.localStorage.getItem('dismissedWhatsNew'))
+    ).toEqual(['a', 'b']);
+  });
+
+  it('can be dismissed one at a time', async () => {
+    const wrapper = mountWith([
+      entry('a', 'Offline mode'),
+      entry('b', 'Book view'),
+    ]);
+    await flushPromises();
+    dismissWhatsNew({ uuid: 'a' });
+    await flushPromises();
+    expect(banner(wrapper).find('.whats-new-banner__count').text()).toBe('1');
+    expect(banner(wrapper).text()).toContain('Book view');
+    expect(banner(wrapper).text()).not.toContain('Offline mode');
+    expect(earlierWhatsNew.value.map((e) => e.uuid)).toEqual(['a']);
+  });
+
+  it('count as dismissed when their old banner was dismissed', async () => {
+    window.localStorage.setItem('dismissedSiteMessages', JSON.stringify(['a']));
+    const wrapper = mountWith([
+      entry('a', 'Book view'),
+      entry('b', 'Offline mode'),
+    ]);
+    await flushPromises();
+    expect(newWhatsNew.value.map((e) => e.uuid)).toEqual(['b']);
+    expect(banner(wrapper).text()).not.toContain('Book view');
+  });
+
+  it('bring the banner back only for an entry added later', async () => {
+    mountWith([entry('a', 'Offline mode')]);
+    await flushPromises();
+    dismissAllWhatsNew();
+    const wrapper = mountWith([
+      entry('a', 'Offline mode'),
+      entry('b', 'Widgets'),
+    ]);
+    await flushPromises();
+    expect(banner(wrapper).text()).toContain('Widgets');
+    expect(banner(wrapper).text()).not.toContain('Offline');
+  });
+
+  it('come as notices from a server that predates them', async () => {
+    const { kind, ...old } = entry('a', 'Offline mode');
+    expect(kind).toBe('whats_new');
+    const wrapper = mountWith([old]);
+    await flushPromises();
+    expect(banner(wrapper).exists()).toBe(false);
+    expect(wrapper.findAll('.site-message')).toHaveLength(1);
+  });
+});
+
+describe('nameForBanner', () => {
+  it('names up to the most it may, or one fewer and a count', () => {
+    const e = (title) => ({ title });
+    const titles = (entries, max) => {
+      const { shown, more } = nameForBanner(entries, max);
+      return [shown.map((entry) => entry.title), more];
+    };
+    const six = ['A', 'B', 'C', 'D', 'E', 'F'].map(e);
+    expect(titles(six.slice(0, 1), 3)).toEqual([['A'], 0]);
+    expect(titles(six.slice(0, 3), 3)).toEqual([['A', 'B', 'C'], 0]);
+    expect(titles(six, 3)).toEqual([['A', 'B'], 4]);
+    expect(titles(six, 6)).toEqual([['A', 'B', 'C', 'D', 'E', 'F'], 0]);
+    expect(titles([...six, e('G')], 6)).toEqual([['A', 'B', 'C', 'D', 'E'], 2]);
   });
 });
