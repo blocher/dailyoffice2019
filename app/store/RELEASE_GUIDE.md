@@ -7,8 +7,8 @@ Play, written from the 4.0.0 release. Everything you paste or upload is in this
 | | iOS | Android |
 |---|---|---|
 | Bundle / package | `com.dailyoffice.dailyoffice2019` | `com.dailyoffice2019.app` |
-| Next release | 4.1.1 (build 4.1.1), November 2026; an earlier 4.1.0 build was uploaded but never submitted | 4.1.1 (version code 7) |
-| Latest release | 4.0.0 (build 4.0.0), live October 28, 2026 | 4.0.0 (version code 6), submitted October 28, 2026 |
+| Latest release | 4.1.1 (build 4.1.1), submitted November 1, 2026 (a 4.1.0 build was uploaded but never submitted) | 4.1.1 (version code 7), submitted November 1, 2026 |
+| Previous release | 4.0.0 (build 4.0.0), live October 28, 2026 | 4.0.0 (version code 6) |
 | Toolchain | Xcode 27.2 (iOS 27.2 SDK), iOS 15+ deployment, SPM | AGP 8.13.2, Gradle 8.14.6, compile/target SDK 36, min SDK 24 |
 | Capacitor | 8.6.0 | same |
 
@@ -153,8 +153,9 @@ New in App Store Connect (Product Page Information → **Header and Search
 Results**). They show on iOS and iPadOS 27 and later, go through App Review,
 and can be changed later from the **Asset Library** without a new version.
 
-- **Header** → `store/creative/header-3840x1646.jpg` (21:9).
-- **Search results** → `store/creative/search-results-3840x2560.jpg` (3:2).
+- App Store Connect takes these as **PNG** (or video) only.
+- **Header** → `store/creative/header-3840x1646.png` (21:9).
+- **Search results** → `store/creative/search-results-3840x2560.png` (3:2).
   Without one, search shows the first three screenshots, which is also fine.
 - Use **Preview** to check the crop on iPhone and iPad before submitting.
 

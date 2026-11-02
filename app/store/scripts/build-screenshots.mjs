@@ -537,14 +537,15 @@ async function graphics(work) {
     const png = join(work, 'creative.png');
     render(htmlPath, png, w, h);
     mkdirSync(dirname(out), { recursive: true });
+    // App Store Connect takes these as PNG (or video) only.
     await sharp(png)
       .resize(w, h)
       .flatten({ background: '#8c1d22' })
-      .jpeg({ quality: 90, chromaSubsampling: '4:4:4', mozjpeg: true })
+      .png({ compressionLevel: 9, adaptiveFiltering: true })
       .toFile(out);
   };
   await phones(
-    join(STORE, 'creative/header-3840x1646.jpg'),
+    join(STORE, 'creative/header-3840x1646.png'),
     3840,
     1646,
     ['book', 'office', 'offline'],
@@ -554,7 +555,7 @@ async function graphics(work) {
     }
   );
   await phones(
-    join(STORE, 'creative/search-results-3840x2560.jpg'),
+    join(STORE, 'creative/search-results-3840x2560.png'),
     3840,
     2560,
     ['office', 'offline', 'audio'],
