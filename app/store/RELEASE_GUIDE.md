@@ -339,7 +339,7 @@ which blanks the screens until a reboot.
 For the videos, pre-roll the office audio to the Confession of Sin (about 0:40)
 and pause, scroll to the top, start
 `xcrun simctl io <device> recordVideo --codec=h264 store/video/raw/iphone.mp4`,
-wait about two seconds, send `store/scripts/remote/tour.js` with
+wait about 2.5 seconds (the videos skip the first 2.4), send `store/scripts/remote/tour.js` with
 `curl localhost:9999/run --data-binary @store/scripts/remote/tour.js`, then stop
 the recording with Ctrl-C. Do the same on the iPad for `ipad.mp4`.
 

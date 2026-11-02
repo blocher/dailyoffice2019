@@ -4,7 +4,7 @@ New in 4.1: pray without a connection.
 • Downloads stay fresh in the background, and corrections reach your device the next time it's online.
 • On iPhone Duo, half open like a book, Book view shows two pages, one on each side of the fold.
 • Book view reopens where you left off.
-• Swipe down to close any panel.
+• On a phone, swipe a panel down to close it.
 
 New last month, in case you missed it (4.0):
 • A new design modeled on the printed 2019 prayer book

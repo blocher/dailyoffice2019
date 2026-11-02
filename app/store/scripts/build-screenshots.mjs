@@ -41,7 +41,7 @@ export const SLIDES = [
     slug: 'offline',
     eyebrow: 'Offline',
     title: 'Pray without a connection',
-    sub: 'The days ahead download on their own, audio too: on a plane, on retreat, or far from a signal',
+    sub: 'The days ahead download on their own, with the audio if you like: on a plane, on retreat, or far from a signal',
   },
   {
     slug: 'audio',
