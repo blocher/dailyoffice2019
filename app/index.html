@@ -57,11 +57,14 @@
         }
       })();
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- crossorigin: a readable answer, which the service worker can keep for offline use
+    <!-- Every page's first request goes to the API: open that connection now. -->
+    <link rel="preconnect" href="%VITE_API_URL%" crossorigin>
+    <!-- Chinese faces, loaded without holding up the first paint: their
+         unicode-range means the font files download only for Chinese text.
+         crossorigin: a readable answer, which the service worker can keep for offline use
          without the size penalty browsers put on opaque ones. -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" crossorigin>
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet" crossorigin></noscript>
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">

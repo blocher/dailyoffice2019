@@ -18,6 +18,15 @@
         "node .claude/local-api-proxy.cjs & cd app && VITE_API_URL=http://127.0.0.1:8017/ npx vite --port 5198 --strictPort"
       ],
       "port": 5198
+    },
+    {
+      "name": "app-dist-preview",
+      "runtimeExecutable": "zsh",
+      "runtimeArgs": [
+        "-c",
+        "cd app && npx vite preview --port 5196 --strictPort"
+      ],
+      "port": 5196
     }
   ]
 }

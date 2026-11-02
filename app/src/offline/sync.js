@@ -20,8 +20,8 @@
 
   Runs start when the app opens or comes back to the front, when the
   connection returns, when settings change, after midnight, and from the
-  Offline panel. Downloads carry X-Offline-Sync so the API doesn't count
-  them as views.
+  Offline panel. Downloads carry X-Offline-Sync, which tells the cache
+  adapter to store them (it is not sent to the API).
 
   The plan is also written to storage for the service worker, which follows
   it in the background where the browser allows (public/sw.js). In the iOS

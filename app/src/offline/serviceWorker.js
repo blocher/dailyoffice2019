@@ -377,9 +377,8 @@ async function backgroundRefresh() {
     try {
       // When it was asked for: a change noted meanwhile may not be in it.
       const askedAt = Date.now();
-      const response = await fetch(task.url, {
-        headers: { 'X-Offline-Sync': '1' },
-      });
+      // No custom headers: each would cost a CORS preflight to the server.
+      const response = await fetch(task.url);
       if (!response.ok) continue;
       const text = await response.text();
       const data = JSON.parse(text);

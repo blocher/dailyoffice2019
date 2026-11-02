@@ -5,3 +5,8 @@
   Service-Worker-Allowed: /
 /site.webmanifest
   Cache-Control: no-cache
+# Built scripts and styles carry a content hash in their names, so a copy never
+# goes stale. The Caslon fonts (public/assets/fonts) don't: give one a new name
+# if it ever changes.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable

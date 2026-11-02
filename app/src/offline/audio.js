@@ -92,10 +92,9 @@ async function readBody(url, signal) {
   };
   try {
     stillGoing();
-    const response = await window.fetch(url, {
-      headers: { [SYNC_HEADER]: '1' },
-      signal: controller.signal,
-    });
+    // No X-Offline-Sync here: in a browser a custom header costs a CORS
+    // preflight per track. (The native download below isn't subject to CORS.)
+    const response = await window.fetch(url, { signal: controller.signal });
     if (!response.ok)
       throw new Error(`Audio download failed (${response.status})`);
     const expected = Number(response.headers.get('content-length')) || 0;

@@ -217,14 +217,14 @@ const bootstrap = async () => {
   await loadDisplayPreferences();
   loadDiscovery();
   watchFold();
-  // Attach the anonymous client id + platform to every API request so the
-  // backend can attribute office views to a unique user (updated clients only).
+  // The anonymous client id + platform go on POSTs only. A custom header on a
+  // GET makes the browser send a CORS preflight to the server first, which
+  // Cloudflare can't cache, so office and calendar reads stay header-free.
   try {
     const clientId = await getClientId();
     identifyUser(clientId);
-    axios.defaults.headers.common['X-Client-Id'] = clientId;
-    axios.defaults.headers.common['X-Client-Platform'] =
-      Capacitor.getPlatform();
+    axios.defaults.headers.post['X-Client-Id'] = clientId;
+    axios.defaults.headers.post['X-Client-Platform'] = Capacitor.getPlatform();
   } catch {
     // analytics headers are best-effort
   }

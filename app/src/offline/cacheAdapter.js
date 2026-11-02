@@ -12,7 +12,9 @@
   - Everything else is "network-first": the API answers when it can; a
     stored copy answers when it can't, or when it is slow to.
   - Requests the sync engine makes carry X-Offline-Sync; they always go to
-    the network and are stored.
+    the network and are stored. The header is a marker for this adapter
+    only and is removed before the request goes out: a custom header would
+    cost a CORS preflight that Cloudflare can't cache.
 
   Answers from storage carry `response.offline = { fetchedAt, stale }`.
   Offline with nothing stored (or when the connection fails and nothing is
@@ -53,6 +55,18 @@ function headerValue(headers, name) {
   const lower = name.toLowerCase();
   const key = Object.keys(headers).find((k) => k.toLowerCase() === lower);
   return key ? headers[key] : undefined;
+}
+
+function removeHeader(headers, name) {
+  if (!headers) return;
+  if (typeof headers.delete === 'function') {
+    headers.delete(name);
+    return;
+  }
+  const lower = name.toLowerCase();
+  Object.keys(headers)
+    .filter((k) => k.toLowerCase() === lower)
+    .forEach((k) => delete headers[k]);
 }
 
 export function offlineError(config, cause) {
@@ -391,6 +405,7 @@ export async function handle(config, networkAdapter) {
   const isSync = Boolean(headerValue(config.headers, SYNC_HEADER));
 
   if (isSync) {
+    removeHeader(config.headers, SYNC_HEADER);
     const askedAt = Date.now();
     const response = await callNetwork(networkAdapter, config, { quiet: true });
     if (!(await keep(key, info, url, response, askedAt))) {

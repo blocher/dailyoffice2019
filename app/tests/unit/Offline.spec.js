@@ -476,6 +476,21 @@ describe('the offline-aware adapter', () => {
     expect(network).toHaveBeenCalledTimes(2); // the first load, then the sync despite the stored copy
   });
 
+  it('keeps the sync marker off the wire (it would cost a CORS preflight)', async () => {
+    const network = vi.fn().mockResolvedValue(ok({ modules: [1] }));
+    await handle(
+      officeConfig({
+        headers: { [SYNC_HEADER]: '1', Accept: 'application/json' },
+      }),
+      network
+    );
+    const sent = network.mock.calls[0][0].headers;
+    expect(Object.keys(sent).map((k) => k.toLowerCase())).not.toContain(
+      'x-offline-sync'
+    );
+    expect(sent.Accept).toBe('application/json');
+  });
+
   it('does not keep audio that is still being prepared', async () => {
     const config = {
       method: 'get',
