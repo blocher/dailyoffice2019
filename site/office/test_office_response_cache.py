@@ -187,7 +187,9 @@ class DeferredAudioViewTests(OfficeViewTestMixin, SimpleTestCase):
     def test_answer_without_a_track_is_not_cached(self):
         with patch.object(index.OfficeAudioSerializer, "data", new_callable=PropertyMock) as data:
             data.return_value = {"audio": {"single_track": []}}
-            self.assertEqual(self.get(self.audio).status_code, 200)
+            trackless = self.get(self.audio)
+            self.assertEqual(trackless.status_code, 200)
+            self.assertEqual(trackless["Cache-Control"], "no-store")
             data.return_value = {"audio": {"single_track": ["ready.mp3"]}}
             response = self.get(self.audio)
             self.assertEqual(json.loads(response.content)["audio"]["single_track"], ["ready.mp3"])

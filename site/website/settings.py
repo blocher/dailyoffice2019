@@ -114,6 +114,8 @@ if DEBUG and not RUNNING_TESTS:
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
+    # Outside the session and CSRF middleware, so it sees any cookie they set.
+    "website.edge_cache.EdgeCacheMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -290,6 +292,13 @@ else:
 # immediately with `python manage.py clear_office_cache`; deploys flush
 # memcached, and any Django admin save clears it too. See office/response_cache.py.
 OFFICE_API_CACHE_SECONDS = env.int("OFFICE_API_CACHE_SECONDS", default=0 if "test" in sys.argv[1:2] else 60)
+
+# Public API content (office, family, calendar, readings, library) is cached by
+# Cloudflare for this long, and purged by tag whenever the office cache above is
+# cleared; the zone/token pair enables the purge. See website/edge_cache.py.
+EDGE_CACHE_SECONDS = env.int("EDGE_CACHE_SECONDS", default=86400)
+CLOUDFLARE_ZONE_ID = env.str("CLOUDFLARE_ZONE_ID", default="")
+CLOUDFLARE_API_TOKEN = env.str("CLOUDFLARE_API_TOKEN", default="")
 
 # On-demand office audio is built by a small per-process thread pool instead of
 # inside the web request (see office/audio_builds.py). Builds hold a DB pool

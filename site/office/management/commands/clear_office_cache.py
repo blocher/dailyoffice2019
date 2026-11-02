@@ -6,8 +6,8 @@ from office import response_cache
 
 class Command(BaseCommand):
     help = (
-        "Clear the short-lived office API response cache (OFFICE_API_CACHE_SECONDS) so database "
-        "edits show up immediately. Deploys already do this by flushing memcached."
+        "Clear the office API response cache (OFFICE_API_CACHE_SECONDS) and Cloudflare's copies "
+        "of API content so database edits show up immediately. Every deploy runs this."
     )
 
     def add_arguments(self, parser):

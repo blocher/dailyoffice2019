@@ -19,9 +19,11 @@ python manage.py collectstatic --noinput --clear
 
 echo "==> Restarting app"
 systemctl restart dailyoffice
-# Memcached is the production cache: this also clears the 60-second office API
-# response cache and any in-flight audio-build locks (site/office/response_cache.py).
+# Memcached is the production cache: this also clears the office API response
+# cache and any in-flight audio-build locks (site/office/response_cache.py).
 echo "flush_all" | nc -q 2 localhost 11211
+# And Cloudflare's copies of API content (site/website/edge_cache.py).
+python manage.py clear_office_cache
 
 echo "==> Installing cron tasks"
 python manage.py installtasks

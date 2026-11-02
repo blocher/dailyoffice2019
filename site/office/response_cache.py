@@ -6,17 +6,17 @@ cache (memcached in production) for ``OFFICE_API_CACHE_SECONDS`` (60 s), keyed
 on the full path and query string, so an edit in the admin or the database is
 visible within about a minute.
 
-The cache sits inside the view, so middleware -- including
-``analytics.middleware.AnalyticsMiddleware`` -- still sees every request. No
-``Cache-Control`` header is added: a browser or CDN copy would hide repeat
-views from analytics and outlive an explicit clear.
+Cloudflare keeps its own copy of these responses in front of this one (see
+``website/edge_cache.py``), so most repeat views never reach the server.
 
 Clearing:
   * ``python manage.py clear_office_cache`` (or ``clear()`` from a shell)
   * any Django admin add/change/delete (see ``OfficeConfig.ready``)
-  * every deploy: ``deploy/server.sh`` flushes memcached
+  * every deploy: ``deploy/server.sh`` flushes memcached and runs
+    ``clear_office_cache``
 Clearing bumps a generation number embedded in every key, which is O(1) and
 works with memcached, which cannot delete by prefix; old entries just expire.
+It also purges Cloudflare's copies.
 """
 
 import base64
@@ -28,6 +28,8 @@ import zlib
 from django.conf import settings
 from django.core.cache import cache
 from django.http import HttpResponse
+
+from website import edge_cache
 
 logger = logging.getLogger(__name__)
 
@@ -49,8 +51,9 @@ def _generation():
 
 
 def clear():
-    """Invalidate every cached office response."""
+    """Invalidate every cached office response, here and at Cloudflare."""
     cache.set(GENERATION_KEY, time.time_ns(), timeout=None)
+    edge_cache.purge()
 
 
 def key_for(request, fmt):

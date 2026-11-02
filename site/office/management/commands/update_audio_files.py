@@ -46,6 +46,9 @@ class Command(BaseCommand):
         days = options["days"]
         if days < 1:
             raise CommandError("--days must be at least 1.")
+        # Lowest CPU priority, inherited by the ffmpeg children: the API shares
+        # this box's two cores and must stay responsive while audio is built.
+        os.nice(19)
         with open(LOCK_PATH, "a") as lock:
             try:
                 fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
