@@ -99,6 +99,47 @@ class CleanupFullAudioFilesTests(TestCase):
             self.assertTrue(os.path.exists(clip_path))
             self.assertIn("openai_v2/full-track.mp3", out.getvalue())
 
+    @override_settings(MEDIA_ROOT="")
+    def test_keeps_cached_clips_that_carry_the_ffmpeg_tag(self):
+        from office.models import AudioClip
+
+        with tempfile.TemporaryDirectory() as tmp:
+            subdir = os.path.join(tmp, "elevenlabs")
+            os.makedirs(subdir)
+            names = {
+                "full": "11111111-1111-5111-8111-111111111111.mp3",
+                "reader": "22222222-2222-5222-8222-222222222222.mp3",
+                "dialogue": "dialogue_" + "a" * 64 + ".mp3",
+                "silence": "silence_500ms_44100.mp3",
+            }
+            old = time.time() - (8 * 86400)
+            for name in names.values():
+                path = os.path.join(subdir, name)
+                with open(path, "wb") as f:
+                    f.write(b"fake-mp3")
+                os.utime(path, (old, old))
+            AudioClip.objects.create(
+                key=names["reader"][:-4], filename=f"elevenlabs/{names['reader']}", provider="elevenlabs"
+            )
+
+            def fake_mp3(path):
+                # ElevenLabs clips are encoded with ffmpeg, just like full tracks.
+                tag = MagicMock()
+                tag.text = ["Lavf63.1.102"]
+                audio = MagicMock()
+                audio.tags.getall.return_value = [tag]
+                return audio
+
+            with (
+                override_settings(MEDIA_ROOT=tmp),
+                patch("office.management.commands.cleanup_full_audio_files.MP3", side_effect=fake_mp3),
+            ):
+                call_command("cleanup_full_audio_files", "--execute", "--days", "3", stdout=StringIO())
+
+            remaining = set(os.listdir(subdir))
+            self.assertNotIn(names["full"], remaining)
+            self.assertEqual(remaining, {names["reader"], names["dialogue"], names["silence"]})
+
 
 class EmbeddedGreatLitanyTests(SimpleTestCase):
     office_classes = (

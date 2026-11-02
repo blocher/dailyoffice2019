@@ -36,6 +36,22 @@ class Command(BaseCommand):
                 dirs.append(path)
         return dirs
 
+    def _cached_clip_names(self):
+        """Relative paths of cached speech clips, which are never disposable.
+
+        Some providers' clips carry the same ffmpeg encoder tag as full tracks
+        (every ElevenLabs mp3 says "Lavf"), and reader clips share the full
+        tracks' ``<uuid>.mp3`` naming, so neither the tag nor the name can tell
+        them apart. Deleting a clip means paying the provider for it again.
+        """
+        from office.models import AudioClip
+
+        return set(AudioClip.objects.values_list("filename", flat=True))
+
+    def _is_cached_clip(self, filename, display_name, clip_names):
+        # ElevenLabs dialogue clips and silence pads are cached outside AudioClip.
+        return display_name in clip_names or filename.startswith(("dialogue_", "silence_"))
+
     def _is_ffmpeg_full_track(self, audio):
         if not audio.tags:
             return False
@@ -69,6 +85,7 @@ class Command(BaseCommand):
         scan_dirs = self._scan_dirs(media_root)
         self.stdout.write(f"Scanning: {', '.join(scan_dirs)}")
 
+        clip_names = self._cached_clip_names()
         full_files_found = []
         total_size_bytes = 0
         total_mp3s = 0
@@ -90,6 +107,8 @@ class Command(BaseCommand):
 
                 total_mp3s += 1
                 display_name = os.path.relpath(file_path, media_root)
+                if self._is_cached_clip(filename, display_name, clip_names):
+                    continue
 
                 try:
                     audio = MP3(file_path)
