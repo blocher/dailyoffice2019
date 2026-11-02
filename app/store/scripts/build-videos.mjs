@@ -31,13 +31,18 @@ const PREVIEW_ENCODE = [
 const SILENCE = ['-f', 'lavfi', '-i', 'anullsrc=channel_layout=stereo:sample_rate=48000'];
 
 // The recordings start a moment before the tour; this is the part used.
-// App previews must run 15 to 30 seconds.
-const TRIM = ['-ss', '2.4', '-t', '29.4'];
+// App previews must run 15 to 30 seconds. The simulator records a frame only
+// when the screen changes, so the frames are filled out to a steady 30 fps
+// before trimming: cut first, and a still opening has no frame at all, and
+// players show black until the screen first changes.
+const TRIM_START = 2.4;
+const TRIM_LENGTH = 29.4;
+const STEADY = `fps=30,trim=start=${TRIM_START}:duration=${TRIM_LENGTH},setpts=PTS-STARTPTS`;
 
 // Captions for the promo, timed to the store tour (store/scripts/remote/tour.js).
 const CAPTIONS = [
   { from: 0, to: 3.6, eyebrow: 'The Daily Office', title: 'Pray with the Church, wherever you are' },
-  { from: 3.6, to: 9.3, eyebrow: 'Everything in order', title: 'Psalms, lessons, and prayers on one page' },
+  { from: 3.6, to: 9.3, eyebrow: 'Everything in order', title: 'Every prayer in its place, on one page' },
   { from: 9.3, to: 15.5, eyebrow: 'Listen', title: 'Pray along with audio, word by word' },
   { from: 15.5, to: 21.6, eyebrow: 'Offline', title: 'Pray without a connection' },
   { from: 21.6, to: 30, eyebrow: 'Book view', title: 'Turn the pages like a prayer book' },
@@ -101,16 +106,16 @@ async function previews() {
   const ipad = join(VIDEO, 'raw/ipad.mp4');
   if (existsSync(iphone)) {
     ffmpeg([
-      ...TRIM, '-i', iphone, ...SILENCE,
-      '-filter_complex', '[0:v]fps=30,scale=886:-2:flags=lanczos,crop=886:1920:0:(ih-1920)/2,format=yuv420p[v]',
+      '-i', iphone, ...SILENCE,
+      '-filter_complex', `[0:v]${STEADY},scale=886:-2:flags=lanczos,crop=886:1920:0:(ih-1920)/2,format=yuv420p[v]`,
       '-map', '[v]', '-map', '1:a', '-shortest', ...PREVIEW_ENCODE,
       join(VIDEO, 'app-preview-iphone-886x1920.mp4'),
     ]);
   }
   if (existsSync(ipad)) {
     ffmpeg([
-      ...TRIM, '-i', ipad, ...SILENCE,
-      '-filter_complex', '[0:v]fps=30,scale=1200:1600:flags=lanczos,format=yuv420p[v]',
+      '-i', ipad, ...SILENCE,
+      '-filter_complex', `[0:v]${STEADY},scale=1200:1600:flags=lanczos,format=yuv420p[v]`,
       '-map', '[v]', '-map', '1:a', '-shortest', ...PREVIEW_ENCODE,
       join(VIDEO, 'app-preview-ipad-1200x1600.mp4'),
     ]);
@@ -156,21 +161,21 @@ async function promo() {
     chrome(endCardHtml(cross), end, 1920, 1080, work);
 
     const duration = Math.min(
-      Number(TRIM[3]),
+      TRIM_LENGTH,
       Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', iphone])) -
-        Number(TRIM[1])
+        TRIM_START
     );
     const endAt = duration;
     const total = endAt + 3.5;
     const x = 1920 - 170 - phoneW;
     const y = (1080 - phoneH) / 2;
-    const inputs = ['-loop', '1', '-t', String(total), '-i', bg, ...TRIM, '-i', iphone, '-loop', '1', '-i', frame, '-loop', '1', '-i', mask];
+    const inputs = ['-loop', '1', '-t', String(total), '-i', bg, '-i', iphone, '-loop', '1', '-i', frame, '-loop', '1', '-i', mask];
     captions.forEach((c) => inputs.push('-loop', '1', '-i', c.out));
     inputs.push('-loop', '1', '-i', end);
     const fade = (start, stop) =>
       `fade=t=in:st=${start}:d=0.4:alpha=1,fade=t=out:st=${Math.max(start, stop - 0.4)}:d=0.4:alpha=1`;
     let graph =
-      `[1:v]fps=30,scale=${phoneW}:${phoneH}:flags=lanczos,format=rgba[ph];` +
+      `[1:v]${STEADY},scale=${phoneW}:${phoneH}:flags=lanczos,format=rgba[ph];` +
       `[3:v]format=gray,scale=${phoneW}:${phoneH}[m];[ph][m]alphamerge[screen];` +
       `[2:v]format=rgba[fr];[fr][screen]overlay=${bezel}:${bezel}[device];` +
       `[device]fade=t=out:st=${endAt - 0.6}:d=0.6:alpha=1[devf];` +

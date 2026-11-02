@@ -162,12 +162,12 @@ Videos aren't in git (they're large). Rebuild them with
 `node store/scripts/build-videos.mjs`, or use the copies in `store/video/` on
 the release Mac:
 
-- iPhone: `app-preview-iphone-886x1920.mp4` (28 s) for the 6.9" slot; App
+- iPhone: `app-preview-iphone-886x1920.mp4` (27 s) for the 6.9" slot; App
   Store Connect accepts the same file for 6.5" and 6.3".
-- iPad: `app-preview-ipad-1200x1600.mp4` (29 s) for the 13" slot.
-- Both follow the store tour (`store/scripts/remote/tour.js`): the office, the
-  psalms and lessons, audio with word highlighting, the Offline panel, and Book
-  view. The poster frame defaults to 5 s and can't be changed after approval;
+- iPad: `app-preview-ipad-1200x1600.mp4` (27 s) for the 13" slot.
+- Both follow the store tour (`store/scripts/remote/tour.js`): the office, one
+  slow scroll to the Confession, audio with word highlighting, the Offline
+  panel, and Book view. The poster frame defaults to 5 s and can't be changed after approval;
   pick one in the audio or Offline part.
 - Previews play before the screenshots, so the first frame matters.
 

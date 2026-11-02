@@ -1,6 +1,6 @@
 /* global setTimeout, scrollY, scrollTo, KeyboardEvent */
 // The store tour for the app previews and the promo (store/scripts/build-videos.mjs):
-// the office, the psalms and lessons, audio with word highlighting, the
+// the office, a slow scroll to the Confession, audio with word highlighting, the
 // Offline panel, and Book view, in about 29 seconds. Run it in the app with
 //   curl localhost:9999/run --data-binary @store/scripts/remote/tour.js
 // while the simulator records (see RELEASE_GUIDE.md).
@@ -24,39 +24,33 @@ async function tour() {
     }
     scrollTo(0, to);
   };
-  // 0–4 s: the office
-  await at(3.5);
-  // 4–9 s: everything in order — scroll through to the psalm
-  const psalm = [
-    ...document.querySelectorAll('h2, h3, .office-heading, [class*=heading]'),
-  ].find((h) => /psalm/i.test(h.innerText));
-  await smooth(
-    psalm ? psalm.getBoundingClientRect().top + scrollY - 120 : 2400,
-    4500
-  );
-  await at(9.2);
-  // 9–15 s: audio, picking up at the Confession (pre-rolled before recording)
+  // 0–3.6 s: the office
+  await at(3.6);
+  // 3.6–9 s: one gentle scroll, about a screen, down to the Confession of
+  // Sin, where the audio picks up (pre-rolled there before recording)
   const confession = [
     ...document.querySelectorAll('h2, h3, [class*=heading]'),
   ].find((h) => /confession of sin/i.test(h.innerText));
   await smooth(
-    confession ? confession.getBoundingClientRect().top + scrollY - 110 : 0,
-    700
+    confession ? confession.getBoundingClientRect().top + scrollY - 110 : 900,
+    5400
   );
+  // 9.2–15.4 s: audio, word by word
+  await at(9.2);
   document.querySelector('[aria-label="Play audio"]')?.click();
   await at(15.4);
   document.querySelector('[aria-label="Pause audio"]')?.click();
   // 15.5–21 s: offline
   await router.push('/office/morning_prayer/2026/11/1?panel=offline');
   await at(21.2);
+  // Close the panel as Book view opens, so the office doesn't flash between.
   document.querySelector('.ui-sheet__close')?.click();
-  await wait(500);
   // 21.7–29 s: Book view
   await router.push('/office/morning_prayer/2026/11/1?book=1');
-  await at(24.5);
-  for (let i = 0; i < 3; i++) {
+  await at(24.6);
+  for (let i = 0; i < 2; i++) {
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
-    await wait(1300);
+    await wait(2000);
   }
   await at(29);
   return 'done ' + ((Date.now() - t0) / 1000).toFixed(1);
