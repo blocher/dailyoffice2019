@@ -116,7 +116,8 @@ function toggle() {
 
 /* As AppHeader's .header-action__icon, whose scoped style can't reach in
    here (only this component's root). */
-.offline-status__icon {
+.offline-status__icon,
+.offline-status__ring {
   position: relative;
   top: -0.09em;
   font-size: 1.1rem;
@@ -125,7 +126,6 @@ function toggle() {
 .offline-status__ring {
   display: inline-grid;
   place-items: center;
-  font-size: 1.1rem;
 }
 
 .offline-status__ring svg {
