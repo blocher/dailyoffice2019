@@ -40,6 +40,7 @@ from churchcal.models import Commemoration
 from office import audio_builds, response_cache
 from office.alternate_readings import alternate_first_lesson, scripture_translation
 from office.audio_builds import AudioNotReady, ensure_generation_allowed, generation_deferred, release_db_connections
+from office.audio_spend import paid_before, record_generation, report_regeneration, submitted_characters
 from office.audio_ceremony import INTERCESSION_INVITATION, INTERCESSION_MODULE, frame_tracks
 from office.combined_track import ensure_combined_track
 from office.api.line import Line
@@ -3489,6 +3490,9 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             if os.path.isfile(file_path) and os.path.getsize(file_path) > 0:
                 word_timing = GenericDailyOfficeSerializer.get_clip_word_timing(path)
             else:
+                regenerated = GenericDailyOfficeSerializer.regeneration_reason(key, file_path)
+                if regenerated:
+                    report_regeneration(TTS_PROVIDER.name, kind, key, regenerated)
                 try:
                     word_timing = GenericDailyOfficeSerializer.synthesize_speech(voice, normalized, file_path)
                 except Exception:
@@ -3501,6 +3505,9 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                         exc_info=True,
                     )
                     return None, None
+                record_generation(
+                    TTS_PROVIDER.name, kind, key, submitted_characters(TTS_PROVIDER, normalized), bool(regenerated)
+                )
         if not (os.path.isfile(file_path) and os.path.getsize(file_path) > 0):
             if raise_on_error:
                 raise RuntimeError("Audio synthesis returned without a nonempty clip.")
@@ -3516,6 +3523,26 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             word_timing,
         )
         return file_url, path
+
+    @staticmethod
+    def regeneration_reason(key, file_path):
+        """Why a clip about to be synthesized was evidently synthesized before, if it was.
+
+        Deliberate rebuilds delete the AudioClip row and sidecar with the file.
+        """
+        from office.models import AudioClip
+
+        try:
+            if AudioClip.objects.filter(key=key).exists():
+                return "the audio is missing but its AudioClip record survives"
+        except Exception:
+            # Accounting must never block audio that is needed now.
+            logger.exception("Could not look up the clip's AudioClip record")
+        if os.path.isfile(GenericDailyOfficeSerializer.word_timing_sidecar(file_path)):
+            return "the audio is missing but its timing sidecar survives"
+        if paid_before(key):
+            return "this audio was paid for before but never kept"
+        return None
 
     @staticmethod
     def get_line_audio_file(line, no_generate=False):

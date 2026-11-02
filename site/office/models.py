@@ -1074,6 +1074,29 @@ class AudioClip(BaseModel):
         return False
 
 
+class TTSGeneration(models.Model):
+    """One paid text-to-speech request that produced a cached clip.
+
+    ``check_tts_spend`` compares these with what the provider bills, so spend
+    the cache does not explain (repeated generations, retries the provider
+    charged for) is noticed within a day. ``regenerated`` marks audio that had
+    been generated before and was paid for again.
+    """
+
+    created = models.DateTimeField(auto_now_add=True, db_index=True)
+    provider = models.CharField(max_length=32)
+    kind = models.CharField(max_length=16, help_text="dialogue, or the AudioClip kind.")
+    key = models.CharField(max_length=64, db_index=True)
+    characters = models.PositiveIntegerField(help_text="Characters submitted, as the provider bills them.")
+    regenerated = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ("-created",)
+
+    def __str__(self):
+        return f"{self.provider} {self.kind} {self.characters} chars{' (regenerated)' if self.regenerated else ''}"
+
+
 class MetricalCollect(BaseModel):
     collect_number = models.PositiveSmallIntegerField(null=True, blank=True)
     original_collect = models.TextField(max_length=255, null=True, blank=True)

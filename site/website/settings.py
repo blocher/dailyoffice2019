@@ -505,6 +505,8 @@ ELEVENLABS_TTS_MAX_RETRIES = env.int("ELEVENLABS_TTS_MAX_RETRIES", default=4)
 # with `setup_elevenlabs_pronunciation` and paste the printed IDs here.
 ELEVENLABS_PRONUNCIATION_DICTIONARY_ID = env("ELEVENLABS_PRONUNCIATION_DICTIONARY_ID", default="")
 ELEVENLABS_PRONUNCIATION_DICTIONARY_VERSION_ID = env("ELEVENLABS_PRONUNCIATION_DICTIONARY_VERSION_ID", default="")
+# check_tts_spend alerts when a day's billed credits exceed this (0 = no budget alert).
+ELEVENLABS_DAILY_CREDIT_BUDGET = env.int("ELEVENLABS_DAILY_CREDIT_BUDGET", default=0)
 
 # Gemini 3.8 TTS via the Gemini API; restart after changing provider settings.
 GEMINI_API_KEY = env("GEMINI_API_KEY", default="")

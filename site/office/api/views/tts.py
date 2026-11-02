@@ -420,7 +420,7 @@ class ElevenLabsTTSProvider(BaseTTSProvider):
         max_attempts = min(5, max(1, self.max_retries + 1))
         waited = 0
         for attempt in range(1, max_attempts + 1):
-            status, retry_after = None, None
+            status, retry_after, failure = None, None, None
             try:
                 response = requests.post(
                     self.ENDPOINT.format(voice_id=voice),
@@ -460,10 +460,10 @@ class ElevenLabsTTSProvider(BaseTTSProvider):
                     raise ElevenLabsRequestError(
                         status, attempt, "non_retryable_status", waited, retry_after
                     ) from None
-            except (requests.ConnectionError, requests.Timeout, requests.exceptions.ChunkedEncodingError):
+            except (requests.ConnectionError, requests.Timeout, requests.exceptions.ChunkedEncodingError) as error:
                 # A reset mid-body raises ChunkedEncodingError, which is not a
                 # ConnectionError but is the same transient failure.
-                pass
+                failure = error
 
             delay = max(2 ** (attempt - 1), retry_after or 0)
             reason = None
@@ -473,6 +473,10 @@ class ElevenLabsTTSProvider(BaseTTSProvider):
                 reason = "sleep_budget_exceeded"
             if reason:
                 raise ElevenLabsRequestError(status, attempt, reason, waited, retry_after) from None
+            if failure is not None:
+                from office.audio_spend import report_retry
+
+                report_retry("elevenlabs", attempt, failure)
             logger.warning("ElevenLabs TTS retry (attempt %d/%d) in %ss", attempt, max_attempts, delay)
             time.sleep(delay)
             waited += delay

@@ -16,6 +16,7 @@ import requests
 from django.conf import settings
 
 from office.audio_builds import AudioNotReady, generation_deferred, release_db_connections
+from office.audio_spend import paid_before, record_generation, report_regeneration, report_retry
 
 # The decoded MP3 can run slightly shorter than the end the API reports for the
 # last segment (encoder padding is a frame or two, about 26 ms each); anything
@@ -363,7 +364,7 @@ class DialogueSession:
         max_retries = min(max(self.provider.max_retries, 0), 4)
         waited = 0
         for attempt in range(max_retries + 1):
-            status, retry_after = None, None
+            status, retry_after, failure = None, None, None
             try:
                 response = requests.post(
                     "https://api.elevenlabs.io/v1/text-to-dialogue/with-timestamps",
@@ -376,10 +377,10 @@ class DialogueSession:
                 if status < 400:
                     return response
                 retry_after = self._retry_after(response)
-            except (requests.ConnectionError, requests.Timeout, requests.exceptions.ChunkedEncodingError):
+            except (requests.ConnectionError, requests.Timeout, requests.exceptions.ChunkedEncodingError) as error:
                 # A reset mid-body raises ChunkedEncodingError, which is not a
                 # ConnectionError but is the same transient failure.
-                pass
+                failure = error
             reason = None
             if status is not None and status not in self.provider._RETRY_STATUSES:
                 reason = "non_retryable_status"
@@ -390,6 +391,8 @@ class DialogueSession:
                 reason = "sleep_budget_exceeded"
             if reason:
                 raise DialogueRequestError(status, attempt + 1, reason, waited, retry_after) from None
+            if failure is not None:
+                report_retry("elevenlabs", attempt + 1, failure)
             time.sleep(delay)
             waited += delay
 
@@ -443,6 +446,14 @@ class DialogueSession:
                 api_key = settings.ELEVENLABS_API_KEY
                 if not api_key:
                     raise ValueError("ELEVENLABS_API_KEY is not configured")
+                if sidecar.exists():
+                    regenerated = "the audio is missing but its timing sidecar survives"
+                elif paid_before(key):
+                    regenerated = "this audio was paid for before but never kept"
+                else:
+                    regenerated = None
+                if regenerated:
+                    report_regeneration("elevenlabs", "dialogue", key, regenerated)
                 payload = {
                     "inputs": turns,
                     "model_id": self.provider.model,
@@ -456,6 +467,10 @@ class DialogueSession:
                     payload["previous_request_ids"] = recent[-3:]
                 release_db_connections()
                 response = self._request(payload, api_key)
+                # Recorded once paid, before validation can discard the audio.
+                record_generation(
+                    "elevenlabs", "dialogue", key, sum(len(turn["text"]) for turn in turns), bool(regenerated)
+                )
                 data = response.json()
                 audio = base64.b64decode(data["audio_base64"], validate=True)
                 if not audio:
