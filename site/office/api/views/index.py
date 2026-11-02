@@ -1209,7 +1209,9 @@ class MPPsalms(CanticleModule, ReadingModule):
     def gloria_patri(self):
         language_style = self.office.settings["language_style"]
         file = "gloria_patri_traditional" if language_style == "traditional" else "gloria_patri"
-        return [Line("", "spacer")] + self._ftl(file)
+        # Dialogue audio speaks the Gloria apart, so the last psalm of the day
+        # sounds (and caches) the same as when another psalm follows it.
+        return [Line("", "spacer", audio_break=True)] + self._ftl(file)
 
     def get_lines(self):
         return self.get_psalm_lines() + self.gloria_patri()
@@ -3996,9 +3998,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             group_buffer = []
             for i, line in enumerate(module["lines"]):
                 if line["line_type"] in ["heading"]:
-                    # Dialogue retains context across headings within a module.
-                    if dialogue is None:
-                        flush_group(group_buffer, module["name"])
+                    flush_group(group_buffer, module["name"])
                     j = i
                     look_ahead_line = module["lines"][j + 1] if j + 1 < len(module["lines"]) else None
                     if look_ahead_line is None:
@@ -4059,10 +4059,20 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
                     if line_silence(line, "silence_after") > 0 or line.get("audio_break_after"):
                         flush_group(group_buffer, module["name"])
                 else:
-                    # Any other non-spoken line (rubric, spacer, citation, ...)
+                    # Any other non-spoken line (heading, rubric, citation, ...)
                     # separates speaker turns and gets its own natural pause. Its
                     # silence padding accrues to the next real track.
-                    if dialogue is None or line_silence(line, "silence_before") or line_silence(line, "silence_after"):
+                    # Dialogue keeps one request across a spacer (a stanza
+                    # break), but not across a heading or rubric: those mark
+                    # where a date's collect, psalm, or sentence meets the fixed
+                    # texts, so the fixed texts keep their cache keys every day.
+                    if (
+                        dialogue is None
+                        or line["line_type"] != "spacer"
+                        or line.get("audio_break")
+                        or line_silence(line, "silence_before")
+                        or line_silence(line, "silence_after")
+                    ):
                         flush_group(group_buffer, module["name"])
                     pending_before[0] += line_silence(line, "silence_before") + line_silence(line, "silence_after")
             flush_group(group_buffer, module["name"])

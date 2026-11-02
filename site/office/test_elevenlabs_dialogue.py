@@ -218,6 +218,114 @@ class DialogueTests(SimpleTestCase):
         self.assertEqual([line["line_type"] for line in clip.call_args_list[0].args[0]], ["leader", "congregation"])
         self.assertEqual([track["module"] for track in audio["tracks"]], ["Preces", "Collect"])
 
+    def serializer_audio(self, modules):
+        from office.api.views import index
+
+        def clip(lines):
+            # One timed word per line, labelled the way DialogueSession.clip does.
+            timing = [
+                {"id": line["id"], "word": line["content"], "start_time": i, "end_time": i + 1}
+                for i, line in enumerate(lines)
+            ]
+            return f"/uploads/{lines[0]['id']}.mp3", timing
+
+        serializer = index.GenericDailyOfficeSerializer()
+        with (
+            patch.object(index, "TTS_PROVIDER", ElevenLabsTTSProvider()),
+            patch.object(serializer, "get_modules", return_value=modules),
+            patch.object(serializer, "normalize_tts_text", side_effect=lambda text: text),
+            patch("office.elevenlabs_dialogue.DialogueSession.clip", side_effect=clip) as mock,
+            patch.object(index, "frame_tracks", side_effect=lambda office, tracks, *args: tracks),
+            patch.object(serializer, "get_single_track", return_value=[]),
+        ):
+            audio = serializer.get_audio(Mock(settings={}))
+        return audio, [[line["content"] for line in call.args[0]] for call in mock.call_args_list]
+
+    def test_fixed_sections_get_the_same_requests_whatever_the_date(self):
+        def prayers(collect):
+            return [
+                {
+                    "name": "The Prayers",
+                    "lines": [
+                        {"id": "h1", "line_type": "heading", "content": "Collect of the Day"},
+                        {"id": "c", "line_type": "leader", "content": collect},
+                        {"id": "a", "line_type": "congregation", "content": "Amen."},
+                        {"id": "r", "line_type": "rubric", "content": "Officiant and People"},
+                        {"id": "p1", "line_type": "congregation", "content": "Our Father,"},
+                        {"id": "s", "line_type": "spacer", "content": ""},
+                        {"id": "p2", "line_type": "congregation", "content": "Amen."},
+                        {"id": "h2", "line_type": "heading", "content": "The Suffrages"},
+                        {"id": "v", "line_type": "leader_dialogue", "content": "O Lord, show your mercy upon us;"},
+                        {"id": "w", "line_type": "congregation_dialogue", "content": "And grant us your salvation."},
+                    ],
+                }
+            ]
+
+        monday, monday_requests = self.serializer_audio(prayers("Short collect."))
+        _, tuesday_requests = self.serializer_audio(prayers("A much longer collect for another day. " * 40))
+        self.assertEqual(
+            monday_requests,
+            [
+                ["Short collect.", "Amen."],
+                ["Our Father,", "Amen."],
+                ["O Lord, show your mercy upon us;", "And grant us your salvation."],
+            ],
+        )
+        self.assertEqual(monday_requests[1:], tuesday_requests[1:])
+        # Highlighting still points every word at its own printed line.
+        self.assertEqual([track["member_ids"] for track in monday["tracks"]], [["c", "a"], ["p1", "p2"], ["v", "w"]])
+        self.assertEqual(
+            [[word["id"] for word in track["word_timing"]] for track in monday["tracks"]],
+            [["c", "a"], ["p1", "p2"], ["v", "w"]],
+        )
+        self.assertEqual([heading["next_id"] for heading in monday["headings"]], ["c", "v"])
+
+    def test_last_psalm_is_requested_apart_from_the_gloria(self):
+        def psalms(*numbers):
+            lines = []
+            for number in numbers:
+                lines += [
+                    {"id": f"h{number}", "line_type": "heading", "content": f"Psalm {number}"},
+                    {"id": f"a{number}", "line_type": "leader", "content": f"Verse of {number}; *"},
+                    {"id": f"s{number}", "line_type": "spacer", "content": ""},
+                    {"id": f"b{number}", "line_type": "congregation", "content": f"answer of {number}."},
+                ]
+            return [
+                {
+                    "name": "Psalms",
+                    "lines": lines
+                    + [
+                        {"id": "break", "line_type": "spacer", "content": "", "audio_break": True},
+                        {"id": "gloria", "line_type": "congregation", "content": "Glory be to the Father,"},
+                    ],
+                }
+            ]
+
+        _, alone = self.serializer_audio(psalms(9))
+        _, followed = self.serializer_audio(psalms(9, 10))
+        self.assertEqual(alone, [["Verse of 9; *", "answer of 9."], ["Glory be to the Father,"]])
+        self.assertEqual(followed[0], alone[0])
+
+    def test_long_sections_split_between_lines_into_even_chunks(self):
+        session = DialogueSession(ElevenLabsTTSProvider())
+        lines = [
+            {"id": str(i), "line_type": "leader" if i % 4 < 2 else "congregation", "content": f"Verse {i} " * 9}
+            for i in range(30)
+        ]
+        chunks = session.chunks(lines, lambda text: text)
+        self.assertEqual(len(chunks), 2)
+        sizes = [session.size(chunk) for chunk in chunks]
+        self.assertLessEqual(max(sizes), 2000)
+        self.assertLess(abs(sizes[0] - sizes[1]), 200)
+        # No printed line is cut between words.
+        self.assertEqual([line["id"] for chunk in chunks for line in chunk], [str(i) for i in range(30)])
+        self.assertEqual(
+            [line["content"] for chunk in chunks for line in chunk],
+            [" ".join(line["content"].split()) for line in lines],
+        )
+        # The cuts depend only on the section itself.
+        self.assertEqual(session.chunks(lines, lambda text: text), chunks)
+
     def test_large_modules_split_within_limit(self):
         session = DialogueSession(ElevenLabsTTSProvider())
         chunks = list(session.chunks(self.lines("word " * 1500), lambda text: text))
