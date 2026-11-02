@@ -1,6 +1,6 @@
 New in 4.1: pray without a connection.
 
-• Offline mode: the days ahead download on their own, up to two months of offices, so you can pray on a plane, on retreat, or anywhere without a signal. Turn on Listen offline to keep the spoken office too. See it all under Menu › Offline.
+• Offline mode: the days ahead download on their own, up to two months of the offices, Family Prayer, and the readings, so you can pray on a plane, on retreat, or anywhere without a signal. Turn on Listen offline to keep the spoken office too. See it all under Menu › Offline.
 • Downloads stay fresh in the background, and corrections reach your device the next time it's online.
 • On iPhone Duo, open it like a book and Book view shows two pages, one on each side of the fold.
 • Book view reopens where you left off.

@@ -84,14 +84,16 @@ async function readContext(store) {
     DynamicStorage.getItem('psalms_translation'),
     DynamicStorage.getItem('psalm_style'),
   ]);
-  const readings =
-    translation && translation !== 'undefined'
-      ? {
-          translation,
-          psalms: psalms || settings.language_style || 'contemporary',
-          style: style || settings.psalm_style || 'whole_verse',
-        }
-      : null;
+  // The same choices the Readings page falls back on, so what's downloaded
+  // is what the page asks for even before it has been opened.
+  const readings = {
+    translation:
+      translation && translation !== 'undefined'
+        ? translation
+        : settings.bible_translation || 'esv',
+    psalms: psalms || settings.language_style || 'contemporary',
+    style: style || settings.psalm_style || 'whole_verse',
+  };
   return { settings: { ...settings }, extraCollects, readings };
 }
 
@@ -181,6 +183,7 @@ export function installOffline({ store }) {
     () => [
       offlinePrefs.days,
       offlinePrefs.family,
+      offlinePrefs.readings,
       offlinePrefs.audio,
       offlinePrefs.audioOffices.join(),
     ],

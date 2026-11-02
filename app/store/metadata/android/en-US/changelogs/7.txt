@@ -1,5 +1,5 @@
 New: pray without a connection.
-• Offline mode: up to two months of offices download on their own; turn on Listen offline to keep the audio too (Menu › Offline)
+• Offline mode: up to two months of offices, Family Prayer, and readings download on their own; turn on Listen offline to keep the audio too (Menu › Offline)
 • Downloads stay fresh in the background
 • Book view reopens where you left off
 • On a phone, swipe a panel down to close it

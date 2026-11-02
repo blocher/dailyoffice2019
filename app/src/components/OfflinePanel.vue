@@ -108,13 +108,30 @@
       <div class="offline-row">
         <div class="offline-row__copy">
           <p class="offline-row__label">Family Prayer</p>
-          <p class="offline-row__hint">{{ familyHint }}</p>
+          <p class="offline-row__hint">
+            Short services for households and children.
+          </p>
         </div>
         <UiSwitch
           :model-value="familyOn"
           label="Include Family Prayer"
           @update:model-value="
             (on) => setOfflinePref('family', on ? 'on' : 'off')
+          "
+        />
+      </div>
+      <div class="offline-row">
+        <div class="offline-row__copy">
+          <p class="offline-row__label">Readings</p>
+          <p class="offline-row__hint">
+            The day’s lessons and psalms, in your translation.
+          </p>
+        </div>
+        <UiSwitch
+          :model-value="readingsOn"
+          label="Include the readings"
+          @update:model-value="
+            (on) => setOfflinePref('readings', on ? 'on' : 'off')
           "
         />
       </div>
@@ -229,7 +246,6 @@ import {
   syncState as sync,
 } from '@/offline';
 import { pwaState as pwa, promptInstall } from '@/offline/pwa';
-import { usedRecently } from '@/offline/usage';
 import { isInstalledApp } from '@/offline/preferences';
 import {
   ESTIMATE_BYTES,
@@ -240,8 +256,6 @@ import {
 } from '@/offline/format';
 
 const store = useStore();
-const familyUsed = ref(false);
-const readingsUsed = ref(false);
 const now = ref(Date.now());
 // "Today" and "checked … ago" move on while the panel stays open.
 let clock = null;
@@ -262,10 +276,6 @@ watch(
     clock = window.setInterval(() => {
       now.value = Date.now();
     }, 60 * 1000);
-    [familyUsed.value, readingsUsed.value] = await Promise.all([
-      usedRecently('family'),
-      usedRecently('readings'),
-    ]);
   }
 );
 
@@ -279,18 +289,8 @@ const dayOptions = DAY_CHOICES.map((value) => ({
   title: value === 0 ? 'Don’t download ahead' : `${value} days`,
 }));
 
-const familyOn = computed(
-  () => prefs.family === 'on' || (prefs.family === 'auto' && familyUsed.value)
-);
-
-const familyHint = computed(() => {
-  if (prefs.family === 'auto') {
-    return familyUsed.value
-      ? 'Included because you’ve prayed it lately.'
-      : 'Included once you pray it.';
-  }
-  return 'Short services for households and children.';
-});
+const familyOn = computed(() => prefs.family !== 'off');
+const readingsOn = computed(() => prefs.readings !== 'off');
 
 const daysNote = computed(() => {
   const parts = [
@@ -311,7 +311,7 @@ const estimate = computed(() =>
     estimateBytes({
       days: days.value,
       family: familyOn.value,
-      readings: readingsUsed.value,
+      readings: readingsOn.value,
     })
   )
 );

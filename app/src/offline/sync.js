@@ -57,7 +57,6 @@ import {
   stalenessOf,
   trimInvalidations,
 } from './staleness';
-import { usedRecently } from './usage';
 import { flushViews } from './viewQueue';
 import {
   DAILY_OFFICES,
@@ -257,7 +256,7 @@ export function buildPlan({
       });
     }
     add(dayUrl(date), base + 2, `Calendar, ${when}`);
-    if (readings && offset < 14) {
+    if (readings) {
       add(
         readingsUrl({ date, settings, ...readings }),
         base + 3,
@@ -645,10 +644,8 @@ async function runOnce(reason) {
     days,
     settings: context.settings,
     extraCollects: context.extraCollects,
-    family:
-      offlinePrefs.family === 'on' ||
-      (offlinePrefs.family === 'auto' && (await usedRecently('family'))),
-    readings: (await usedRecently('readings')) ? context.readings : null,
+    family: offlinePrefs.family !== 'off',
+    readings: offlinePrefs.readings !== 'off' ? context.readings : null,
   });
   syncState.plannedDays = days;
 

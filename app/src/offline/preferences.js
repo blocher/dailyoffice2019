@@ -6,7 +6,8 @@
                   7 in a browser tab (30 there too once the installed web
                   app has run: the two share storage and the plan, and each
                   would prune what the other downloads).
-    family        'auto' (when Family Prayer has been used lately), 'on', 'off'
+    family        'on' (the default) or 'off': Family Prayer for each day
+    readings      'on' (the default) or 'off': the day's readings
     audio         download audio for today and tomorrow (opt-in)
     audioOffices  which daily offices' audio to download
 */
@@ -26,6 +27,7 @@ export const AUDIO_OFFICE_CHOICES = [
 const KEYS = {
   days: 'offline_days',
   family: 'offline_family',
+  readings: 'offline_readings',
   audio: 'offline_audio',
   audioOffices: 'offline_audio_offices',
 };
@@ -35,7 +37,8 @@ let installedBefore = false;
 export const offlinePrefs = reactive({
   loaded: false,
   days: null,
-  family: 'auto',
+  family: 'on',
+  readings: 'on',
   audio: false,
   audioOffices: ['morning_prayer', 'evening_prayer'],
 });
@@ -63,15 +66,17 @@ export function effectiveDays() {
 
 export async function loadOfflinePrefs() {
   try {
-    const [days, family, audio, audioOffices] = await Promise.all(
+    const [days, family, readings, audio, audioOffices] = await Promise.all(
       Object.values(KEYS).map((key) => DynamicStorage.getItem(key))
     );
     const parsedDays =
       days === null || days === '' || days === undefined ? null : Number(days);
     offlinePrefs.days = DAY_CHOICES.includes(parsedDays) ? parsedDays : null;
-    offlinePrefs.family = ['auto', 'on', 'off'].includes(family)
-      ? family
-      : 'auto';
+    // Only a choice of 'off' is kept: Family Prayer and the readings are on
+    // unless turned off (before 4.1, Family Prayer's default was 'auto', on
+    // once it had been prayed).
+    offlinePrefs.family = family === 'off' ? 'off' : 'on';
+    offlinePrefs.readings = readings === 'off' ? 'off' : 'on';
     offlinePrefs.audio = audio === 'true';
     installedBefore = (await DynamicStorage.getItem(INSTALLED_KEY)) === 'true';
     if (!installedBefore && isInstalledApp() && !Capacitor.isNativePlatform()) {
