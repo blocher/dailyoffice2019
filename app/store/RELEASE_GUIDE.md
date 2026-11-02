@@ -7,7 +7,7 @@ Play, written from the 4.0.0 release. Everything you paste or upload is in this
 | | iOS | Android |
 |---|---|---|
 | Bundle / package | `com.dailyoffice.dailyoffice2019` | `com.dailyoffice2019.app` |
-| Next release | 4.1.0 (build 4.1.0), prepared November 1, 2026 | 4.1.0 (version code 7) |
+| Next release | 4.1.1 (build 4.1.1), November 2026; an earlier 4.1.0 build was uploaded but never submitted | 4.1.1 (version code 7) |
 | Latest release | 4.0.0 (build 4.0.0), live October 28, 2026 | 4.0.0 (version code 6), submitted October 28, 2026 |
 | Toolchain | Xcode 27.2 (iOS 27.2 SDK), iOS 15+ deployment, SPM | AGP 8.13.2, Gradle 8.14.6, compile/target SDK 36, min SDK 24 |
 | Capacitor | 8.6.0 | same |
@@ -31,7 +31,7 @@ Play, written from the 4.0.0 release. Everything you paste or upload is in this
      `ios/App/App.xcodeproj/project.pbxproj` (both Debug and Release).
    - Android: `versionName` and `versionCode` in `android/app/build.gradle`.
      `versionCode` must be higher than any code ever uploaded; **the next one
-     is 8** (4.1.0 is 7).
+     is 8** (4.1.1 is 7).
    - `version` in `package.json`, then `npm install` to update the lockfile.
 3. **Write the release notes:** iOS `store/metadata/ios/en-US/release_notes.txt`,
    and Android `store/metadata/android/en-US/changelogs/<versionCode>.txt`
