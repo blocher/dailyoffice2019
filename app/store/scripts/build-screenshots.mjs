@@ -144,13 +144,19 @@ export const TARGETS = [
     raw: 'duo-outer',
     ...DUO,
   },
+  // The inner screen in landscape: held like a book, with the fold down the
+  // middle, Book view shows two pages.
   {
     dir: 'screenshots/ios/iphone-duo-inner',
-    w: 2007,
-    h: 2853,
+    w: 2853,
+    h: 2007,
     raw: 'duo-inner',
     ...DUO,
-    device: 0.8,
+    landscape: true,
+    lead: ['book'],
+    device: 0.57,
+    radius: 0.035,
+    bezel: 0.008,
   },
   { dir: 'screenshots/ios/ipad-13', w: 2064, h: 2752, ...IPAD }, // iPad Pro 13", iPad Air 13" (required)
   { dir: 'screenshots/ios/ipad-12.9', w: 2048, h: 2732, ...IPAD }, // iPad Pro 12.9"
@@ -201,6 +207,7 @@ function rawPath(set, slug) {
 const FONT_STACK = `'Adobe Caslon Pro', 'Big Caslon', 'Libre Caslon Text', Georgia, serif`;
 
 function slideHtml(t, slide, capture, background) {
+  if (t.landscape) return landscapeSlideHtml(t, slide, capture, background);
   const { w, h } = t;
   const u = w / 100; // 1vw in px, so the layout scales with the canvas
   const s = t.scale;
@@ -274,6 +281,77 @@ function slideHtml(t, slide, capture, background) {
   </body></html>`;
 }
 
+// Landscape: the caption on the left, the device on the right.
+function landscapeSlideHtml(t, slide, capture, background) {
+  const { w, h } = t;
+  const u = h / 100;
+  const deviceW = w * t.device;
+  return `<!doctype html><html><head><meta charset="utf-8"><style>
+    html, body { margin: 0; width: ${w}px; height: ${h}px; overflow: hidden; }
+    body {
+      background: url('${background}') center / cover;
+      font-family: ${FONT_STACK};
+      color: #fbf3e2;
+      -webkit-font-smoothing: antialiased;
+    }
+    .caption {
+      position: absolute;
+      left: ${w * 0.05}px;
+      width: ${w * 0.31}px;
+      top: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .eyebrow {
+      font-variant-caps: all-small-caps;
+      letter-spacing: 0.16em;
+      font-size: ${3.8 * u}px;
+      color: #e8cf8f;
+      margin: 0 0 ${1.6 * u}px;
+    }
+    .rule { width: ${9 * u}px; height: ${0.22 * u}px; background: #c9a45a; margin: 0 0 ${3 * u}px; opacity: 0.8; }
+    h1 {
+      font-weight: 400;
+      font-size: ${7.4 * u}px;
+      line-height: 1.08;
+      margin: 0;
+      text-wrap: balance;
+      letter-spacing: -0.005em;
+    }
+    p.sub {
+      font-style: italic;
+      font-size: ${3.6 * u}px;
+      line-height: 1.32;
+      margin: ${3 * u}px 0 0;
+      color: #f3e4c8;
+      text-wrap: pretty;
+    }
+    .device {
+      position: absolute;
+      right: ${w * 0.05}px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: ${deviceW}px;
+      padding: ${w * t.bezel}px;
+      box-sizing: border-box;
+      background: #15100e;
+      border-radius: ${w * t.radius}px;
+      box-shadow: 0 ${3 * u}px ${8 * u}px rgb(20 2 2 / 0.55), 0 0 0 ${0.18 * u}px rgb(255 235 200 / 0.18);
+    }
+    .device img { display: block; width: 100%; border-radius: ${w * (t.radius - t.bezel)}px; }
+  </style></head><body>
+    <div class="caption">
+      <p class="eyebrow">${slide.eyebrow}</p>
+      <div class="rule"></div>
+      <h1>${slide.title}</h1>
+      <p class="sub">${slide.sub}</p>
+    </div>
+    <div class="device"><img src="${capture}"></div>
+  </body></html>`;
+}
+
 function render(htmlPath, out, w, h) {
   execFileSync(
     CHROME,
@@ -321,7 +399,14 @@ async function main() {
         .png()
         .toFile(bg);
       let n = 0;
-      for (const slide of SLIDES) {
+      // A set can lead with its strongest slides (`lead`), the rest following
+      // in the usual order.
+      const lead = t.lead ?? [];
+      const slides = [
+        ...SLIDES.filter((slide) => lead.includes(slide.slug)),
+        ...SLIDES.filter((slide) => !lead.includes(slide.slug)),
+      ];
+      for (const slide of slides) {
         if (n >= (t.max ?? 10)) break;
         const capture = rawPath(t.raw, slide.slug);
         if (!capture) continue;

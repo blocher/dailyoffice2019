@@ -130,16 +130,18 @@ set and upload the new ones:
 | iPhone 6.1" (5.8"/6.1" Face ID), if shown | `iphone-6.1/` | 1170×2532 |
 | iPhone 5.5" | `iphone-5.5/` | 1242×2208 |
 | **iPhone Duo**, outer screen | `iphone-duo-outer/` | 1398×2034 |
-| **iPhone Duo**, inner screen | `iphone-duo-inner/` (see below) | 2007×2853 |
+| **iPhone Duo**, inner screen | `iphone-duo-inner/` (landscape) | 2853×2007 |
 | iPad 13" (required) | `ipad-13/` | 2064×2752 |
 | iPad 12.9" / 11", if shown | `ipad-12.9/`, `ipad-11/` | |
 
 - **iPhone Duo:** uploading Duo screenshots is what puts **"Made for iPhone
   Duo"** on the product page; there is no checkbox. Duo screenshots go in
   through the web page only (the API has no Duo type yet), and become required
-  in April 2027 for builds on the iOS 27.1 SDK or later. The inner-screen
-  captures need the simulator unfolded, which only Device Hub can do:
-  unfold it, run the capture steps below with the raw folder
+  in April 2027 for builds on the iOS 27.1 SDK or later. The inner-screen set
+  is landscape (2853×2007), the way the Duo opens like a book, and leads with
+  Book view's two-page spread. To retake it, unfold the simulator in Device
+  Hub (open its window, **Start**, then open it fully; nothing in `simctl`
+  can fold it), capture with `--display=3` into
   `store/screenshots/raw/duo-inner/`, and rebuild.
 - Order matters (`01-office`, `02-offline` … `10-podcasts`), and the first three
   show in search results.
