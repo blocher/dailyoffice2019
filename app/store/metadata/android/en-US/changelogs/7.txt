@@ -1,0 +1,6 @@
+New: pray without a connection.
+• Offline mode: up to two months of offices download on their own; turn on Listen offline to keep the audio too (Menu › Offline)
+• Downloads stay fresh in the background
+• Book view reopens where you left off
+• Swipe down to close any panel
+New last month (4.0): a design modeled on the printed prayer book, Book view, audio for every office, podcasts, themes and typefaces, and a new calendar.

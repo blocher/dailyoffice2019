@@ -7,10 +7,10 @@ Play, written from the 4.0.0 release. Everything you paste or upload is in this
 | | iOS | Android |
 |---|---|---|
 | Bundle / package | `com.dailyoffice.dailyoffice2019` | `com.dailyoffice2019.app` |
-| Latest release | 4.0.0 (build 4.0.0), submitted October 27, 2026 | 4.0.0 (version code 6), submitted October 28, 2026 |
-| Previous release | 3.1.3 (March 9, 2026) | 3.1.3 (version code 4) |
-| Toolchain | Xcode 27.1, iOS 15+ deployment, SPM | AGP 8.13.2, Gradle 8.14.6, compile/target SDK 36, min SDK 24 |
-| Capacitor | 8.5.3 | same |
+| Next release | 4.1.0 (build 4.1.0), prepared November 1, 2026 | 4.1.0 (version code 7) |
+| Latest release | 4.0.0 (build 4.0.0), live October 28, 2026 | 4.0.0 (version code 6), submitted October 28, 2026 |
+| Toolchain | Xcode 27.2 (iOS 27.2 SDK), iOS 15+ deployment, SPM | AGP 8.13.2, Gradle 8.14.6, compile/target SDK 36, min SDK 24 |
+| Capacitor | 8.6.0 | same |
 
 ## Accounts
 
@@ -31,7 +31,7 @@ Play, written from the 4.0.0 release. Everything you paste or upload is in this
      `ios/App/App.xcodeproj/project.pbxproj` (both Debug and Release).
    - Android: `versionName` and `versionCode` in `android/app/build.gradle`.
      `versionCode` must be higher than any code ever uploaded; **the next one
-     is 7**.
+     is 8** (4.1.0 is 7).
    - `version` in `package.json`, then `npm install` to update the lockfile.
 3. **Write the release notes:** iOS `store/metadata/ios/en-US/release_notes.txt`,
    and Android `store/metadata/android/en-US/changelogs/<versionCode>.txt`
@@ -115,15 +115,46 @@ https://www.dailyoffice2019.com/privacy-policy.
 
 ### Screenshots (from `store/screenshots/ios/`, 10 per size, already in order)
 
-- **iPhone 6.9" display** → `iphone-6.9/` (1320×2868). Apple's newest
-  requirement is the **6.3" Dynamic Island** slot; upload `iphone-6.3/`
-  (1206×2622) there if App Store Connect shows it. Upload any other slot it
-  asks for from `iphone-6.5/`, `iphone-6.1/`, `iphone-5.5/`.
-- **iPad 13" display** → `ipad-13/` (2064×2752); `ipad-12.9/` and `ipad-11/` if
-  asked.
-- Order matters (`01-office` … `10-podcasts`), and the first three show in
-  search results.
+**Replace every iPhone set, not just one.** A size with its own screenshots
+shows them; only an *empty* size borrows from another. 4.0.0 replaced the 6.3"
+set but left the 3.x pictures in the 6.9", 6.5", and 5.5" sets, so Pro Max,
+Plus, Air, older large iPhones, and home-button iPhones still showed the old
+design. In **View All Sizes in Media Manager**, delete the old images in each
+set and upload the new ones:
+
+| App Store Connect slot | Folder | Size |
+|---|---|---|
+| iPhone 6.9" (API: APP_IPHONE_67) | `iphone-6.9/` | 1320×2868 |
+| iPhone 6.5" | `iphone-6.5/` | 1284×2778 |
+| iPhone 6.3" (required) | `iphone-6.3/` | 1206×2622 |
+| iPhone 6.1" (5.8"/6.1" Face ID), if shown | `iphone-6.1/` | 1170×2532 |
+| iPhone 5.5" | `iphone-5.5/` | 1242×2208 |
+| **iPhone Duo**, outer screen | `iphone-duo-outer/` | 1398×2034 |
+| **iPhone Duo**, inner screen | `iphone-duo-inner/` (see below) | 2007×2853 |
+| iPad 13" (required) | `ipad-13/` | 2064×2752 |
+| iPad 12.9" / 11", if shown | `ipad-12.9/`, `ipad-11/` | |
+
+- **iPhone Duo:** uploading Duo screenshots is what puts **"Made for iPhone
+  Duo"** on the product page; there is no checkbox. Duo screenshots go in
+  through the web page only (the API has no Duo type yet), and become required
+  in April 2027 for builds on the iOS 27.1 SDK or later. The inner-screen
+  captures need the simulator unfolded, which only Device Hub can do:
+  unfold it, run the capture steps below with the raw folder
+  `store/screenshots/raw/duo-inner/`, and rebuild.
+- Order matters (`01-office`, `02-offline` … `10-podcasts`), and the first three
+  show in search results.
 - The un-captioned originals are in `store/screenshots/raw/`.
+
+### Header and search results (iOS 27 creative assets; optional)
+
+New in App Store Connect (Product Page Information → **Header and Search
+Results**). They show on iOS and iPadOS 27 and later, go through App Review,
+and can be changed later from the **Asset Library** without a new version.
+
+- **Header** → `store/creative/header-3840x1646.jpg` (21:9).
+- **Search results** → `store/creative/search-results-3840x2560.jpg` (3:2).
+  Without one, search shows the first three screenshots, which is also fine.
+- Use **Preview** to check the crop on iPhone and iPad before submitting.
 
 ### App previews (videos; optional)
 
@@ -131,8 +162,14 @@ Videos aren't in git (they're large). Rebuild them with
 `node store/scripts/build-videos.mjs`, or use the copies in `store/video/` on
 the release Mac:
 
-- iPhone: `app-preview-iphone-886x1920.mp4` (23 s) for the 6.9"/6.5" slots.
-- iPad: `app-preview-ipad-1200x1600.mp4` for the 13" slot.
+- iPhone: `app-preview-iphone-886x1920.mp4` (28 s) for the 6.9" slot; App
+  Store Connect accepts the same file for 6.5" and 6.3".
+- iPad: `app-preview-ipad-1200x1600.mp4` (29 s) for the 13" slot.
+- Both follow the store tour (`store/scripts/remote/tour.js`): the office, the
+  psalms and lessons, audio with word highlighting, the Offline panel, and Book
+  view. The poster frame defaults to 5 s and can't be changed after approval;
+  pick one in the audio or Offline part.
+- Previews play before the screenshots, so the first frame matters.
 
 ### App Review, privacy, and rating
 
@@ -291,7 +328,20 @@ removes it), and send navigation commands to
 `curl localhost:9999/run --data-binary '…'`; capture with
 `xcrun simctl io booted screenshot` or `adb exec-out screencap -p`. The
 captured office is Friday, October 23, 2026 (St. James of Jerusalem), chosen
-for its red liturgical color, which matches the icon.
+for its red liturgical color, which matches the icon. The iPhone Duo set and
+the videos use All Saints' Day (November 1, 2026), since audio only plays for
+three days back. Set a plain status bar first:
+`xcrun simctl status_bar <device> override --time 9:41 --batteryState discharging --batteryLevel 100`
+(a "charged" battery draws green). On iPhone Duo, add `--display=1` (outer) or
+`--display=3` (inner) to `screenshot`; don't use `simctl io screenConfig power`,
+which blanks the screens until a reboot.
+
+For the videos, pre-roll the office audio to the Confession of Sin (about 0:40)
+and pause, scroll to the top, start
+`xcrun simctl io <device> recordVideo --codec=h264 store/video/raw/iphone.mp4`,
+wait about two seconds, send `store/scripts/remote/tour.js` with
+`curl localhost:9999/run --data-binary @store/scripts/remote/tour.js`, then stop
+the recording with Ctrl-C. Do the same on the iPad for `ipad.mp4`.
 
 On the Android emulator, launch with `setopt NO_BG_NICE` and `-no-window`
 (for example `emulator -avd DO_Phone -no-window -no-snapshot-save`); a

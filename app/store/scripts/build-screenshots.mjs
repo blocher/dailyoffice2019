@@ -28,13 +28,20 @@ const CHROME =
   '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 
 // Order matters: the first three are what most people see in search results.
-// Google Play shows up to eight, so it takes the first eight.
+// The App Store shows up to ten and Google Play up to eight, so each takes
+// the first ten or eight it has captures for.
 export const SLIDES = [
   {
     slug: 'office',
     eyebrow: 'The Daily Office',
     title: 'Pray with the Church, wherever you are',
     sub: 'Morning, Midday, Evening, and Compline from the 2019 Book of Common Prayer',
+  },
+  {
+    slug: 'offline',
+    eyebrow: 'Offline',
+    title: 'Pray without a connection',
+    sub: 'The days ahead download on their own, audio too: on a plane, on retreat, or far from a signal',
   },
   {
     slug: 'audio',
@@ -79,16 +86,16 @@ export const SLIDES = [
     sub: 'Lives, traditions, and further reading for each commemoration',
   },
   {
-    slug: 'dark',
-    eyebrow: 'Night prayer',
-    title: 'A dark page for Compline',
-    sub: 'Follows your device, or choose a theme of your own',
-  },
-  {
     slug: 'podcasts',
     eyebrow: 'Podcasts',
     title: 'The offices in your podcast app',
     sub: 'Morning and Evening Prayer and the daily readings, new every day',
+  },
+  {
+    slug: 'dark',
+    eyebrow: 'Night prayer',
+    title: 'A dark page for Compline',
+    sub: 'Follows your device, or choose a theme of your own',
   },
 ];
 
@@ -99,6 +106,14 @@ const IPHONE = {
   device: 0.8,
   scale: 1,
   radius: 0.105,
+  bezel: 0.014,
+};
+// iPhone Duo's outer screen is nearly as wide as it is tall, like a small
+// iPad, so it's framed like one.
+const DUO = {
+  device: 0.76,
+  scale: 0.8,
+  radius: 0.075,
   bezel: 0.014,
 };
 const IPAD = {
@@ -113,7 +128,30 @@ export const TARGETS = [
   { dir: 'screenshots/ios/iphone-6.3', w: 1206, h: 2622, ...IPHONE }, // iPhone 18/17/16 Pro (required)
   { dir: 'screenshots/ios/iphone-6.5', w: 1284, h: 2778, ...IPHONE }, // iPhone 11 Pro Max – 14 Plus
   { dir: 'screenshots/ios/iphone-6.1', w: 1170, h: 2532, ...IPHONE }, // iPhone 12–14
-  { dir: 'screenshots/ios/iphone-5.5', w: 1242, h: 2208, ...IPHONE, device: 0.72 }, // Home-button iPhones
+  {
+    dir: 'screenshots/ios/iphone-5.5',
+    w: 1242,
+    h: 2208,
+    ...IPHONE,
+    device: 0.72,
+  }, // Home-button iPhones
+  // iPhone Duo, outer and inner screens. Uploading these shows "Made for iPhone
+  // Duo" on the product page; App Store Connect takes them in its web pages only.
+  {
+    dir: 'screenshots/ios/iphone-duo-outer',
+    w: 1398,
+    h: 2034,
+    raw: 'duo-outer',
+    ...DUO,
+  },
+  {
+    dir: 'screenshots/ios/iphone-duo-inner',
+    w: 2007,
+    h: 2853,
+    raw: 'duo-inner',
+    ...DUO,
+    device: 0.8,
+  },
   { dir: 'screenshots/ios/ipad-13', w: 2064, h: 2752, ...IPAD }, // iPad Pro 13", iPad Air 13" (required)
   { dir: 'screenshots/ios/ipad-12.9', w: 2048, h: 2732, ...IPAD }, // iPad Pro 12.9"
   { dir: 'screenshots/ios/ipad-11', w: 1668, h: 2388, ...IPAD }, // iPad Pro 11", iPad Air 11"
@@ -269,6 +307,10 @@ async function main() {
   try {
     for (const t of TARGETS) {
       if (only && !t.dir.includes(only)) continue;
+      if (!SLIDES.some((slide) => rawPath(t.raw, slide.slug))) {
+        console.log(`${t.dir}: no captures in screenshots/raw/${t.raw}/`);
+        continue;
+      }
       const outDir = join(STORE, t.dir);
       rmSync(outDir, { recursive: true, force: true });
       mkdirSync(outDir, { recursive: true });
@@ -280,7 +322,7 @@ async function main() {
         .toFile(bg);
       let n = 0;
       for (const slide of SLIDES) {
-        if (t.max && n >= t.max) break;
+        if (n >= (t.max ?? 10)) break;
         const capture = rawPath(t.raw, slide.slug);
         if (!capture) continue;
         n += 1;
@@ -311,7 +353,8 @@ async function main() {
   }
 }
 
-// Google Play feature graphic (1024x500) and social/press images.
+// Google Play feature graphic (1024x500), social/press images, and the App
+// Store's header and search results assets.
 async function graphics(work) {
   const hero = rawPath('iphone', 'office');
   const make = async (out, w, h, { phone = true } = {}) => {
@@ -371,6 +414,70 @@ async function graphics(work) {
   await make(join(STORE, 'graphics/square-1080.jpg'), 1080, 1080, {
     phone: false,
   });
+
+  // App Store creative assets (iOS 27 and later): the product page header
+  // (21:9) and the search results asset (3:2). Apple's templates keep the
+  // focus in the middle, so the phones sit centered with nothing at the edges.
+  const phones = async (out, w, h, slugs, { eyebrow, title }) => {
+    const bg = join(work, `bg-c-${w}.png`);
+    await sharp(await leather(Math.max(w, h)))
+      .resize(w, h, { fit: 'cover' })
+      .png()
+      .toFile(bg);
+    const u = h / 100;
+    const phoneW = Math.min((w * 0.62) / slugs.length, h * 0.36);
+    const devices = slugs
+      .map((slug) => rawPath('iphone', slug))
+      .filter(Boolean)
+      .map(
+        (capture) =>
+          `<div class="phone"><img src="${pathToFileURL(capture).href}"></div>`
+      )
+      .join('');
+    const html = `<!doctype html><html><head><meta charset="utf-8"><style>
+      html, body { margin: 0; width: ${w}px; height: ${h}px; overflow: hidden; }
+      body { background: url('${pathToFileURL(bg).href}') center / cover; font-family: ${FONT_STACK}; color: #fbf3e2; text-align: center; -webkit-font-smoothing: antialiased; }
+      .caption { position: absolute; left: 0; right: 0; top: ${7 * u}px; }
+      .eyebrow { font-variant-caps: all-small-caps; letter-spacing: 0.16em; font-size: ${4.2 * u}px; color: #e8cf8f; margin: 0 0 ${1.2 * u}px; }
+      h1 { font-weight: 400; font-size: ${8.4 * u}px; line-height: 1; margin: 0; }
+      .row { position: absolute; left: 0; right: 0; top: ${26 * u}px; display: flex; justify-content: center; gap: ${phoneW * 0.12}px; }
+      .phone { width: ${phoneW}px; padding: ${phoneW * 0.025}px; background: #15100e; border-radius: ${phoneW * 0.13}px; box-shadow: 0 ${2 * u}px ${6 * u}px rgb(20 2 2 / 0.6); flex: none; }
+      .phone img { display: block; width: 100%; border-radius: ${phoneW * 0.11}px; }
+    </style></head><body>
+      <div class="caption"><p class="eyebrow">${eyebrow}</p><h1>${title}</h1></div>
+      <div class="row">${devices}</div>
+    </body></html>`;
+    const htmlPath = join(work, 'creative.html');
+    writeFileSync(htmlPath, html);
+    const png = join(work, 'creative.png');
+    render(htmlPath, png, w, h);
+    mkdirSync(dirname(out), { recursive: true });
+    await sharp(png)
+      .resize(w, h)
+      .flatten({ background: '#8c1d22' })
+      .jpeg({ quality: 90, chromaSubsampling: '4:4:4', mozjpeg: true })
+      .toFile(out);
+  };
+  await phones(
+    join(STORE, 'creative/header-3840x1646.jpg'),
+    3840,
+    1646,
+    ['book', 'office', 'offline'],
+    {
+      eyebrow: 'The Book of Common Prayer (2019)',
+      title: 'Pray with the Church, wherever you are',
+    }
+  );
+  await phones(
+    join(STORE, 'creative/search-results-3840x2560.jpg'),
+    3840,
+    2560,
+    ['office', 'offline', 'audio'],
+    {
+      eyebrow: 'Morning · Midday · Evening · Compline',
+      title: 'Pray the Daily Office, even offline',
+    }
+  );
   console.log('Feature graphic and social images written.');
 }
 
