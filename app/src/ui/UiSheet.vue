@@ -553,7 +553,11 @@ onBeforeUnmount(() => {
   transition: transform 260ms var(--ease);
   max-height: calc(var(--vvh) - env(safe-area-inset-top) - 2.5rem);
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  /* The sides too: iPhone Duo's outer screen keeps its clock and controls
+     in a column down one side. */
+  padding-right: env(safe-area-inset-right);
   padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
 }
 
 /* The bar is small; the padding gives it a finger-sized target. */

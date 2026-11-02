@@ -481,20 +481,23 @@ async function relayout() {
     rect.height -
     parseFloat(styles.paddingTop || 0) -
     parseFloat(styles.paddingBottom || 0);
+  const padLeft = parseFloat(styles.paddingLeft || 0);
+  const innerWidth =
+    rect.width - padLeft - parseFloat(styles.paddingRight || 0);
   const fontSize =
     parseFloat(window.getComputedStyle(flow.value).fontSize) ||
     displayState.fontSize;
   Object.assign(
     layout,
     computeReaderLayout({
-      width: rect.width,
+      width: innerWidth,
       height: innerHeight,
       fontSize,
       spread: spreadPref.value,
       viewportHeight: window.visualViewport?.height || window.innerHeight,
       fold: foldState.fold && {
         ...foldState.fold,
-        x: foldState.fold.x - rect.left,
+        x: foldState.fold.x - rect.left - padLeft,
       },
     })
   );
@@ -1445,8 +1448,10 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   min-height: 0;
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
+  /* All four sides: iPhone Duo's outer screen keeps its clock and controls
+     in a column down one side. */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
   overflow: hidden;
   touch-action: none;
   user-select: none;
@@ -1817,7 +1822,8 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-2) max(var(--space-3), env(safe-area-inset-left));
+  padding: var(--space-2) max(var(--space-3), env(safe-area-inset-right))
+    var(--space-2) max(var(--space-3), env(safe-area-inset-left));
   background-color: var(--paper-overlay);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
