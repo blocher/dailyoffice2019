@@ -384,7 +384,7 @@
 </template>
 
 <script>
-import { Browser } from '@capacitor/browser';
+import { openExternalLink } from '@/helpers/externalLink';
 import { Clipboard } from '@capacitor/clipboard';
 import { Capacitor } from '@capacitor/core';
 import {
@@ -705,7 +705,7 @@ export default {
         return;
       }
       if (Capacitor.getPlatform() !== 'web') {
-        await Browser.open({ url });
+        await openExternalLink(url);
         return;
       }
       window.open(url, '_blank', 'noopener,noreferrer');

@@ -21,10 +21,10 @@
 </template>
 
 <script setup>
-import { Browser } from '@capacitor/browser';
+import { openExternalLink } from '@/helpers/externalLink';
 
 async function openLink() {
-  await Browser.open({ url: 'https://ko-fi.com/dailyoffice' });
+  await openExternalLink('https://ko-fi.com/dailyoffice');
 }
 </script>
 
