@@ -4,6 +4,7 @@ from django.test import SimpleTestCase, override_settings
 from pymemcache.exceptions import MemcacheError
 
 from churchcal import calculations
+from churchcal.api import views
 
 
 @override_settings(USE_CALENDAR_CACHE=True)
@@ -59,3 +60,21 @@ class CalendarCacheFailureTests(SimpleTestCase):
             with self.assertRaisesMessage(ValueError, "invalid calendar data"):
                 calculations.get_church_year("2026-10-05")
             cache.set.assert_not_called()
+
+
+@override_settings(USE_CALENDAR_CACHE=True)
+class CalendarYearViewCacheWriteTests(SimpleTestCase):
+    def test_failed_cache_write_does_not_fail_the_request(self):
+        for error in (BrokenPipeError("broken"), MemcacheError("unavailable")):
+            with self.subTest(error=type(error).__name__):
+                with (
+                    patch.object(views, "cache") as cache,
+                    patch.object(views, "ChurchYear", return_value=Mock()),
+                    patch.object(views, "CalendarYear") as calendar_year,
+                    patch("logging.Logger.warning") as warning,
+                ):
+                    cache.get.return_value = None
+                    cache.set.side_effect = error
+                    views.get_calendar_year(2026, "ACNA_BCP2019")
+                    calendar_year.assert_called_once()
+                    self.assertEqual(warning.call_count, 2)

@@ -1,3 +1,4 @@
+import logging
 import os
 
 from django.conf import settings
@@ -5,6 +6,7 @@ from django.core.cache import cache
 from django.http import FileResponse
 from django.utils import timezone
 from mutagen.mp3 import MP3
+from pymemcache.exceptions import MemcacheError
 from rest_framework.renderers import BaseRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -20,6 +22,8 @@ from churchcal.calendar_feeds import (
 )
 from website import settings as site_settings
 
+logger = logging.getLogger(__name__)
+
 
 class CalendarFeedRenderer(BaseRenderer):
     media_type = "text/calendar"
@@ -34,6 +38,15 @@ class CalendarFeedRenderer(BaseRenderer):
         return str(data).encode(self.charset)
 
 
+def _cache_church_year(key, church_year):
+    # The cache is only an optimisation. A cache backend that drops the connection
+    # (BrokenPipeError and friends) must not fail the calendar request.
+    try:
+        cache.set(key, church_year, 60 * 60 * 12)
+    except (OSError, MemcacheError):
+        logger.warning("Could not cache church year %s", key, exc_info=True)
+
+
 def get_calendar_year(year, calendar):
     year = int(year)
     first_year = year - 1
@@ -42,11 +55,11 @@ def get_calendar_year(year, calendar):
     first_church_year = cache.get(f"{first_year}_{calendar}") if site_settings.USE_CALENDAR_CACHE else None
     if not first_church_year:
         first_church_year = ChurchYear(first_year, calendar)
-        cache.set(f"{first_year}_{calendar}", first_church_year, 60 * 60 * 12)
+        _cache_church_year(f"{first_year}_{calendar}", first_church_year)
     second_church_year = cache.get(f"{second_year}_{calendar}") if site_settings.USE_CALENDAR_CACHE else None
     if not second_church_year:
         second_church_year = ChurchYear(second_year, calendar)
-    cache.set(f"{second_year}_{calendar}", second_church_year, 60 * 60 * 12)
+    _cache_church_year(f"{second_year}_{calendar}", second_church_year)
     return CalendarYear(year, first_church_year, second_church_year)
 
 
