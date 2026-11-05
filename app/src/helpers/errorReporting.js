@@ -57,6 +57,11 @@ function onlyInPageDocument(frames) {
     frames.every((f) => !f.file || stripped(f.file) === page)
   );
 }
+// Some browsers and extensions (seen as "/__DLD__<hash>/resources/frontend.min.js"
+// on our own origin) inject a script of their own that raises "timeout" when
+// its request fails. Our bundle is only ever served from /assets/, so frames
+// from that path are never ours and nothing here can prevent the error.
+const INJECTED_SCRIPT_FILE = /\/__DLD__[0-9a-f]+\//i;
 // A fetch() that never got a response (offline, dropped connection, blocker)
 // rejects with a bare TypeError: "Load failed" in Safari, "Failed to fetch" in
 // Chrome, "NetworkError ..." in Firefox. Vite's modulepreload polyfill (for
@@ -123,6 +128,7 @@ export function isNoise(event) {
   )
     return true;
   if (onlyInPageDocument(frames)) return true;
+  if (frames.some((f) => INJECTED_SCRIPT_FILE.test(f.file || ''))) return true;
   if (frames.some((f) => EXTENSION_FILE.test(f.file || ''))) {
     return true;
   }
