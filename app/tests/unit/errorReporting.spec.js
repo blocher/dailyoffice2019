@@ -195,6 +195,11 @@ describe('error reporting', () => {
           new TypeError('x'),
           [fetchError('https://reader.self')]
         ),
+        fakeEvent({
+          errorClass: 'TypeError',
+          errorMessage:
+            "Policy vue's TrustedTypePolicyOptions did not specify a 'createHTML' member.",
+        }),
         // A script injected into the page document, not our bundle.
         fakeEvent({
           errorClass: 'RangeError',
