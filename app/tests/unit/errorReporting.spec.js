@@ -195,6 +195,17 @@ describe('error reporting', () => {
           new TypeError('x'),
           [fetchError('https://reader.self')]
         ),
+        // A script injected by the browser or an extension, served from a path we never use.
+        fakeEvent({
+          errorClass: 'Error',
+          errorMessage: 'timeout',
+          stacktrace: [
+            {
+              file: 'https://www.dailyoffice2019.com/__DLD__b765b9c3/resources/frontend.min.js',
+              lineNumber: 1738,
+            },
+          ],
+        }),
         // A script injected into the page document, not our bundle.
         fakeEvent({
           errorClass: 'RangeError',
