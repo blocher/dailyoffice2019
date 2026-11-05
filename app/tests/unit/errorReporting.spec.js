@@ -195,6 +195,12 @@ describe('error reporting', () => {
           new TypeError('x'),
           [fetchError('https://reader.self')]
         ),
+        // Stack overflow in a script with no file attached (injected, not ours).
+        fakeEvent({
+          errorClass: 'Error',
+          errorMessage: 'RangeError: Maximum call stack size exceeded.',
+          stacktrace: [{ file: 'undefined', lineNumber: 195 }],
+        }),
         // A script injected into the page document, not our bundle.
         fakeEvent({
           errorClass: 'RangeError',
