@@ -3604,8 +3604,19 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             return None
         key = hashlib.sha256(text.encode()).hexdigest()
         path = Path(settings.MEDIA_ROOT) / TTS_PROVIDER.media_subdir / f"reading_{key}.voice.json"
-        path.parent.mkdir(parents=True, exist_ok=True)
-        with open(str(path) + ".lock", "a") as lock:
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            lock = open(str(path) + ".lock", "a")
+        except PermissionError:
+            # The provider folder is not writable by this worker (a deploy
+            # permissions problem). Rendering the office must not fail for it:
+            # use a stored assignment if one exists, else pick a voice without
+            # persisting it, as the clip generator would have no way to save
+            # audio here either.
+            if path.exists():
+                return json.loads(path.read_text())["voice"]
+            return TTS_PROVIDER.voice_for_text("reader", text)
+        with lock:
             fcntl.flock(lock, fcntl.LOCK_EX)
             if path.exists():
                 return json.loads(path.read_text())["voice"]
