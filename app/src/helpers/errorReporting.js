@@ -38,6 +38,13 @@ const EXTENSION_FILE =
 // Extension errors that arrive with no stack, so EXTENSION_FILE can't match.
 // The app itself never calls the extension messaging API.
 const EXTENSION_MESSAGE = /Invalid call to runtime\.sendMessage\(\)/i;
+// A rejection with a bare string/object and no stack: "Object Not Found
+// Matching Id:1, MethodName:update, ParamCount:4" is thrown by an in-page
+// native bridge that some Android/Windows webviews, translators and
+// accessibility tools inject. The app has no such method, so the rejection
+// can't come from our code; BugSnag wraps it as an InvalidError.
+const INJECTED_BRIDGE_REJECTION =
+  /Object Not Found Matching Id:\d+, MethodName:\w+, ParamCount:\d+/i;
 // Our built page has one short inline script, wrapped in try/catch, so errors
 // whose every frame is in the page document itself come from a script the
 // browser or an extension injected (translation, reader and in-app browsers
@@ -115,6 +122,17 @@ export function isNoise(event) {
   )
     return true;
   if (VUE_DOM_DETACHED.test(text) && inReaderMode(event)) return true;
+  if (
+    INJECTED_BRIDGE_REJECTION.test(
+      String(
+        event.getMetadata?.(
+          'unhandledrejection handler',
+          'non-error parameter'
+        ) || text
+      )
+    )
+  )
+    return true;
   const frames = error.stacktrace || [];
   if (
     BARE_NETWORK_FAILURE.test(text) &&
