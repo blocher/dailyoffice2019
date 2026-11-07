@@ -16,6 +16,7 @@ import { loadDisplayPreferences } from './helpers/displayPreferences';
 import { loadDiscovery } from './helpers/discovery';
 import { watchFold } from './helpers/fold';
 import { takeBookViewQuery, takePanelQuery } from './helpers/panels';
+import { installVoiceLaunch, takeAutoplayQuery } from './helpers/voice';
 import { createGtag, event } from 'vue-gtag';
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
 import { Capacitor } from '@capacitor/core';
@@ -50,6 +51,10 @@ router.beforeEach((to, from) => {
   // ?panel=offline (and /offline) opens a panel, as above.
   const panelRedirect = takePanelQuery(to, from);
   if (panelRedirect !== null) return panelRedirect;
+  // ?autoplay=1 (Siri, Google Assistant, a shortcut) starts the page's audio
+  // once it loads (helpers/voice.js).
+  const autoplayRedirect = takeAutoplayQuery(to);
+  if (autoplayRedirect) return autoplayRedirect;
   // A navigation to the same address (e.g. Back closing the book view)
   // changes nothing on the page.
   if (from.matched.length && to.fullPath === from.fullPath) return;
@@ -230,6 +235,8 @@ const bootstrap = async () => {
   }
   await router.isReady();
   app.mount('#app');
+  // Pages that voice assistants and shortcuts open the app at.
+  installVoiceLaunch(router);
 };
 
 // The native apps keep the cover-art splash up until the first page renders

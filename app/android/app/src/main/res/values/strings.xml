@@ -4,4 +4,49 @@
     <string name="title_activity_main">Daily Office</string>
     <string name="package_name">com.dailyoffice2019.app</string>
     <string name="custom_url_scheme">com.dailyoffice2019.app</string>
+    <!-- Launcher shortcuts and Google Assistant (xml/shortcuts.xml). -->
+    <string name="shortcut_pray_now">Pray now</string>
+    <string name="shortcut_pray_now_long">Play the office for now</string>
+    <string name="shortcut_family">Family Prayer</string>
+    <string name="shortcut_family_long">Play Family Prayer</string>
+    <string name="shortcut_readings">Readings</string>
+    <string name="shortcut_readings_long">Today’s readings</string>
+    <string name="shortcut_calendar">Calendar</string>
+    <string name="shortcut_calendar_long">The church calendar</string>
+    <string-array name="shortcut_pray_now_names">
+        <item>the office</item>
+        <item>daily office</item>
+        <item>today\'s office</item>
+        <item>prayers</item>
+    </string-array>
+    <string-array name="shortcut_family_names">
+        <item>family prayer</item>
+        <item>family prayers</item>
+        <item>prayers with the kids</item>
+    </string-array>
+    <string-array name="shortcut_readings_names">
+        <item>readings</item>
+        <item>today\'s readings</item>
+        <item>lessons</item>
+        <item>lectionary</item>
+    </string-array>
+    <string-array name="shortcut_calendar_names">
+        <item>calendar</item>
+        <item>church calendar</item>
+        <item>saints</item>
+    </string-array>
+    <!-- What assistants can do with the app (xml/app_metadata.xml). -->
+    <string name="app_functions_description">Play or open the Daily Office and Family Prayer, and answer questions about the church calendar, readings, psalms, and collects.</string>
+    <!-- The calendar widget (voice/TodayWidget.kt). -->
+    <string name="widget_name">Today in the Church Calendar</string>
+    <string name="widget_description">The day’s feast, season, color, and saint, from the Book of Common Prayer (2019).</string>
+    <string name="widget_today">TODAY</string>
+    <string name="widget_this_evening">THIS EVENING</string>
+    <string name="widget_loading">The Daily Office</string>
+    <string name="widget_offline">Open the app to load today</string>
+    <string name="widget_pray_now">Pray</string>
+    <string name="widget_readings">Readings</string>
+    <string name="widget_weekday_title">On a weekday with a saint, show</string>
+    <string name="widget_weekday_saint">The saint</string>
+    <string name="widget_weekday_weekday">The weekday</string>
 </resources>

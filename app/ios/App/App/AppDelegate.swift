@@ -2,6 +2,7 @@ import UIKit
 import AVFoundation
 import Capacitor
 import Firebase
+import WidgetKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -26,6 +27,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Audio downloads that finish while the app is open are only filed once their session
         // exists again; open it now rather than waiting for the next background run.
         OfflineAudioDownloads.shared.reconnect()
+
+        // Offices and psalms go in Spotlight's semantic index, which Siri searches
+        // (Voice/VoiceIntents.swift).
+        if #available(iOS 18.0, *) {
+            VoiceSpotlight.indexIfNeeded()
+        }
+
+        // The calendar widget (DailyOfficeWidget) reads the day again whenever the app opens.
+        WidgetCenter.shared.reloadAllTimelines()
 
         // Override point for customization after application launch.
         return true

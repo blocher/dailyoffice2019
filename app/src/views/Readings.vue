@@ -244,6 +244,7 @@
           :office="audioTitle"
           :is-esv-or-kjv="isEsvOrKjv"
           :is-within-seven-days="isWithinAudioDates"
+          :autoplay="autoplay"
           @dismiss-audio="confirmDismissAudio"
           @audio-play="onAudioPlay"
         />
@@ -289,6 +290,7 @@ import AudioPlayerMessage from '@/components/AudoPlayerMessage.vue';
 import { confirm } from '@/ui/feedback';
 import { displayState, setAudioEnabled } from '@/helpers/displayPreferences';
 import { fetchAudioTrack, isWithinAudioWindow } from '@/helpers/officeAudio';
+import { donateActivity, takeAutoplayRequest } from '@/helpers/voice';
 import { trackEvent } from '@/helpers/analytics';
 
 const SERVICE_GROUPS = [
@@ -394,6 +396,8 @@ export default {
         },
       ],
       notFound: false,
+      // Siri or a shortcut asked for these readings to play (helpers/voice.js).
+      autoplay: false,
       audioLinks: [],
       audioReady: false,
       audioRequest: 0,
@@ -623,6 +627,12 @@ export default {
     },
   },
   async created() {
+    // "Hey Siri, play today's readings": turn the player on and start it once
+    // the track is ready.
+    if (takeAutoplayRequest(this.$route.path)) {
+      this.autoplay = true;
+      if (!this.audioEnabled) setAudioEnabled(true);
+    }
     // ?book=1 opens the book view directly (a shareable deep link).
     onBookViewRequest(
       this,
@@ -764,8 +774,17 @@ export default {
       }
     },
     onAudioPlay() {
+      // Autoplay is for the first start only, not a player made again later.
+      this.autoplay = false;
       if (this.audioPlayTracked) return;
       this.audioPlayTracked = true;
+      donateActivity({
+        kind: 'readings',
+        service: this.audioService ? this.audioService.kind : '',
+        date: this.calendarDate ? datePath(this.calendarDate) : '',
+        title: this.audioTitle,
+        played: true,
+      });
       trackEvent(
         'audio_play',
         {

@@ -363,6 +363,13 @@ export default {
       required: true,
       default: false,
     },
+    // Start playing as soon as the player is set up: Siri, Google Assistant
+    // or a shortcut asked for this audio (helpers/voice.js). The native
+    // player needs no tap to start; a browser may still ask for one.
+    autoplay: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -488,6 +495,7 @@ export default {
       this.detailedSegments = this.audio[3];
       this.wordSegments = Array.isArray(this.audio[4]) ? this.audio[4] : [];
       this.$nextTick(() => this.prepareWordElements());
+      if (this.autoplay) this.startAudio();
     }
 
     this.$nextTick(() => {

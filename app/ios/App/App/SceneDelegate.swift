@@ -11,6 +11,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Also delivers a link the app was launched with, once the page has loaded.
         SceneDelegateProxy.shared.scene(scene, willConnectTo: session, options: connectionOptions)
+        // A Siri Suggestion or Handoff the app was launched from (Voice/VoiceLaunchPlugin.swift).
+        for activity in connectionOptions.userActivities {
+            if let path = VoiceDonations.path(for: activity) { VoiceLaunch.open(path: path) }
+        }
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
@@ -18,6 +22,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        if let path = VoiceDonations.path(for: userActivity) {
+            VoiceLaunch.open(path: path)
+            return
+        }
         SceneDelegateProxy.shared.scene(scene, continue: userActivity)
     }
 }

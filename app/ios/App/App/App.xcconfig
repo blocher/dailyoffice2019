@@ -1,0 +1,4 @@
+// The App target's base settings: the shared version, and the Siri AI preview switch.
+
+#include "../Version.xcconfig"
+#include "Voice/SiriAI.xcconfig"

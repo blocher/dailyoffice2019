@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+// AppFunctions (voice/DailyOfficeAppFunctions.kt) are declared with KSP; AGP compiles the Kotlin.
+apply plugin: 'com.google.devtools.ksp'
 
 // Release signing: copy keystore.properties.example to keystore.properties
 // (ignored by git) and fill in the upload key, so `./gradlew bundleRelease`
@@ -11,7 +13,11 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.dailyoffice2019.app"
-    compileSdk = rootProject.ext.compileSdkVersion
+    // AppFunctions, which Gemini calls on Android 16 and later, need the Android 17 SDK to build.
+    // This is only what the app is compiled against: targetSdk and minSdk are unchanged, so the
+    // same phones can install it and it behaves as before. The Capacitor plugins stay on
+    // compileSdkVersion.
+    compileSdk = rootProject.ext.appCompileSdkVersion
     defaultConfig {
         applicationId "com.dailyoffice2019.app"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -41,7 +47,7 @@ android {
                 signingConfig = signingConfigs.release
             }
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 }
@@ -63,6 +69,10 @@ dependencies {
     implementation "androidx.media3:media3-session:$media3Version"
     // Offline downloads keep fresh in the background (app/.../offline/).
     implementation "androidx.work:work-runtime:$androidxWorkVersion"
+    // Gemini and other assistants call the app's AppFunctions on Android 16 and later (app/.../voice/).
+    implementation "androidx.appfunctions:appfunctions:$appFunctionsVersion"
+    ksp "androidx.appfunctions:appfunctions-compiler:$appFunctionsVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinxCoroutinesVersion"
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"

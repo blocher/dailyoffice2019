@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The calendar widget (voice/TodayWidget.kt). It reads the day again at 3 p.m. and midnight by
+     itself; updatePeriodMillis is the fallback. The weekday option can be changed later
+     (reconfigurable) and isn't asked for when the widget is added (configuration_optional). -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:configure="com.dailyoffice2019.app.voice.TodayWidgetConfigureActivity"
+    android:description="@string/widget_description"
+    android:initialLayout="@layout/widget_today"
+    android:minWidth="180dp"
+    android:minHeight="110dp"
+    android:minResizeWidth="110dp"
+    android:minResizeHeight="80dp"
+    android:previewLayout="@layout/widget_today"
+    android:resizeMode="horizontal|vertical"
+    android:targetCellWidth="4"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="21600000"
+    android:widgetCategory="home_screen"
+    android:widgetFeatures="reconfigurable|configuration_optional" />
