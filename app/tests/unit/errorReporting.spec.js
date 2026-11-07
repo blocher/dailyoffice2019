@@ -208,6 +208,15 @@ describe('error reporting', () => {
             },
           ],
         }),
+        // Every frame blank: a script evaluated from a string, not our bundle.
+        fakeEvent({
+          errorClass: 'Error',
+          errorMessage: 'Ma`prod',
+          stacktrace: [
+            { file: '', lineNumber: 0, method: 'Di' },
+            { file: '[native code]', lineNumber: 0, method: 'Promise' },
+          ],
+        }),
       ];
       noise.forEach((event) => expect(onError(event)).toBe(false));
       expect(
