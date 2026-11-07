@@ -34,6 +34,9 @@
 		9D2EB0082FB8000100D1A1CE /* VoiceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0FA1022FB7000100D1A1CE /* VoiceModel.swift */; };
 		9D2EB0092FB8000100D1A1CE /* LiturgicalCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0FA1042FB7000100D1A1CE /* LiturgicalCalendar.swift */; };
 		9D2EB0102FB8000100D1A1CE /* DailyOfficeWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 9D2EB0012FB8000100D1A1CE /* DailyOfficeWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AC4B11022FB9000100D1A1CE /* OfficePlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4B11012FB9000100D1A1CE /* OfficePlayer.swift */; };
+		AC4B11042FB9000100D1A1CE /* OfficeAudioResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4B11032FB9000100D1A1CE /* OfficeAudioResolver.swift */; };
+		AC4B11062FB9000100D1A1CE /* CarPlaySceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4B11052FB9000100D1A1CE /* CarPlaySceneDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -99,6 +102,10 @@
 		9D2EB0032FB8000100D1A1CE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9D2EB0052FB8000100D1A1CE /* Version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
 		9D2EB0062FB8000100D1A1CE /* App.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = App.xcconfig; sourceTree = "<group>"; };
+		AC4B11012FB9000100D1A1CE /* OfficePlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfficePlayer.swift; sourceTree = "<group>"; };
+		AC4B11032FB9000100D1A1CE /* OfficeAudioResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfficeAudioResolver.swift; sourceTree = "<group>"; };
+		AC4B11052FB9000100D1A1CE /* CarPlaySceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarPlaySceneDelegate.swift; sourceTree = "<group>"; };
+		AC4B11072FB9000100D1A1CE /* App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -149,6 +156,9 @@
 				7A1C0E0E2F9B4D0100A1B2C3 /* SceneDelegate.swift */,
 				7A1C0E0C2F9B4D0100A1B2C3 /* MainViewController.swift */,
 				7A1C0E0A2F9B4D0100A1B2C3 /* NativeAudioPlugin.swift */,
+				AC4B11012FB9000100D1A1CE /* OfficePlayer.swift */,
+				AC4B11082FB9000100D1A1CE /* Car */,
+				AC4B11072FB9000100D1A1CE /* App.entitlements */,
 				FC94AD4BDAF949AC9A70D95B /* OfflineSyncPlugin.swift */,
 				5D0F01D42FB0A10000C0FFEE /* FoldPlugin.swift */,
 				8C0FA1012FB7000100D1A1CE /* Voice */,
@@ -186,6 +196,15 @@
 				9D2EB0032FB8000100D1A1CE /* Info.plist */,
 			);
 			path = DailyOfficeWidget;
+			sourceTree = "<group>";
+		};
+		AC4B11082FB9000100D1A1CE /* Car */ = {
+			isa = PBXGroup;
+			children = (
+				AC4B11032FB9000100D1A1CE /* OfficeAudioResolver.swift */,
+				AC4B11052FB9000100D1A1CE /* CarPlaySceneDelegate.swift */,
+			);
+			path = Car;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -307,6 +326,9 @@
 				7A1C0E0F2F9B4D0100A1B2C3 /* SceneDelegate.swift in Sources */,
 				7A1C0E0D2F9B4D0100A1B2C3 /* MainViewController.swift in Sources */,
 				7A1C0E0B2F9B4D0100A1B2C3 /* NativeAudioPlugin.swift in Sources */,
+				AC4B11022FB9000100D1A1CE /* OfficePlayer.swift in Sources */,
+				AC4B11042FB9000100D1A1CE /* OfficeAudioResolver.swift in Sources */,
+				AC4B11062FB9000100D1A1CE /* CarPlaySceneDelegate.swift in Sources */,
 				9A8FA4CD69B94EA288243887 /* OfflineSyncPlugin.swift in Sources */,
 				5D0F01D52FB0A10000C0FFEE /* FoldPlugin.swift in Sources */,
 				8C0FA1032FB7000100D1A1CE /* VoiceModel.swift in Sources */,
@@ -466,6 +488,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 2TG4YK78KZ;
+				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "The Daily Office";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -490,6 +513,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 2TG4YK78KZ;
+				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				INFOPLIST_FILE = App/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "The Daily Office";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;

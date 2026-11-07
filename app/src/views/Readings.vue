@@ -291,6 +291,7 @@ import { confirm } from '@/ui/feedback';
 import { displayState, setAudioEnabled } from '@/helpers/displayPreferences';
 import { fetchAudioTrack, isWithinAudioWindow } from '@/helpers/officeAudio';
 import { donateActivity, takeAutoplayRequest } from '@/helpers/voice';
+import { saveNativeAudioRequests } from '@/helpers/nativeAudioRequests';
 import { trackEvent } from '@/helpers/analytics';
 
 const SERVICE_GROUPS = [
@@ -747,6 +748,15 @@ export default {
         psalter: this.psalmCycle,
         position: String(this.audioService.position),
         include_audio_links: 'true',
+      });
+      // CarPlay and Android Auto ask for readings audio the same way.
+      saveNativeAudioRequests(this.$store.state.settings, {
+        readings: {
+          translation: this.translation,
+          psalms: this.psalmsTranslation,
+          style: this.psalmStyle,
+          psalter: this.psalmCycle,
+        },
       });
       const url =
         `${import.meta.env.VITE_API_URL}api/v1/readings_audio/` +

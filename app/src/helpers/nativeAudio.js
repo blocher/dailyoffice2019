@@ -152,7 +152,7 @@ export class NativeAudioElement extends window.EventTarget {
     this.seekTarget = { position: clamped, until: now() + SEEK_SETTLE_MS };
     this.emit('seeking');
     this.emit('timeupdate');
-    this.send('seekTo', { position: clamped });
+    this.send('seekTo', { position: clamped, url: this.source });
   }
 
   get playbackRate() {
@@ -165,7 +165,7 @@ export class NativeAudioElement extends window.EventTarget {
     this.setPosition(this.currentTime);
     this.rate = rate;
     this.emit('ratechange');
-    this.send('setRate', { rate });
+    this.send('setRate', { rate, url: this.source });
   }
 
   load() {
@@ -173,17 +173,15 @@ export class NativeAudioElement extends window.EventTarget {
     this.rate = this.defaultPlaybackRate;
     if (!this.source) {
       this.detach();
-      this.send('stop');
+      // Only this page's track: CarPlay or Android Auto may be playing
+      // another, which this page must leave alone.
+      if (this.loadedSource) this.send('stop', { url: this.loadedSource });
+      this.loadedSource = '';
       return;
     }
     this.attach();
-    this.send('setSource', {
-      url: this.source,
-      title: this.metadata.title || '',
-      artist: this.metadata.artist || '',
-      artwork: this.metadata.artwork || '',
-      rate: this.rate,
-    });
+    this.loadedSource = this.source;
+    this.send('setSource', this.sourceOptions());
   }
 
   play() {
@@ -203,7 +201,9 @@ export class NativeAudioElement extends window.EventTarget {
       this.emit('play');
       if (this.readyState < HAVE_ENOUGH_DATA) this.emit('waiting');
     }
-    return this.send('play').then(() => undefined);
+    // With its track: if the car started another since, the player loads
+    // this one again (the native player is shared).
+    return this.send('play', this.sourceOptions()).then(() => undefined);
   }
 
   pause() {
@@ -214,7 +214,17 @@ export class NativeAudioElement extends window.EventTarget {
       this.emit('timeupdate');
       this.emit('pause');
     }
-    this.send('pause').catch(() => {});
+    this.send('pause', { url: this.source }).catch(() => {});
+  }
+
+  sourceOptions() {
+    return {
+      url: this.source,
+      title: this.metadata.title || '',
+      artist: this.metadata.artist || '',
+      artwork: this.metadata.artwork || '',
+      rate: this.rate,
+    };
   }
 
   // Native calls run in order on the plugin's side and resolve with the

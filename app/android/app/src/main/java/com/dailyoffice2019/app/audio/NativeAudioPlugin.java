@@ -102,19 +102,27 @@ public class NativeAudioPlugin extends Plugin {
             call.reject("A url is required");
             return;
         }
+        Runnable load = loader(call, url);
+        withController(call, (c) -> load.run());
+    }
+
+    /**
+     * Loads the page's track, keeping a healthy one already loaded (the page reopened while the
+     * office played on, or retrying while the player reconnects by itself). The artwork is read
+     * here, off the main thread; the returned work runs on it.
+     */
+    private Runnable loader(PluginCall call, String url) {
         String title = call.getString("title", "");
         String artist = call.getString("artist", "");
         String artwork = call.getString("artwork", "");
         double rate = call.getDouble("rate", 1.0);
         lastUrl = url;
-        // Read off the main thread; used only if the track is (re)loaded.
         byte[] artworkData = readWebAsset(artwork);
-        withController(call, (c) -> {
+        return () -> {
+            MediaController c = controller;
             MediaItem current = c.getCurrentMediaItem();
             boolean same = current != null && url.equals(current.mediaId);
-            // This track is already loaded and healthy: the page was reopened while the office
-            // played on, or the page is retrying while the player reconnects by itself
-            // (OfficeLoadErrorPolicy). Reloading would drop the connection and the buffer.
+            // Reloading a healthy track would drop the connection and the buffer.
             if (same && c.getPlaybackState() != Player.STATE_IDLE && c.getPlayerError() == null) {
                 return;
             }
@@ -144,12 +152,32 @@ public class NativeAudioPlugin extends Plugin {
                 c.setPlaybackSpeed((float) rate);
             }
             c.prepare();
-        });
+        };
+    }
+
+    /**
+     * Android Auto plays through the same player, so the page's commands name their track: a
+     * command for a track other than the one loaded leaves Android Auto's audio alone (and `play`
+     * loads the page's track again).
+     */
+    private static boolean isForAnotherTrack(PluginCall call, MediaController c) {
+        String url = call.getString("url");
+        if (url == null || url.isEmpty()) {
+            return false;
+        }
+        MediaItem current = c.getCurrentMediaItem();
+        return current == null || !url.equals(current.mediaId);
     }
 
     @PluginMethod
     public void play(PluginCall call) {
+        String url = call.getString("url");
+        Runnable load = url == null || url.isEmpty() ? null : loader(call, url);
         withController(call, (c) -> {
+            // Android Auto may have started another track since the page loaded its own.
+            if (load != null && isForAnotherTrack(call, c)) {
+                load.run();
+            }
             if (c.getMediaItemCount() == 0) {
                 throw new IllegalStateException("No audio source");
             }
@@ -167,7 +195,11 @@ public class NativeAudioPlugin extends Plugin {
             call.resolve(status("command"));
             return;
         }
-        withController(call, Player::pause);
+        withController(call, (c) -> {
+            if (!isForAnotherTrack(call, c)) {
+                c.pause();
+            }
+        });
     }
 
     @PluginMethod
@@ -177,7 +209,11 @@ public class NativeAudioPlugin extends Plugin {
             call.reject("A position is required");
             return;
         }
-        withController(call, (c) -> c.seekTo(Math.round(position * 1000)));
+        withController(call, (c) -> {
+            if (!isForAnotherTrack(call, c)) {
+                c.seekTo(Math.round(position * 1000));
+            }
+        });
     }
 
     @PluginMethod
@@ -187,7 +223,11 @@ public class NativeAudioPlugin extends Plugin {
             call.reject("A rate is required");
             return;
         }
-        withController(call, (c) -> c.setPlaybackSpeed(rate.floatValue()));
+        withController(call, (c) -> {
+            if (!isForAnotherTrack(call, c)) {
+                c.setPlaybackSpeed(rate.floatValue());
+            }
+        });
     }
 
     @PluginMethod
@@ -200,6 +240,9 @@ public class NativeAudioPlugin extends Plugin {
         }
         lastUrl = null;
         withController(call, (c) -> {
+            if (isForAnotherTrack(call, c)) {
+                return;
+            }
             c.pause();
             c.stop();
             c.clearMediaItems();

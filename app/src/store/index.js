@@ -18,6 +18,12 @@ export default createStore({
     async saveSettings({ commit }, settings) {
       commit('saveSettings', settings);
       await DynamicStorage.setItem('settings', JSON.stringify(settings));
+      // The addresses CarPlay and Android Auto ask for audio with.
+      import('@/helpers/nativeAudioRequests')
+        .then(({ saveNativeAudioRequests }) =>
+          saveNativeAudioRequests(settings)
+        )
+        .catch(() => {});
     },
     async initializeSettings({ state, commit }) {
       const initializeAdditionalCollects = async () => {

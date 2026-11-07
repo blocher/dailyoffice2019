@@ -2,7 +2,6 @@ package com.dailyoffice2019.app.audio;
 
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
@@ -19,12 +18,10 @@ import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory;
 import androidx.media3.extractor.DefaultExtractorsFactory;
 import androidx.media3.session.MediaSession;
-import androidx.media3.session.MediaSessionService;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import java.util.ArrayList;
+import androidx.media3.session.MediaLibraryService;
+import androidx.media3.session.MediaLibraryService.MediaLibrarySession;
+import com.dailyoffice2019.app.car.OfficeLibrary;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Plays office audio in a media-playback foreground service.
@@ -33,10 +30,10 @@ import java.util.List;
  * foreground, so a long office ran dry partway through. Media3 runs the player here instead: the
  * service is promoted to the foreground while audio plays (with the lock-screen and notification
  * controls), holds wake and Wi-Fi locks, and keeps the network. NativeAudioPlugin connects to it
- * with a MediaController.
+ * with a MediaController; Android Auto browses and plays its library (car/OfficeLibrary.kt).
  */
 @OptIn(markerClass = UnstableApi.class)
-public class PlaybackService extends MediaSessionService {
+public class PlaybackService extends MediaLibraryService {
 
     // While playing, buffer far ahead (an office is about 25 MB at 160 kbps), so a dropped
     // connection or a phone that restricts the network is covered by what is already downloaded.
@@ -50,7 +47,7 @@ public class PlaybackService extends MediaSessionService {
     private static final int READ_TIMEOUT_MS = 20_000;
 
     @Nullable
-    private MediaSession session;
+    private MediaLibrarySession session;
 
     @Override
     public void onCreate() {
@@ -90,7 +87,8 @@ public class PlaybackService extends MediaSessionService {
             .setSeekForwardIncrementMs(15_000)
             .build();
 
-        MediaSession.Builder builder = new MediaSession.Builder(this, player).setCallback(new Callback(getPackageName()));
+        // What Android Auto browses and plays, and how the page's own tracks load (car/OfficeLibrary.kt).
+        MediaLibrarySession.Builder builder = new MediaLibrarySession.Builder(this, player, new OfficeLibrary(this));
         PendingIntent openApp = openAppIntent();
         if (openApp != null) {
             builder.setSessionActivity(openApp);
@@ -109,41 +107,9 @@ public class PlaybackService extends MediaSessionService {
         return PendingIntent.getActivity(this, 0, launch, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    /**
-     * A controller's media items arrive without their URI; restore it from the request metadata
-     * NativeAudioPlugin sets. Only this app may load audio: other controllers (the lock screen,
-     * Bluetooth, the system media controls) can play, pause and seek what is already loaded.
-     */
-    private static final class Callback implements MediaSession.Callback {
-
-        private final String packageName;
-
-        Callback(String packageName) {
-            this.packageName = packageName;
-        }
-
-        @NonNull
-        @Override
-        public ListenableFuture<List<MediaItem>> onAddMediaItems(
-            @NonNull MediaSession mediaSession,
-            @NonNull MediaSession.ControllerInfo controller,
-            @NonNull List<MediaItem> mediaItems
-        ) {
-            if (!packageName.equals(controller.getPackageName())) {
-                return Futures.immediateFailedFuture(new UnsupportedOperationException());
-            }
-            List<MediaItem> resolved = new ArrayList<>();
-            for (MediaItem item : mediaItems) {
-                Uri uri = item.requestMetadata.mediaUri;
-                resolved.add(uri != null ? item.buildUpon().setUri(uri).build() : item);
-            }
-            return Futures.immediateFuture(resolved);
-        }
-    }
-
     @Nullable
     @Override
-    public MediaSession onGetSession(@NonNull MediaSession.ControllerInfo controllerInfo) {
+    public MediaLibrarySession onGetSession(@NonNull MediaSession.ControllerInfo controllerInfo) {
         return session;
     }
 

@@ -174,6 +174,7 @@ import { trackEvent } from '@/helpers/analytics';
 import { fetchAudioTrack, isWithinAudioWindow } from '@/helpers/officeAudio';
 import { isLocalTrackUrl } from '@/helpers/audioTrack';
 import { donateActivity, takeAutoplayRequest } from '@/helpers/voice';
+import { saveNativeAudioRequests } from '@/helpers/nativeAudioRequests';
 import { officeUrl } from '@/offline/urls';
 import { network } from '@/offline';
 import { isNetworkFailure } from '@/offline/network';
@@ -383,6 +384,8 @@ export default {
       extraCollects,
     });
     this.officeSettings = settings;
+    // CarPlay and Android Auto ask for audio with these same addresses.
+    saveNativeAudioRequests(settings, { extraCollects });
     await this.loadOffice();
   },
 

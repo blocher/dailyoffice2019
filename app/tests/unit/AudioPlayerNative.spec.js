@@ -149,7 +149,7 @@ describe('AudioPlayer on the native app player', () => {
     plugin.send({ state: 'ready', position: 0 });
     vm.jumpToSection(334);
     await flush();
-    expect(plugin.last('seekTo')).toEqual({ position: 333 });
+    expect(plugin.last('seekTo')).toEqual({ position: 333, url: URL });
     plugin.send({
       state: 'ready',
       position: 333,
@@ -228,7 +228,7 @@ describe('AudioPlayer on the native app player', () => {
     plugin.send({ state: 'ended', position: 1328, playWhenReady: true });
     expect(vm.isPlaying).toBe(false);
     expect(vm.currentTime).toBe(0);
-    expect(plugin.last('seekTo')).toEqual({ position: 0 });
+    expect(plugin.last('seekTo')).toEqual({ position: 0, url: URL });
   });
 
   it('stops the native player when leaving the office', async () => {

@@ -59,6 +59,11 @@
             android:name="android.app.appfunctions.app_metadata"
             android:resource="@xml/app_metadata" />
 
+        <!-- An Android Auto media app (xml/automotive_app_desc.xml; audio/PlaybackService.java). -->
+        <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
+
         <!-- The day in the church calendar on the home screen (voice/TodayWidget.kt). -->
         <receiver
             android:name=".voice.TodayWidget"
@@ -90,6 +95,9 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="androidx.media3.session.MediaSessionService" />
+                <!-- Android Auto and Assistant browse and play its library (car/OfficeLibrary.kt). -->
+                <action android:name="androidx.media3.session.MediaLibraryService" />
+                <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
         </service>
 

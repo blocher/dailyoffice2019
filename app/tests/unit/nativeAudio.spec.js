@@ -162,7 +162,7 @@ describe('NativeAudioElement', () => {
     clock += 500;
     expect(element.currentTime).toBeCloseTo(10.5);
     element.playbackRate = 2;
-    expect(plugin.calls.at(-1)).toEqual(['setRate', { rate: 2 }]);
+    expect(plugin.calls.at(-1)).toEqual(['setRate', { rate: 2, url: URL }]);
     clock += 500;
     expect(element.currentTime).toBeCloseTo(11.5);
   });
@@ -264,7 +264,7 @@ describe('NativeAudioElement', () => {
     element.load();
     ready();
     element.currentTime = 600;
-    expect(plugin.calls.at(-1)).toEqual(['seekTo', { position: 600 }]);
+    expect(plugin.calls.at(-1)).toEqual(['seekTo', { position: 600, url: URL }]);
     expect(element.currentTime).toBe(600);
     expect(events).toContain('seeking');
     ready({ position: 3 });
@@ -348,7 +348,8 @@ describe('NativeAudioElement', () => {
     element.removeAttribute('src');
     element.load();
     await settle();
-    expect(plugin.calls.at(-1)[0]).toBe('stop');
+    // Naming its own track, so a track CarPlay or Android Auto started plays on.
+    expect(plugin.calls.at(-1)).toEqual(['stop', { url: URL }]);
     expect(handle.remove).toHaveBeenCalled();
     ready();
     expect(Number.isNaN(element.duration)).toBe(true);
@@ -371,5 +372,31 @@ describe('NativeAudioElement', () => {
     }).not.toThrow();
     await settle();
     expect(element.pendingCommands).toBe(0);
+  });
+});
+
+describe('NativeAudioElement sharing the player with the car', () => {
+  it('names its track when it plays, so the player can load it again', async () => {
+    const plugin = new FakePlugin();
+    const element = new NativeAudioElement(plugin, { title: 'Compline', artist: 'The Daily Office', artwork: 'icon.png' });
+    element.src = URL;
+    element.load();
+    await element.play().catch(() => {});
+    expect(plugin.calls.find(([method]) => method === 'play')[1]).toEqual({
+      url: URL,
+      title: 'Compline',
+      artist: 'The Daily Office',
+      artwork: 'icon.png',
+      rate: 1,
+    });
+    element.pause();
+    expect(plugin.calls.at(-1)).toEqual(['pause', { url: URL }]);
+  });
+
+  it('sends no stop when it never loaded a track', () => {
+    const plugin = new FakePlugin();
+    const element = new NativeAudioElement(plugin, {});
+    element.load();
+    expect(plugin.calls.some(([method]) => method === 'stop')).toBe(false);
   });
 });
