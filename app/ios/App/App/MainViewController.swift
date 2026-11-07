@@ -12,6 +12,8 @@ class MainViewController: CAPBridgeViewController {
         // Background downloads for offline use (OfflineSyncPlugin.swift).
         bridge?.registerPluginInstance(OfflineSyncPlugin())
         bridge?.registerPluginInstance(foldPlugin)
+        // Siri and Shortcuts open pages through this (Voice/VoiceLaunchPlugin.swift).
+        bridge?.registerPluginInstance(VoiceLaunchPlugin())
     }
 
     // Folding, unfolding, and turning iPhone Duo lay the screen out again.

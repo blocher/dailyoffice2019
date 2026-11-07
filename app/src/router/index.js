@@ -174,6 +174,14 @@ const routes = [
       import(/* webpackChunkName: "about" */ '../views/About.vue'),
   },
   {
+    path: '/voice',
+    name: 'VoiceAndWidgets',
+    meta: {
+      title: 'Siri, Google & Widgets | The Daily Office',
+    },
+    component: () => import('../views/VoiceAndWidgets.vue'),
+  },
+  {
     path: '/podcasts',
     name: 'Podcasts',
     meta: {

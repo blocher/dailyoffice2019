@@ -1,14 +1,20 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    
+    apply from: "variables.gradle"
+
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.13.2'
-        classpath 'com.google.gms:google-services:4.4.4'
+        classpath 'com.android.tools.build:gradle:9.5.1'
+        classpath 'com.google.gms:google-services:4.5.0'
+        // AGP 9 compiles Kotlin itself; this picks the Kotlin version it uses (and the Capacitor
+        // plugins written in Kotlin, which read kotlin_version from variables.gradle).
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        // Generates the AppFunctions schema (app/.../voice/).
+        classpath "com.google.devtools.ksp:symbol-processing-gradle-plugin:$kspVersion"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -24,6 +30,6 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+tasks.register('clean', Delete) {
+    delete rootProject.layout.buildDirectory
 }

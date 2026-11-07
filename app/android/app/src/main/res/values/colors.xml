@@ -2,4 +2,10 @@
 <resources>
     <!-- The leather of the 2019 Book of Common Prayer cover (store/scripts/build-icons.mjs). -->
     <color name="splash_background">#8C1D22</color>
+    <!-- The calendar widget (voice/TodayWidget.kt): the app's paper and ink
+         (app/src/styles/tokens.css). Dark versions in values-night. -->
+    <color name="widget_paper">#FDFCF9</color>
+    <color name="widget_ink">#1C1A17</color>
+    <color name="widget_ink_soft">#55504A</color>
+    <color name="widget_ink_faint">#857E74</color>
 </resources>

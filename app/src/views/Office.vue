@@ -123,6 +123,7 @@
     :office="office"
     :isEsvOrKjv="isEsvOrKjv"
     :isWithinSevenDays="isWithinSevenDays"
+    :autoplay="autoplay"
     @dismiss-audio="confirmDismissAudio"
     @audio-play="onAudioPlay"
   />
@@ -172,6 +173,8 @@ import { resolveColorFromCard, setSeasonAccent } from '@/helpers/seasonAccent';
 import { trackEvent } from '@/helpers/analytics';
 import { fetchAudioTrack, isWithinAudioWindow } from '@/helpers/officeAudio';
 import { isLocalTrackUrl } from '@/helpers/audioTrack';
+import { donateActivity, takeAutoplayRequest } from '@/helpers/voice';
+import { saveNativeAudioRequests } from '@/helpers/nativeAudioRequests';
 import { officeUrl } from '@/offline/urls';
 import { network } from '@/offline';
 import { isNetworkFailure } from '@/offline/network';
@@ -232,6 +235,8 @@ export default {
       audioPlayTracked: false,
       bookOpen: false,
       discovery: discoveryState,
+      // Siri or a shortcut asked for this office to play (helpers/voice.js).
+      autoplay: false,
     };
   },
   computed: {
@@ -312,6 +317,12 @@ export default {
   },
 
   async created() {
+    // "Hey Siri, play Compline": turn the player on and start it once the
+    // track is ready.
+    if (takeAutoplayRequest(this.$route.path)) {
+      this.autoplay = true;
+      if (!this.audioEnabled) setAudioEnabled(true);
+    }
     // ?book=1 opens the book view directly (a shareable deep link).
     onBookViewRequest(
       this,
@@ -373,6 +384,8 @@ export default {
       extraCollects,
     });
     this.officeSettings = settings;
+    // CarPlay and Android Auto ask for audio with these same addresses.
+    saveNativeAudioRequests(settings, { extraCollects });
     await this.loadOffice();
   },
 
@@ -430,6 +443,7 @@ export default {
         },
         { toBackend: false, toGA: true }
       );
+      this.donateOffice(false);
       if (
         this.audioLoadingEnabled &&
         this.isWithinSevenDays &&
@@ -476,11 +490,14 @@ export default {
       }
     },
     onAudioPlay() {
+      // Autoplay is for the first start only, not a player made again later.
+      this.autoplay = false;
       // First real play per office load; the player guards repeat presses too.
       if (this.audioPlayTracked) {
         return;
       }
       this.audioPlayTracked = true;
+      this.donateOffice(true);
       trackEvent(
         'audio_play',
         {
@@ -491,6 +508,17 @@ export default {
         },
         { toBackend: true, toGA: true }
       );
+    },
+    // Siri Suggestions and Android shortcuts learn which office this is.
+    donateOffice(played) {
+      donateActivity({
+        kind: 'office',
+        serviceType: this.serviceType,
+        office: this.office,
+        date: this.officeDateStr,
+        title: this.officeTitle,
+        played,
+      });
     },
     async setAudioLinks(url) {
       if (import.meta.env.VITE_FETCH_AUDIO_ON === 'false') return [];

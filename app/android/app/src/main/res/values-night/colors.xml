@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The calendar widget in dark mode (app/src/styles/tokens.css, :root.dark). -->
+    <color name="widget_paper">#161513</color>
+    <color name="widget_ink">#E9E4DA</color>
+    <color name="widget_ink_soft">#B6ADA0</color>
+    <color name="widget_ink_faint">#877F73</color>
+</resources>

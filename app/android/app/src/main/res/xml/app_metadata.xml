@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- What the app's AppFunctions are for, for Gemini and other assistants
+     (voice/DailyOfficeAppFunctions.kt). -->
+<AppFunctionAppMetadata xmlns:appfn="http://schemas.android.com/apk/androidx.appfunctions"
+    appfn:displayDescription="@string/app_functions_description"
+    appfn:instructions="The Daily Office is the daily prayer of the Book of Common Prayer (2019) of the Anglican Church in North America. It has four daily offices (Morning Prayer, Midday Prayer, Evening Prayer, Compline) and four shorter Family Prayer offices for households and children, each with its appointed psalms, Scripture readings, and collect, read aloud in English for the ESV and KJV translations.
+Operational patterns:
+- To listen to an office, use playOffice; to read along, use openOffice. With no office named, both choose by the time of day. Use 'family' when the user mentions family, children, or praying together at home. Bedtime means compline, or family_close_of_day with children.
+- Start the openApp PendingIntent a function returns to show the page.
+- Answer questions about the church calendar (feast, season, color, saints, collect, fast days, readings, the Gospel, when a feast falls) with the matching get or find function rather than from general knowledge: this calendar can differ from other churches'.
+- Pass the day the user means as date; leave it empty for today.
+Constraints:
+- Don't recite the words of an office or a reading from memory; open it or use readPsalm.
+- Audio is only available in English for the ESV and KJV translations, from three days ago to nine days ahead." />

@@ -186,6 +186,23 @@ const groups = computed(() => {
           action: () => openPanel('share'),
         },
         {
+          // Siri and the widgets on iPhone; Google and the widget on Android.
+          label:
+            platform === 'android'
+              ? 'Google, shortcuts & widget'
+              : platform === 'ios'
+                ? 'Siri, Shortcuts & widgets'
+                : 'Voice & widgets',
+          hint:
+            platform === 'android'
+              ? 'And Android Auto'
+              : platform === 'ios'
+                ? 'Lock Screen and CarPlay too'
+                : 'In the iPhone and Android apps',
+          icon: 'mic',
+          to: '/voice',
+        },
+        {
           label: 'Add to your calendar app',
           icon: 'calendar-plus',
           action: openCalendarSubscription,

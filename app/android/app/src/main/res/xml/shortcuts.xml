@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The launcher icon's long-press shortcuts, which Google Assistant can also open by name
+  ("open Family Prayer on Daily Office", through actions.intent.OPEN_APP_FEATURE). Each opens a
+  page with a dailyoffice2019:// link (app/src/helpers/voice.js); ?autoplay=1 starts its audio.
+  The offices and readings someone uses are added as dynamic shortcuts (voice/VoiceLaunchPlugin.kt).
+-->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <capability android:name="actions.intent.OPEN_APP_FEATURE">
+        <!-- A feature with no shortcut of its own opens today's office. -->
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="com.dailyoffice2019.app.MainActivity"
+            android:targetPackage="com.dailyoffice2019.app">
+            <url-template android:value="dailyoffice2019://open/{?feature}" />
+            <parameter android:name="feature" android:key="feature" />
+        </intent>
+    </capability>
+
+    <shortcut
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutId="pray-now"
+        android:shortcutLongLabel="@string/shortcut_pray_now_long"
+        android:shortcutShortLabel="@string/shortcut_pray_now">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="dailyoffice2019://open/?autoplay=1"
+            android:targetClass="com.dailyoffice2019.app.MainActivity"
+            android:targetPackage="com.dailyoffice2019.app" />
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+            <parameter-binding android:key="feature" android:value="@array/shortcut_pray_now_names" />
+        </capability-binding>
+    </shortcut>
+
+    <shortcut
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutId="family-prayer"
+        android:shortcutLongLabel="@string/shortcut_family_long"
+        android:shortcutShortLabel="@string/shortcut_family">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="dailyoffice2019://open/family?autoplay=1"
+            android:targetClass="com.dailyoffice2019.app.MainActivity"
+            android:targetPackage="com.dailyoffice2019.app" />
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+            <parameter-binding android:key="feature" android:value="@array/shortcut_family_names" />
+        </capability-binding>
+    </shortcut>
+
+    <shortcut
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutId="readings"
+        android:shortcutLongLabel="@string/shortcut_readings_long"
+        android:shortcutShortLabel="@string/shortcut_readings">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="dailyoffice2019://open/readings/"
+            android:targetClass="com.dailyoffice2019.app.MainActivity"
+            android:targetPackage="com.dailyoffice2019.app" />
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+            <parameter-binding android:key="feature" android:value="@array/shortcut_readings_names" />
+        </capability-binding>
+    </shortcut>
+
+    <shortcut
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutId="calendar"
+        android:shortcutLongLabel="@string/shortcut_calendar_long"
+        android:shortcutShortLabel="@string/shortcut_calendar">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="dailyoffice2019://open/calendar"
+            android:targetClass="com.dailyoffice2019.app.MainActivity"
+            android:targetPackage="com.dailyoffice2019.app" />
+        <capability-binding android:key="actions.intent.OPEN_APP_FEATURE">
+            <parameter-binding android:key="feature" android:value="@array/shortcut_calendar_names" />
+        </capability-binding>
+    </shortcut>
+</shortcuts>

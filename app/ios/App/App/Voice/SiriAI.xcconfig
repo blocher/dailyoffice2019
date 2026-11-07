@@ -1,0 +1,50 @@
+// The Siri AI Developer Preview layer: on with the iOS 27.3 SDK or later, off before.
+//
+// SIRI_AI_PREVIEW compiles Voice/SiriAI.swift, and the skills bundle is copied into the app.
+// App.xcconfig includes this file for the App target, whose build settings add
+// $(SIRI_AI_CONDITIONS) to SWIFT_ACTIVE_COMPILATION_CONDITIONS and use $(SIRI_AI_EXCLUDED_FILES)
+// for EXCLUDED_SOURCE_FILE_NAMES.
+//
+// Build-setting conditions match SDK names with a trailing wildcard only, so each later SDK
+// family is listed.
+
+SIRI_AI_CONDITIONS =
+SIRI_AI_EXCLUDED_FILES = Skills.skillsbundle
+
+SIRI_AI_CONDITIONS[sdk=iphoneos27.3*] = SIRI_AI_PREVIEW
+SIRI_AI_CONDITIONS[sdk=iphoneos27.4*] = SIRI_AI_PREVIEW
+SIRI_AI_CONDITIONS[sdk=iphoneos27.5*] = SIRI_AI_PREVIEW
+SIRI_AI_CONDITIONS[sdk=iphoneos27.6*] = SIRI_AI_PREVIEW
+SIRI_AI_CONDITIONS[sdk=iphoneos27.7*] = SIRI_AI_PREVIEW
+SIRI_AI_CONDITIONS[sdk=iphoneos27.8*] = SIRI_AI_PREVIEW
+SIRI_AI_CONDITIONS[sdk=iphoneos27.9*] = SIRI_AI_PREVIEW
+SIRI_AI_CONDITIONS[sdk=iphoneos28*] = SIRI_AI_PREVIEW
+SIRI_AI_CONDITIONS[sdk=iphoneos29*] = SIRI_AI_PREVIEW
+SIRI_AI_CONDITIONS[sdk=iphonesimulator27.3*] = SIRI_AI_PREVIEW
+SIRI_AI_CONDITIONS[sdk=iphonesimulator27.4*] = SIRI_AI_PREVIEW
+SIRI_AI_CONDITIONS[sdk=iphonesimulator27.5*] = SIRI_AI_PREVIEW
+SIRI_AI_CONDITIONS[sdk=iphonesimulator27.6*] = SIRI_AI_PREVIEW
+SIRI_AI_CONDITIONS[sdk=iphonesimulator27.7*] = SIRI_AI_PREVIEW
+SIRI_AI_CONDITIONS[sdk=iphonesimulator27.8*] = SIRI_AI_PREVIEW
+SIRI_AI_CONDITIONS[sdk=iphonesimulator27.9*] = SIRI_AI_PREVIEW
+SIRI_AI_CONDITIONS[sdk=iphonesimulator28*] = SIRI_AI_PREVIEW
+SIRI_AI_CONDITIONS[sdk=iphonesimulator29*] = SIRI_AI_PREVIEW
+
+SIRI_AI_EXCLUDED_FILES[sdk=iphoneos27.3*] =
+SIRI_AI_EXCLUDED_FILES[sdk=iphoneos27.4*] =
+SIRI_AI_EXCLUDED_FILES[sdk=iphoneos27.5*] =
+SIRI_AI_EXCLUDED_FILES[sdk=iphoneos27.6*] =
+SIRI_AI_EXCLUDED_FILES[sdk=iphoneos27.7*] =
+SIRI_AI_EXCLUDED_FILES[sdk=iphoneos27.8*] =
+SIRI_AI_EXCLUDED_FILES[sdk=iphoneos27.9*] =
+SIRI_AI_EXCLUDED_FILES[sdk=iphoneos28*] =
+SIRI_AI_EXCLUDED_FILES[sdk=iphoneos29*] =
+SIRI_AI_EXCLUDED_FILES[sdk=iphonesimulator27.3*] =
+SIRI_AI_EXCLUDED_FILES[sdk=iphonesimulator27.4*] =
+SIRI_AI_EXCLUDED_FILES[sdk=iphonesimulator27.5*] =
+SIRI_AI_EXCLUDED_FILES[sdk=iphonesimulator27.6*] =
+SIRI_AI_EXCLUDED_FILES[sdk=iphonesimulator27.7*] =
+SIRI_AI_EXCLUDED_FILES[sdk=iphonesimulator27.8*] =
+SIRI_AI_EXCLUDED_FILES[sdk=iphonesimulator27.9*] =
+SIRI_AI_EXCLUDED_FILES[sdk=iphonesimulator28*] =
+SIRI_AI_EXCLUDED_FILES[sdk=iphonesimulator29*] =
