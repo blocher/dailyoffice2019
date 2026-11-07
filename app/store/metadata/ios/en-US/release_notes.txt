@@ -1,12 +1,17 @@
-New in 4.1: pray without a connection.
+New in 4.2: pray hands-free.
 
-• Offline mode: the days ahead download on their own, up to two months of the offices, Family Prayer, and the readings, so you can pray on a plane, on retreat, or anywhere without a signal. Turn on Listen offline to keep the spoken office too. See it all under Menu › Offline.
-• Downloads stay fresh in the background, and corrections reach your device the next time it's online.
-• On iPhone Duo, open it like a book and Book view shows two pages, one on each side of the fold.
-• Book view reopens where you left off.
-• On a phone, swipe a panel down to close it.
+• Siri: "Pray Morning Prayer with The Daily Office" starts the office with audio. Ask Siri what today's feast is, the liturgical color, the season, the collect, the readings, or when the next holy day falls, and get the answer without opening the app.
+• CarPlay: listen to the offices and the readings in the car, starting with the office for the time of day.
+• Widgets: today's feast, season, color, and saint on your Home Screen and Lock Screen, with a Pray button.
+• Find psalms and offices in Spotlight and Siri Suggestions.
+• See Menu › Siri, Shortcuts & widgets for everything you can say.
 
-New last month, in case you missed it (4.0):
+New in 4.1:
+• Offline mode: up to two months of the offices, Family Prayer, and the readings download on their own, so you can pray anywhere without a signal. Turn on Listen offline to keep the spoken office too (Menu › Offline).
+• On iPhone Duo, Book view shows two pages, one on each side of the fold.
+• Book view reopens where you left off; on a phone, swipe a panel down to close it.
+
+New in 4.0:
 • A new design modeled on the printed 2019 prayer book
 • Book view: pray an office page by page, turning the pages like a real book
 • Audio for every office, with word-by-word highlighting, that keeps playing with your screen locked

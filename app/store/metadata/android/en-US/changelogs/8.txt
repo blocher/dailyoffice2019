@@ -1,0 +1,6 @@
+New in 4.2: pray hands-free.
+• Google Assistant and Gemini: start an office or ask about the day's feast, color, or readings
+• Android Auto: listen to the offices and readings in the car
+• A home-screen widget for today in the church calendar
+New in 4.1: offline mode, with up to two months of offices, Family Prayer, readings, and audio
+New in 4.0: a design modeled on the printed prayer book, Book view, audio for every office, podcasts, themes and typefaces, and a new calendar

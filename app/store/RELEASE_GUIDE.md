@@ -7,9 +7,9 @@ Play, written from the 4.0.0 release. Everything you paste or upload is in this
 | | iOS | Android |
 |---|---|---|
 | Bundle / package | `com.dailyoffice.dailyoffice2019` | `com.dailyoffice2019.app` |
-| Latest release | 4.1.1 (build 4.1.1), submitted November 1, 2026 (a 4.1.0 build was uploaded but never submitted) | 4.1.1 (version code 7), submitted November 1, 2026 |
-| Previous release | 4.0.0 (build 4.0.0), live October 28, 2026 | 4.0.0 (version code 6) |
-| Toolchain | Xcode 27.2 (iOS 27.2 SDK), iOS 15+ deployment, SPM | AGP 8.13.2, Gradle 8.14.6, compile/target SDK 36, min SDK 24 |
+| Latest release | 4.2.0 (build 4.2.0), submitted November 7, 2026 | 4.2.0 (version code 8), submitted November 7, 2026 |
+| Previous release | 4.1.1 (build 4.1.1), live November 2, 2026 | 4.1.1 (version code 7) |
+| Toolchain | Xcode 27.2 (iOS 27.2 SDK), iOS 15+ deployment, SPM | AGP 9.5.1, Gradle 9.9.0 (JDK 21), app compile SDK 37, target SDK 36, min SDK 24 |
 | Capacitor | 8.6.0 | same |
 
 ## Accounts
@@ -28,10 +28,10 @@ Play, written from the 4.0.0 release. Everything you paste or upload is in this
 1. **Merge to `master` first.** Release builds come from `master`.
 2. **Bump the versions.** Both stores reject a version they've already seen.
    - iOS: `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` in
-     `ios/App/App.xcodeproj/project.pbxproj` (both Debug and Release).
+     `ios/App/Version.xcconfig` (shared by the app and its widget extension).
    - Android: `versionName` and `versionCode` in `android/app/build.gradle`.
      `versionCode` must be higher than any code ever uploaded; **the next one
-     is 8** (4.1.1 is 7).
+     is 9** (4.2.0 is 8).
    - `version` in `package.json`, then `npm install` to update the lockfile.
 3. **Write the release notes:** iOS `store/metadata/ios/en-US/release_notes.txt`,
    and Android `store/metadata/android/en-US/changelogs/<versionCode>.txt`
@@ -80,7 +80,10 @@ xcodebuild -exportArchive -archivePath /tmp/App.xcarchive \
   -allowProvisioningUpdates
 ```
 
-`destination: upload` sends the build straight to App Store Connect. To use
+`destination: upload` sends the build straight to App Store Connect. If export fails with "App Store Connect access … is required" (Xcode's
+saved sign-in has expired), add the App Store Connect API key instead:
+`-authenticationKeyPath <AuthKey_….p8> -authenticationKeyID <key id>
+-authenticationKeyIssuerID <issuer id>`. To use
 Xcode instead: `npx cap open ios`, choose **Any iOS Device (arm64)**,
 **Product → Archive**, then **Distribute App → App Store Connect → Upload** in
 the Organizer.
@@ -234,7 +237,9 @@ moment yourself.
 
 1. **Test and release → Production → Create new release.**
 2. Upload `app-release.aab` by hand. Browser automation can't attach files over
-   10 MB.
+   10 MB in one go; for 4.2.0 the bundle was split (`split -b 7300000`), each
+   half attached to a scratch file input, and the halves rejoined in the page
+   (checked against the file's SHA-256) and handed to Play's `.aab` input.
 3. Release name: `<versionName> (<versionCode>)`, such as `4.0.0 (6)`.
 4. Release notes: paste `store/metadata/android/en-US/changelogs/<versionCode>.txt`.
 5. **Rollout:** 4.0.0 went to 100%. A staged rollout (for example 20%, then 100%
