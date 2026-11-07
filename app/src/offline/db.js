@@ -203,10 +203,18 @@ export function eachRecord(name, visit, mode = 'readwrite') {
           resolve();
           return;
         }
-        const result = visit(cursor.value);
-        if (result === 'delete') cursor.delete();
-        else if (result && typeof result === 'object') cursor.update(result);
-        cursor.continue();
+        // Safari can finish the transaction between records (the app was
+        // backgrounded, the connection dropped), so `continue` throws
+        // TransactionInactiveError from inside this handler, where nothing
+        // could catch it. Reject instead, so the caller handles it.
+        try {
+          const result = visit(cursor.value);
+          if (result === 'delete') cursor.delete();
+          else if (result && typeof result === 'object') cursor.update(result);
+          cursor.continue();
+        } catch (error) {
+          reject(error);
+        }
       };
     });
   });
