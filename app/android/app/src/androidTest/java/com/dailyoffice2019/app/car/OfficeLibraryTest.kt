@@ -12,12 +12,14 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.dailyoffice2019.app.audio.PlaybackService
 import com.dailyoffice2019.app.voice.Office
+import com.dailyoffice2019.app.voice.VoicePlayback
 import java.util.concurrent.Callable
 import java.util.concurrent.FutureTask
 import java.util.concurrent.TimeUnit
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -112,6 +114,38 @@ class OfficeLibraryTest {
         assertEquals(Office.COMPLINE, office("Compline"))
         assertEquals(Office.EVENING_PRAYER, office("play evensong"))
         assertEquals(Office.FAMILY_MORNING, office("family morning prayer"))
+        assertEquals(Office.MIDDAY_PRAYER, office("Play Midday Prayer on the Daily Office"))
+        assertEquals(Office.MIDDAY_PRAYER, office("noon day prayer"))
         assertTrue(OfficeAudioResolver.requestFor(context, "today's readings") is OfficeAudioResolver.Request.ForReadings)
+        // Empty: the office for now. Something the app doesn't have: nothing.
+        assertNotNull(OfficeAudioResolver.requestFor(context, ""))
+        assertNull(OfficeAudioResolver.requestFor(context, "jazz"))
+    }
+
+    @Test
+    fun searchesTheLibrary() {
+        onMain { browser.search("vespers", null) }.get(10, TimeUnit.SECONDS)
+        val found = onMain { browser.getSearchResult("vespers", 0, 10, null) }.get(10, TimeUnit.SECONDS).value!!
+        assertEquals(listOf("office:evening_prayer"), found.map { it.mediaId })
+        val none = onMain { browser.getSearchResult("jazz", 0, 10, null) }.get(10, TimeUnit.SECONDS).value!!
+        assertTrue(none.isEmpty())
+    }
+
+    /** As Assistant's "play Evensong on Daily Office" arrives (playFromSearch, or VoicePlayActivity). */
+    @Test
+    fun playsAVoiceSearch() {
+        onMain {
+            browser.setMediaItem(VoicePlayback.item(null, "play even song on the daily office"))
+            browser.prepare()
+            browser.play()
+        }
+        val deadline = SystemClock.elapsedRealtime() + 90_000
+        var title: String? = null
+        while (SystemClock.elapsedRealtime() < deadline) {
+            title = onMain { browser.mediaMetadata.title?.toString() }
+            if (title == "Evening Prayer" && onMain { browser.playbackState } == Player.STATE_READY) break
+            SystemClock.sleep(500)
+        }
+        assertEquals("Evening Prayer", title)
     }
 }

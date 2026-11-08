@@ -88,7 +88,9 @@ public class PlaybackService extends MediaLibraryService {
             .build();
 
         // What Android Auto browses and plays, and how the page's own tracks load (car/OfficeLibrary.kt).
-        MediaLibrarySession.Builder builder = new MediaLibrarySession.Builder(this, player, new OfficeLibrary(this));
+        OfficeLibrary library = new OfficeLibrary(this);
+        library.watch(player);
+        MediaLibrarySession.Builder builder = new MediaLibrarySession.Builder(this, player, library);
         PendingIntent openApp = openAppIntent();
         if (openApp != null) {
             builder.setSessionActivity(openApp);

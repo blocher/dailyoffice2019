@@ -2,6 +2,7 @@ import UIKit
 import AVFoundation
 import Capacitor
 import Firebase
+import Intents
 import WidgetKit
 
 @UIApplicationMain
@@ -33,6 +34,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if #available(iOS 18.0, *) {
             VoiceSpotlight.indexIfNeeded()
         }
+
+        // Play pressed with nothing to resume (a headset, the car, Siri's "play") plays the office
+        // for now; Siri learns the offices' names as media titles (Voice/VoicePlayback.swift).
+        OfficePlayer.shared.onPlayWithNothingQueued = {
+            Task { @MainActor in OfficePlayback.playNow() }
+        }
+        VoiceVocabulary.register()
 
         // The calendar widget (DailyOfficeWidget) reads the day again whenever the app opens.
         WidgetCenter.shared.reloadAllTimelines()
@@ -71,6 +79,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return
         }
         OfflineAudioDownloads.shared.handleEvents(completion: completionHandler)
+    }
+
+    // Siri's "Play Compline on The Daily Office" (and the same in CarPlay) is an INPlayMediaIntent,
+    // handled here in the app rather than in an extension, so it plays through the app's own
+    // player (Voice/VoicePlayback.swift).
+    func application(_ application: UIApplication, handlerFor intent: INIntent) -> Any? {
+        intent is INPlayMediaIntent ? PlayMediaIntentHandler() : nil
+    }
+
+    // The handler answers .handleInApp; iOS then calls this, in the background if need be, where
+    // the app may start audio.
+    func application(_ application: UIApplication, handle intent: INIntent, completionHandler: @escaping (INIntentResponse) -> Void) {
+        guard let intent = intent as? INPlayMediaIntent else {
+            completionHandler(INPlayMediaIntentResponse(code: .failure, userActivity: nil))
+            return
+        }
+        Task { @MainActor in
+            PlayMediaIntentHandler.play(intent, completion: completionHandler)
+        }
     }
 
     // The window, and links that open the app, belong to the scene now (SceneDelegate.swift).

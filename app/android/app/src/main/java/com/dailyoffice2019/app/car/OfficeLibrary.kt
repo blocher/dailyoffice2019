@@ -5,12 +5,15 @@ import androidx.annotation.OptIn
 import androidx.core.content.ContextCompat
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService.LibraryParams
 import androidx.media3.session.MediaLibraryService.MediaLibrarySession
 import androidx.media3.session.MediaSession
+import androidx.media3.session.MediaSession.MediaItemsWithStartPosition
 import androidx.media3.session.SessionError
+import androidx.media3.session.SessionResult
 import com.dailyoffice2019.app.voice.Office
 import com.dailyoffice2019.app.voice.ReadingsService
 import com.google.common.collect.ImmutableList
@@ -24,6 +27,12 @@ import java.util.concurrent.Executors
  * folder with the office for now and all eight offices, and a Readings folder. Choosing one finds
  * its audio (OfficeAudioResolver) and plays it in PlaybackService's player, the same one the page
  * uses. The Android side of ios/App/App/Car/CarPlaySceneDelegate.swift.
+ *
+ * Voice requests ("play Evening Prayer on Daily Office" in the car or to Assistant, and the
+ * MEDIA_PLAY_FROM_SEARCH that voice/VoicePlayActivity.kt passes on) arrive as a search query,
+ * matched by voice/VoiceWords.kt; an empty one is the office for now. Play with nothing worth
+ * resuming (nothing loaded, an office that finished, or one paused for hours) plays the office
+ * for now too, rather than this morning's office in the evening.
  *
  * Library ids: "office:now", "office:family-now", "office:<office key>", "readings:<slug>".
  * The page's own items carry their audio address instead (NativeAudioPlugin), and only this app
@@ -39,7 +48,34 @@ class OfficeLibrary(private val context: Context) : MediaLibrarySession.Callback
         const val PRAY = "pray"
         const val READINGS = "readings"
         private const val ARTIST = "The Daily Office"
+
+        /** A paused office older than this is not resumed by a bare "play" from outside the app. */
+        const val STALE_AFTER_MS = 2 * 60 * 60 * 1000L
     }
+
+    // When the player last played or paused, to tell a paused office from a stale one.
+    @Volatile private var lastActive = System.currentTimeMillis()
+
+    /** Follows the session's player (PlaybackService), for STALE_AFTER_MS. */
+    fun watch(player: Player) {
+        player.addListener(
+            object : Player.Listener {
+                override fun onIsPlayingChanged(isPlaying: Boolean) {
+                    lastActive = System.currentTimeMillis()
+                }
+
+                override fun onPlaybackStateChanged(playbackState: Int) {
+                    lastActive = System.currentTimeMillis()
+                }
+            },
+        )
+    }
+
+    /** Nothing loaded, an office that has finished, or one paused for hours. */
+    fun nothingToResume(player: Player, now: Long = System.currentTimeMillis()): Boolean =
+        player.mediaItemCount == 0 ||
+            player.playbackState == Player.STATE_ENDED ||
+            (!player.isPlaying && now - lastActive > STALE_AFTER_MS)
 
     private fun folder(id: String, title: String) = MediaItem.Builder()
         .setMediaId(id)
@@ -98,6 +134,35 @@ class OfficeLibrary(private val context: Context) : MediaLibrarySession.Callback
         else -> null
     }
 
+    /** The track's item, as the page names it (by its address), so the page can follow it. */
+    private fun trackItem(track: OfficeAudioResolver.Track): MediaItem = MediaItem.Builder()
+        .setMediaId(track.uri.toString())
+        .setUri(track.uri)
+        .setMediaMetadata(
+            MediaMetadata.Builder()
+                .setTitle(track.title)
+                .setDisplayTitle(track.title)
+                .setArtist(ARTIST)
+                .setSubtitle(ARTIST)
+                .setMediaType(MediaMetadata.MEDIA_TYPE_PODCAST_EPISODE)
+                .build(),
+        )
+        .build()
+
+    /** A voice search's answer, as a library item ("office:compline"), or null. */
+    fun searchResult(query: String?): MediaItem? {
+        val request = OfficeAudioResolver.requestFor(context, query) ?: return null
+        val id = when (request) {
+            is OfficeAudioResolver.Request.ForOffice -> "office:${request.office.key}"
+            is OfficeAudioResolver.Request.ForReadings -> "readings:${request.service.slug}"
+        }
+        return playable(id, request.title, null)
+    }
+
+    private fun notOurs(query: String?) = OfficeAudioResolver.Failure(
+        "The Daily Office has no “${query.orEmpty().trim()}”. Try Morning Prayer, Compline, or today’s readings.",
+    )
+
     override fun onGetLibraryRoot(
         session: MediaLibrarySession,
         browser: MediaSession.ControllerInfo,
@@ -154,30 +219,113 @@ class OfficeLibrary(private val context: Context) : MediaLibrarySession.Callback
             mediaItems.map { item ->
                 val uri = item.requestMetadata.mediaUri
                 if (uri != null && ownApp) return@map item.buildUpon().setUri(uri).build()
+                val query = item.requestMetadata.searchQuery
                 val request = request(item.mediaId)
-                    ?: OfficeAudioResolver.requestFor(context, item.requestMetadata.searchQuery)
-                    ?: throw OfficeAudioResolver.Failure(OfficeAudioResolver.NO_AUDIO)
-                val track = OfficeAudioResolver.resolve(context, request)
-                MediaItem.Builder()
-                    // The track's address, as the page names it, so the page can follow it.
-                    .setMediaId(track.uri.toString())
-                    .setUri(track.uri)
-                    .setMediaMetadata(
-                        MediaMetadata.Builder()
-                            .setTitle(track.title)
-                            .setDisplayTitle(track.title)
-                            .setArtist(ARTIST)
-                            .setSubtitle(ARTIST)
-                            .setMediaType(MediaMetadata.MEDIA_TYPE_PODCAST_EPISODE)
-                            .build(),
-                    )
-                    .build()
+                    // A voice search ("" for "play Daily Office": the office for now).
+                    ?: OfficeAudioResolver.requestFor(context, query)
+                    ?: throw notOurs(query ?: item.mediaId)
+                trackItem(OfficeAudioResolver.resolve(context, request))
             }.toMutableList()
         }
+        reportFailure(mediaSession, controller, future)
+        return future
+    }
+
+    /**
+     * Play pressed with nothing in the player (a headset, the car, Assistant's "play", the system's
+     * resume card): the office for now.
+     */
+    override fun onPlaybackResumption(
+        mediaSession: MediaSession,
+        controller: MediaSession.ControllerInfo,
+        isForPlayback: Boolean,
+    ): ListenableFuture<MediaItemsWithStartPosition> {
+        val future = executor.submit<MediaItemsWithStartPosition> {
+            val office = Office.current(com.dailyoffice2019.app.voice.AppPreferences(context).prefersFamilyPrayer)
+            val track = OfficeAudioResolver.resolve(context, OfficeAudioResolver.Request.ForOffice(office))
+            MediaItemsWithStartPosition(listOf(trackItem(track)), 0, 0L)
+        }
+        if (isForPlayback) reportFailure(mediaSession, controller, future)
+        return future
+    }
+
+    /**
+     * Play from outside the app (Bluetooth, the car, Assistant) on an office that finished or was
+     * left paused for hours plays the office for now instead. The page's own Play, and the
+     * notification's, resume what they show.
+     */
+    @Deprecated("Media3 still calls this; kept until the replacement is stable.")
+    override fun onPlayerCommandRequest(
+        session: MediaSession,
+        controller: MediaSession.ControllerInfo,
+        playerCommand: Int,
+    ): Int {
+        val player = session.player
+        if (playerCommand == Player.COMMAND_PLAY_PAUSE &&
+            controller.packageName != context.packageName &&
+            !player.playWhenReady &&
+            player.mediaItemCount > 0 &&
+            nothingToResume(player)
+        ) {
+            playNow(session, controller)
+            return SessionResult.RESULT_INFO_SKIPPED
+        }
+        @Suppress("DEPRECATION")
+        return super.onPlayerCommandRequest(session, controller, playerCommand)
+    }
+
+    /** Loads and plays the office for now. */
+    private fun playNow(session: MediaSession, controller: MediaSession.ControllerInfo) {
+        val future = onPlaybackResumption(session, controller, true)
         Futures.addCallback(
             future,
-            object : com.google.common.util.concurrent.FutureCallback<MutableList<MediaItem>> {
-                override fun onSuccess(result: MutableList<MediaItem>) = Unit
+            object : com.google.common.util.concurrent.FutureCallback<MediaItemsWithStartPosition> {
+                override fun onSuccess(result: MediaItemsWithStartPosition) {
+                    val player = session.player
+                    player.setMediaItems(result.mediaItems, result.startIndex, result.startPositionMs)
+                    player.prepare()
+                    player.play()
+                }
+
+                override fun onFailure(error: Throwable) = Unit
+            },
+            ContextCompat.getMainExecutor(context),
+        )
+    }
+
+    /** "Play Compline" said to Android Auto's search, or typed there. */
+    override fun onSearch(
+        session: MediaLibrarySession,
+        browser: MediaSession.ControllerInfo,
+        query: String,
+        params: LibraryParams?,
+    ): ListenableFuture<LibraryResult<Void>> {
+        session.notifySearchResultChanged(browser, query, if (searchResult(query) != null) 1 else 0, params)
+        return Futures.immediateFuture(LibraryResult.ofVoid())
+    }
+
+    override fun onGetSearchResult(
+        session: MediaLibrarySession,
+        browser: MediaSession.ControllerInfo,
+        query: String,
+        page: Int,
+        pageSize: Int,
+        params: LibraryParams?,
+    ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
+        val found = searchResult(query)
+        val items = if (found != null && page == 0) ImmutableList.of(found) else ImmutableList.of()
+        return Futures.immediateFuture(LibraryResult.ofItemList(items, params))
+    }
+
+    private fun <T> reportFailure(
+        mediaSession: MediaSession,
+        controller: MediaSession.ControllerInfo,
+        future: ListenableFuture<T>,
+    ) {
+        Futures.addCallback(
+            future,
+            object : com.google.common.util.concurrent.FutureCallback<T> {
+                override fun onSuccess(result: T) = Unit
 
                 override fun onFailure(error: Throwable) {
                     // Shown in the car: why nothing plays.
@@ -188,6 +336,5 @@ class OfficeLibrary(private val context: Context) : MediaLibrarySession.Callback
             // The session is only used from the main thread.
             ContextCompat.getMainExecutor(context),
         )
-        return future
     }
 }

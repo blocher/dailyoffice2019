@@ -28,6 +28,15 @@ final class OfficePlayer {
     /// Posted with each status report, for CarPlay's lists to follow what plays.
     static let statusChanged = Notification.Name("OfficePlayer.statusChanged")
 
+    /// Play pressed (headset, car, lock screen, or Siri's "play") with nothing worth resuming:
+    /// nothing loaded, an office that has finished, or one left paused for hours. The app plays
+    /// the office for this time of day instead (OfficePlayback.playNow), rather than this
+    /// morning's office in the evening.
+    var onPlayWithNothingQueued: (() -> Void)?
+
+    // A paused office older than this is not resumed by a bare "play".
+    private static let staleAfter: TimeInterval = 2 * 60 * 60
+
     // Reconnect for this long without playing before giving up (OfficeLoadErrorPolicy on Android).
     // Trying holds the app awake, so it mustn't go on all night.
     private static let giveUpAfter: TimeInterval = 5 * 60
@@ -54,6 +63,8 @@ final class OfficePlayer {
     private var rate: Float = 1
     private var playWhenReady = false
     private var ended = false
+    // When the office last played or paused, to tell a paused office from a stale one.
+    private var lastActive = Date()
     private var error: String?
     // Where the playhead goes once the item can seek: a seek made before it was ready, or the
     // place to return to after reconnecting. Reported as the position until then.
@@ -274,6 +285,7 @@ final class OfficePlayer {
     }
 
     private func startPlayback() {
+        lastActive = Date()
         activateSession()
         item?.preferredForwardBufferDuration = Self.playingBuffer
         if #available(iOS 16.0, *) {
@@ -283,6 +295,7 @@ final class OfficePlayer {
     }
 
     private func pausePlayback() {
+        lastActive = Date()
         lastPosition = currentPosition()
         playWhenReady = false
         player.pause()
@@ -351,6 +364,7 @@ final class OfficePlayer {
     private func itemEnded(_ note: Notification) {
         guard note.object as? AVPlayerItem === item else { return }
         ended = true
+        lastActive = Date()
         playWhenReady = false
         lastPosition = currentDuration()
         endBackgroundTask()
@@ -554,7 +568,12 @@ final class OfficePlayer {
     private func setUpRemoteCommands() {
         let commands = MPRemoteCommandCenter.shared()
         commands.playCommand.addTarget { [weak self] _ in
-            guard let self, self.source != nil else { return .noActionableNowPlayingItem }
+            guard let self else { return .noActionableNowPlayingItem }
+            if self.nothingToResume {
+                guard let playNow = self.onPlayWithNothingQueued else { return .noActionableNowPlayingItem }
+                playNow()
+                return .success
+            }
             self.resumePlayback()
             return .success
         }
@@ -564,7 +583,13 @@ final class OfficePlayer {
             return .success
         }
         commands.togglePlayPauseCommand.addTarget { [weak self] _ in
-            guard let self, self.source != nil else { return .noActionableNowPlayingItem }
+            guard let self else { return .noActionableNowPlayingItem }
+            if !self.playWhenReady, self.nothingToResume {
+                guard let playNow = self.onPlayWithNothingQueued else { return .noActionableNowPlayingItem }
+                playNow()
+                return .success
+            }
+            guard self.source != nil else { return .noActionableNowPlayingItem }
             if self.playWhenReady {
                 self.pausePlayback()
             } else {
@@ -595,12 +620,18 @@ final class OfficePlayer {
         enableRemoteCommands(false)
     }
 
+    /// Nothing loaded, an office that has finished, or one paused for hours.
+    var nothingToResume: Bool {
+        source == nil || item == nil || ended || Date().timeIntervalSince(lastActive) > Self.staleAfter
+    }
+
     private func enableRemoteCommands(_ enabled: Bool) {
         let commands = MPRemoteCommandCenter.shared()
+        // Play always works: with nothing loaded it plays the office for now.
+        commands.playCommand.isEnabled = true
+        commands.togglePlayPauseCommand.isEnabled = true
         for command in [
-            commands.playCommand,
             commands.pauseCommand,
-            commands.togglePlayPauseCommand,
             commands.skipForwardCommand,
             commands.skipBackwardCommand,
             commands.changePlaybackPositionCommand,

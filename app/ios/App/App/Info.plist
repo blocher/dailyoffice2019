@@ -44,12 +44,28 @@
 		<dict>
 			<key>INAlternativeAppName</key>
 			<string>Daily Office 2019</string>
+			<key>INAlternativeAppNamePronunciationHint</key>
+			<string>Daily Office twenty nineteen</string>
 		</dict>
+		<dict>
+			<key>INAlternativeAppName</key>
+			<string>Daily Office App</string>
+		</dict>
+	</array>
+	<key>INIntentsSupported</key>
+	<array>
+		<string>INPlayMediaIntent</string>
+	</array>
+	<key>INSupportedMediaCategories</key>
+	<array>
+		<string>INMediaCategoryGeneral</string>
 	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSSiriUsageDescription</key>
+	<string>Siri can play an office or the readings when you ask, such as “Play Compline on The Daily Office.”</string>
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>com.dailyoffice.dailyoffice2019.open</string>

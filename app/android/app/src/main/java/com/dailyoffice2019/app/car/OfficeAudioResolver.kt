@@ -2,9 +2,12 @@ package com.dailyoffice2019.app.car
 
 import android.content.Context
 import android.net.Uri
+import com.dailyoffice2019.app.voice.AppPreferences
 import com.dailyoffice2019.app.voice.CalendarApi
 import com.dailyoffice2019.app.voice.Office
 import com.dailyoffice2019.app.voice.ReadingsService
+import com.dailyoffice2019.app.voice.VoiceRequest
+import com.dailyoffice2019.app.voice.VoiceWords
 import java.io.File
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -219,19 +222,15 @@ object OfficeAudioResolver {
         return (hash.toLong() and 0xFFFFFFFFL).toString(36)
     }
 
-    /** What a voice search ("play Compline on Daily Office") asks for, or null. */
-    fun requestFor(context: Context, query: String?): Request? {
-        val words = query?.trim()?.lowercase().orEmpty()
-        if (words.contains("reading") || words.contains("lesson") || words.contains("gospel")) {
-            return Request.ForReadings(ReadingsService.named(words))
+    /**
+     * What a voice search asks for ("play Evening Prayer on Daily Office", "evensong", "today's
+     * readings"), by the words in voice/VoiceWords.kt. An empty search is the office for now; null
+     * for words the app has nothing for.
+     */
+    fun requestFor(context: Context, query: String?, now: Calendar = Calendar.getInstance()): Request? =
+        when (val match = VoiceWords.match(query, AppPreferences(context).prefersFamilyPrayer, now)) {
+            is VoiceRequest.ForOffice -> Request.ForOffice(match.office)
+            is VoiceRequest.ForReadings -> Request.ForReadings(match.service)
+            null -> null
         }
-        // The longest name heard wins: "family morning prayer" is Family Prayer, not Morning Prayer.
-        val named = Office.entries
-            .flatMap { office -> (listOf(office.title) + office.synonyms).map { office to it.lowercase() } }
-            .filter { (_, name) -> words.contains(name) }
-            .maxByOrNull { (_, name) -> name.length }
-            ?.first
-        if (named != null) return Request.ForOffice(named)
-        return Request.ForOffice(Office.named(if (words.contains("family")) "family" else "now", context)!!)
-    }
 }

@@ -5,12 +5,16 @@ import SwiftUI
 // Siri, Shortcuts, Spotlight and the Action button, on iOS 17 and later. (iOS 15 and 16 get
 // Siri Suggestions and Spotlight from the page's NSUserActivity, in VoiceLaunchPlugin.swift.)
 //
-// Two kinds of action:
-// - Open and play: these open the app at a page (VoiceLaunch); ?autoplay=1 has the page start
-//   the audio once it's ready (app/src/helpers/voice.js). The app's own player then keeps going
-//   with the phone locked.
+// Three kinds of action:
+// - Play: these play the audio in the background without opening the app (AudioPlaybackIntent),
+//   through the same player and request addresses as CarPlay (VoicePlayback.swift), so they work
+//   with the phone locked in a car.
+// - Open, read or show: these open the app at a page (VoiceLaunch).
 // - Questions: answered from the calendar API in the background, spoken on AirPods and shown on
 //   screen, without opening the app (LiturgicalAnswers.swift).
+//
+// "Play Compline on The Daily Office" may reach the app as Siri's media request instead of these
+// phrases; VoicePlayback.swift handles that with the same words (VoiceWords in VoiceModel.swift).
 //
 // DailyOfficeShortcuts gives the most-used ones phrases that work with no setup ("Play Compline in
 // The Daily Office"). On iOS 27.3 with Siri AI, SiriAI.swift also offers every action here to Siri
@@ -38,21 +42,34 @@ enum OfficeChoice: String, AppEnum {
         .now: DisplayRepresentation(
             title: "The office for now",
             subtitle: "Morning, Midday, Evening Prayer or Compline, by the time of day",
-            synonyms: ["the office", "the daily office", "the next office", "the hours", "my prayers"]
+            synonyms: ["the office", "the daily office", "today’s office", "the next office", "the hours", "my prayers", "our prayers", "prayers"]
         ),
         .familyNow: DisplayRepresentation(
             title: "Family Prayer",
             subtitle: "Family Prayer for this time of day",
-            synonyms: ["family prayer", "family prayers", "prayers with the kids", "prayers with my family"]
+            synonyms: ["family prayer", "family prayers", "prayers with the kids", "prayers with the children", "prayers with my family", "prayers with the family"]
         ),
-        .morningPrayer: DisplayRepresentation(title: "Morning Prayer", subtitle: "The Daily Office", synonyms: ["Matins", "Morning Office", "Daily Morning Prayer"]),
-        .middayPrayer: DisplayRepresentation(title: "Midday Prayer", subtitle: "The Daily Office", synonyms: ["Noonday Prayer", "Midday Office", "Daily Midday Prayer"]),
+        // These must be literals for Siri; keep them in step with VoiceWords (VoiceModel.swift).
+        .morningPrayer: DisplayRepresentation(title: "Morning Prayer", subtitle: "The Daily Office", synonyms: ["Matins", "Lauds", "Morning Office", "Daily Morning Prayer"]),
+        .middayPrayer: DisplayRepresentation(
+            title: "Midday Prayer",
+            subtitle: "The Daily Office",
+            synonyms: ["Noonday Prayer", "Noon Prayer", "Mid-day Prayer", "Midday Office", "Sext", "Daily Midday Prayer"]
+        ),
         .eveningPrayer: DisplayRepresentation(title: "Evening Prayer", subtitle: "The Daily Office", synonyms: ["Evensong", "Vespers", "Evening Office", "Daily Evening Prayer"]),
-        .compline: DisplayRepresentation(title: "Compline", subtitle: "The Daily Office", synonyms: ["Night Prayer", "Bedtime Prayer", "Prayer at the End of the Day"]),
+        .compline: DisplayRepresentation(
+            title: "Compline",
+            subtitle: "The Daily Office",
+            synonyms: ["Night Prayer", "Night Office", "Bedtime Prayers", "Prayers at Bedtime", "Prayer at the End of the Day"]
+        ),
         .familyMorning: DisplayRepresentation(title: "Family Prayer in the Morning", subtitle: "Family Prayer", synonyms: ["Family Morning Prayer", "Morning Family Prayer"]),
         .familyMidday: DisplayRepresentation(title: "Family Prayer at Midday", subtitle: "Family Prayer", synonyms: ["Family Midday Prayer", "Family Noonday Prayer"]),
         .familyEarlyEvening: DisplayRepresentation(title: "Family Prayer in the Early Evening", subtitle: "Family Prayer", synonyms: ["Family Evening Prayer", "Family Early Evening Prayer", "Family Supper Prayer"]),
-        .familyCloseOfDay: DisplayRepresentation(title: "Family Prayer at the Close of Day", subtitle: "Family Prayer", synonyms: ["Family Bedtime Prayer", "Family Night Prayer", "Family Compline", "Close of Day"]),
+        .familyCloseOfDay: DisplayRepresentation(
+            title: "Family Prayer at the Close of Day",
+            subtitle: "Family Prayer",
+            synonyms: ["Family Bedtime Prayer", "Bedtime Prayers with the Family", "Family Night Prayer", "Family Compline", "Close of Day"]
+        ),
     ]
 
     init(_ office: Office) {
@@ -79,11 +96,11 @@ enum ReadingsChoice: String, AppEnum {
     static let typeDisplayRepresentation: TypeDisplayRepresentation = "Readings"
 
     static let caseDisplayRepresentations: [ReadingsChoice: DisplayRepresentation] = [
-        .morningPrayer: DisplayRepresentation(title: "Morning Prayer", synonyms: ["the morning readings", "the morning lessons"]),
-        .eveningPrayer: DisplayRepresentation(title: "Evening Prayer", synonyms: ["the evening readings", "the evening lessons"]),
+        .morningPrayer: DisplayRepresentation(title: "Morning Prayer", synonyms: ["the morning readings", "the morning lessons", "Matins"]),
+        .eveningPrayer: DisplayRepresentation(title: "Evening Prayer", synonyms: ["the evening readings", "the evening lessons", "Evensong"]),
         .holyEucharist: DisplayRepresentation(
             title: "Holy Eucharist",
-            synonyms: ["the Eucharist", "Mass", "Communion", "the Lord’s Supper", "Sunday’s readings", "the lectionary"]
+            synonyms: ["the Eucharist", "Mass", "Communion", "the Lord’s Supper", "Sunday’s readings", "the lectionary", "the Gospel"]
         ),
     ]
 
@@ -213,14 +230,28 @@ private func openPage(_ path: String, autoplay: Bool = false) {
     VoiceLaunch.open(path: VoiceLinks.adding(autoplay: autoplay, to: path))
 }
 
+/// Plays without opening the app (VoicePlayback.swift), and says what is playing.
 @available(iOS 17.0, *)
-struct PlayOfficeIntent: AppIntent {
+@MainActor
+private func playDialog(_ request: OfficeAudioResolver.Request) async -> IntentDialog {
+    switch await OfficePlayback.start(request) {
+    case .playing(let title):
+        return IntentDialog(full: "Playing \(title).", supporting: "Playing \(title)")
+    case .starting(let title):
+        return IntentDialog(full: "Starting \(title). It will begin in a moment.", supporting: "Starting \(title)")
+    case .failed(let error):
+        return IntentDialog("\(error.localizedDescription)")
+    }
+}
+
+@available(iOS 17.0, *)
+struct PlayOfficeIntent: AudioPlaybackIntent {
     static let title: LocalizedStringResource = "Play an Office"
     static let description = IntentDescription(
-        "Opens The Daily Office at today’s Morning Prayer, Midday Prayer, Evening Prayer, Compline, or one of the four Family Prayer offices, and starts reading it aloud. With no office named, plays the one for this time of day.",
+        "Reads today’s Morning Prayer, Midday Prayer, Evening Prayer, Compline, or one of the four Family Prayer offices aloud from The Daily Office, without opening the app (with the phone locked, and in CarPlay). With no office named, plays the one for this time of day.",
         categoryName: "Pray"
     )
-    static let openAppWhenRun = true
+    static let openAppWhenRun = false
 
     @Parameter(
         title: "Office",
@@ -241,8 +272,7 @@ struct PlayOfficeIntent: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
         let chosen = (office ?? .now).resolve()
-        openPage(chosen.path, autoplay: true)
-        return .result(dialog: IntentDialog(full: "Here is \(chosen.title).", supporting: "Playing \(chosen.title)"))
+        return .result(dialog: await playDialog(.office(chosen)))
     }
 }
 
@@ -294,13 +324,13 @@ struct OpenOfficeEntityIntent: OpenIntent {
 }
 
 @available(iOS 17.0, *)
-struct PlayReadingsIntent: AppIntent {
+struct PlayReadingsIntent: AudioPlaybackIntent {
     static let title: LocalizedStringResource = "Play Today’s Readings"
     static let description = IntentDescription(
-        "Opens today’s Scripture readings in The Daily Office (the psalms and lessons appointed for Morning or Evening Prayer, or the Holy Eucharist) and starts reading them aloud.",
+        "Reads today’s Scripture readings aloud from The Daily Office (the psalms and lessons appointed for Morning or Evening Prayer, or the Holy Eucharist), without opening the app.",
         categoryName: "Readings"
     )
-    static let openAppWhenRun = true
+    static let openAppWhenRun = false
 
     @Parameter(
         title: "Service",
@@ -321,8 +351,7 @@ struct PlayReadingsIntent: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
         let chosen = (service ?? .forNow()).service
-        openPage(chosen.path, autoplay: true)
-        return .result(dialog: IntentDialog(full: "Here are today’s readings for \(chosen.title).", supporting: "Playing the readings"))
+        return .result(dialog: await playDialog(.readings(chosen)))
     }
 }
 
@@ -758,15 +787,32 @@ struct DailyOfficeShortcuts: AppShortcutsProvider {
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
             intent: PlayOfficeIntent(),
+            // The verbs and names are VoiceWords' (VoiceModel.swift); "Read me" plays, "Read"
+            // alone opens the page (OpenOfficeIntent).
             phrases: [
                 "Play \(\.$office) in \(.applicationName)",
                 "Play \(\.$office) on \(.applicationName)",
+                "Play \(\.$office) with \(.applicationName)",
                 "Pray \(\.$office) with \(.applicationName)",
                 "Pray \(\.$office) in \(.applicationName)",
+                "Pray \(\.$office) on \(.applicationName)",
                 "Start \(\.$office) in \(.applicationName)",
+                "Start \(\.$office) on \(.applicationName)",
+                "Begin \(\.$office) in \(.applicationName)",
+                "Say \(\.$office) with \(.applicationName)",
+                "Read me \(\.$office) in \(.applicationName)",
+                "Read me \(\.$office) from \(.applicationName)",
+                "Listen to \(\.$office) in \(.applicationName)",
+                "Listen to \(\.$office) on \(.applicationName)",
+                "Put on \(\.$office) in \(.applicationName)",
+                "Resume \(\.$office) in \(.applicationName)",
+                "Let’s pray \(\.$office) with \(.applicationName)",
+                "Let’s pray with \(.applicationName)",
                 "Pray with \(.applicationName)",
                 "Play \(.applicationName)",
+                "Start \(.applicationName)",
                 "Pray the office with \(.applicationName)",
+                "Play the office in \(.applicationName)",
             ],
             shortTitle: "Play an Office",
             systemImageName: "play.circle"
@@ -786,8 +832,14 @@ struct DailyOfficeShortcuts: AppShortcutsProvider {
             intent: PlayReadingsIntent(),
             phrases: [
                 "Play today’s readings in \(.applicationName)",
+                "Play today’s readings on \(.applicationName)",
                 "Play the readings for \(\.$service) in \(.applicationName)",
+                "Play the readings for \(\.$service) on \(.applicationName)",
                 "Read me today’s readings in \(.applicationName)",
+                "Read me the lessons in \(.applicationName)",
+                "Play today’s lessons in \(.applicationName)",
+                "Play the psalms for today in \(.applicationName)",
+                "Listen to today’s readings in \(.applicationName)",
             ],
             shortTitle: "Play the Readings",
             systemImageName: "text.book.closed"

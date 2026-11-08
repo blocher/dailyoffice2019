@@ -19,9 +19,9 @@ import kotlinx.coroutines.withContext
  * Gemini and other assistants on Android 16 and later call these (AppFunctions): the Android side
  * of the Siri actions in ios/App/App/Voice/VoiceIntents.swift.
  *
- * Opening and playing return a PendingIntent that opens the app at the page (?autoplay=1 starts
- * its audio, app/src/helpers/voice.js). Questions are answered from the calendar API without
- * opening the app.
+ * Playing returns a PendingIntent that starts the audio without showing the page
+ * (VoicePlayActivity, the same player and requests as Android Auto); opening returns one that
+ * opens the app at the page. Questions are answered from the calendar API without opening the app.
  *
  * KSP generates DailyOfficeAppFunctionService from this class, and the schema in
  * assets/daily_office_app_functions.xml; AndroidManifest.xml declares the service. The app-wide
@@ -49,9 +49,9 @@ data class CalendarAnswer(
 data class AppPage(
     /** What will open, such as "Compline" or "Psalm 23". */
     val title: String,
-    /** True when the page starts reading its audio aloud as soon as it opens. */
+    /** True when starting openApp reads the office or readings aloud (without showing the page). */
     val playsAudio: Boolean,
-    /** Opens the app at the page. Start it to show the page to the user. */
+    /** Start it: plays the audio in the background when playsAudio is true; otherwise opens the app at the page. */
     val openApp: PendingIntent,
 )
 
@@ -77,6 +77,18 @@ abstract class DailyOfficeAppFunctions : AppFunctionService() {
 
     private fun page(title: String, path: String, autoplay: Boolean) =
         AppPage(title, autoplay, VoiceLinks.pendingIntent(this, path, autoplay))
+
+    /** Plays a library item (car/OfficeLibrary.kt ids) without showing the page. */
+    private fun player(title: String, mediaId: String) = AppPage(
+        title,
+        true,
+        PendingIntent.getActivity(
+            this,
+            mediaId.hashCode(),
+            VoicePlayActivity.intent(this, mediaId),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+        ),
+    )
 
     private fun answer(result: LiturgicalAnswer) = CalendarAnswer(
         result.spoken,
@@ -112,13 +124,16 @@ abstract class DailyOfficeAppFunctions : AppFunctionService() {
     // Opening and playing
 
     /**
-     * Opens The Daily Office at today's office and starts reading it aloud: Morning Prayer, Midday
-     * Prayer, Evening Prayer, or Compline from the Book of Common Prayer (2019), or one of the four
-     * shorter Family Prayer offices for households and children.
+     * Reads today's office aloud, in the background without showing the app (with the phone locked
+     * or in the car): Morning Prayer, Midday Prayer, Evening Prayer, or Compline from the Book of
+     * Common Prayer (2019), or one of the four shorter Family Prayer offices for households and
+     * children. Use this for "play", "pray", "start", "say", "read me", "listen to" or "let's pray".
      *
      * @param office Which office: "now" (or empty) for the office for this time of day, "family" for
-     *   Family Prayer for this time of day, or a specific office.
-     * @return The page to open; start its openApp to show it.
+     *   Family Prayer for this time of day, or a specific office. Other names: Matins or Lauds are
+     *   Morning Prayer; Noonday, Noon Prayer or Sext are Midday Prayer; Evensong or Vespers are
+     *   Evening Prayer; Night Prayer or bedtime prayers are Compline.
+     * @return What will play; start its openApp to start the audio.
      */
     @AppFunctionDeclaration(isDescribedByKDoc = true)
     suspend fun playOffice(
@@ -126,7 +141,7 @@ abstract class DailyOfficeAppFunctions : AppFunctionService() {
         office: String? = null,
     ): AppPage {
         val chosen = officeNamed(office)
-        return page(chosen.title, chosen.path, autoplay = true)
+        return player(chosen.title, "office:${chosen.key}")
     }
 
     /**
@@ -147,12 +162,13 @@ abstract class DailyOfficeAppFunctions : AppFunctionService() {
     }
 
     /**
-     * Opens today's Scripture readings (the psalms and lessons appointed for Morning Prayer or
-     * Evening Prayer, or the readings for the Holy Eucharist) and starts reading them aloud.
+     * Reads today's Scripture readings aloud (the psalms and lessons appointed for Morning Prayer or
+     * Evening Prayer, or the readings for the Holy Eucharist, with the Gospel), in the background
+     * without showing the app.
      *
      * @param service "morning_prayer", "evening_prayer", or "holy_eucharist". Empty means Morning
      *   Prayer before 3 p.m. and Evening Prayer after.
-     * @return The page to open; start its openApp to show it.
+     * @return What will play; start its openApp to start the audio.
      */
     @AppFunctionDeclaration(isDescribedByKDoc = true)
     suspend fun playReadings(
@@ -160,7 +176,7 @@ abstract class DailyOfficeAppFunctions : AppFunctionService() {
         service: String? = null,
     ): AppPage {
         val chosen = ReadingsService.named(service)
-        return page("Readings for ${chosen.title}", chosen.path, autoplay = true)
+        return player("Readings for ${chosen.title}", "readings:${chosen.slug}")
     }
 
     /**

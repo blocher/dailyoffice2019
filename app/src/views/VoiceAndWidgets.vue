@@ -30,7 +30,8 @@
         </h2>
         <p>
           Say “Hey Siri,” then any of these. Siri needs the app’s name, “The
-          Daily Office”, in each one. If Siri mishears, try typing to Siri.
+          Daily Office” (or just “Daily Office”), in each one. If Siri mishears,
+          try typing to Siri.
         </p>
         <div
           v-for="group in siriPhrases"
@@ -45,9 +46,11 @@
           </ul>
         </div>
         <p class="voice-note">
-          Siri answers questions without opening the app, and reads them aloud
-          on AirPods. To play or open an office, Siri opens the app, which keeps
-          playing with the phone locked. Needs iOS 17 or later.
+          Siri plays an office or the readings without opening the app, even
+          with the phone locked, and answers questions aloud on AirPods. Other
+          names work too: Noonday Prayer, Evensong, Vespers, Matins, Night
+          Prayer. To read along, say “Open” instead of “Play”. Needs iOS 17 or
+          later.
         </p>
       </section>
 
@@ -149,8 +152,9 @@
         </h2>
         <p>
           Open The Daily Office on your car’s screen to play the office for now,
-          any office, or the day’s readings. Siri works in the car too: “Hey
-          Siri, play Compline in The Daily Office.”
+          any office, or the day’s readings. Siri works in the car too, with the
+          phone locked: “Hey Siri, play Midday Prayer on The Daily Office.”
+          Pressing play with nothing to resume plays the office for now.
         </p>
       </section>
     </template>
@@ -162,14 +166,18 @@
         </h2>
         <p>Say “Hey Google,” then any of these:</p>
         <ul class="phrases">
+          <li>“Play Evening Prayer on Daily Office”</li>
+          <li>“Play Compline on Daily Office”</li>
+          <li>“Play Daily Office” (the office for now)</li>
           <li>“Open Pray now on Daily Office”</li>
           <li>“Open Family Prayer on Daily Office”</li>
           <li>“Open the readings on Daily Office”</li>
           <li>“Open the calendar on Daily Office”</li>
         </ul>
         <p>
-          Offices you pray in the app are added too, so “Open Compline on Daily
-          Office” works once you’ve prayed Compline.
+          “Play” starts the audio without opening the app; “Open” shows the page
+          to read along. Offices you pray in the app are added too, so “Open
+          Compline on Daily Office” works once you’ve prayed Compline.
         </p>
         <p class="voice-note">
           On Android 16 and later, Gemini can play any office and answer
@@ -231,8 +239,8 @@
         </h2>
         <p>
           Open Daily Office in Android Auto to play the office for now, any
-          office, or the day’s readings. Or ask: “Hey Google, play Compline on
-          Daily Office.”
+          office, or the day’s readings. Or ask: “Hey Google, play Evensong on
+          Daily Office,” or “play today’s readings on Daily Office.”
         </p>
       </section>
     </template>
@@ -247,7 +255,9 @@ import { APP_STORE_URLS } from '@/helpers/appStores';
 /*
   How to use the apps with Siri, Google, shortcuts, widgets and the car.
   The phrases match what the apps offer: ios/App/App/Voice/VoiceIntents.swift
-  (DailyOfficeShortcuts) and android/.../res/xml/shortcuts.xml.
+  (DailyOfficeShortcuts), the words both apps understand (VoiceWords in
+  ios/.../Voice/VoiceModel.swift and android/.../voice/VoiceWords.kt), and
+  android/.../res/xml/shortcuts.xml.
 */
 const platform = Capacitor.getPlatform();
 const isWeb = platform === 'web';
@@ -281,11 +291,13 @@ const siriPhrases = [
   {
     title: 'Pray',
     phrases: [
-      'Play Compline in The Daily Office',
+      'Play Compline on The Daily Office',
+      'Play Midday Prayer on The Daily Office',
       'Pray Morning Prayer with The Daily Office',
       'Play Evensong in The Daily Office',
       'Play Family Prayer in The Daily Office',
-      'Pray with The Daily Office',
+      'Read me Night Prayer in The Daily Office',
+      'Play The Daily Office',
       'Open Evening Prayer in The Daily Office',
       'Play today’s readings in The Daily Office',
     ],

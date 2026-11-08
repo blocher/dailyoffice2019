@@ -3,7 +3,8 @@ import UIKit
 
 /// The Daily Office in CarPlay: a Pray tab with the office for now and all eight offices, and a
 /// Readings tab with the day's readings. Choosing one finds its audio (OfficeAudioResolver) and
-/// plays it through the app's one player (OfficePlayer), then shows Now Playing, whose controls
+/// plays it through the app's one player (OfficePlayback, Voice/VoicePlayback.swift, as Siri
+/// does), then shows Now Playing, whose controls
 /// the player already answers (play, pause, 15-second skips, scrubbing).
 ///
 /// CarPlay can start the app with no screen of its own on the phone, so none of this needs the
@@ -13,8 +14,6 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
     private var prayTemplate: CPListTemplate?
     private var readingsTemplate: CPListTemplate?
     private var items: [OfficeAudioResolver.Request: [CPListItem]] = [:]
-    private var playing: OfficeAudioResolver.Request?
-    private var playingSource: String?
     private var dayHeadline: String?
     private var statusObserver: NSObjectProtocol?
 
@@ -101,7 +100,8 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
         item.handler = { [weak self] _, completion in
             self?.play(request, completion: completion)
         }
-        item.isPlaying = request == playing && OfficePlayer.shared.isPlaying
+        item.isPlaying = OfficePlayer.shared.currentSource == OfficePlayback.currentSource
+            && request == OfficePlayback.current && OfficePlayer.shared.isPlaying
         items[request, default: []].append(item)
         return item
     }
@@ -134,30 +134,15 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
     // MARK: - Playing
 
     private func play(_ request: OfficeAudioResolver.Request, completion: @escaping () -> Void) {
-        Task { [weak self] in
+        Task { @MainActor [weak self] in
             do {
-                let track = try await OfficeAudioResolver.resolve(request)
-                await MainActor.run {
-                    let player = OfficePlayer.shared
-                    player.setSource(
-                        track.url.absoluteString,
-                        title: track.title,
-                        artist: "The Daily Office",
-                        artworkPath: "android-chrome-512x512.png",
-                        rate: nil
-                    )
-                    try? player.play()
-                    self?.playing = request
-                    self?.playingSource = track.url.absoluteString
-                    self?.showPlaying()
-                    completion()
-                    self?.showNowPlaying()
-                }
+                try await OfficePlayback.play(request)
+                self?.showPlaying()
+                completion()
+                self?.showNowPlaying()
             } catch {
-                await MainActor.run {
-                    completion()
-                    self?.showAlert(error.localizedDescription)
-                }
+                completion()
+                self?.showAlert(error.localizedDescription)
             }
         }
     }
@@ -168,10 +153,12 @@ final class CarPlaySceneDelegate: UIResponder, CPTemplateApplicationSceneDelegat
         interfaceController.pushTemplate(CPNowPlayingTemplate.shared, animated: true, completion: nil)
     }
 
-    /// Marks what is playing in the lists (nothing, once the page has loaded a track of its own).
+    /// Marks what is playing in the lists, whether CarPlay, Siri or the headset started it
+    /// (nothing, once the page has loaded a track of its own).
     private func showPlaying() {
         let player = OfficePlayer.shared
-        if player.currentSource == nil || player.currentSource != playingSource { playing = nil }
+        let playing = player.currentSource != nil && player.currentSource == OfficePlayback.currentSource
+            ? OfficePlayback.current : nil
         for (request, listItems) in items {
             for item in listItems {
                 item.isPlaying = request == playing && player.isPlaying

@@ -18,17 +18,27 @@
         <item>daily office</item>
         <item>today\'s office</item>
         <item>prayers</item>
+        <item>my prayers</item>
+        <item>the daily office</item>
+        <item>the next office</item>
+        <item>the hours</item>
     </string-array>
     <string-array name="shortcut_family_names">
         <item>family prayer</item>
         <item>family prayers</item>
         <item>prayers with the kids</item>
+        <item>prayers with the children</item>
+        <item>prayers with my family</item>
     </string-array>
     <string-array name="shortcut_readings_names">
         <item>readings</item>
         <item>today\'s readings</item>
         <item>lessons</item>
         <item>lectionary</item>
+        <item>today\'s lessons</item>
+        <item>the Gospel</item>
+        <item>today\'s psalms</item>
+        <item>the psalms for today</item>
     </string-array>
     <string-array name="shortcut_calendar_names">
         <item>calendar</item>

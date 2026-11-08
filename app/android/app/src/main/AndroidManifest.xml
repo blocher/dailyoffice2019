@@ -76,6 +76,21 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_today_info" />
         </receiver>
+        <!-- "Play Evening Prayer on Daily Office" to Google Assistant, and Gemini's play actions:
+             plays without showing the page (voice/VoicePlayActivity.kt). -->
+        <activity
+            android:name=".voice.VoicePlayActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:launchMode="singleInstance"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.media.action.MEDIA_PLAY_FROM_SEARCH" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".voice.TodayWidgetConfigureActivity"
             android:excludeFromRecents="true"

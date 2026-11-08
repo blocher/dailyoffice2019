@@ -21,25 +21,18 @@ import org.json.JSONObject
  */
 
 /** One of the eight offices, daily or family. */
-enum class Office(val serviceType: String, val slug: String, val title: String, val synonyms: List<String>) {
-    MORNING_PRAYER("office", "morning_prayer", "Morning Prayer", listOf("Matins", "Morning Office")),
-    MIDDAY_PRAYER("office", "midday_prayer", "Midday Prayer", listOf("Noonday Prayer", "Midday Office")),
-    EVENING_PRAYER("office", "evening_prayer", "Evening Prayer", listOf("Evensong", "Vespers", "Evening Office")),
-    COMPLINE("office", "compline", "Compline", listOf("Night Prayer", "Bedtime Prayer")),
-    FAMILY_MORNING("family", "morning_prayer", "Family Prayer in the Morning", listOf("Family Morning Prayer")),
-    FAMILY_MIDDAY("family", "midday_prayer", "Family Prayer at Midday", listOf("Family Midday Prayer")),
-    FAMILY_EARLY_EVENING(
-        "family",
-        "early_evening_prayer",
-        "Family Prayer in the Early Evening",
-        listOf("Family Evening Prayer", "Family Supper Prayer"),
-    ),
-    FAMILY_CLOSE_OF_DAY(
-        "family",
-        "close_of_day_prayer",
-        "Family Prayer at the Close of Day",
-        listOf("Family Bedtime Prayer", "Family Night Prayer", "Close of Day"),
-    );
+enum class Office(val serviceType: String, val slug: String, val title: String) {
+    MORNING_PRAYER("office", "morning_prayer", "Morning Prayer"),
+    MIDDAY_PRAYER("office", "midday_prayer", "Midday Prayer"),
+    EVENING_PRAYER("office", "evening_prayer", "Evening Prayer"),
+    COMPLINE("office", "compline", "Compline"),
+    FAMILY_MORNING("family", "morning_prayer", "Family Prayer in the Morning"),
+    FAMILY_MIDDAY("family", "midday_prayer", "Family Prayer at Midday"),
+    FAMILY_EARLY_EVENING("family", "early_evening_prayer", "Family Prayer in the Early Evening"),
+    FAMILY_CLOSE_OF_DAY("family", "close_of_day_prayer", "Family Prayer at the Close of Day");
+
+    /** Other names people use for it (VoiceWords has every word the matcher knows). */
+    val synonyms: List<String> get() = VoiceWords.synonyms[this].orEmpty()
 
     /** The app's page for this office today. */
     val path: String get() = "/$serviceType/$slug"
@@ -73,11 +66,14 @@ enum class Office(val serviceType: String, val slug: String, val title: String, 
                 return current(AppPreferences(context).prefersFamilyPrayer)
             }
             if (wanted == "family" || wanted == "family_prayer" || wanted == "family_now") return current(true)
-            return entries.firstOrNull { office ->
+            entries.firstOrNull { office ->
                 office.key == wanted ||
                     office.title.lowercase().replace(' ', '_') == wanted ||
                     office.synonyms.any { it.lowercase().replace(' ', '_') == wanted }
-            }
+            }?.let { return it }
+            // Any other way of saying it ("noonday", "bedtime prayers with the kids").
+            val spoken = VoiceWords.match(wanted.replace('_', ' '), AppPreferences(context).prefersFamilyPrayer)
+            return (spoken as? VoiceRequest.ForOffice)?.office
         }
     }
 }

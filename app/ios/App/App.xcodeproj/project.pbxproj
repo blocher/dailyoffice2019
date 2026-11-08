@@ -35,6 +35,7 @@
 		9D2EB0092FB8000100D1A1CE /* LiturgicalCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0FA1042FB7000100D1A1CE /* LiturgicalCalendar.swift */; };
 		9D2EB0102FB8000100D1A1CE /* DailyOfficeWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 9D2EB0012FB8000100D1A1CE /* DailyOfficeWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AC4B11022FB9000100D1A1CE /* OfficePlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4B11012FB9000100D1A1CE /* OfficePlayer.swift */; };
+		BD5C22012FBA000100D1A1CE /* VoicePlayback.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5C22022FBA000100D1A1CE /* VoicePlayback.swift */; };
 		AC4B11042FB9000100D1A1CE /* OfficeAudioResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4B11032FB9000100D1A1CE /* OfficeAudioResolver.swift */; };
 		AC4B11062FB9000100D1A1CE /* CarPlaySceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4B11052FB9000100D1A1CE /* CarPlaySceneDelegate.swift */; };
 /* End PBXBuildFile section */
@@ -103,6 +104,7 @@
 		9D2EB0052FB8000100D1A1CE /* Version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
 		9D2EB0062FB8000100D1A1CE /* App.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = App.xcconfig; sourceTree = "<group>"; };
 		AC4B11012FB9000100D1A1CE /* OfficePlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfficePlayer.swift; sourceTree = "<group>"; };
+		BD5C22022FBA000100D1A1CE /* VoicePlayback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoicePlayback.swift; sourceTree = "<group>"; };
 		AC4B11032FB9000100D1A1CE /* OfficeAudioResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfficeAudioResolver.swift; sourceTree = "<group>"; };
 		AC4B11052FB9000100D1A1CE /* CarPlaySceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CarPlaySceneDelegate.swift; sourceTree = "<group>"; };
 		AC4B11072FB9000100D1A1CE /* App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
@@ -177,6 +179,7 @@
 			isa = PBXGroup;
 			children = (
 				8C0FA1022FB7000100D1A1CE /* VoiceModel.swift */,
+				BD5C22022FBA000100D1A1CE /* VoicePlayback.swift */,
 				8C0FA1042FB7000100D1A1CE /* LiturgicalCalendar.swift */,
 				8C0FA1062FB7000100D1A1CE /* LiturgicalAnswers.swift */,
 				8C0FA1082FB7000100D1A1CE /* VoiceLaunchPlugin.swift */,
@@ -328,6 +331,7 @@
 				7A1C0E0B2F9B4D0100A1B2C3 /* NativeAudioPlugin.swift in Sources */,
 				AC4B11022FB9000100D1A1CE /* OfficePlayer.swift in Sources */,
 				AC4B11042FB9000100D1A1CE /* OfficeAudioResolver.swift in Sources */,
+				BD5C22012FBA000100D1A1CE /* VoicePlayback.swift in Sources */,
 				AC4B11062FB9000100D1A1CE /* CarPlaySceneDelegate.swift in Sources */,
 				9A8FA4CD69B94EA288243887 /* OfflineSyncPlugin.swift in Sources */,
 				5D0F01D52FB0A10000C0FFEE /* FoldPlugin.swift in Sources */,
