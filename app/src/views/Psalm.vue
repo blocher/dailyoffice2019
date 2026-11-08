@@ -60,6 +60,13 @@
             Show Contemporary
           </button>
         </p>
+        <ChantPlayer
+          v-if="showChant"
+          ref="chantPlayer"
+          :verses="psalm.verses"
+          :tone="psalm.chant_tone"
+          @position="onChantPosition"
+        />
         <p v-if="showChant" class="psalm-chant-legend">
           Pointed for {{ psalm.chant_tone.label }}.
           <span class="psalm-chant-legend__key"
@@ -116,12 +123,26 @@
       <div id="main" class="book psalm-text">
         <div v-if="!traditional">
           <span v-for="verse in psalm.verses" :key="verse.number">
-            <span v-if="verse.first_half">
+            <span
+              v-if="verse.first_half"
+              :ref="(el) => setVerseRef(verse.number, el)"
+            >
               <p class="hangingIndent extra-space-before">
-                <sup>{{ verse.number }}</sup>
+                <sup v-if="!(showChant && verse.chant)">{{ verse.number }}</sup>
+                <sup v-else
+                  ><button
+                    type="button"
+                    class="psalm-verse-play"
+                    :aria-label="`Play from verse ${verse.number}`"
+                    @click="playFrom(verse.number)"
+                  >
+                    {{ verse.number }}
+                  </button></sup
+                >
                 <ChantText
                   v-if="showChant && verse.chant"
                   :segments="verse.chant.first_half"
+                  :active="activeIndex(verse.number, 0)"
                 />
                 <template v-else>{{ verse.first_half }}</template> *
               </p>
@@ -129,6 +150,7 @@
                 <ChantText
                   v-if="showChant && verse.chant"
                   :segments="verse.chant.second_half"
+                  :active="activeIndex(verse.number, 1)"
                 />
                 <template v-else>{{ verse.second_half }}</template>
               </p>
@@ -183,16 +205,19 @@
 </template>
 
 <script>
+import ChantPlayer from '@/components/ChantPlayer.vue';
 import ChantText from '@/components/ChantText.vue';
 import Loading from '@/components/Loading.vue';
 import { displayState, setChantMode } from '@/helpers/displayPreferences';
 import { DynamicStorage } from '@/helpers/storage';
 
 export default {
-  components: { ChantText, Loading },
+  components: { ChantPlayer, ChantText, Loading },
   data() {
     return {
       display: displayState,
+      // The syllable the chant player is sounding: { verse, half, index }.
+      chantPosition: null,
       psalm: null,
       loading: true,
       error: false,
@@ -204,6 +229,8 @@ export default {
     };
   },
   async created() {
+    // Verse elements by number, to keep the verse being sung in view.
+    this.verseRefs = {};
     const traditional = await DynamicStorage.getItem(
       'traditionalPsalms',
       false
@@ -237,8 +264,36 @@ export default {
       return this.display.chantMode && this.hasChant && !this.traditional;
     },
   },
+  watch: {
+    showChant(shown) {
+      if (!shown) this.chantPosition = null;
+    },
+  },
   methods: {
     setChantMode,
+    setVerseRef(number, el) {
+      if (el) this.verseRefs[number] = el;
+      else delete this.verseRefs[number];
+    },
+    activeIndex(number, half) {
+      const position = this.chantPosition;
+      return position && position.verse === number && position.half === half
+        ? position.index
+        : -1;
+    },
+    onChantPosition(position) {
+      const previous = this.chantPosition;
+      this.chantPosition = position;
+      if (position && position.verse !== previous?.verse) {
+        this.verseRefs[position.verse]?.scrollIntoView?.({
+          block: 'nearest',
+          behavior: 'smooth',
+        });
+      }
+    },
+    playFrom(number) {
+      this.$refs.chantPlayer?.playFrom(number);
+    },
     changeLanguage(value) {
       this.traditional = value;
       this.setTradtional();
@@ -306,6 +361,27 @@ export default {
   font-size: var(--text-sm);
   color: var(--ink-soft);
   text-align: center;
+}
+
+.psalm-verse-play {
+  position: relative;
+  font: inherit;
+  line-height: 1;
+  color: var(--accent);
+  padding: 0 0.1em;
+  border-radius: var(--radius-sm);
+}
+
+/* Verse numbers are small; give the finger a bigger target. */
+.psalm-verse-play::before {
+  content: '';
+  position: absolute;
+  inset: -0.6rem -0.5rem;
+}
+
+.psalm-verse-play:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 .psalm-chant-legend__switch {

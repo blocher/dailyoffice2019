@@ -72,7 +72,14 @@ class Tone:
     ending: TonePart
 
     def as_dict(self):
-        return {"code": self.code, "label": self.label, "clef": self.clef}
+        return {
+            "code": self.code,
+            "label": self.label,
+            "clef": self.clef,
+            "demo": tone_demo(self),
+            # The reciting note, so the player can put it at a comfortable pitch.
+            "tenor": gabc_pitches(self.mediation.tenor, self.clef)[0][0],
+        }
 
 
 _TONE_SOURCES = {
@@ -146,3 +153,80 @@ TONE_CHOICES = [(code, tone.label) for code, tone in TONES.items()]
 
 def get_tone(code):
     return TONES.get(code or DEFAULT_TONE) or TONES[DEFAULT_TONE]
+
+
+# --- Pitches -----------------------------------------------------------------
+#
+# GABC names staff positions a (below the bottom line) to m; the clef says
+# which line holds do (c3, c4) or fa (f3). Chant has no fixed pitch, so the
+# numbers below put do at middle C (MIDI 60) and the player transposes to a
+# comfortable reciting pitch.
+
+_STAFF = "abcdefghijklm"
+_LINE_LETTER = {1: "d", 2: "f", 3: "h", 4: "j"}
+_DIATONIC = [0, 2, 4, 5, 7, 9, 11]  # do re mi fa sol la ti
+
+
+def _letter_to_midi(letter, clef, flat=False):
+    clef = clef or "c4"
+    kind, line = clef[0], int(clef[-1])
+    reference = _STAFF.index(_LINE_LETTER[line])
+    # Scale degree of the reference line: do (0) for a C clef, fa (3) for F.
+    reference_degree = 0 if kind == "c" else 3
+    steps = _STAFF.index(letter.lower()) - reference + reference_degree
+    octave, degree = divmod(steps, 7)
+    midi = 60 + 12 * octave + _DIATONIC[degree]
+    return midi - 1 if flat else midi
+
+
+def gabc_pitches(notes, clef):
+    """[(midi, pulses), ...] for the GABC notes sung on one syllable.
+
+    Understands note letters (either case), ``x`` (a flat on the position
+    just named, which is not itself sung) and ``.`` (a dot of length: one
+    more pulse). Shape and ornament marks (v, w, _, /, ...) are ignored.
+    """
+    result = []
+    flats = set()
+    i = 0
+    while i < len(notes):
+        char = notes[i]
+        lower = char.lower()
+        if lower in _STAFF:
+            if i + 1 < len(notes) and notes[i + 1] == "x":
+                flats.add(lower)
+                i += 2
+                continue
+            if i + 1 < len(notes) and notes[i + 1] == "y":
+                flats.discard(lower)
+                i += 2
+                continue
+            result.append([_letter_to_midi(lower, clef, flat=lower in flats), 1])
+        elif char == "." and result:
+            result[-1][1] += 1
+        i += 1
+    return [tuple(n) for n in result]
+
+
+def tone_demo(tone, recitation=3):
+    """The bare tone, for learning it: intonation, a few reciting notes and
+    the mediation; then a few reciting notes and the ending.
+
+    Returns {"first_half": [{"p": [...], "d": [...]}], "second_half": [...]},
+    one entry per note group, as the player expects for syllables.
+    """
+
+    def half(part, with_intonation):
+        groups = []
+        if with_intonation:
+            groups += [token.notes for token in part.intonation]
+        groups += [part.tenor] * recitation
+        groups += [token.notes for token in part.cadence]
+        out = []
+        for notes in groups:
+            pitches = gabc_pitches(notes, tone.clef)
+            if pitches:
+                out.append({"p": [p for p, _ in pitches], "d": [d for _, d in pitches]})
+        return out
+
+    return {"first_half": half(tone.mediation, True), "second_half": half(tone.ending, False)}

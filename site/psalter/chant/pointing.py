@@ -156,35 +156,48 @@ def point_verse(first_notation, second_notation, tone, *, first_verse=False):
     return first, second
 
 
-def segments(pointed):
-    """Display segments for a pointed half: [{"t": text, "r": role}, ...].
+def segments(pointed, clef=None):
+    """Display and playback segments for a pointed half.
+
+    Each syllable is its own segment, ``{"t": text, "r": role}``, and with a
+    ``clef`` also carries what is sung on it: ``"p"`` (MIDI pitches, do at
+    middle C) and ``"d"`` (pulses for each). Spaces and punctuation are
+    separate plain segments with no notes, so only letters are marked.
 
     Roles are "" (sung on the reciting note), "bar" (an empty marker where the
     inflection begins), "intonation", "preparatory", "accent", "return" and
-    "final". Spaces and punctuation are plain text so only letters are marked.
+    "final".
     """
     from psalter.chant.notation import split_punctuation
+    from psalter.chant.tones import gabc_pitches
 
     out = []
 
-    def add(text, role):
+    def plain(text):
         if not text:
             return
-        if out and out[-1]["r"] == role and role in ("", RETURN, FINAL):
+        if out and out[-1]["r"] == "" and "p" not in out[-1]:
             out[-1]["t"] += text
         else:
-            out.append({"t": text, "r": role})
+            out.append({"t": text, "r": ""})
 
     for i, syllable in enumerate(pointed.syllables):
         if i and syllable.word_start:
-            add(" ", "")
+            plain(" ")
         if i == pointed.inflection_start:
             out.append({"t": "", "r": "bar"})
         role = "" if syllable.role == RECITE else syllable.role
         lead, core, trail = split_punctuation(syllable.text)
-        add(lead, "")
-        add(core, role)
-        add(trail, "")
+        if not core:
+            lead, core, trail = "", syllable.text, ""
+        plain(lead)
+        segment = {"t": core, "r": role}
+        if clef:
+            pitches = gabc_pitches(syllable.notes, clef)
+            segment["p"] = [p for p, _ in pitches]
+            segment["d"] = [d for _, d in pitches]
+        out.append(segment)
+        plain(trail)
     return out
 
 

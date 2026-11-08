@@ -126,6 +126,15 @@ class PointingTests(SimpleTestCase):
         self.assertEqual(items[-1], {"t": ";", "r": ""})
         self.assertEqual("".join(i["t"] for i in items), "The Lord is my shepherd;")
 
+    def test_segments_carry_pitches_for_playback(self):
+        tone = TONES["8.G"]
+        pointed = point("The +Lord is my +shep/herd;", tone.mediation, mediation=True, first_verse=True)
+        sung = [s for s in segments(pointed, tone.clef) if "p" in s]
+        self.assertEqual([s["t"] for s in sung], ["The", "Lord", "is", "my", "shep", "herd"])
+        # Intonation G A, reciting C, the rise to D on the accent, and a long C.
+        self.assertEqual([s["p"] for s in sung], [[55], [57], [60], [60], [62], [60]])
+        self.assertEqual(sung[-1]["d"], [2])
+
     def test_describe(self):
         pointed = point("the +Lord with +ho/ly +wor/ship.", TONES["8.G"].ending, mediation=False)
         self.assertEqual(describe(pointed), "the Lord with | [ho]-[ly] WOR-ship.")
@@ -133,6 +142,23 @@ class PointingTests(SimpleTestCase):
     def test_unknown_tone_uses_the_default(self):
         self.assertEqual(get_tone("").code, DEFAULT_TONE)
         self.assertEqual(get_tone("nonsense").code, DEFAULT_TONE)
+
+
+class PitchTests(SimpleTestCase):
+    def test_gabc_pitches(self):
+        from psalter.chant.tones import gabc_pitches
+
+        self.assertEqual(gabc_pitches("j.", "c4"), [(60, 2)])
+        self.assertEqual(gabc_pitches("ixi", "c4"), [(58, 1)])  # B flat
+        self.assertEqual(gabc_pitches("gvFED.", "c4"), [(55, 1), (53, 1), (52, 1), (50, 2)])
+        self.assertEqual(gabc_pitches("h", "c3"), [(60, 1)])
+        self.assertEqual(gabc_pitches("h", "f3"), [(65, 1)])
+
+    def test_every_tone_has_a_demo(self):
+        for code, tone in TONES.items():
+            with self.subTest(tone=code):
+                demo = tone.as_dict()["demo"]
+                self.assertTrue(demo["first_half"] and demo["second_half"])
 
 
 class DictionaryTests(SimpleTestCase):
@@ -308,7 +334,10 @@ class DisplayTests(TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(data["chant_tone"]["code"], DEFAULT_TONE)
-        self.assertEqual(data["verses"][0]["chant"]["first_half"][0], {"t": "The", "r": "intonation"})
+        first = data["verses"][0]["chant"]["first_half"][0]
+        self.assertEqual((first["t"], first["r"], first["p"]), ("The", "intonation", [55]))
+        self.assertEqual(data["chant_tone"]["tenor"], 60)
+        self.assertTrue(data["chant_tone"]["demo"]["second_half"])
 
     def test_office_lines_carry_chant_for_contemporary_text_only(self):
         verses = PsalmVerse.objects.filter(psalm=self.psalm).select_related("psalm", "pointing").order_by("number")

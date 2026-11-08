@@ -240,8 +240,8 @@ def chant_for_verse(verse, tone=None, first_verse=None):
         first_verse=verse.number == 1 if first_verse is None else first_verse,
     )
     return {
-        "first_half": segments(first),
-        "second_half": segments(second),
+        "first_half": segments(first, tone.clef),
+        "second_half": segments(second, tone.clef),
         "status": pointing.status,
         "tone": tone.code,
     }
