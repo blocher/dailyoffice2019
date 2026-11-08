@@ -29,6 +29,9 @@ REST_BETWEEN_VERSES = 1
 DEFAULT_TENOR = 57  # A below middle C: comfortable for most voices
 
 _LETTERS = re.compile(r"[^A-Za-zÀ-ɏ']+")
+# The psalter prints LORD as "Lᴏʀᴅ" with small-capital letters, which lie
+# outside the Latin ranges above; fold them (and curly apostrophes) first.
+_FOLD = str.maketrans("ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀꜱᴛᴜᴠᴡʏᴢ’‘", "abcdefghijklmnopqrstuvwyz''")
 
 
 @dataclass
@@ -51,7 +54,7 @@ def _words(pointed):
 
 
 def _clean(text):
-    return _LETTERS.sub("", text).strip("'")
+    return _LETTERS.sub("", text.translate(_FOLD)).strip("'")
 
 
 def psalm_notes(psalm, *, tone=None, tenor=DEFAULT_TENOR, verse_numbers=None):

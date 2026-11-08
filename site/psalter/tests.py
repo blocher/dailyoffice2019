@@ -420,6 +420,13 @@ class ExportTests(TestCase):
         self.assertEqual(notes[6].onset, first_half_end + 2)
         self.assertEqual(length, notes[-1].onset + notes[-1].pulses)
 
+    def test_lyrics_keep_small_capitals_and_apostrophes(self):
+        from psalter.chant.export import _clean
+
+        self.assertEqual(_clean("Lᴏʀᴅ"), "Lord")
+        self.assertEqual(_clean("Name’s"), "Name's")
+        self.assertEqual(_clean("“comfort.”"), "comfort")
+
     def test_held_syllables_take_a_dash(self):
         from psalter.chant.export import psalm_notes
 
