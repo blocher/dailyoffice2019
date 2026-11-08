@@ -446,6 +446,8 @@ class ExportTests(TestCase):
             text = script.read_text()
             self.assertIn("function main()", text)
             self.assertIn('"shepherd"', text)
+            # Notes within a phrase touch, so each syllable is not re-attacked.
+            self.assertIn("n[1] * PULSE);", text)
             xml = Path(directory) / "psalm.musicxml"
             call_command("export_chant", "23", "--format", "musicxml", "--out", str(xml), stdout=StringIO())
             document = minidom.parse(str(xml))

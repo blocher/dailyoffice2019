@@ -153,7 +153,7 @@ function main() {{
   for (var j = 0; j < NOTES.length; j++) {{
     var n = NOTES[j];
     var note = SV.create("Note");
-    note.setTimeRange(start + n[0] * PULSE, n[1] * PULSE - 1);
+    note.setTimeRange(start + n[0] * PULSE, n[1] * PULSE);
     note.setPitch(n[2]);
     note.setLyrics(n[3]);
     group.addNote(note);
