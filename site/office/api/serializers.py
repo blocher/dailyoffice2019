@@ -3,6 +3,8 @@ from rest_framework import serializers
 
 from office.models import UpdateNotice, Collect, AboutItem, CollectTag, CollectTagCategory, Scripture, SiteMessage
 from psalter.models import Psalm, PsalmVerse, PsalmTopic
+from psalter.chant.service import chant_for_verse
+from psalter.chant.tones import get_tone
 
 
 class UpdateNoticeSerializer(serializers.HyperlinkedModelSerializer):
@@ -109,9 +111,16 @@ class SourceSerializer(serializers.Serializer):
 
 
 class PsalmVerseSerializer(serializers.HyperlinkedModelSerializer):
+    # Plainsong pointing of the contemporary text, or null if not pointed yet.
+    # Select-related "pointing" and "psalm" to avoid a query per verse.
+    chant = serializers.SerializerMethodField()
+
+    def get_chant(self, obj):
+        return chant_for_verse(obj)
+
     class Meta:
         model = PsalmVerse
-        fields = ["id", "number", "first_half", "second_half", "first_half_tle", "second_half_tle"]
+        fields = ["id", "number", "first_half", "second_half", "first_half_tle", "second_half_tle", "chant"]
 
 
 class PsalmTopicSerializer(serializers.HyperlinkedModelSerializer):
@@ -129,9 +138,14 @@ class PsalmSerializer(serializers.HyperlinkedModelSerializer):
         topics = [PsalmTopicSerializer(topic.psalm_topic).data for topic in topics]
         return topics
 
+    chant_tone = serializers.SerializerMethodField()
+
+    def get_chant_tone(self, obj):
+        return get_tone(obj.chant_tone).as_dict()
+
     class Meta:
         model = Psalm
-        fields = ["id", "number", "latin_title", "topics", "verses"]
+        fields = ["id", "number", "latin_title", "topics", "verses", "chant_tone"]
 
 
 class PsalmTopicSerializer(serializers.HyperlinkedModelSerializer):

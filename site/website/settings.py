@@ -453,6 +453,9 @@ EMAIL_HOST_USER = env("EMAIL_HOST_USER")  # 587
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")  # 587
 
 OPENAI_API_KEY = env("OPENAI_API_KEY")
+# Model that marks syllables and stresses when pointing psalms for plainsong
+# (manage.py point_psalms).
+PSALM_POINTING_MODEL = env("PSALM_POINTING_MODEL", default="gpt-5")
 
 # --- Text-to-speech (liturgy audio) -----------------------------------------
 # Which backend generates office audio: "openai", "elevenlabs", "gemini", or "fish".

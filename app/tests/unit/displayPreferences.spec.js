@@ -11,6 +11,7 @@ import {
   fontSizePercent,
   loadDisplayPreferences,
   nextFontSize,
+  setChantMode,
   setReadingFont,
   setRubricStyle,
   setTheme,
@@ -93,6 +94,18 @@ describe('display preferences', () => {
     );
   });
 
+  it('keeps chant pointing off unless it was turned on', async () => {
+    stubStorage({});
+    await loadDisplayPreferences();
+    expect(displayState.chantMode).toBe(false);
+    stubStorage({ chantMode: 'true' });
+    await loadDisplayPreferences();
+    expect(displayState.chantMode).toBe(true);
+    await setChantMode(false);
+    expect(displayState.chantMode).toBe(false);
+    expect(DynamicStorage.setItem).toHaveBeenCalledWith('chantMode', 'false');
+  });
+
   it('steps text size along fixed notches and reports it against the default', () => {
     expect(nextFontSize(DEFAULT_FONT_SIZE, 1)).toBe(26);
     expect(nextFontSize(DEFAULT_FONT_SIZE, -1)).toBe(22);
@@ -114,6 +127,7 @@ describe('display preferences', () => {
       expect(text).toContain(label);
     }
     expect(text).toContain('Audio player');
+    expect(text).toContain('Pointed for chant');
 
     await wrapper.setProps({ showAudio: false });
     expect(wrapper.text()).not.toContain('Audio player');

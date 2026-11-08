@@ -1,13 +1,13 @@
 /*
   Display preferences
   ===================
-  Theme, text size, reading face, rubric style, the margin contents, and
-  whether audio controls show. One
+  Theme, text size, reading face, rubric style, the margin contents,
+  whether audio controls show, and whether psalms are pointed for chant. One
   reactive store shared by the header's Display panel, the Settings page, and
   the office page, so a change in one place shows everywhere at once.
   Values persist through DynamicStorage under the same keys the app has
   always used ('user-theme', 'fontSize', 'audioEnabled') plus 'readingFont',
-  'rubricStyle', and 'showContents'.
+  'rubricStyle', 'showContents', and 'chantMode'.
 */
 import { reactive } from 'vue';
 import { DynamicStorage } from '@/helpers/storage';
@@ -101,6 +101,8 @@ export const displayState = reactive({
   rubricStyle: 'italic',
   showContents: true,
   audioEnabled: true,
+  // Mark psalms for singing to plainsong tones (where they are pointed).
+  chantMode: false,
   loaded: false,
 });
 
@@ -209,6 +211,7 @@ export async function loadDisplayPreferences() {
     rubricStyle,
     showContents,
     audioEnabled,
+    chantMode,
   ] = await Promise.all([
     DynamicStorage.getItem('user-theme'),
     DynamicStorage.getItem('fontSize'),
@@ -216,6 +219,7 @@ export async function loadDisplayPreferences() {
     DynamicStorage.getItem('rubricStyle'),
     DynamicStorage.getItem('showContents'),
     DynamicStorage.getItem('audioEnabled'),
+    DynamicStorage.getItem('chantMode'),
   ]);
   displayState.theme = THEME_VALUES.includes(theme) ? theme : 'auto';
   displayState.fontSize = parseFontSize(fontSize ?? DEFAULT_FONT_SIZE);
@@ -229,6 +233,7 @@ export async function loadDisplayPreferences() {
   displayState.audioEnabled = !(
     audioEnabled === 'false' || audioEnabled === false
   );
+  displayState.chantMode = chantMode === 'true' || chantMode === true;
   displayState.loaded = true;
   mirror('user-theme', displayState.theme);
   mirror('fontSize', displayState.fontSize);
@@ -299,6 +304,15 @@ export async function setAudioEnabled(enabled) {
   );
 }
 
+/** Point psalms for singing to plainsong tones. */
+export async function setChantMode(enabled) {
+  displayState.chantMode = Boolean(enabled);
+  await DynamicStorage.setItem(
+    'chantMode',
+    displayState.chantMode ? 'true' : 'false'
+  );
+}
+
 export async function resetDisplayPreferences() {
   await Promise.all([
     setTheme('auto'),
@@ -307,5 +321,6 @@ export async function resetDisplayPreferences() {
     setRubricStyle('italic'),
     setShowContents(true),
     setAudioEnabled(true),
+    setChantMode(false),
   ]);
 }

@@ -38,7 +38,29 @@
             aria-label="Language"
             @update:model-value="changeLanguage"
           />
+          <label v-if="hasChant && !traditional" class="psalm-chant-toggle">
+            <span>Chant</span>
+            <UiSwitch
+              :model-value="display.chantMode"
+              label="Point this psalm for chant"
+              @update:model-value="setChantMode"
+            />
+          </label>
         </div>
+        <p v-if="showChant" class="psalm-chant-legend">
+          Pointed for {{ psalm.chant_tone.label }}.
+          <span class="psalm-chant-legend__key"
+            ><span class="psalm-chant-legend__bar">|</span> the tone turns</span
+          >
+          ·
+          <span class="psalm-chant-legend__key"
+            ><span class="psalm-chant-legend__accent">accent</span></span
+          >
+          ·
+          <span class="psalm-chant-legend__key"
+            ><span class="psalm-chant-legend__prep">preparatory</span></span
+          >
+        </p>
       </template>
     </header>
 
@@ -83,10 +105,19 @@
           <span v-for="verse in psalm.verses" :key="verse.number">
             <span v-if="verse.first_half">
               <p class="hangingIndent extra-space-before">
-                <sup>{{ verse.number }}</sup> {{ verse.first_half }} *
+                <sup>{{ verse.number }}</sup>
+                <ChantText
+                  v-if="showChant && verse.chant"
+                  :segments="verse.chant.first_half"
+                />
+                <template v-else>{{ verse.first_half }}</template> *
               </p>
               <p class="indent">
-                {{ verse.second_half }}
+                <ChantText
+                  v-if="showChant && verse.chant"
+                  :segments="verse.chant.second_half"
+                />
+                <template v-else>{{ verse.second_half }}</template>
               </p>
             </span>
           </span>
@@ -139,13 +170,16 @@
 </template>
 
 <script>
+import ChantText from '@/components/ChantText.vue';
 import Loading from '@/components/Loading.vue';
+import { displayState, setChantMode } from '@/helpers/displayPreferences';
 import { DynamicStorage } from '@/helpers/storage';
 
 export default {
-  components: { Loading },
+  components: { ChantText, Loading },
   data() {
     return {
+      display: displayState,
       psalm: null,
       loading: true,
       error: false,
@@ -182,7 +216,16 @@ export default {
     this.error = false;
     this.loading = false;
   },
+  computed: {
+    hasChant() {
+      return Boolean(this.psalm?.verses?.some((verse) => verse.chant));
+    },
+    showChant() {
+      return this.display.chantMode && this.hasChant && !this.traditional;
+    },
+  },
   methods: {
+    setChantMode,
     changeLanguage(value) {
       this.traditional = value;
       this.setTradtional();
@@ -235,9 +278,49 @@ export default {
   color: var(--accent);
 }
 
+.psalm-chant-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+  font-variant-caps: all-small-caps;
+  letter-spacing: var(--tracking-caps);
+}
+
+.psalm-chant-legend {
+  margin: var(--space-3) 0 0;
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+.psalm-chant-legend__key {
+  white-space: nowrap;
+}
+
+.psalm-chant-legend__bar {
+  color: var(--accent);
+}
+
+.psalm-chant-legend__accent,
+.psalm-chant-legend__prep {
+  text-decoration-line: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 0.09em;
+  text-underline-offset: 0.18em;
+}
+
+.psalm-chant-legend__prep {
+  text-decoration-style: dotted;
+}
+
 .psalm-tools {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
+  gap: var(--space-3) var(--space-4);
   margin-top: var(--space-2);
 }
 

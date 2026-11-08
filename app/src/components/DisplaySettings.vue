@@ -88,6 +88,22 @@
       />
     </section>
 
+    <section class="display-row display-row--inline">
+      <div class="display-row__copy">
+        <h3 class="display-row__label">Pointed for chant</h3>
+        <p class="display-row__hint">
+          Mark psalms for singing to plainsong tones: a bar where the tone
+          turns, accents underlined, preparatory notes dotted. Being tested on a
+          few psalms.
+        </p>
+      </div>
+      <UiSwitch
+        :model-value="state.chantMode"
+        label="Point psalms for chant"
+        @update:model-value="setChantMode"
+      />
+    </section>
+
     <section v-if="showAudio" class="display-row display-row--inline">
       <div class="display-row__copy">
         <h3 class="display-row__label">Audio player</h3>
@@ -116,6 +132,7 @@ import {
   displayState as state,
   fontSizePercent,
   setAudioEnabled,
+  setChantMode,
   setFontSize,
   setReadingFont,
   setRubricStyle,

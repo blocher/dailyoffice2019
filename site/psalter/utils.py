@@ -1,6 +1,7 @@
 from django.utils.html import format_html
 
 from office.api.line import Line
+from psalter.chant.service import chant_for_verse
 from psalter.models import PsalmVerse
 
 
@@ -128,11 +129,16 @@ def get_psalms(
             verses = (
                 PsalmVerse.objects.filter(psalm__number=citation_parts[0], number__gte=start, number__lte=end)
                 .order_by("number")
-                .select_related("psalm")
+                .select_related("psalm", "pointing")
                 .all()
             )
         else:
-            verses = PsalmVerse.objects.filter(psalm__number=citation).order_by("number").select_related("psalm").all()
+            verses = (
+                PsalmVerse.objects.filter(psalm__number=citation)
+                .order_by("number")
+                .select_related("psalm", "pointing")
+                .all()
+            )
         html = html + psalm_html(
             citation,
             verses,
@@ -171,11 +177,14 @@ def psalm_api_lines(
         lines.append(Line(verses[0].psalm.latin_title, "subheading"))
 
     filtered_verses = [v for v in verses if _has_verse_text(v, language_style, display_language, use_target)]
+    # Plainsong pointing exists for the contemporary English text only.
+    with_chant = language_style != "traditional" and not use_target and display_language == "english"
 
     for i, verse in enumerate(filtered_verses):
         first_half, second_half = _get_verse_text(verse, language_style, display_language, use_target)
         if first_half is None:
             continue
+        chant = chant_for_verse(verse, first_verse=i == 0) if with_chant else None
 
         if headings == "half_verse":
             style = "leader"
@@ -192,6 +201,7 @@ def psalm_api_lines(
                 style,
                 preface=verse.number,
                 indented="hangingIndent",
+                **({"chant": chant["first_half"]} if chant else {}),
             )
         )
         if headings == "half_verse":
@@ -208,6 +218,7 @@ def psalm_api_lines(
                 second_half,
                 style,
                 indented="indent",
+                **({"chant": chant["second_half"]} if chant else {}),
             )
         )
     return lines
