@@ -1,6 +1,9 @@
 <template>
   <div class="chant-player">
-    <div class="chant-player__buttons">
+    <p v-if="!hasNotes" class="chant-player__hint">
+      The notes for playing aren’t here yet. Reload the page to fetch them.
+    </p>
+    <div v-if="hasNotes" class="chant-player__buttons">
       <UiButton
         :icon="playing === 'psalm' ? 'pause' : 'play'"
         size="sm"
@@ -17,7 +20,7 @@
         {{ playing === 'tone' ? 'Stop' : 'Hear the tone' }}
       </UiButton>
     </div>
-    <div class="chant-player__settings">
+    <div v-if="hasNotes" class="chant-player__settings">
       <UiSegmented
         :model-value="tempo"
         :options="tempos"
@@ -33,12 +36,14 @@
         @update:model-value="setPitch"
       />
     </div>
-    <p class="chant-player__hint">Tap a verse number to start there.</p>
+    <p v-if="hasNotes" class="chant-player__hint">
+      Tap a verse number to start there.
+    </p>
   </div>
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import {
   PITCHES,
   TEMPOS,
@@ -57,6 +62,14 @@ const props = defineProps({
   tone: { type: Object, required: true },
 });
 const emit = defineEmits(['position']);
+
+// A psalm stored on the device before the server sent notes has marks but
+// no pitches: say so rather than fail to play.
+const hasNotes = computed(() =>
+  props.verses.some((v) =>
+    v.chant?.first_half?.some((segment) => segment.p?.length)
+  )
+);
 
 const tempos = TEMPOS.map(({ value, label }) => ({ value, label }));
 const pitches = PITCHES.map(({ value, label }) => ({ value, label }));

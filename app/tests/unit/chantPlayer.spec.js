@@ -159,3 +159,26 @@ describe('ChantText highlighting', () => {
     expect(wrapper.find('.chant-accent').text()).toBe('shep');
   });
 });
+
+describe('ChantPlayer', () => {
+  it('asks for a reload when the psalm has marks but no notes', async () => {
+    const { default: ChantPlayer } =
+      await import('@/components/ChantPlayer.vue');
+    const { default: UiKit } = await import('@/ui');
+    const old = FIRST.map(({ t, r }) => ({ t, r }));
+    const wrapper = mount(ChantPlayer, {
+      props: {
+        verses: [{ number: 1, chant: { first_half: old, second_half: [] } }],
+        tone: { tenor: 60, demo: null },
+      },
+      global: { plugins: [UiKit] },
+    });
+    expect(wrapper.text()).toContain('Reload the page');
+    expect(wrapper.text()).not.toContain('Play the psalm');
+
+    await wrapper.setProps({
+      verses: [{ number: 1, chant: { first_half: FIRST, second_half: [] } }],
+    });
+    expect(wrapper.text()).toContain('Play the psalm');
+  });
+});
