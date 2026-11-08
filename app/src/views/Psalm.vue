@@ -38,7 +38,7 @@
             aria-label="Language"
             @update:model-value="changeLanguage"
           />
-          <label v-if="hasChant && !traditional" class="psalm-chant-toggle">
+          <label v-if="hasChant" class="psalm-chant-toggle">
             <span>Chant</span>
             <UiSwitch
               :model-value="display.chantMode"
@@ -47,6 +47,19 @@
             />
           </label>
         </div>
+        <p
+          v-if="display.chantMode && hasChant && traditional"
+          class="psalm-chant-legend"
+        >
+          Chant pointing is for the Contemporary text.
+          <button
+            type="button"
+            class="psalm-chant-legend__switch"
+            @click="changeLanguage(false)"
+          >
+            Show Contemporary
+          </button>
+        </p>
         <p v-if="showChant" class="psalm-chant-legend">
           Pointed for {{ psalm.chant_tone.label }}.
           <span class="psalm-chant-legend__key"
@@ -293,6 +306,12 @@ export default {
   font-size: var(--text-sm);
   color: var(--ink-soft);
   text-align: center;
+}
+
+.psalm-chant-legend__switch {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
 }
 
 .psalm-chant-legend__key {

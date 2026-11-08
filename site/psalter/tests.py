@@ -243,6 +243,15 @@ class ServiceTests(TestCase):
         pointing.refresh_from_db()
         self.assertEqual(pointing.status, PsalmVersePointing.APPROVED)
 
+    def test_pointing_clears_caches_and_tells_devices(self):
+        from office.models import ContentChange
+
+        with self.captureOnCommitCallbacks(execute=True):
+            point_psalm(self.psalm, use_ai=False)
+        change = ContentChange.objects.latest("created")
+        self.assertIn("Psalm 23", change.note)
+        self.assertIsNone(change.start_date)
+
     def test_chant_for_verse(self):
         self.assertIsNone(chant_for_verse(self.verse))
         point_psalm(self.psalm, client=FakeClient(GOOD), runs=1)

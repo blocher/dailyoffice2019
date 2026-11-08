@@ -13,7 +13,7 @@ from django.core.management.base import BaseCommand, CommandError
 from psalter.chant import ai
 from psalter.chant.notation import NotationError
 from psalter.chant.pointing import describe, point_verse
-from psalter.chant.service import point_psalm
+from psalter.chant.service import point_psalm, publish_changes
 from psalter.chant.tones import TONES, get_tone
 from psalter.models import Psalm
 
@@ -80,9 +80,10 @@ class Command(BaseCommand):
         totals = {}
         for number in numbers:
             psalm = psalms[number]
-            if options["tone"] and not options["dry_run"]:
+            if options["tone"] and not options["dry_run"] and psalm.chant_tone != options["tone"]:
                 psalm.chant_tone = options["tone"]
                 psalm.save(update_fields=["chant_tone"])
+                publish_changes(f"Psalm {number} set to tone {options['tone']}")
             tone = get_tone(options["tone"] or psalm.chant_tone)
             self.stdout.write(self.style.MIGRATE_HEADING(f"Psalm {number} — {tone.label}"))
             try:

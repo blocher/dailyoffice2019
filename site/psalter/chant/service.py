@@ -202,7 +202,21 @@ def point_psalm(psalm, *, runs=2, use_ai=True, force=False, verse_numbers=None, 
                         "dictionary_second_half": result.dictionary_second,
                     },
                 )
+            publish_changes(f"Pointed Psalm {psalm.number} for chant")
     return results
+
+
+def publish_changes(note):
+    """Show new pointing at once: clear the office response cache (and
+    Cloudflare's copies) and tell devices to refresh their offline downloads.
+
+    Admin edits do this through the LogEntry signals in office/apps.py; the
+    command and admin actions save without a LogEntry, so they call this.
+    """
+    from office import offline_content, response_cache
+
+    transaction.on_commit(response_cache.clear)
+    transaction.on_commit(lambda: offline_content.record_change(note=note))
 
 
 def chant_for_verse(verse, tone=None, first_verse=None):
