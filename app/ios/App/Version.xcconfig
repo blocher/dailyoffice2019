@@ -1,5 +1,5 @@
 // The version the App Store sees, for the app and its widget extension (DailyOfficeWidget), which
 // must match. Change it here, not in a target's General tab, which would set it for one target only.
 
-MARKETING_VERSION = 4.2.1
-CURRENT_PROJECT_VERSION = 4.2.1
+MARKETING_VERSION = 4.2.2
+CURRENT_PROJECT_VERSION = 4.2.2

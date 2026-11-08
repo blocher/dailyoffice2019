@@ -1,0 +1,4 @@
+New in 4.2.2: "Hey Google, play Evening Prayer on Daily Office" plays right away, in Android Auto too. Play with nothing queued starts the office for now. A new guide to the widget, Android Auto and Google.
+New in 4.2: Google Assistant and Gemini, Android Auto, and a home-screen calendar widget
+New in 4.1: offline mode, with up to two months of offices, Family Prayer, readings, and audio
+New in 4.0: a new design, Book view, audio for every office, podcasts, themes, and a new calendar

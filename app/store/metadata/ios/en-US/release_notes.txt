@@ -1,7 +1,8 @@
-New in 4.2.1: voice requests that just work.
-• "Hey Siri, play Midday Prayer on The Daily Office" now plays right away, even with your phone locked and in CarPlay. Other names work too: Noonday Prayer, Evensong, Vespers, Matins, Compline, Night Prayer, Family Prayer, and today's readings.
-• Siri plays an office or the readings without opening the app. Say "Open" instead of "Play" to read along.
-• Pressing play in the car or on your headphones with nothing to resume starts the office for the time of day, not an earlier one.
+New in 4.2.2: pray by voice, even in the car.
+• "Hey Siri, pray Compline with The Daily Office" starts the office right away, even with your phone locked and in CarPlay. Other names work too: Matins, Noonday Prayer, Evensong, Vespers, Night Prayer, Family Prayer, and today's readings.
+• Say "Open" instead of "Pray" to read along. With the app open, Siri shows the office it plays.
+• Pressing play in the car or on your headphones with nothing to resume starts the office for the time of day.
+• A new guide with pictures: Menu › Widgets, CarPlay & Siri.
 
 New in 4.2: pray hands-free.
 

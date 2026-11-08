@@ -1,1 +1,1 @@
-New: pray hands-free. Ask Siri to play any office, even in CarPlay with your phone locked, name today's feast, or keep the church calendar on your Home Screen.
+New: pray hands-free. "Hey Siri, pray Compline with The Daily Office" plays it right away, even in CarPlay with your phone locked. Widgets show the day's feast.

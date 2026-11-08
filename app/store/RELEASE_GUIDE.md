@@ -7,8 +7,8 @@ Play, written from the 4.0.0 release. Everything you paste or upload is in this
 | | iOS | Android |
 |---|---|---|
 | Bundle / package | `com.dailyoffice.dailyoffice2019` | `com.dailyoffice2019.app` |
-| Latest release | 4.2.1 (build 4.2.1), submitted November 8, 2026 | 4.2.1 (version code 9), submitted November 8, 2026 |
-| Previous release | 4.1.1 (build 4.1.1), live November 2, 2026 (4.2.0 was withdrawn from review for 4.2.1) | 4.2.0 (version code 8), replaced in review by 4.2.1 |
+| Latest release | 4.2.2 (build 4.2.2), submitted November 8, 2026 | 4.2.2 (version code 10), submitted November 8, 2026 |
+| Previous release | 4.1.1 (build 4.1.1), live November 2, 2026 (4.2.0 and 4.2.1 were withdrawn from review for 4.2.2) | 4.1.1 (version code 7); 4.2.0 (8) and 4.2.1 (9) were replaced in review |
 | Toolchain | Xcode 27.2 (iOS 27.2 SDK), iOS 15+ deployment, SPM | AGP 9.5.1, Gradle 9.9.0 (JDK 21), app compile SDK 37, target SDK 36, min SDK 24 |
 | Capacitor | 8.6.0 | same |
 
@@ -31,7 +31,7 @@ Play, written from the 4.0.0 release. Everything you paste or upload is in this
      `ios/App/Version.xcconfig` (shared by the app and its widget extension).
    - Android: `versionName` and `versionCode` in `android/app/build.gradle`.
      `versionCode` must be higher than any code ever uploaded; **the next one
-     is 10** (4.2.1 is 9).
+     is 11** (4.2.2 is 10).
    - `version` in `package.json`, then `npm install` to update the lockfile.
 3. **Write the release notes:** iOS `store/metadata/ios/en-US/release_notes.txt`,
    and Android `store/metadata/android/en-US/changelogs/<versionCode>.txt`
