@@ -399,3 +399,53 @@ class AdminTests(TestCase):
         self.pointing.refresh_from_db()
         self.assertEqual(self.pointing.status, PsalmVersePointing.APPROVED)
         self.assertEqual(self.pointing.second_half_stress, edited)
+
+
+class ExportTests(TestCase):
+    def setUp(self):
+        self.psalm = make_psalm()
+        point_psalm(self.psalm, client=FakeClient(GOOD), runs=1)
+
+    def test_notes_follow_synthesizer_v_lyric_conventions(self):
+        from psalter.chant.export import psalm_notes
+
+        notes, length = psalm_notes(self.psalm, tenor=60)
+        lyrics = [n.lyric for n in notes[:7]]
+        # "shep-herd" is one word over two notes; "herd" takes "+".
+        self.assertEqual(lyrics[:6], ["The", "Lord", "is", "my", "shepherd", "+"])
+        self.assertEqual(notes[2].pitch, 60)  # the reciting note where asked
+        self.assertEqual(notes[4].pitch, 62)  # the rise on the accent
+        # A rest of two pulses at the asterisk.
+        first_half_end = notes[5].onset + notes[5].pulses
+        self.assertEqual(notes[6].onset, first_half_end + 2)
+        self.assertEqual(length, notes[-1].onset + notes[-1].pulses)
+
+    def test_held_syllables_take_a_dash(self):
+        from psalter.chant.export import psalm_notes
+
+        notes, _ = psalm_notes(self.psalm, tone=TONES["1.D"])
+        last = [n for n in notes if n.verse == 1 and n.half == 1][-4:]
+        # Tone I.D ends on a group of four notes on one syllable.
+        self.assertEqual([n.lyric for n in last][1:], ["-", "-", "-"])
+
+    def test_command_writes_a_script_and_musicxml(self):
+        import tempfile
+        from pathlib import Path
+        from xml.dom import minidom
+
+        with tempfile.TemporaryDirectory() as directory:
+            script = Path(directory) / "psalm.js"
+            call_command("export_chant", "23", "--out", str(script), stdout=StringIO())
+            text = script.read_text()
+            self.assertIn("function main()", text)
+            self.assertIn('"shepherd"', text)
+            xml = Path(directory) / "psalm.musicxml"
+            call_command("export_chant", "23", "--format", "musicxml", "--out", str(xml), stdout=StringIO())
+            document = minidom.parse(str(xml))
+            lyrics = [t.firstChild.data for t in document.getElementsByTagName("text")]
+            self.assertEqual(lyrics[:6], ["The", "Lord", "is", "my", "shep", "herd"])
+
+    def test_command_needs_a_pointed_psalm(self):
+        Psalm.objects.create(number=24)
+        with self.assertRaises(CommandError):
+            call_command("export_chant", "24", stdout=StringIO())
