@@ -177,7 +177,7 @@ const routes = [
     path: '/voice',
     name: 'VoiceAndWidgets',
     meta: {
-      title: 'Siri, Google & Widgets | The Daily Office',
+      title: 'Widgets, Car & Voice | The Daily Office',
     },
     component: () => import('../views/VoiceAndWidgets.vue'),
   },

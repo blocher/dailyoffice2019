@@ -23,22 +23,294 @@
       </p>
     </div>
 
+    <nav class="voice-jump" aria-label="On this page">
+      <a v-for="item in jumpLinks" :key="item.id" :href="`#${item.id}`">
+        <UiIcon :name="item.icon" />
+        {{ item.label }}
+      </a>
+    </nav>
+
     <template v-if="shown === 'ios'">
-      <section class="voice-section" aria-labelledby="siri-title">
+      <!-- Widgets -->
+      <section
+        id="widgets"
+        class="voice-section"
+        aria-labelledby="widgets-title"
+      >
+        <h2 id="widgets-title" class="section-title">
+          <UiIcon name="calendar" /> Widgets
+        </h2>
+        <p>
+          Today in the church calendar at a glance: the feast, season and color,
+          the saint remembered, and any fast. After 3 p.m. it shows the
+          evening’s observance. Tap <strong>Pray</strong> for the office of the
+          hour.
+        </p>
+
+        <div class="shots">
+          <figure class="shot">
+            <img
+              :src="iosHome"
+              width="720"
+              height="856"
+              loading="lazy"
+              alt="An iPhone Home Screen with The Daily Office widget in two sizes: the medium one names the Twenty-fourth Sunday after Pentecost, with Pray and Readings buttons."
+            />
+            <figcaption>Home Screen: small and medium</figcaption>
+          </figure>
+          <figure class="shot">
+            <img
+              :src="iosLock"
+              width="720"
+              height="556"
+              loading="lazy"
+              alt="An iPhone Lock Screen showing today’s name, the Twenty-fourth Sunday after Pentecost, under the clock, beside a round Pray button."
+            />
+            <figcaption>Lock Screen widgets</figcaption>
+          </figure>
+        </div>
+
+        <div class="howto">
+          <UiDisclosure title="Add it to the Home Screen">
+            <ol class="steps">
+              <li>
+                Touch and hold an empty part of the Home Screen until the apps
+                jiggle.
+              </li>
+              <li>
+                Tap <strong>Edit</strong> › <strong>Add Widget</strong>, and
+                search for <strong>Daily Office</strong>.
+              </li>
+              <li>
+                Swipe to the size you want and tap
+                <strong>Add Widget</strong>. The medium size has
+                <strong>Pray</strong> and <strong>Readings</strong> buttons.
+              </li>
+            </ol>
+            <p class="voice-note">
+              On a weekday when a saint is remembered, the widget names the
+              saint. To show the weekday instead, touch and hold the widget and
+              choose <strong>Edit Widget</strong>.
+            </p>
+          </UiDisclosure>
+          <UiDisclosure title="Add it to the Lock Screen">
+            <ol class="steps">
+              <li>
+                Touch and hold the Lock Screen, then tap
+                <strong>Customize</strong> › <strong>Lock Screen</strong>.
+              </li>
+              <li>
+                Tap the space below the clock (or the date above it, for one
+                line of text), and choose <strong>The Daily Office</strong>.
+              </li>
+              <li>
+                Pick the rectangle with today’s name, the round
+                <strong>Pray</strong> button, or both, then tap
+                <strong>Done</strong>.
+              </li>
+            </ol>
+          </UiDisclosure>
+        </div>
+      </section>
+
+      <!-- CarPlay -->
+      <section id="car" class="voice-section" aria-labelledby="car-title">
+        <h2 id="car-title" class="section-title">
+          <UiIcon name="headphones" /> CarPlay
+        </h2>
+        <p>
+          Open The Daily Office on your car’s screen to pray the office for the
+          time of day, any office, or the day’s readings, read aloud. It keeps
+          playing with your phone locked.
+        </p>
+        <CarScreen system="carplay" />
+        <div class="howto">
+          <UiDisclosure title="Don’t see it in the car?">
+            <ol class="steps">
+              <li>
+                On your iPhone, open <strong>Settings</strong> ›
+                <strong>General</strong> › <strong>CarPlay</strong>, and tap
+                your car.
+              </li>
+              <li>
+                Tap <strong>Customize</strong> and make sure
+                <strong>The Daily Office</strong> is in the list of apps shown.
+              </li>
+            </ol>
+          </UiDisclosure>
+        </div>
+      </section>
+
+      <!-- Siri -->
+      <section id="voice" class="voice-section" aria-labelledby="siri-title">
         <h2 id="siri-title" class="section-title">
           <UiIcon name="mic" /> Ask Siri
         </h2>
         <p>
-          Say “Hey Siri,” then any of these. Siri needs the app’s name, “The
-          Daily Office” (or just “Daily Office”), in each one. If Siri mishears,
-          try typing to Siri.
+          Say “Hey Siri,” then any of these, in the car or anywhere. Each needs
+          the app’s name, “The Daily Office” (or just “Daily Office”).
         </p>
+
+        <div class="tip" role="note">
+          <UiIcon name="info" />
+          <p>
+            Say <strong>“Pray”</strong>, not “Play”. Siri can take “Play Morning
+            Prayer” to the Daily Office podcast of the same name in the Podcasts
+            app.
+          </p>
+        </div>
+
         <div
           v-for="group in siriPhrases"
           :key="group.title"
           class="phrase-group"
         >
           <h3 class="phrase-group__title">{{ group.title }}</h3>
+          <p v-if="group.note" class="phrase-group__note">{{ group.note }}</p>
+          <ul class="phrases">
+            <li v-for="phrase in group.phrases" :key="phrase">
+              “{{ phrase }}”
+            </li>
+          </ul>
+        </div>
+
+        <p class="voice-note">
+          Other names work too: Matins, Noonday Prayer, Evensong, Vespers, Night
+          Prayer, and Family Prayer. Needs iOS 17 or later.
+        </p>
+
+        <div class="howto">
+          <UiDisclosure title="Make your own phrase, such as “Compline”">
+            <ol class="steps">
+              <li>
+                Open the <strong>Shortcuts</strong> app and tap
+                <strong>+</strong>.
+              </li>
+              <li>
+                Tap <strong>Add Action</strong>, search for
+                <strong>The Daily Office</strong>, and choose
+                <strong>Play an Office</strong>.
+              </li>
+              <li>Tap the office in the action and choose one.</li>
+              <li>
+                Name the shortcut what you’ll say, such as
+                <strong>Compline</strong>, and tap <strong>Done</strong>.
+              </li>
+            </ol>
+            <p class="voice-note">
+              The app’s other actions are there too: the day’s feast, collect,
+              readings and saints, the next holy day, a psalm read aloud.
+            </p>
+          </UiDisclosure>
+          <UiDisclosure title="Put it on the Action button">
+            <p>
+              On iPhone 15 Pro and later, open <strong>Settings</strong> ›
+              <strong>Action Button</strong>, swipe to
+              <strong>Shortcut</strong>, and choose one of The Daily Office’s
+              actions, such as <strong>Play an Office</strong>.
+            </p>
+          </UiDisclosure>
+          <UiDisclosure title="Siri Suggestions">
+            <p>
+              Siri learns when you pray. After you’ve prayed an office in the
+              app a few times, it suggests it at that time of day, on the Lock
+              Screen and in Search.
+            </p>
+          </UiDisclosure>
+        </div>
+      </section>
+    </template>
+
+    <template v-else>
+      <!-- Widget -->
+      <section
+        id="widgets"
+        class="voice-section"
+        aria-labelledby="widgets-title"
+      >
+        <h2 id="widgets-title" class="section-title">
+          <UiIcon name="calendar" /> Home screen widget
+        </h2>
+        <p>
+          Today in the church calendar at a glance: the feast, season and color,
+          the saint remembered, and any fast. After 3 p.m. it shows the
+          evening’s observance. Tap <strong>Pray</strong> for the office of the
+          hour.
+        </p>
+
+        <div class="shots shots--single">
+          <figure class="shot">
+            <img
+              :src="androidHome"
+              width="720"
+              height="553"
+              loading="lazy"
+              alt="An Android home screen with the Daily Office widget naming the Twenty-fourth Sunday after Pentecost, with Pray and Readings buttons."
+            />
+            <figcaption>On the home screen</figcaption>
+          </figure>
+        </div>
+
+        <div class="howto">
+          <UiDisclosure title="Add it to your home screen">
+            <ol class="steps">
+              <li>Touch and hold an empty part of your home screen.</li>
+              <li>
+                Tap <strong>Widgets</strong> and search for
+                <strong>Daily Office</strong>.
+              </li>
+              <li>
+                Tap <strong>Today in the Church Calendar</strong>, then
+                <strong>Add</strong>. Resize it by touching and holding it.
+              </li>
+            </ol>
+            <p class="voice-note">
+              On a weekday when a saint is remembered, the widget names the
+              saint. To show the weekday instead, touch and hold the widget and
+              choose <strong>Settings</strong>.
+            </p>
+          </UiDisclosure>
+          <UiDisclosure title="Shortcuts on the app icon">
+            <p>
+              Touch and hold the Daily Office icon to see
+              <strong>Pray now</strong>, <strong>Family Prayer</strong>,
+              <strong>Readings</strong> and <strong>Calendar</strong>, and the
+              offices you’ve prayed. Drag one onto your home screen to keep it a
+              tap away.
+            </p>
+          </UiDisclosure>
+        </div>
+      </section>
+
+      <!-- Android Auto -->
+      <section id="car" class="voice-section" aria-labelledby="car-title">
+        <h2 id="car-title" class="section-title">
+          <UiIcon name="headphones" /> Android Auto
+        </h2>
+        <p>
+          Open Daily Office in Android Auto to pray the office for the time of
+          day, any office, or the day’s readings, read aloud. It keeps playing
+          with your phone locked.
+        </p>
+        <CarScreen system="auto" />
+      </section>
+
+      <!-- Google -->
+      <section id="voice" class="voice-section" aria-labelledby="google-title">
+        <h2 id="google-title" class="section-title">
+          <UiIcon name="mic" /> Ask Google
+        </h2>
+        <p>
+          Say “Hey Google,” then any of these, in the car or anywhere. Each
+          needs the app’s name, “Daily Office”.
+        </p>
+        <div
+          v-for="group in googlePhrases"
+          :key="group.title"
+          class="phrase-group"
+        >
+          <h3 class="phrase-group__title">{{ group.title }}</h3>
+          <p v-if="group.note" class="phrase-group__note">{{ group.note }}</p>
           <ul class="phrases">
             <li v-for="phrase in group.phrases" :key="phrase">
               “{{ phrase }}”
@@ -46,218 +318,43 @@
           </ul>
         </div>
         <p class="voice-note">
-          Siri plays an office or the readings without opening the app, even
-          with the phone locked, and answers questions aloud on AirPods. Other
-          names work too: Noonday Prayer, Evensong, Vespers, Matins, Night
-          Prayer. To read along, say “Open” instead of “Play”. Needs iOS 17 or
-          later.
+          Other names work too: Matins, Noonday Prayer, Evensong, Vespers, Night
+          Prayer, and Family Prayer. Offices you pray in the app are added to
+          “Open”, so “Open Compline on Daily Office” works once you’ve prayed
+          Compline.
         </p>
-      </section>
-
-      <section class="voice-section" aria-labelledby="shortcuts-title">
-        <h2 id="shortcuts-title" class="section-title">
-          <UiIcon name="link" /> Make your own Siri phrase
-        </h2>
-        <p>
-          To say just “Play Compline” (without the app’s name), make a shortcut
-          with that name:
-        </p>
-        <ol class="steps">
-          <li>
-            Open the <strong>Shortcuts</strong> app and tap <strong>+</strong>.
-          </li>
-          <li>
-            Tap <strong>Add Action</strong>, search for
-            <strong>The Daily Office</strong>, and choose
-            <strong>Play an Office</strong>.
-          </li>
-          <li>
-            Tap the office in the action and choose one, such as Compline.
-          </li>
-          <li>
-            Name the shortcut what you’ll say, such as
-            <strong>Play Compline</strong>, and tap <strong>Done</strong>.
-          </li>
-        </ol>
-        <p>
-          The Daily Office’s other actions are there too: the day’s feast,
-          collect, readings and saints, the next holy day, a psalm read aloud.
-          Put one on the <strong>Action button</strong> (iPhone 15 Pro and
-          later) in Settings › Action Button › Shortcut.
-        </p>
-        <p class="voice-note">
-          Siri also learns when you pray: after you’ve prayed an office in the
-          app a few times, it suggests it at that time of day.
-        </p>
-      </section>
-
-      <section class="voice-section" aria-labelledby="home-widget-title">
-        <h2 id="home-widget-title" class="section-title">
-          <UiIcon name="calendar" /> Home Screen widget
-        </h2>
-        <p>
-          Today in the church calendar: the feast, season and color, the saint
-          remembered, and any fast. After 3 p.m. it shows the evening’s
-          observance.
-        </p>
-        <ol class="steps">
-          <li>
-            Touch and hold an empty part of the Home Screen until the apps
-            jiggle.
-          </li>
-          <li>
-            Tap <strong>Edit</strong> › <strong>Add Widget</strong>, and search
-            for <strong>Daily Office</strong>.
-          </li>
-          <li>
-            Choose the small or medium size and tap
-            <strong>Add Widget</strong>. The medium size adds
-            <strong>Pray</strong> and <strong>Readings</strong> buttons.
-          </li>
-        </ol>
-        <p>
-          On a weekday when a saint is remembered, the widget names the saint.
-          To show the weekday instead, touch and hold the widget and choose
-          <strong>Edit Widget</strong> (iOS 17 and later).
-        </p>
-      </section>
-
-      <section class="voice-section" aria-labelledby="lock-widget-title">
-        <h2 id="lock-widget-title" class="section-title">
-          <UiIcon name="phone" /> Lock Screen widgets
-        </h2>
-        <ol class="steps">
-          <li>
-            Touch and hold the Lock Screen, then tap
-            <strong>Customize</strong> › <strong>Lock Screen</strong>.
-          </li>
-          <li>
-            Tap the space above the clock for a one-line widget, or below it for
-            the others, and choose <strong>The Daily Office</strong>.
-          </li>
-          <li>
-            Pick the round <strong>Pray</strong> button, the rectangle with
-            today’s name, or both, then tap <strong>Done</strong>.
-          </li>
-        </ol>
-        <p class="voice-note">
-          Pray opens the office for the time of day, ready to pray. Needs iOS 16
-          or later.
-        </p>
-      </section>
-
-      <section class="voice-section" aria-labelledby="carplay-title">
-        <h2 id="carplay-title" class="section-title">
-          <UiIcon name="headphones" /> CarPlay
-        </h2>
-        <p>
-          Open The Daily Office on your car’s screen to play the office for now,
-          any office, or the day’s readings. Siri works in the car too, with the
-          phone locked: “Hey Siri, play Midday Prayer on The Daily Office.”
-          Pressing play with nothing to resume plays the office for now.
-        </p>
-      </section>
-    </template>
-
-    <template v-else>
-      <section class="voice-section" aria-labelledby="google-title">
-        <h2 id="google-title" class="section-title">
-          <UiIcon name="mic" /> Ask Google
-        </h2>
-        <p>Say “Hey Google,” then any of these:</p>
-        <ul class="phrases">
-          <li>“Play Evening Prayer on Daily Office”</li>
-          <li>“Play Compline on Daily Office”</li>
-          <li>“Play Daily Office” (the office for now)</li>
-          <li>“Open Pray now on Daily Office”</li>
-          <li>“Open Family Prayer on Daily Office”</li>
-          <li>“Open the readings on Daily Office”</li>
-          <li>“Open the calendar on Daily Office”</li>
-        </ul>
-        <p>
-          “Play” starts the audio without opening the app; “Open” shows the page
-          to read along. Offices you pray in the app are added too, so “Open
-          Compline on Daily Office” works once you’ve prayed Compline.
-        </p>
-        <p class="voice-note">
-          On Android 16 and later, Gemini can play any office and answer
-          questions about the church calendar (the day’s feast, color, saints,
-          collect and readings, and when a feast falls), as Google opens Gemini
-          to apps.
-        </p>
-      </section>
-
-      <section class="voice-section" aria-labelledby="android-shortcuts-title">
-        <h2 id="android-shortcuts-title" class="section-title">
-          <UiIcon name="link" /> Shortcuts
-        </h2>
-        <ol class="steps">
-          <li>
-            Touch and hold the Daily Office icon to see
-            <strong>Pray now</strong>, <strong>Family Prayer</strong>,
-            <strong>Readings</strong> and <strong>Calendar</strong>, and the
-            offices you’ve prayed.
-          </li>
-          <li>
-            Drag one onto your home screen to keep it a tap away. Pray now
-            starts the audio for the office of the hour.
-          </li>
-        </ol>
-      </section>
-
-      <section class="voice-section" aria-labelledby="android-widget-title">
-        <h2 id="android-widget-title" class="section-title">
-          <UiIcon name="calendar" /> Home screen widget
-        </h2>
-        <p>
-          Today in the church calendar: the feast, season and color, the saint
-          remembered, and any fast, with <strong>Pray</strong> and
-          <strong>Readings</strong> buttons. After 3 p.m. it shows the evening’s
-          observance.
-        </p>
-        <ol class="steps">
-          <li>Touch and hold an empty part of your home screen.</li>
-          <li>
-            Tap <strong>Widgets</strong> and find
-            <strong>Daily Office</strong> (or search for “Church”).
-          </li>
-          <li>
-            Tap <strong>Today in the Church Calendar</strong>, then
-            <strong>Add</strong>. Resize it by touching and holding it.
-          </li>
-        </ol>
-        <p>
-          On a weekday when a saint is remembered, the widget names the saint.
-          To show the weekday instead, touch and hold the widget and choose
-          <strong>Settings</strong>.
-        </p>
-      </section>
-
-      <section class="voice-section" aria-labelledby="auto-title">
-        <h2 id="auto-title" class="section-title">
-          <UiIcon name="headphones" /> Android Auto
-        </h2>
-        <p>
-          Open Daily Office in Android Auto to play the office for now, any
-          office, or the day’s readings. Or ask: “Hey Google, play Evensong on
-          Daily Office,” or “play today’s readings on Daily Office.”
-        </p>
+        <div class="howto">
+          <UiDisclosure title="Gemini">
+            <p>
+              On Android 16 and later, Gemini can play any office and answer
+              questions about the church calendar (the day’s feast, color,
+              saints, collect and readings, and when a feast falls), as Google
+              opens Gemini to apps.
+            </p>
+          </UiDisclosure>
+        </div>
       </section>
     </template>
   </div>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, defineComponent, h, ref } from 'vue';
 import { Capacitor } from '@capacitor/core';
 import { APP_STORE_URLS } from '@/helpers/appStores';
+import UiIcon from '@/ui/UiIcon.vue';
+import iosHome from '@/assets/voice/ios-home.webp';
+import iosLock from '@/assets/voice/ios-lock.webp';
+import androidHome from '@/assets/voice/android-home.webp';
 
 /*
-  How to use the apps with Siri, Google, shortcuts, widgets and the car.
-  The phrases match what the apps offer: ios/App/App/Voice/VoiceIntents.swift
-  (DailyOfficeShortcuts), the words both apps understand (VoiceWords in
-  ios/.../Voice/VoiceModel.swift and android/.../voice/VoiceWords.kt), and
-  android/.../res/xml/shortcuts.xml.
+  How to use the apps' widgets, the car, and Siri or Google, in that order.
+  The phrases match what the apps understand: the media requests matched by
+  VoiceWords (ios/.../Voice/VoiceModel.swift, android/.../voice/VoiceWords.kt),
+  the App Shortcuts in ios/App/App/Voice/VoiceIntents.swift, and
+  android/.../res/xml/shortcuts.xml. The screenshots (src/assets/voice/) are
+  from the iOS 27 simulator and an Android emulator; the car screens are drawn
+  here from the apps' CarPlay and Android Auto lists.
 */
 const platform = Capacitor.getPlatform();
 const isWeb = platform === 'web';
@@ -278,28 +375,47 @@ const storeLink = computed(() =>
 const copy = computed(() =>
   shown.value === 'ios'
     ? {
-        title: 'Siri & Widgets',
-        lede: 'Pray, listen, and ask about the church calendar without opening the app, from Siri, the Home and Lock Screens, and CarPlay.',
+        title: 'Widgets, CarPlay & Siri',
+        lede: 'The day in the church calendar on your Home and Lock Screens, the offices in the car, and prayer by voice.',
       }
     : {
-        title: 'Google & Widgets',
-        lede: 'Pray, listen, and see the church calendar from Google, your home screen, and Android Auto.',
+        title: 'Widget, Android Auto & Google',
+        lede: 'The day in the church calendar on your home screen, the offices in the car, and prayer by voice.',
       }
 );
+
+const jumpLinks = computed(() => [
+  { id: 'widgets', label: 'Widgets', icon: 'calendar' },
+  {
+    id: 'car',
+    label: shown.value === 'ios' ? 'CarPlay' : 'Android Auto',
+    icon: 'headphones',
+  },
+  {
+    id: 'voice',
+    label: shown.value === 'ios' ? 'Siri' : 'Google',
+    icon: 'mic',
+  },
+]);
 
 const siriPhrases = [
   {
     title: 'Pray',
+    note: 'Starts the audio straight away, even with your phone locked.',
     phrases: [
-      'Play Compline on The Daily Office',
-      'Play Midday Prayer on The Daily Office',
+      'Pray with The Daily Office',
+      'Pray Compline with The Daily Office',
       'Pray Morning Prayer with The Daily Office',
-      'Play Evensong in The Daily Office',
-      'Play Family Prayer in The Daily Office',
-      'Read me Night Prayer in The Daily Office',
-      'Play The Daily Office',
+      'Pray Family Prayer with The Daily Office',
+      'Read me today’s readings in The Daily Office',
+    ],
+  },
+  {
+    title: 'Open',
+    note: 'Shows the office to read along.',
+    phrases: [
       'Open Evening Prayer in The Daily Office',
-      'Play today’s readings in The Daily Office',
+      'Open Compline in The Daily Office',
     ],
   },
   {
@@ -315,6 +431,103 @@ const siriPhrases = [
     ],
   },
 ];
+
+const googlePhrases = [
+  {
+    title: 'Play',
+    note: 'Starts the audio straight away, in Android Auto too.',
+    phrases: [
+      'Play Evening Prayer on Daily Office',
+      'Play Compline on Daily Office',
+      'Play Daily Office',
+      'Play today’s readings on Daily Office',
+    ],
+  },
+  {
+    title: 'Open',
+    note: 'Shows the page to read along.',
+    phrases: [
+      'Open Pray now on Daily Office',
+      'Open Family Prayer on Daily Office',
+      'Open the readings on Daily Office',
+      'Open the calendar on Daily Office',
+    ],
+  },
+];
+
+/*
+  The apps' car screens, drawn in the page's colors (CarPlay and Android Auto
+  can't be captured without a car): the Pray list of
+  ios/App/App/Car/CarPlaySceneDelegate.swift and android/.../car/OfficeLibrary.kt.
+*/
+const CarScreen = defineComponent({
+  props: { system: { type: String, default: 'carplay' } },
+  setup(props) {
+    const rows = [
+      { icon: 'sun', title: 'Midday Prayer', detail: 'For this time of day' },
+      { icon: 'sun', title: 'Family Prayer at Midday' },
+      { header: 'The Daily Office' },
+      { icon: 'sunrise', title: 'Morning Prayer' },
+      { icon: 'sunset', title: 'Evening Prayer' },
+      { icon: 'moon', title: 'Compline' },
+    ];
+    const tabs = [
+      { icon: 'book', label: 'Pray', active: true },
+      { icon: 'book-text', label: 'Readings' },
+    ];
+    return () =>
+      h('figure', { class: ['car', `car--${props.system}`] }, [
+        h(
+          'div',
+          {
+            class: 'car__screen',
+            role: 'img',
+            'aria-label':
+              props.system === 'carplay'
+                ? 'The Daily Office in CarPlay: a Pray tab listing the office for this time of day, Family Prayer, and the Daily Office offices, and a Readings tab.'
+                : 'Daily Office in Android Auto: a Pray list with the office for this time of day, Family Prayer, and the Daily Office offices, and a Readings list.',
+          },
+          [
+            h(
+              'div',
+              { class: 'car__rail', 'aria-hidden': 'true' },
+              tabs.map((tab) =>
+                h('span', { class: ['car__tab', tab.active && 'is-active'] }, [
+                  h(UiIcon, { name: tab.icon }),
+                  h('span', tab.label),
+                ])
+              )
+            ),
+            h('div', { class: 'car__list', 'aria-hidden': 'true' }, [
+              h(
+                'div',
+                { class: 'car__heading' },
+                'Twenty-fourth Sunday after Pentecost'
+              ),
+              ...rows.map((row) =>
+                row.header
+                  ? h('div', { class: 'car__section' }, row.header)
+                  : h('div', { class: 'car__row' }, [
+                      h(UiIcon, { name: row.icon }),
+                      h('span', { class: 'car__text' }, [
+                        h('span', { class: 'car__title' }, row.title),
+                        row.detail &&
+                          h('span', { class: 'car__detail' }, row.detail),
+                      ]),
+                    ])
+              ),
+            ]),
+          ]
+        ),
+        h(
+          'figcaption',
+          props.system === 'carplay'
+            ? 'On the car’s screen: Pray and Readings'
+            : 'In Android Auto: Pray and Readings'
+        ),
+      ]);
+  },
+});
 </script>
 
 <style scoped>
@@ -327,7 +540,7 @@ const siriPhrases = [
   flex-direction: column;
   align-items: center;
   gap: var(--space-2);
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-5);
 }
 
 .voice-guide__get {
@@ -336,11 +549,44 @@ const siriPhrases = [
   font-size: var(--text-sm);
 }
 
+/* Jump links */
+.voice-jump {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-6);
+}
+
+.voice-jump a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2.75rem;
+  padding: var(--space-1) var(--space-4);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-pill);
+  background-color: var(--paper-raised);
+  color: var(--ink);
+  font-size: var(--text-sm);
+  text-decoration: none;
+}
+
+.voice-jump a:hover,
+.voice-jump a:focus-visible {
+  border-color: var(--accent);
+}
+
+.voice-jump :deep(svg) {
+  color: var(--accent);
+}
+
 .voice-section {
   margin-bottom: var(--space-7);
   color: var(--ink);
   font-size: var(--text-md);
   line-height: var(--leading-prose);
+  scroll-margin-top: calc(var(--header-height, 3.5rem) + var(--space-4));
 }
 
 .voice-section .section-title {
@@ -357,13 +603,89 @@ const siriPhrases = [
   margin: var(--space-2) 0 var(--space-3);
 }
 
+/* Screenshots */
+.shots {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: var(--space-4);
+  margin: var(--space-4) 0;
+}
+
+.shots--single {
+  grid-template-columns: minmax(0, 26rem);
+  justify-content: center;
+}
+
+@media (max-width: 30rem) {
+  .shots {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.shot {
+  margin: 0;
+}
+
+.shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.shot figcaption,
+.voice-section :deep(.car figcaption) {
+  margin-top: var(--space-2);
+  color: var(--ink-faint);
+  font-size: var(--text-sm);
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+.howto {
+  margin-top: var(--space-3);
+  border-top: 1px solid var(--rule);
+}
+
+/* Tip */
+.tip {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  margin: var(--space-3) 0 var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  background-color: var(--accent-wash);
+}
+
+.tip :deep(svg) {
+  flex: none;
+  margin-top: 0.2em;
+  color: var(--accent);
+}
+
+.voice-section .tip p {
+  margin: 0;
+}
+
+/* Phrases */
 .phrase-group__title {
-  margin: var(--space-4) 0 var(--space-2);
+  margin: var(--space-4) 0 var(--space-1);
   color: var(--ink-faint);
   font-size: var(--text-sm);
   font-weight: 400;
   font-variant-caps: all-small-caps;
   letter-spacing: 0.06em;
+}
+
+.voice-section .phrase-group__note {
+  margin: 0 0 var(--space-2);
+  color: var(--ink-soft);
+  font-size: var(--text-sm);
 }
 
 .phrases {
@@ -400,5 +722,107 @@ const siriPhrases = [
 .voice-note {
   color: var(--ink-soft);
   font-size: var(--text-sm);
+}
+
+/* The car screen, drawn in the page's own colors */
+.voice-section :deep(.car) {
+  margin: var(--space-4) 0;
+}
+
+.voice-section :deep(.car__screen) {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  overflow: hidden;
+  border: 6px solid var(--ink);
+  border-radius: var(--radius-lg);
+  background-color: var(--paper-sunken);
+  box-shadow: var(--shadow-sm);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+}
+
+.voice-section :deep(.car--auto .car__screen) {
+  border-radius: var(--radius);
+}
+
+.voice-section :deep(.car__rail) {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-1);
+  border-right: 1px solid var(--rule);
+  background-color: var(--paper-raised);
+}
+
+.voice-section :deep(.car__tab) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-2) 0;
+  border-radius: var(--radius-sm);
+  color: var(--ink-faint);
+  font-size: var(--text-xs);
+}
+
+.voice-section :deep(.car__tab.is-active) {
+  background-color: var(--accent-wash);
+  color: var(--accent);
+}
+
+.voice-section :deep(.car__list) {
+  padding: var(--space-3) var(--space-4) var(--space-2);
+}
+
+.voice-section :deep(.car__heading),
+.voice-section :deep(.car__section) {
+  color: var(--ink-faint);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.voice-section :deep(.car__section) {
+  margin-top: var(--space-3);
+}
+
+.voice-section :deep(.car__row) {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--text-sm);
+  line-height: var(--leading-tight);
+}
+
+.voice-section :deep(.car__row:last-child) {
+  border-bottom: none;
+}
+
+.voice-section :deep(.car__row svg) {
+  flex: none;
+  color: var(--accent);
+}
+
+.voice-section :deep(.car__text) {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.voice-section :deep(.car__title) {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.voice-section :deep(.car__detail) {
+  color: var(--ink-soft);
+  font-size: var(--text-xs);
 }
 </style>

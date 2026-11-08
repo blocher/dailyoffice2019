@@ -189,15 +189,15 @@ const groups = computed(() => {
           // Siri and the widgets on iPhone; Google and the widget on Android.
           label:
             platform === 'android'
-              ? 'Google, shortcuts & widget'
+              ? 'Widget, Android Auto & Google'
               : platform === 'ios'
-                ? 'Siri, Shortcuts & widgets'
-                : 'Voice & widgets',
+                ? 'Widgets, CarPlay & Siri'
+                : 'Widgets, car & voice',
           hint:
             platform === 'android'
-              ? 'And Android Auto'
+              ? 'Home screen, the car, your voice'
               : platform === 'ios'
-                ? 'Lock Screen and CarPlay too'
+                ? 'Home and Lock Screen, the car, your voice'
                 : 'In the iPhone and Android apps',
           icon: 'mic',
           to: '/voice',
