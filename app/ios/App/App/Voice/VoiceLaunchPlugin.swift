@@ -61,6 +61,7 @@ enum VoiceLaunch {
     /// Opens the app at a page: "/office/compline?autoplay=1".
     static func open(path: String) {
         DispatchQueue.main.async {
+            VoiceLog.note("VoiceLaunch.open \(path) page listening=\(plugin != nil)")
             if let plugin {
                 plugin.emitOpen(path)
             } else {

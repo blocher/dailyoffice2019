@@ -87,16 +87,18 @@ object VoiceWords {
         "it", "something", "audio", "aloud", "out", "loud", "go",
     )
 
-    /** Other names for each office (Office.synonyms), for shortcuts and Assistant. */
+    /**
+     * Other names for each office (Office.synonyms), for shortcuts and Assistant: each belongs to one
+     * office only, so an assistant never has two offices to choose between. The matcher above
+     * understands the rest.
+     */
     val synonyms = mapOf(
-        Office.MORNING_PRAYER to listOf("Matins", "Lauds", "Morning Office", "Daily Morning Prayer"),
-        Office.MIDDAY_PRAYER to listOf("Noonday Prayer", "Noon Prayer", "Midday Office", "Sext", "Daily Midday Prayer"),
-        Office.EVENING_PRAYER to listOf("Evensong", "Vespers", "Evening Office", "Daily Evening Prayer"),
-        Office.COMPLINE to listOf("Night Prayer", "Night Office", "Prayer at the End of the Day"),
-        Office.FAMILY_MORNING to listOf("Family Morning Prayer", "Morning Family Prayer"),
-        Office.FAMILY_MIDDAY to listOf("Family Midday Prayer", "Family Noonday Prayer"),
-        Office.FAMILY_EARLY_EVENING to listOf("Family Evening Prayer", "Family Early Evening Prayer", "Family Supper Prayer"),
-        Office.FAMILY_CLOSE_OF_DAY to listOf("Family Bedtime Prayer", "Family Night Prayer", "Family Compline", "Close of Day"),
+        Office.MORNING_PRAYER to listOf("Matins", "Lauds", "the Morning Office"),
+        Office.MIDDAY_PRAYER to listOf("Noonday Prayer", "Noon Prayer", "Sext"),
+        Office.EVENING_PRAYER to listOf("Evensong", "Vespers", "the Evening Office"),
+        Office.COMPLINE to listOf("Night Prayer", "Prayers at Bedtime"),
+        Office.FAMILY_EARLY_EVENING to listOf("Family Supper Prayer"),
+        Office.FAMILY_CLOSE_OF_DAY to listOf("Close of Day"),
     )
 
     /** Lowercase words, with punctuation gone and split words joined: "Mid-day Prayer!" is "midday prayer". */

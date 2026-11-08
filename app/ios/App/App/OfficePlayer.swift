@@ -80,6 +80,9 @@ final class OfficePlayer {
     private var backgroundTask: UIBackgroundTaskIdentifier = .invalid
 
     private var resumeAfterInterruption = false
+    /// When Siri (or a headset, the car) last started an office: Siri then speaks its answer, which
+    /// interrupts the office, and iOS doesn't always say to resume afterwards.
+    var voiceStartedAt: Date?
     private var inForeground = true
     private var timer: Timer?
 
@@ -141,6 +144,9 @@ final class OfficePlayer {
     var currentSource: String? { source }
 
     var isPlaying: Bool { playWhenReady }
+
+    /// Actually making sound (not just asked to play while it buffers).
+    var isAudible: Bool { player.timeControlStatus == .playing }
 
     /// Loads a track, keeping a healthy one that is already loaded (the page retrying while the
     /// player reconnects by itself).
@@ -267,6 +273,7 @@ final class OfficePlayer {
     }
 
     private func itemStatusChanged(_ item: AVPlayerItem) {
+        VoiceLog.note("Player item status \(item.status.rawValue) playWhenReady=\(playWhenReady) error=\(item.error?.localizedDescription ?? "none")")
         switch item.status {
         case .readyToPlay:
             if let target = pendingSeek {
@@ -343,12 +350,14 @@ final class OfficePlayer {
         do {
             try session.setCategory(.playback, mode: .spokenAudio)
             try session.setActive(true)
+            VoiceLog.note("Audio session active")
         } catch {
-            print("OfficePlayer: could not activate the audio session: \(error)")
+            VoiceLog.note("Audio session failed: \(error)")
         }
     }
 
     private func timeControlChanged() {
+        VoiceLog.note("Player timeControl \(player.timeControlStatus.rawValue) waiting=\(player.reasonForWaitingToPlay?.rawValue ?? "none") foreground=\(inForeground)")
         if player.timeControlStatus == .playing {
             // Playing again: any outage is over.
             failingSince = nil
@@ -432,6 +441,7 @@ final class OfficePlayer {
 
     // The player stops and reports an error, keeping its place; the page offers Retry.
     private func giveUp(_ code: String) {
+        VoiceLog.note("Player gave up: \(code)")
         cancelReconnect()
         error = code
         player.pause()
@@ -509,6 +519,7 @@ final class OfficePlayer {
               let rawType = info[AVAudioSessionInterruptionTypeKey] as? UInt,
               let type = AVAudioSession.InterruptionType(rawValue: rawType)
         else { return }
+        VoiceLog.note("Audio interruption \(type == .began ? "began" : "ended") options=\(info[AVAudioSessionInterruptionOptionKey] ?? "none") playWhenReady=\(playWhenReady)")
         switch type {
         case .began:
             if #available(iOS 14.5, *),
@@ -523,7 +534,9 @@ final class OfficePlayer {
             }
         case .ended:
             let rawOptions = info[AVAudioSessionInterruptionOptionKey] as? UInt ?? 0
-            if resumeAfterInterruption, AVAudioSession.InterruptionOptions(rawValue: rawOptions).contains(.shouldResume) {
+            let justStartedByVoice = voiceStartedAt.map { Date().timeIntervalSince($0) < 60 } ?? false
+            if resumeAfterInterruption,
+               AVAudioSession.InterruptionOptions(rawValue: rawOptions).contains(.shouldResume) || justStartedByVoice {
                 resumePlayback()
             }
             resumeAfterInterruption = false
@@ -568,6 +581,7 @@ final class OfficePlayer {
     private func setUpRemoteCommands() {
         let commands = MPRemoteCommandCenter.shared()
         commands.playCommand.addTarget { [weak self] _ in
+            VoiceLog.note("Remote command: play")
             guard let self else { return .noActionableNowPlayingItem }
             if self.nothingToResume {
                 guard let playNow = self.onPlayWithNothingQueued else { return .noActionableNowPlayingItem }
@@ -578,11 +592,13 @@ final class OfficePlayer {
             return .success
         }
         commands.pauseCommand.addTarget { [weak self] _ in
+            VoiceLog.note("Remote command: pause")
             guard let self, self.source != nil else { return .noActionableNowPlayingItem }
             self.pausePlayback()
             return .success
         }
         commands.togglePlayPauseCommand.addTarget { [weak self] _ in
+            VoiceLog.note("Remote command: toggle")
             guard let self else { return .noActionableNowPlayingItem }
             if !self.playWhenReady, self.nothingToResume {
                 guard let playNow = self.onPlayWithNothingQueued else { return .noActionableNowPlayingItem }

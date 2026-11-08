@@ -85,12 +85,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // handled here in the app rather than in an extension, so it plays through the app's own
     // player (Voice/VoicePlayback.swift).
     func application(_ application: UIApplication, handlerFor intent: INIntent) -> Any? {
-        intent is INPlayMediaIntent ? PlayMediaIntentHandler() : nil
+        VoiceLog.note("Handler asked for \(String(describing: type(of: intent)))")
+        return intent is INPlayMediaIntent ? PlayMediaIntentHandler() : nil
     }
 
-    // The handler answers .handleInApp; iOS then calls this, in the background if need be, where
-    // the app may start audio.
+    // The handler plays straight away; this only catches a .handleInApp delivery, should iOS
+    // send one.
     func application(_ application: UIApplication, handle intent: INIntent, completionHandler: @escaping (INIntentResponse) -> Void) {
+        VoiceLog.note("Handle in app: \(String(describing: type(of: intent)))")
         guard let intent = intent as? INPlayMediaIntent else {
             completionHandler(INPlayMediaIntentResponse(code: .failure, userActivity: nil))
             return

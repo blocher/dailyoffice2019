@@ -1,5 +1,31 @@
 import Intents
+import os
 import UIKit
+
+/// Voice requests in the device log (Console), and in Library/Caches/voice-log.txt for copying off
+/// a test phone (`xcrun devicectl device copy from --domain-type appDataContainer …`): what Siri
+/// asked for and what happened, for diagnosing requests that go astray.
+enum VoiceLog {
+    private static let logger = Logger(subsystem: "com.dailyoffice.dailyoffice2019", category: "Voice")
+    private static let queue = DispatchQueue(label: "VoiceLog")
+    private static let file: URL? = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first?
+        .appendingPathComponent("voice-log.txt")
+
+    static func note(_ message: String) {
+        logger.notice("\(message)")
+        let line = "\(ISO8601DateFormatter().string(from: Date())) \(message)\n"
+        queue.async {
+            guard let file, let data = line.data(using: .utf8) else { return }
+            if let handle = try? FileHandle(forWritingTo: file) {
+                handle.seekToEndOfFile()
+                handle.write(data)
+                try? handle.close()
+            } else {
+                try? data.write(to: file)
+            }
+        }
+    }
+}
 
 /// Plays an office (or the readings) straight from Siri, CarPlay, the lock screen or a headset,
 /// without opening the page, so it works with the phone locked in a car.
@@ -30,7 +56,15 @@ enum OfficePlayback {
     /// Finds the track and plays it.
     @discardableResult
     static func play(_ request: OfficeAudioResolver.Request) async throws -> OfficeAudioResolver.Track {
-        let track = try await OfficeAudioResolver.resolve(request)
+        VoiceLog.note("Finding audio for \(request.title)")
+        let track: OfficeAudioResolver.Track
+        do {
+            track = try await OfficeAudioResolver.resolve(request)
+        } catch {
+            VoiceLog.note("No audio for \(request.title): \(error.localizedDescription)")
+            throw error
+        }
+        VoiceLog.note("Playing \(track.url.absoluteString)")
         let player = OfficePlayer.shared
         player.setSource(
             track.url.absoluteString,
@@ -39,14 +73,24 @@ enum OfficePlayback {
             artworkPath: "android-chrome-512x512.png",
             rate: nil
         )
+        player.voiceStartedAt = Date()
         try player.play()
         current = request
         currentSource = track.url.absoluteString
+        // With the app on screen, show what's playing too. The page asks for the same track and the
+        // one player keeps it going (?autoplay=1 only makes sure the page shows it playing).
+        if UIApplication.shared.applicationState == .active {
+            VoiceLaunch.open(path: VoiceLinks.adding(autoplay: true, to: request.path))
+        }
         return track
     }
 
     /// Plays, answering within a few seconds for Siri, and keeps the app awake until the track
     /// has started even when that takes longer.
+    /// How long to keep the app awake for the track to become audible: until then iOS may suspend
+    /// a background app (as Siri leaves it), and the office never starts.
+    private static let audibleWithin: TimeInterval = 90
+
     static func start(_ request: OfficeAudioResolver.Request) async -> Outcome {
         let application = UIApplication.shared
         var task = UIBackgroundTaskIdentifier.invalid
@@ -54,7 +98,11 @@ enum OfficePlayback {
             application.endBackgroundTask(task)
             task = .invalid
         }
-        let playing = Task { @MainActor () -> Error? in
+        var failure: Error?
+        var loaded = false
+        // Find and load the track, then hold the app awake until it is actually heard (audio
+        // playing keeps a background app running from then on).
+        Task { @MainActor in
             defer {
                 if task != .invalid {
                     application.endBackgroundTask(task)
@@ -63,24 +111,31 @@ enum OfficePlayback {
             }
             do {
                 try await play(request)
-                return nil
+                loaded = true
+                let giveUpAt = Date().addingTimeInterval(audibleWithin)
+                while !OfficePlayer.shared.isAudible, Date() < giveUpAt {
+                    try? await Task.sleep(nanoseconds: 250_000_000)
+                }
+                VoiceLog.note("\(request.title) audible: \(OfficePlayer.shared.isAudible)")
             } catch {
-                return error
+                failure = error
             }
         }
-        let answer = await withTaskGroup(of: Outcome?.self) { group -> Outcome in
-            group.addTask {
-                if let error = await playing.value { return .failed(error) }
-                return .playing(request.title)
+        // Answer Siri once it's heard, or failed, or after a few seconds (it carries on).
+        let answerBy = Date().addingTimeInterval(answerWithin)
+        var answer: Outcome = .starting(request.title)
+        while Date() < answerBy {
+            if let failure {
+                answer = .failed(failure)
+                break
             }
-            group.addTask {
-                try? await Task.sleep(nanoseconds: UInt64(answerWithin * 1_000_000_000))
-                return nil
+            if loaded, OfficePlayer.shared.isAudible {
+                answer = .playing(request.title)
+                break
             }
-            let first = await group.next() ?? nil
-            group.cancelAll()
-            return first ?? .starting(request.title)
+            try? await Task.sleep(nanoseconds: 200_000_000)
         }
+        VoiceLog.note("Start \(request.title): \(String(describing: answer))")
         return answer
     }
 
@@ -102,12 +157,21 @@ enum OfficePlayback {
     }
 }
 
+extension OfficeAudioResolver.Request {
+    /// The app's page for it.
+    var path: String {
+        switch self {
+        case .office(let office): return office.path
+        case .readings(let service): return service.path
+        }
+    }
+}
+
 // MARK: - Siri's media requests
 
 /// "Play Midday Prayer on The Daily Office", "Play The Daily Office", and the same in CarPlay:
 /// Siri sends these to media apps as INPlayMediaIntent rather than to the App Shortcuts. Handled
-/// in the app (AppDelegate application(_:handlerFor:)); playback starts in
-/// application(_:handle:completionHandler:), where iOS lets a background app start audio.
+/// in the app (AppDelegate application(_:handlerFor:)), which plays straight away in handle().
 final class PlayMediaIntentHandler: NSObject, INPlayMediaIntentHandling {
     private static let officePrefix = "office:"
     private static let readingsPrefix = "readings:"
@@ -160,7 +224,9 @@ final class PlayMediaIntentHandler: NSObject, INPlayMediaIntentHandling {
 
     func resolveMediaItems(for intent: INPlayMediaIntent, with completion: @escaping ([INPlayMediaMediaItemResolutionResult]) -> Void) {
         Task { @MainActor in
-            guard let request = Self.request(for: intent) else {
+            let request = Self.request(for: intent)
+            VoiceLog.note("Media request words: \"\(Self.words(in: intent))\" → \(request?.title ?? "nothing")")
+            guard let request else {
                 completion([INPlayMediaMediaItemResolutionResult.unsupported()])
                 return
             }
@@ -169,14 +235,17 @@ final class PlayMediaIntentHandler: NSObject, INPlayMediaIntentHandling {
     }
 
     func handle(intent: INPlayMediaIntent, completion: @escaping (INPlayMediaIntentResponse) -> Void) {
-        // iOS starts (or wakes) the app in the background and calls
-        // application(_:handle:completionHandler:), where it may start audio.
-        completion(INPlayMediaIntentResponse(code: .handleInApp, userActivity: nil))
+        // Handled here, in the app Siri woke: answering .handleInApp instead relies on iOS calling
+        // application(_:handle:completionHandler:), which it doesn't for this scene-based app.
+        VoiceLog.note("Media request handle")
+        Task { @MainActor in Self.play(intent, completion: completion) }
     }
 
-    /// From AppDelegate application(_:handle:completionHandler:).
+    /// Plays what a media request asks for (and from AppDelegate application(_:handle:…), should
+    /// iOS deliver one there).
     @MainActor
     static func play(_ intent: INPlayMediaIntent, completion: @escaping (INPlayMediaIntentResponse) -> Void) {
+        VoiceLog.note("Media request in app: \"\(words(in: intent))\"")
         // "Resume" with nothing named: carry on with an office paused a little while ago.
         let player = OfficePlayer.shared
         if words(in: intent).isEmpty, intent.mediaItems?.isEmpty ?? true, !player.nothingToResume {
@@ -197,7 +266,6 @@ final class PlayMediaIntentHandler: NSObject, INPlayMediaIntentHandling {
             case .playing, .starting:
                 completion(INPlayMediaIntentResponse(code: .success, userActivity: nil))
             case .failed(let error):
-                print("Siri could not play \(request.title): \(error.localizedDescription)")
                 completion(INPlayMediaIntentResponse(code: .failure, userActivity: nil))
             }
         }

@@ -308,16 +308,16 @@ enum VoiceWords {
         "it", "something", "audio", "aloud", "out", "loud", "go",
     ]
 
-    /// Short names for Siri and Shortcuts (Office.synonyms).
+    /// Other names for Siri, Spotlight and Shortcuts (Office.synonyms): each belongs to one office
+    /// only, so Siri never has two offices to choose between ("Family Morning Prayer" would match
+    /// Morning Prayer too). The matcher above understands the rest.
     static let synonyms: [Office: [String]] = [
-        .morningPrayer: ["Matins", "Lauds", "Morning Office", "Daily Morning Prayer"],
-        .middayPrayer: ["Noonday Prayer", "Noon Prayer", "Midday Office", "Sext", "Daily Midday Prayer"],
-        .eveningPrayer: ["Evensong", "Vespers", "Evening Office", "Daily Evening Prayer"],
-        .compline: ["Night Prayer", "Night Office", "Prayer at the End of the Day"],
-        .familyMorning: ["Family Morning Prayer", "Morning Family Prayer"],
-        .familyMidday: ["Family Midday Prayer", "Family Noonday Prayer"],
-        .familyEarlyEvening: ["Family Evening Prayer", "Family Early Evening Prayer", "Family Supper Prayer"],
-        .familyCloseOfDay: ["Family Bedtime Prayer", "Family Night Prayer", "Family Compline", "Close of Day"],
+        .morningPrayer: ["Matins", "Lauds", "the Morning Office"],
+        .middayPrayer: ["Noonday Prayer", "Noon Prayer", "Sext"],
+        .eveningPrayer: ["Evensong", "Vespers", "the Evening Office"],
+        .compline: ["Night Prayer", "Prayers at Bedtime"],
+        .familyEarlyEvening: ["Family Supper Prayer"],
+        .familyCloseOfDay: ["Close of Day"],
     ]
 
     /// Lowercase words, with punctuation gone and split words joined: "Mid-day Prayer!" is
