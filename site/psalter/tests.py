@@ -152,7 +152,20 @@ class PitchTests(SimpleTestCase):
         self.assertEqual(gabc_pitches("ixi", "c4"), [(58, 1)])  # B flat
         self.assertEqual(gabc_pitches("gvFED.", "c4"), [(55, 1), (53, 1), (52, 1), (50, 2)])
         self.assertEqual(gabc_pitches("h", "c3"), [(60, 1)])
+        self.assertEqual(gabc_pitches("gf..", "c4"), [(55, 2), (53, 2)])
         self.assertEqual(gabc_pitches("h", "f3"), [(65, 1)])
+
+    def test_score_lines_up_with_the_demo(self):
+        tone = TONES["8.G"].as_dict()
+        score = tone["score"]
+        self.assertEqual(score["clef"], "c4")
+        self.assertEqual(
+            [g["role"] for g in score["first_half"]],
+            ["intonation", "intonation", "tenor", "accent", "return", "note"],
+        )
+        self.assertEqual([g["n"] for g in score["second_half"]], ["j", "i", "j", "h", "g", "g."])
+        # The demo repeats the tenor three times; otherwise the same groups.
+        self.assertEqual(len(tone["demo"]["first_half"]), len(score["first_half"]) + 2)
 
     def test_every_tone_has_a_demo(self):
         for code, tone in TONES.items():

@@ -77,6 +77,7 @@ class Tone:
             "label": self.label,
             "clef": self.clef,
             "demo": tone_demo(self),
+            "score": tone_score(self),
             # The reciting note, so the player can put it at a comfortable pitch.
             "tenor": gabc_pitches(self.mediation.tenor, self.clef)[0][0],
         }
@@ -203,7 +204,9 @@ def gabc_pitches(notes, clef):
                 continue
             result.append([_letter_to_midi(lower, clef, flat=lower in flats), 1])
         elif char == "." and result:
-            result[-1][1] += 1
+            # ".." after a group of notes dots the last two, one each.
+            doubled = i > 0 and notes[i - 1] == "." and len(result) > 1
+            result[-2 if doubled else -1][1] += 1
         i += 1
     return [tuple(n) for n in result]
 
@@ -230,3 +233,26 @@ def tone_demo(tone, recitation=3):
         return out
 
     return {"first_half": half(tone.mediation, True), "second_half": half(tone.ending, False)}
+
+
+def tone_score(tone):
+    """The tone as notation: {"clef", "first_half", "second_half"}.
+
+    Each half is a list of note groups, ``{"n": GABC notes, "role": ...}``,
+    in the order sung: "intonation", "tenor" (the reciting note), then the
+    cadence's "note", "accent" and "return" (an open note, sung only when
+    there are syllables for it). The groups line up with ``tone_demo``,
+    which repeats the tenor. Drawn by the app's ChantScore component.
+    """
+
+    def half(part, with_intonation):
+        groups = []
+        if with_intonation:
+            groups += [{"n": token.notes, "role": "intonation"} for token in part.intonation]
+        groups.append({"n": part.tenor, "role": "tenor"})
+        for token in part.cadence:
+            role = "accent" if token.accent else "return" if token.open else "note"
+            groups.append({"n": token.notes, "role": role})
+        return [g for g in groups if gabc_pitches(g["n"], tone.clef)]
+
+    return {"clef": tone.clef, "first_half": half(tone.mediation, True), "second_half": half(tone.ending, False)}

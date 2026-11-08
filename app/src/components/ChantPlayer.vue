@@ -61,7 +61,7 @@ const props = defineProps({
   // { label, tenor, demo: { first_half, second_half } }
   tone: { type: Object, required: true },
 });
-const emit = defineEmits(['position']);
+const emit = defineEmits(['position', 'tone-position']);
 
 // A psalm stored on the device before the server sent notes has marks but
 // no pitches: say so rather than fail to play.
@@ -84,6 +84,7 @@ const player = createChantPlayer({
   onPosition: (syllable) => {
     if (syllable && playing.value === 'psalm') lastVerse = syllable.verse;
     emit('position', playing.value === 'psalm' ? syllable : null);
+    emit('tone-position', playing.value === 'tone' ? syllable : null);
   },
   onEnd: () => {
     playing.value = null;

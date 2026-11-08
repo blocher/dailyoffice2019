@@ -60,12 +60,19 @@
             Show Contemporary
           </button>
         </p>
+        <ChantScore
+          v-if="showChant && psalm.chant_tone.score"
+          :score="psalm.chant_tone.score"
+          :label="psalm.chant_tone.label"
+          :active="tonePosition"
+        />
         <ChantPlayer
           v-if="showChant"
           ref="chantPlayer"
           :verses="psalm.verses"
           :tone="psalm.chant_tone"
           @position="onChantPosition"
+          @tone-position="tonePosition = $event"
         />
         <p v-if="showChant" class="psalm-chant-legend">
           Pointed for {{ psalm.chant_tone.label }}.
@@ -206,18 +213,21 @@
 
 <script>
 import ChantPlayer from '@/components/ChantPlayer.vue';
+import ChantScore from '@/components/ChantScore.vue';
 import ChantText from '@/components/ChantText.vue';
 import Loading from '@/components/Loading.vue';
 import { displayState, setChantMode } from '@/helpers/displayPreferences';
 import { DynamicStorage } from '@/helpers/storage';
 
 export default {
-  components: { ChantPlayer, ChantText, Loading },
+  components: { ChantPlayer, ChantScore, ChantText, Loading },
   data() {
     return {
       display: displayState,
       // The syllable the chant player is sounding: { verse, half, index }.
       chantPosition: null,
+      // The note group "Hear the tone" is sounding: { half, index }.
+      tonePosition: null,
       psalm: null,
       loading: true,
       error: false,
