@@ -20,7 +20,8 @@ describe('VoiceAndWidgets', () => {
   it('shows only the iPhone guide in the iOS app', () => {
     const wrapper = mountPage('ios');
     expect(wrapper.find('h1').text()).toBe('Siri & Widgets');
-    expect(wrapper.text()).toContain('Play Compline in The Daily Office');
+    expect(wrapper.text()).toContain('Play Midday Prayer on The Daily Office');
+    expect(wrapper.text()).toContain('without opening the app');
     expect(wrapper.text()).toContain('Lock Screen widgets');
     expect(wrapper.text()).toContain('CarPlay');
     expect(wrapper.text()).not.toContain('Android Auto');
@@ -30,6 +31,7 @@ describe('VoiceAndWidgets', () => {
   it('shows only the Android guide in the Android app', () => {
     const wrapper = mountPage('android');
     expect(wrapper.find('h1').text()).toBe('Google & Widgets');
+    expect(wrapper.text()).toContain('Play Evening Prayer on Daily Office');
     expect(wrapper.text()).toContain('Open Pray now on Daily Office');
     expect(wrapper.text()).toContain('Android Auto');
     expect(wrapper.text()).not.toContain('Lock Screen');
