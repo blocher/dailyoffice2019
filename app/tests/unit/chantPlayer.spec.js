@@ -49,6 +49,19 @@ describe('buildTimeline', () => {
     expect(timeline.duration).toBe(14);
   });
 
+  it('takes fractional lengths and breathes after a comma', () => {
+    const half = [
+      { t: 'Lord', r: '', p: [60], d: [0.75], w: 0.5 },
+      { t: ', ', r: '' },
+      { t: 'my', r: '', p: [60], d: [0.75] },
+    ];
+    const timeline = buildTimeline([{ number: 1, halves: [half, []] }], { pulse: 1 });
+    expect(timeline.syllables[0].end).toBe(0.75);
+    // Half a pulse of breath before "my".
+    expect(timeline.syllables[1].start).toBe(1.25);
+    expect(syllableAt(timeline, 1)).toBeNull();
+  });
+
   it('finds the syllable sounding at a time', () => {
     const timeline = buildTimeline([{ number: 1, halves: [FIRST, SECOND] }], {
       pulse: 1,

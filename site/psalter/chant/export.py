@@ -1,9 +1,9 @@
 """Export a pointed psalm for singing-voice software.
 
-Builds one timeline of sung notes from the pointing (the same rhythm as the
-app's player, app/src/helpers/chantPlayer.js: a pulse a syllable, dots of
-length add one, two pulses' rest at the asterisk, one between verses) and
-writes it as:
+Builds one timeline of sung notes from the pointing, with the same rhythm as
+the app's player (app/src/helpers/chantPlayer.js): the lengths and the breaths
+at commas from ``pointing.rhythm``, two pulses' rest at the asterisk and one
+between verses. It writes it as:
 
 * a Synthesizer V Studio script (JavaScript) that writes the notes and
   lyrics into the open project when run from its Scripts menu, or
@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from xml.sax.saxutils import escape
 
 from psalter.chant.notation import is_valid
-from psalter.chant.pointing import point_verse
+from psalter.chant.pointing import point_verse, rhythm
 from psalter.chant.service import verse_texts
 from psalter.chant.tones import gabc_pitches, get_tone
 
@@ -36,8 +36,8 @@ _FOLD = str.maketrans("ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀꜱᴛᴜ�
 
 @dataclass
 class SungNote:
-    onset: int  # in pulses from the start
-    pulses: int
+    onset: float  # in pulses from the start, on a quarter-pulse grid
+    pulses: float
     pitch: int  # MIDI
     lyric: str  # word, "+" (next syllable of the word) or "-" (held)
     syllable: str  # the syllable as printed, for MusicXML and checking
@@ -85,7 +85,7 @@ def psalm_notes(psalm, *, tone=None, tenor=DEFAULT_TENOR, verse_numbers=None):
         halves = point_verse(pointing.first_half_stress, pointing.second_half_stress, tone, first_verse=position == 0)
         for half_index, pointed in enumerate(halves):
             words = _words(pointed)
-            for syllable in pointed.syllables:
+            for syllable, (scale, pause) in zip(pointed.syllables, rhythm(pointed)):
                 word = words[syllable.word_index]
                 place = word.index(syllable)
                 if len(word) == 1:
@@ -98,6 +98,7 @@ def psalm_notes(psalm, *, tone=None, tenor=DEFAULT_TENOR, verse_numbers=None):
                     syllabic = "middle"
                 first_lyric = _clean("".join(s.text for s in word)) if place == 0 else "+"
                 for i, (pitch, pulses) in enumerate(gabc_pitches(syllable.notes, tone.clef)):
+                    pulses *= scale
                     notes.append(
                         SungNote(
                             onset=time,
@@ -111,6 +112,7 @@ def psalm_notes(psalm, *, tone=None, tenor=DEFAULT_TENOR, verse_numbers=None):
                         )
                     )
                     time += pulses
+                time += pause
             if half_index == 0:
                 time += REST_AT_ASTERISK
         if position < len(pointed_verses) - 1:
@@ -153,7 +155,7 @@ function main() {{
   for (var j = 0; j < NOTES.length; j++) {{
     var n = NOTES[j];
     var note = SV.create("Note");
-    note.setTimeRange(start + n[0] * PULSE, n[1] * PULSE);
+    note.setTimeRange(Math.round(start + n[0] * PULSE), Math.round(n[1] * PULSE));
     note.setPitch(n[2]);
     note.setLyrics(n[3]);
     group.addNote(note);
@@ -192,7 +194,21 @@ _STEPS = [
     ("B", -1),
     ("B", 0),
 ]
-_TYPES = {1: ("eighth", 0), 2: ("quarter", 0), 3: ("quarter", 1), 4: ("half", 0), 6: ("half", 1), 8: ("whole", 0)}
+# Durations are written in quarter pulses (a pulse is an eighth note), so a
+# quarter note is eight divisions. Lengths with no single note value are tied.
+_UNITS_PER_PULSE = 4
+_TYPES = {
+    32: ("whole", 0),
+    24: ("half", 1),
+    16: ("half", 0),
+    12: ("quarter", 1),
+    8: ("quarter", 0),
+    6: ("eighth", 1),
+    4: ("eighth", 0),
+    3: ("16th", 1),
+    2: ("16th", 0),
+    1: ("32nd", 0),
+}
 
 
 def _pitch_xml(midi):
@@ -202,9 +218,20 @@ def _pitch_xml(midi):
     return f"<pitch><step>{step}</step>{alter_xml}<octave>{octave}</octave></pitch>"
 
 
-def _type_xml(pulses):
-    name, dots = _TYPES.get(pulses, ("quarter", 0))
+def _type_xml(units):
+    name, dots = _TYPES[units]
     return f"<type>{name}</type>" + "<dot/>" * dots
+
+
+def _split(pulses):
+    """Note values, in divisions, that add up to a length in pulses."""
+    remaining = round(pulses * _UNITS_PER_PULSE)
+    parts = []
+    while remaining > 0:
+        value = next(v for v in _TYPES if v <= remaining)
+        parts.append(value)
+        remaining -= value
+    return parts
 
 
 def to_musicxml(psalm, notes, *, tone, pulse_seconds):
@@ -234,7 +261,7 @@ def to_musicxml(psalm, notes, *, tone, pulse_seconds):
         body = []
         if index == 1:
             body.append(
-                "<attributes><divisions>2</divisions><key><fifths>0</fifths></key>"
+                f"<attributes><divisions>{_UNITS_PER_PULSE * 2}</divisions><key><fifths>0</fifths></key>"
                 '<time print-object="no" symbol="normal"><senza-misura/></time>'
                 "<clef><sign>G</sign><line>2</line><clef-octave-change>-1</clef-octave-change></clef></attributes>"
                 f'<direction placement="above"><direction-type><words>Psalm {psalm.number}, {escape(tone.label)}</words>'
@@ -242,7 +269,8 @@ def to_musicxml(psalm, notes, *, tone, pulse_seconds):
             )
         for kind, item in measure:
             if kind == "rest":
-                body.append(f"<note><rest/><duration>{item}</duration>{_type_xml(item)}</note>")
+                for units in _split(item):
+                    body.append(f"<note><rest/><duration>{units}</duration>{_type_xml(units)}</note>")
                 continue
             lyric = ""
             if item.syllable:
@@ -250,9 +278,20 @@ def to_musicxml(psalm, notes, *, tone, pulse_seconds):
                     f'<lyric number="1"><syllabic>{item.syllabic}</syllabic>'
                     f"<text>{escape(item.syllable)}</text></lyric>"
                 )
-            body.append(
-                f"<note>{_pitch_xml(item.pitch)}<duration>{item.pulses}</duration>{_type_xml(item.pulses)}{lyric}</note>"
-            )
+            parts_of_note = _split(item.pulses)
+            for i, units in enumerate(parts_of_note):
+                ties = []
+                if i > 0:
+                    ties.append("stop")
+                if i < len(parts_of_note) - 1:
+                    ties.append("start")
+                tie = "".join(f'<tie type="{t}"/>' for t in ties)
+                tied = "".join(f'<tied type="{t}"/>' for t in ties)
+                notations = f"<notations>{tied}</notations>" if tied else ""
+                body.append(
+                    f"<note>{_pitch_xml(item.pitch)}<duration>{units}</duration>{tie}{_type_xml(units)}"
+                    f"{notations}{lyric if i == 0 else ''}</note>"
+                )
         barline = (
             '<barline location="right"><bar-style>light-heavy</bar-style></barline>' if index == len(measures) else ""
         )

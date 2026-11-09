@@ -18,6 +18,7 @@ from psalter.chant.pointing import (
     RETURN,
     describe,
     point,
+    rhythm,
     segments,
 )
 from psalter.chant.service import assess, chant_for_verse, point_psalm
@@ -133,7 +134,20 @@ class PointingTests(SimpleTestCase):
         self.assertEqual([s["t"] for s in sung], ["The", "Lord", "is", "my", "shep", "herd"])
         # Intonation G A, reciting C, the rise to D on the accent, and a long C.
         self.assertEqual([s["p"] for s in sung], [[55], [57], [60], [60], [62], [60]])
-        self.assertEqual(sung[-1]["d"], [2])
+        # The long final note, broadened in the cadence.
+        self.assertEqual(sung[-1]["d"], [3])
+        self.assertEqual(sung[2]["d"], [0.75])  # quicker on the reciting note
+
+    def test_rhythm_breathes_at_commas_but_not_at_the_end(self):
+        tone = TONES["8.G"]
+        pointed = point("Yea, though I +walk through the +val/ley,", tone.mediation, mediation=True)
+        timing = rhythm(pointed)
+        self.assertEqual(timing[0], (0.75, 0.5))  # "Yea," on the reciting note, then a breath
+        self.assertEqual(timing[1], (0.75, 0))
+        self.assertEqual(timing[-1][1], 0)  # the asterisk already rests
+        sung = [s for s in segments(pointed, tone.clef) if "p" in s]
+        self.assertEqual(sung[0]["w"], 0.5)
+        self.assertNotIn("w", sung[1])
 
     def test_describe(self):
         pointed = point("the +Lord with +ho/ly +wor/ship.", TONES["8.G"].ending, mediation=False)
@@ -447,12 +461,27 @@ class ExportTests(TestCase):
             self.assertIn("function main()", text)
             self.assertIn('"shepherd"', text)
             # Notes within a phrase touch, so each syllable is not re-attacked.
-            self.assertIn("n[1] * PULSE);", text)
+            self.assertIn("Math.round(n[1] * PULSE)", text)
             xml = Path(directory) / "psalm.musicxml"
             call_command("export_chant", "23", "--format", "musicxml", "--out", str(xml), stdout=StringIO())
             document = minidom.parse(str(xml))
             lyrics = [t.firstChild.data for t in document.getElementsByTagName("text")]
             self.assertEqual(lyrics[:6], ["The", "Lord", "is", "my", "shep", "herd"])
+            # Reciting syllables are dotted sixteenths (three of eight
+            # divisions to the quarter); the accent is a dotted eighth.
+            durations = [
+                int(n.getElementsByTagName("duration")[0].firstChild.data)
+                for n in document.getElementsByTagName("note")
+            ]
+            self.assertEqual(durations[2], 3)
+            self.assertEqual(durations[4], 6)
+
+    def test_lengths_without_a_note_value_are_tied(self):
+        from psalter.chant.export import _split
+
+        self.assertEqual(_split(0.75), [3])
+        self.assertEqual(_split(1.25), [4, 1])
+        self.assertEqual(_split(3), [12])
 
     def test_command_needs_a_pointed_psalm(self):
         Psalm.objects.create(number=24)

@@ -39,6 +39,15 @@ FINAL = "final"
 ENDING_LAST_ACCENT_MAX_RETURN = 1
 EARLIER_ACCENT_MAX_RETURN = 2
 
+# Rhythm, in pulses (a pulse is one syllable at the chosen tempo). Good
+# psalmody moves through the reciting note at the pace of careful speech,
+# breathes at the commas, and broadens into the cadence. Lengths stay on a
+# quarter-pulse grid so that the MusicXML export can write them as plain notes.
+RECITING_LENGTH = 0.75  # each syllable on the reciting note
+CADENCE_LENGTH = 1.5  # scales the tone's own lengths from the inflection on
+PAUSE_AFTER_PUNCTUATION = 0.5  # a breath at a comma or stop inside a half-verse
+_PAUSING_PUNCTUATION = set(",;:.!?")
+
 
 @dataclass
 class PointedSyllable:
@@ -150,6 +159,32 @@ def point(notation, part, *, mediation, first_verse=False):
     return PointedHalf(syllables=syllables, inflection_start=inflection_start, warnings=warnings)
 
 
+def rhythm(pointed):
+    """(length scale, pause after) for each syllable of a pointed half.
+
+    The scale multiplies the tone's lengths for the syllable's notes: shorter
+    on the reciting note, broader from the inflection to the end. The pause,
+    in pulses, follows a syllable that ends in a comma or a stop, except at the
+    end of the half-verse, where the asterisk or the end of the verse already
+    gives a rest.
+    """
+    from psalter.chant.notation import split_punctuation
+
+    timing = []
+    last = len(pointed.syllables) - 1
+    for i, syllable in enumerate(pointed.syllables):
+        if syllable.role == RECITE:
+            scale = RECITING_LENGTH
+        elif syllable.role == INTONATION:
+            scale = 1
+        else:
+            scale = CADENCE_LENGTH
+        trail = split_punctuation(syllable.text)[2]
+        pause = PAUSE_AFTER_PUNCTUATION if i < last and _PAUSING_PUNCTUATION & set(trail) else 0
+        timing.append((scale, pause))
+    return timing
+
+
 def point_verse(first_notation, second_notation, tone, *, first_verse=False):
     first = point(first_notation, tone.mediation, mediation=True, first_verse=first_verse)
     second = point(second_notation, tone.ending, mediation=False)
@@ -161,8 +196,10 @@ def segments(pointed, clef=None):
 
     Each syllable is its own segment, ``{"t": text, "r": role}``, and with a
     ``clef`` also carries what is sung on it: ``"p"`` (MIDI pitches, do at
-    middle C) and ``"d"`` (pulses for each). Spaces and punctuation are
-    separate plain segments with no notes, so only letters are marked.
+    middle C), ``"d"`` (pulses for each, in quarter pulses; see ``rhythm``)
+    and, after a comma, ``"w"`` (pulses of rest before the next syllable).
+    Spaces and punctuation are separate plain segments with no notes, so only
+    letters are marked.
 
     Roles are "" (sung on the reciting note), "bar" (an empty marker where the
     inflection begins), "intonation", "preparatory", "accent", "return" and
@@ -181,6 +218,7 @@ def segments(pointed, clef=None):
         else:
             out.append({"t": text, "r": ""})
 
+    timing = rhythm(pointed)
     for i, syllable in enumerate(pointed.syllables):
         if i and syllable.word_start:
             plain(" ")
@@ -194,8 +232,11 @@ def segments(pointed, clef=None):
         segment = {"t": core, "r": role}
         if clef:
             pitches = gabc_pitches(syllable.notes, clef)
+            scale, pause = timing[i]
             segment["p"] = [p for p, _ in pitches]
-            segment["d"] = [d for _, d in pitches]
+            segment["d"] = [d * scale for _, d in pitches]
+            if pause:
+                segment["w"] = pause
         out.append(segment)
         plain(trail)
     return out

@@ -7,16 +7,17 @@
   The server sends each sung syllable with its pitches ("p", MIDI, do at
   middle C) and their lengths in pulses ("d"); see psalter/chant/pointing.py.
   buildTimeline() turns verses into timed notes and syllables, following the
-  Manual of Plainsong: every syllable takes a pulse, as in a deliberate
-  monotone; a dot of length adds one; a rest of two pulses at the asterisk;
-  and one pulse between verses. createChantPlayer() sounds a timeline and
-  reports which syllable is being sung.
+  Manual of Plainsong, with the lengths the server sets (rhythm() in
+  psalter/chant/pointing.py): quicker on the reciting note, broader in the
+  cadence, and a short breath after a comma ("w"); a rest of two pulses at
+  the asterisk; and one pulse between verses. createChantPlayer() sounds a
+  timeline and reports which syllable is being sung.
 */
 
 export const TEMPOS = [
   { value: 'slow', label: 'Slow', pulse: 0.44 },
-  { value: 'normal', label: 'Normal', pulse: 0.34 },
-  { value: 'brisk', label: 'Brisk', pulse: 0.27 },
+  { value: 'normal', label: 'Normal', pulse: 0.38 },
+  { value: 'brisk', label: 'Brisk', pulse: 0.3 },
 ];
 
 // Where the reciting note sits (MIDI): F3, A3, D4.
@@ -44,7 +45,7 @@ export function transposeFor(pitch, toneTenor) {
   Returns { notes: [{ midi, start, end }], syllables: [{ verse, half,
   index, start, end }], duration } with times in seconds.
 */
-export function buildTimeline(verses, { pulse = 0.34, transpose = 0 } = {}) {
+export function buildTimeline(verses, { pulse = 0.38, transpose = 0 } = {}) {
   const notes = [];
   const syllables = [];
   let time = 0;
@@ -63,6 +64,8 @@ export function buildTimeline(verses, { pulse = 0.34, transpose = 0 } = {}) {
           time += length;
         });
         syllables.push({ verse: verse.number, half, index, start, end: time });
+        // A breath after a comma ("w", in pulses).
+        if (segment.w) time += segment.w * pulse;
       });
       if (half === 0) time += REST_AT_ASTERISK * pulse;
     });

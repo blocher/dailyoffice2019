@@ -18,7 +18,7 @@ from psalter.management.commands.point_psalms import parse_selection
 from psalter.models import Psalm
 
 # Seconds per pulse (one syllable), as in the app's player.
-TEMPOS = {"slow": 0.44, "normal": 0.34, "brisk": 0.27}
+TEMPOS = {"slow": 0.44, "normal": 0.38, "brisk": 0.3}
 
 
 class Command(BaseCommand):
