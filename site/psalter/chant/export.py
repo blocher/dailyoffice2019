@@ -7,7 +7,9 @@ between verses. It writes it as:
 
 * a Synthesizer V Studio script (JavaScript) that writes the notes and
   lyrics into the open project when run from its Scripts menu, or
-* MusicXML, which Synthesizer V and most notation programs import.
+* MusicXML, which Synthesizer V and most notation programs import, or
+* a MuseScore Studio score (MusicXML converted by MuseScore's command line)
+  set to sing with a Cantai voice; see ``set_musescore_sound``.
 
 Lyrics follow Synthesizer V's conventions: a word sung over several notes
 has the whole word on its first syllable's note and ``+`` on each later
@@ -16,6 +18,7 @@ syllable's; a syllable held over several notes has ``-`` on the extra ones.
 
 import json
 import re
+import zipfile
 from dataclasses import dataclass
 from xml.sax.saxutils import escape
 
@@ -303,6 +306,106 @@ def to_musicxml(psalm, notes, *, tone, pulse_seconds):
         '"http://www.musicxml.org/dtds/partwise.dtd">\n'
         '<score-partwise version="4.0">'
         f"<work><work-title>Psalm {psalm.number}</work-title></work>"
-        '<part-list><score-part id="P1"><part-name>Voice</part-name></score-part></part-list>'
+        '<part-list><score-part id="P1"><part-name>Tenor</part-name>'
+        '<score-instrument id="P1-I1"><instrument-name>Tenor</instrument-name>'
+        "<instrument-sound>voice.tenor</instrument-sound></score-instrument></score-part></part-list>"
         f'<part id="P1">{"".join(parts)}</part></score-partwise>\n'
     )
+
+
+# --- MuseScore Studio with Cantai --------------------------------------------
+
+MSCORE = "/Applications/MuseScore 4.app/Contents/MacOS/mscore"
+
+# The Cantai men's choir as MuseScore stores it in a score's audiosettings.json
+# (Mixer > Sound > MuseSounds > Cantai > Choir > Choir (Male)).
+CANTAI_MALE_CHOIR = {
+    "resourceMeta": {
+        "attributes": {
+            "isOnline": "1",
+            "museCategory": "Choir",
+            "museName": "Choir (Male)",
+            "musePack": "Cantai",
+            "museUID": "50406",
+            "museVendorName": "Cantai",
+            "playbackSetupData": "",
+        },
+        "hasNativeEditorSupport": False,
+        "id": "50406",
+        "type": "muse_sampler_sound_pack",
+        "vendor": "MuseSounds",
+    },
+    "unitConfiguration": {},
+}
+
+_REVERB = {
+    "out": {
+        "balance": 0,
+        "fxChain": {
+            "0": {
+                "active": True,
+                "chainOrder": 0,
+                "resourceMeta": {
+                    "attributes": {},
+                    "hasNativeEditorSupport": True,
+                    "id": "Muse Reverb",
+                    "type": "muse_plugin",
+                    "vendor": "Muse",
+                },
+                "unitConfiguration": {},
+            }
+        },
+        "volumeDb": 0,
+    },
+    "soloMuteState": {"mute": False, "solo": False},
+}
+
+
+def sound_from_score(path):
+    """The sound of the first part of a saved MuseScore score, so a voice
+    chosen once in MuseScore's mixer can be reused for every psalm."""
+    with zipfile.ZipFile(path) as archive:
+        settings = json.loads(archive.read("audiosettings.json"))
+    for track in settings.get("tracks", []):
+        if track.get("instrumentId") != "metronome":
+            return track["in"]
+    raise ValueError(f"{path} has no sound set for its part.")
+
+
+def set_musescore_sound(path, sound=CANTAI_MALE_CHOIR, *, instrument="tenor", part="1"):
+    """Set the sound of a single-part MuseScore score (.mscz) in place, with
+    the hall reverb MuseScore gives new scores."""
+    with zipfile.ZipFile(path) as archive:
+        entries = [(info, archive.read(info.filename)) for info in archive.infolist()]
+    settings = {}
+    for info, data in entries:
+        if info.filename == "audiosettings.json":
+            settings = json.loads(data)
+    settings["activeSoundProfile"] = "MuseSounds"
+    settings["aux"] = [
+        _REVERB,
+        {"out": {"balance": 0, "fxChain": {}, "volumeDb": 0}, "soloMuteState": {"mute": False, "solo": False}},
+    ]
+    settings["tracks"] = [
+        {
+            "instrumentId": instrument,
+            "partId": part,
+            "in": sound,
+            "out": {
+                "auxSends": [{"active": True, "signalAmount": 0.3}, {"active": True, "signalAmount": 0.3}],
+                "balance": 0,
+                "fxChain": {},
+                "volumeDb": 0,
+            },
+            "soloMuteState": {"mute": False, "solo": False},
+        }
+    ]
+    data = json.dumps(settings, indent=4).encode()
+    with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as archive:
+        written = False
+        for info, content in entries:
+            if info.filename == "audiosettings.json":
+                content, written = data, True
+            archive.writestr(info, content)
+        if not written:
+            archive.writestr("audiosettings.json", data)

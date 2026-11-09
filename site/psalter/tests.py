@@ -476,6 +476,27 @@ class ExportTests(TestCase):
             self.assertEqual(durations[2], 3)
             self.assertEqual(durations[4], 6)
 
+    def test_musescore_score_gets_the_cantai_voice(self):
+        import tempfile
+        import zipfile
+        from pathlib import Path
+
+        from psalter.chant.export import CANTAI_MALE_CHOIR, set_musescore_sound, sound_from_score
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "psalm.mscz"
+            with zipfile.ZipFile(path, "w") as archive:
+                archive.writestr("psalm.mscx", "<museScore/>")
+                archive.writestr(
+                    "audiosettings.json", json.dumps({"activeSoundProfile": "MuseScore Basic", "tracks": []})
+                )
+            set_musescore_sound(path)
+            with zipfile.ZipFile(path) as archive:
+                self.assertEqual(archive.read("psalm.mscx"), b"<museScore/>")
+                settings = json.loads(archive.read("audiosettings.json"))
+            self.assertEqual(settings["tracks"][0]["instrumentId"], "tenor")
+            self.assertEqual(sound_from_score(path), CANTAI_MALE_CHOIR)
+
     def test_lengths_without_a_note_value_are_tied(self):
         from psalter.chant.export import _split
 
