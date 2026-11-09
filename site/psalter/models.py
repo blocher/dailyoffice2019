@@ -17,6 +17,14 @@ class Psalm(UUIDModel):
         choices=TONE_CHOICES,
         help_text=f"The plainsong tone this psalm is pointed for. Blank uses {DEFAULT_TONE}.",
     )
+    # A sung recording of the whole pointed psalm (manage.py record_chant), with
+    # the pulse it was sung at and a key of what was sung; the API offers it only
+    # while the key still matches the pointing, so the app's highlighting keeps
+    # time with it.
+    chant_recording = models.FileField(upload_to="chant/", blank=True, default="")
+    chant_recording_pulse = models.FloatField(null=True, blank=True)
+    chant_recording_key = models.CharField(max_length=40, blank=True, default="")
+    chant_recording_voice = models.CharField(max_length=100, blank=True, default="")
 
     def __str__(self):
         return f"Psalm {self.number}"

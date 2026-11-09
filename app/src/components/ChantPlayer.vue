@@ -22,6 +22,15 @@
     </div>
     <div v-if="hasNotes" class="chant-player__settings">
       <UiSegmented
+        v-if="recording"
+        :model-value="voice"
+        :options="voices"
+        size="sm"
+        aria-label="Voice"
+        @update:model-value="setVoice"
+      />
+      <UiSegmented
+        v-if="!useChoir"
         :model-value="tempo"
         :options="tempos"
         size="sm"
@@ -29,6 +38,7 @@
         @update:model-value="setTempo"
       />
       <UiSegmented
+        v-if="!useChoir"
         :model-value="pitch"
         :options="pitches"
         size="sm"
@@ -49,8 +59,11 @@ import {
   TEMPOS,
   buildTimeline,
   createChantPlayer,
+  createRecordingPlayer,
   pulseFor,
+  recordingUrl,
   transposeFor,
+  verseStart,
 } from '@/helpers/chantPlayer';
 import { DynamicStorage } from '@/helpers/storage';
 import { toast } from '@/ui/feedback';
@@ -60,6 +73,8 @@ const props = defineProps({
   verses: { type: Array, required: true },
   // { label, tenor, demo: { first_half, second_half } }
   tone: { type: Object, required: true },
+  // { url, pulse, voice }: the psalm sung by a choir, or null.
+  recording: { type: Object, default: null },
 });
 const emit = defineEmits(['position', 'tone-position']);
 
@@ -76,11 +91,21 @@ const pitches = PITCHES.map(({ value, label }) => ({ value, label }));
 const tempo = ref('normal');
 const pitch = ref('medium');
 const playing = ref(null); // 'psalm' | 'tone' | null
+const voices = [
+  { value: 'choir', label: 'Choir' },
+  { value: 'organ', label: 'Organ' },
+];
+const voice = ref('choir');
+// The choir recording has its own speed and pitch; the organ follows the
+// settings.
+const useChoir = computed(
+  () => Boolean(props.recording?.url) && voice.value === 'choir'
+);
 
 // The verse being sung, so a change of speed or pitch restarts it.
 let lastVerse = null;
 
-const player = createChantPlayer({
+const callbacks = {
   onPosition: (syllable) => {
     if (syllable && playing.value === 'psalm') lastVerse = syllable.verse;
     emit('position', playing.value === 'psalm' ? syllable : null);
@@ -89,18 +114,25 @@ const player = createChantPlayer({
   onEnd: () => {
     playing.value = null;
   },
-});
+};
+const player = createChantPlayer(callbacks);
+const choir = createRecordingPlayer(callbacks);
 
 onMounted(async () => {
-  const [storedTempo, storedPitch] = await Promise.all([
+  const [storedTempo, storedPitch, storedVoice] = await Promise.all([
     DynamicStorage.getItem('chantTempo'),
     DynamicStorage.getItem('chantPitch'),
+    DynamicStorage.getItem('chantVoice'),
   ]);
   if (TEMPOS.some((t) => t.value === storedTempo)) tempo.value = storedTempo;
   if (PITCHES.some((p) => p.value === storedPitch)) pitch.value = storedPitch;
+  if (voices.some((v) => v.value === storedVoice)) voice.value = storedVoice;
 });
 
-onBeforeUnmount(() => player.stop());
+onBeforeUnmount(() => {
+  player.stop();
+  choir.stop();
+});
 
 function options() {
   return {
@@ -111,6 +143,7 @@ function options() {
 
 async function start(kind, verses) {
   player.stop();
+  choir.stop();
   const timeline = buildTimeline(verses, options());
   // Set before playing: the player reports the first syllable at once.
   playing.value = kind;
@@ -122,15 +155,39 @@ async function start(kind, verses) {
   }
 }
 
-/** Play the psalm from a verse number (or the beginning). */
-function playFrom(verseNumber) {
-  const verses = props.verses
+function chantVerses(verseNumber = null) {
+  return props.verses
     .filter((v) => v.chant && (verseNumber == null || v.number >= verseNumber))
     .map((v) => ({
       number: v.number,
       halves: [v.chant.first_half, v.chant.second_half],
     }));
-  return start('psalm', verses);
+}
+
+/** Play the psalm from a verse number (or the beginning). */
+function playFrom(verseNumber) {
+  if (useChoir.value) return playRecording(verseNumber);
+  return start('psalm', chantVerses(verseNumber));
+}
+
+async function playRecording(verseNumber) {
+  player.stop();
+  choir.stop();
+  // The recording is the whole psalm, so time it as the whole psalm and seek.
+  const timeline = buildTimeline(chantVerses(), {
+    pulse: props.recording.pulse,
+  });
+  playing.value = 'psalm';
+  lastVerse = verseNumber;
+  const started = await choir.play(
+    recordingUrl(props.recording.url),
+    timeline,
+    verseStart(timeline, verseNumber)
+  );
+  if (started === false) {
+    playing.value = null;
+    toast('The choir recording couldn’t be played. Try the organ.');
+  }
 }
 
 function playTone() {
@@ -143,6 +200,7 @@ function playTone() {
 
 function stop() {
   player.stop();
+  choir.stop();
 }
 
 function restartIfPlaying() {
@@ -153,6 +211,12 @@ function restartIfPlaying() {
 async function setTempo(value) {
   tempo.value = value;
   await DynamicStorage.setItem('chantTempo', value);
+  restartIfPlaying();
+}
+
+async function setVoice(value) {
+  voice.value = value;
+  await DynamicStorage.setItem('chantVoice', value);
   restartIfPlaying();
 }
 

@@ -508,3 +508,41 @@ class ExportTests(TestCase):
         Psalm.objects.create(number=24)
         with self.assertRaises(CommandError):
             call_command("export_chant", "24", stdout=StringIO())
+
+
+class RecordingTests(TestCase):
+    def setUp(self):
+        self.psalm = make_psalm()
+        point_psalm(self.psalm, client=FakeClient(GOOD), runs=1)
+
+    def recording(self):
+        from office.api.serializers import PsalmSerializer
+        from office.api.views.resources import PsalmsViewSet
+
+        psalm = PsalmsViewSet.queryset.get(pk=self.psalm.pk)
+        return PsalmSerializer(psalm).data["chant_recording"]
+
+    def record(self):
+        from psalter.chant.export import recording_key
+
+        verses = list(self.psalm.psalmverse_set.select_related("pointing").order_by("number"))
+        self.psalm.chant_recording.name = "chant/psalm-23.mp3"
+        self.psalm.chant_recording_pulse = 0.38
+        self.psalm.chant_recording_key = recording_key(self.psalm, verses, 0.38)
+        self.psalm.chant_recording_voice = "Cantai men's choir"
+        self.psalm.save()
+
+    def test_no_recording(self):
+        self.assertIsNone(self.recording())
+
+    def test_recording_while_it_matches_the_pointing(self):
+        self.record()
+        self.assertEqual(
+            self.recording(),
+            {"url": "/uploads/chant/psalm-23.mp3", "pulse": 0.38, "voice": "Cantai men's choir"},
+        )
+        # Re-pointing a verse puts the recording out of time with the text.
+        pointing = PsalmVersePointing.objects.filter(verse__psalm=self.psalm).first()
+        pointing.second_half_stress = pointing.second_half_stress.replace("+lack", "lack")
+        pointing.save()
+        self.assertIsNone(self.recording())

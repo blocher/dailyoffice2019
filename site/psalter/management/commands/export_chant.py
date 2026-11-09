@@ -13,8 +13,6 @@ Studio installed; open it there and Cantai renders the voice.
 See psalter/chant/export.py.
 """
 
-import subprocess
-import tempfile
 from pathlib import Path
 
 from django.core.management.base import BaseCommand, CommandError
@@ -24,10 +22,10 @@ from psalter.chant.export import (
     DEFAULT_TENOR,
     MSCORE,
     psalm_notes,
-    set_musescore_sound,
     sound_from_score,
     to_musicxml,
     to_synthv_script,
+    write_musescore_score,
 )
 from psalter.chant.tones import TONES, get_tone
 from psalter.management.commands.point_psalms import parse_selection
@@ -80,15 +78,7 @@ class Command(BaseCommand):
 
     def write_musescore(self, path, musicxml, options):
         sound = sound_from_score(options["sound_from"]) if options["sound_from"] else CANTAI_MALE_CHOIR
-        if not Path(options["mscore"]).exists():
-            raise CommandError(f"MuseScore Studio is not at {options['mscore']}; pass --mscore.")
-        with tempfile.TemporaryDirectory() as directory:
-            source = Path(directory) / "psalm.musicxml"
-            source.write_text(musicxml, encoding="utf-8")
-            path.unlink(missing_ok=True)
-            result = subprocess.run(
-                [options["mscore"], str(source), "-o", str(path.resolve())], capture_output=True, text=True
-            )
-        if not path.exists():
-            raise CommandError(f"MuseScore could not convert the score: {result.stderr[-500:]}")
-        set_musescore_sound(path, sound)
+        try:
+            write_musescore_score(path, musicxml, sound=sound, mscore=options["mscore"])
+        except (FileNotFoundError, RuntimeError) as error:
+            raise CommandError(str(error))

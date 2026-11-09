@@ -7,8 +7,10 @@ import ChantText from '@/components/ChantText.vue';
 import {
   buildTimeline,
   createChantPlayer,
+  recordingUrl,
   syllableAt,
   transposeFor,
+  verseStart,
 } from '@/helpers/chantPlayer';
 
 // "The Lord is my shepherd; * therefore" in Tone VIII, cut short.
@@ -60,6 +62,24 @@ describe('buildTimeline', () => {
     // Half a pulse of breath before "my".
     expect(timeline.syllables[1].start).toBe(1.25);
     expect(syllableAt(timeline, 1)).toBeNull();
+  });
+
+  it('finds where a whole-psalm recording reaches a verse', () => {
+    const verses = [
+      { number: 1, halves: [FIRST, SECOND] },
+      { number: 2, halves: [[], SECOND] },
+    ];
+    const timeline = buildTimeline(verses, { pulse: 1 });
+    expect(verseStart(timeline, null)).toBe(0);
+    expect(verseStart(timeline, 2)).toBe(12);
+    expect(verseStart(timeline, 9)).toBe(0);
+  });
+
+  it('resolves a recording path against the API', () => {
+    expect(recordingUrl('/uploads/chant/psalm-23.mp3', 'https://api.example.com/')).toBe(
+      'https://api.example.com/uploads/chant/psalm-23.mp3'
+    );
+    expect(recordingUrl(null)).toBeNull();
   });
 
   it('finds the syllable sounding at a time', () => {

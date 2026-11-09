@@ -71,6 +71,7 @@
           ref="chantPlayer"
           :verses="psalm.verses"
           :tone="psalm.chant_tone"
+          :recording="psalm.chant_recording"
           @position="onChantPosition"
           @tone-position="tonePosition = $event"
         />

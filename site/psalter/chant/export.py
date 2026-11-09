@@ -16,13 +16,18 @@ has the whole word on its first syllable's note and ``+`` on each later
 syllable's; a syllable held over several notes has ``-`` on the extra ones.
 """
 
+import hashlib
 import json
 import re
+import subprocess
+import tempfile
 import zipfile
+from pathlib import Path
 from dataclasses import dataclass
 from xml.sax.saxutils import escape
 
 from psalter.chant.notation import is_valid
+from psalter.chant import pointing as pointing_rules
 from psalter.chant.pointing import point_verse, rhythm
 from psalter.chant.service import verse_texts
 from psalter.chant.tones import gabc_pitches, get_tone
@@ -409,3 +414,39 @@ def set_musescore_sound(path, sound=CANTAI_MALE_CHOIR, *, instrument="tenor", pa
             archive.writestr(info, content)
         if not written:
             archive.writestr("audiosettings.json", data)
+
+
+def write_musescore_score(path, musicxml, *, sound=CANTAI_MALE_CHOIR, mscore=MSCORE):
+    """Convert MusicXML to a MuseScore score at ``path`` with MuseScore's
+    command line, and set its voice."""
+    path = Path(path).resolve()
+    if not Path(mscore).exists():
+        raise FileNotFoundError(f"MuseScore Studio is not at {mscore}.")
+    with tempfile.TemporaryDirectory() as directory:
+        source = Path(directory) / "psalm.musicxml"
+        source.write_text(musicxml, encoding="utf-8")
+        path.unlink(missing_ok=True)
+        result = subprocess.run([mscore, str(source), "-o", str(path)], capture_output=True, text=True)
+    if not path.exists():
+        raise RuntimeError(f"MuseScore could not convert the score: {result.stderr[-500:]}")
+    set_musescore_sound(path, sound)
+
+
+def recording_key(psalm, verses, pulse_seconds):
+    """What a recording of the psalm was sung from: the tone, the pointing,
+    the rhythm and the pulse. A recording whose key no longer matches would be
+    out of time with the app's highlighting, so the API leaves it out."""
+    pointed = []
+    for verse in verses:
+        pointing = getattr(verse, "pointing", None)
+        if pointing is not None:
+            pointed.append([verse.number, pointing.first_half_stress, pointing.second_half_stress])
+    rules = [
+        pointing_rules.RECITING_LENGTH,
+        pointing_rules.CADENCE_LENGTH,
+        pointing_rules.PAUSE_AFTER_PUNCTUATION,
+        REST_AT_ASTERISK,
+        REST_BETWEEN_VERSES,
+    ]
+    data = json.dumps([get_tone(psalm.chant_tone).code, round(pulse_seconds, 4), rules, pointed])
+    return hashlib.sha1(data.encode()).hexdigest()

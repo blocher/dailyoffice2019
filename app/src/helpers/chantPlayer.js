@@ -210,3 +210,114 @@ export function createChantPlayer({ onPosition, onEnd } = {}) {
     },
   };
 }
+
+/**
+  The full address of a recording the API gives as a path ("/uploads/…").
+*/
+export function recordingUrl(path, base = import.meta.env.VITE_API_URL) {
+  if (!path) return null;
+  try {
+    return new window.URL(path, base).href;
+  } catch {
+    return path;
+  }
+}
+
+/** Where a recording of the whole psalm reaches a verse, in seconds. */
+export function verseStart(timeline, verseNumber) {
+  if (verseNumber == null) return 0;
+  const syllable = timeline.syllables.find((s) => s.verse >= verseNumber);
+  return syllable ? syllable.start : 0;
+}
+
+/**
+  Plays a sung recording of a psalm (manage.py record_chant) and reports the
+  syllable being sung from the recording's own position, using the timeline
+  of the pulse it was sung at. Same callbacks as createChantPlayer.
+  play() resolves true when it starts, false when the file can't be played,
+  and null when stopped while it was loading.
+*/
+export function createRecordingPlayer({ onPosition, onEnd } = {}) {
+  let audio = null;
+  let timer = null;
+  let current = null;
+
+  function tick() {
+    if (!current || !audio) return;
+    const syllable = syllableAt(current.timeline, audio.currentTime);
+    if (syllable !== current.syllable) {
+      current.syllable = syllable;
+      onPosition?.(syllable);
+    }
+  }
+
+  function finish() {
+    if (timer) window.clearInterval(timer);
+    timer = null;
+    const wasPlaying = Boolean(current);
+    current = null;
+    if (wasPlaying) {
+      onPosition?.(null);
+      onEnd?.();
+    }
+  }
+
+  function stop() {
+    if (audio) audio.pause();
+    finish();
+  }
+
+  // The recording is fetched whole and played from memory: it is small (about
+  // a megabyte a psalm), and seeking to a verse then works whatever the
+  // server, including ones that ignore range requests.
+  async function load(url) {
+    if (audio && audio.dataset.src === url) return;
+    const response = await window.fetch(url);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const blob = await response.blob();
+    if (audio) window.URL.revokeObjectURL(audio.src);
+    audio = new Audio(window.URL.createObjectURL(blob));
+    audio.dataset.src = url;
+    audio.preload = 'auto';
+    audio.addEventListener('ended', finish);
+  }
+
+  async function play(url, timeline, from = 0) {
+    stop();
+    if (typeof Audio === 'undefined') return false;
+    current = { timeline, syllable: null };
+    try {
+      await load(url);
+      if (!current) return null;
+      // Seeking before the file's length is known is ignored on some browsers.
+      if (from && audio.readyState < 1) {
+        await new Promise((resolve, reject) => {
+          audio.addEventListener('loadedmetadata', resolve, { once: true });
+          audio.addEventListener('error', reject, { once: true });
+          audio.load();
+        });
+      }
+      audio.currentTime = from;
+      await audio.play();
+    } catch {
+      finish();
+      return false;
+    }
+    // Stopped while the file was loading.
+    if (!current) {
+      audio.pause();
+      return null;
+    }
+    tick();
+    timer = window.setInterval(tick, TICK_MS);
+    return true;
+  }
+
+  return {
+    play,
+    stop,
+    get playing() {
+      return Boolean(current);
+    },
+  };
+}

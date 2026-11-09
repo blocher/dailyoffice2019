@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from office.models import UpdateNotice, Collect, AboutItem, CollectTag, CollectTagCategory, Scripture, SiteMessage
 from psalter.models import Psalm, PsalmVerse, PsalmTopic
+from psalter.chant.export import recording_key
 from psalter.chant.service import chant_for_verse
 from psalter.chant.tones import get_tone
 
@@ -143,9 +144,29 @@ class PsalmSerializer(serializers.HyperlinkedModelSerializer):
     def get_chant_tone(self, obj):
         return get_tone(obj.chant_tone).as_dict()
 
+    # The psalm sung by a choir (manage.py record_chant): the file's path under
+    # the API's address, and the pulse it was sung at, from which the app times
+    # its highlighting. Null when there is none, or when the pointing, rhythm or
+    # tone has changed since it was recorded.
+    chant_recording = serializers.SerializerMethodField()
+
+    def get_chant_recording(self, obj):
+        if not obj.chant_recording or not obj.chant_recording_pulse:
+            return None
+        verses = getattr(obj, "verses", None)
+        if verses is None:
+            verses = list(obj.psalmverse_set.select_related("pointing").order_by("number"))
+        if recording_key(obj, verses, obj.chant_recording_pulse) != obj.chant_recording_key:
+            return None
+        return {
+            "url": obj.chant_recording.url,
+            "pulse": obj.chant_recording_pulse,
+            "voice": obj.chant_recording_voice,
+        }
+
     class Meta:
         model = Psalm
-        fields = ["id", "number", "latin_title", "topics", "verses", "chant_tone"]
+        fields = ["id", "number", "latin_title", "topics", "verses", "chant_tone", "chant_recording"]
 
 
 class PsalmTopicSerializer(serializers.HyperlinkedModelSerializer):
