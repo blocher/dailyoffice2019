@@ -5,6 +5,7 @@
         v-if="open"
         class="ui-sheet-root"
         :class="`ui-sheet-root--${resolvedSide}`"
+        :style="layer ? { zIndex: 1000 + layer } : null"
       >
         <div class="ui-sheet-scrim" aria-hidden="true" @click="close" />
         <section
@@ -182,6 +183,10 @@ const isPhone = ref(false);
 let media = null;
 let previouslyFocused = null;
 let locked = false;
+// Position in the open-sheet stack. Sheets are teleported to <body> in mount
+// order, not open order, so a sheet opened from inside another (a confirm
+// from a drawer) needs a higher z-index to sit above the first one's scrim.
+const layer = ref(0);
 const stackEntry = { close: () => close(), panel: () => panel.value };
 
 const resolvedSide = computed(() => {
@@ -358,6 +363,7 @@ async function onOpened() {
     lockScroll();
     locked = true;
     pushSheet(stackEntry);
+    layer.value = sheetStack.length;
   }
   previouslyFocused = document.activeElement;
   await nextTick();
