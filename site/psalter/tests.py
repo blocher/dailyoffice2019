@@ -134,8 +134,9 @@ class PointingTests(SimpleTestCase):
         self.assertEqual([s["t"] for s in sung], ["The", "Lord", "is", "my", "shep", "herd"])
         # Intonation G A, reciting C, the rise to D on the accent, and a long C.
         self.assertEqual([s["p"] for s in sung], [[55], [57], [60], [60], [62], [60]])
-        # The long final note, broadened in the cadence.
-        self.assertEqual(sung[-1]["d"], [3])
+        # The long final note, broadened a little less than the cadence.
+        self.assertEqual(sung[-1]["d"], [2.5])
+        self.assertEqual(sung[-2]["d"], [1.5])
         self.assertEqual(sung[2]["d"], [0.75])  # quicker on the reciting note
 
     def test_rhythm_breathes_at_commas_but_not_at_the_end(self):

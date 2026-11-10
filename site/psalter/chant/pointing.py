@@ -45,6 +45,7 @@ EARLIER_ACCENT_MAX_RETURN = 2
 # quarter-pulse grid so that the MusicXML export can write them as plain notes.
 RECITING_LENGTH = 0.75  # each syllable on the reciting note
 CADENCE_LENGTH = 1.5  # scales the tone's own lengths from the inflection on
+FINAL_LENGTH = 1.25  # the last note: still broadened, but not dragged
 PAUSE_AFTER_PUNCTUATION = 0.5  # a breath at a comma or stop inside a half-verse
 _PAUSING_PUNCTUATION = set(",;:.!?")
 
@@ -163,7 +164,8 @@ def rhythm(pointed):
     """(length scale, pause after) for each syllable of a pointed half.
 
     The scale multiplies the tone's lengths for the syllable's notes: shorter
-    on the reciting note, broader from the inflection to the end. The pause,
+    on the reciting note, broader from the inflection on, and a little less
+    broad on the last note so the end doesn't drag. The pause,
     in pulses, follows a syllable that ends in a comma or a stop, except at the
     end of the half-verse, where the asterisk or the end of the verse already
     gives a rest.
@@ -177,6 +179,8 @@ def rhythm(pointed):
             scale = RECITING_LENGTH
         elif syllable.role == INTONATION:
             scale = 1
+        elif syllable.role == FINAL:
+            scale = FINAL_LENGTH
         else:
             scale = CADENCE_LENGTH
         trail = split_punctuation(syllable.text)[2]

@@ -444,6 +444,7 @@ def recording_key(psalm, verses, pulse_seconds):
     rules = [
         pointing_rules.RECITING_LENGTH,
         pointing_rules.CADENCE_LENGTH,
+        pointing_rules.FINAL_LENGTH,
         pointing_rules.PAUSE_AFTER_PUNCTUATION,
         REST_AT_ASTERISK,
         REST_BETWEEN_VERSES,
