@@ -496,6 +496,7 @@ class ExportTests(TestCase):
                 self.assertEqual(archive.read("psalm.mscx"), b"<museScore/>")
                 settings = json.loads(archive.read("audiosettings.json"))
             self.assertEqual(settings["tracks"][0]["instrumentId"], "tenor")
+            self.assertEqual(settings["tracks"][0]["out"]["auxSends"][0]["signalAmount"], 0.42)
             self.assertEqual(sound_from_score(path), CANTAI_MALE_CHOIR)
 
     def test_lengths_without_a_note_value_are_tied(self):

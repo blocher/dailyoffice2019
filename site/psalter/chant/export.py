@@ -343,6 +343,10 @@ CANTAI_MALE_CHOIR = {
     "unitConfiguration": {},
 }
 
+# How much of the voice goes to the hall reverb (MuseScore's Mixer > Aux
+# sends > Reverb, 0 to 1). 42% sounds like a choir in a church.
+REVERB_SEND = 0.42
+
 _REVERB = {
     "out": {
         "balance": 0,
@@ -377,9 +381,9 @@ def sound_from_score(path):
     raise ValueError(f"{path} has no sound set for its part.")
 
 
-def set_musescore_sound(path, sound=CANTAI_MALE_CHOIR, *, instrument="tenor", part="1"):
+def set_musescore_sound(path, sound=CANTAI_MALE_CHOIR, *, instrument="tenor", part="1", reverb=REVERB_SEND):
     """Set the sound of a single-part MuseScore score (.mscz) in place, with
-    the hall reverb MuseScore gives new scores."""
+    ``reverb`` of it sent to MuseScore's hall reverb."""
     with zipfile.ZipFile(path) as archive:
         entries = [(info, archive.read(info.filename)) for info in archive.infolist()]
     settings = {}
@@ -397,7 +401,7 @@ def set_musescore_sound(path, sound=CANTAI_MALE_CHOIR, *, instrument="tenor", pa
             "partId": part,
             "in": sound,
             "out": {
-                "auxSends": [{"active": True, "signalAmount": 0.3}, {"active": True, "signalAmount": 0.3}],
+                "auxSends": [{"active": True, "signalAmount": reverb}, {"active": True, "signalAmount": 0.3}],
                 "balance": 0,
                 "fxChain": {},
                 "volumeDb": 0,
