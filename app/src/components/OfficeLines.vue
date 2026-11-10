@@ -30,6 +30,7 @@
       <OfficeRubric v-if="line.line_type === 'rubric'" :line="line" />
       <OfficeSpacer v-if="line.line_type === 'spacer'" />
     </div>
+    <PrayerRequests v-if="module.name === INTERCESSION_MODULE" />
   </div>
 </template>
 
@@ -44,6 +45,10 @@ import OfficeLeaderDialogue from '@/components/OfficeLeaderDialogue.vue';
 import OfficeRubric from '@/components/OfficeRubric.vue';
 import OfficeSpacer from '@/components/OfficeSpacer.vue';
 import OfficeSubheading from '@/components/OfficeSubheading.vue';
+import PrayerRequests from '@/components/PrayerRequests.vue';
+
+// Matches the module name the API sends (site/office/audio_ceremony.py).
+const INTERCESSION_MODULE = 'Intercessions, Thanksgivings, and Praise';
 
 /*
   The lines of an office, drawn with the book styles. Used by the office
