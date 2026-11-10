@@ -12,6 +12,7 @@ at. The API offers the recording only while the pointing, rhythm and pulse
 still match what was sung, so re-record after changing any of them.
 """
 
+import hashlib
 import shutil
 import subprocess
 import tempfile
@@ -105,7 +106,11 @@ class Command(BaseCommand):
                 psalm.chant_recording.delete(save=False)
             key = recording_key(psalm, verses, pulse)
             with mp3.open("rb") as handle:
-                psalm.chant_recording.save(f"psalm-{psalm.number}-{key[:8]}.mp3", File(handle), save=False)
+                # Named by its sound, so a new recording (another voice or
+                # reverb) never comes from a cache of the old one.
+                digest = hashlib.sha1(handle.read()).hexdigest()[:10]
+                handle.seek(0)
+                psalm.chant_recording.save(f"psalm-{psalm.number}-{digest}.mp3", File(handle), save=False)
         psalm.chant_recording_pulse = pulse
         psalm.chant_recording_key = key
         psalm.chant_recording_voice = options["voice"]
