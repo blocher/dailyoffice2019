@@ -57,6 +57,17 @@ function onlyInPageDocument(frames) {
     frames.every((f) => !f.file || stripped(f.file) === page)
   );
 }
+// Frames that have no file at all (empty, or only "[native code]") belong to a
+// script that was evaluated from a string or injected by the browser, e.g. the
+// in-app browser on iOS Chrome throwing a garbled "Ma`prod" with every frame
+// blank. None of our bundled code is in such a stack, so there is nothing here
+// to fix. A real bundle frame always carries its file, so this can't hide ours.
+function noFrameHasAFile(frames) {
+  return (
+    frames.length > 0 &&
+    frames.every((f) => !f.file || f.file === '[native code]')
+  );
+}
 // A fetch() that never got a response (offline, dropped connection, blocker)
 // rejects with a bare TypeError: "Load failed" in Safari, "Failed to fetch" in
 // Chrome, "NetworkError ..." in Firefox. Vite's modulepreload polyfill (for
@@ -123,6 +134,7 @@ export function isNoise(event) {
   )
     return true;
   if (onlyInPageDocument(frames)) return true;
+  if (noFrameHasAFile(frames) && error.errorClass === 'Error') return true;
   if (frames.some((f) => EXTENSION_FILE.test(f.file || ''))) {
     return true;
   }
