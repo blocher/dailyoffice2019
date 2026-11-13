@@ -209,6 +209,11 @@ class Command(BaseCommand):
                 rel_name = f"{prefix}/{entry}" if prefix else entry
                 if rel_name in known:
                     continue
+                # ElevenLabs dialogue clips and silence pads are cached outside
+                # AudioClip, so they never have a row. Deleting one leaves its
+                # timing sidecar behind and the next request pays for it again.
+                if entry.startswith(("dialogue_", "silence_")):
+                    continue
                 orphans.append((rel_name, full))
 
         deleted = 0
