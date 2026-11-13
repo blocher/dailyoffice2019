@@ -731,3 +731,25 @@ class RebuildAudioClipCommandTests(TestCase):
                 )
 
             self.assertFalse(os.path.exists(orphan_path))
+
+    def test_prune_orphans_keeps_dialogue_clips_and_silence_pads(self):
+        with tempfile.TemporaryDirectory() as directory:
+            provider_dir = os.path.join(directory, "elevenlabs")
+            os.makedirs(provider_dir)
+            kept = [os.path.join(provider_dir, name) for name in ("dialogue_abc.mp3", "silence_500.mp3")]
+            orphan_path = os.path.join(provider_dir, "orphan.mp3")
+            for path in (*kept, orphan_path):
+                with open(path, "wb") as handle:
+                    handle.write(b"audio")
+
+            with override_settings(MEDIA_ROOT=directory):
+                call_command(
+                    "rebuild_audio_clip",
+                    "--prune-orphans",
+                    "--execute",
+                    stdout=StringIO(),
+                )
+
+            for path in kept:
+                self.assertTrue(os.path.exists(path))
+            self.assertFalse(os.path.exists(orphan_path))
