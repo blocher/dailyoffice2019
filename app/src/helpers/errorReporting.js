@@ -57,6 +57,12 @@ function onlyInPageDocument(frames) {
     frames.every((f) => !f.file || stripped(f.file) === page)
   );
 }
+// Trusted Types: Vue creates a policy named "vue" with createHTML. This error
+// means another script registered a "vue" policy first (a browser extension or
+// page-rewriting tool), so Vue got theirs, which lacks createHTML. Nothing in
+// the app can prevent it.
+const TRUSTED_TYPES_CONFLICT =
+  /Policy \S+'s TrustedTypePolicyOptions did not specify a 'createHTML' member/i;
 // A fetch() that never got a response (offline, dropped connection, blocker)
 // rejects with a bare TypeError: "Load failed" in Safari, "Failed to fetch" in
 // Chrome, "NetworkError ..." in Firefox. Vite's modulepreload polyfill (for
@@ -111,7 +117,8 @@ export function isNoise(event) {
     STALE_CHUNK.test(text) ||
     EMPTY_ROUTE_CHUNK.test(text) ||
     RESIZE_OBSERVER.test(text) ||
-    EXTENSION_MESSAGE.test(text)
+    EXTENSION_MESSAGE.test(text) ||
+    TRUSTED_TYPES_CONFLICT.test(text)
   )
     return true;
   if (VUE_DOM_DETACHED.test(text) && inReaderMode(event)) return true;
