@@ -154,12 +154,20 @@ export default {
       panels.share = !panels.share;
     },
     async share() {
-      await Share.share({
-        title: 'Pray the Daily Office',
-        text: 'Join me in praying the Daily Office using my customized settings',
-        url: await this.getCompactLink(),
-        dialogTitle: 'Pray with others',
-      });
+      const url = await this.getCompactLink();
+      try {
+        await Share.share({
+          title: 'Pray the Daily Office',
+          text: 'Join me in praying the Daily Office using my customized settings',
+          url,
+          dialogTitle: 'Pray with others',
+        });
+      } catch (error) {
+        // Dismissing the share sheet rejects ("Share canceled" / AbortError);
+        // that is the reader's choice, not a failure.
+        if (/cancel|abort/i.test(`${error?.name} ${error?.message}`)) return;
+        throw error;
+      }
     },
   },
 };

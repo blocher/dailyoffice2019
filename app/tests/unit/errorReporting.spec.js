@@ -153,6 +153,7 @@ describe('error reporting', () => {
           errorMessage: 'Failed to fetch dynamically imported module: x.js',
         }),
         fakeEvent({ errorMessage: 'Importing a module script failed.' }),
+        fakeEvent({ errorMessage: 'Share canceled' }),
         fakeEvent({
           errorMessage:
             'Couldn\'t resolve component "default" at "/privacy-policy"',

@@ -32,6 +32,8 @@ const STALE_CHUNK =
 // raises this just before the reload. Same stale-chunk case as above.
 const EMPTY_ROUTE_CHUNK = /Couldn't resolve component "default" at/i;
 // A browser quirk, not a bug: the observer simply skipped a frame.
+// Dismissing the native share sheet rejects with "Share canceled".
+const SHARE_CANCELED = /^Error: Share canceled$/i;
 const RESIZE_OBSERVER = /ResizeObserver loop/i;
 const EXTENSION_FILE =
   /^(chrome|moz|safari|safari-web|ms-browser)-extension:\/\//i;
@@ -111,6 +113,7 @@ export function isNoise(event) {
     STALE_CHUNK.test(text) ||
     EMPTY_ROUTE_CHUNK.test(text) ||
     RESIZE_OBSERVER.test(text) ||
+    SHARE_CANCELED.test(text) ||
     EXTENSION_MESSAGE.test(text)
   )
     return true;
