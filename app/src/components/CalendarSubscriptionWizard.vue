@@ -688,8 +688,15 @@ export default {
       }
     },
     async copyText(text, message) {
-      await Clipboard.write({ string: text });
-      toast.success(message);
+      // Browsers refuse clipboard writes outside a user gesture or when the
+      // user has denied permission (NotAllowedError); say so instead of
+      // leaving an unhandled rejection.
+      try {
+        await Clipboard.write({ string: text });
+        toast.success(message);
+      } catch {
+        toast.error('Couldn’t copy the link. Select it and copy it instead.');
+      }
     },
     async copySubscriptionUrl() {
       await this.copyText(

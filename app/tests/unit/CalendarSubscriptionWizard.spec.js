@@ -4,11 +4,13 @@ import CalendarSubscriptionWizard from '../../src/components/CalendarSubscriptio
 import { getCalendarFeedBaseUrl } from '../../src/helpers/calendarSubscription';
 import UiKit from '../../src/ui';
 
-const { clipboardWrite, browserOpen, messageSuccess } = vi.hoisted(() => ({
-  clipboardWrite: vi.fn().mockResolvedValue(),
-  browserOpen: vi.fn().mockResolvedValue(),
-  messageSuccess: vi.fn(),
-}));
+const { clipboardWrite, browserOpen, messageSuccess, messageError } =
+  vi.hoisted(() => ({
+    clipboardWrite: vi.fn().mockResolvedValue(),
+    browserOpen: vi.fn().mockResolvedValue(),
+    messageSuccess: vi.fn(),
+    messageError: vi.fn(),
+  }));
 
 vi.mock('@capacitor/clipboard', () => ({
   Clipboard: {
@@ -29,7 +31,10 @@ vi.mock('@capacitor/core', () => ({
 }));
 
 vi.mock('@/ui/feedback', () => ({
-  toast: Object.assign(vi.fn(), { success: messageSuccess }),
+  toast: Object.assign(vi.fn(), {
+    success: messageSuccess,
+    error: messageError,
+  }),
   confirm: vi.fn(),
 }));
 
@@ -144,6 +149,18 @@ describe('CalendarSubscriptionWizard', () => {
     expect(messageSuccess).toHaveBeenCalledWith(
       'The calendar URL has been copied.'
     );
+  });
+
+  it('shows a message when the browser refuses the clipboard write', async () => {
+    clipboardWrite.mockRejectedValueOnce(
+      Object.assign(new Error('denied'), { name: 'NotAllowedError' })
+    );
+    const wrapper = mountWizard({ defaultScope: 'every' });
+
+    await expect(wrapper.vm.copySubscriptionUrl()).resolves.toBeUndefined();
+
+    expect(messageError).toHaveBeenCalled();
+    expect(messageSuccess).not.toHaveBeenCalled();
   });
 
   it('closes the sheet entirely from the quick links panel', async () => {
