@@ -167,7 +167,10 @@ function loadStoredIndex() {
       .eachRecord(
         'responses',
         (record) => {
-          map.set(record.key, summaryOf(record));
+          // A record the browser can no longer read comes back empty
+          // (Chrome, when its stored value is damaged). Skip it: throwing
+          // here would end the scan and leave every answer after it out.
+          if (record?.key) map.set(record.key, summaryOf(record));
           return null;
         },
         'readonly'

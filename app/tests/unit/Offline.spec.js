@@ -424,6 +424,19 @@ describe('the offline-aware adapter', () => {
     expect(await readStoredInfo(key)).toMatchObject({ key, fetchedAt: 1 });
   });
 
+  it('skips a stored answer the browser can no longer read', async () => {
+    const key = 'psalms';
+    await db.put('responses', null, 'damaged');
+    await db.put('responses', {
+      key,
+      fetchedAt: 1,
+      schema: 1,
+      kind: 'reference',
+      bytes: 2,
+    });
+    expect(await readStoredInfo(key)).toMatchObject({ key, fetchedAt: 1 });
+  });
+
   it('falls back to storage when the network fails', async () => {
     const config = { method: 'get', url: '/api/v1/psalms', headers: {} };
     const network = vi.fn().mockResolvedValue(ok([{ number: 1 }]));
