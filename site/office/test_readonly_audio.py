@@ -71,3 +71,17 @@ class CacheOnlyAudioTests(SimpleTestCase):
             self.assertIsNotNone(url)
             self.assertTrue(Path(directory, path.removeprefix("/uploads/")).is_file())
             synthesis.assert_called_once()
+
+
+class ReadingVoiceReadOnlyTests(SimpleTestCase):
+    def test_unwritable_provider_folder_still_assigns_a_voice(self):
+        provider = Mock(media_subdir="elevenlabs", voice_for_text=Mock(return_value="reader"))
+        provider.name = "elevenlabs"
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            override_settings(MEDIA_ROOT=directory),
+            patch.object(index, "TTS_PROVIDER", provider),
+            patch.object(Path, "mkdir", side_effect=PermissionError("read-only media root")),
+        ):
+            voice = index.GenericDailyOfficeSerializer.reading_voice("In the beginning God created.")
+        self.assertEqual(voice, "reader")
