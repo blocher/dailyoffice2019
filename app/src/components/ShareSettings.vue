@@ -144,9 +144,15 @@ export default {
       return this.buildUrl(this.$route.path, queryString);
     },
     async copyLink() {
-      await Clipboard.write({
-        string: await this.getCompactLink(),
-      });
+      const link = await this.getCompactLink();
+      // Browsers refuse clipboard writes when the page isn't allowed to
+      // (NotAllowedError): say so rather than fail silently.
+      try {
+        await Clipboard.write({ string: link });
+      } catch {
+        toast.error('Couldn’t copy the link. Select it and copy it instead.');
+        return;
+      }
       toast.success('The share link is copied to your clipboard.');
     },
     // Kept for callers that open the panel directly.
