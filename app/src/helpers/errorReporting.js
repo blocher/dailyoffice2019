@@ -57,6 +57,18 @@ function onlyInPageDocument(frames) {
     frames.every((f) => !f.file || stripped(f.file) === page)
   );
 }
+// "Maximum call stack size exceeded" whose frames have no usable file at all
+// (a bare line number, or the literal "undefined") has no code of ours in it:
+// it is an injected script recursing, as with onlyInPageDocument above.
+const STACK_OVERFLOW = /Maximum call stack size exceeded/i;
+function hasNoFileFrames(frames) {
+  return (
+    frames.length > 0 &&
+    frames.every(
+      (f) => !f.file || ['undefined', 'unknown file'].includes(f.file)
+    )
+  );
+}
 // A fetch() that never got a response (offline, dropped connection, blocker)
 // rejects with a bare TypeError: "Load failed" in Safari, "Failed to fetch" in
 // Chrome, "NetworkError ..." in Firefox. Vite's modulepreload polyfill (for
@@ -123,6 +135,7 @@ export function isNoise(event) {
   )
     return true;
   if (onlyInPageDocument(frames)) return true;
+  if (STACK_OVERFLOW.test(text) && hasNoFileFrames(frames)) return true;
   if (frames.some((f) => EXTENSION_FILE.test(f.file || ''))) {
     return true;
   }
