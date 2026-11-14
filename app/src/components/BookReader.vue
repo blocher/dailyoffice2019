@@ -810,6 +810,9 @@ function place(el, slot) {
 */
 function buildTurn(direction) {
   const host = scene.value;
+  // The reader can close mid-gesture (pointerup after the stage unmounts),
+  // leaving no scene to draw into: hand back a drawer that does nothing.
+  if (!host) return () => {};
   host.replaceChildren();
   const cols = layout.cols;
   const first = firstPage.value;
