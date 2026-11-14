@@ -4577,7 +4577,14 @@ class AudioViewSet(ViewSet):
 
     @csrf_exempt
     def retrieve(self, request):
-        data = json.loads(request.body)
+        # An empty or malformed body (a dropped or aborted client request) has no
+        # line to voice; answer like any other "no audio" case instead of a 500.
+        try:
+            data = json.loads(request.body)
+        except ValueError:
+            return Response({"path": ""})
+        if not isinstance(data, dict):
+            return Response({"path": ""})
         content = data.get("content", None)
         if not content:
             return Response({"path": ""})
