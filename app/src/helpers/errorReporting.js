@@ -39,22 +39,32 @@ const EXTENSION_FILE =
 // The app itself never calls the extension messaging API.
 const EXTENSION_MESSAGE = /Invalid call to runtime\.sendMessage\(\)/i;
 // Our built page has one short inline script, wrapped in try/catch, so errors
-// whose every frame is in the page document itself come from a script the
+// whose every frame is in a page document itself come from a script the
 // browser or an extension injected (translation, reader and in-app browsers
 // on iOS): e.g. "Maximum call stack size exceeded" recursing between two
-// minified functions at line 400+ of /commemorations/<id>.
+// minified functions at line 400+ of /commemorations/<id>. The script keeps
+// the address it was injected at, so after the reader moves to another page
+// its frames name an earlier route ("/" while on /morning_prayer/...): any
+// address on our origin that isn't a file (our code is all in .js files)
+// counts as a page document.
 function onlyInPageDocument(frames) {
-  let page;
+  let origin;
   try {
-    const { origin, pathname } = window.location;
-    page = origin + pathname;
+    origin = window.location.origin;
   } catch {
     return false;
   }
-  const stripped = (file) => String(file || '').split(/[?#]/)[0];
+  const isPage = (file) => {
+    try {
+      const url = new window.URL(String(file));
+      return url.origin === origin && !/\.\w+$/.test(url.pathname);
+    } catch {
+      return false;
+    }
+  };
   return (
-    frames.some((f) => stripped(f.file) === page) &&
-    frames.every((f) => !f.file || stripped(f.file) === page)
+    frames.some((f) => isPage(f.file)) &&
+    frames.every((f) => !f.file || isPage(f.file))
   );
 }
 // A fetch() that never got a response (offline, dropped connection, blocker)
