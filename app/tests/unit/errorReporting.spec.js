@@ -208,6 +208,16 @@ describe('error reporting', () => {
             },
           ],
         }),
+        // The same, injected on an earlier route of this visit.
+        fakeEvent({
+          errorClass: 'RangeError',
+          errorMessage: 'Maximum call stack size exceeded.',
+          stacktrace: [
+            { file: `${window.location.origin}/morning_prayer/2026/11/15` },
+            { file: `${window.location.origin}/`, method: 'xk' },
+            { file: `${window.location.origin}/`, method: 'vk' },
+          ],
+        }),
       ];
       noise.forEach((event) => expect(onError(event)).toBe(false));
       expect(
@@ -238,6 +248,19 @@ describe('error reporting', () => {
           })
         )
       ).toBe(true);
+      // So is a script file of ours outside /assets/, or another site's page.
+      [`${window.location.origin}/sw.js`, 'https://example.com/'].forEach(
+        (file) =>
+          expect(
+            onError(
+              fakeEvent({
+                errorClass: 'RangeError',
+                errorMessage: 'Maximum call stack size exceeded.',
+                stacktrace: [{ file }],
+              })
+            )
+          ).toBe(true)
+      );
       // A failed fetch raised from our own code is still worth seeing.
       expect(
         onError(
