@@ -208,6 +208,13 @@ describe('error reporting', () => {
             },
           ],
         }),
+        // Code injected with no URL of its own (an extension or automation
+        // tool), not our bundle.
+        fakeEvent({
+          errorClass: 'TypeError',
+          errorMessage: "Cannot read properties of null (reading 'content')",
+          stacktrace: [{ file: 'global code', lineNumber: 8, columnNumber: 76 }],
+        }),
       ];
       noise.forEach((event) => expect(onError(event)).toBe(false));
       expect(
@@ -233,6 +240,19 @@ describe('error reporting', () => {
             errorMessage: 'Maximum call stack size exceeded.',
             stacktrace: [
               { file: window.location.href, lineNumber: 5 },
+              { file: `${window.location.origin}/assets/index-abc.js` },
+            ],
+          })
+        )
+      ).toBe(true);
+      // An anonymous frame called from our bundle is ours.
+      expect(
+        onError(
+          fakeEvent({
+            errorClass: 'TypeError',
+            errorMessage: "Cannot read properties of null (reading 'content')",
+            stacktrace: [
+              { file: 'global code', lineNumber: 8 },
               { file: `${window.location.origin}/assets/index-abc.js` },
             ],
           })
