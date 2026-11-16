@@ -57,6 +57,18 @@ function onlyInPageDocument(frames) {
     frames.every((f) => !f.file || stripped(f.file) === page)
   );
 }
+// Code evaluated with no address of its own (an extension's injected
+// function, an automation tool's page.evaluate) reports its frames under the
+// bare name "global code" rather than a URL, e.g. "Cannot read properties of
+// null (reading 'content')" at global code:8:76. Everything the app runs is
+// loaded from a URL (our bundle, or the page's one inline script, which is
+// wrapped in try/catch), so a stack made only of such frames isn't ours.
+function onlyInAnonymousCode(frames) {
+  return (
+    frames.length > 0 &&
+    frames.every((f) => String(f.file || '').trim() === 'global code')
+  );
+}
 // A fetch() that never got a response (offline, dropped connection, blocker)
 // rejects with a bare TypeError: "Load failed" in Safari, "Failed to fetch" in
 // Chrome, "NetworkError ..." in Firefox. Vite's modulepreload polyfill (for
@@ -123,6 +135,7 @@ export function isNoise(event) {
   )
     return true;
   if (onlyInPageDocument(frames)) return true;
+  if (onlyInAnonymousCode(frames)) return true;
   if (frames.some((f) => EXTENSION_FILE.test(f.file || ''))) {
     return true;
   }
