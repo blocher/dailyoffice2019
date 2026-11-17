@@ -68,7 +68,23 @@ export function openDb() {
       resolve(null);
       return;
     }
-    request.onupgradeneeded = () => upgrade(request.result);
+    request.onupgradeneeded = () => {
+      // Some WebKit builds fire this before the request holds a database
+      // (request.result is undefined). Abort the upgrade rather than throw
+      // into the page: the app falls back to memory, as when IndexedDB is
+      // blocked, and the next launch tries again.
+      try {
+        upgrade(request.result);
+      } catch {
+        try {
+          request.transaction?.abort();
+        } catch {
+          // Nothing left to abort.
+        }
+        unavailable = true;
+        resolve(null);
+      }
+    };
     request.onsuccess = () => {
       const db = request.result;
       // Another tab (or the service worker) upgrading: let it.
