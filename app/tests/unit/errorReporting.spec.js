@@ -208,6 +208,19 @@ describe('error reporting', () => {
             },
           ],
         }),
+        // A host app's WebView evaluating its own script in the page.
+        fakeEvent({
+          errorClass: 'ReferenceError',
+          errorMessage: 'xbrowser is not defined',
+          stacktrace: [
+            {
+              file: window.location.href,
+              lineNumber: 1,
+              method: 'execute_auto_fill',
+            },
+            { file: 'global code', lineNumber: 1 },
+          ],
+        }),
       ];
       noise.forEach((event) => expect(onError(event)).toBe(false));
       expect(
@@ -234,6 +247,19 @@ describe('error reporting', () => {
             stacktrace: [
               { file: window.location.href, lineNumber: 5 },
               { file: `${window.location.origin}/assets/index-abc.js` },
+            ],
+          })
+        )
+      ).toBe(true);
+      // Evaluated code that calls into our bundle is still ours.
+      expect(
+        onError(
+          fakeEvent({
+            errorClass: 'TypeError',
+            errorMessage: 'x is undefined',
+            stacktrace: [
+              { file: `${window.location.origin}/assets/index-abc.js` },
+              { file: 'global code', lineNumber: 1 },
             ],
           })
         )
