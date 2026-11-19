@@ -2,6 +2,7 @@ from uuid import UUID
 
 from django.db.models import Prefetch, Q
 from rest_framework.decorators import action
+from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
@@ -139,11 +140,16 @@ class PsalmsViewSet(ViewSet):
     serializer_class = PsalmSerializer
 
     def retrieve(self, request, *args, **kwargs):
+        pk = str(kwargs["pk"])
         try:
-            uuid_obj = UUID(kwargs["pk"], version=4)
-            psalm = self.queryset.filter(Q(pk=kwargs["pk"])).first()
+            uuid_obj = UUID(pk, version=4)
+            psalm = self.queryset.filter(Q(pk=pk)).first()
         except ValueError:
-            psalm = self.queryset.filter(Q(number=kwargs["pk"])).first()
+            # Anything else must be a psalm number; links built from a missing
+            # number (e.g. /psalms/null/) would otherwise raise a ValueError.
+            psalm = self.queryset.filter(Q(number=int(pk))).first() if pk.isdigit() else None
+        if psalm is None:
+            raise NotFound()
         serializer = PsalmSerializer(psalm, many=False)
         return Response(serializer.data)
 
