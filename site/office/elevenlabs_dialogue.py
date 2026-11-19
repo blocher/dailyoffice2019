@@ -19,9 +19,10 @@ from office.audio_builds import AudioNotReady, generation_deferred, release_db_c
 from office.audio_spend import paid_before, record_generation, report_regeneration, report_retry
 
 # The decoded MP3 can run slightly shorter than the end the API reports for the
-# last segment (encoder padding is a frame or two, about 26 ms each); anything
-# beyond this means the audio really was cut off.
-SEGMENT_END_TOLERANCE_SECONDS = 0.06
+# last segment (encoder padding and rounding, a few frames of about 26 ms each;
+# 80 ms has been seen on otherwise complete audio); anything beyond this means
+# the audio really was cut off.
+SEGMENT_END_TOLERANCE_SECONDS = 0.1
 MAX_REQUEST_CHARACTERS = 2000
 
 

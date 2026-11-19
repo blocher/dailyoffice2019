@@ -135,6 +135,29 @@ class DialoguePlaybackFallbackTests(SimpleTestCase):
                     self.assertGreater(details[key]["zero_character_intervals"], 0)
                 self.assertFalse(session.highlighting_available)
 
+    def test_audio_a_few_frames_shorter_than_the_last_segment_is_kept(self):
+        # BugSnag 6afe770054bff5cb6a2c4f7b: complete audio decoded 80 ms short
+        # of the reported last segment end was discarded (and paid for again).
+        last_segment_end = 1.6
+        for shortfall, kept in ((0.08, True), (0.2, False)):
+            with (
+                self.subTest(shortfall=shortfall),
+                tempfile.TemporaryDirectory() as directory,
+                override_settings(MEDIA_ROOT=directory),
+                patch("office.elevenlabs_dialogue.requests.post", return_value=self.response()),
+                patch("office.elevenlabs_dialogue.bugsnag.notify") as notify,
+                patch.object(DialogueSession, "_decoded_duration", return_value=last_segment_end - shortfall),
+            ):
+                path, timing = DialogueSession(ElevenLabsTTSProvider()).clip(self.lines())
+                self.assertEqual(path is not None, kept)
+                self.assertEqual(timing, [])
+                self.assertEqual(bool(list(Path(directory).rglob("dialogue_*.mp3"))), kept)
+                details = notify.call_args.kwargs["metadata"]["audio"]
+                if kept:
+                    self.assertTrue(details["playback_only"])
+                else:
+                    self.assertEqual(details["fallback_rejected"], "audio_shorter_than_segments")
+
     def test_corrupt_or_cut_audio_is_rejected_without_publishing(self):
         for audio in (b"not an MP3", self.audio[: len(self.audio) // 2]):
             with (
