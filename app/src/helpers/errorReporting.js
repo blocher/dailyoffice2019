@@ -42,7 +42,11 @@ const EXTENSION_MESSAGE = /Invalid call to runtime\.sendMessage\(\)/i;
 // whose every frame is in the page document itself come from a script the
 // browser or an extension injected (translation, reader and in-app browsers
 // on iOS): e.g. "Maximum call stack size exceeded" recursing between two
-// minified functions at line 400+ of /commemorations/<id>.
+// minified functions at line 400+ of /commemorations/<id>. A host app's
+// WebView that runs code with evaluateJavascript() adds a frame named
+// "global code" (no real file), e.g. an Android autofill helper calling
+// execute_auto_fill() and failing with "xbrowser is not defined".
+const EVALUATED_CODE = 'global code';
 function onlyInPageDocument(frames) {
   let page;
   try {
@@ -54,7 +58,9 @@ function onlyInPageDocument(frames) {
   const stripped = (file) => String(file || '').split(/[?#]/)[0];
   return (
     frames.some((f) => stripped(f.file) === page) &&
-    frames.every((f) => !f.file || stripped(f.file) === page)
+    frames.every(
+      (f) => !f.file || f.file === EVALUATED_CODE || stripped(f.file) === page
+    )
   );
 }
 // A fetch() that never got a response (offline, dropped connection, blocker)
