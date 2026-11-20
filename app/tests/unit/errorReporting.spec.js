@@ -286,3 +286,72 @@ describe('error reporting', () => {
     });
   });
 });
+
+describe('non-error rejections', () => {
+  it('describes values that serialize to {}', async () => {
+    const { describeNonError } = await load();
+    class Hidden {}
+    expect(describeNonError(new Hidden())).toMatchObject({
+      kind: 'object',
+      tag: '[object Object]',
+      constructorName: 'Hidden',
+      ownProperties: [],
+    });
+    expect(describeNonError(null)).toEqual({ kind: 'null' });
+    expect(describeNonError(undefined)).toEqual({ kind: 'undefined' });
+    expect(describeNonError('nope')).toMatchObject({
+      kind: 'string',
+      value: 'nope',
+    });
+  });
+
+  it('names an event and its target error', async () => {
+    const { describeNonError } = await load();
+    const target = new EventTarget();
+    target.error = { name: 'AbortError', message: 'closed' };
+    const event = new Event('error');
+    Object.defineProperty(event, 'target', { value: target });
+    expect(describeNonError(event)).toMatchObject({
+      tag: '[object Event]',
+      kind: 'object',
+      constructorName: 'Event',
+      type: 'error',
+      target: '[object EventTarget]',
+      targetError: 'AbortError: closed',
+    });
+  });
+
+  it('survives values with throwing getters', async () => {
+    const { describeNonError } = await load();
+    const value = {};
+    Object.defineProperty(value, 'type', {
+      get() {
+        throw new Error('no');
+      },
+    });
+    expect(describeNonError(value)).toMatchObject({ tag: '[object Object]' });
+  });
+
+  it('annotates InvalidError reports and still sends them', async () => {
+    const { onReport } = await load();
+    const addMetadata = vi.fn();
+    const event = {
+      errors: [
+        { errorClass: 'InvalidError', errorMessage: '', stacktrace: [] },
+      ],
+      originalError: {},
+      breadcrumbs: [],
+      addMetadata,
+    };
+    expect(onReport(event)).toBe(true);
+    expect(addMetadata).toHaveBeenCalledWith(
+      'non-error details',
+      expect.objectContaining({ tag: '[object Object]' })
+    );
+    // Real errors are left alone.
+    const real = { ...event, errors: [{ errorClass: 'TypeError' }] };
+    addMetadata.mockClear();
+    expect(onReport(real)).toBe(true);
+    expect(addMetadata).not.toHaveBeenCalled();
+  });
+});

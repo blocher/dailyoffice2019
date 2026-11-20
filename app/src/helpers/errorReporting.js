@@ -134,6 +134,69 @@ export function isNoise(event) {
   );
 }
 
+/*
+  A promise rejected with something other than an Error (a plain object, a
+  DOM event, a custom class) reaches Bugsnag as "InvalidError" with no stack,
+  and its "non-error parameter" tab often shows just {} because the value has
+  no enumerable own properties. That leaves nothing to trace it by, so record
+  what kind of value it was: its type tag, constructor, every own property
+  name, and, for events, the event type and target.
+*/
+export function describeNonError(value) {
+  if (value === null || value === undefined) return { kind: String(value) };
+  const info = { kind: typeof value };
+  try {
+    info.tag = Object.prototype.toString.call(value);
+    if (typeof value === 'object' || typeof value === 'function') {
+      const ctor = value.constructor?.name;
+      if (ctor) info.constructorName = String(ctor);
+      info.ownProperties = Object.getOwnPropertyNames(value).slice(0, 20);
+      ['type', 'name', 'message', 'code', 'status', 'reason'].forEach((key) => {
+        const field = value[key];
+        if (['string', 'number', 'boolean'].includes(typeof field)) {
+          info[key] = String(field).slice(0, 200);
+        }
+      });
+      const target = value.target ?? value.currentTarget;
+      if (target && typeof target === 'object') {
+        info.target = Object.prototype.toString.call(target);
+        if (target.error) {
+          info.targetError =
+            `${target.error.name || ''}: ${target.error.message || ''}`.slice(
+              0,
+              200
+            );
+        }
+      }
+    } else {
+      info.value = String(value).slice(0, 200);
+    }
+  } catch {
+    // An exotic value (revoked proxy, throwing getter): keep what we have.
+  }
+  return info;
+}
+
+/** Add describeNonError() details to an InvalidError report. */
+function annotateNonError(event) {
+  if (event.errors?.[0]?.errorClass !== 'InvalidError') return;
+  try {
+    event.addMetadata(
+      'non-error details',
+      describeNonError(event.originalError)
+    );
+  } catch {
+    // Never let the extra detail stop the report.
+  }
+}
+
+/** Bugsnag's onError: drop noise, annotate the rest. */
+export function onReport(event) {
+  if (isNoise(event)) return false;
+  annotateNonError(event);
+  return true;
+}
+
 /**
  * Start Bugsnag and catch errors from the Vue app. Call once, before the
  * app mounts. Does nothing unless reporting is enabled and has a key.
@@ -154,7 +217,7 @@ export function startErrorReporting(app) {
       // The anonymous client id stands in for the user (see identifyUser).
       generateAnonymousId: false,
       plugins: [new BugsnagPluginVue()],
-      onError: (event) => !isNoise(event),
+      onError: onReport,
     });
     app?.use(Bugsnag.getPlugin('vue'));
     started = true;
