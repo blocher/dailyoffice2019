@@ -63,6 +63,18 @@ class DialogueTests(SimpleTestCase):
             self.assertEqual(session.previous, [])
             self.assertEqual(DialogueSession(ElevenLabsTTSProvider()).previous, [])
 
+    def test_published_cache_files_are_readable_by_other_users(self):
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            override_settings(MEDIA_ROOT=directory),
+            patch("office.elevenlabs_dialogue.requests.post", return_value=self.response()),
+        ):
+            DialogueSession(ElevenLabsTTSProvider()).clip(self.lines())
+            published = [*Path(directory).rglob("*.mp3"), *Path(directory).rglob("*.dialogue.json")]
+            self.assertEqual(len(published), 2)
+            for path in published:
+                self.assertEqual(path.stat().st_mode & 0o777, 0o644, path.name)
+
     def test_expired_context_is_not_sent_and_failures_report(self):
         with (
             tempfile.TemporaryDirectory() as directory,
