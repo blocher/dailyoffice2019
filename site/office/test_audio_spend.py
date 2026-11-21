@@ -107,6 +107,17 @@ class DialogueSpendTests(TestCase):
                 DialogueSession(ElevenLabsTTSProvider()).clip(self.lines)
                 self.assertEqual(len(notified(notify, PossiblyChargedRetry)), reported)
 
+    @override_settings(ELEVENLABS_TTS_TIMEOUT=120, ELEVENLABS_DIALOGUE_TIMEOUT=300)
+    def test_dialogue_waits_longer_than_a_single_clip_before_giving_up(self):
+        # A read timeout abandons audio the provider may still charge for.
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            override_settings(MEDIA_ROOT=directory),
+            patch("office.elevenlabs_dialogue.requests.post", return_value=self.response()) as post,
+        ):
+            DialogueSession(ElevenLabsTTSProvider()).clip(self.lines)
+            self.assertEqual(post.call_args.kwargs["timeout"], (15, 300))
+
 
 class ClipSpendTests(TestCase):
     def provider(self):

@@ -501,6 +501,9 @@ ELEVENLABS_TTS_VOICE_CONGREGATION = env("ELEVENLABS_TTS_VOICE_CONGREGATION", def
 ELEVENLABS_TTS_VOICES_READER = env.list("ELEVENLABS_TTS_VOICES_READER", default=[])
 ELEVENLABS_TTS_TIMEOUT = env.int("ELEVENLABS_TTS_TIMEOUT", default=120)
 ELEVENLABS_TTS_MAX_RETRIES = env.int("ELEVENLABS_TTS_MAX_RETRIES", default=4)
+# Seconds to wait for a dialogue clip, which arrives whole. A timeout is retried
+# and may be billed twice, so keep this above the slowest synthesis.
+ELEVENLABS_DIALOGUE_TIMEOUT = env.int("ELEVENLABS_DIALOGUE_TIMEOUT", default=300)
 # v2 cannot use IPA. Create a dictionary of alias rules (Amen -> "ahmén")
 # with `setup_elevenlabs_pronunciation` and paste the printed IDs here.
 ELEVENLABS_PRONUNCIATION_DICTIONARY_ID = env("ELEVENLABS_PRONUNCIATION_DICTIONARY_ID", default="")

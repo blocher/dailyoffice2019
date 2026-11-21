@@ -360,7 +360,12 @@ class DialogueSession:
         If provider guidance cannot fit the sleep budget, stop instead of
         shortening it and retrying before the provider permits. Request timeouts
         remain separate from this sleep budget.
+
+        The whole clip arrives in one response once it is synthesized, so a long
+        chunk can take minutes. The read timeout is therefore generous: giving up
+        on a request the provider is still working on means paying for it again.
         """
+        read_timeout = getattr(settings, "ELEVENLABS_DIALOGUE_TIMEOUT", 300)
         max_retries = min(max(self.provider.max_retries, 0), 4)
         waited = 0
         for attempt in range(max_retries + 1):
@@ -371,7 +376,7 @@ class DialogueSession:
                     headers={"xi-api-key": api_key},
                     json=payload,
                     params={"output_format": "mp3_44100_128"},
-                    timeout=self.provider.timeout,
+                    timeout=(15, read_timeout),
                 )
                 status = response.status_code
                 if status < 400:
