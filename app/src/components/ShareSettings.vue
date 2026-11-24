@@ -154,12 +154,24 @@ export default {
       panels.share = !panels.share;
     },
     async share() {
-      await Share.share({
-        title: 'Pray the Daily Office',
-        text: 'Join me in praying the Daily Office using my customized settings',
-        url: await this.getCompactLink(),
-        dialogTitle: 'Pray with others',
-      });
+      const url = await this.getCompactLink();
+      try {
+        await Share.share({
+          title: 'Pray the Daily Office',
+          text: 'Join me in praying the Daily Office using my customized settings',
+          url,
+          dialogTitle: 'Pray with others',
+        });
+      } catch (error) {
+        // Closing the share sheet without choosing an app rejects with
+        // "Share canceled" (an AbortError on the web). That's not a failure.
+        if (
+          error?.name === 'AbortError' ||
+          /cancel|abort/i.test(error?.message || '')
+        )
+          return;
+        toast.error('Couldn’t open the share sheet. Copy the link instead.');
+      }
     },
   },
 };
