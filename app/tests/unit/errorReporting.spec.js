@@ -13,8 +13,9 @@ const bugsnag = vi.hoisted(() => {
 
 vi.mock('@bugsnag/js', () => ({ default: bugsnag }));
 vi.mock('@bugsnag/plugin-vue', () => ({ default: class BugsnagPluginVue {} }));
+const platform = vi.hoisted(() => ({ name: 'web' }));
 vi.mock('@capacitor/core', () => ({
-  Capacitor: { getPlatform: () => 'web' },
+  Capacitor: { getPlatform: () => platform.name },
 }));
 
 // A fresh copy of the module (and its "started" state) for each test.
@@ -48,6 +49,7 @@ function fetchError(url) {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  platform.name = 'web';
   window.sessionStorage.clear();
 });
 
@@ -283,6 +285,46 @@ describe('error reporting', () => {
           )
         )
       ).toBe(true);
+    });
+
+    it('drops errors thrown inside a script injected into the web page', () => {
+      const onError = bugsnag.start.mock.calls[0][0].onError;
+      // An extension's or in-app browser's script failing in its own
+      // postMessage() call, reached through a listener Bugsnag wrapped.
+      const injected = fakeEvent({
+        errorClass: 'InvalidAccessError',
+        errorMessage: 'The object does not support the operation or argument.',
+        stacktrace: [
+          { file: '[native code]', method: 'postMessage' },
+          { file: 'user-script:2', method: 'post' },
+          { file: 'user-script:2', method: 'report' },
+          { file: 'https://www.dailyoffice2019.com/assets/index-abc.js' },
+        ],
+      });
+      expect(onError(injected)).toBe(false);
+      // Our code throwing when an injected script calls into it is ours.
+      expect(
+        onError(
+          fakeEvent({
+            stacktrace: [
+              { file: 'https://www.dailyoffice2019.com/assets/index-abc.js' },
+              { file: 'user-script:2' },
+            ],
+          })
+        )
+      ).toBe(true);
+      // In the native apps the user script is Capacitor's bridge, which
+      // carries real plugin errors.
+      platform.name = 'ios';
+      expect(
+        onError(
+          fakeEvent({
+            errorMessage: 'Share canceled',
+            stacktrace: [{ file: 'user-script:2', method: 'returnResult' }],
+          })
+        )
+      ).toBe(true);
+      expect(onError(injected)).toBe(true);
     });
   });
 });

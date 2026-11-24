@@ -57,6 +57,17 @@ function onlyInPageDocument(frames) {
     frames.every((f) => !f.file || stripped(f.file) === page)
   );
 }
+// On the web, "user-script:N" frames are scripts Safari injected into the page
+// for an extension or an in-app browser; the site ships none. When the error
+// was thrown from inside one (e.g. InvalidAccessError from its own
+// postMessage() call), it isn't ours. In the native apps Capacitor's bridge is
+// itself a user script and carries real plugin errors, so those are kept.
+const USER_SCRIPT_FILE = /^user-script:\d+$/i;
+function thrownByInjectedUserScript(frames) {
+  if (Capacitor.getPlatform() !== 'web') return false;
+  const thrower = frames.find((f) => f.file && f.file !== '[native code]');
+  return USER_SCRIPT_FILE.test(thrower?.file || '');
+}
 // A fetch() that never got a response (offline, dropped connection, blocker)
 // rejects with a bare TypeError: "Load failed" in Safari, "Failed to fetch" in
 // Chrome, "NetworkError ..." in Firefox. Vite's modulepreload polyfill (for
@@ -123,6 +134,7 @@ export function isNoise(event) {
   )
     return true;
   if (onlyInPageDocument(frames)) return true;
+  if (thrownByInjectedUserScript(frames)) return true;
   if (frames.some((f) => EXTENSION_FILE.test(f.file || ''))) {
     return true;
   }
