@@ -145,6 +145,14 @@ def schedule(identity, build):
         executor = _get_executor()
     try:
         executor.submit(_run, identity, build)
+    except RuntimeError:
+        # The executor refuses new work once this worker has begun shutting
+        # down (a deploy restart). Don't fail the request: release the lock and
+        # let the caller answer "preparing"; the client's retry reaches a fresh
+        # worker that can queue the build.
+        _finish(identity)
+        logger.warning("Audio build not queued: worker is shutting down", exc_info=True)
+        return False
     except Exception:
         _finish(identity)
         raise
