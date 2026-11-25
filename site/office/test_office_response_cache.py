@@ -251,6 +251,18 @@ class AudioBuildSchedulerTests(SimpleTestCase):
         self.assertFalse(audio_builds.is_building("office-c"))
         self.assertEqual(release.call_count, 2)
 
+    def test_shutdown_does_not_fail_the_request(self):
+        def refuse(*args):
+            raise RuntimeError("cannot schedule new futures after interpreter shutdown")
+
+        with (
+            patch.object(audio_builds, "_get_executor", return_value=SimpleNamespace(submit=refuse)),
+            self.assertLogs("office.audio_builds", "WARNING"),
+        ):
+            self.assertFalse(audio_builds.schedule("office-f", lambda: True))
+        self.assertFalse(audio_builds.is_building("office-f"))
+        self.assertNotIn("office-f", audio_builds._pending)
+
     def test_queue_is_bounded(self):
         audio_builds._pending.update({"x", "y"})
         self.assertFalse(audio_builds.schedule("office-e", lambda: True))
