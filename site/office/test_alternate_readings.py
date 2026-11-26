@@ -503,3 +503,26 @@ class AlternateMigrationTests(TransactionTestCase):
         holy = appointed_day(base, ep_reading_1_testament="DC")
         historical = self.migrate()
         self.assertEqual(historical.get_model("office", "AlternateReading").objects.count(), 2)
+
+
+class MassReadingTranslationFallbackTests(SimpleTestCase):
+    """A mass reading missing in the chosen translation falls back instead of crashing."""
+
+    def test_missing_translation_uses_fallback_text(self):
+        from office.models import Scripture
+
+        scripture = Scripture(passage="John 20:24-29", nvi=None, nrsvce="<p>Thomas, one of the twelve.</p>")
+        reading = SimpleNamespace(long_citation="John 20:24-29", short_citation="", short_text="", testament="NT")
+        module = SimpleNamespace(
+            bible_translation="nvi",
+            office=SimpleNamespace(settings={"reading_length": "full"}),
+            language="english",
+            remove_headings_if_needed=lambda text: text,
+            audio=lambda *args: None,
+            closing=ReadingModule.closing,
+            closing_response=ReadingModule.closing_response,
+        )
+        with patch.object(Scripture.objects, "get", return_value=scripture):
+            lines = ReadingModule.get_mass_reading_lines(module, reading)
+        html = [line["content"] for line in lines if line["line_type"] == "html"]
+        self.assertTrue(any("Thomas, one of the twelve." in content for content in html))

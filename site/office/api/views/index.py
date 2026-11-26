@@ -845,8 +845,10 @@ class ReadingModule(Module):
             text = Scripture.objects.get(passage=reading.short_citation)
             citation = reading.short_citation
 
-        text = getattr(text, translation)
-        text = self.remove_headings_if_needed(text)
+        # Not every translation has every mass reading (e.g. NVI); fall back
+        # the same way the daily lectionary does rather than passing None on.
+        text, _ = scripture_translation(text, translation)
+        text = self.remove_headings_if_needed(text or "")
         voice = GenericDailyOfficeSerializer.reading_voice(text)
         text = GenericDailyOfficeSerializer.handle_html(text, html=True, no_generate=True, voice=voice)
 
