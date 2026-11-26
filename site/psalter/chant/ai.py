@@ -23,9 +23,13 @@ How to judge stress (after Briggs & Frere, A Manual of Plainsong, 1902):
 - "Lord", "God", "Name" and other names of God are stressed.
 - Mark the main stress of every word of two or more syllables; mark a secondary stress only where a careful reader would give it a beat (e.g. "+right/eous/+ness" is wrong; "+right/eous/ness" is right; "+ev/er/+last/ing" is right).
 - Do not leave long runs unstressed: in a run of monosyllables, mark the words a reader would lean on. Two stresses may stand next to each other.
-- Give "-ed" its own syllable only where it is pronounced: "+bless/ed" as an adjective ("+Bless/ed is the +man"), "+blessed" as a verb ("he +blessed them"); "be/+lov/ed" when said that way.
 - Divide syllables as a singer would sing them, by sound: "+shep/herd", "+right/eous/ness", "sal/+va/tion", "+mer/cy", "Is/ra/el" (three syllables), "+heav/en", "+pow/er", "+ev/er".
 - Keep possessives and contractions inside their syllable: "+Name's", "+Lord's".
+- House rules for how many syllables a word is sung in (the psalter is sung, so the flowing form):
+  two syllables: "+ev/ery", "+heav/en", "+pow/er", "+spir/it", "+e/vil", "de/+sire", "de/+sired";
+  one syllable: "+fire", "+hour", "our";
+  every syllable sounded: "+Is/ra/el", "Je/+ru/sa/lem", "+Bles/sèd" (a written "-èd" is always its own syllable), "be/+lov/èd";
+  "blessed" without the grave accent is one syllable ("he +blessed them").
 - Pay most care to the last five or six syllables of each half-verse; they decide how the tone fits.
 
 Example:

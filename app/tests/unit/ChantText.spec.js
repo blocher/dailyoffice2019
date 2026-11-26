@@ -33,6 +33,32 @@ describe('ChantText', () => {
   });
 });
 
+describe('ChantText with the St. Bernard Psalter', () => {
+  it('shows pointed syllables in bold and slurs in italic, as the book does', () => {
+    const wrapper = mount(ChantText, {
+      props: {
+        segments: [
+          { t: 'have mercy upon me, ', r: '' },
+          { t: '', r: 'bar' },
+          { t: 'and', r: 'pointed' },
+          { t: ' ', r: '' },
+          { t: 'hear', r: 'note' },
+          { t: ' ', r: '' },
+          { t: 'my', r: 'slur' },
+          { t: ' ', r: '' },
+          { t: 'prayer', r: 'final' },
+          { t: '.', r: '' },
+        ],
+      },
+    });
+    expect(wrapper.find('.chant-pointed').text()).toBe('and');
+    expect(wrapper.find('.chant-slur').text()).toBe('my');
+    expect(wrapper.text().replace('|', '')).toBe(
+      'have mercy upon me, and hear my prayer.'
+    );
+  });
+});
+
 describe('office psalm lines', () => {
   const line = {
     content: 'The Lord is my shepherd; *',

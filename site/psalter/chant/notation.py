@@ -1,7 +1,7 @@
 """Stress notation for half-verses.
 
 A half-verse's syllables and accents are stored as the verse text itself with
-two marks added, so an editor can read and correct it in the admin:
+marks added, so an editor can read and correct it in the admin:
 
 * ``/`` divides a word into syllables;
 * ``+`` comes before an accented (stressed) syllable.
@@ -9,15 +9,29 @@ two marks added, so an editor can read and correct it in the admin:
     "the +Lord is my +shep/herd;"
     "and +bring me +forth in the +paths of +right/eous/ness for his +Name's +sake."
 
-Removing both marks must give back the verse text exactly (ignoring runs of
-whitespace). Neither character appears in the psalter's text.
+Pointing copied from a printed psalter (the St. Bernard Psalter) uses three
+more marks, one for each of the book's typefaces:
+
+* ``^`` before a syllable printed in bold: it moves to the next pointed note;
+* ``~`` before a syllable printed in italic: pointed, and sung over a slur;
+* ``=`` before a syllable printed underlined in bold italic: in a half-verse
+  too short for the tone, it takes two notes of the inflection.
+
+    "The Lᴏʀᴅ ^is my ^shep/herd;"
+    "and ^hear ~my prayer."
+
+Removing every mark must give back the verse text exactly (ignoring runs of
+whitespace). None of these characters appears in the psalter's text.
 """
 
 import re
 from dataclasses import dataclass
 
-MARKS = "+/"
-_WORD_CHAR = re.compile(r"[A-Za-z0-9À-ɏ]")
+MARKS = "+/^~="
+PREFIX_MARKS = "+^~="
+# Letters, including the small capitals of "Lᴏʀᴅ".
+LETTERS = "A-Za-z0-9À-ɏᴀ-ᴢɢɪɴʀʏʜʟꜰꜱ"
+_WORD_CHAR = re.compile(f"[{LETTERS}]")
 
 
 class NotationError(ValueError):
@@ -31,6 +45,13 @@ class Syllable:
     word_index: int
     word_start: bool  # first syllable of its word
     has_letters: bool = True
+    pointed: bool = False  # bold in the book: on a pointed note
+    slur: bool = False  # italic in the book: pointed, over a slur
+    double: bool = False  # underlined in the book: takes two notes
+
+    @property
+    def marked(self):
+        return self.pointed or self.slur or self.double
 
 
 def normalize_text(text):
@@ -38,7 +59,14 @@ def normalize_text(text):
 
 
 def strip_marks(notation):
-    return normalize_text(notation).replace("+", "").replace("/", "")
+    text = normalize_text(notation)
+    for mark in MARKS:
+        text = text.replace(mark, "")
+    return text
+
+
+def _strip_prefix(part):
+    return "".join(c for c in part if c not in PREFIX_MARKS)
 
 
 def parse(notation):
@@ -55,7 +83,7 @@ def parse(notation):
         first = True
         for part in parts:
             accent = "+" in part
-            text = part.replace("+", "")
+            text = _strip_prefix(part)
             if not text:
                 continue
             has_letters = bool(_WORD_CHAR.search(text))
@@ -66,7 +94,16 @@ def parse(notation):
                 previous.text = f"{previous.text}{joiner}{text}"
                 continue
             syllables.append(
-                Syllable(text=text, accent=accent, word_index=word_index, word_start=first, has_letters=has_letters)
+                Syllable(
+                    text=text,
+                    accent=accent,
+                    word_index=word_index,
+                    word_start=first,
+                    has_letters=has_letters,
+                    pointed="^" in part,
+                    slur="~" in part,
+                    double="=" in part,
+                )
             )
             first = False
     return syllables
@@ -78,10 +115,11 @@ def validate(notation, text):
         raise NotationError("The marked text does not match the verse text once + and / are removed.")
     for word in normalize_text(notation).split(" "):
         for part in word.split("/"):
-            if part.count("+") > 1:
-                raise NotationError(f"More than one + in the syllable {part!r}.")
-            if "+" in part and not _WORD_CHAR.search(part.replace("+", "")):
-                raise NotationError(f"A + marks a syllable with no letters in {word!r}.")
+            for mark in PREFIX_MARKS:
+                if part.count(mark) > 1:
+                    raise NotationError(f"More than one {mark} in the syllable {part!r}.")
+            if any(m in part for m in PREFIX_MARKS) and not _WORD_CHAR.search(_strip_prefix(part)):
+                raise NotationError(f"A mark is on a syllable with no letters in {word!r}.")
         if "//" in word or word.startswith("/") or word.endswith("/"):
             raise NotationError(f"Empty syllable in {word!r}.")
     if not parse(notation):
@@ -112,6 +150,10 @@ def word_patterns(notation):
     return [("".join(words[i][0]), words[i][1], tuple(words[i][2])) for i in order]
 
 
+def has_book_marks(notation):
+    return any(mark in (notation or "") for mark in "^~=")
+
+
 def tail_signature(notation, syllable_count=6):
     """The accents of the last few syllables, the part that decides the pointing.
 
@@ -125,5 +167,5 @@ def tail_signature(notation, syllable_count=6):
 
 def split_punctuation(text):
     """(leading punctuation, core, trailing punctuation) of a printed syllable."""
-    match = re.match(r"^([^A-Za-z0-9À-ɏ]*)(.*?)([^A-Za-z0-9À-ɏ]*)$", text)
+    match = re.match(f"^([^{LETTERS}]*)(.*?)([^{LETTERS}]*)$", text)
     return match.group(1), match.group(2), match.group(3)

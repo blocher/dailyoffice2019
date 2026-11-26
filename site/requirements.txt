@@ -47,6 +47,8 @@ pdfplumber>=0.11.10
 Pillow>=13.0.0
 pip>=26.2.2
 pipdeptree>=4.2.10
+# TeX hyphenation patterns, to divide psalm words into syllables (psalter/chant).
+pyphen>=0.17.2
 platformdirs>=4.13.6
 pre-commit>=4.7.0
 premailer>=3.10.0

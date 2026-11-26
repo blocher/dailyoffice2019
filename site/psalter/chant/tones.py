@@ -70,11 +70,15 @@ class Tone:
     clef: str
     mediation: TonePart
     ending: TonePart
+    # Book tones are pointed by marks copied from a printed psalter (see
+    # psalter.chant.bookpointing) rather than by stress.
+    book: bool = False
 
     def as_dict(self):
         return {
             "code": self.code,
             "label": self.label,
+            "book": self.book,
             "clef": self.clef,
             "demo": tone_demo(self),
             "score": tone_score(self),
@@ -146,6 +150,45 @@ TONES["per"] = Tone(
     mediation=parse_part("ixhi hr g ixi h 'g fr f."),
     ending=parse_part("gr d 'f fr ed.."),
 )
+
+# The tones of the St. Bernard Psalter (ed. Ben Jefferies, Nashotah House
+# Press, 2nd ed. 2023), which points the 2019 New Coverdale Psalter for these
+# tones and sets one tone for each office of the thirty-day cycle. Transcribed
+# from the book's staves, transposed so they need no sharps (the intervals are
+# the book's). In the book a tick under a note means a bold or italic syllable
+# goes there; here that is a leading ``'``. A note in parentheses (taking any
+# extra syllables) ends in ``r``; a group of notes on one syllable (a slur,
+# italic in the book) is one token. Every other note takes exactly one syllable.
+_BOOK_TONES = {
+    # code: (label, clef, mediation, termination)
+    "B1.1": ("I.1", "c4", "f gh hr 'ixi hr h 'g hr h.", "hr 'g f 'gh gr g."),
+    "B2.1": ("II.1", "f3", "e f hr 'i hr h.", "hr 'g e 'fr 'f."),
+    "B3.4": ("III.4", "c4", "g hj jr 'k jr j jr 'ih j.", "jr 'h j jr 'i."),
+    "B4.2": ("IV.2", "c4", "h gh hr 'g h 'i hr h.", "hr 'g h i 'g gr h."),
+    "B4.4": ("IV.4", "c4", "h gh hr 'g h 'i hr h.", "hr 'g h i 'g er e."),
+    "B5.1": ("V.1", "c3", "d f hr 'i hr h.", "hr 'i gr g 'h fr f."),
+    "B5.3": ("V.3", "c3", "d f hr 'i hr h.", "hr 'f gxg 'e dr d."),
+    "B6": ("VI", "c4", "f gh hr 'g h fr 'f.", "hr 'f gh 'g fr f."),
+    "B7.7": ("VII.7", "c3", "hg hi ir 'k jr j 'i jr j.", "ir 'j ir i 'h hr i."),
+    "B8.1": ("VIII.1", "c4", "g h jr 'k jr j.", "jr 'i j 'h gr g."),
+    "B8.2": ("VIII.2", "c4", "g h jr 'k jr j.", "jr 'h j 'k jr j."),
+    "Bper": ("Tonus peregrinus", "c4", "hixi hr 'g ixi h 'g fr f.", "gr 'd f fr ed.."),
+}
+
+for _code, (_label, _clef, _mediation, _termination) in _BOOK_TONES.items():
+    TONES[_code] = Tone(
+        code=_code,
+        label=(_label if _code == "Bper" else f"Tone {_label}") + " (St. Bernard Psalter)",
+        clef=_clef,
+        mediation=parse_part(_mediation),
+        ending=parse_part(_termination),
+        book=True,
+    )
+
+# The book's own names for its tones, as printed at the head of each office.
+BOOK_TONE_NAMES = {label.lower(): code for code, (label, *_rest) in _BOOK_TONES.items()}
+BOOK_TONE_NAMES["tonus peregrinus"] = "Bper"
+BOOK_TONE_NAMES["1.1"] = "B1.1"  # printed with an arabic numeral on some pages
 
 DEFAULT_TONE = "8.G"
 

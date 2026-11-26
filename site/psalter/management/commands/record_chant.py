@@ -62,7 +62,7 @@ class Command(BaseCommand):
 
     def record(self, psalm, sound, pulse, options):
         tone = get_tone(psalm.chant_tone)
-        notes, _ = psalm_notes(psalm, tone=tone)
+        notes, _ = psalm_notes(psalm)  # each verse to its own tone
         if not notes:
             self.stderr.write(f"Psalm {psalm.number} has no pointed verses; skipped.")
             return

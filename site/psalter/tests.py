@@ -113,6 +113,8 @@ class PointingTests(SimpleTestCase):
 
     def test_every_tone_points_a_verse(self):
         for code, tone in TONES.items():
+            if tone.book:
+                continue  # pointed from the book's marks; see BookPointingTests
             with self.subTest(tone=code):
                 first = point("and +bring me +forth in the +paths of +right/eous/ness", tone.mediation, mediation=True)
                 second = point("for his +Name's +sake.", tone.ending, mediation=False)
@@ -395,7 +397,7 @@ class AdminTests(TestCase):
         self.assertContains(response, "class='accent'")
         self.assertEqual(self.client.get(reverse("admin:psalter_psalmversepointing_changelist")).status_code, 200)
         url = reverse("admin:psalter_psalmversepointing_change", args=[self.pointing.pk])
-        self.assertContains(self.client.get(url), "Syllables and stresses")
+        self.assertContains(self.client.get(url), "Syllables and marks")
 
     def test_editing_validates_and_approves(self):
         url = reverse("admin:psalter_psalmversepointing_change", args=[self.pointing.pk])
@@ -548,3 +550,295 @@ class RecordingTests(TestCase):
         pointing.second_half_stress = pointing.second_half_stress.replace("+lack", "lack")
         pointing.save()
         self.assertIsNone(self.recording())
+
+
+# --- The St. Bernard Psalter --------------------------------------------------
+
+
+def book_roles(notation, tone_code, mediation, first_verse=False):
+    from psalter.chant.pointing import point_marked
+
+    tone = TONES[tone_code]
+    part = tone.mediation if mediation else tone.ending
+    pointed = point_marked(notation, part, mediation=mediation, first_verse=first_verse)
+    sung = [(s.text.strip(".,;:"), s.role) for s in pointed.syllables[pointed.inflection_start :]]
+    return sung, pointed
+
+
+class BookNotationTests(SimpleTestCase):
+    def test_book_marks_parse_and_strip(self):
+        syllables = parse("and ^hear ~my =prayer.")
+        self.assertEqual([s.text for s in syllables], ["and", "hear", "my", "prayer."])
+        self.assertEqual([(s.pointed, s.slur, s.double) for s in syllables][1:], [(1, 0, 0), (0, 1, 0), (0, 0, 1)])
+        validate("and ^hear ~my =prayer.", "and hear my prayer.")
+        with self.assertRaises(NotationError):
+            validate("and ^^hear my prayer.", "and hear my prayer.")
+        with self.assertRaises(NotationError):
+            validate("and ^ hear my prayer.", "and hear my prayer.")
+
+    def test_small_capitals_are_letters(self):
+        from psalter.chant.notation import split_punctuation
+
+        self.assertEqual(split_punctuation("Lᴏʀᴅ;"), ("", "Lᴏʀᴅ", ";"))
+        self.assertEqual(dictionary.notate("the Lᴏʀᴅ’s house"), "the +Lᴏʀᴅ’s +house")
+
+
+class BookPointingTests(SimpleTestCase):
+    """Verses as the St. Bernard Psalter points them, for each kind of tone."""
+
+    def test_book_tones_parse(self):
+        for code, tone in TONES.items():
+            if not tone.book:
+                continue
+            with self.subTest(tone=code):
+                self.assertTrue(tone.mediation.tenor and tone.ending.tenor)
+                # The first note after the reciting note is ticked in every book tone.
+                self.assertTrue(tone.mediation.cadence[0].accent)
+                self.assertTrue(tone.ending.cadence[0].accent)
+
+    def test_psalm_23_in_tone_iv_4(self):
+        sung, pointed = book_roles("The Lᴏʀᴅ ^is my ^shep/herd;", "B4.4", mediation=True)
+        self.assertEqual(sung, [("is", "pointed"), ("my", "note"), ("shep", "pointed"), ("herd", "final")])
+        self.assertEqual(pointed.warnings, [])
+        # "my cup shall be full": "be" goes to the parentheses, not the accent.
+        sung, pointed = book_roles("you have a/noint/ed my head with oil, ^and my cup ^shall be full.", "B4.4", False)
+        self.assertEqual(
+            sung,
+            [
+                ("and", "pointed"),
+                ("my", "note"),
+                ("cup", "note"),
+                ("shall", "pointed"),
+                ("be", "return"),
+                ("full", "final"),
+            ],
+        )
+        self.assertEqual(pointed.warnings, [])
+
+    def test_a_short_mediation_drops_its_last_note(self):
+        sung, pointed = book_roles("all the days ^of my ^life,", "B4.4", mediation=True)
+        self.assertEqual(sung, [("of", "pointed"), ("my", "note"), ("life", "pointed")])
+        self.assertEqual(pointed.warnings, [])
+
+    def test_italic_takes_the_slur(self):
+        sung, pointed = book_roles("have mer/cy up/on me, ^and hear ~my prayer.", "B1.1", mediation=False)
+        self.assertEqual(sung, [("and", "pointed"), ("hear", "note"), ("my", "slur"), ("prayer", "final")])
+        self.assertEqual(pointed.syllables[-2].notes, "gh")
+        # Tone VI's slur has no tick; italic still goes there.
+        sung, pointed = book_roles("he came fly/ing up/on the ^wings ~of ^the wind.", "B6", mediation=False)
+        self.assertEqual(sung, [("wings", "pointed"), ("of", "slur"), ("the", "pointed"), ("wind", "final")])
+        self.assertEqual(pointed.warnings, [])
+
+    def test_bold_runs_on_to_the_parentheses(self):
+        # II.1: the parenthesised note is ticked and may be left out.
+        sung, pointed = book_roles("they shall fall and per/ish ^at your ^pres/^ence;", "B2.1", mediation=False)
+        self.assertEqual(sung, [("at", "pointed"), ("your", "note"), ("pres", "pointed"), ("ence", "pointed")])
+        sung, pointed = book_roles("I will speak of all your mar/^ve/lous ^works.", "B2.1", mediation=False)
+        self.assertEqual(sung, [("ve", "pointed"), ("lous", "note"), ("works", "pointed")])
+        self.assertEqual(pointed.warnings, [])
+
+    def test_marks_that_do_not_fit_are_reported(self):
+        _, pointed = book_roles("there/fore I can ^lack ^no/thing.", "B4.4", mediation=False)
+        self.assertTrue(pointed.warnings)
+
+    def test_without_marks_stress_is_used_and_flagged(self):
+        sung, pointed = book_roles("there/fore I can +lack +noth/ing.", "B4.4", mediation=False)
+        self.assertEqual(sung[-1], ("ing", "final"))
+        self.assertIn("No marks from the book", pointed.warnings[0])
+
+    def test_segments_show_bold_and_italic(self):
+        from psalter.chant.pointing import point_verse
+
+        tone = TONES["B1.1"]
+        first, second = point_verse(
+            "Hear me when I call, O God ^of my ^right/eous/ness;", "and ^hear ~my prayer.", tone
+        )
+        items = segments(second, tone.clef)
+        self.assertIn("pointed", [i["r"] for i in items if i["t"] == "and"])
+        self.assertIn("note", [i["r"] for i in items if i["t"] == "hear"])
+        self.assertIn("slur", [i["r"] for i in items if i["t"] == "my"])
+        self.assertEqual(describe(second), "| AND hear MY~ prayer.")
+
+
+class SyllableTests(SimpleTestCase):
+    def test_divisions(self):
+        for word, expected in [
+            ("shepherd", ["shep", "herd"]),
+            ("therefore", ["there", "fore"]),
+            ("righteousness", ["right", "eous", "ness"]),
+            ("evil", ["e", "vil"]),
+            ("Israel", ["Is", "ra", "el"]),
+            ("every", ["ev", "ery"]),
+            ("wickedness", ["wick", "ed", "ness"]),
+            ("Blessèd", ["Bles", "sèd"]),
+            ("blessed", ["blessed"]),
+            ("fire", ["fire"]),
+            ("peaceable", ["peace", "a", "ble"]),
+            ("blasphemes", ["blas", "phemes"]),
+        ]:
+            with self.subTest(word=word):
+                self.assertEqual(dictionary.syllabify(word), expected)
+
+
+class BernardMatchTests(TestCase):
+    def setUp(self):
+        self.psalm = make_psalm()
+
+    def words(self, text, tone="B4.4"):
+        """Book words from text marked [bold] and <italic>, "*" after the first half."""
+        import re
+
+        from psalter.chant.bernard import BOLD, ITALIC, REGULAR, BookWord
+
+        out = []
+        for token in text.split():
+            if token == "*":
+                out[-1].half_break = True
+                continue
+            styles = []
+            style = REGULAR
+            for char in token:
+                if char in "[<":
+                    style = BOLD if char == "[" else ITALIC
+                elif char in "]>":
+                    style = REGULAR
+                elif re.match(r"[^\W\d_]", char) and char not in "’'":
+                    styles.append(style)
+            out.append(BookWord(re.sub(r"[\[\]<>]", "", token), styles, tone, 54, "Day 4 Evening Prayer"))
+        return out
+
+    def test_marks_are_copied_onto_the_text(self):
+        from psalter.chant.bernard import match_psalm
+
+        book = self.words(
+            "The Lord [is] my [shep]herd; * therefore [I] can lack [no]thing. "
+            "He shall feed me [in] green [past]ures * and lead me forth beside the [wa]ters of [com]fort."
+        )
+        verses = list(self.psalm.psalmverse_set.order_by("number"))
+        results = match_psalm(verses, book)
+        self.assertEqual(results[0].first_half, "The Lord ^is my ^shep/herd;")
+        self.assertEqual(results[0].second_half, "there/fore ^I can lack ^no/thing.")
+        # The book's own division ("past|ures") wins over the dictionary's.
+        self.assertEqual(results[1].first_half, "He shall feed me ^in green ^past/ures")
+        self.assertEqual([r.issues for r in results], [[], []])
+        self.assertEqual(results[0].tone, "B4.4")
+
+    def test_differences_are_reported(self):
+        from psalter.chant.bernard import match_psalm
+
+        book = self.words(
+            "The Lord [is] my [shep]herd; * so [I] shall lack [no]thing. "
+            "He shall feed me [in] green [past]ures * and lead me forth beside the [wa]ters of [com]fort."
+        )
+        results = match_psalm(list(self.psalm.psalmverse_set.order_by("number")), book)
+        self.assertTrue(any("so" in issue for issue in results[0].issues))
+        self.assertEqual(results[1].issues, [])
+
+    def test_a_drop_capital_joins_its_word(self):
+        from psalter.chant.bernard import BookWord, _resolve_drop_caps
+
+        words = [BookWord("T\x00he", ["r", "r"], "B4.4", 1), BookWord("I\x00call", ["r", "r", "r", "r"], "B4.4", 1)]
+        resolved = _resolve_drop_caps(words, {"the", "i", "call"})
+        self.assertEqual([w.text for w in resolved], ["The", "I", "call"])
+
+    def test_import_stores_pointing_and_tones(self):
+        from psalter.chant.service import import_book
+
+        book = self.words(
+            "The Lord [is] my [shep]herd; * therefore [I] can lack [no]thing. "
+            "He shall feed me [in] green [past]ures * and lead me forth beside the [wa]ters of [com]fort."
+        )
+        import_book({23: book})
+        self.psalm.refresh_from_db()
+        self.assertEqual(self.psalm.chant_tone, "B4.4")
+        pointing = PsalmVersePointing.objects.get(verse__psalm=self.psalm, verse__number=1)
+        self.assertEqual(pointing.status, PsalmVersePointing.BOOK)
+        self.assertEqual(pointing.source, PsalmVersePointing.SOURCE_BOOK)
+        self.assertEqual((pointing.tone, pointing.book_page), ("B4.4", 54))
+        chant = chant_for_verse(PsalmVerse.objects.select_related("pointing", "psalm").get(pk=pointing.verse_id))
+        self.assertEqual(chant["tone"], "B4.4")
+        # The AI leaves the book's pointing alone.
+        self.assertEqual(point_psalm(self.psalm, use_ai=False), [])
+        # An editor's approval survives a second import.
+        pointing.status = PsalmVersePointing.APPROVED
+        pointing.first_half_stress = "The Lord ^is ^my shep/herd;"
+        pointing.save()
+        results = import_book({23: book})
+        self.assertTrue(results[23][0].skipped)
+        pointing.refresh_from_db()
+        self.assertEqual(pointing.first_half_stress, "The Lord ^is ^my shep/herd;")
+
+
+class PointingProposalTests(TestCase):
+    def setUp(self):
+        from psalter.chant.service import import_book
+
+        self.psalm = make_psalm()
+        book = BernardMatchTests.words(
+            None,
+            "The Lord [is] my [shep]herd; * therefore [I] can lack [no]thing. "
+            "He shall feed me [in] green [past]ures * and lead me forth beside the [wa]ters of [com]fort.",
+        )
+        import_book({23: book})
+
+    def proposal(self, **changes):
+        data = {
+            "psalm": 23,
+            "verse": 1,
+            "first_half": "The Lord ^is my ^shep/herd;",
+            "second_half": "there/fore ^I can ^lack ^no/thing.",
+            "note": "A test.",
+        }
+        data.update(changes)
+        return data
+
+    def test_editor_gives_syllables_and_marks(self):
+        response = self.client.get("/api/v1/psalms/23/verses/1/pointing")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["tone"]["code"], "B4.4")
+        self.assertTrue(data["tone"]["book"])
+        self.assertEqual(
+            [(s["t"], s["m"]) for s in data["second_half"]],
+            [("there", ""), ("fore", ""), ("I", "^"), ("can", ""), ("lack", ""), ("no", "^"), ("thing.", "")],
+        )
+        self.assertEqual(self.client.get("/api/v1/psalms/23/verses/99/pointing").status_code, 404)
+
+    def test_preview_sings_the_proposal(self):
+        response = self.client.post("/api/v1/pointing/preview", self.proposal(), content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()["warnings"])
+        response = self.client.post(
+            "/api/v1/pointing/preview", self.proposal(second_half="other words"), content_type="application/json"
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_proposals_are_stored_and_accepted(self):
+        from django.contrib.admin.sites import site
+
+        from psalter.admin import PointingProposalAdmin
+        from psalter.models import PointingProposal
+
+        same = self.proposal(second_half="there/fore ^I can lack ^no/thing.")
+        self.assertEqual(
+            self.client.post("/api/v1/pointing/proposals", same, content_type="application/json").status_code, 400
+        )
+        response = self.client.post("/api/v1/pointing/proposals", self.proposal(), content_type="application/json")
+        self.assertEqual(response.status_code, 201)
+        proposal = PointingProposal.objects.get()
+        self.assertEqual(proposal.previous_second_half, "there/fore ^I can lack ^no/thing.")
+        self.assertEqual(proposal.tone, "B4.4")
+
+        user = get_user_model().objects.create_superuser("admin", "admin@example.com", "password")
+        self.client.force_login(user)
+        url = reverse("admin:psalter_pointingproposal_change", args=[proposal.pk])
+        self.assertContains(self.client.get(url), "Now and proposed")
+        admin = PointingProposalAdmin(PointingProposal, site)
+        request = SimpleNamespace(user=user, _messages=SimpleNamespace(add=lambda *a, **k: None))
+        admin.message_user = lambda *args, **kwargs: None
+        admin.accept(request, PointingProposal.objects.all())
+        pointing = PsalmVersePointing.objects.get(verse__psalm=self.psalm, verse__number=1)
+        self.assertEqual(pointing.second_half_stress, "there/fore ^I can ^lack ^no/thing.")
+        self.assertEqual((pointing.status, pointing.source), ("approved", "editor"))
+        proposal.refresh_from_db()
+        self.assertEqual(proposal.status, "accepted")

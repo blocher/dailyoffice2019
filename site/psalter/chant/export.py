@@ -69,11 +69,12 @@ def psalm_notes(psalm, *, tone=None, tenor=DEFAULT_TENOR, verse_numbers=None):
     """The psalm's sung notes and its length in pulses.
 
     Only verses that have been pointed are included. ``tenor`` puts the
-    reciting note at that MIDI pitch.
+    reciting note at that MIDI pitch. Each verse is sung to its own tone (the
+    book's tone for its office) unless ``tone`` is given for them all.
     """
-    tone = tone or get_tone(psalm.chant_tone)
-    transpose = tenor - gabc_pitches(tone.mediation.tenor, tone.clef)[0][0]
-    verses = psalm.psalmverse_set.select_related("pointing").order_by("number")
+    from psalter.chant.service import verse_tone
+
+    verses = psalm.psalmverse_set.select_related("pointing", "psalm").order_by("number")
     if verse_numbers:
         verses = verses.filter(number__in=verse_numbers)
 
@@ -90,7 +91,11 @@ def psalm_notes(psalm, *, tone=None, tenor=DEFAULT_TENOR, verse_numbers=None):
         pointed_verses.append((verse, pointing))
 
     for position, (verse, pointing) in enumerate(pointed_verses):
-        halves = point_verse(pointing.first_half_stress, pointing.second_half_stress, tone, first_verse=position == 0)
+        verse_tone_ = tone or verse_tone(verse, pointing)
+        transpose = tenor - gabc_pitches(verse_tone_.mediation.tenor, verse_tone_.clef)[0][0]
+        halves = point_verse(
+            pointing.first_half_stress, pointing.second_half_stress, verse_tone_, first_verse=position == 0
+        )
         for half_index, pointed in enumerate(halves):
             words = _words(pointed)
             for syllable, (scale, pause) in zip(pointed.syllables, rhythm(pointed)):
@@ -105,7 +110,7 @@ def psalm_notes(psalm, *, tone=None, tenor=DEFAULT_TENOR, verse_numbers=None):
                 else:
                     syllabic = "middle"
                 first_lyric = _clean("".join(s.text for s in word)) if place == 0 else "+"
-                for i, (pitch, pulses) in enumerate(gabc_pitches(syllable.notes, tone.clef)):
+                for i, (pitch, pulses) in enumerate(gabc_pitches(syllable.notes, verse_tone_.clef)):
                     pulses *= scale
                     notes.append(
                         SungNote(
@@ -444,7 +449,7 @@ def recording_key(psalm, verses, pulse_seconds):
     for verse in verses:
         pointing = getattr(verse, "pointing", None)
         if pointing is not None:
-            pointed.append([verse.number, pointing.first_half_stress, pointing.second_half_stress])
+            pointed.append([verse.number, pointing.first_half_stress, pointing.second_half_stress, pointing.tone])
     rules = [
         pointing_rules.RECITING_LENGTH,
         pointing_rules.CADENCE_LENGTH,

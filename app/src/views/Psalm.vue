@@ -75,7 +75,29 @@
           @position="onChantPosition"
           @tone-position="tonePosition = $event"
         />
-        <p v-if="showChant" class="psalm-chant-legend">
+        <p v-if="showChant && psalm.chant_tone.book" class="psalm-chant-legend">
+          Pointed as in the St. Bernard Psalter, {{ bookToneName }}.
+          <span class="psalm-chant-legend__key"
+            ><span class="psalm-chant-legend__bar">|</span> the tone turns</span
+          >
+          ·
+          <span class="psalm-chant-legend__key"
+            ><strong>bold</strong>: the next marked note</span
+          >
+          ·
+          <span class="psalm-chant-legend__key"
+            ><em>italic</em>: over a slur</span
+          >
+          <br />
+          <button
+            type="button"
+            class="psalm-chant-legend__switch"
+            @click="suggestFix()"
+          >
+            Suggest a fix
+          </button>
+        </p>
+        <p v-else-if="showChant" class="psalm-chant-legend">
           Pointed for {{ psalm.chant_tone.label }}.
           <span class="psalm-chant-legend__key"
             ><span class="psalm-chant-legend__bar">|</span> the tone turns</span
@@ -88,7 +110,22 @@
           <span class="psalm-chant-legend__key"
             ><span class="psalm-chant-legend__prep">preparatory</span></span
           >
+          <br />
+          <button
+            type="button"
+            class="psalm-chant-legend__switch"
+            @click="suggestFix()"
+          >
+            Suggest a fix
+          </button>
         </p>
+        <PointingEditor
+          v-if="showChant"
+          v-model:open="editorOpen"
+          :psalm="psalm.number"
+          :verses="chantVerseNumbers"
+          :verse="editorVerse"
+        />
       </template>
     </header>
 
@@ -217,11 +254,12 @@ import ChantPlayer from '@/components/ChantPlayer.vue';
 import ChantScore from '@/components/ChantScore.vue';
 import ChantText from '@/components/ChantText.vue';
 import Loading from '@/components/Loading.vue';
+import PointingEditor from '@/components/PointingEditor.vue';
 import { displayState, setChantMode } from '@/helpers/displayPreferences';
 import { DynamicStorage } from '@/helpers/storage';
 
 export default {
-  components: { ChantPlayer, ChantScore, ChantText, Loading },
+  components: { ChantPlayer, ChantScore, ChantText, Loading, PointingEditor },
   data() {
     return {
       display: displayState,
@@ -229,6 +267,9 @@ export default {
       chantPosition: null,
       // The note group "Hear the tone" is sounding: { half, index }.
       tonePosition: null,
+      // The "Suggest a fix" sheet, and the verse it opens on.
+      editorOpen: false,
+      editorVerse: 1,
       psalm: null,
       loading: true,
       error: false,
@@ -274,6 +315,18 @@ export default {
     showChant() {
       return this.display.chantMode && this.hasChant && !this.traditional;
     },
+    chantVerseNumbers() {
+      return (this.psalm?.verses || [])
+        .filter((verse) => verse.chant)
+        .map((verse) => verse.number);
+    },
+    // "Tone IV.4 (St. Bernard Psalter)" -> "Tone IV.4".
+    bookToneName() {
+      return this.psalm.chant_tone.label.replace(
+        /\s*\(St\. Bernard Psalter\)$/,
+        ''
+      );
+    },
   },
   watch: {
     showChant(shown) {
@@ -304,6 +357,12 @@ export default {
     },
     playFrom(number) {
       this.$refs.chantPlayer?.playFrom(number);
+    },
+    // Open the editor on the verse being sung, or the first.
+    suggestFix() {
+      this.editorVerse =
+        this.chantPosition?.verse || this.chantVerseNumbers[0] || 1;
+      this.editorOpen = true;
     },
     changeLanguage(value) {
       this.traditional = value;

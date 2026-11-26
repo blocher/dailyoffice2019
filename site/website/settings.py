@@ -396,6 +396,7 @@ REST_FRAMEWORK = {
         "analytics_event": "240/hour",
         "analytics_offline_views": "60/hour",
         "custom_podcast": env("CUSTOM_PODCAST_CREATE_RATE", default="20/hour"),
+        "pointing_proposal": "30/hour",
     },
     # Answer in JSON whatever the Accept header says. Proxies such as Google
     # Translate's drop the app's `Accept: application/json`, and the browsable

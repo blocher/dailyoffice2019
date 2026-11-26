@@ -12,10 +12,10 @@ from dataclasses import dataclass, field
 from django.db import transaction
 
 from psalter.chant import ai, dictionary
-from psalter.chant.notation import is_valid, normalize_text, parse, tail_signature, word_patterns
+from psalter.chant.notation import NotationError, is_valid, normalize_text, parse, tail_signature, word_patterns
 from psalter.chant.pointing import point_verse, segments
 from psalter.chant.tones import get_tone
-from psalter.models import PsalmVerse, PsalmVersePointing
+from psalter.models import Psalm, PsalmVerse, PsalmVersePointing
 
 TAIL = 6
 
@@ -166,14 +166,15 @@ def collect_runs(psalm_number, verses, runs, *, client=None, model=None):
 def point_psalm(psalm, *, runs=2, use_ai=True, force=False, verse_numbers=None, client=None, model=None, save=True):
     """Point one psalm's verses. Returns a list of VerseResult.
 
-    Approved verses are left alone unless ``force`` is set.
+    Approved verses, and those copied from the St. Bernard Psalter, are left
+    alone unless ``force`` is set.
     """
     verses = list(PsalmVerse.objects.filter(psalm=psalm).select_related("pointing").order_by("number"))
     if verse_numbers:
         verses = [v for v in verses if v.number in set(verse_numbers)]
     if not force:
         verses = [
-            v for v in verses if not (hasattr(v, "pointing") and v.pointing.status == PsalmVersePointing.APPROVED)
+            v for v in verses if not (hasattr(v, "pointing") and v.pointing.status in PsalmVersePointing.TRUSTED)
         ]
     verses = [v for v in verses if v.first_half and v.second_half]
     if not verses:
@@ -200,10 +201,112 @@ def point_psalm(psalm, *, runs=2, use_ai=True, force=False, verse_numbers=None, 
                         "ai_runs": result.runs,
                         "dictionary_first_half": result.dictionary_first,
                         "dictionary_second_half": result.dictionary_second,
+                        "source": (
+                            PsalmVersePointing.SOURCE_AI if result.runs else PsalmVersePointing.SOURCE_DICTIONARY
+                        ),
                     },
                 )
             publish_changes(f"Pointed Psalm {psalm.number} for chant")
     return results
+
+
+def verse_tone(verse, pointing=None):
+    """The tone a verse is sung to: its own (the book's office tone), else its psalm's."""
+    pointing = pointing if pointing is not None else getattr(verse, "pointing", None)
+    code = (pointing.tone if pointing is not None else "") or verse.psalm.chant_tone
+    return get_tone(code)
+
+
+@dataclass
+class BookResult:
+    verse: PsalmVerse
+    first_half: str
+    second_half: str
+    tone: str
+    status: str
+    notes: list = field(default_factory=list)
+    skipped: bool = False
+
+
+def import_book(book, psalm_numbers=None, *, force=False, save=True):
+    """Store the St. Bernard Psalter's pointing and tones (``bernard.read_book``).
+
+    Each verse gets the book's marks and the tone of its office. A verse the
+    book's marks fit exactly is "book"; one with differences of wording, or
+    marks the tone can't follow, is "check", with the reasons in its notes.
+    Verses an editor has approved are left alone unless ``force`` is set.
+    Each psalm's own tone becomes the tone of its first verse.
+    """
+    from psalter.chant.bernard import match_psalm
+
+    numbers = psalm_numbers or sorted(book)
+    psalms = {p.number: p for p in Psalm.objects.filter(number__in=numbers)}
+    results = {}
+    for number in numbers:
+        psalm = psalms.get(number)
+        if psalm is None or number not in book:
+            continue
+        verses = list(PsalmVerse.objects.filter(psalm=psalm).select_related("pointing", "psalm").order_by("number"))
+        verses = [v for v in verses if v.first_half and v.second_half]
+        psalm_results = []
+        for found in match_psalm(verses, book[number]):
+            tone = get_tone(found.tone)
+            notes = list(found.issues)
+            try:
+                first, second = point_verse(
+                    found.first_half, found.second_half, tone, first_verse=found.verse.number == 1
+                )
+                notes += first.warnings + second.warnings
+            except NotationError as error:
+                notes.append(f"Could not point: {error}")
+            existing = getattr(found.verse, "pointing", None)
+            skipped = bool(
+                not force
+                and existing is not None
+                and (
+                    existing.status == PsalmVersePointing.APPROVED
+                    or existing.source == PsalmVersePointing.SOURCE_EDITOR
+                )
+            )
+            psalm_results.append(
+                BookResult(
+                    verse=found.verse,
+                    first_half=found.first_half,
+                    second_half=found.second_half,
+                    tone=found.tone,
+                    status=PsalmVersePointing.CHECK if notes else PsalmVersePointing.BOOK,
+                    notes=notes,
+                    skipped=skipped,
+                )
+            )
+            if save and not skipped:
+                _save_book_pointing(found, psalm_results[-1].status, notes)
+        if save and psalm_results and psalm.chant_tone != psalm_results[0].tone:
+            psalm.chant_tone = psalm_results[0].tone
+            psalm.save(update_fields=["chant_tone"])
+        results[number] = psalm_results
+    if save and results:
+        publish_changes("Pointed the psalter from the St. Bernard Psalter")
+    return results
+
+
+def _save_book_pointing(found, status, notes):
+    PsalmVersePointing.objects.update_or_create(
+        verse=found.verse,
+        defaults={
+            "first_half_stress": found.first_half,
+            "second_half_stress": found.second_half,
+            "status": status,
+            "review_notes": "\n".join(notes),
+            "source": PsalmVersePointing.SOURCE_BOOK,
+            "tone": found.tone,
+            "book_page": found.page or None,
+            "book_office": found.office,
+            "confidence": None,
+            "ai_model": "",
+            "ai_runs": [],
+        },
+    )
 
 
 def publish_changes(note):
@@ -232,7 +335,7 @@ def chant_for_verse(verse, tone=None, first_verse=None):
     if not (is_valid(pointing.first_half_stress, first_text) and is_valid(pointing.second_half_stress, second_text)):
         # The verse text was edited after pointing; don't show stale marks.
         return None
-    tone = tone or get_tone(verse.psalm.chant_tone)
+    tone = tone or verse_tone(verse, pointing)
     first, second = point_verse(
         pointing.first_half_stress,
         pointing.second_half_stress,
@@ -244,4 +347,5 @@ def chant_for_verse(verse, tone=None, first_verse=None):
         "second_half": segments(second, tone.clef),
         "status": pointing.status,
         "tone": tone.code,
+        "source": pointing.source,
     }

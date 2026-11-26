@@ -54,6 +54,9 @@ class PsalmVersePointing(UUIDModel):
 
     The stress notation (see ``psalter.chant.notation``) is independent of the
     tone, so a psalm can be moved to another tone without pointing it again.
+    Pointing copied from the St. Bernard Psalter (``import_bernard_psalter``)
+    carries the book's marks instead, and is sung to the book's tone for the
+    verse's office (``tone``).
     """
 
     AGREED = "agreed"
@@ -61,12 +64,27 @@ class PsalmVersePointing(UUIDModel):
     NEEDS_REVIEW = "needs_review"
     DICTIONARY = "dictionary"
     APPROVED = "approved"
+    BOOK = "book"
     STATUS_CHOICES = [
         (NEEDS_REVIEW, "Needs review"),
-        (CHECK, "Check: AI and dictionary differ"),
+        (CHECK, "Check: flagged for a look"),
         (AGREED, "AI and dictionary agree"),
         (DICTIONARY, "Dictionary only (no AI)"),
+        (BOOK, "From the St. Bernard Psalter"),
         (APPROVED, "Approved"),
+    ]
+    # Statuses that re-pointing leaves alone unless forced.
+    TRUSTED = (APPROVED, BOOK)
+
+    SOURCE_AI = "ai"
+    SOURCE_DICTIONARY = "dictionary"
+    SOURCE_BOOK = "book"
+    SOURCE_EDITOR = "editor"
+    SOURCE_CHOICES = [
+        (SOURCE_AI, "AI stress marking"),
+        (SOURCE_DICTIONARY, "Dictionary"),
+        (SOURCE_BOOK, "St. Bernard Psalter"),
+        (SOURCE_EDITOR, "Editor"),
     ]
 
     verse = models.OneToOneField(PsalmVerse, on_delete=models.CASCADE, related_name="pointing")
@@ -85,6 +103,18 @@ class PsalmVersePointing(UUIDModel):
     ai_runs = models.JSONField(blank=True, default=list, help_text="Each AI answer, for comparison.")
     dictionary_first_half = models.CharField(max_length=1200, blank=True, default="")
     dictionary_second_half = models.CharField(max_length=1200, blank=True, default="")
+    source = models.CharField(max_length=20, choices=SOURCE_CHOICES, blank=True, default="", db_index=True)
+    tone = models.CharField(
+        max_length=10,
+        blank=True,
+        default="",
+        choices=TONE_CHOICES,
+        help_text="The tone this verse is sung to. Blank uses the psalm's tone.",
+    )
+    book_page = models.PositiveSmallIntegerField(
+        blank=True, null=True, help_text="The page of the St. Bernard Psalter this verse was copied from."
+    )
+    book_office = models.CharField(max_length=40, blank=True, default="", help_text="E.g. Day 4 Evening Prayer.")
 
     def __str__(self):
         return f"Pointing for {self.verse}"
@@ -92,6 +122,39 @@ class PsalmVersePointing(UUIDModel):
     class Meta:
         ordering = ("verse__psalm__number", "verse__number")
         verbose_name = "psalm verse pointing"
+
+
+class PointingProposal(UUIDModel):
+    """A suggested correction to a verse's chant pointing, sent from the app.
+
+    Anyone may propose one; an editor accepts it in the admin, which copies it
+    to the verse's pointing (source "editor", status "approved").
+    """
+
+    PENDING = "pending"
+    ACCEPTED = "accepted"
+    DECLINED = "declined"
+    STATUS_CHOICES = [(PENDING, "Pending"), (ACCEPTED, "Accepted"), (DECLINED, "Declined")]
+
+    verse = models.ForeignKey(PsalmVerse, on_delete=models.CASCADE, related_name="pointing_proposals")
+    first_half_stress = models.CharField(max_length=1200)
+    second_half_stress = models.CharField(max_length=1200)
+    tone = models.CharField(max_length=10, blank=True, default="", choices=TONE_CHOICES)
+    # What was shown when the proposal was made, to see what it changes.
+    previous_first_half = models.CharField(max_length=1200, blank=True, default="")
+    previous_second_half = models.CharField(max_length=1200, blank=True, default="")
+    note = models.TextField(blank=True, default="")
+    name = models.CharField(max_length=200, blank=True, default="")
+    email = models.EmailField(blank=True, default="")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=PENDING, db_index=True)
+    reviewer_note = models.TextField(blank=True, default="")
+
+    def __str__(self):
+        return f"Proposal for {self.verse}"
+
+    class Meta:
+        ordering = ("-created",)
+        verbose_name = "pointing proposal"
 
 
 class PsalmTopic(UUIDModel):

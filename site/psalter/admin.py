@@ -10,9 +10,9 @@ from django.utils.safestring import mark_safe
 from psalter.chant import ai
 from psalter.chant.notation import NotationError, validate
 from psalter.chant.pointing import point_verse, segments
-from psalter.chant.service import point_psalm, verse_texts
+from psalter.chant.service import point_psalm, publish_changes, verse_texts, verse_tone
 from psalter.chant.tones import get_tone
-from psalter.models import Psalm, PsalmTopic, PsalmVerse, PsalmVersePointing
+from psalter.models import PointingProposal, Psalm, PsalmTopic, PsalmVerse, PsalmVersePointing
 
 # Admin actions call the AI synchronously, so keep each request small.
 MAX_PSALMS_PER_ACTION = 5
@@ -24,6 +24,11 @@ CHANT_PREVIEW_CSS = """
 .chant-preview .second { padding-left: 2em; margin-bottom: .6em; }
 .chant-preview .accent { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; font-weight: bold; }
 .chant-preview .preparatory, .chant-preview .intonation { font-style: italic; text-decoration: underline dotted; text-underline-offset: 3px; }
+.chant-preview .pointed { font-weight: bold; }
+.chant-preview .slur { font-style: italic; }
+.chant-preview .status-book { background: #2b6cb0; }
+.chant-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5em; }
+.chant-compare h4 { font: bold 12px sans-serif; margin: 0 0 .4em; text-transform: none; }
 .chant-preview .bar { color: #a33; padding: 0 .15em; font-weight: bold; }
 .chant-preview .status { font: 11px sans-serif; padding: 1px 5px; border-radius: 3px; margin-left: .5em; color: #fff; }
 .chant-preview .status-agreed, .chant-preview .status-approved { background: #2e7d32; }
@@ -37,7 +42,9 @@ CHANT_PREVIEW_CSS = """
 CHANT_LEGEND = (
     "<p class='legend'><span class='bar'>|</span> inflection begins &nbsp; "
     "<span class='accent'>accent</span> accented note &nbsp; "
-    "<span class='preparatory'>preparatory</span> preparatory or intonation note</p>"
+    "<span class='preparatory'>preparatory</span> preparatory or intonation note &nbsp; "
+    "<span class='pointed'>bold</span> and <span class='slur'>italic</span>: a pointed note and a slur, "
+    "as the St. Bernard Psalter prints them</p>"
 )
 
 
@@ -46,7 +53,7 @@ def segments_html(items):
     for item in items:
         if item["r"] == "bar":
             parts.append(mark_safe("<span class='bar'>|</span>"))
-        elif item["r"] in ("accent", "preparatory", "intonation"):
+        elif item["r"] in ("accent", "preparatory", "intonation", "pointed", "slur"):
             parts.append(format_html("<span class='{}'>{}</span>", item["r"], item["t"]))
         else:
             parts.append(format_html("{}", item["t"]))
@@ -166,7 +173,7 @@ class PsalmAdmin(admin.ModelAdmin):
     @admin.display(description="Pointed for chant")
     def chant_preview(self, obj):
         tone = get_tone(obj.chant_tone)
-        verses = PsalmVerse.objects.filter(psalm=obj).select_related("pointing").order_by("number")
+        verses = PsalmVerse.objects.filter(psalm=obj).select_related("pointing", "psalm").order_by("number")
         rows = []
         for verse in verses:
             pointing = getattr(verse, "pointing", None)
@@ -184,7 +191,7 @@ class PsalmAdmin(admin.ModelAdmin):
                     verse.number,
                     pointing.first_half_stress,
                     pointing.second_half_stress,
-                    tone,
+                    verse_tone(verse, pointing),
                     status=pointing.status,
                     link=link,
                 )
@@ -236,7 +243,7 @@ class PsalmAdmin(admin.ModelAdmin):
 class PsalmVersePointingForm(forms.ModelForm):
     class Meta:
         model = PsalmVersePointing
-        fields = ("first_half_stress", "second_half_stress", "status")
+        fields = ("first_half_stress", "second_half_stress", "tone", "status")
         widgets = {
             "first_half_stress": forms.Textarea(attrs={"rows": 2, "cols": 100}),
             "second_half_stress": forms.Textarea(attrs={"rows": 2, "cols": 100}),
@@ -258,8 +265,8 @@ class PsalmVersePointingForm(forms.ModelForm):
 
 class PsalmVersePointingAdmin(admin.ModelAdmin):
     form = PsalmVersePointingForm
-    list_display = ("verse_label", "status", "confidence", "pointed")
-    list_filter = ("status",)
+    list_display = ("verse_label", "status", "source", "tone", "pointed")
+    list_filter = ("status", "source", "tone")
     search_fields = ("=verse__psalm__number",)
     list_select_related = ("verse", "verse__psalm")
     list_per_page = 50
@@ -267,6 +274,9 @@ class PsalmVersePointingAdmin(admin.ModelAdmin):
         "verse_label",
         "preview",
         "review_notes",
+        "source",
+        "book_page",
+        "book_office",
         "confidence",
         "ai_model",
         "ai_answers",
@@ -277,11 +287,13 @@ class PsalmVersePointingAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {"fields": ("verse_label", "preview", "status")}),
         (
-            "Syllables and stresses",
+            "Syllables and marks",
             {
-                "fields": ("first_half_stress", "second_half_stress"),
-                "description": "Put / between syllables and + before each stressed syllable. Removing the marks must "
-                "give back the verse text. Saving a change marks the verse approved.",
+                "fields": ("first_half_stress", "second_half_stress", "tone"),
+                "description": "Put / between syllables. For a St. Bernard Psalter tone, put ^ before each syllable the "
+                "book prints in bold, ~ before one in italic and = before one underlined; for another tone, + before "
+                "each stressed syllable. Removing the marks must give back the verse text. Saving a change marks the "
+                "verse approved.",
             },
         ),
         (
@@ -289,6 +301,9 @@ class PsalmVersePointingAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     "review_notes",
+                    "source",
+                    "book_page",
+                    "book_office",
                     "confidence",
                     "ai_model",
                     "ai_answers",
@@ -314,13 +329,13 @@ class PsalmVersePointingAdmin(admin.ModelAdmin):
             "{}<div class='chant-preview'>{}</div>",
             mark_safe(CHANT_PREVIEW_CSS),
             pointed_verse_html(
-                obj.verse.number, obj.first_half_stress, obj.second_half_stress, get_tone(obj.verse.psalm.chant_tone)
+                obj.verse.number, obj.first_half_stress, obj.second_half_stress, verse_tone(obj.verse, obj)
             ),
         )
 
     @admin.display(description="Preview")
     def preview(self, obj):
-        tone = get_tone(obj.verse.psalm.chant_tone)
+        tone = verse_tone(obj.verse, obj)
         psalm_url = reverse("admin:psalter_psalm_change", args=[obj.verse.psalm.pk])
         return format_html(
             "{}<div class='chant-preview'><p class='legend'>{} · <a href='{}'>whole psalm</a></p>{}{}</div>",
@@ -342,9 +357,11 @@ class PsalmVersePointingAdmin(admin.ModelAdmin):
         )
 
     def save_model(self, request, obj, form, change):
-        stress_changed = {"first_half_stress", "second_half_stress"} & set(form.changed_data)
-        if change and stress_changed and "status" not in form.changed_data:
-            obj.status = PsalmVersePointing.APPROVED
+        stress_changed = {"first_half_stress", "second_half_stress", "tone"} & set(form.changed_data)
+        if change and stress_changed:
+            obj.source = PsalmVersePointing.SOURCE_EDITOR
+            if "status" not in form.changed_data:
+                obj.status = PsalmVersePointing.APPROVED
         super().save_model(request, obj, form, change)
 
     @admin.action(description="Approve the selected pointings")
@@ -358,7 +375,100 @@ class PsalmVersePointingAdmin(admin.ModelAdmin):
         self.message_user(request, f"Marked {count} for review.")
 
 
+class PointingProposalAdmin(admin.ModelAdmin):
+    """Corrections sent from the app's pointing editor, to accept or decline."""
+
+    list_display = ("verse_label", "status", "created", "proposer", "changes")
+    list_filter = ("status",)
+    search_fields = ("=verse__psalm__number", "note", "name", "email")
+    list_select_related = ("verse", "verse__psalm")
+    readonly_fields = (
+        "verse_label",
+        "comparison",
+        "first_half_stress",
+        "second_half_stress",
+        "tone",
+        "note",
+        "name",
+        "email",
+        "created",
+    )
+    fields = readonly_fields[:2] + ("status", "reviewer_note") + readonly_fields[2:]
+    actions = ("accept", "decline")
+
+    def has_add_permission(self, request):
+        return False
+
+    @admin.display(description="Verse", ordering="verse__psalm__number")
+    def verse_label(self, obj):
+        return f"Psalm {obj.verse.psalm.number}:{obj.verse.number}"
+
+    @admin.display(description="From")
+    def proposer(self, obj):
+        return obj.name or obj.email or "—"
+
+    @admin.display(description="Proposed")
+    def changes(self, obj):
+        return format_html(
+            "{}<div class='chant-preview'>{}</div>",
+            mark_safe(CHANT_PREVIEW_CSS),
+            pointed_verse_html(obj.verse.number, obj.first_half_stress, obj.second_half_stress, get_tone(obj.tone)),
+        )
+
+    @admin.display(description="Now and proposed")
+    def comparison(self, obj):
+        pointing = getattr(obj.verse, "pointing", None)
+        if pointing is not None:
+            now = pointed_verse_html(
+                obj.verse.number,
+                pointing.first_half_stress,
+                pointing.second_half_stress,
+                verse_tone(obj.verse, pointing),
+                status=pointing.status,
+            )
+        else:
+            now = format_html("<p class='legend'>Not pointed yet.</p>")
+        tone = get_tone(obj.tone)
+        return format_html(
+            "{}<div class='chant-preview'>{}<div class='chant-compare'><div><h4>Now</h4>{}</div>"
+            "<div><h4>Proposed ({})</h4>{}</div></div></div>",
+            mark_safe(CHANT_PREVIEW_CSS),
+            mark_safe(CHANT_LEGEND),
+            now,
+            tone.label,
+            pointed_verse_html(obj.verse.number, obj.first_half_stress, obj.second_half_stress, tone),
+        )
+
+    @admin.action(description="Accept: use the proposed pointing")
+    def accept(self, request, queryset):
+        count = 0
+        for proposal in queryset.select_related("verse", "verse__psalm").filter(status=PointingProposal.PENDING):
+            PsalmVersePointing.objects.update_or_create(
+                verse=proposal.verse,
+                defaults={
+                    "first_half_stress": proposal.first_half_stress,
+                    "second_half_stress": proposal.second_half_stress,
+                    "tone": proposal.tone,
+                    "status": PsalmVersePointing.APPROVED,
+                    "source": PsalmVersePointing.SOURCE_EDITOR,
+                    "review_notes": f"Accepted a proposal from {self.proposer(proposal)}.",
+                },
+            )
+            proposal.status = PointingProposal.ACCEPTED
+            proposal.save(update_fields=["status", "updated"])
+            count += 1
+        if count:
+            publish_changes(f"Accepted {count} pointing proposal(s)")
+        self.message_user(request, f"Accepted {count}; the app shows them now.")
+
+    @admin.action(description="Decline")
+    def decline(self, request, queryset):
+        count = queryset.filter(status=PointingProposal.PENDING).update(status=PointingProposal.DECLINED)
+        self.message_user(request, f"Declined {count}.")
+
+
 admin.site.register(Psalm, PsalmAdmin)
+admin.site.register(PointingProposal, PointingProposalAdmin)
 admin.site.register(PsalmVersePointing, PsalmVersePointingAdmin)
 admin.site.register(PsalmVerse, PsalmVerseAdmin)
 admin.site.register(PsalmTopic, PsalmTopicAdmin)

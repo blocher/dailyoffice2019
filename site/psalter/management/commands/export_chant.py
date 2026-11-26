@@ -41,7 +41,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("psalm", type=int)
         parser.add_argument("--format", choices=["synthv", "musicxml", "musescore"], default="synthv")
-        parser.add_argument("--tone", choices=sorted(TONES), help="Override the psalm's tone.")
+        parser.add_argument("--tone", choices=sorted(TONES), help="Sing every verse to this tone instead of its own.")
         parser.add_argument("--verses", help="Only these verses, e.g. 1-3.")
         parser.add_argument(
             "--tenor",
@@ -60,7 +60,13 @@ class Command(BaseCommand):
             raise CommandError(f"Psalm {options['psalm']} is not in the database.")
         tone = get_tone(options["tone"] or psalm.chant_tone)
         verses = parse_selection([options["verses"]]) if options["verses"] else None
-        notes, _ = psalm_notes(psalm, tone=tone, tenor=options["tenor"], verse_numbers=verses)
+        # Each verse keeps its own tone unless --tone is given.
+        notes, _ = psalm_notes(
+            psalm,
+            tone=get_tone(options["tone"]) if options["tone"] else None,
+            tenor=options["tenor"],
+            verse_numbers=verses,
+        )
         if not notes:
             raise CommandError(f"Psalm {psalm.number} has no pointed verses. Run point_psalms {psalm.number} first.")
         pulse = TEMPOS[options["tempo"]]
