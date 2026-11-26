@@ -1,3 +1,4 @@
+import logging
 import os
 
 from django.conf import settings
@@ -5,6 +6,7 @@ from django.core.cache import cache
 from django.http import FileResponse
 from django.utils import timezone
 from mutagen.mp3 import MP3
+from pymemcache.exceptions import MemcacheError
 from rest_framework.renderers import BaseRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -20,6 +22,8 @@ from churchcal.calendar_feeds import (
 )
 from website import settings as site_settings
 
+logger = logging.getLogger(__name__)
+
 
 class CalendarFeedRenderer(BaseRenderer):
     media_type = "text/calendar"
@@ -34,19 +38,36 @@ class CalendarFeedRenderer(BaseRenderer):
         return str(data).encode(self.charset)
 
 
+def get_cached_church_year(year, calendar):
+    """Return the ChurchYear, using memcached when it works and computing it when it doesn't.
+
+    A pickled ChurchYear is large; memcached can refuse it ("Out of memory during
+    read") or be unreachable. The cache is only an optimization, so a failure
+    there must not fail the request (same handling as calculations.get_church_year).
+    """
+    key = f"{year}_{calendar}"
+    cache_available = site_settings.USE_CALENDAR_CACHE
+    church_year = None
+    if cache_available:
+        try:
+            church_year = cache.get(key)
+        except (OSError, MemcacheError):
+            logger.warning("Calendar cache read failed for %s; computing without cache", key, exc_info=True)
+            cache_available = False
+    if not church_year:
+        church_year = ChurchYear(year, calendar)
+        if cache_available:
+            try:
+                cache.set(key, church_year, 60 * 60 * 12)
+            except (OSError, MemcacheError):
+                logger.warning("Calendar cache write failed for %s; using computed calendar", key, exc_info=True)
+    return church_year
+
+
 def get_calendar_year(year, calendar):
     year = int(year)
-    first_year = year - 1
-    second_year = year
-    print(calendar)
-    first_church_year = cache.get(f"{first_year}_{calendar}") if site_settings.USE_CALENDAR_CACHE else None
-    if not first_church_year:
-        first_church_year = ChurchYear(first_year, calendar)
-        cache.set(f"{first_year}_{calendar}", first_church_year, 60 * 60 * 12)
-    second_church_year = cache.get(f"{second_year}_{calendar}") if site_settings.USE_CALENDAR_CACHE else None
-    if not second_church_year:
-        second_church_year = ChurchYear(second_year, calendar)
-    cache.set(f"{second_year}_{calendar}", second_church_year, 60 * 60 * 12)
+    first_church_year = get_cached_church_year(year - 1, calendar)
+    second_church_year = get_cached_church_year(year, calendar)
     return CalendarYear(year, first_church_year, second_church_year)
 
 
@@ -79,10 +100,7 @@ class YearView(APIView):
 
     def get(self, request, year):
         calendar = request.GET.get("calendar", "ACNA_BCP2019")
-        church_year = cache.get(f"{year}_{calendar}") if site_settings.USE_CALENDAR_CACHE else None
-        if not church_year:
-            church_year = ChurchYear(year, calendar)
-            cache.set(f"{year}_{calendar}", church_year, 60 * 60 * 12)
+        church_year = get_cached_church_year(year, calendar)
         serializer = DaySerializer([date for date in church_year], many=True)
         return Response(serializer.data)
 
