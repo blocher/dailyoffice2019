@@ -810,6 +810,9 @@ function place(el, slot) {
 */
 function buildTurn(direction) {
   const host = scene.value;
+  // The reader can close mid-gesture, unmounting the scene; callers then
+  // move without the page-turn animation.
+  if (!host) return null;
   host.replaceChildren();
   const cols = layout.cols;
   const first = firstPage.value;
@@ -918,6 +921,11 @@ async function turn(direction, { fromProgress = 0, draw = null } = {}) {
     dragOffset.value = 0;
   } else {
     const render = draw || buildTurn(direction);
+    if (!render) {
+      goToView(view.value + direction);
+      turning.value = false;
+      return;
+    }
     // From a standstill the page lifts and settles; from a drag it simply
     // carries on.
     await animate(
