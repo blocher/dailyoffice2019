@@ -59,3 +59,52 @@ class CalendarCacheFailureTests(SimpleTestCase):
             with self.assertRaisesMessage(ValueError, "invalid calendar data"):
                 calculations.get_church_year("2026-10-05")
             cache.set.assert_not_called()
+
+
+class CalendarViewCacheFailureTests(SimpleTestCase):
+    """The month/year calendar API survives memcached refusing a ChurchYear."""
+
+    def test_memcache_write_failure_still_returns_the_calendar(self):
+        from pymemcache.exceptions import MemcacheServerError
+
+        from churchcal.api import views
+
+        calendar = Mock()
+        with (
+            patch.object(views.site_settings, "USE_CALENDAR_CACHE", True),
+            patch.object(views, "cache") as cache,
+            patch.object(views, "ChurchYear", return_value=calendar) as church_year,
+            patch("logging.Logger.warning") as warning,
+        ):
+            cache.get.return_value = None
+            cache.set.side_effect = MemcacheServerError(b"Out of memory during read")
+            self.assertIs(views.get_cached_church_year(1960, "ACNA_BCP2019"), calendar)
+            church_year.assert_called_once_with(1960, "ACNA_BCP2019")
+            warning.assert_called_once()
+
+    def test_memcache_read_failure_skips_the_write(self):
+        from churchcal.api import views
+
+        with (
+            patch.object(views.site_settings, "USE_CALENDAR_CACHE", True),
+            patch.object(views, "cache") as cache,
+            patch.object(views, "ChurchYear") as church_year,
+            patch("logging.Logger.warning"),
+        ):
+            cache.get.side_effect = ConnectionResetError("reset")
+            self.assertIs(views.get_cached_church_year(1961, "ACNA_BCP2019"), church_year.return_value)
+            cache.set.assert_not_called()
+
+    def test_cache_hit_is_not_rewritten(self):
+        from churchcal.api import views
+
+        calendar = Mock()
+        with (
+            patch.object(views.site_settings, "USE_CALENDAR_CACHE", True),
+            patch.object(views, "cache") as cache,
+            patch.object(views, "ChurchYear") as church_year,
+        ):
+            cache.get.return_value = calendar
+            self.assertIs(views.get_cached_church_year(1961, "ACNA_BCP2019"), calendar)
+            church_year.assert_not_called()
+            cache.set.assert_not_called()
