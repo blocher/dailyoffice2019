@@ -1,6 +1,7 @@
 from django.utils.html import format_html
 
 from office.api.line import Line
+from psalter.chant.service import chant_for_verse
 from psalter.models import PsalmVerse
 
 
@@ -123,16 +124,25 @@ def get_psalms(
     lines = []
     for citation in citations:
         citation_parts = citation.split(":")
+        next_verse = None
         if len(citation_parts) > 1:
             start, end = citation_parts[1].split("-")
-            verses = (
-                PsalmVerse.objects.filter(psalm__number=citation_parts[0], number__gte=start, number__lte=end)
+            # One verse past the end, to know whether the next section's
+            # heading follows (see _audio_suffix).
+            verses = list(
+                PsalmVerse.objects.filter(psalm__number=citation_parts[0], number__gte=start, number__lte=int(end) + 1)
                 .order_by("number")
-                .select_related("psalm")
+                .select_related("psalm", "pointing")
+            )
+            if verses and verses[-1].number > int(end):
+                next_verse = verses.pop()
+        else:
+            verses = (
+                PsalmVerse.objects.filter(psalm__number=citation)
+                .order_by("number")
+                .select_related("psalm", "pointing")
                 .all()
             )
-        else:
-            verses = PsalmVerse.objects.filter(psalm__number=citation).order_by("number").select_related("psalm").all()
         html = html + psalm_html(
             citation,
             verses,
@@ -147,14 +157,44 @@ def get_psalms(
             language_style=language_style,
             headings=headings,
             display_language=display_language,
+            next_verse=next_verse,
         )
     if api:
         return lines
     return html
 
 
+def _section_heading(verse, use_target_language):
+    """A section heading printed above the verse (Psalm 119's Hebrew letters).
+
+    Only the English texts are divided this way.
+    """
+    if use_target_language or verse is None:
+        return ""
+    return verse.section_heading or ""
+
+
+def _audio_suffix(following, use_target_language):
+    """Audio-only words to say after a verse.
+
+    The office audio of Psalm 119 was recorded when each section's letter was
+    stored at the end of the verse before it, so it says "... utterly. Beth"
+    at the end of verse 8 and not above verse 9. Saying it there still keeps
+    every paid clip of the psalm (their cache keys are the spoken text).
+    Dropping this means paying to record Psalm 119 again.
+    """
+    heading = _section_heading(following, use_target_language)
+    return {"audio_suffix": f" {heading}"} if heading else {}
+
+
 def psalm_api_lines(
-    citation, verses, heading=True, language_style="contemporary", headings="whole_verse", display_language="english"
+    citation,
+    verses,
+    heading=True,
+    language_style="contemporary",
+    headings="whole_verse",
+    display_language="english",
+    next_verse=None,
 ):
     # Decide at the psalm level: use target language for all verses, or English for all
     use_target = _psalm_has_language(verses, display_language)
@@ -171,11 +211,18 @@ def psalm_api_lines(
         lines.append(Line(verses[0].psalm.latin_title, "subheading"))
 
     filtered_verses = [v for v in verses if _has_verse_text(v, language_style, display_language, use_target)]
+    # Plainsong pointing exists for the contemporary English text only.
+    with_chant = language_style != "traditional" and not use_target and display_language == "english"
 
     for i, verse in enumerate(filtered_verses):
         first_half, second_half = _get_verse_text(verse, language_style, display_language, use_target)
         if first_half is None:
             continue
+        chant = chant_for_verse(verse, first_verse=i == 0) if with_chant else None
+        section = _section_heading(verse, use_target)
+        if section:
+            lines.append(Line(section, "subheading", psalm_section=True))
+        following = filtered_verses[i + 1] if i + 1 < len(filtered_verses) else next_verse
 
         if headings == "half_verse":
             style = "leader"
@@ -192,6 +239,7 @@ def psalm_api_lines(
                 style,
                 preface=verse.number,
                 indented="hangingIndent",
+                **({"chant": chant["first_half"]} if chant else {}),
             )
         )
         if headings == "half_verse":
@@ -208,6 +256,8 @@ def psalm_api_lines(
                 second_half,
                 style,
                 indented="indent",
+                **({"chant": chant["second_half"]} if chant else {}),
+                **_audio_suffix(following, use_target),
             )
         )
     return lines
@@ -240,6 +290,9 @@ def psalm_html(
     for i, verse in enumerate(verses):
         first_half, second_half = _get_verse_text(verse, language_style, display_language, use_target)
         if first_half and second_half:
+            section = _section_heading(verse, use_target)
+            if section:
+                html = html + format_html("<h4 class='psalm-section'>{}</h4>", section)
             if headings == "half_verse":
                 html = html + format_html(
                     "<p class='hanging-indent'><sup class='versenum'>{}</sup> {} <span class='asterisk'>*</span> </p>",

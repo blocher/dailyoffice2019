@@ -134,7 +134,11 @@ class PsalmsViewSet(ViewSet):
             queryset=PsalmTopicPsalm.objects.order_by("psalm_topic__order").select_related("psalm_topic"),
             to_attr="topics",
         ),
-        Prefetch("psalmverse_set", PsalmVerse.objects.order_by("number"), to_attr="verses"),
+        Prefetch(
+            "psalmverse_set",
+            PsalmVerse.objects.order_by("number").select_related("psalm", "pointing"),
+            to_attr="verses",
+        ),
     )
     serializer_class = PsalmSerializer
 

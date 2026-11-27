@@ -3192,6 +3192,27 @@ def build_office_audio(path, query_string):
     return response.status_code == 200
 
 
+def spoken_psalm_sections(modules):
+    """The modules as the office audio says them.
+
+    Psalm 119's section letters are said at the end of the verse before each
+    section, as when they were part of its text, and their printed headings
+    are silent and keep the psalm in one request; so the psalm's recorded
+    clips keep their cache keys (see psalter.utils._audio_suffix).
+    """
+    return [
+        {
+            **module,
+            "lines": [
+                {**line, "content": line["content"] + line["audio_suffix"]} if line.get("audio_suffix") else line
+                for line in module["lines"]
+                if not line.get("psalm_section")
+            ],
+        }
+        for module in modules
+    ]
+
+
 class GenericDailyOfficeSerializer(serializers.Serializer):
     modules = serializers.SerializerMethodField()
 
@@ -3866,7 +3887,7 @@ class GenericDailyOfficeSerializer(serializers.Serializer):
             office_settings.get("display_language", "english"),
         ):
             return []
-        modules = self.get_modules(obj)
+        modules = spoken_psalm_sections(self.get_modules(obj))
         if TTS_PROVIDER.name in {"gemini", "elevenlabs"}:
             # Copy only the audio representation; printed prayer text is unchanged.
             modules = [

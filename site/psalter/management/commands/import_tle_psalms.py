@@ -7,6 +7,7 @@ from pdfplumber.utils import cluster_objects
 
 from office.utils import title_case
 from psalter.models import PsalmVerse, Psalm
+from psalter.sections import SECTIONED_PSALM, section_letter, split_trailing_letter
 from website import settings
 
 
@@ -156,6 +157,10 @@ def import_psalter(files, trad=False):
                 psalm = Psalm.objects.get_or_create(number=psalm_number)[0]
                 verse = PsalmVerse.objects.get_or_create(psalm=psalm, number=verse_number)
                 verse = verse[0]
+                if psalm_number == SECTIONED_PSALM:
+                    # The printed letter heads the next section, not this verse.
+                    second_half = split_trailing_letter(second_half)[0]
+                    verse.section_heading = section_letter(verse_number) or ""
                 if trad:
                     verse.first_half_tle = first_half
                     verse.second_half_tle = second_half

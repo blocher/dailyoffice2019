@@ -38,7 +38,94 @@
             aria-label="Language"
             @update:model-value="changeLanguage"
           />
+          <label v-if="hasChant" class="psalm-chant-toggle">
+            <span>Chant</span>
+            <UiSwitch
+              :model-value="display.chantMode"
+              label="Point this psalm for chant"
+              @update:model-value="setChantMode"
+            />
+          </label>
         </div>
+        <p
+          v-if="display.chantMode && hasChant && traditional"
+          class="psalm-chant-legend"
+        >
+          Chant pointing is for the Contemporary text.
+          <button
+            type="button"
+            class="psalm-chant-legend__switch"
+            @click="changeLanguage(false)"
+          >
+            Show Contemporary
+          </button>
+        </p>
+        <ChantScore
+          v-if="showChant && psalm.chant_tone.score"
+          :score="psalm.chant_tone.score"
+          :label="psalm.chant_tone.label"
+          :active="tonePosition"
+        />
+        <ChantPlayer
+          v-if="showChant"
+          ref="chantPlayer"
+          :verses="psalm.verses"
+          :tone="psalm.chant_tone"
+          :recording="psalm.chant_recording"
+          @position="onChantPosition"
+          @tone-position="tonePosition = $event"
+        />
+        <p v-if="showChant && psalm.chant_tone.book" class="psalm-chant-legend">
+          Pointed as in the St. Bernard Psalter, {{ bookToneName }}.
+          <span class="psalm-chant-legend__key"
+            ><span class="psalm-chant-legend__bar">|</span> the tone turns</span
+          >
+          ·
+          <span class="psalm-chant-legend__key"
+            ><strong>bold</strong>: the next marked note</span
+          >
+          ·
+          <span class="psalm-chant-legend__key"
+            ><em>italic</em>: over a slur</span
+          >
+          <br />
+          <button
+            type="button"
+            class="psalm-chant-legend__switch"
+            @click="suggestFix()"
+          >
+            Suggest a fix
+          </button>
+        </p>
+        <p v-else-if="showChant" class="psalm-chant-legend">
+          Pointed for {{ psalm.chant_tone.label }}.
+          <span class="psalm-chant-legend__key"
+            ><span class="psalm-chant-legend__bar">|</span> the tone turns</span
+          >
+          ·
+          <span class="psalm-chant-legend__key"
+            ><span class="psalm-chant-legend__accent">accent</span></span
+          >
+          ·
+          <span class="psalm-chant-legend__key"
+            ><span class="psalm-chant-legend__prep">preparatory</span></span
+          >
+          <br />
+          <button
+            type="button"
+            class="psalm-chant-legend__switch"
+            @click="suggestFix()"
+          >
+            Suggest a fix
+          </button>
+        </p>
+        <PointingEditor
+          v-if="showChant"
+          v-model:open="editorOpen"
+          :psalm="psalm.number"
+          :verses="chantVerseNumbers"
+          :verse="editorVerse"
+        />
       </template>
     </header>
 
@@ -81,18 +168,54 @@
       <div id="main" class="book psalm-text">
         <div v-if="!traditional">
           <span v-for="verse in psalm.verses" :key="verse.number">
-            <span v-if="verse.first_half">
+            <h4
+              v-if="verse.section_heading && verse.first_half"
+              class="psalm-section"
+            >
+              {{ verse.section_heading }}
+            </h4>
+            <span
+              v-if="verse.first_half"
+              :ref="(el) => setVerseRef(verse.number, el)"
+            >
               <p class="hangingIndent extra-space-before">
-                <sup>{{ verse.number }}</sup> {{ verse.first_half }} *
+                <sup v-if="!(showChant && verse.chant)">{{ verse.number }}</sup>
+                <sup v-else
+                  ><button
+                    type="button"
+                    class="psalm-verse-play"
+                    :aria-label="`Play from verse ${verse.number}`"
+                    @click="playFrom(verse.number)"
+                  >
+                    {{ verse.number }}
+                  </button></sup
+                >
+                <ChantText
+                  v-if="showChant && verse.chant"
+                  :segments="verse.chant.first_half"
+                  :active="activeIndex(verse.number, 0)"
+                />
+                <template v-else>{{ verse.first_half }}</template> *
               </p>
               <p class="indent">
-                {{ verse.second_half }}
+                <ChantText
+                  v-if="showChant && verse.chant"
+                  :segments="verse.chant.second_half"
+                  :active="activeIndex(verse.number, 1)"
+                />
+                <template v-else>{{ verse.second_half }}</template>
               </p>
             </span>
           </span>
         </div>
         <div v-if="traditional">
           <span v-for="verse in psalm.verses" :key="verse.number">
+            <h4
+              v-if="verse.section_heading && verse.first_half_tle"
+              class="psalm-section"
+            >
+              {{ verse.section_heading }}
+            </h4>
             <span v-if="verse.first_half_tle">
               <p class="hangingIndent extra-space-before">
                 <sup>{{ verse.number }}</sup> {{ verse.first_half_tle }} *
@@ -139,13 +262,26 @@
 </template>
 
 <script>
+import ChantPlayer from '@/components/ChantPlayer.vue';
+import ChantScore from '@/components/ChantScore.vue';
+import ChantText from '@/components/ChantText.vue';
 import Loading from '@/components/Loading.vue';
+import PointingEditor from '@/components/PointingEditor.vue';
+import { displayState, setChantMode } from '@/helpers/displayPreferences';
 import { DynamicStorage } from '@/helpers/storage';
 
 export default {
-  components: { Loading },
+  components: { ChantPlayer, ChantScore, ChantText, Loading, PointingEditor },
   data() {
     return {
+      display: displayState,
+      // The syllable the chant player is sounding: { verse, half, index }.
+      chantPosition: null,
+      // The note group "Hear the tone" is sounding: { half, index }.
+      tonePosition: null,
+      // The "Suggest a fix" sheet, and the verse it opens on.
+      editorOpen: false,
+      editorVerse: 1,
       psalm: null,
       loading: true,
       error: false,
@@ -157,6 +293,8 @@ export default {
     };
   },
   async created() {
+    // Verse elements by number, to keep the verse being sung in view.
+    this.verseRefs = {};
     const traditional = await DynamicStorage.getItem(
       'traditionalPsalms',
       false
@@ -182,7 +320,62 @@ export default {
     this.error = false;
     this.loading = false;
   },
+  computed: {
+    hasChant() {
+      return Boolean(this.psalm?.verses?.some((verse) => verse.chant));
+    },
+    showChant() {
+      return this.display.chantMode && this.hasChant && !this.traditional;
+    },
+    chantVerseNumbers() {
+      return (this.psalm?.verses || [])
+        .filter((verse) => verse.chant)
+        .map((verse) => verse.number);
+    },
+    // "Tone IV.4 (St. Bernard Psalter)" -> "Tone IV.4".
+    bookToneName() {
+      return this.psalm.chant_tone.label.replace(
+        /\s*\(St\. Bernard Psalter\)$/,
+        ''
+      );
+    },
+  },
+  watch: {
+    showChant(shown) {
+      if (!shown) this.chantPosition = null;
+    },
+  },
   methods: {
+    setChantMode,
+    setVerseRef(number, el) {
+      if (el) this.verseRefs[number] = el;
+      else delete this.verseRefs[number];
+    },
+    activeIndex(number, half) {
+      const position = this.chantPosition;
+      return position && position.verse === number && position.half === half
+        ? position.index
+        : -1;
+    },
+    onChantPosition(position) {
+      const previous = this.chantPosition;
+      this.chantPosition = position;
+      if (position && position.verse !== previous?.verse) {
+        this.verseRefs[position.verse]?.scrollIntoView?.({
+          block: 'nearest',
+          behavior: 'smooth',
+        });
+      }
+    },
+    playFrom(number) {
+      this.$refs.chantPlayer?.playFrom(number);
+    },
+    // Open the editor on the verse being sung, or the first.
+    suggestFix() {
+      this.editorVerse =
+        this.chantPosition?.verse || this.chantVerseNumbers[0] || 1;
+      this.editorOpen = true;
+    },
     changeLanguage(value) {
       this.traditional = value;
       this.setTradtional();
@@ -235,9 +428,76 @@ export default {
   color: var(--accent);
 }
 
+.psalm-chant-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+  font-variant-caps: all-small-caps;
+  letter-spacing: var(--tracking-caps);
+}
+
+.psalm-chant-legend {
+  margin: var(--space-3) 0 0;
+  font-size: var(--text-sm);
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+.psalm-verse-play {
+  position: relative;
+  font: inherit;
+  line-height: 1;
+  color: var(--accent);
+  padding: 0 0.1em;
+  border-radius: var(--radius-sm);
+}
+
+/* Verse numbers are small; give the finger a bigger target. */
+.psalm-verse-play::before {
+  content: '';
+  position: absolute;
+  inset: -0.6rem -0.5rem;
+}
+
+.psalm-verse-play:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.psalm-chant-legend__switch {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.psalm-chant-legend__key {
+  white-space: nowrap;
+}
+
+.psalm-chant-legend__bar {
+  color: var(--accent);
+}
+
+.psalm-chant-legend__accent,
+.psalm-chant-legend__prep {
+  text-decoration-line: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 0.09em;
+  text-underline-offset: 0.18em;
+}
+
+.psalm-chant-legend__prep {
+  text-decoration-style: dotted;
+}
+
 .psalm-tools {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
+  gap: var(--space-3) var(--space-4);
   margin-top: var(--space-2);
 }
 

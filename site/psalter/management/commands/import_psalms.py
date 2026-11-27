@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 from bs4 import BeautifulSoup
 
 from psalter.models import Psalm, PsalmVerse
+from psalter.sections import SECTIONED_PSALM, section_letter, split_trailing_letter
 from website.settings import BASE_DIR
 
 
@@ -62,6 +63,10 @@ class Command(BaseCommand):
                 line = line.replace("<br/>", " ").replace("<br />", " ").replace("<br>", " ")
                 line = line.replace("\n", " ").replace("\r", "")
                 line = line.replace("  ", " ")
+                if int(psalm.number) == SECTIONED_PSALM:
+                    # The printed letter heads the next section, not this verse.
+                    line = split_trailing_letter(line)[0]
+                    psalm_verse.section_heading = section_letter(int(psalm_verse.number)) or ""
                 psalm_verse.second_half = line
                 psalm_verse.save()
                 first_half_next = True

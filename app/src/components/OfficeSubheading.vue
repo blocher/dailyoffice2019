@@ -1,5 +1,7 @@
 <template>
-  <h4 class="subheading">{{ line.content }}</h4>
+  <h4 class="subheading" :class="{ 'psalm-section': line.psalm_section }">
+    {{ line.content }}
+  </h4>
 </template>
 
 <script>

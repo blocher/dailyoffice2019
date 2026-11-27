@@ -33,6 +33,7 @@ from office.api.views.resources import (
 )
 from analytics.views import AnalyticsEventView, OfflineOfficeViewsView
 from office.api.views.offline import ContentChangesView
+from office.api.views.pointing import PointingEditorView, PointingPreviewView, PointingProposalView
 from office.readings_audio import ReadingsAudioView
 from patrons import views as patron_views
 from podcasts.urls import urlpatterns as podcast_urlpatterns
@@ -190,6 +191,13 @@ urlpatterns = podcast_urlpatterns + [
         EmailSignupView.as_view(),
         name="email_signup",
     ),
+    path(
+        "api/v1/psalms/<int:psalm>/verses/<int:verse>/pointing",
+        PointingEditorView.as_view(),
+        name="pointing_editor",
+    ),
+    path("api/v1/pointing/preview", PointingPreviewView.as_view(), name="pointing_preview"),
+    path("api/v1/pointing/proposals", PointingProposalView.as_view(), name="pointing_proposals"),
     path(
         r"api/v1/bible/<str:passage>/<str:version>",
         BiblePassageView.as_view(),
