@@ -7,6 +7,7 @@ from rest_framework.viewsets import ViewSet
 
 from office.api.serializers import (
     CollectSerializer,
+    PsalmListSerializer,
     PsalmSerializer,
     PsalmTopicSerializer,
     AboutItemSerializer,
@@ -153,7 +154,7 @@ class PsalmsViewSet(ViewSet):
 
     def list(self, request):
         psalms = self.queryset
-        serializer = PsalmSerializer(psalms, many=True)
+        serializer = PsalmListSerializer(psalms, many=True)
         return Response(serializer.data)
 
     @action(detail=False)

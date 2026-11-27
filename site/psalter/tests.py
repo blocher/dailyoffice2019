@@ -410,6 +410,15 @@ class DisplayTests(TestCase):
         self.assertEqual(data["chant_tone"]["tenor"], 60)
         self.assertTrue(data["chant_tone"]["demo"]["second_half"])
 
+    def test_psalm_list_leaves_out_the_chant(self):
+        response = self.client.get("/api/v1/psalms")
+        self.assertEqual(response.status_code, 200)
+        psalm = response.json()[0]
+        self.assertEqual(psalm["number"], 23)
+        self.assertNotIn("chant_recording", psalm)
+        self.assertNotIn("chant", psalm["verses"][0])
+        self.assertTrue(psalm["verses"][0]["first_half"])
+
     def test_office_lines_carry_chant_for_contemporary_text_only(self):
         verses = PsalmVerse.objects.filter(psalm=self.psalm).select_related("psalm", "pointing").order_by("number")
         lines = psalm_api_lines("23", verses)
@@ -524,6 +533,42 @@ class ExportTests(TestCase):
                     durations.append(units)
             self.assertEqual(durations[2], 5)
             self.assertEqual(durations[4], 10)
+
+    def test_musicxml_respells_words_cantai_would_mispronounce(self):
+        from xml.dom import minidom
+
+        from psalter.chant.export import SungNote, to_musicxml
+        from psalter.chant.tones import get_tone
+
+        def note(onset, lyric, syllable, syllabic, verse):
+            return SungNote(
+                onset=onset, pulses=1, pitch=57, lyric=lyric, syllable=syllable, syllabic=syllabic, verse=verse, half=0
+            )
+
+        notes = [
+            note(0, "wind", "wind", "single", 1),
+            note(1, "Hasten", "Has", "begin", 1),
+            note(2, "+", "ten", "end", 1),
+            note(3, "-", "", "", 1),
+            note(5, "bow", "bow", "single", 7),  # bow down: sung as printed
+        ]
+        xml = to_musicxml(self.psalm, notes, tone=get_tone("B8.1"), pulse_seconds=0.38)
+        lyrics = [t.firstChild.data for t in minidom.parseString(xml).getElementsByTagName("text")]
+        self.assertEqual(lyrics, ["winned", "Hay", "sen", "bow"])
+        # The bow that shoots is respelled only where the verse means it.
+        psalm = SimpleNamespace(number=7)
+        xml = to_musicxml(psalm, [note(0, "bow", "bow", "single", 13)], tone=get_tone("B8.1"), pulse_seconds=0.38)
+        self.assertIn("<text>beau</text>", xml)
+
+    def test_recording_key_changes_only_where_words_are_respelled(self):
+        from psalter.chant.export import recording_key
+        from psalter.chant.pronunciation import respellings_in
+
+        verses = list(self.psalm.psalmverse_set.select_related("pointing").order_by("number"))
+        # Verse 2 says "lead me forth", which Cantai would sing as the metal.
+        self.assertEqual(respellings_in(23, verses), [(2, "lead", "leed")])
+        self.assertEqual(respellings_in(23, verses[:1]), [])
+        self.assertNotEqual(recording_key(self.psalm, verses, 0.38), recording_key(self.psalm, verses[:1], 0.38))
 
     def test_musicxml_breathes_at_a_comma_inside_a_half_verse(self):
         from xml.dom import minidom
