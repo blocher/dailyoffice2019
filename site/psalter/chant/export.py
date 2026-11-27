@@ -29,6 +29,7 @@ from xml.sax.saxutils import escape
 from psalter.chant.notation import is_valid
 from psalter.chant import pointing as pointing_rules
 from psalter.chant.pointing import INTONATION, RECITE, point_verse, rhythm
+from psalter.chant.pronunciation import respellings_in, sung_syllables
 from psalter.chant.service import verse_texts
 from psalter.chant.tones import gabc_pitches, get_tone
 
@@ -292,6 +293,8 @@ def to_musicxml(psalm, notes, *, tone, pulse_seconds):
         time = note.onset + note.pulses
     if current:
         measures.append(current)
+    # Cantai's lyrics, with the words it would mispronounce respelled.
+    sung_text = dict(zip(map(id, notes), sung_syllables(psalm.number, notes)))
 
     parts = []
     for index, measure in enumerate(measures, start=1):
@@ -329,7 +332,7 @@ def to_musicxml(psalm, notes, *, tone, pulse_seconds):
             if item.syllable:
                 lyric = (
                     f'<lyric number="1"><syllabic>{item.syllabic}</syllabic>'
-                    f"<text>{escape(item.syllable)}</text></lyric>"
+                    f"<text>{escape(sung_text[id(item)])}</text></lyric>"
                 )
             parts_of_note = _split(item.pulses)
             for i, units in enumerate(parts_of_note):
@@ -504,5 +507,11 @@ def recording_key(psalm, verses, pulse_seconds):
         REST_AT_ASTERISK,
         REST_BETWEEN_VERSES,
     ]
-    data = json.dumps([get_tone(psalm.chant_tone).code, round(pulse_seconds, 4), rules, pointed])
+    key = [get_tone(psalm.chant_tone).code, round(pulse_seconds, 4), rules, pointed]
+    # Only psalms with respelled words carry them, so the others' keys (and
+    # recordings) stay as they were.
+    respelled = respellings_in(psalm.number, verses)
+    if respelled:
+        key.append(respelled)
+    data = json.dumps(key)
     return hashlib.sha1(data.encode()).hexdigest()

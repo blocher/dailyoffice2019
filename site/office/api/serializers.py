@@ -178,6 +178,23 @@ class PsalmSerializer(serializers.HyperlinkedModelSerializer):
         fields = ["id", "number", "latin_title", "topics", "verses", "chant_tone", "chant_recording"]
 
 
+class PsalmListVerseSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = PsalmVerse
+        fields = ["id", "number", "section_heading", "first_half", "second_half", "first_half_tle", "second_half_tle"]
+
+
+class PsalmListSerializer(PsalmSerializer):
+    """The psalter's index: the text without the chant (each psalm's page
+    has that), which made the list several megabytes and seconds slower."""
+
+    verses = PsalmListVerseSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Psalm
+        fields = ["id", "number", "latin_title", "topics", "verses"]
+
+
 class PsalmTopicSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = PsalmTopic
