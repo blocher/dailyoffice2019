@@ -42,7 +42,10 @@ const EXTENSION_MESSAGE = /Invalid call to runtime\.sendMessage\(\)/i;
 // whose every frame is in the page document itself come from a script the
 // browser or an extension injected (translation, reader and in-app browsers
 // on iOS): e.g. "Maximum call stack size exceeded" recursing between two
-// minified functions at line 400+ of /commemorations/<id>.
+// minified functions at line 400+ of /commemorations/<id>. The injected
+// script's top level shows up as a "global code" frame with no real file
+// (Android in-app browsers' "swbrowser is not defined" from needInjectCss).
+const TOP_LEVEL_FRAME = /^global code$/i;
 function onlyInPageDocument(frames) {
   let page;
   try {
@@ -54,7 +57,10 @@ function onlyInPageDocument(frames) {
   const stripped = (file) => String(file || '').split(/[?#]/)[0];
   return (
     frames.some((f) => stripped(f.file) === page) &&
-    frames.every((f) => !f.file || stripped(f.file) === page)
+    frames.every(
+      (f) =>
+        !f.file || TOP_LEVEL_FRAME.test(f.file) || stripped(f.file) === page
+    )
   );
 }
 // A fetch() that never got a response (offline, dropped connection, blocker)
