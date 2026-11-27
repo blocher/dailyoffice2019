@@ -2,7 +2,7 @@
 
 Builds one timeline of sung notes from the pointing, with the same rhythm as
 the app's player (app/src/helpers/chantPlayer.js): the lengths and the breaths
-at commas from ``pointing.rhythm``, two pulses' rest at the asterisk and one
+at commas from ``pointing.rhythm``, three pulses' rest at the asterisk and one
 between verses. It writes it as:
 
 * a Synthesizer V Studio script (JavaScript) that writes the notes and
@@ -32,7 +32,7 @@ from psalter.chant.pointing import point_verse, rhythm
 from psalter.chant.service import verse_texts
 from psalter.chant.tones import gabc_pitches, get_tone
 
-REST_AT_ASTERISK = 2
+REST_AT_ASTERISK = 3
 REST_BETWEEN_VERSES = 1
 DEFAULT_TENOR = 57  # A below middle C: comfortable for most voices
 
@@ -261,9 +261,10 @@ def to_musicxml(psalm, notes, *, tone, pulse_seconds):
             if current:
                 measures.append(current)
             current, current_key = [], key
-            # Rests between halves and verses go at the start of the next measure.
-            if note.onset > time:
-                current.append(("rest", note.onset - time))
+        # Rests between halves and verses go at the start of the next
+        # measure; a breath at a comma stays within its half-verse.
+        if note.onset > time:
+            current.append(("rest", note.onset - time))
         current.append(("note", note))
         time = note.onset + note.pulses
     if current:
@@ -349,8 +350,8 @@ CANTAI_MALE_CHOIR = {
 }
 
 # How much of the voice goes to the hall reverb (MuseScore's Mixer > Aux
-# sends > Reverb, 0 to 1). 42% sounds like a choir in a church.
-REVERB_SEND = 0.42
+# sends > Reverb, 0 to 1). 43% sounds like a choir in a church.
+REVERB_SEND = 0.43
 
 _REVERB = {
     "out": {

@@ -432,9 +432,9 @@ class ExportTests(TestCase):
         self.assertEqual(lyrics[:6], ["The", "Lord", "is", "my", "shepherd", "+"])
         self.assertEqual(notes[2].pitch, 60)  # the reciting note where asked
         self.assertEqual(notes[4].pitch, 62)  # the rise on the accent
-        # A rest of two pulses at the asterisk.
+        # A rest of three pulses at the asterisk.
         first_half_end = notes[5].onset + notes[5].pulses
-        self.assertEqual(notes[6].onset, first_half_end + 2)
+        self.assertEqual(notes[6].onset, first_half_end + 3)
         self.assertEqual(length, notes[-1].onset + notes[-1].pulses)
 
     def test_lyrics_keep_small_capitals_and_apostrophes(self):
@@ -479,6 +479,26 @@ class ExportTests(TestCase):
             self.assertEqual(durations[2], 3)
             self.assertEqual(durations[4], 6)
 
+    def test_musicxml_breathes_at_a_comma_inside_a_half_verse(self):
+        from xml.dom import minidom
+
+        from psalter.chant.export import SungNote, to_musicxml
+        from psalter.chant.tones import get_tone
+
+        # "death, I": half a pulse's breath after the comma, same half-verse.
+        notes = [
+            SungNote(
+                onset=0, pulses=0.75, pitch=57, lyric="death", syllable="death", syllabic="single", verse=4, half=0
+            ),
+            SungNote(onset=1.25, pulses=0.75, pitch=57, lyric="I", syllable="I", syllabic="single", verse=4, half=0),
+        ]
+        xml = to_musicxml(self.psalm, notes, tone=get_tone("B8.1"), pulse_seconds=0.38)
+        kinds = [
+            "rest" if n.getElementsByTagName("rest") else "note"
+            for n in minidom.parseString(xml).getElementsByTagName("note")
+        ]
+        self.assertEqual(kinds, ["note", "rest", "note"])
+
     def test_musescore_score_gets_the_cantai_voice(self):
         import tempfile
         import zipfile
@@ -498,7 +518,7 @@ class ExportTests(TestCase):
                 self.assertEqual(archive.read("psalm.mscx"), b"<museScore/>")
                 settings = json.loads(archive.read("audiosettings.json"))
             self.assertEqual(settings["tracks"][0]["instrumentId"], "tenor")
-            self.assertEqual(settings["tracks"][0]["out"]["auxSends"][0]["signalAmount"], 0.42)
+            self.assertEqual(settings["tracks"][0]["out"]["auxSends"][0]["signalAmount"], 0.43)
             self.assertEqual(sound_from_score(path), CANTAI_MALE_CHOIR)
 
     def test_lengths_without_a_note_value_are_tied(self):
@@ -948,3 +968,77 @@ class PsalmSectionTests(TestCase):
         self.assertEqual(split_trailing_letter("Behold, He"), ("Behold,", "He"))
         self.assertEqual(split_trailing_letter("for ever."), ("for ever.", None))
         self.assertEqual([section_letter(n) for n in (1, 8, 9, 169, 177)], ["Aleph", None, "Beth", "Taw", None])
+
+
+class CantaiFailureTests(SimpleTestCase):
+    def test_a_failed_cantai_render_is_caught(self):
+        import tempfile
+        import time
+        from pathlib import Path
+
+        from psalter.management.commands.record_chant import cantai_failure
+
+        with tempfile.TemporaryDirectory() as directory:
+            logs = Path(directory)
+            started = time.time() - 1
+            # No sign of Cantai: MuseScore fell back to its basic sound.
+            (logs / "MuseScore_1.log").write_text("INFO | MuseSampler successfully inited\n")
+            self.assertIn("basic sound", cantai_failure(started, logs))
+            (logs / "MuseScore_1.log").write_text(
+                "INFO | MuseSampler successfully inited\n"
+                "INFO | MuseSamplerResolver::init | >>> Cantai convert cache lookup for request 5 (hit: true)\n"
+            )
+            self.assertEqual(cantai_failure(started, logs), "")
+            (logs / "MuseScore_2.log").write_text(
+                "ERROR | MuseSamplerResolver::init | >>> Cantai render failed: The socket was closed due to a timeout\n"
+            )
+            self.assertIn("Cantai render failed", cantai_failure(started, logs))
+            # Logs from before the render don't count, so Cantai's earlier
+            # singing doesn't vouch for a later render.
+            self.assertIn("basic sound", cantai_failure(time.time() + 60, logs))
+
+    def test_recordings_are_brought_to_a_standard_loudness(self):
+        import shutil
+        import subprocess
+        import tempfile
+        from pathlib import Path
+
+        from psalter.management.commands.record_chant import LOUDNESS, encode_mp3
+
+        if not shutil.which("ffmpeg"):
+            self.skipTest("ffmpeg is not installed")
+        with tempfile.TemporaryDirectory() as directory:
+            wav = Path(directory) / "quiet.wav"
+            mp3 = Path(directory) / "quiet.mp3"
+            # Ten seconds of a quiet tone, like a Cantai render.
+            subprocess.run(
+                [
+                    "ffmpeg",
+                    "-loglevel",
+                    "error",
+                    "-f",
+                    "lavfi",
+                    "-i",
+                    "sine=frequency=220:duration=10",
+                    "-af",
+                    "volume=-30dB",
+                    str(wav),
+                ],
+                check=True,
+            )
+            encode_mp3(wav, mp3)
+            report = subprocess.run(
+                ["ffmpeg", "-hide_banner", "-nostats", "-i", str(mp3), "-af", "ebur128", "-f", "null", "-"],
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stderr
+            integrated = float(report.rsplit("I:", 1)[1].split("LUFS")[0])
+            self.assertAlmostEqual(integrated, LOUDNESS, delta=1)
+            rate = subprocess.run(
+                ["ffprobe", "-v", "error", "-show_entries", "stream=sample_rate", "-of", "csv=p=0", str(mp3)],
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.strip()
+            self.assertEqual(rate, "44100")

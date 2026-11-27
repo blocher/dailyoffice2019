@@ -9,7 +9,7 @@
   buildTimeline() turns verses into timed notes and syllables, following the
   Manual of Plainsong, with the lengths the server sets (rhythm() in
   psalter/chant/pointing.py): quicker on the reciting note, broader in the
-  cadence, and a short breath after a comma ("w"); a rest of two pulses at
+  cadence, and a short breath after a comma ("w"); a rest of three pulses at
   the asterisk; and one pulse between verses. createChantPlayer() sounds a
   timeline and reports which syllable is being sung.
 */
@@ -27,7 +27,7 @@ export const PITCHES = [
   { value: 'high', label: 'High', tenor: 62 },
 ];
 
-const REST_AT_ASTERISK = 2;
+const REST_AT_ASTERISK = 3;
 const REST_BETWEEN_VERSES = 1;
 
 export function pulseFor(tempo) {

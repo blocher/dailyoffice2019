@@ -41,14 +41,14 @@ describe('buildTimeline', () => {
       [1, 1, 0],
       [2, 1, 0],
     ]);
-    // 1 + 1 + 1 + 2 pulses, a rest of 2 at the asterisk.
-    expect(timeline.syllables[4].start).toBe(7);
+    // 1 + 1 + 1 + 2 pulses, a rest of 3 at the asterisk.
+    expect(timeline.syllables[4].start).toBe(8);
     // "there" has two notes; one pulse between verses; verse 2 has an empty
     // first half that still rests at the asterisk.
-    expect(timeline.syllables[4].end).toBe(9);
-    expect(timeline.syllables[5].start).toBe(12);
+    expect(timeline.syllables[4].end).toBe(10);
+    expect(timeline.syllables[5].start).toBe(14);
     expect(timeline.notes[0]).toEqual({ midi: 52, start: 0, end: 1 });
-    expect(timeline.duration).toBe(14);
+    expect(timeline.duration).toBe(16);
   });
 
   it('takes fractional lengths and breathes after a comma', () => {
@@ -71,7 +71,7 @@ describe('buildTimeline', () => {
     ];
     const timeline = buildTimeline(verses, { pulse: 1 });
     expect(verseStart(timeline, null)).toBe(0);
-    expect(verseStart(timeline, 2)).toBe(12);
+    expect(verseStart(timeline, 2)).toBe(14);
     expect(verseStart(timeline, 9)).toBe(0);
   });
 
@@ -88,7 +88,7 @@ describe('buildTimeline', () => {
     });
     expect(syllableAt(timeline, 3.5).index).toBe(6);
     expect(syllableAt(timeline, 5.5)).toBeNull(); // the rest at the asterisk
-    expect(syllableAt(timeline, 7.2).half).toBe(1);
+    expect(syllableAt(timeline, 8.2).half).toBe(1);
   });
 
   it('puts the reciting note at the chosen pitch', () => {

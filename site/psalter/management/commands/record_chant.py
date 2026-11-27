@@ -13,9 +13,11 @@ still match what was sung, so re-record after changing any of them.
 """
 
 import hashlib
+import json
 import shutil
 import subprocess
 import tempfile
+import time
 from pathlib import Path
 
 from django.core.files import File
@@ -36,6 +38,92 @@ from psalter.management.commands.point_psalms import parse_selection
 from psalter.models import Psalm
 
 RENDER_TIMEOUT = 15 * 60
+MUSESCORE_LOGS = Path.home() / "Library/Application Support/MuseScore/MuseScore4/logs"
+# Cantai sings on Muse's servers. When it can't reach them MuseScore still
+# writes the audio, without the choir; these lines in its log say so.
+CANTAI_FAILURES = ("Cantai preparation failed", "Cantai render failed")
+# Loudness of saved recordings (EBU R128): -16 LUFS integrated, the usual
+# level for spoken and sung audio on phones, with true peaks under -1.5 dBTP.
+LOUDNESS = -16
+TRUE_PEAK = -1.5
+LOUDNESS_RANGE = 11
+
+
+def encode_mp3(wav, mp3):
+    """Encode ``wav`` as a 128k MP3 at a standard loudness.
+
+    Cantai renders quietly (peaks near -20 dBFS). Two passes of ffmpeg's
+    EBU R128 filter: the first measures, the second raises the whole
+    recording by one amount (linear), keeping the choir's dynamics.
+    """
+    measure = subprocess.run(
+        [
+            "ffmpeg",
+            "-hide_banner",
+            "-nostats",
+            "-i",
+            str(wav),
+            "-af",
+            f"loudnorm=I={LOUDNESS}:TP={TRUE_PEAK}:LRA={LOUDNESS_RANGE}:print_format=json",
+            "-f",
+            "null",
+            "-",
+        ],
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stderr
+    measured = json.loads(measure[measure.rindex("{") : measure.rindex("}") + 1])
+    normalize = (
+        f"loudnorm=I={LOUDNESS}:TP={TRUE_PEAK}:LRA={LOUDNESS_RANGE}"
+        f":measured_I={measured['input_i']}:measured_TP={measured['input_tp']}"
+        f":measured_LRA={measured['input_lra']}:measured_thresh={measured['input_thresh']}"
+        f":offset={measured['target_offset']}:linear=true"
+    )
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-y",
+            "-loglevel",
+            "error",
+            "-i",
+            str(wav),
+            "-af",
+            normalize,
+            "-ar",
+            "44100",  # loudnorm works at 192 kHz; come back down
+            "-codec:a",
+            "libmp3lame",
+            "-b:a",
+            "128k",
+            str(mp3),
+        ],
+        check=True,
+    )
+
+
+def cantai_failure(since, logs=MUSESCORE_LOGS):
+    """Why Cantai didn't sing in the render MuseScore logged after ``since``
+    (a timestamp), or "" if it did.
+
+    Cantai logs a line whenever it sings ("Cantai convert cache ..."). With
+    none, MuseScore couldn't load the voice (say, after signing in to Muse Hub
+    again) and quietly played its basic sound instead, which has no words.
+    """
+    if not logs.is_dir():
+        return ""
+    sang = False
+    for log in sorted(logs.glob("*.log"), key=lambda path: path.stat().st_mtime):
+        if log.stat().st_mtime < since:
+            continue
+        for line in log.read_text(errors="replace").splitlines():
+            for failure in CANTAI_FAILURES:
+                if failure in line:
+                    return line[line.index(failure) :][:160]
+            sang = sang or "Cantai convert" in line
+    if not sang:
+        return "MuseScore didn't load Cantai and used its basic sound, which has no words"
+    return ""
 
 
 class Command(BaseCommand):
@@ -81,27 +169,26 @@ class Command(BaseCommand):
             except (FileNotFoundError, RuntimeError) as error:
                 raise CommandError(str(error))
             self.stdout.write(f"Psalm {psalm.number}: rendering with MuseScore…")
-            subprocess.run(
-                [options["mscore"], str(score), "-o", str(wav)], capture_output=True, timeout=RENDER_TIMEOUT
-            )
+            started = time.time()
+            try:
+                subprocess.run(
+                    [options["mscore"], str(score), "-o", str(wav)], capture_output=True, timeout=RENDER_TIMEOUT
+                )
+            except subprocess.TimeoutExpired:
+                failure = cantai_failure(started) or "no log line"
+                raise CommandError(
+                    f"Psalm {psalm.number}: MuseScore was still rendering after {RENDER_TIMEOUT // 60} minutes, "
+                    f"so nothing was saved ({failure})."
+                )
             if not wav.exists() or wav.stat().st_size == 0:
                 raise CommandError(f"MuseScore did not render Psalm {psalm.number}.")
-            subprocess.run(
-                [
-                    "ffmpeg",
-                    "-y",
-                    "-loglevel",
-                    "error",
-                    "-i",
-                    str(wav),
-                    "-codec:a",
-                    "libmp3lame",
-                    "-b:a",
-                    "128k",
-                    str(mp3),
-                ],
-                check=True,
-            )
+            failure = cantai_failure(started)
+            if failure:
+                raise CommandError(
+                    f"Psalm {psalm.number}: Cantai didn't sing it, so nothing was saved ({failure}). "
+                    "Is Muse Hub open and signed in? Try again in a while."
+                )
+            encode_mp3(wav, mp3)
             if psalm.chant_recording:
                 psalm.chant_recording.delete(save=False)
             key = recording_key(psalm, verses, pulse)
