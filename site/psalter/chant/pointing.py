@@ -41,13 +41,22 @@ EARLIER_ACCENT_MAX_RETURN = 2
 
 # Rhythm, in pulses (a pulse is one syllable at the chosen tempo). Good
 # psalmody moves through the reciting note at the pace of careful speech,
-# breathes at the commas, and broadens into the cadence. Lengths stay on a
-# quarter-pulse grid so that the MusicXML export can write them as plain notes.
-RECITING_LENGTH = 0.75  # each syllable on the reciting note
-CADENCE_LENGTH = 1.5  # scales the tone's own lengths from the inflection on
-FINAL_LENGTH = 1.25  # the last note: still broadened, but not dragged
-PAUSE_AFTER_PUNCTUATION = 0.5  # a breath at a comma or stop inside a half-verse
-_PAUSING_PUNCTUATION = set(",;:.!?")
+# longer on the stressed syllables, breathes at the commas, and broadens
+# gradually into the cadence, the end of the verse more than its middle.
+# Lengths stay on an eighth-pulse grid so that the MusicXML export can write
+# them as plain notes.
+RECITING_STRESSED = 0.875  # a stressed syllable on the reciting note
+RECITING_UNSTRESSED = 0.625  # an unstressed one: "of the", "-ow of"
+# The cadence's first and last syllables (before the final note), in each
+# half: the tone's lengths are scaled from the first to the last.
+MEDIATION_BROADENING = (1.125, 1.25)
+ENDING_BROADENING = (1.125, 1.375)
+MEDIATION_FINAL_LENGTH = 1.125  # the note before the asterisk
+FINAL_LENGTH = 1.25  # the verse's last note: still broadened, but not dragged
+PAUSE_AFTER_COMMA = 0.75  # a breath at a comma inside a half-verse
+PAUSE_AFTER_STOP = 1  # a longer one at ; : . ! or ?
+BEFORE_BREATH_LENGTH = 1  # a reciting syllable before either: held, not clipped
+_STOPS = set(";:.!?")
 
 
 @dataclass
@@ -66,6 +75,7 @@ class PointedHalf:
     inflection_start: int  # index of the first syllable of the inflection
     warnings: list = field(default_factory=list)
     book: bool = False  # pointed from a printed psalter's marks
+    mediation: bool = False  # the first half-verse (before the asterisk)
 
     def roles(self):
         return [s.role for s in self.syllables]
@@ -158,7 +168,7 @@ def point(notation, part, *, mediation, first_verse=False):
                 syllables[i].role = INTONATION
                 syllables[i].notes = token.notes
 
-    return PointedHalf(syllables=syllables, inflection_start=inflection_start, warnings=warnings)
+    return PointedHalf(syllables=syllables, inflection_start=inflection_start, warnings=warnings, mediation=mediation)
 
 
 # --- Pointing from a printed psalter --------------------------------------
@@ -345,6 +355,13 @@ def point_marked(notation, part, *, mediation, first_verse=False):
             if s.marked:
                 warnings.append(f"'{s.text}' is marked but is sung on the reciting note.")
 
+    # A half too short for the whole mediation leaves its last note out (as
+    # the book does); its last syllable is still held as long as that note,
+    # so the half doesn't end abruptly ("He shall refresh my soul").
+    dropped_last = any(kind == "drop" and token_indexes[-1] == len(cadence) - 1 for kind, _, token_indexes in steps)
+    if dropped_last and syllables and syllables[-1].notes and not syllables[-1].notes.endswith("."):
+        syllables[-1].notes += "."
+
     if first_verse and part.intonation:
         needed = len(part.intonation)
         if start > needed:
@@ -352,34 +369,86 @@ def point_marked(notation, part, *, mediation, first_verse=False):
                 syllables[i].role = INTONATION
                 syllables[i].notes = token.notes
 
-    return PointedHalf(syllables=syllables, inflection_start=start, warnings=warnings, book=True)
+    return PointedHalf(syllables=syllables, inflection_start=start, warnings=warnings, book=True, mediation=mediation)
+
+
+def _on_grid(length):
+    return round(length * 8) / 8
+
+
+def spoken_stress(pointed):
+    """Whether each syllable is stressed in speech: the ``+`` marks where the
+    pointing has them, otherwise the pronouncing dictionary's stress for its
+    word (a monosyllable is stressed unless it is a little word: "of", "the")."""
+    from psalter.chant import dictionary
+    from psalter.chant.notation import split_punctuation
+
+    if any(s.accent for s in pointed.syllables):
+        # Marked with "+": a word without one is unstressed on purpose.
+        return [s.accent for s in pointed.syllables]
+    words = {}
+    for i, syllable in enumerate(pointed.syllables):
+        words.setdefault(syllable.word_index, []).append(i)
+    stressed = [False] * len(pointed.syllables)
+    for indexes in words.values():
+        syllables = [pointed.syllables[i] for i in indexes]
+        word = "".join(split_punctuation(s.text)[1] or s.text for s in syllables)
+        if not dictionary.plain_letters(word).strip("'"):
+            continue
+        pieces, accented = dictionary.word_stress(word)
+        for place in accented:
+            # The dictionary may divide the word otherwise; keep its stress
+            # on the nearest syllable.
+            place = min(round(place * len(indexes) / max(len(pieces), 1)), len(indexes) - 1)
+            stressed[indexes[place]] = True
+    return stressed
 
 
 def rhythm(pointed):
     """(length scale, pause after) for each syllable of a pointed half.
 
-    The scale multiplies the tone's lengths for the syllable's notes: shorter
-    on the reciting note, broader from the inflection on, and a little less
-    broad on the last note so the end doesn't drag. The pause,
-    in pulses, follows a syllable that ends in a comma or a stop, except at the
-    end of the half-verse, where the asterisk or the end of the verse already
-    gives a rest.
+    The scale multiplies the tone's lengths for the syllable's notes. On the
+    reciting note a stressed syllable is a little longer than an unstressed
+    one, as in speech. From the inflection on, the lengths broaden step by
+    step to the last syllable before the final note, more in the second half
+    than in the first; the final note is a little less broad, so the end
+    doesn't drag. The pause, in pulses, follows a syllable that ends in a
+    comma (a breath) or a stop (a longer one), except at the end of the
+    half-verse, where the asterisk or the end of the verse already gives a
+    rest.
     """
     from psalter.chant.notation import split_punctuation
 
-    timing = []
+    stressed = spoken_stress(pointed)
     last = len(pointed.syllables) - 1
+    start, end = MEDIATION_BROADENING if pointed.mediation else ENDING_BROADENING
+    final_length = MEDIATION_FINAL_LENGTH if pointed.mediation else FINAL_LENGTH
+    cadence = [
+        i
+        for i, s in enumerate(pointed.syllables)
+        if s.role not in (RECITE, INTONATION, FINAL) and not (pointed.book and i == last)
+    ]
+    timing = []
     for i, syllable in enumerate(pointed.syllables):
         if syllable.role == RECITE:
-            scale = RECITING_LENGTH
+            scale = RECITING_STRESSED if stressed[i] else RECITING_UNSTRESSED
         elif syllable.role == INTONATION:
             scale = 1
         elif syllable.role == FINAL or (pointed.book and i == last):
-            scale = FINAL_LENGTH
+            scale = final_length
         else:
-            scale = CADENCE_LENGTH
+            step = cadence.index(i) / (len(cadence) - 1) if len(cadence) > 1 else 1
+            scale = _on_grid(start + (end - start) * step)
         trail = split_punctuation(syllable.text)[2]
-        pause = PAUSE_AFTER_PUNCTUATION if i < last and _PAUSING_PUNCTUATION & set(trail) else 0
+        pause = 0
+        if i < last and _STOPS & set(trail):
+            pause = PAUSE_AFTER_STOP
+        elif i < last and "," in trail:
+            pause = PAUSE_AFTER_COMMA
+        if pause and syllable.role == RECITE:
+            # As in speech, the end of a phrase is drawn out a little
+            # ("with me; your rod"), rather than cut off before the breath.
+            scale = max(scale, BEFORE_BREATH_LENGTH)
         timing.append((scale, pause))
     return timing
 
@@ -396,7 +465,7 @@ def segments(pointed, clef=None):
 
     Each syllable is its own segment, ``{"t": text, "r": role}``, and with a
     ``clef`` also carries what is sung on it: ``"p"`` (MIDI pitches, do at
-    middle C), ``"d"`` (pulses for each, in quarter pulses; see ``rhythm``)
+    middle C), ``"d"`` (pulses for each, in eighth pulses; see ``rhythm``)
     and, after a comma, ``"w"`` (pulses of rest before the next syllable).
     Spaces and punctuation are separate plain segments with no notes, so only
     letters are marked.

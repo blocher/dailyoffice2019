@@ -18,6 +18,7 @@ from psalter.chant.pointing import (
     RETURN,
     describe,
     point,
+    point_verse,
     rhythm,
     segments,
 )
@@ -136,21 +137,61 @@ class PointingTests(SimpleTestCase):
         self.assertEqual([s["t"] for s in sung], ["The", "Lord", "is", "my", "shep", "herd"])
         # Intonation G A, reciting C, the rise to D on the accent, and a long C.
         self.assertEqual([s["p"] for s in sung], [[55], [57], [60], [60], [62], [60]])
-        # The long final note, broadened a little less than the cadence.
-        self.assertEqual(sung[-1]["d"], [2.5])
-        self.assertEqual(sung[-2]["d"], [1.5])
-        self.assertEqual(sung[2]["d"], [0.75])  # quicker on the reciting note
+        # The cadence broadens to the last syllable; the long final note
+        # before the asterisk a little less.
+        self.assertEqual(sung[-1]["d"], [2.25])
+        self.assertEqual(sung[-2]["d"], [1.25])
+        self.assertEqual(sung[2]["d"], [0.625])  # quicker on the reciting note
 
     def test_rhythm_breathes_at_commas_but_not_at_the_end(self):
         tone = TONES["8.G"]
         pointed = point("Yea, though I +walk through the +val/ley,", tone.mediation, mediation=True)
         timing = rhythm(pointed)
-        self.assertEqual(timing[0], (0.75, 0.5))  # "Yea," on the reciting note, then a breath
-        self.assertEqual(timing[1], (0.75, 0))
+        self.assertEqual(timing[0], (1, 0.75))  # "Yea," held before the breath, not clipped
+        self.assertEqual(timing[1], (0.625, 0))
+        self.assertEqual(timing[3], (0.875, 0))  # "+walk": stressed, so a little longer
         self.assertEqual(timing[-1][1], 0)  # the asterisk already rests
         sung = [s for s in segments(pointed, tone.clef) if "p" in s]
-        self.assertEqual(sung[0]["w"], 0.5)
+        self.assertEqual(sung[0]["w"], 0.75)
         self.assertNotIn("w", sung[1])
+
+    def test_a_short_mediation_still_holds_its_last_syllable(self):
+        from psalter.chant.tones import gabc_pitches
+
+        tone = get_tone("B4.4")
+        final = sum(p for _, p in gabc_pitches(tone.mediation.cadence[-1].notes, tone.clef))
+        # Too short for the whole mediation: the book leaves the last note out.
+        short, _ = point_verse("He shall re/^fresh my ^soul", "and ^so ^on.", tone)
+        self.assertEqual(sum(p for _, p in gabc_pitches(short.syllables[-1].notes, tone.clef)), final)
+        self.assertEqual(
+            rhythm(short)[-1], rhythm(point_verse("in your ^ho/ly ^pla/ces;", "and ^so ^on.", tone)[0])[-1]
+        )
+
+    def test_book_pointing_recites_with_the_dictionary_stress(self):
+        from psalter.chant.pointing import spoken_stress
+
+        tone = get_tone("B4.4")
+        first, _ = point_verse("the val/ley of the shad/ow of ^death, I ^will,", "and ^so ^on.", tone)
+        stress = dict(zip([s.text for s in first.syllables], spoken_stress(first)))
+        self.assertTrue(stress["val"])
+        self.assertFalse(stress["ley"])
+        self.assertFalse(stress["of"])
+        self.assertTrue(stress["shad"])
+
+    def test_cadence_broadens_gradually_and_more_at_the_end(self):
+        from psalter.chant.pointing import ENDING_BROADENING, MEDIATION_BROADENING
+
+        tone = TONES["8.G"]
+        first, second = point_verse("He shall +feed me in +green +pas/tures", GOOD[2][1], tone)
+        for half, (start, end) in ((first, MEDIATION_BROADENING), (second, ENDING_BROADENING)):
+            scales = [
+                scale for s, (scale, _) in zip(half.syllables, rhythm(half)) if s.role not in ("recite", "final")
+            ]
+            self.assertEqual(scales[-1], end)
+            if len(scales) > 1:
+                self.assertEqual(scales[0], start)
+            self.assertEqual(scales, sorted(scales))
+        self.assertLess(MEDIATION_BROADENING[1], ENDING_BROADENING[1])
 
     def test_describe(self):
         pointed = point("the +Lord with +ho/ly +wor/ship.", TONES["8.G"].ending, mediation=False)
@@ -470,14 +511,19 @@ class ExportTests(TestCase):
             document = minidom.parse(str(xml))
             lyrics = [t.firstChild.data for t in document.getElementsByTagName("text")]
             self.assertEqual(lyrics[:6], ["The", "Lord", "is", "my", "shep", "herd"])
-            # Reciting syllables are dotted sixteenths (three of eight
-            # divisions to the quarter); the accent is a dotted eighth.
-            durations = [
-                int(n.getElementsByTagName("duration")[0].firstChild.data)
-                for n in document.getElementsByTagName("note")
-            ]
-            self.assertEqual(durations[2], 3)
-            self.assertEqual(durations[4], 6)
+            # An unstressed reciting syllable is five of sixteen divisions to
+            # the quarter; the accent, at the end of the cadence, ten.
+            # (Lengths with no single note value are tied notes; add them up.)
+            durations = []
+            for n in document.getElementsByTagName("note"):
+                units = int(n.getElementsByTagName("duration")[0].firstChild.data)
+                tied = any(tie.getAttribute("type") == "stop" for tie in n.getElementsByTagName("tie"))
+                if tied:
+                    durations[-1] += units
+                else:
+                    durations.append(units)
+            self.assertEqual(durations[2], 5)
+            self.assertEqual(durations[4], 10)
 
     def test_musicxml_breathes_at_a_comma_inside_a_half_verse(self):
         from xml.dom import minidom
@@ -498,6 +544,42 @@ class ExportTests(TestCase):
             for n in minidom.parseString(xml).getElementsByTagName("note")
         ]
         self.assertEqual(kinds, ["note", "rest", "note"])
+
+    def test_musicxml_swells_to_the_cadence_and_falls_away(self):
+        import re
+
+        from psalter.chant.export import SungNote, to_musicxml
+        from psalter.chant.tones import get_tone
+
+        def sung(onset, cadence, half=0):
+            return SungNote(
+                onset=onset,
+                pulses=1,
+                pitch=57,
+                lyric="la",
+                syllable="la",
+                syllabic="single",
+                verse=1,
+                half=half,
+                cadence=cadence,
+            )
+
+        def shape(notes):
+            xml = to_musicxml(self.psalm, notes, tone=get_tone("B8.1"), pulse_seconds=0.38)
+            events = re.findall(r'<wedge type="(\w+)"/>|<(note)>|<dynamics><(\w+)/>', xml)
+            return [wedge or note or dynamic for wedge, note, dynamic in events]
+
+        # A recitation of four pulses swells; one of two (the second half)
+        # only falls away, and each half starts again from mp.
+        long = [sung(onset, False) for onset in range(4)] + [sung(4, True), sung(5, True)]
+        short = [sung(7, False, 1), sung(8, False, 1), sung(9, True, 1), sung(10, True, 1)]
+        self.assertEqual(
+            shape(long + short),
+            ["mp", "crescendo"]
+            + ["note"] * 4
+            + ["stop", "diminuendo", "note", "note", "stop"]
+            + ["note", "mp", "note", "note", "diminuendo", "note", "note", "stop"],
+        )
 
     def test_musescore_score_gets_the_cantai_voice(self):
         import tempfile
@@ -524,9 +606,10 @@ class ExportTests(TestCase):
     def test_lengths_without_a_note_value_are_tied(self):
         from psalter.chant.export import _split
 
-        self.assertEqual(_split(0.75), [3])
-        self.assertEqual(_split(1.25), [4, 1])
-        self.assertEqual(_split(3), [12])
+        self.assertEqual(_split(0.75), [6])
+        self.assertEqual(_split(0.625), [4, 1])
+        self.assertEqual(_split(1.25), [8, 2])
+        self.assertEqual(_split(3), [24])
 
     def test_command_needs_a_pointed_psalm(self):
         Psalm.objects.create(number=24)

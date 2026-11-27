@@ -28,7 +28,7 @@ from xml.sax.saxutils import escape
 
 from psalter.chant.notation import is_valid
 from psalter.chant import pointing as pointing_rules
-from psalter.chant.pointing import point_verse, rhythm
+from psalter.chant.pointing import INTONATION, RECITE, point_verse, rhythm
 from psalter.chant.service import verse_texts
 from psalter.chant.tones import gabc_pitches, get_tone
 
@@ -44,7 +44,7 @@ _FOLD = str.maketrans("ᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘǫʀꜱᴛᴜ�
 
 @dataclass
 class SungNote:
-    onset: float  # in pulses from the start, on a quarter-pulse grid
+    onset: float  # in pulses from the start, on an eighth-pulse grid
     pulses: float
     pitch: int  # MIDI
     lyric: str  # word, "+" (next syllable of the word) or "-" (held)
@@ -52,6 +52,7 @@ class SungNote:
     syllabic: str  # MusicXML: single, begin, middle, end; "" for held notes
     verse: int
     half: int
+    cadence: bool = False  # from the inflection on, not the reciting note
 
 
 def _words(pointed):
@@ -122,6 +123,7 @@ def psalm_notes(psalm, *, tone=None, tenor=DEFAULT_TENOR, verse_numbers=None):
                             syllabic=syllabic if i == 0 else "",
                             verse=verse.number,
                             half=half_index,
+                            cadence=syllable.role not in (RECITE, INTONATION),
                         )
                     )
                     time += pulses
@@ -207,20 +209,22 @@ _STEPS = [
     ("B", -1),
     ("B", 0),
 ]
-# Durations are written in quarter pulses (a pulse is an eighth note), so a
-# quarter note is eight divisions. Lengths with no single note value are tied.
-_UNITS_PER_PULSE = 4
+# Durations are written in eighth pulses (a pulse is an eighth note), so a
+# quarter note is sixteen divisions. Lengths with no single note value are tied.
+_UNITS_PER_PULSE = 8
 _TYPES = {
-    32: ("whole", 0),
-    24: ("half", 1),
-    16: ("half", 0),
-    12: ("quarter", 1),
-    8: ("quarter", 0),
-    6: ("eighth", 1),
-    4: ("eighth", 0),
-    3: ("16th", 1),
-    2: ("16th", 0),
-    1: ("32nd", 0),
+    64: ("whole", 0),
+    48: ("half", 1),
+    32: ("half", 0),
+    24: ("quarter", 1),
+    16: ("quarter", 0),
+    12: ("eighth", 1),
+    8: ("eighth", 0),
+    6: ("16th", 1),
+    4: ("16th", 0),
+    3: ("32nd", 1),
+    2: ("32nd", 0),
+    1: ("64th", 0),
 }
 
 
@@ -247,9 +251,28 @@ def _split(pulses):
     return parts
 
 
+# How a choir shapes each half-verse: from a quiet start (BASE_DYNAMIC, set
+# again at each half so the level never drifts) it grows through the
+# recitation to the cadence and falls away to the end, as a crescendo and a
+# diminuendo, each a step of MuseScore's dynamics. A recitation shorter
+# than SWELL_MIN_PULSES doesn't swell: a whole step in a few syllables
+# lands hard on the cadence ("He shall re-FRESH").
+BASE_DYNAMIC = "mp"
+SWELL_MIN_PULSES = 4
+
+
+def _dynamic(mark):
+    return f'<direction placement="below"><direction-type><dynamics><{mark}/></dynamics></direction-type></direction>'
+
+
+def _wedge(kind):
+    return f'<direction placement="below"><direction-type><wedge type="{kind}"/></direction-type></direction>'
+
+
 def to_musicxml(psalm, notes, *, tone, pulse_seconds):
     """One measure per half-verse, no time signature (chant is unmeasured);
-    a pulse is an eighth note."""
+    a pulse is an eighth note. Each half-verse swells to its cadence and
+    falls away to its end (see ``BASE_DYNAMIC``)."""
     bpm = round(60 / (pulse_seconds * 2), 2)
     measures = []
     current_key = None
@@ -281,11 +304,27 @@ def to_musicxml(psalm, notes, *, tone, pulse_seconds):
                 f'<direction placement="above"><direction-type><words>Psalm {psalm.number}, {escape(tone.label)}</words>'
                 f'</direction-type><sound tempo="{bpm}"/></direction>'
             )
+        sung = [item for kind, item in measure if kind == "note"]
+        cadence_onset = next((n.onset for n in sung if n.cadence), sung[-1].onset + sung[-1].pulses)
+        swell = cadence_onset - sung[0].onset >= SWELL_MIN_PULSES
+        wedge = None
+        dynamic_set = False
         for kind, item in measure:
             if kind == "rest":
                 for units in _split(item):
                     body.append(f"<note><rest/><duration>{units}</duration>{_type_xml(units)}</note>")
                 continue
+            if not dynamic_set:
+                body.append(_dynamic(BASE_DYNAMIC))
+                dynamic_set = True
+            if wedge is None and not item.cadence and swell:
+                body.append(_wedge("crescendo"))
+                wedge = "crescendo"
+            elif wedge != "diminuendo" and item.cadence:
+                if wedge:
+                    body.append(_wedge("stop"))
+                body.append(_wedge("diminuendo"))
+                wedge = "diminuendo"
             lyric = ""
             if item.syllable:
                 lyric = (
@@ -306,6 +345,8 @@ def to_musicxml(psalm, notes, *, tone, pulse_seconds):
                     f"<note>{_pitch_xml(item.pitch)}<duration>{units}</duration>{tie}{_type_xml(units)}"
                     f"{notations}{lyric if i == 0 else ''}</note>"
                 )
+        if wedge:
+            body.append(_wedge("stop"))
         barline = (
             '<barline location="right"><bar-style>light-heavy</bar-style></barline>' if index == len(measures) else ""
         )
@@ -452,10 +493,14 @@ def recording_key(psalm, verses, pulse_seconds):
         if pointing is not None:
             pointed.append([verse.number, pointing.first_half_stress, pointing.second_half_stress, pointing.tone])
     rules = [
-        pointing_rules.RECITING_LENGTH,
-        pointing_rules.CADENCE_LENGTH,
+        pointing_rules.RECITING_STRESSED,
+        pointing_rules.RECITING_UNSTRESSED,
+        pointing_rules.MEDIATION_BROADENING,
+        pointing_rules.ENDING_BROADENING,
+        pointing_rules.MEDIATION_FINAL_LENGTH,
         pointing_rules.FINAL_LENGTH,
-        pointing_rules.PAUSE_AFTER_PUNCTUATION,
+        pointing_rules.PAUSE_AFTER_COMMA,
+        pointing_rules.PAUSE_AFTER_STOP,
         REST_AT_ASTERISK,
         REST_BETWEEN_VERSES,
     ]
