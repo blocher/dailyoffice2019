@@ -38,6 +38,7 @@ from psalter.management.commands.point_psalms import parse_selection
 from psalter.models import Psalm
 
 RENDER_TIMEOUT = 15 * 60
+RENDER_SECONDS_PER_VERSE = 15
 MUSESCORE_LOGS = Path.home() / "Library/Application Support/MuseScore/MuseScore4/logs"
 # Cantai sings on Muse's servers. When it can't reach them MuseScore still
 # writes the audio, without the choir; these lines in its log say so.
@@ -170,14 +171,14 @@ class Command(BaseCommand):
                 raise CommandError(str(error))
             self.stdout.write(f"Psalm {psalm.number}: rendering with MuseScore…")
             started = time.time()
+            # Cantai takes a few seconds a verse; Psalm 119 needs longer.
+            timeout = max(RENDER_TIMEOUT, len(verses) * RENDER_SECONDS_PER_VERSE)
             try:
-                subprocess.run(
-                    [options["mscore"], str(score), "-o", str(wav)], capture_output=True, timeout=RENDER_TIMEOUT
-                )
+                subprocess.run([options["mscore"], str(score), "-o", str(wav)], capture_output=True, timeout=timeout)
             except subprocess.TimeoutExpired:
                 failure = cantai_failure(started) or "no log line"
                 raise CommandError(
-                    f"Psalm {psalm.number}: MuseScore was still rendering after {RENDER_TIMEOUT // 60} minutes, "
+                    f"Psalm {psalm.number}: MuseScore was still rendering after {timeout // 60} minutes, "
                     f"so nothing was saved ({failure})."
                 )
             if not wav.exists() or wav.stat().st_size == 0:
