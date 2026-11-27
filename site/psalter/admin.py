@@ -117,7 +117,16 @@ class VersesWithLord(SimpleListFilter):
 
 class PsalmVerseAdmin(admin.ModelAdmin):
     list_display = ("psalm_number", "number", "first_half", "second_half", "first_half_tle", "second_half_tle")
-    fields = ("psalm_number", "number", "first_half", "second_half", "first_half_tle", "second_half_tle", "psalm")
+    fields = (
+        "psalm_number",
+        "number",
+        "section_heading",
+        "first_half",
+        "second_half",
+        "first_half_tle",
+        "second_half_tle",
+        "psalm",
+    )
     readonly_fields = ("psalm_number",)
     list_filter = (VersesWithLord,)
 

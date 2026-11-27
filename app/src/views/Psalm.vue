@@ -168,6 +168,12 @@
       <div id="main" class="book psalm-text">
         <div v-if="!traditional">
           <span v-for="verse in psalm.verses" :key="verse.number">
+            <h4
+              v-if="verse.section_heading && verse.first_half"
+              class="psalm-section"
+            >
+              {{ verse.section_heading }}
+            </h4>
             <span
               v-if="verse.first_half"
               :ref="(el) => setVerseRef(verse.number, el)"
@@ -204,6 +210,12 @@
         </div>
         <div v-if="traditional">
           <span v-for="verse in psalm.verses" :key="verse.number">
+            <h4
+              v-if="verse.section_heading && verse.first_half_tle"
+              class="psalm-section"
+            >
+              {{ verse.section_heading }}
+            </h4>
             <span v-if="verse.first_half_tle">
               <p class="hangingIndent extra-space-before">
                 <sup>{{ verse.number }}</sup> {{ verse.first_half_tle }} *

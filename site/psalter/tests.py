@@ -842,3 +842,109 @@ class PointingProposalTests(TestCase):
         self.assertEqual((pointing.status, pointing.source), ("approved", "editor"))
         proposal.refresh_from_db()
         self.assertEqual(proposal.status, "accepted")
+
+
+class PsalmSectionTests(TestCase):
+    """Psalm 119's Hebrew letters head its sections, apart from the verse text."""
+
+    LETTERED = {8: "Beth", 16: "Gimel"}
+
+    def setUp(self):
+        self.psalm = Psalm.objects.create(number=119, latin_title="Beati immaculati")
+        for number in range(1, 18):
+            letter = self.LETTERED.get(number)
+            second = f" second half {number}." + (f" {letter}" if letter else "")
+            PsalmVerse.objects.create(
+                psalm=self.psalm,
+                number=number,
+                first_half=f" first half {number}",
+                second_half=second,
+                first_half_tle=f" thy first half {number}",
+                second_half_tle=second.replace("second", "thy second"),
+            )
+        verse = PsalmVerse.objects.get(psalm=self.psalm, number=8)
+        PsalmVersePointing.objects.create(
+            verse=verse,
+            first_half_stress="first ^half ~8",
+            second_half_stress="sec/ond ^half ~8. Be/th",
+            status=PsalmVersePointing.CHECK,
+            source=PsalmVersePointing.SOURCE_BOOK,
+            review_notes="The book has “nothing” where the text has “Beth”.",
+        )
+
+    def migrate(self):
+        from importlib import import_module
+
+        from django.apps import apps
+
+        import_module("psalter.migrations.0011_psalmverse_section_heading").move_letters_to_headings(apps, None)
+
+    def verse(self, number):
+        return PsalmVerse.objects.select_related("psalm", "pointing").get(psalm=self.psalm, number=number)
+
+    def test_migration_moves_letters_to_section_headings(self):
+        self.migrate()
+        self.migrate()  # and changes nothing the second time
+        eight = self.verse(8)
+        self.assertEqual(eight.second_half, " second half 8.")
+        self.assertEqual(eight.second_half_tle, " thy second half 8.")
+        self.assertEqual(self.verse(16).second_half, " second half 16.")
+        headings = dict(
+            PsalmVerse.objects.filter(psalm=self.psalm)
+            .exclude(section_heading="")
+            .values_list("number", "section_heading")
+        )
+        self.assertEqual(headings, {1: "Aleph", 9: "Beth", 17: "Gimel"})
+        # The pointing drops the letter too, and the verse is the book's again.
+        self.assertEqual(eight.pointing.second_half_stress, "sec/ond ^half ~8.")
+        self.assertEqual(eight.pointing.status, PsalmVersePointing.BOOK)
+        self.assertEqual(eight.pointing.review_notes, "")
+        self.assertIsNotNone(chant_for_verse(eight))
+
+    def test_office_lines_head_sections_and_say_letters_as_before(self):
+        from office.api.views.index import spoken_psalm_sections
+        from psalter.utils import get_psalms
+
+        self.migrate()
+        lines = get_psalms("119:1-8", api=True)
+        sections = [line["content"] for line in lines if line.get("psalm_section")]
+        self.assertEqual(sections, ["Aleph"])
+        self.assertEqual(lines[2]["line_type"], "subheading")  # after the psalm's heading and title
+        # The range ends before Beth; its audio still says the letter after verse 8.
+        self.assertEqual(lines[-1]["content"], " second half 8.")
+        self.assertEqual(lines[-1]["audio_suffix"], " Beth")
+
+        lines = get_psalms("119:8-9", api=True, language_style="traditional")
+        contents = [line["content"] for line in lines]
+        self.assertLess(contents.index(" thy second half 8."), contents.index("Beth"))
+        self.assertLess(contents.index("Beth"), contents.index(" thy first half 9 *"))
+        spoken = spoken_psalm_sections([{"name": "Psalms", "lines": lines}])[0]["lines"]
+        self.assertNotIn("Beth", [line["content"] for line in spoken])
+        self.assertIn(" thy second half 8. Beth", [line["content"] for line in spoken])
+
+        html = get_psalms("119:8-9")
+        self.assertLess(html.index("second half 8."), html.index("<h4 class='psalm-section'>Beth</h4>"))
+
+    def test_other_languages_have_no_section_headings(self):
+        self.migrate()
+        PsalmVerse.objects.filter(psalm=self.psalm).update(first_half_spanish="primera", second_half_spanish="segunda")
+        lines = psalm_api_lines(
+            "119", list(PsalmVerse.objects.filter(psalm=self.psalm).order_by("number")), display_language="spanish"
+        )
+        self.assertFalse(any(line.get("psalm_section") or line.get("audio_suffix") for line in lines))
+        self.assertTrue(lines)
+
+    def test_psalm_api_gives_section_headings(self):
+        self.migrate()
+        verses = self.client.get("/api/v1/psalms/119/").json()["verses"]
+        self.assertEqual(verses[8]["section_heading"], "Beth")
+        self.assertEqual(verses[7]["section_heading"], "")
+        self.assertEqual(verses[7]["second_half"], " second half 8.")
+
+    def test_split_trailing_letter(self):
+        from psalter.sections import section_letter, split_trailing_letter
+
+        self.assertEqual(split_trailing_letter(" and walk in the law. Beth"), (" and walk in the law.", "Beth"))
+        self.assertEqual(split_trailing_letter("Behold, He"), ("Behold,", "He"))
+        self.assertEqual(split_trailing_letter("for ever."), ("for ever.", None))
+        self.assertEqual([section_letter(n) for n in (1, 8, 9, 169, 177)], ["Aleph", None, "Beth", "Taw", None])

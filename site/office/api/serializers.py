@@ -121,7 +121,16 @@ class PsalmVerseSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = PsalmVerse
-        fields = ["id", "number", "first_half", "second_half", "first_half_tle", "second_half_tle", "chant"]
+        fields = [
+            "id",
+            "number",
+            "section_heading",
+            "first_half",
+            "second_half",
+            "first_half_tle",
+            "second_half_tle",
+            "chant",
+        ]
 
 
 class PsalmTopicSerializer(serializers.HyperlinkedModelSerializer):

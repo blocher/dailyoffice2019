@@ -82,6 +82,16 @@
   padding: 0.5rem 0;
 }
 
+/* The letters heading the sections of Psalm 119 (Aleph, Beth, ...) */
+:is(#main, .book) h4.psalm-section {
+  margin: 1.4em 0 0;
+  padding: 0;
+  font-style: normal;
+  font-size: 1em;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.12em;
+}
+
 /* Citations */
 :is(#main, .book) h5 {
   margin: 0.3em 0 0.6em;

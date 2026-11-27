@@ -41,6 +41,9 @@ class PsalmVerse(UUIDModel):
     second_half_spanish = models.CharField(max_length=1000, blank=True, null=True)
     first_half_chinese = models.CharField(max_length=1000, blank=True, null=True)
     second_half_chinese = models.CharField(max_length=1000, blank=True, null=True)
+    # Printed above this verse, apart from its text: the Hebrew letter that
+    # heads each section of Psalm 119 (see psalter.sections).
+    section_heading = models.CharField(max_length=40, blank=True, default="")
 
     def __str__(self):
         return f"Psalm {self.psalm.number}:{self.number}"
