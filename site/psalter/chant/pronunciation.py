@@ -35,6 +35,8 @@ SPELLINGS = {
     "hearkens": ["har", "kens"],
     "agéd": ["ay", "jed"],
     "zeëb": ["ze", "eb"],
+    "covetous": ["cuv", "uh", "tus"],
+    "zoan": ["zoh", "an"],
 }
 
 _WEAPON = ["beau"]
