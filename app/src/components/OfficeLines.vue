@@ -1,8 +1,10 @@
 <template>
   <div v-for="module in modules" :key="module.name">
     <div
-      v-for="line in module.lines.filter((l) => l.line_type !== 'speaker')"
-      :key="line.content"
+      v-for="(line, index) in module.lines.filter(
+        (l) => l.line_type !== 'speaker'
+      )"
+      :key="`${index}-${line.content}`"
     >
       <OfficeHeading v-if="line.line_type === 'heading'" :line="line" />
       <OfficeSubheading v-if="line.line_type === 'subheading'" :line="line" />

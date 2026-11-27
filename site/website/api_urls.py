@@ -24,6 +24,7 @@ from office.api.views.index import (
     CommemorationsView,
 )
 from office.api.views.resources import (
+    CanticlesView,
     CollectsViewSet,
     PsalmsViewSet,
     AboutViewSet,
@@ -85,6 +86,7 @@ urlpatterns = podcast_urlpatterns + [
     ),
     path(r"api/v1/commemorations/<uuid:uuid>", CommemorationsView.as_view(), name="commemoration"),
     path(r"api/v1/litany", GreatLitanyView.as_view(), name="litany"),
+    path(r"api/v1/canticles", CanticlesView.as_view(), name="canticles"),
     path(r"api/v1/calendar/<int:year>-<int:month>", MonthView.as_view(), name="month_view"),
     path(r"api/v1/calendar/<int:year>", YearView.as_view(), name="month_view"),
     path(r"api/v1/audio_track/<path:track>", AudioTrackView.as_view(), name="audio_track"),

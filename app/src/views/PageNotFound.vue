@@ -42,6 +42,7 @@ const more = [
   { label: 'Family Prayer', icon: 'home', to: '/family' },
   { label: "Today's Readings", icon: 'book-text', to: '/readings' },
   { label: 'The Psalter', icon: 'library', to: '/psalms' },
+  { label: 'Canticles', icon: 'music', to: '/canticles' },
   { label: 'Collects', icon: 'bookmark', to: '/collects' },
   { label: 'Settings', icon: 'settings', to: '/settings' },
 ];

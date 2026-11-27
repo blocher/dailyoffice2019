@@ -167,6 +167,7 @@ const groups = computed(() => {
       items: [
         { label: 'Calendar', icon: 'calendar', to: '/calendar' },
         { label: 'The Psalter', icon: 'library', to: '/psalms' },
+        { label: 'Canticles', icon: 'music', to: '/canticles' },
         { label: 'Collects', icon: 'bookmark', to: '/collects' },
       ],
     },

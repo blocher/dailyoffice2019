@@ -1,0 +1,2339 @@
+{
+ "canticles": [
+  {
+   "slug": "venite",
+   "latin_name": "Venite",
+   "english_name": "O Come",
+   "citation": "Psalm 95:1-7, 8-11",
+   "category": "invitatory",
+   "suggested": [
+    "Most days"
+   ],
+   "gloria": false,
+   "notes": [
+    "In Lent the whole psalm is said; at other times the last verses may be omitted."
+   ],
+   "texts": {
+    "contemporary": [
+     {
+      "content": "O come, let us sing unto the Lord; *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "let us heartily rejoice in the strength of our salvation.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "Let us come before his presence with thanksgiving *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ],
+    "traditional": [
+     {
+      "content": "O come, let us sing unto the Lord; *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "let us heartily rejoice in the strength of our salvation.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "Let us come before his presence with thanksgiving; *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ]
+   },
+   "offices": [
+    "morning"
+   ],
+   "rotations": [],
+   "slots": [
+    "invitatory"
+   ]
+  },
+  {
+   "slug": "jubilate",
+   "latin_name": "Jubilate",
+   "english_name": "Be Joyful",
+   "citation": "Psalm 100",
+   "category": "invitatory",
+   "suggested": [
+    "Sundays and feasts",
+    "When Psalm 95 is appointed"
+   ],
+   "gloria": false,
+   "notes": [],
+   "texts": {
+    "contemporary": [
+     {
+      "content": "O be joyful in the Lord, all you lands; *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "serve the Lord with gladness,",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "and come before his presence with a song.",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ],
+    "traditional": [
+     {
+      "content": "O be joyful in the Lord, all ye lands; *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "serve the Lord with gladness,",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "and come before his presence with a song.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     }
+    ]
+   },
+   "offices": [
+    "morning"
+   ],
+   "rotations": [
+    "2011"
+   ],
+   "slots": [
+    "invitatory",
+    "mp2"
+   ]
+  },
+  {
+   "slug": "pascha-nostrum",
+   "latin_name": "Pascha nostrum",
+   "english_name": "Christ Our Passover",
+   "citation": "1 Corinthians 5:7-8; Romans 6:9-11; 1 Corinthians 15:20-22",
+   "category": "invitatory",
+   "suggested": [
+    "Easter Week",
+    "Eastertide"
+   ],
+   "gloria": false,
+   "notes": [],
+   "texts": {
+    "contemporary": [
+     {
+      "content": "Alleluia. Christ our Passover has been sacrificed for us; *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "therefore let us keep the feast,",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "Not with the old leaven, the leaven of malice and evil, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ],
+    "traditional": [
+     {
+      "content": "Alleluia. Christ our Passover is sacrificed for us; *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "therefore let us keep the feast;",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "Not with the old leaven,",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ]
+   },
+   "offices": [
+    "morning"
+   ],
+   "rotations": [],
+   "slots": [
+    "invitatory"
+   ]
+  },
+  {
+   "slug": "phos-hilaron",
+   "latin_name": "Phos hilaron",
+   "english_name": "O Gladsome Light",
+   "citation": "",
+   "category": "evening_hymn",
+   "suggested": [
+    "Every evening"
+   ],
+   "gloria": false,
+   "notes": [],
+   "texts": {
+    "contemporary": [
+     {
+      "content": "O gladsome light,",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "pure brightness of the everliving Father in heaven, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "O Jesus Christ, holy and blessed!",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     }
+    ],
+    "traditional": [
+     {
+      "content": "O gladsome light,",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "pure brightness of the everliving Father in heaven, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "O Jesus Christ, holy and blessed!",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     }
+    ]
+   },
+   "offices": [
+    "evening"
+   ],
+   "rotations": [],
+   "slots": [
+    "evening_hymn"
+   ]
+  },
+  {
+   "slug": "te-deum",
+   "latin_name": "Te Deum laudamus",
+   "english_name": "We Praise You, O God",
+   "citation": "",
+   "category": "morning",
+   "suggested": [
+    "Outside Lent"
+   ],
+   "gloria": false,
+   "notes": [],
+   "texts": {
+    "contemporary": [
+     {
+      "content": "We praise you, O God; we acclaim you as Lord; *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "all creation worships you, the Father everlasting.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "To you all angels, all the powers of heaven, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ],
+    "traditional": [
+     {
+      "content": "We praise thee, O God; we acknowledge thee to be the Lord. *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "All the earth doth worship thee, the Father everlasting.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "To thee all angels cry aloud, the heavens and all the powers therein. *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ]
+   },
+   "offices": [
+    "morning"
+   ],
+   "rotations": [
+    "default",
+    "2011",
+    "1979"
+   ],
+   "slots": [
+    "mp1",
+    "mp2"
+   ]
+  },
+  {
+   "slug": "benedictus-es-domine",
+   "latin_name": "Benedictus es, Domine",
+   "english_name": "A Song of Praise",
+   "citation": "Song of the Three Young Men, 29-34",
+   "category": "morning",
+   "suggested": [
+    "Lent"
+   ],
+   "gloria": false,
+   "notes": [],
+   "texts": {
+    "contemporary": [
+     {
+      "content": "Glory to you, Lord God of our fathers; *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "you are worthy of praise; glory to you.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "Glory to you for the radiance of your holy Name; *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ],
+    "traditional": [
+     {
+      "content": "Blessed art thou, O Lord God of our fathers; *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "praised and exalted above all for ever.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "Blessed art thou for the name of thy Majesty; *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ]
+   },
+   "offices": [
+    "morning",
+    "evening"
+   ],
+   "rotations": [
+    "default",
+    "2011",
+    "1979"
+   ],
+   "slots": [
+    "ep1",
+    "mp1"
+   ]
+  },
+  {
+   "slug": "benedictus",
+   "latin_name": "Benedictus",
+   "english_name": "The Song of Zechariah",
+   "citation": "Luke 1:68-79",
+   "category": "morning",
+   "suggested": [
+    "Anytime"
+   ],
+   "gloria": true,
+   "notes": [],
+   "texts": {
+    "contemporary": [
+     {
+      "content": "Blessed be the Lord, the God of Israel; *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "he has come to his people and set them free.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "He has raised up for us a mighty savior, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ],
+    "traditional": [
+     {
+      "content": "Blessed be the Lord God of Israel, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "for he hath visited and redeemed his people;",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "And hath raised up a mighty salvation for us *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ]
+   },
+   "offices": [
+    "morning"
+   ],
+   "rotations": [
+    "default",
+    "2011",
+    "1979"
+   ],
+   "slots": [
+    "mp1",
+    "mp2"
+   ]
+  },
+  {
+   "slug": "magnificat",
+   "latin_name": "Magnificat",
+   "english_name": "The Song of Mary",
+   "citation": "Luke 1:46-55",
+   "category": "evening",
+   "suggested": [
+    "Anytime"
+   ],
+   "gloria": true,
+   "notes": [],
+   "texts": {
+    "contemporary": [
+     {
+      "content": "My soul magnifies the Lord, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "and my spirit rejoices in God my Savior;",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "For he has regarded *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ],
+    "traditional": [
+     {
+      "content": "My soul doth magnify the Lord, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "and my spirit hath rejoiced in God my Savior.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "For he hath regarded *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ]
+   },
+   "offices": [
+    "evening"
+   ],
+   "rotations": [
+    "default",
+    "2011",
+    "1979"
+   ],
+   "slots": [
+    "ep1",
+    "ep2"
+   ]
+  },
+  {
+   "slug": "nunc-dimittis",
+   "latin_name": "Nunc dimittis",
+   "english_name": "The Song of Simeon",
+   "citation": "Luke 2:29-32",
+   "category": "evening",
+   "suggested": [
+    "Anytime"
+   ],
+   "gloria": true,
+   "notes": [],
+   "texts": {
+    "contemporary": [
+     {
+      "content": "Lord, now let your servant depart in peace, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "according to your word.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "For my eyes have seen your salvation, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ],
+    "traditional": [
+     {
+      "content": "Lord, now lettest thou thy servant depart in peace, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "according to thy word;",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "For mine eyes have seen thy salvation, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ]
+   },
+   "offices": [
+    "evening",
+    "compline"
+   ],
+   "rotations": [
+    "default",
+    "2011",
+    "1979"
+   ],
+   "slots": [
+    "compline",
+    "ep2"
+   ]
+  },
+  {
+   "slug": "magna-et-mirabilia",
+   "latin_name": "Magna et mirabilia",
+   "english_name": "The Song of the Redeemed",
+   "citation": "Revelation 15:3-4",
+   "category": "supplemental",
+   "suggested": [
+    "Advent",
+    "Eastertide"
+   ],
+   "gloria": true,
+   "notes": [],
+   "texts": {
+    "contemporary": [
+     {
+      "content": "O ruler of the universe, Lord God,",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "great deeds are they that you have done, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "surpassing human understanding.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     }
+    ],
+    "traditional": [
+     {
+      "content": "O ruler of the universe, Lord God, great deeds are they that thou hast done, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "surpassing human understanding.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "Thy ways are ways of righteousness and truth, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ]
+   },
+   "offices": [
+    "morning"
+   ],
+   "rotations": [
+    "2011",
+    "1979"
+   ],
+   "slots": [
+    "mp1",
+    "mp2"
+   ]
+  },
+  {
+   "slug": "surge-illuminare",
+   "latin_name": "Surge, illuminare",
+   "english_name": "Arise, shine, for your light has come",
+   "citation": "Isaiah 60:1-3, 11, 14, 18-19",
+   "category": "supplemental",
+   "suggested": [
+    "Epiphany"
+   ],
+   "gloria": true,
+   "notes": [],
+   "texts": {
+    "contemporary": [
+     {
+      "content": "Arise, shine, for your light has come, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "and the glory of the LORD has dawned upon you.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "For behold, darkness covers the land; *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ],
+    "traditional": [
+     {
+      "content": "Arise, shine, for thy light has come, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "and the glory of the Lord has dawned upon thee.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "For behold, darkness covereth the land; *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ]
+   },
+   "offices": [
+    "morning",
+    "evening"
+   ],
+   "rotations": [
+    "2011",
+    "1979"
+   ],
+   "slots": [
+    "ep1",
+    "mp1"
+   ]
+  },
+  {
+   "slug": "kyrie-pantokrator",
+   "latin_name": "Kyrie Pantokrator",
+   "english_name": "A Song of Penitence",
+   "citation": "Prayer of Manasseh, 1-2, 4, 6-7, 11-15",
+   "category": "supplemental",
+   "suggested": [
+    "Lent"
+   ],
+   "gloria": false,
+   "notes": [],
+   "texts": {
+    "contemporary": [
+     {
+      "content": "O Lord and Ruler of the hosts of heaven,*",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "God of Abraham, Isaac, and Jacob,  and of all their righteous offspring:",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "You made the heavens and the earth, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ],
+    "traditional": [
+     {
+      "content": "O Lord and Ruler of the hosts of heaven, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "God of Abraham, Isaac, and Jacob, and of all their righteous offspring:",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "Thou hast made the heavens and the earth, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ]
+   },
+   "offices": [
+    "morning",
+    "evening"
+   ],
+   "rotations": [
+    "2011",
+    "1979"
+   ],
+   "slots": [
+    "ep1",
+    "ep2",
+    "mp1"
+   ]
+  },
+  {
+   "slug": "quaerite-dominum",
+   "latin_name": "Quaerite Dominum",
+   "english_name": "Seek the Lord while he wills to be found",
+   "citation": "Isaiah 55:6-11",
+   "category": "supplemental",
+   "suggested": [
+    "Lent"
+   ],
+   "gloria": true,
+   "notes": [],
+   "texts": {
+    "contemporary": [
+     {
+      "content": "Seek the LORD while he wills to be found; *",
+      "line_type": "congregation",
+      "indented": "handingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "call upon him when he draws near.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "Let the wicked forsake their ways *",
+      "line_type": "congregation",
+      "indented": "handingIndent",
+      "extra_space_before": false
+     }
+    ],
+    "traditional": [
+     {
+      "content": "Seek the Lord while he willeth to be found; *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "call upon him when he draweth near.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "Let the wicked forsake their ways *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ]
+   },
+   "offices": [
+    "morning",
+    "evening"
+   ],
+   "rotations": [
+    "2011",
+    "1979"
+   ],
+   "slots": [
+    "ep1",
+    "ep2",
+    "mp1"
+   ]
+  },
+  {
+   "slug": "cantemus-domino",
+   "latin_name": "Cantemus Domino",
+   "english_name": "The Song of Moses",
+   "citation": "Exodus 15:1-6, 11-13, 17-18",
+   "category": "supplemental",
+   "suggested": [
+    "Eastertide"
+   ],
+   "gloria": true,
+   "notes": [],
+   "texts": {
+    "contemporary": [
+     {
+      "content": "I will sing to the LORD, for he is lofty and uplifted; *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "the horse and its rider has he hurled into the sea.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "The LORD is my strength and my refuge; *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ],
+    "traditional": [
+     {
+      "content": "I will sing unto the Lord, for he hath triumphed gloriously; *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "the horse and its rider hath he thrown into the sea.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "The Lord is my strength and song *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ]
+   },
+   "offices": [
+    "morning",
+    "evening"
+   ],
+   "rotations": [
+    "2011",
+    "1979"
+   ],
+   "slots": [
+    "ep1",
+    "mp1"
+   ]
+  },
+  {
+   "slug": "dignus-es",
+   "latin_name": "Dignus es",
+   "english_name": "A Song to the Lamb",
+   "citation": "Revelation 4:11; 5:9-10, 13, 14",
+   "category": "supplemental",
+   "suggested": [
+    "Ascensiontide",
+    "Eastertide"
+   ],
+   "gloria": false,
+   "notes": [],
+   "texts": {
+    "contemporary": [
+     {
+      "content": "Splendor and honor and kingly power *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "are yours by right, O Lord our God,",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "For you created everything that is, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ],
+    "traditional": [
+     {
+      "content": "Thou art worthy, O Lord our God, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "to receive splendor and honor and kingly power,",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "For thou hast created everything that is, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ]
+   },
+   "offices": [
+    "morning"
+   ],
+   "rotations": [
+    "2011",
+    "1979"
+   ],
+   "slots": [
+    "mp1",
+    "mp2"
+   ]
+  },
+  {
+   "slug": "cantate-domino",
+   "latin_name": "Cantate Domino",
+   "english_name": "Sing unto the Lord",
+   "citation": "Psalm 98",
+   "category": "supplemental",
+   "suggested": [
+    "Eastertide",
+    "Non-penitential seasons"
+   ],
+   "gloria": true,
+   "notes": [],
+   "texts": {
+    "contemporary": [
+     {
+      "content": "O sing unto the LORD a new song, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "for he has done marvelous things.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "With his own right hand, and with his holy arm, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ],
+    "traditional": [
+     {
+      "content": "O sing unto the Lord a new song, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "for he hath done marvelous things.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "With his own right hand, and with his holy arm, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ]
+   },
+   "offices": [
+    "evening"
+   ],
+   "rotations": [
+    "2011"
+   ],
+   "slots": [
+    "ep1",
+    "ep2"
+   ]
+  },
+  {
+   "slug": "ecce-deus",
+   "latin_name": "Ecce, Deus",
+   "english_name": "Surely, it is God who saves me",
+   "citation": "Isaiah 12:2-6",
+   "category": "supplemental",
+   "suggested": [
+    "Anytime"
+   ],
+   "gloria": true,
+   "notes": [],
+   "texts": {
+    "contemporary": [
+     {
+      "content": "Surely, it is God who saves me; *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "I will trust in him and not be afraid.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "For the LORD is my stronghold and my sure defense, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ],
+    "traditional": [
+     {
+      "content": "Surely, it is God who doth save me; *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "I will trust in him and not be afraid.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "For the Lord is my stronghold and my sure defense, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ]
+   },
+   "offices": [
+    "morning",
+    "evening"
+   ],
+   "rotations": [
+    "2011",
+    "1979"
+   ],
+   "slots": [
+    "ep1",
+    "mp1"
+   ]
+  },
+  {
+   "slug": "deus-misereatur",
+   "latin_name": "Deus misereatur",
+   "english_name": "God be merciful",
+   "citation": "Psalm 67",
+   "category": "supplemental",
+   "suggested": [
+    "Anytime"
+   ],
+   "gloria": false,
+   "notes": [],
+   "texts": {
+    "contemporary": [
+     {
+      "content": "May God be merciful unto us, and bless us, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "and show us the light of his countenance, and be merciful unto us.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "Let your way be known upon earth, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ],
+    "traditional": [
+     {
+      "content": "God be merciful unto us, and bless us, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "and show us the light of his countenance, and be merciful unto us;",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "That thy way may be known upon earth, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ]
+   },
+   "offices": [
+    "evening"
+   ],
+   "rotations": [
+    "2011"
+   ],
+   "slots": [
+    "ep2"
+   ]
+  },
+  {
+   "slug": "benedicite",
+   "latin_name": "Benedicite, omnia opera Domini",
+   "english_name": "A Song of Creation",
+   "citation": "Song of the Three Young Men, 35-65",
+   "category": "supplemental",
+   "suggested": [
+    "Saturday"
+   ],
+   "gloria": false,
+   "notes": [],
+   "texts": {
+    "contemporary": [
+     {
+      "content": "Glorify the Lord, all you works of the Lord, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "praise him and highly exalt him for ever.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "In the firmament of his power, glorify the Lord, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ],
+    "traditional": [
+     {
+      "content": "O all ye works of the Lord, bless ye the Lord, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "praise him, and magnify him for ever.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "O ye angels of the Lord, bless ye the Lord, *",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ]
+   },
+   "offices": [
+    "morning",
+    "evening"
+   ],
+   "rotations": [
+    "2011",
+    "1979"
+   ],
+   "slots": [
+    "ep1",
+    "mp1"
+   ]
+  },
+  {
+   "slug": "gloria-in-excelsis",
+   "latin_name": "Gloria in excelsis",
+   "english_name": "Glory to God in the highest",
+   "citation": "",
+   "category": "other",
+   "suggested": [
+    "Non-penitential seasons"
+   ],
+   "gloria": false,
+   "notes": [],
+   "texts": {
+    "contemporary": [
+     {
+      "content": "Glory to God in the highest,",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "and peace to his people on earth.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "Lord God, heavenly King,",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     }
+    ],
+    "traditional": [
+     {
+      "content": "Glory be to God on high,",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     },
+     {
+      "content": "and on earth peace, good will towards men.",
+      "line_type": "congregation",
+      "indented": "indent",
+      "extra_space_before": false
+     },
+     {
+      "content": "We praise thee, we bless thee,",
+      "line_type": "congregation",
+      "indented": "hangingIndent",
+      "extra_space_before": false
+     }
+    ]
+   },
+   "offices": [
+    "morning"
+   ],
+   "rotations": [
+    "1979"
+   ],
+   "slots": [
+    "mp2"
+   ]
+  }
+ ],
+ "categories": [
+  {
+   "key": "invitatory",
+   "label": "Invitatories",
+   "description": "Said at the opening of Morning Prayer."
+  },
+  {
+   "key": "evening_hymn",
+   "label": "The Evening Hymn",
+   "description": "Said or sung at the opening of Evening Prayer."
+  },
+  {
+   "key": "morning",
+   "label": "Morning Canticles",
+   "description": "The canticles of Morning Prayer."
+  },
+  {
+   "key": "evening",
+   "label": "Evening Canticles",
+   "description": "The canticles of Evening Prayer and Compline."
+  },
+  {
+   "key": "supplemental",
+   "label": "Supplemental Canticles",
+   "description": "Canticles that may replace the usual canticles of Morning and Evening Prayer."
+  },
+  {
+   "key": "other",
+   "label": "Other Canticles",
+   "description": ""
+  }
+ ],
+ "offices": [
+  {
+   "key": "morning",
+   "label": "Morning Prayer"
+  },
+  {
+   "key": "evening",
+   "label": "Evening Prayer"
+  },
+  {
+   "key": "compline",
+   "label": "Compline"
+  }
+ ],
+ "seasons": [
+  {
+   "key": "advent",
+   "label": "Advent"
+  },
+  {
+   "key": "christmas",
+   "label": "Christmas"
+  },
+  {
+   "key": "epiphany",
+   "label": "Epiphany"
+  },
+  {
+   "key": "lent",
+   "label": "Lent & Holy Week"
+  },
+  {
+   "key": "easter",
+   "label": "Easter"
+  },
+  {
+   "key": "pentecost",
+   "label": "After Pentecost"
+  }
+ ],
+ "slots": [
+  {
+   "key": "mp1",
+   "office": "morning",
+   "label": "First Canticle"
+  },
+  {
+   "key": "mp2",
+   "office": "morning",
+   "label": "Second Canticle"
+  },
+  {
+   "key": "ep1",
+   "office": "evening",
+   "label": "First Canticle"
+  },
+  {
+   "key": "ep2",
+   "office": "evening",
+   "label": "Second Canticle"
+  }
+ ],
+ "rotations": [
+  {
+   "key": "default",
+   "setting_value": "default",
+   "name": "Traditional",
+   "description": "The traditional fixed canticles each day.",
+   "rows": [
+    {
+     "key": "every_day",
+     "label": "Every day",
+     "days": [
+      "sunday",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+      "feast"
+     ],
+     "cells": {
+      "mp1": [
+       {
+        "canticles": [
+         "te-deum"
+        ],
+        "seasons": [
+         "advent",
+         "christmas",
+         "epiphany",
+         "easter",
+         "pentecost"
+        ]
+       },
+       {
+        "canticles": [
+         "benedictus-es-domine"
+        ],
+        "seasons": [
+         "lent"
+        ]
+       }
+      ],
+      "mp2": [
+       {
+        "canticles": [
+         "benedictus"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep1": [
+       {
+        "canticles": [
+         "magnificat"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep2": [
+       {
+        "canticles": [
+         "nunc-dimittis"
+        ],
+        "seasons": []
+       }
+      ]
+     }
+    }
+   ],
+   "notes": []
+  },
+  {
+   "key": "2011",
+   "setting_value": "2011",
+   "name": "Seasonal Rotation",
+   "description": "One fixed canticle and one canticle that rotates by season.",
+   "rows": [
+    {
+     "key": "sunday",
+     "label": "Sunday",
+     "days": [
+      "sunday"
+     ],
+     "cells": {
+      "mp1": [
+       {
+        "canticles": [
+         "te-deum"
+        ],
+        "seasons": []
+       }
+      ],
+      "mp2": [
+       {
+        "canticles": [
+         "benedictus"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep1": [
+       {
+        "canticles": [
+         "magnificat"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep2": [
+       {
+        "canticles": [
+         "nunc-dimittis"
+        ],
+        "seasons": []
+       }
+      ]
+     }
+    },
+    {
+     "key": "monday-friday",
+     "label": "Monday – Friday",
+     "days": [
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday"
+     ],
+     "cells": {
+      "mp1": [
+       {
+        "canticles": [
+         "magna-et-mirabilia"
+        ],
+        "seasons": [
+         "advent"
+        ]
+       },
+       {
+        "canticles": [
+         "te-deum"
+        ],
+        "seasons": [
+         "christmas"
+        ]
+       },
+       {
+        "canticles": [
+         "surge-illuminare"
+        ],
+        "seasons": [
+         "epiphany"
+        ]
+       },
+       {
+        "canticles": [
+         "benedictus-es-domine"
+        ],
+        "seasons": [
+         "lent"
+        ]
+       },
+       {
+        "canticles": [
+         "cantemus-domino"
+        ],
+        "seasons": [
+         "easter"
+        ]
+       },
+       {
+        "canticles": [
+         "ecce-deus"
+        ],
+        "seasons": [
+         "pentecost"
+        ]
+       }
+      ],
+      "mp2": [
+       {
+        "canticles": [
+         "benedictus"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep1": [
+       {
+        "canticles": [
+         "magnificat"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep2": [
+       {
+        "canticles": [
+         "quaerite-dominum"
+        ],
+        "seasons": [
+         "advent"
+        ]
+       },
+       {
+        "canticles": [
+         "cantate-domino"
+        ],
+        "seasons": [
+         "christmas",
+         "easter"
+        ]
+       },
+       {
+        "canticles": [
+         "deus-misereatur"
+        ],
+        "seasons": [
+         "epiphany",
+         "pentecost"
+        ]
+       },
+       {
+        "canticles": [
+         "kyrie-pantokrator"
+        ],
+        "seasons": [
+         "lent"
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "key": "saturday",
+     "label": "Saturday",
+     "days": [
+      "saturday"
+     ],
+     "cells": {
+      "mp1": [
+       {
+        "canticles": [
+         "magna-et-mirabilia"
+        ],
+        "seasons": [
+         "advent"
+        ]
+       },
+       {
+        "canticles": [
+         "te-deum"
+        ],
+        "seasons": [
+         "christmas"
+        ]
+       },
+       {
+        "canticles": [
+         "surge-illuminare"
+        ],
+        "seasons": [
+         "epiphany"
+        ]
+       },
+       {
+        "canticles": [
+         "benedictus-es-domine"
+        ],
+        "seasons": [
+         "lent"
+        ]
+       },
+       {
+        "canticles": [
+         "cantemus-domino"
+        ],
+        "seasons": [
+         "easter"
+        ]
+       },
+       {
+        "canticles": [
+         "benedicite"
+        ],
+        "seasons": [
+         "pentecost"
+        ]
+       }
+      ],
+      "mp2": [
+       {
+        "canticles": [
+         "benedictus"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep1": [
+       {
+        "canticles": [
+         "magnificat"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep2": [
+       {
+        "canticles": [
+         "nunc-dimittis"
+        ],
+        "seasons": []
+       }
+      ]
+     }
+    },
+    {
+     "key": "feast",
+     "label": "Principal Feasts",
+     "days": [
+      "feast"
+     ],
+     "cells": {
+      "mp1": [
+       {
+        "canticles": [
+         "te-deum"
+        ],
+        "seasons": []
+       }
+      ],
+      "mp2": [
+       {
+        "canticles": [
+         "benedictus"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep1": [
+       {
+        "canticles": [
+         "magnificat"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep2": [
+       {
+        "canticles": [
+         "nunc-dimittis"
+        ],
+        "seasons": []
+       }
+      ]
+     }
+    }
+   ],
+   "notes": [
+    {
+     "slot": "mp1",
+     "text": "On weekdays that keep the Ascension or Pentecost, the Dignus es is said.",
+     "canticles": [
+      "dignus-es"
+     ]
+    },
+    {
+     "slot": "mp2",
+     "text": "On April 29 the Jubilate is said in place of the Benedictus.",
+     "canticles": [
+      "jubilate"
+     ]
+    },
+    {
+     "slot": "ep1",
+     "text": "On November 13 the Cantate Domino is said in place of the Magnificat.",
+     "canticles": [
+      "cantate-domino"
+     ]
+    },
+    {
+     "slot": "ep2",
+     "text": "In Epiphany and after Pentecost, the Nunc dimittis replaces the Deus misereatur whenever Psalm 67 is appointed that evening.",
+     "canticles": [
+      "nunc-dimittis",
+      "deus-misereatur"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "1979",
+   "setting_value": "1979",
+   "name": "Daily Rotation",
+   "description": "A rotating set of canticles by day of week and season.",
+   "rows": [
+    {
+     "key": "sunday",
+     "label": "Sunday",
+     "days": [
+      "sunday"
+     ],
+     "cells": {
+      "mp1": [
+       {
+        "canticles": [
+         "surge-illuminare"
+        ],
+        "seasons": [
+         "advent"
+        ]
+       },
+       {
+        "canticles": [
+         "benedictus"
+        ],
+        "seasons": [
+         "christmas",
+         "epiphany",
+         "pentecost"
+        ]
+       },
+       {
+        "canticles": [
+         "kyrie-pantokrator"
+        ],
+        "seasons": [
+         "lent"
+        ]
+       },
+       {
+        "canticles": [
+         "cantemus-domino"
+        ],
+        "seasons": [
+         "easter"
+        ]
+       }
+      ],
+      "mp2": [
+       {
+        "canticles": [
+         "benedictus"
+        ],
+        "seasons": [
+         "advent",
+         "lent"
+        ]
+       },
+       {
+        "canticles": [
+         "te-deum"
+        ],
+        "seasons": [
+         "christmas",
+         "epiphany",
+         "easter",
+         "pentecost"
+        ]
+       }
+      ],
+      "ep1": [
+       {
+        "canticles": [
+         "magnificat"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep2": [
+       {
+        "canticles": [
+         "nunc-dimittis"
+        ],
+        "seasons": []
+       }
+      ]
+     }
+    },
+    {
+     "key": "monday",
+     "label": "Monday",
+     "days": [
+      "monday"
+     ],
+     "cells": {
+      "mp1": [
+       {
+        "canticles": [
+         "ecce-deus"
+        ],
+        "seasons": []
+       }
+      ],
+      "mp2": [
+       {
+        "canticles": [
+         "magna-et-mirabilia"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep1": [
+       {
+        "canticles": [
+         "cantemus-domino"
+        ],
+        "seasons": [
+         "advent",
+         "christmas",
+         "epiphany",
+         "easter",
+         "pentecost"
+        ]
+       },
+       {
+        "canticles": [
+         "kyrie-pantokrator"
+        ],
+        "seasons": [
+         "lent"
+        ]
+       }
+      ],
+      "ep2": [
+       {
+        "canticles": [
+         "nunc-dimittis"
+        ],
+        "seasons": []
+       }
+      ]
+     }
+    },
+    {
+     "key": "tuesday",
+     "label": "Tuesday",
+     "days": [
+      "tuesday"
+     ],
+     "cells": {
+      "mp1": [
+       {
+        "canticles": [
+         "benedictus-es-domine"
+        ],
+        "seasons": []
+       }
+      ],
+      "mp2": [
+       {
+        "canticles": [
+         "dignus-es"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep1": [
+       {
+        "canticles": [
+         "quaerite-dominum"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep2": [
+       {
+        "canticles": [
+         "magnificat"
+        ],
+        "seasons": []
+       }
+      ]
+     }
+    },
+    {
+     "key": "wednesday",
+     "label": "Wednesday",
+     "days": [
+      "wednesday"
+     ],
+     "cells": {
+      "mp1": [
+       {
+        "canticles": [
+         "surge-illuminare"
+        ],
+        "seasons": [
+         "advent",
+         "christmas",
+         "epiphany",
+         "easter",
+         "pentecost"
+        ]
+       },
+       {
+        "canticles": [
+         "kyrie-pantokrator"
+        ],
+        "seasons": [
+         "lent"
+        ]
+       }
+      ],
+      "mp2": [
+       {
+        "canticles": [
+         "benedictus"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep1": [
+       {
+        "canticles": [
+         "benedicite"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep2": [
+       {
+        "canticles": [
+         "nunc-dimittis"
+        ],
+        "seasons": []
+       }
+      ]
+     }
+    },
+    {
+     "key": "thursday",
+     "label": "Thursday",
+     "days": [
+      "thursday"
+     ],
+     "cells": {
+      "mp1": [
+       {
+        "canticles": [
+         "cantemus-domino"
+        ],
+        "seasons": []
+       }
+      ],
+      "mp2": [
+       {
+        "canticles": [
+         "magna-et-mirabilia"
+        ],
+        "seasons": [
+         "advent",
+         "lent"
+        ]
+       },
+       {
+        "canticles": [
+         "gloria-in-excelsis"
+        ],
+        "seasons": [
+         "christmas",
+         "epiphany",
+         "easter",
+         "pentecost"
+        ]
+       }
+      ],
+      "ep1": [
+       {
+        "canticles": [
+         "surge-illuminare"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep2": [
+       {
+        "canticles": [
+         "magnificat"
+        ],
+        "seasons": []
+       }
+      ]
+     }
+    },
+    {
+     "key": "friday",
+     "label": "Friday",
+     "days": [
+      "friday"
+     ],
+     "cells": {
+      "mp1": [
+       {
+        "canticles": [
+         "quaerite-dominum"
+        ],
+        "seasons": [
+         "advent",
+         "christmas",
+         "epiphany",
+         "easter",
+         "pentecost"
+        ]
+       },
+       {
+        "canticles": [
+         "kyrie-pantokrator"
+        ],
+        "seasons": [
+         "lent"
+        ]
+       }
+      ],
+      "mp2": [
+       {
+        "canticles": [
+         "dignus-es"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep1": [
+       {
+        "canticles": [
+         "benedictus-es-domine"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep2": [
+       {
+        "canticles": [
+         "nunc-dimittis"
+        ],
+        "seasons": []
+       }
+      ]
+     }
+    },
+    {
+     "key": "saturday",
+     "label": "Saturday",
+     "days": [
+      "saturday"
+     ],
+     "cells": {
+      "mp1": [
+       {
+        "canticles": [
+         "benedicite"
+        ],
+        "seasons": []
+       }
+      ],
+      "mp2": [
+       {
+        "canticles": [
+         "magna-et-mirabilia"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep1": [
+       {
+        "canticles": [
+         "ecce-deus"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep2": [
+       {
+        "canticles": [
+         "magnificat"
+        ],
+        "seasons": []
+       }
+      ]
+     }
+    },
+    {
+     "key": "feast",
+     "label": "Principal Feasts",
+     "days": [
+      "feast"
+     ],
+     "cells": {
+      "mp1": [
+       {
+        "canticles": [
+         "benedictus"
+        ],
+        "seasons": []
+       }
+      ],
+      "mp2": [
+       {
+        "canticles": [
+         "te-deum"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep1": [
+       {
+        "canticles": [
+         "magnificat"
+        ],
+        "seasons": []
+       }
+      ],
+      "ep2": [
+       {
+        "canticles": [
+         "nunc-dimittis"
+        ],
+        "seasons": []
+       }
+      ]
+     }
+    }
+   ],
+   "notes": []
+  }
+ ],
+ "invitatory_rotations": [
+  {
+   "key": "invitatory_traditional",
+   "name": "Venite always",
+   "description": "Always the Venite, except on days when Psalm 95 is appointed.",
+   "appointments": [
+    {
+     "when": "Easter Week",
+     "canticles": [
+      "pascha-nostrum"
+     ]
+    },
+    {
+     "when": "All other days",
+     "canticles": [
+      "venite"
+     ]
+    },
+    {
+     "when": "When Psalm 95 is appointed",
+     "canticles": [
+      "jubilate"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "invitatory_jubilate_on_feasts",
+   "name": "Celebratory Sundays and feasts",
+   "description": "The Jubilate on Sundays and feasts, the Venite on other days.",
+   "appointments": [
+    {
+     "when": "Easter Week",
+     "canticles": [
+      "pascha-nostrum"
+     ]
+    },
+    {
+     "when": "Sundays and feasts in Eastertide",
+     "canticles": [
+      "pascha-nostrum"
+     ]
+    },
+    {
+     "when": "Sundays and feasts",
+     "canticles": [
+      "jubilate"
+     ]
+    },
+    {
+     "when": "Other days",
+     "canticles": [
+      "venite"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "invitatory_rotating",
+   "name": "Rotating each day",
+   "description": "Alternate between the Venite and the Jubilate.",
+   "appointments": [
+    {
+     "when": "Easter Week",
+     "canticles": [
+      "pascha-nostrum"
+     ]
+    },
+    {
+     "when": "Every third day of Eastertide",
+     "canticles": [
+      "pascha-nostrum"
+     ]
+    },
+    {
+     "when": "Alternating days",
+     "canticles": [
+      "venite",
+      "jubilate"
+     ]
+    }
+   ]
+  },
+  {
+   "key": "celebratory_always",
+   "name": "Celebratory always",
+   "description": "Always the Jubilate, or the Pascha Nostrum in Eastertide.",
+   "appointments": [
+    {
+     "when": "Eastertide",
+     "canticles": [
+      "pascha-nostrum"
+     ]
+    },
+    {
+     "when": "All other days",
+     "canticles": [
+      "jubilate"
+     ]
+    },
+    {
+     "when": "When Psalm 100 is appointed",
+     "canticles": [
+      "venite"
+     ]
+    }
+   ]
+  }
+ ],
+ "invitatory_note": "Whatever the setting, the invitatory is never the same as one of the day's appointed psalms: the Jubilate replaces the Venite when Psalm 95 is appointed, and the Venite replaces the Jubilate when Psalm 100 is."
+}

@@ -2,7 +2,9 @@ from uuid import UUID
 
 from django.db.models import Prefetch, Q
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
 
 from office.api.serializers import (
@@ -15,6 +17,7 @@ from office.api.serializers import (
     ScriptureSerializer,
     SourceSerializer,
 )
+from office.canticle_library import canticle_library
 from office.models import Collect, AboutItem, CollectTagCategory, CollectTag, Scripture
 from psalter.models import Psalm, PsalmTopicPsalm, PsalmVerse, PsalmTopic
 
@@ -178,15 +181,10 @@ class ScriptureViewSet(ViewSet):
         return Response(serializer.data)
 
 
-class CanticlesViewSet(ViewSet):
-    queryset = Scripture.objects.all()
-    serializer_class = ScriptureSerializer
+class CanticlesView(APIView):
+    """Every canticle, in both language styles, with the rotations that appoint it."""
 
-    def retrieve(self, request, *args, **kwargs):
-        try:
-            uuid_obj = UUID(kwargs["pk"], version=4)
-            scripture = self.queryset.filter(Q(pk=kwargs["pk"])).first()
-        except ValueError:
-            scripture = self.queryset.filter(Q(passage=kwargs["pk"])).first()
-        serializer = ScriptureSerializer(scripture, many=False)
-        return Response(serializer.data)
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        return Response(canticle_library())

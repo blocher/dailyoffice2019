@@ -214,6 +214,22 @@ const routes = [
       import(/* webpackChunkName: "about" */ '../views/Psalms.vue'),
   },
   {
+    path: '/canticles',
+    name: 'Canticles',
+    meta: {
+      title: 'Canticles | The Daily Office',
+    },
+    component: () => import('../views/Canticles.vue'),
+  },
+  {
+    path: '/canticle/:slug/',
+    name: 'Canticle',
+    meta: {
+      title: 'Canticles | The Daily Office',
+    },
+    component: () => import('../views/Canticle.vue'),
+  },
+  {
     path: '/psalm/:number/',
     name: 'Psalm',
     meta: {

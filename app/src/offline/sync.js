@@ -99,6 +99,7 @@ const REFERENCE_PATHS = [
   'grouped_collects',
   'psalms',
   'psalms/topics/',
+  'canticles',
   'about',
 ];
 
