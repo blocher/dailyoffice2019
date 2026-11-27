@@ -208,6 +208,19 @@ describe('error reporting', () => {
             },
           ],
         }),
+        // An in-app browser's injected script, ending at its top level.
+        fakeEvent({
+          errorClass: 'ReferenceError',
+          errorMessage: 'swbrowser is not defined',
+          stacktrace: [
+            {
+              file: window.location.href,
+              lineNumber: 1,
+              method: 'needInjectCss',
+            },
+            { file: 'global code', lineNumber: 1, method: '' },
+          ],
+        }),
       ];
       noise.forEach((event) => expect(onError(event)).toBe(false));
       expect(
@@ -235,6 +248,16 @@ describe('error reporting', () => {
               { file: window.location.href, lineNumber: 5 },
               { file: `${window.location.origin}/assets/index-abc.js` },
             ],
+          })
+        )
+      ).toBe(true);
+      // A "global code" frame alone, with no page-document frame, is kept.
+      expect(
+        onError(
+          fakeEvent({
+            errorClass: 'ReferenceError',
+            errorMessage: 'x is not defined',
+            stacktrace: [{ file: 'global code', lineNumber: 1 }],
           })
         )
       ).toBe(true);
