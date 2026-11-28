@@ -6,6 +6,7 @@ import {
   countViews,
   pageOfOffset,
   pagesLeftInSection,
+  readerStylesApplied,
   resolvePageCount,
   resumeBlockIndex,
   sectionForPage,
@@ -266,5 +267,22 @@ describe('reader layout', () => {
     expect(resumeBlockIndex(saved, { key: saved.key, count: 280 })).toBeNull();
     expect(resumeBlockIndex({ ...saved, index: -1 }, same)).toBeNull();
     expect(resumeBlockIndex({ ...saved, index: 300 }, same)).toBeNull();
+  });
+});
+
+describe('reader stylesheet check', () => {
+  it('passes when the reader is a fixed overlay', () => {
+    expect(readerStylesApplied({ position: 'fixed' })).toBe(true);
+  });
+
+  it('fails when the reader sits in the page flow', () => {
+    // BugSnag 6b0a483e54bff5cb6a21f112: a 4px stage and a strip with no
+    // columns, as when the component's CSS never loaded.
+    expect(readerStylesApplied({ position: 'static' })).toBe(false);
+  });
+
+  it('assumes the styles are there when it cannot tell', () => {
+    expect(readerStylesApplied(null)).toBe(true);
+    expect(readerStylesApplied({})).toBe(true);
   });
 });
