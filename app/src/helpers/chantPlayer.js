@@ -269,14 +269,21 @@ export function createRecordingPlayer({ onPosition, onEnd } = {}) {
 
   // The recording is fetched whole and played from memory: it is small (about
   // a megabyte a psalm), and seeking to a verse then works whatever the
-  // server, including ones that ignore range requests.
+  // server, including ones that ignore range requests. If it can't be fetched
+  // (a server or a cached copy without CORS headers, which fetch needs and an
+  // <audio> element doesn't), it plays straight from its address instead.
   async function load(url) {
     if (audio && audio.dataset.src === url) return;
-    const response = await window.fetch(url);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const blob = await response.blob();
-    if (audio) window.URL.revokeObjectURL(audio.src);
-    audio = new Audio(window.URL.createObjectURL(blob));
+    let src = url;
+    try {
+      const response = await window.fetch(url);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      src = window.URL.createObjectURL(await response.blob());
+    } catch {
+      // Play from the address.
+    }
+    if (audio?.src?.startsWith('blob:')) window.URL.revokeObjectURL(audio.src);
+    audio = new Audio(src);
     audio.dataset.src = url;
     audio.preload = 'auto';
     audio.addEventListener('ended', finish);

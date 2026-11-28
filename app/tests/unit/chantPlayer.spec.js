@@ -7,6 +7,7 @@ import ChantText from '@/components/ChantText.vue';
 import {
   buildTimeline,
   createChantPlayer,
+  createRecordingPlayer,
   recordingUrl,
   syllableAt,
   transposeFor,
@@ -177,6 +178,77 @@ describe('createChantPlayer', () => {
     const timeline = buildTimeline([{ number: 1, halves: [FIRST, []] }]);
     expect(await player.play(timeline)).toBe(false);
     expect(onEnd).toHaveBeenCalled();
+  });
+});
+
+class FakeAudio {
+  static last = null;
+  static refuse = false;
+  constructor(src) {
+    this.src = src;
+    this.dataset = {};
+    this.readyState = 4;
+    this.currentTime = 0;
+    this.play = vi.fn(() =>
+      FakeAudio.refuse
+        ? Promise.reject(new Error('NotSupportedError'))
+        : Promise.resolve()
+    );
+    this.pause = vi.fn();
+    FakeAudio.last = this;
+  }
+  addEventListener() {}
+}
+
+describe('createRecordingPlayer', () => {
+  const URL_ = 'https://api.example.org/uploads/chant/psalm-23.mp3';
+  const timeline = buildTimeline([{ number: 1, halves: [FIRST, SECOND] }]);
+  let originalAudio;
+  beforeEach(() => {
+    vi.useFakeTimers();
+    originalAudio = window.Audio;
+    window.Audio = FakeAudio;
+    globalThis.Audio = FakeAudio;
+    window.URL.createObjectURL = vi.fn(() => 'blob:recording');
+    window.URL.revokeObjectURL = vi.fn();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    window.Audio = originalAudio;
+    globalThis.Audio = originalAudio;
+    delete window.fetch;
+  });
+
+  it('plays the recording from memory when it can be fetched', async () => {
+    window.fetch = vi.fn(() =>
+      Promise.resolve({ ok: true, blob: () => Promise.resolve(new Blob()) })
+    );
+    const player = createRecordingPlayer();
+    expect(await player.play(URL_, timeline)).toBe(true);
+    expect(FakeAudio.last.src).toBe('blob:recording');
+    expect(FakeAudio.last.play).toHaveBeenCalled();
+    player.stop();
+  });
+
+  it('plays straight from the address when the fetch is refused', async () => {
+    // What a browser does when the server sends no CORS header.
+    window.fetch = vi.fn(() => Promise.reject(new TypeError('Failed to fetch')));
+    const player = createRecordingPlayer();
+    expect(await player.play(URL_, timeline)).toBe(true);
+    expect(FakeAudio.last.src).toBe(URL_);
+    expect(FakeAudio.last.play).toHaveBeenCalled();
+    player.stop();
+  });
+
+  it('says so when the recording cannot be played at all', async () => {
+    window.fetch = vi.fn(() => Promise.resolve({ ok: false, status: 404 }));
+    FakeAudio.refuse = true;
+    const onEnd = vi.fn();
+    const player = createRecordingPlayer({ onEnd });
+    expect(await player.play(URL_, timeline)).toBe(false);
+    expect(FakeAudio.last.src).toBe(URL_);
+    expect(player.playing).toBe(false);
+    FakeAudio.refuse = false;
   });
 });
 
