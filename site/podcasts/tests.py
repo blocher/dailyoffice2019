@@ -648,6 +648,28 @@ class FeedTests(MediaRootMixin, TestCase):
             self.client.get("/podcasts/compline.xml")
             self.assertEqual(render.call_count, 2)
 
+    def test_feed_is_served_when_memcached_refuses_it(self):
+        from pymemcache.exceptions import MemcacheServerError
+
+        with (
+            patch("podcasts.views.cache.set", side_effect=MemcacheServerError(b"out of memory storing object")),
+            patch("logging.Logger.warning") as warning,
+        ):
+            response = self.client.get("/podcasts/morning-prayer.xml")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(ET.fromstring(response.content).tag, "rss")
+        warning.assert_called_once()
+
+    def test_feed_is_served_when_the_cache_read_fails(self):
+        from pymemcache.exceptions import MemcacheServerError
+
+        with (
+            patch("podcasts.views.cache.get", side_effect=MemcacheServerError(b"Out of memory during read")),
+            patch("logging.Logger.warning"),
+        ):
+            response = self.client.get("/podcasts/morning-prayer.xml")
+        self.assertEqual(response.status_code, 200)
+
     def test_podcast_guid_is_stable(self):
         self.assertEqual(rss.podcast_guid("morning-prayer"), rss.podcast_guid("morning-prayer"))
         self.assertNotEqual(rss.podcast_guid("morning-prayer"), rss.podcast_guid("compline"))

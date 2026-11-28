@@ -7,6 +7,7 @@ from django.core.cache import cache
 from django.http import FileResponse, Http404, HttpResponse, JsonResponse
 from django.utils import timezone
 from django.views import View
+from pymemcache.exceptions import MemcacheError
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.throttling import SimpleRateThrottle
@@ -43,10 +44,19 @@ class PodcastFeedView(View):
     def get(self, request, slug):
         feed = get_feed_or_404(slug)
         key = f"podcast-feed:{feed.slug}"
-        body = cache.get(key)
+        try:
+            body = cache.get(key)
+        except (OSError, MemcacheError):
+            logger.warning("Podcast feed cache read failed for %s; rendering without cache", key, exc_info=True)
+            body = None
         if body is None:
             body = rss.render_feed(feed)
-            cache.set(key, body, FEED_SERVER_CACHE_SECONDS)
+            # The cache only spares the database; memcached refusing the feed
+            # ("out of memory storing object") must not fail the request.
+            try:
+                cache.set(key, body, FEED_SERVER_CACHE_SECONDS)
+            except (OSError, MemcacheError):
+                logger.warning("Podcast feed cache write failed for %s; serving the rendered feed", key, exc_info=True)
         response = HttpResponse(body, content_type="application/rss+xml; charset=utf-8")
         response["Cache-Control"] = f"public, max-age={FEED_CACHE_SECONDS}"
         return response
