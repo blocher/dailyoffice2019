@@ -235,12 +235,14 @@ import { markBookViewSeen } from '@/helpers/discovery';
 import { notifyOnce } from '@/helpers/errorReporting';
 import { foldState } from '@/helpers/fold';
 import { openPanel, panels } from '@/helpers/panels';
+import { toast } from '@/ui/feedback';
 import {
   canSwipeToClose,
   computeReaderLayout,
   countViews,
   pageOfOffset,
   pagesLeftInSection,
+  readerStylesApplied,
   resolvePageCount,
   resumeBlockIndex,
   sectionForPage,
@@ -577,6 +579,10 @@ function checkLayout() {
     scheduleLayoutCheck();
     return;
   }
+  if (!stylesApplied()) {
+    reportUnstyled();
+    return;
+  }
   const { fromScrollWidth, fromContentEnd } = pageCounts;
   if (fromScrollWidth > 1 && fromContentEnd > 1) return;
   const error = new Error(
@@ -593,6 +599,36 @@ function checkLayout() {
       groupingHash: 'BookViewSinglePage',
     }
   );
+}
+
+function stylesApplied() {
+  return readerStylesApplied(
+    root.value ? window.getComputedStyle(root.value) : null
+  );
+}
+
+// The reader's stylesheet never arrived, so the book can't be laid out as
+// pages: close it and leave the reader on the page, which still reads fine,
+// rather than over a broken overlay. Reported apart from a real single-page
+// layout so the two don't mix.
+function reportUnstyled() {
+  const error = new Error('Book view opened without its stylesheet');
+  error.name = 'BookViewUnstyled';
+  notifyOnce(
+    'bookViewUnstyled',
+    error,
+    { bookView: diagnostics() },
+    {
+      context: `Book view: ${props.title || window.location.pathname}`,
+      severity: 'warning',
+      groupingHash: 'BookViewUnstyled',
+    }
+  );
+  close();
+  toast.warning({
+    title: 'Book view didn’t load',
+    message: 'Reload the page to try it again.',
+  });
 }
 
 const round = (n) => (Number.isFinite(n) ? Math.round(n * 10) / 10 : null);
@@ -648,6 +684,7 @@ function diagnostics() {
           )
         ),
     },
+    stylesApplied: stylesApplied(),
     stage: stageRect && {
       width: round(stageRect.width),
       height: round(stageRect.height),

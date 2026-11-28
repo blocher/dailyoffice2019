@@ -225,3 +225,15 @@ export function resumeBlockIndex(saved, { key, count }) {
   if (!Number.isInteger(saved.index) || saved.index < 0) return null;
   return saved.index < count ? saved.index : null;
 }
+
+/**
+ * Whether the reader's own stylesheet has reached the page, judged from the
+ * reader root's computed style. Without it the reader isn't a fixed overlay
+ * and the text strip has no columns, so the office lays out as one tall,
+ * clipped page that can't be turned (seen on an iOS in-app browser).
+ * @param {{position?: string}|null} rootStyle getComputedStyle(root)
+ */
+export function readerStylesApplied(rootStyle) {
+  if (!rootStyle || !rootStyle.position) return true;
+  return rootStyle.position === 'fixed';
+}
